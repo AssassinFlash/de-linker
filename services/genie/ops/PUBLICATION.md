@@ -127,3 +127,120 @@ Stop the owned managed worker through its normal release process after checking 
 ```
 
 The target must already be a known retired hash and the expected current hash must still match. This CAS does not change products, original files, current Woo source or engineering. Resume the verified prior worker/runtime and allow it to materialize current Woo inputs with a higher epoch. An adopted managed index cannot use the old unfenced `rollback` symlink command. Read back the actual serving source/recipe/runtime/generation/epoch, native acknowledgement, current withdrawal controls and original-file digests before declaring recovery.
+
+## Paired serving-rule release
+
+`ops/paired_release.py` is the committed operator for an already prepared Genie
+runtime and the final immutable Mac worker source. It changes only Genie API and
+judge units. It does not stage sources, install dependencies, publish WordPress,
+change launchd, or touch Engine. The ordinary scheduled worker keeps its existing
+path. The previous one-use migration runner has been retired; do not recreate it.
+
+Before this window, complete final review/CI, prepare one unselected VPS runtime
+under `/opt/linker-genie/<version>` with its locked `.venv`, and prepare the same
+final source on the Mac. Measure identities after all ops changes: ops Python
+participates in the recipe, while runtime source also participates in serving.
+The candidate source and current/previous source must remain immutable during the
+window. Keep the original runtime/index pair and existing recovery points. Read
+the installed launch definition/executable and pause its idle schedule under the
+existing worker lock before executing this operator. No concurrent publication
+owner may switch the runtime/index during the window. The API and judge unit
+ExecStart must use `/opt/linker-genie/current/.venv/bin/`; actual post-start PIDs
+must have the selected release as cwd. Resolve a different unit layout before
+publishing, rather than weakening this check.
+
+Use the existing shared interpreter, with `PYTHONPATH` pointing to the immutable
+candidate `src`, service root and `ops`. Never copy or create another environment.
+The existing private worker environment is read through the same loader used by
+launchd, preserving provider proxy routing and exact-site bypass. Credentials
+remain in the existing mode-0600 file/environment and structured SSH stdin. The
+publication credential is used only for native jobs POSTs; the service token is
+used only for private loaded readback. The existing inventory REST configuration
+must identify the same Woo origin as the queue.
+
+The release owner must record a single private journal path outside the source,
+inside an existing mode-0700 directory, for example
+`/Users/chesterjohn/de-linker-ops/knowledge-worker/paired-release.json`. It contains
+the exact temporary lease capability and source manifest, never account keys.
+Keep at most this one journal and its atomic `.next` sibling. Successful actual
+ready ACK plus candidate-selector verification removes the journal. On failure,
+keep it only until inspected recovery or native lease retirement is verified,
+then remove it. Do not print, commit, or attach it to an issue.
+
+From the final immutable Mac service root, use this same argument set for each
+command (replace candidate and previous with the freshly verified exact names):
+
+```sh
+PYTHONPATH="$PWD/src:$PWD:$PWD/ops" \
+/Users/chesterjohn/de-linker-ops/knowledge-worker/releases/1418dc26e14c/.venv/bin/python \
+ops/paired_release.py preflight \
+  --env-file /Users/chesterjohn/de-linker-ops/knowledge-worker/worker.env \
+  --host linker-services --candidate <prepared-runtime-version> \
+  --previous <verified-current-runtime-version> \
+  --journal /Users/chesterjohn/de-linker-ops/knowledge-worker/paired-release.json \
+  --worker-id publication-618-mac --lease-seconds 7200 \
+  --loaded-url http://127.0.0.1:8902/knowledge/loaded
+```
+
+`preflight` reads the remote selector and hashes the actual prepared source; it
+makes no lease, journal or service change. Execute `publish` with the same
+arguments once. It requires the original selector and an unused journal path,
+then runs native Worker/run_job. It builds a new generation with the real lease
+and existing PDF/parse/vector caches. The operator is **cached-only**: a missing
+vector fails visibly before any embedding API call. This intentionally requires
+input/cache verification before the window; it never converts a metadata change
+into an old generation's proof.
+
+The existing publish helper checksum/delta/compress uploads and verifies actual
+SQLite/manifest/owner bytes before the runtime hook. Only then does the operator
+stop API/judge, CAS the selector, start both, and verify actual running PID/cwd.
+Native fenced activation independently checks current lease and actual serving
+identity. Worker then validates full loaded source/model/recipe/serving/index/
+epoch/product coverage and sends the native ready ACK. The same native ACK response must contain both `accepted=true` and
+`complete=true` for paired success; accepted-but-pending or a missing complete
+field retains the journal and reports incomplete, without another POST/read.
+The ordinary scheduled worker retains its accepted-ACK contract.
+No-job and lock-busy exits are incomplete releases, not success. Semantic gaps remain visible.
+
+Before any possible index activation, runtime-switch or startup failure restores
+the old selector, starts both units even if the failed stop/start left them
+inactive, verifies actual PIDs/cwd and compares the entire old loaded receipt.
+After activation becomes possible, transport loss or later journal/loaded/ACK
+failure preserves the candidate and original lease. No automatic runtime-only
+rollback, activation replay, replacement claim or rebuild occurs.
+
+For ambiguity, inspect the actual selector and native activation fence first.
+`resume-ack` with the same arguments uses only the journal's exact lease,
+`operation=verify` and native inspect of its exact index/SHA, then the existing
+Worker ack-only full-loaded validation/ACK retry. It cannot make an ordinary
+claim or a new generation. An expired/changed lease refuses. If ACK was accepted
+but its response lost, the old capability is already retired: resume refuses.
+Run `confirm-ready` with the same release arguments plus the already verified
+privileged SSH alias and WordPress root:
+
+```sh
+# Same interpreter, PYTHONPATH, env-file and release arguments as above.
+ops/paired_release.py confirm-ready <same-release-arguments> \
+  --wp-host hostinger-de-linker \
+  --wp-root /home/u388076051/domains/de-linker.com/public_html
+```
+
+This command makes only existing SSH/WP-CLI `eval-file -` reads. It projects the
+native queue's acknowledged identity, coverage, retired-lease state and fresh
+Woo source/model identity; no lease token or customer content is printed. It
+compares the original journal's exact job/worker/source/model/recipe/serving/
+index/epoch against the durable ready ACK and actual loaded receipt, verifies
+the native index activation fence and exact SQLite SHA, and repeats the native
+read to reject drift before removing the journal. It cannot claim, build,
+activate or ACK anything. An absent/mismatched/pending receipt or live lease
+refuses and retains the journal. Neither a 409 nor a supplied proof file counts
+as success. Do not infer failed delivery or rebuild from a refusal. Deliberate rollback after activation follows the
+retired-recipe CAS procedure above with a new higher native epoch.
+
+After successful ACK, install the final immutable Mac source through the existing
+launcher installer, restore the normal schedule and observe one actual natural
+poll. Read actual runtime/source/index/recipe/serving/epoch and Woo ready receipt;
+retain the semantic-gap state. Then retire the task stage/journal and superseded
+source/runtime within current+previous and index KEEP3, protecting the shared
+1418 interpreter and actual references. Publication is not complete until this
+readback and resource cleanup are recorded by the release owner.

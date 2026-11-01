@@ -199,7 +199,11 @@ def selected_modules(changes, base="", head=""):
             return None
         if path.startswith(("apps/planner/", "plugins/linker-tools/build/planner/")):
             selected.add("planner")
-            if path.startswith("apps/planner/tests/fixtures/preparation-flow"):
+            # Native Engine contracts read browser schemas and shared fixtures
+            # directly, beyond the solar preparation-flow fixture family.
+            if path.startswith(
+                ("apps/planner/src/contracts/", "apps/planner/tests/fixtures/")
+            ):
                 selected.add("engine")
         elif path == "plugins/linker-tools/build/manifest.json":
             if not planner_changed or not planner_manifest_isolated(base, head):

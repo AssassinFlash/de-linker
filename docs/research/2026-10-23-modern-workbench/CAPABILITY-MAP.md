@@ -319,3 +319,117 @@ Aladdin 不只提供画布。固定源码中已经能追到：
 **D：完整链的缺口已收窄。** 现可把“电缆热承受预算—实际器件让通能量—远端最小故障可靠切除—安装点最大故障分断”作为同回路的四项独立计算/核查；方法来源由E7/E8支撑，复用§9.3的拓扑/工况和冻结消费者。仍缺实际电缆热参数/原件、保护型号/设置/曲线与配合表、并网和孤岛各自的最大/最小故障包络、当地切除/接地条件；PV DC和电池系统适用性仍待相应资料。这些是项目数据与适用证据缺口，不能继续笼统称“相线短路方法没有公开原文”，也不能因方法取得就给GoodWe工程放行。
 
 补充批资源收口：Apify API读取曾遇到curl TLS握手错误及urllib系统代理CONNECT503，未另起抓取批或直连源站；同一Apify dataset经IPv4/HTTP1.1取回两份正文。回收改用同一TLS连接依次请求，核run终态和三份无共享名称存储的同owner/默认ID/`13:51:43`创建时刻；dataset `nK1LII4Sj5LQVR45F`（2条）、KV `iLQoT4wjeB1w4g9eC`、queue `jkBZSGiuVYyeVp7Hy`均DELETE204、各GET404，连接和命令进程随即关闭。仅保留本节和run元数据，没有本地临时文件/测试/环境，实际本地释放0；补充批远端回收3份存储，不虚报字节数。起始Data卷可用828GiB；收尾空间读回随本轮最终资源报告提供。文档差异空白检查通过。
+
+## 10. 具名电缆的原厂参数证据（2026-11-01）
+
+本节由 `sol_cable_primary_sources` 负责，只在本文件追加研究事实，不改 §9、源码、Woo 或生产。用途是为 §9 已取得的稳态压降方法寻找具名电缆的材料、构造、截面与明确条件下的电阻数据；候选并不代表在售、库存、购买推荐或已经为 GoodWe 选定电缆。资源合同：只走 Apify，最多两批，每批最多四个明确 URL、无递归、run 超时180秒；每批 run/dataset/KV/queue 最多各一套。先用一个明确型号检索定位官方原域，再取官方原件；检索摘要不作参数依据。命令与正文只在内存，不创建本地原件、脚本、报告、浏览器、实例或备份；本节是唯一持久增量，随现有能力图保留。终态提取来源 URL、hash、精确表行和条件后，核本批归属并回收远端临时存储。开始读回 Data 卷3.6TiB、已用2.8TiB、可用822GiB、78%。
+
+### 10.1 已取得的原厂页面和可重定位证据
+
+**M：以下参数来自 Nexans La Triveneta Cavi 官方产品页正文。** 检索批 `apify/google-search-scraper` run `ResJwTZvBwCSJnIVP`，`2026-10-31T18:28:58.585Z`开始、`18:29:04.547Z`成功，只用于定位原域链接。原文批 `apify/website-content-crawler` run `UWZhP9ExiMUEQgXDe`，`18:30:33.446Z`开始、`18:30:39.110Z`成功；深度0，只读以下两个具名产品页，均HTTP200。官方 HTML 表即本次一手原件；没有取得PDF字节，不填写虚构的PDF SHA或页码。页面没有可确认的技术修订号，采样日期与正文hash只标识本次读取版本，不能把HTTP动态 `Last-Modified` 当资料修订日期。
+
+| 来源 | 型号和原厂识别 | 精确定位 | 取样及 SHA-256 |
+| --- | --- | --- | --- |
+| [N1 官方页](https://latrivenetacavi.nexans.com/en/products/industrial-and-logistics/industrial-Dca-class/NPE%C2%AE-SUN-P38533/product~038021106~.html) | NPE® SUN PLUS H1Z2Z2-K 1 x 4；Nexans ref. `038021106` | `Characteristics → Construction characteristics`、`Dimensional characteristics`、`Electrical characteristics`，逐字段行 | 取样`2026-10-31T18:30:37.483Z`；全文`text` UTF-8 SHA `61ef7cccb66aebc964bbfeb21f7198ba2f8a4c5d99fc7fc0a594f747d40d784f`；crawler保存的`html`字符串SHA `a8da2b49e9b75d9f0506713abed0b4510657aeed493043c34e0d860859ffe34f` |
+| [N2 官方页](https://latrivenetacavi.nexans.com/en/products/special-projects/special-Dca-class/NPE%C2%AE-SUN-P38533/product~038023102~.html) | NPE® SUN PLUS H1Z2Z2-K 1 x 6；Nexans ref. `038023102` | 同上三个字段组，尤其电气组20°C最大直流电阻行 | 取样`2026-10-31T18:30:37.611Z`；全文`text` UTF-8 SHA `ca024a05b8b19da5ec861f2a9e444cf0276ff98b2017c337f41f118e62f16f58`；crawler保存的`html`字符串SHA `a0898bbf6e9be79081efff462b32c6f742b447c3eff66d2a60f68d7af272a007` |
+
+两页各自提供 `Datasheet PDF` 链接：[N1 PDF端点](https://latrivenetacavi.nexans.com/.rest/catalog/v1/product/pdf/038021106)、[N2 PDF端点](https://latrivenetacavi.nexans.com/.rest/catalog/v1/product/pdf/038023102)。本批没有继续请求这两个端点或认证附件，故它们仅是可后续取证的原厂入口，不能冒充已核字节或已入库的文件。
+
+### 10.2 可用参数与未取得的条件
+
+| 原厂明确参数 | N1 `038021106` | N2 `038023102` | 适用条件与限制 |
+| --- | --- | --- | --- |
+| 构造、芯数、截面 | 1 x 4；单芯；4mm² | 1 x 6；单芯；6mm² | 均为具名产品自身参数，不扩展至同截面任意品牌或不同型号 |
+| 导体材料及柔性等级 | 镀锡铜；柔性class 5；圆形 | 同左 | 不是裸铜实心导体，不能套入未经核实的统一材料电阻率 |
+| 绝缘、外护套 | 两者均为交联无卤橡胶；说明段称交联LS0H compound | 同左 | 本页没有把绝缘写作XLPE；实现应保留厂商原意，不按电压或用途猜绝缘材料 |
+| 电阻 | **最大Rdc20 = 5.09Ω/km** | **最大Rdc20 = 3.39Ω/km** | 电气组行名`Max. DC resistance of the conductor at 20°C`。这是单根导体在20°C的最大直流电阻，不是典型值、逐批实测值、整个往返回路电阻或热态值 |
+| 空气中一根电缆载流数值 | 55A | 70A | 厂商字段明确导体120°C、环境60°C、一根电缆；只存该表行条件，不当现场通用额定值 |
+| 表面一根电缆载流数值 | 52A | 67A | 同为导体120°C、环境60°C，表面一根电缆 |
+| 表面两根接触载流数值 | 44A | 57A | 同为导体120°C、环境60°C，表面两根接触；不迁移到成束、多层、地下、管内或其他温度 |
+| Rac、X、AC频率与排列 | 未提供 | 未提供 | 不将Rdc20重标为50Hz或60Hz Rac；不以缺省X=0填补缺项 |
+| 电阻温度系数或Rdc温度换算式 | 未提供 | 未提供 | 未取得铜通用系数的适用原件，因此只支持匹配20°C条件，不对其他温度自动修正 |
+
+两页说明段列有光伏用途、相关产品标准名称和安装条件。这证明厂商公开描述，不能代替标准全文、国家采纳或指定GoodWe端子的兼容放行。载流字段的120°C导体条件与同页使用温度字段必须连同厂家使用寿命、敷设和项目要求另核；本次独立压降算例不使用这组载流数据作合格判断。[N1](https://latrivenetacavi.nexans.com/en/products/industrial-and-logistics/industrial-Dca-class/NPE%C2%AE-SUN-P38533/product~038021106~.html)、[N2](https://latrivenetacavi.nexans.com/en/products/special-projects/special-Dca-class/NPE%C2%AE-SUN-P38533/product~038023102~.html)
+
+### 10.3 工程参考维护与独立手算（D）
+
+**D：这两项可以成为既有 Woo `EngineeringReference` 的非商售参考候选。** 沿已存在的 Trina 参考项模式维护身份、来源和修订，再由统一feed消费；本研究不创建Woo记录、销售SKU、库存或旁路产品库，也不把候选自动分配给项目。每条电阻组需保存型号/ref、截面、材料/构造/绝缘和来源；两组共同的条件为`current_kind=dc`、`temperature_c=20`、`frequency_hz=null`、`arrangement=null`、`resistance_basis=maximum`、`reactance_ohm_per_km=null`。分别保存5.09与3.39Ω/km；`null`表示本资料无相应数据，不表示零值。源引用至少包含上表URL、字段路径、采样时间、正文hash，以及“页面未给修订号”的事实。20°C以外、AC回路或项目指定的实际电缆不同，必须保持数据不足而不匹配该组。
+
+**D：以下是独立人工算例，输入由此例明确指定，不是本站项目或厂商推荐工况。** 设稳态DC电流20A、导体温度恰为20°C、参考电压600V，正负导体各30m（各0.03km），仅计导体段且无接触电阻数据。使用 §9.2 的逐导体回路推导：
+
+| 算例 | 最大导体回路电阻 | 对应压降上限 | 相对600V | 对应导体损耗上限 |
+| --- | --- | --- | --- | --- |
+| 正负两根都采用N2 6mm² | `3.39 × (0.03 + 0.03) = 0.2034Ω` | `20 × 0.2034 = 4.068V` | `4.068 / 600 × 100 = 0.678%` | `20² × 0.2034 = 81.36W` |
+| 正导体N1 4mm²、负导体N2 6mm²，各30m；仅为非对称计算夹具 | `5.09 × 0.03 + 3.39 × 0.03 = 0.2544Ω` | `20 × 0.2544 = 5.088V` | `5.088 / 600 × 100 = 0.848%` | `20² × 0.2544 = 101.76W` |
+
+原厂Rdc是最大值，所以结果应标“在声明20°C条件下，基于最大Rdc的导体段上限”，不能标精确实际压降。两根长度已逐根相加，不能再乘2；实际温度、触点、端子、保护与其他串联段未计入，不能把该上限解释为整个安装的总损耗或总压降上限。没有项目限值与国家适用依据，数值计算不产生压降合格、过载/短路保护合格或国家放行。AC仍须另取对应频率、温度、排列的Rac/X；§9具备AC公式并不填补本节缺失的AC数据。
+
+### 10.4 取证和资源收口
+
+本次两批均终态成功。actor各自自动多建一份空dataset，实际每批为2 dataset、1 KV、1 queue，超出原计划每类一套；未追加第三批或重复抓取。检索批默认dataset `2mafUklZttP3IHgy3`（1条）、自动链接拓展dataset `hMLL20K1GmqDY72hA`（0条）、KV `DeIel4Sts9eBjwsmT`、queue `9CWqkopOWeCOVFFLo`，已核同run/owner、无共享名称和`18:28:58`创建时刻，全部DELETE204且GET404。原文批默认dataset `orRwWN7Pc9cZ6h4p9`（2条）、自动错误dataset `zorGgS2tIClzFmEKS`（0条）、KV `EevN5eZS5jbJUeMu0`、queue `LqCENhl0DFcgV1IN2`，同样核同run/owner、无共享名称和`18:30:33`创建时刻，全部DELETE204且GET404；run元数据保留，不重建存储。
+
+首批KV的第一次Apify API元数据GET发生连接层失败，原始异常为`URLError(OSError('Tunnel connection failed: 503 Service Unavailable'))`；失败发生在本命令的`18:29:22`至`18:30:45Z`区间，原调用未单独记录精确失败时刻，客户端未取得Apify HTTP状态或响应正文，不能写成Apify端返回503。保留同次原始异常后，改用curl IPv4/HTTP1.1访问相同Apify API，`18:30:45.227Z`核归属GET200，DELETE204、GET404完成；未重启actor、直连源站或改全局代理。
+
+唯一持久新增是本文件§10，无本地原件/副本/脚本/备份/实例/浏览器或遗留进程。远端8份临时存储全部已回收；原文批删除前API账面`storageBytes`为dataset 43,747、空错误dataset 0、KV 4,458、queue 606（合48,811字节），这是删除前计数，不能当物理磁盘释放实测；本地实际释放0字节。收尾Data卷3.6TiB、已用2.8TiB、可用821GiB、78%，与开始差异不归因于本任务。纯文档差异与空白检查通过，未启动业务测试或其他验证环境。
+
+### 10.5 官方PDF原件的具名续取（2026-11-01授权）
+
+根代理授权一个后续Apify批，只请求§10.1已核的两个官方PDF端点`/.rest/catalog/v1/product/pdf/038021106`与`038023102`，不再搜索、递归或重抓网页。资源合同：负责人`sol_cable_primary_sources`；一个actor run、上限180秒、两个URL、每份PDF最多5MiB；终态后核归属回收本批dataset/KV/queue（actor自动产生的空错误dataset同批回收）。仅允许保留两份唯一原厂PDF至绝对路径`/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/research/2026-10-23-modern-workbench/sources/nexans-038021106.pdf`及同目录`nexans-038023102.pdf`，用途是实际Woo非商售工程参考的托管原件、页码与原文证据。原件随工程来源长期保留；同SHA不复制，被可信新版取代且无冻结引用时回收。先确认返回`%PDF`和大小、取得真实页数再写唯一目标文件；提取只在内存，不保留页面图或副报告，不把HTML渲染物当PDF原件。失败保留同次脱敏状态、正文和时间后止损，不绕开Apify；不新增实例、依赖、生产或Woo写入。
+
+**本批没有取得PDF。** `apify/website-content-crawler` run `qID8CW4abYm0KkHDE`，`2026-10-31T18:36:09.870Z`开始、`18:36:18.839Z`结束，actor终态虽为`SUCCEEDED`，请求统计为0成功、2失败。该次原始log在`18:36:17.014Z`对`038023102`、`18:36:17.463Z`对`038021106`均报`Error: navigation: Download is starting.`，定位`genericHandler (file:///home/myuser/dist/request-handler.js:428:15)`；同次`18:36:11.857Z`警告`saveFiles`选项已弃用、应改用`saveContentTypes`。输入设置`saveFiles=true`，但采集器没有保存任何文件；不能把run成功当作取证成功，也不能把这类采集器下载处理错误说成原厂文件不存在。源HTTP状态/响应正文未由该次log或dataset暴露，故未核实；不是虚构HTTP404或网络503。
+
+同次Apify API回读证据：默认dataset在`18:36:33.539Z`、错误dataset在`18:36:35.801Z`均HTTP200且原始body为`[]`；run log在`18:36:38.346Z`HTTP200；KV key清单在`18:36:40.636Z`HTTP200，仅`CRAWLEE_STATE`、`ERROR_REPORT_DATASET`、`INPUT`、`SDK_CRAWLER_STATISTICS_website-content-crawler`、`SDK_SESSION_POOL_STATE`五个状态记录，无PDF。没有重启actor、换URL、直连源站或用HTML生成替代物。未创建`sources`目录或两个目标PDF，故PDF格式、页数、页号、SHA及托管文件链仍未完成；§10.1–10.3的HTML事实不因此失效。
+
+失败批四份存储`H8XScN6gsN3kXwdoW`、`neqg5GxpVERdcWnHq`、`Kvalbg1gWldM2yb4o`、`xpHaQEQGpFbL5DaAn`均已核同run/owner、无共享名称与`18:36:09`创建时刻，DELETE204并GET404，清理进程已退出。
+
+**有新诊断后的单次纠正合同：** 根代理允许先读当前actor官方规格，明确支持后才追加一次纠正run。`2026-10-31T18:38:09.898Z`经同Apify API实际读取[当前默认build规格与说明](https://api.apify.com/v2/acts/apify~website-content-crawler/builds/default)HTTP200：build `5i2wakgyINEu6WRZt`、版本`0.3.102`；input schema按sorted-key JSON编码SHA `1321083182a1fbe7a35d752cf5827f3ed8f1b2f46ec92cfc53358571d03919fa`。规格明确`saveFiles`按文件扩展名识别（当前两个端点没有`.pdf`后缀），新参数`saveContentTypes`类型是**string**，支持确切MIME `application/pdf`，文件存至默认KV、元数据存dataset。由此纠正为`saveContentTypes="application/pdf"`并省略旧参数，不猜数组或新增URL；pin同build、同两个端点、深度0、重试0、run180秒，大小在KV key清单及实际字节两层核≤5MiB后才读入唯一目标文件。资源/路径/负责人/长期保留与回收条件完全沿用本节原合同，纠正批终态清理全部临时存储；若再失败不追加相同尝试。
+
+**纠正仍未取到PDF，已停止新增抓取。** run `aVvvOFeTr0BeBjaQt`，`2026-10-31T18:38:35.596Z`开始、`18:38:46.389Z`结束，同build与正确MIME设置，仍0成功、2失败。该次原始log分别在`18:38:44.983Z`（`038023102`）、`18:38:44.994Z`（`038021106`）报相同`Error: navigation: Download is starting.`，同`genericHandler`行428；省略旧选项后已无deprecated警告，但没有修复真实下载行为，不能继续把文件后缀认定为唯一根因。默认dataset在`18:38:56.023Z`、错误dataset在`18:38:58.550Z`均API HTTP200且body`[]`；run log在`18:39:01.162Z`HTTP200，未暴露源站HTTP状态或响应正文。KV key清单API读取在`18:39:15.424Z`失败：curl exit35、HTTP000、body为空，原始stderr为`LibreSSL SSL_connect: SSL_ERROR_SYSCALL in connection to api.apify.com:443`；这是API TLS连接错误，不能当作源PDF状态，也不能宣称已经核得纠正批空key清单。没有取得字节、创建目录或目标PDF，原件页数/页号/SHA和托管链继续明确未完成。
+
+纠正批四份存储`sgvVvb5PNbwfbWn3U`、`ri6jOxLHfUFmvHysG`、`xzu3nRvDgVEwiiS6G`、`RYD5QLMcbdrlVaObZ`最终均已核归属DELETE204、GET404。过程中错误dataset删除后的GET、KV第一次DELETE各遇同型curl exit35/HTTP000/TLS错误且body为空；后续GET200证明KV未删除，改同Apify API的urllib核同run后DELETE204，`18:40:47.585Z`核KV404、`18:40:50.087Z`核错误dataset404。没有重跑抓取来补清理证据。
+
+### 10.6 更换为官方raw HTTP二进制下载能力（授权单批）
+
+前两批确认失败层位于原actor的导航/下载处理，原厂是否能返回PDF仍未知。根代理授权只调查Apify官方raw HTTP actor，能力明确后最多一批同两端点。`2026-10-31T18:40:25.633Z`经Apify API取得[Cheerio Scraper当前build规格和readme](https://api.apify.com/v2/acts/apify~cheerio-scraper/builds/default)HTTP200：build`slvl0txyiL8qUoTR0`，版本`3.0.24`；input schema按sorted-key JSON编码SHA `724969fa52565ae2ccbab7659f32d0e906b8cabb91ac416e76e88053041e610e`。官方说明明确此actor不使用Chromium/Firefox；`additionalMimeTypes`为array，可增加支持的MIME；非HTML/XML/JSON的`context.body`是Buffer；`context.setValue(key,data,options)`可将文件写入本run默认KV，`context.response`提供源HTTP状态和headers。
+
+资源合同：负责人仍`sol_cable_primary_sources`，只创建一个pin该build的raw HTTP下载run、两个已知URL、180秒、重试0、并发2、`linkSelector`空串且不enqueue链接。仅允许`application/pdf`与二进制`application/octet-stream`进入自定义pageFunction，核源status200、body前5字节`%PDF-`且≤5MiB，再将原始Buffer直接存默认KV，不做PDF转换；本地下载同样校验大小/格式，再存§10.5授权的两个唯一原件路径。提取仅调用现有pdfinfo/pdftotext、stdin/stdout内存，无新依赖、原件副本或渲染文件。终态核本批run/owner/创建时刻后回收全部dataset/KV/queue；原件长期保留及回收条件沿用§10.5。若此raw批失败，保留同次源status/截断错误正文/时间，不追加抓取。
+
+**启动被Apify账号权限拒绝，未创建run，PDF原件仍未取得。** `2026-10-31T18:41:46.785Z`，POST `https://api.apify.com/v2/acts/apify~cheerio-scraper/runs?waitForFinish=45&timeout=180&memory=512&build=3.0.24` 返回HTTP403，原始脱敏body为：
+
+```json
+{
+  "error": {
+    "type": "full-permission-actor-not-approved",
+    "message": "This Actor requires full access to your account. You must approve its permissions before running it: https://console.apify.com/actors/YrQuEkowkNCLdk4j2?approvePermissions=true",
+    "data": {
+      "approvalUrl": "https://console.apify.com/actors/YrQuEkowkNCLdk4j2?approvePermissions=true"
+    }
+  }
+}
+```
+
+这是平台在run创建前的权限门，不是源PDF的HTTP状态。没有批准完整账号权限、打开浏览器或改用其他actor绕过；根代理已收到同次原始错误。此请求没有产生可回收run/dataset/KV/queue，没有请求到原厂PDF；两个目标文件仍不存在。前两次实际抓取失败所生8份临时存储已全部204删除、404读回，本次续取未保留任何运行进程、文件副本或本地新目录。仅本文件记录新增，纯文档空白检查通过；Data卷仍可用821GiB、已用2.8TiB/78%，本地释放0字节。
+
+
+### 10.7 同一已授权 actor 的 raw HTTP 模式续取（2026-11-01）
+
+本轮负责人 `oem_cable_originals`，只负责两个 Nexans 原件及本节证据，不修改源码、生产或其他人的改动。先读既有失败证据；本机资料库 `/Users/chesterjohn/de-linker-data/pdf` 与 `index`/`parsed` 未找到 Nexans 或两个 ref 的已有记录。正常授权环境的 `APIFY_TOKEN` 可用，未从研究文档或其他来源提取密钥。`2026-11-01` 经 Apify API 读同一已授权 `apify/website-content-crawler` build `5i2wakgyINEu6WRZt` / `0.3.102`，schema 明确提供 `crawlerType="cheerio"`（Raw HTTP client），与前两次 browser navigation 不同；不再请求此前未批准的独立 Cheerio Scraper actor。
+
+资源合同：只创建一个同 actor、pin `0.3.102` 的 raw 模式 run，上限180秒、并发2、重试0、depth0、maxCrawlPages/maxResults均2、saveContentTypes仅 `application/pdf`，只请求§10.1两端点，不搜索、递归或批量站点。每份下载上限5MiB，先查KV大小，再核真实 `%PDF-`、页数与SHA。唯一原件保存至既有非仓库资料库 `/Users/chesterjohn/de-linker-data/pdf/<真实SHA256>.pdf`，每份仅一份、同SHA复用；用途为后续 Woo 非销售工程参考的托管原件，长期保留至可信新版取代且无冻结报告引用。§10.5原拟仓库`sources/`路径由本轮非仓库要求取代，不创建该目录。本run的dataset/KV/queue（含自动错误dataset）在提取必要的小型证据后核归属删除并404读回。文本、pdfinfo与最多一张同时在用的临时页面PNG用于核验，均由本负责人在本次结束前回收；PNG仅存在临时目录，不留副报告、重复PDF、依赖、实例或浏览器。开始Data卷已用2.8TiB、可用831GiB（78%）。若raw模式失败，保留同次具体状态和响应，停止相同重试。
+
+
+补充原响应边界：本run队列两项`userData.lastHttpStatus=200`、`lastContentType="application/pdf;charset=UTF-8"`，handledAt分别`2026-11-01T03:50:38.660Z`与`03:50:39.299Z`；这证明200/MIME，不证明正文已保存。根代理据此授权仅核已有 Apify Proxy 原生HTTP能力：`2026-11-01T03:51Z`使用正常环境token GET `/v2/users/me` HTTP200，账户现有proxy配置有密码和可用非零代理组（密码不打印、不落盘），无需更改账号、额度或批准其他actor。工具清单没有已安装的Apify二进制专用工具。
+
+本次追加传输合同：仅经该账号已授权 Apify Proxy 的HTTP入口 `http://proxy.apify.com:8000` 建立CONNECT隧道，再对HTTPS目标 `latrivenetacavi.nexans.com` 协商TLS并读两条同源具名URL；代理自身没有使用HTTPS入口，显式ProxyHandler、不设直连回退、不搜索、不抓其他源URL、不新增actor。每条仅1次、45秒、最多5MiB、验证TLS，不调整权限/额度。凭据仅内存；成功原件与临时页资源继续按本节既有归属、SHA路径、保留和回收边界执行。仅源status200、PDF签名和真实页数全部通过才写资料库唯一文件；失败保留脱敏状态后停止。
+
+
+**实际结果：未取得PDF，停止抓取。** raw模式 run `oMmHuBfx9GpMRXbUp`，`2026-11-01T03:50:32.586Z`开始、`03:50:40.649Z`终态`SUCCEEDED`，同build `5i2wakgyINEu6WRZt`。log确认`CheerioCrawler`，仍在`genericHandler (file:///home/myuser/dist/request-handler.js:428:15)`分别于`03:50:38.691Z`（`038021106`）与`03:50:39.323Z`（`038023102`）报`Error: navigation: Download is starting.`，0成功/2失败。默认dataset API `03:50:50.371Z` HTTP200正文`[]`；KV清单`03:50:51.941Z` HTTP200仅5状态key（`CRAWLEE_STATE`、`ERROR_REPORT_DATASET`、`INPUT`、`SDK_CRAWLER_STATISTICS_website-content-crawler`、`SDK_SESSION_POOL_STATE`），无PDF。与此前不同，本次队列请求保留了两条源status200/PDF MIME（见上）；不能把actor终态成功当PDF取得，也不能把该失败归为原厂404、无文件或浏览器引擎专属故障。
+
+已授权Apify Proxy原生读取分别于`2026-11-01T03:52:15.016Z`、`03:52:17.028Z`发起，只用前述两个URL；两次均返回客户端异常`URLError: <urlopen error Remote end closed connection without response>`，未取得HTTP响应/status/正文。显式HTTP代理CONNECT无直连回退；代理请求与目标HTTPS的协议已区分，该异常发生于可用响应前，不能进一步判断关闭发生于CONNECT应答还是目标TLS阶段，只证明本次原生代理传输未取得源响应，不能推断原厂拒绝、原厂PDF为空、账号未授权或源HTTP错误。未更改代理、权限、额度或系统设置，未再试相同crawler、未换普通搜索/直连。正常授权密码始终只在内存，不记录密码或token。
+
+因此真实PDF字节、文件SHA、页数、页号、PDF表格行及技术修订/打印日期边界仍未核实；没有创建PDF文件、PNG、临时目录或新依赖，既有非仓库资料库没有新增原件。§10.1–10.3已核HTML事实及20°C算例继续保留，但**不能声称已有可托管PDF或可填写PDF页码**，后续Woo非销售工程参考接入仍缺这两份真实原件。没有HTML hash冒充PDF hash。
+
+
+**资源收口：** 本run默认dataset `z3LxwllIv0airH0JF`、空错误dataset `fjbhyY2FFtRzSWZbb`、KV `hCPcB3zgDu2rpGqeB`、queue `2B8vQKKByF7Dk5KAe`均已核同run/owner、无共享name及`03:50:32`创建时刻，逐项DELETE204、GET404；最后queue读回`2026-11-01T03:53:59.947Z`。两个dataset均0条；删除前API账面storageBytes分别0、0、3128、889（合4017字节），仅是远端账面清理量，不当本地物理释放量。初次清理API读取发生`URLError: <urlopen error _ssl.c:1126: The handshake operation timed out>`，该次无HTTP响应；随后同Apify API的curl IPv4/HTTP1.1完成归属核验、删除与404读回，没有重跑抓取。run元数据保留，不重建临时存储。
+
+本次持久新增仅本节Markdown证据；PDF、页面图、临时文件/目录、依赖、备份、实例、浏览器均新增0，所有执行进程已退出，没有遗留运行资源。磁盘Data卷3.6TiB、已用2.8TiB、最后读回可用834GiB（78%；共享活动产生的变化不归因于本任务），本地删除/实际释放0字节；远端4份临时存储已全部回收。仅执行文档diff/空白检查，未启动业务测试；工作树其他会话的源码与验收文件改动均未触碰。

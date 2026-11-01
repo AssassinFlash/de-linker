@@ -1,6 +1,7 @@
 """Private staging modes must not disable a published browser application."""
 
 import os
+import shlex
 import shutil
 import stat
 from pathlib import Path
@@ -285,7 +286,19 @@ def test_guard_refusal_retains_foreign_preparation_for_inspection(
     tmp_path: Path, replaced: str
 ) -> None:
     """Refusal cannot delete a replaced backup, marker or batch directory."""
-    target = Target(
+
+    class ReplacedPreparation(Target):
+        def shell(self, script: str) -> str:
+            if "TIMEFORMAT=" in script:
+                # Preparation now belongs to the one recovery-protected shell.
+                # Inject the race after its copies, before its final guard;
+                # on_switch runs before that shell has created any backup.
+                checkpoint = "\nif ! { "
+                assert script.count(checkpoint) == 1
+                script = script.replace(checkpoint, "\n" + damage() + checkpoint, 1)
+            return super().shell(script)
+
+    target = ReplacedPreparation(
         "fixture", str(tmp_path / "site"), "http://127.0.0.1", (), None, None
     )
     relative = "wp-content/plugins/example"
@@ -307,20 +320,37 @@ def test_guard_refusal_retains_foreign_preparation_for_inspection(
     foreign = {"copy": copy, "marker": marker}.get(replaced, batch)
     live_inode = live.stat().st_ino
 
-    def damage() -> None:
-        (live.with_name(".example.next") / "assets" / "header.js").chmod(0o600)
+    def damage() -> str:
+        commands = [
+            shlex.join(
+                [
+                    "chmod",
+                    "600",
+                    str(live.with_name(".example.next") / "assets" / "header.js"),
+                ]
+            )
+        ]
         if replaced in ("unreadable-batch", "newline-batch"):
             name = "inspection-evidence" if replaced == "unreadable-batch" else "\n"
-            private_file(batch / name, "retain this private evidence")
+            evidence = shlex.quote(str(batch / name))
+            commands.append(
+                f"printf '%s' 'retain this private evidence' > {evidence}\nchmod 600 {evidence}"
+            )
             if replaced == "unreadable-batch":
-                batch.chmod(0o000)
-            return
-        foreign.rename(tmp_path / "our-original-preparation")
+                commands.append(shlex.join(["chmod", "000", str(batch)]))
+            return "\n".join(commands)
+        commands.append(
+            shlex.join(["mv", str(foreign), str(tmp_path / "our-original-preparation")])
+        )
         if replaced == "batch":
-            foreign.mkdir(mode=0o700)
+            commands.append(shlex.join(["mkdir", "-m", "700", str(foreign)]))
         else:
             # Even a replacement bearing this deploy id is not our saved inode.
-            private_file(foreign, deploy_id)
+            quoted = shlex.quote(str(foreign))
+            commands.append(
+                f"printf '%s' {shlex.quote(deploy_id)} > {quoted}\nchmod 600 {quoted}"
+            )
+        return "\n".join(commands)
 
     with pytest.raises(CutoverError, match="public.asset"):
         atomic.publish(
@@ -331,7 +361,6 @@ def test_guard_refusal_retains_foreign_preparation_for_inspection(
                 atomic.Artifact(style_source, "wp-content/themes/child/style.css"),
             ],
             deploy_id=deploy_id,
-            on_switch=damage,
         )
 
     if replaced == "unreadable-batch":
@@ -352,12 +381,17 @@ def test_guard_refusal_retains_foreign_preparation_for_inspection(
     assert not (batch.parent / "latest").exists()
 
 
-def test_uncertain_switch_transport_retains_preparation(tmp_path: Path) -> None:
+@pytest.mark.parametrize("executed", [False, True])
+def test_uncertain_switch_transport_retains_preparation(
+    tmp_path: Path, executed: bool
+) -> None:
     """A missing final SSH result is never treated as an explicit guard refusal."""
 
     class LostTransport(Target):
         def shell(self, script: str) -> str:
             if "TIMEFORMAT=" in script:
+                if executed:
+                    super().shell(script)
                 raise CutoverError("fixture SSH result unknown")
             return super().shell(script)
 
@@ -374,9 +408,23 @@ def test_uncertain_switch_transport_retains_preparation(tmp_path: Path) -> None:
     with pytest.raises(CutoverError, match="SSH result unknown"):
         atomic.publish(target, [atomic.Artifact(source, relative)], deploy_id=deploy_id)
 
-    assert live.read_text() == "old MU code"
-    assert live.with_name(".guard.php.prev").read_text() == "old MU code"
-    assert (Path(atomic.backup_root(target)) / deploy_id).is_dir()
+    batch = Path(atomic.backup_root(target)) / deploy_id
+    if executed:
+        # The remote switch committed, but its reply did not arrive. Keep the
+        # original backup and pending manifest for native readback/recovery.
+        assert live.read_text() == "new MU code"
+        assert live.with_name(".guard.php.prev").read_text() == "old MU code"
+        assert batch.is_dir()
+        directory, manifest = atomic.latest_manifest(target)
+        assert Path(directory) == batch
+        assert manifest.deploy_id == deploy_id and manifest.state == "pending"
+    else:
+        # A command that never ran cannot have prepared backups. Its verified
+        # upload must still survive; the caller cannot infer a guard refusal.
+        assert live.read_text() == "old MU code"
+        assert live.with_name(".guard.php.next").read_text() == "new MU code"
+        assert not live.with_name(".guard.php.prev").exists()
+        assert not batch.exists()
 
 
 def test_static_theme_file_is_readable_and_private_mu_file_and_neighbour_stay_private(

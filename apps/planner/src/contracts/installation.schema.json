@@ -1,5 +1,22 @@
 {
   "$defs": {
+    "CableReference": {
+      "additionalProperties": false,
+      "properties": {
+        "product_id": {
+          "$ref": "#/$defs/Count"
+        },
+        "product_revision": {
+          "$ref": "#/$defs/Hash"
+        }
+      },
+      "required": [
+        "product_id",
+        "product_revision"
+      ],
+      "title": "CableReference",
+      "type": "object"
+    },
     "CableRun": {
       "additionalProperties": false,
       "properties": {
@@ -34,6 +51,24 @@
             }
           ],
           "default": null
+        },
+        "core_roles": {
+          "items": {
+            "enum": [
+              "dc_positive",
+              "dc_negative",
+              "line",
+              "neutral",
+              "l1",
+              "l2",
+              "l3",
+              "pe",
+              "unused"
+            ],
+            "type": "string"
+          },
+          "title": "Core Roles",
+          "type": "array"
         }
       },
       "required": [
@@ -46,6 +81,136 @@
       "title": "CableRun",
       "type": "object"
     },
+    "CircuitOperatingCondition": {
+      "additionalProperties": false,
+      "description": "Declared steady load; cable manufacturer parameters cannot be entered here.",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "name": {
+          "$ref": "#/$defs/Text"
+        },
+        "method": {
+          "enum": [
+            "dc_resistive",
+            "ac_two_wire",
+            "ac_balanced_three_phase"
+          ],
+          "title": "Method",
+          "type": "string"
+        },
+        "current_a": {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        "reference_voltage_v": {
+          "$ref": "#/$defs/Positive"
+        },
+        "direction": {
+          "enum": [
+            "start_to_end",
+            "end_to_start"
+          ],
+          "title": "Direction",
+          "type": "string"
+        },
+        "conductor_temperature_c": {
+          "$ref": "#/$defs/linker_engine__planning__geometry_documents__Number__2"
+        },
+        "frequency_hz": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Positive"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "power_factor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/linker_engine__planning__geometry_documents__Number__3"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reactive_direction": {
+          "anyOf": [
+            {
+              "enum": [
+                "lagging",
+                "leading"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reactive Direction"
+        },
+        "balanced": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Balanced"
+        },
+        "sinusoidal": {
+          "title": "Sinusoidal",
+          "type": "boolean"
+        },
+        "arrangement": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Text"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_note": {
+          "$ref": "#/$defs/Text"
+        },
+        "voltage_limit": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/VoltageLimit"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "method",
+        "current_a",
+        "reference_voltage_v",
+        "direction",
+        "conductor_temperature_c",
+        "frequency_hz",
+        "power_factor",
+        "reactive_direction",
+        "balanced",
+        "sinusoidal",
+        "arrangement",
+        "source_note",
+        "voltage_limit"
+      ],
+      "title": "CircuitOperatingCondition",
+      "type": "object"
+    },
     "ConductorSpecification": {
       "additionalProperties": false,
       "properties": {
@@ -54,6 +219,17 @@
         },
         "source_note": {
           "$ref": "#/$defs/Text"
+        },
+        "cable_reference": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CableReference"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -192,6 +368,13 @@
         },
         "end": {
           "$ref": "#/$defs/Endpoint"
+        },
+        "operating_conditions": {
+          "items": {
+            "$ref": "#/$defs/CircuitOperatingCondition"
+          },
+          "title": "Operating Conditions",
+          "type": "array"
         }
       },
       "required": [
@@ -260,11 +443,6 @@
       "minimum": 0,
       "type": "number"
     },
-    "Number": {
-      "maximum": 9007199254740991,
-      "minimum": -9007199254740991,
-      "type": "number"
-    },
     "Positive": {
       "exclusiveMinimum": 0,
       "type": "number"
@@ -290,15 +468,15 @@
       "additionalProperties": false,
       "properties": {
         "east_m": {
-          "$ref": "#/$defs/Number"
+          "$ref": "#/$defs/linker_engine__planning__geometry_documents__Number__1"
         },
         "north_m": {
-          "$ref": "#/$defs/Number"
+          "$ref": "#/$defs/linker_engine__planning__geometry_documents__Number__1"
         },
         "height_m": {
           "anyOf": [
             {
-              "$ref": "#/$defs/Number"
+              "$ref": "#/$defs/linker_engine__planning__geometry_documents__Number__1"
             },
             {
               "type": "null"
@@ -323,6 +501,36 @@
       "maxLength": 4096,
       "minLength": 1,
       "type": "string"
+    },
+    "VoltageLimit": {
+      "additionalProperties": false,
+      "properties": {
+        "maximum_percent": {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        "source_note": {
+          "$ref": "#/$defs/Text"
+        }
+      },
+      "required": [
+        "maximum_percent",
+        "source_note"
+      ],
+      "title": "VoltageLimit",
+      "type": "object"
+    },
+    "linker_engine__planning__geometry_documents__Number__1": {
+      "maximum": 9007199254740991,
+      "minimum": -9007199254740991,
+      "type": "number"
+    },
+    "linker_engine__planning__geometry_documents__Number__2": {
+      "type": "number"
+    },
+    "linker_engine__planning__geometry_documents__Number__3": {
+      "maximum": 1,
+      "minimum": 0,
+      "type": "number"
     }
   },
   "additionalProperties": false,

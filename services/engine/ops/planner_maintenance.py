@@ -388,6 +388,21 @@ class Remote:
                 reason = (
                     safe[-1].decode() if safe else "exit_" + str(process.returncode)
                 )
+                if not safe and process.returncode == 255:
+                    # Store only fixed categories; SSH stderr can name private hosts.
+                    diagnostics = error.lower()
+                    for signature, category in (
+                        (b"timed out during banner exchange", "ssh_banner_timeout"),
+                        (b"permission denied (", "ssh_auth_denied"),
+                        (b"connection refused", "ssh_refused"),
+                        (b"host key verification failed", "ssh_host_key"),
+                        (b"could not resolve hostname", "ssh_dns"),
+                        (b"operation timed out", "ssh_connect_timeout"),
+                        (b"connection timed out", "ssh_connect_timeout"),
+                    ):
+                        if signature in diagnostics:
+                            reason = category
+                            break
                 raise RuntimeError("remote_" + action + "_" + reason)
             result: dict[str, Any] = json.loads(out)
             return result

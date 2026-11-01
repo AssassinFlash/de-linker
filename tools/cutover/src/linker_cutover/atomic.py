@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+import hashlib
+import inspect
 import json
 import math
+import os
 import re
 import shlex
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
 from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 
@@ -213,14 +216,22 @@ def _same_filesystem(target: Target, root: str, parents: list[str]) -> None:
 
 
 def _discard_unswitched_preparation(
-    target: Target, manifest: Manifest, directory: str, before: dict[str, str]
+    target: Target,
+    manifest: Manifest,
+    directory: str,
+    before: dict[str, str],
+    prepared: dict[str, str],
+    prior_id: str,
 ) -> str:
-    """Same-shell guard-refusal cleanup, never transport-error or rename recovery."""
+    """Discard only this shell's inode-recorded preparation while live is unchanged."""
     batch = shlex.quote(directory)
+    pointer = shlex.quote(str(Path(backup_root(target)) / "latest"))
     checks = [
         _IDENTITY,
+        'test -n "$batch_inode"',
         f"test ! -L {batch}",
-        f'test "$(identity {batch})" = {shlex.quote(before[directory])}',
+        f'test "$(identity {batch})" = "$batch_inode"',
+        f'test "$(if [ -f {pointer} ]; then cat {pointer}; fi)" = {shlex.quote(prior_id)}',
         shlex.join(
             [
                 "python3",
@@ -241,25 +252,120 @@ def _discard_unswitched_preparation(
             )
         else:
             checks.append(f"test ! -e {live}\ntest ! -L {live}")
+        names = _siblings(entry.relative)
+        staged = _quoted(target, names.next)
+        checks.append(
+            f'test "$(identity {staged})" = '
+            + shlex.quote(before[target.path_of(names.next)])
+        )
+        for sibling in (
+            names.failed,
+            names.absent if entry.existed else names.previous,
+        ):
+            quoted = _quoted(target, sibling)
+            checks.append(f"test ! -e {quoted}\ntest ! -L {quoted}")
         if entry.directory and entry.existed:
             # The original live directory becomes .prev only after rename.
+            previous = _quoted(target, names.previous)
+            checks.append(f"test ! -e {previous}\ntest ! -L {previous}")
             continue
-        names = _siblings(entry.relative)
-        prepared = _quoted(target, names.previous if entry.existed else names.absent)
-        checks.extend(
-            [
-                f"test -f {prepared}\ntest ! -L {prepared}",
-                f'test "$(identity {prepared})" = {shlex.quote(entry.inode)}',
-            ]
-        )
+        copied = _quoted(target, names.previous if entry.existed else names.absent)
+        variable = prepared[entry.relative]
+        owned = [
+            f"test -f {copied}\ntest ! -L {copied}",
+            f'test "$(identity {copied})" = "${variable}"',
+        ]
         if not entry.existed:
-            checks.append(
-                f'test "$(cat {prepared})" = {shlex.quote(manifest.deploy_id)}'
-            )
-        cleanup.append(f"rm -f {prepared}")
+            owned.append(f'test "$(cat {copied})" = {shlex.quote(manifest.deploy_id)}')
+        checks.append(
+            f'if [ -n "${variable}" ]; then\n'
+            + "\n".join(owned)
+            + f"\nelse\ntest ! -e {copied}\ntest ! -L {copied}\nfi"
+        )
+        cleanup.append(f'if [ -n "${variable}" ]; then rm -f {copied}; fi')
     # Validate the whole preparation before deleting any of it. A nonempty or
     # replaced batch, changed live path or foreign marker is retained for review.
     return "\n".join([*checks, *cleanup, f"rmdir {batch}"])
+
+
+def _write_prepared_manifest(target: Target, manifest: Manifest, directory: str) -> str:
+    """Fill copied-backup inodes inside the same shell that prepares and switches."""
+    paths = [
+        target.path_of(
+            _siblings(entry.relative).previous
+            if entry.existed
+            else _siblings(entry.relative).absent
+        )
+        for entry in manifest.backups
+    ]
+    script = (
+        "import json,os\nfrom pathlib import Path\n"
+        f"record=json.loads({json.dumps(asdict(manifest))!r})\n"
+        f"paths={paths!r}\n"
+        "for entry,path in zip(record['backups'],paths,strict=True):\n"
+        " info=os.stat(path)\n entry['inode']=f'{info.st_dev}:{info.st_ino}'\n"
+        f"path=Path({_manifest_path(directory)!r})\n"
+        "temporary=path.with_suffix('.json.next')\n"
+        "temporary.write_text(json.dumps(record))\n"
+        "temporary.replace(path)\n"
+    )
+    return shlex.join(["python3", "-c", script])
+
+
+# The same portable hash runs here and on the target. Ignore interpreter caches:
+# source and stage identity must not change merely because a tool was imported.
+def source_digest(source: Path, ignored: tuple[str, ...] = ()) -> str:
+    """Identity of artifact bytes, paths, modes and symbolic links on either machine."""
+    if not source.exists() and not source.is_symlink():
+        return "-"
+    omitted = {*ignored, "__pycache__"}
+
+    def entries(parent: Path) -> Iterator[Path]:
+        for item in sorted(parent.iterdir()):
+            if item.name in omitted:
+                continue
+            if item.suffix != ".pyc":
+                yield item
+            if not item.is_symlink() and item.is_dir():
+                yield from entries(item)
+
+    tree = source.is_dir()
+    paths = entries(source) if tree else iter([source])
+    result = hashlib.sha256()
+    for item in paths:
+        if not tree and (item.name in omitted or item.suffix == ".pyc"):
+            continue
+        relative = str(item.relative_to(source)) if tree else "."
+        result.update(relative.encode() + b"\0")
+        result.update(str(item.lstat().st_mode & 0o777).encode() + b"\0")
+        if item.is_symlink():
+            result.update(b"L" + os.readlink(item).encode())
+        elif item.is_file():
+            content = hashlib.sha256()
+            with item.open("rb") as handle:
+                for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                    content.update(chunk)
+            result.update(b"F" + content.digest())
+        else:
+            result.update(b"D")
+    return result.hexdigest()
+
+
+def staged_digests(target: Target, relatives: list[str]) -> dict[str, str]:
+    """Read all completed .next hashes in one transport round trip."""
+    script = (
+        "from __future__ import annotations\nimport hashlib,json,os\nfrom pathlib import Path\n"
+        + inspect.getsource(source_digest)
+        + "\nprint(json.dumps({key:source_digest(Path(value)) for key,value in "
+        + repr(
+            {
+                relative: target.path_of(_siblings(relative).next)
+                for relative in relatives
+            }
+        )
+        + ".items()}))"
+    )
+    return dict(json.loads(target.shell(shlex.join(["python3", "-c", script]))))
 
 
 def publish(
@@ -269,6 +375,8 @@ def publish(
     deploy_id: str,
     on_switch: Callable[[], None] | None = None,
     after_switch: str = "",
+    completed_uploads: dict[str, str] | None = None,
+    on_uploaded: Callable[[str, str], None] | None = None,
 ) -> Receipt:
     """Upload everything, then rename everything in one recovery-protected shell.
 
@@ -288,12 +396,22 @@ def publish(
             raise CutoverError(
                 f"deployment {prior_id} still needs verify/archive or rollback"
             )
+    uploaded = completed_uploads or {}
+    verified = staged_digests(target, list(uploaded)) if uploaded else {}
     for artifact in artifacts:
         names = _siblings(artifact.relative)
         if any(
             target.exists(path) for path in (names.previous, names.absent, names.failed)
         ):
             raise CutoverError(f"unresolved previous deployment: {artifact.relative}")
+        expected = source_digest(artifact.source) if on_uploaded is not None else ""
+        if (
+            expected
+            and uploaded.get(artifact.relative) == expected
+            and verified.get(artifact.relative) == expected
+        ):
+            print(f"reused verified upload {artifact.relative}", flush=True)
+            continue
         parent = _quoted(target, str(Path(artifact.relative).parent))
         target.shell(
             f"set -eu\nmkdir -p {parent}\nrm -rf {_quoted(target, names.next)}"
@@ -311,6 +429,16 @@ def publish(
             f"uploaded {artifact.relative} in {time.monotonic() - started:.1f}s",
             flush=True,
         )
+        if on_uploaded is not None:
+            # rsync success alone is not an integrity checkpoint.
+            if (
+                staged_digests(target, [artifact.relative]).get(artifact.relative)
+                != expected
+            ):
+                raise CutoverError(
+                    f"uploaded artifact digest mismatch: {artifact.relative}"
+                )
+            on_uploaded(artifact.relative, expected)
     public_inventory = [(item.relative, item.source.is_dir()) for item in artifacts]
     public_proof = public_assets.prepare(target, public_inventory)
     _same_filesystem(
@@ -319,58 +447,41 @@ def publish(
         [target.path_of(str(Path(item.relative).parent)) for item in artifacts],
     )
     directory = str(Path(root) / deploy_id)
-    target.shell(
-        f"set -eu\ntest ! -e {shlex.quote(directory)}\nmkdir {shlex.quote(directory)}"
-    )
     live_paths = [target.path_of(item.relative) for item in artifacts]
     next_paths = [target.path_of(_siblings(item.relative).next) for item in artifacts]
-    before = identities(target, [directory, *live_paths, *next_paths])
+    before = identities(target, [*live_paths, *next_paths])
     prepare: list[str] = []
-    for item, live_path in zip(artifacts, live_paths, strict=True):
+    prepared: dict[str, str] = {}
+    for index, (item, live_path) in enumerate(zip(artifacts, live_paths, strict=True)):
         names = _siblings(item.relative)
         if before[live_path] == "-":
-            prepare.append(
-                f"printf '%s' {shlex.quote(deploy_id)} > {_quoted(target, names.absent)}"
-            )
+            copied = _quoted(target, names.absent)
+            command = f"printf '%s' {shlex.quote(deploy_id)} > {copied}"
         elif not item.source.is_dir():
-            prepare.append(
-                f"cp -p {_quoted(target, item.relative)} {_quoted(target, names.previous)}"
-            )
-    backup_paths = [
-        target.path_of(
-            _siblings(item.relative).absent
-            if before[live_path] == "-"
-            else _siblings(item.relative).previous
+            copied = _quoted(target, names.previous)
+            command = f"cp -p {_quoted(target, item.relative)} {copied}"
+        else:
+            continue
+        variable = f"prepared_{index}"
+        prepared[item.relative] = variable
+        # HUP/TERM are deferred until this command's actual inode is captured,
+        # including a partial failed copy. No later connection guesses ownership.
+        prepare.append(
+            f"prepare_status=0\n{command} || prepare_status=$?\n"
+            f"if [ -e {copied} ] || [ -L {copied} ]; then {variable}=$(identity {copied}); fi\n"
+            'test "$prepare_status" = 0\ntest "$interrupted" = 0'
         )
-        if not item.source.is_dir() or before[live_path] == "-"
-        else live_path
-        for item, live_path in zip(artifacts, live_paths, strict=True)
-    ]
-    try:
-        target.shell("set -eu\n" + "\n".join(prepare))
-        saved = identities(target, backup_paths)
-    except CutoverError:
-        # No live rename has happened yet. Remove only this preparation's
-        # file copies/absence markers so a failed copy cannot poison a retry.
-        cleanup = [f"rm -rf {shlex.quote(directory)}"]
-        for item in artifacts:
-            names = _siblings(item.relative)
-            cleanup.append(f"rm -f {_quoted(target, names.absent)}")
-            if not item.source.is_dir():
-                cleanup.append(f"rm -f {_quoted(target, names.previous)}")
-        target.shell("set -eu\n" + "\n".join(cleanup))
-        raise
     entries = tuple(
         Backup(
             item.relative,
             deploy_id,
             item.source.is_dir(),
             before[live_path] != "-",
-            saved[backup_path],
+            "",  # Filled by the same remote shell after its preparation/switch.
             before[next_path],
         )
-        for item, live_path, backup_path, next_path in zip(
-            artifacts, live_paths, backup_paths, next_paths, strict=True
+        for item, live_path, next_path in zip(
+            artifacts, live_paths, next_paths, strict=True
         )
     )
     manifest = Manifest(deploy_id, "pending", entries)
@@ -406,9 +517,39 @@ def publish(
         if prior_id
         else f"rm -f {pointer}"
     )
+    preflight: list[str] = [_IDENTITY]
+    for entry in entries:
+        live = _quoted(target, entry.relative)
+        preflight.append(
+            f'test "$(identity {live})" = {shlex.quote(before[target.path_of(entry.relative)])}'
+            if entry.existed
+            else f"test ! -e {live}\ntest ! -L {live}"
+        )
+        for sibling in asdict(_siblings(entry.relative)).values():
+            if sibling == _siblings(entry.relative).next:
+                continue
+            quoted = _quoted(target, sibling)
+            preflight.append(f"test ! -e {quoted}\ntest ! -L {quoted}")
+    discard = _discard_unswitched_preparation(
+        target, manifest, directory, before, prepared, prior_id
+    )
     script = (
         "set -eu\n"
-        + "if ! "
+        + _IDENTITY
+        + "\npreparing=1\ninterrupted=0\nbatch_inode=\n"
+        + "\n".join(f"{variable}=" for variable in prepared.values())
+        + "\nrestore_all() {\ntrap - EXIT HUP INT TERM\nset +e\n"
+        + 'if [ "$preparing" = 1 ]; then\n( set -eu\n'
+        + discard
+        + "\n)\nreturn\nfi\n"
+        + "\n".join(restore)
+        + "\n}\ntrap restore_all EXIT\ntrap 'interrupted=1' HUP INT TERM\n"
+        + "\n".join(preflight)
+        + f"\ntest ! -e {shlex.quote(directory)}\ntest ! -L {shlex.quote(directory)}\n"
+        + f"mkdir {shlex.quote(directory)}\nbatch_inode=$(identity {shlex.quote(directory)})\n"
+        + 'test "$interrupted" = 0\n'
+        + "\n".join(prepare)
+        + "\nif ! "
         + "{ "
         + (public_assets.check_script(target, public_inventory, public_proof) or ":")
         + " && "
@@ -423,11 +564,8 @@ def publish(
             or ":"
         )
         + "; }"
-        + "; then\n"
-        + _discard_unswitched_preparation(target, manifest, directory, before)
-        + "\nexit 1\nfi\nrestore_all() {\ntrap - EXIT HUP INT TERM\nset +e\n"
-        + "\n".join(restore)
-        + "\n}\ntrap restore_all EXIT\ntrap 'exit 1' HUP INT TERM\n"
+        + "; then\nexit 1\nfi\n"
+        + "trap 'exit 1' HUP INT TERM\ntest \"$interrupted\" = 0\npreparing=0\n"
     )
     script += (
         "TIMEFORMAT='LINKER_CUTOVER_SWITCH_SECONDS=%R'\n{ time {\n"
@@ -435,7 +573,7 @@ def publish(
         + "\n}; } 2>&1\n"
     )
     script += (
-        _write_manifest(manifest, directory)
+        _write_prepared_manifest(target, manifest, directory)
         + f"\nprintf '%s' {shlex.quote(deploy_id)} > {pointer}\ntrap - EXIT HUP INT TERM\n"
     )
     if after_switch:
@@ -539,7 +677,12 @@ def _checked_backups(
 def archive(target: Target, receipt: Receipt) -> None:
     """After site verification, rename every backup into the private deploy set."""
     directory, manifest, paths = _checked_backups(target, list(receipt.paths))
-    if manifest.deploy_id != receipt.deploy_id or manifest.state != "pending":
+    if manifest.deploy_id != receipt.deploy_id:
+        raise CutoverError("archive requires the pending deployment receipt")
+    if manifest.state == "archived":
+        _finalize_archive(target, receipt)
+        return
+    if manifest.state != "pending":
         raise CutoverError("archive requires the pending deployment receipt")
     _same_filesystem(
         target, backup_root(target), [str(Path(path).parent) for path in paths]
@@ -574,7 +717,20 @@ def archive(target: Target, receipt: Receipt) -> None:
     )
     script += "\ntrap - EXIT HUP INT TERM\n"
     target.shell(script)
-    _checked_backups(target, list(receipt.paths))
+    _finalize_archive(target, receipt)
+
+
+def _finalize_archive(target: Target, receipt: Receipt) -> None:
+    """Read back the committed archive and retire old batches, also after a lost reply."""
+    directory, manifest, _ = _checked_backups(target, list(receipt.paths))
+    if manifest.deploy_id != receipt.deploy_id or manifest.state != "archived":
+        raise CutoverError("archive finalization requires the archived deployment")
+    live = identities(target, [target.path_of(path) for path in receipt.paths])
+    if any(
+        live[target.path_of(entry.relative)] != entry.new_inode
+        for entry in manifest.backups
+    ):
+        raise CutoverError("live changed since deploy; checkpoint retained")
     siblings = [
         target.path_of(name)
         for relative in receipt.paths

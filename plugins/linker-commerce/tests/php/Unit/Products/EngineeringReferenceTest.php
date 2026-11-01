@@ -112,6 +112,57 @@ final class EngineeringReferenceTest extends TestCase {
 	}
 
 	/** Replacement bytes revoke scalar evidence without changing unrelated compatibility. */
+	public function test_cable_reference_is_typed_non_sale_and_revoked_by_document_change(): void {
+		$this->current_faq_meta[ EngineeringReference::ROLE_META_KEY ] = EngineeringReference::CABLE;
+		$this->current_faq_meta[ EngineeringReference::ID_META_KEY ]   = 'fixture_cable_6';
+		$manifest = Publication::manifest();
+		$doc      = $manifest['documents'][0];
+		$source   = array(
+			'document_id'       => $doc['document_id'],
+			'document_revision' => $doc['document_revision'],
+			'blob_sha256'       => $doc['blob_sha256'],
+			'product_id'        => self::ID,
+			'page'              => 1,
+			'quote'             => 'Synthetic retained document binding, not a published manufacturer approval.',
+		);
+		$facts    = array(
+			'schema_version'     => 1,
+			'construction'       => 'single_conductor',
+			'core_count'         => 1,
+			'cross_section_mm2'  => 6,
+			'conductor_material' => 'Tinned copper',
+			'insulation'         => 'Cross-linked rubber',
+			'source'             => $source,
+			'parameter_sets'     => array(
+				array(
+					'id'                    => 'dc_20',
+					'current_kind'          => 'dc',
+					'temperature_c'         => 20,
+					'frequency_hz'          => null,
+					'arrangement'           => null,
+					'resistance_ohm_per_km' => 3.39,
+					'reactance_ohm_per_km'  => null,
+					'resistance_basis'      => 'maximum',
+					'source'                => $source,
+				),
+			),
+		);
+		$this->current_faq_meta[ \Linker\Commerce\Products\Publication\CableFacts::META_KEY ] = $facts;
+		$feed = EngineeringFeed::feed();
+		$this->assertSame( array(), $feed['products'] );
+		$this->assertNull( EngineeringFeed::item( self::ID ) );
+		$this->assertSame( 'cable', $feed['overlay'][0]['kind'] );
+		$this->assertSame( 3.39, $feed['overlay'][0]['cable_facts']['parameter_sets'][0]['resistance_ohm_per_km'] );
+		$this->assertSame( 'maximum', $feed['overlay'][0]['cable_facts']['parameter_sets'][0]['resistance_basis'] );
+		$this->assertArrayHasKey( 'url', $feed['overlay'][0]['cable_facts']['source'] );
+		$this->current_faq_meta[ \Linker\Commerce\Products\Publication\CableFacts::META_KEY ]['parameter_sets'][0]['frequency_hz'] = 50;
+		$this->assertSame( array(), EngineeringFeed::feed()['overlay'] );
+		$this->current_faq_meta[ \Linker\Commerce\Products\Publication\CableFacts::META_KEY ] = $facts;
+		file_put_contents( $this->publication_uploads . '/2026/manual.pdf', "%PDF-1.4\nreplacement\n%%EOF" );
+		$this->assertSame( array(), EngineeringFeed::feed()['overlay'] );
+	}
+
+	/** Replacement bytes revoke scalar evidence without changing unrelated compatibility. */
 	public function test_replaced_pdf_revokes_figures_and_migration_reruns_never_rebind(): void {
 		$before  = EngineeringFeed::feed();
 		$binding = $this->current_faq_meta[ EvidenceBindings::META_KEY ];
@@ -241,7 +292,8 @@ final class EngineeringReferenceTest extends TestCase {
 		WP_Mock::userFunction( 'get_posts' )->andReturnUsing(
 			function ( array $query ): array {
 				$this->assertSame( EngineeringReference::ROLE_META_KEY, $query['meta_key'] );
-				$this->assertSame( EngineeringReference::PV_MODULE, $query['meta_value'] );
+				$this->assertSame( array( EngineeringReference::PV_MODULE, EngineeringReference::CABLE ), $query['meta_value'] );
+				$this->assertSame( 'IN', $query['meta_compare'] );
 				$this->assertTrue( $query['linker_publication_internal'] );
 				return array( self::ID, 9999 );
 			}

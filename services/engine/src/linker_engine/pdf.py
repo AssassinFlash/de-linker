@@ -205,6 +205,9 @@ def _section(
             [header, *body],
             colWidths=[width * share for share in shares],
             repeatRows=1,
+            # Accepted project names and notes may exceed one page's height.
+            # Preserve their text just as the detail-row table above does.
+            splitInRow=1,
         )
         table.setStyle(
             TableStyle(

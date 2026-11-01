@@ -7,6 +7,7 @@ from typing import cast
 from linker_engine.models import ReportRow, ReportSection, ReportTable
 
 from .canonical import Object
+from .installation_electrical_report import electrical_sections
 from .project_materials import conductor_specification, material_quantity
 from .report_copy import text
 
@@ -211,4 +212,7 @@ def installation_sections(source: Object, locale: str) -> list[ReportSection]:
                 ),
             )
         )
+    electrical = plan.get("electrical")
+    if isinstance(electrical, dict):
+        sections.extend(electrical_sections(electrical, locale))
     return sections

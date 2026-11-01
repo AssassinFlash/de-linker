@@ -10,7 +10,7 @@ requires-python = ">=3.12"
 dependencies = ["linker-local"]
 
 [tool.uv.sources]
-linker-local = { path = "../local" }
+linker-local = { path = "../local", editable = true }
 
 [project.scripts]
 linker-cutover = "linker_cutover.cli:main"

@@ -83,8 +83,37 @@ final class AuthTemplates {
 	public function register(): void {
 		add_filter( 'woocommerce_get_query_vars', array( $this, 'query_vars' ) );
 		add_filter( 'wc_get_template', array( $this, 'template' ), 30, 2 );
+		add_filter( 'seopress_titles_title', array( $this, 'document_title' ), 40 );
+		add_filter( 'pre_get_document_title', array( $this, 'document_title' ), 40 );
 		add_action( 'template_redirect', array( $this, 'signed_out_notice' ) );
 		add_action( 'template_redirect', array( $this, 'register_redirect' ) );
+	}
+
+	/**
+	 * English authentication endpoint titles use their existing card headings.
+	 *
+	 * SEOPress otherwise repeats the parent account page's saved sign-in title.
+	 * Both title entry points share this callback; independent German titles
+	 * remain with the language companion and the sign-in title stays unchanged.
+	 *
+	 * @param string $title Existing document title.
+	 */
+	public function document_title( string $title ): string {
+		if ( ! function_exists( 'is_account_page' ) || ! is_account_page() || ! function_exists( 'is_wc_endpoint_url' ) || is_404() ) {
+			return $title;
+		}
+		$language = function_exists( 'pll_current_language' ) ? pll_current_language() : explode( '_', get_locale() )[0];
+		if ( 'en' !== $language ) {
+			return $title;
+		}
+		if ( is_wc_endpoint_url( self::REGISTER_ENDPOINT ) ) {
+			$heading = __( 'Create your business account', 'linker-commerce' );
+		} elseif ( is_wc_endpoint_url( 'lost-password' ) ) {
+			$heading = __( 'Reset your password', 'linker-commerce' );
+		} else {
+			return $title;
+		}
+		return $heading . ' | ' . get_bloginfo( 'name' );
 	}
 
 	/**

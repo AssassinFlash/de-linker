@@ -232,12 +232,94 @@ class Publication:
             products.extend(self._reference_scope(engine, current)["products"])
         except ReferenceEvidenceUnavailable:
             pass
+        products.extend(self.cable_scope(current)["products"])
         return products
+
+    def cable_scope(
+        self, current: dict[str, Any], *, prepared: bool = False
+    ) -> dict[str, Any]:
+        """Current non-sale cable records use normal product/document revocation."""
+        products = {p["product_id"]: p for p in current["products"]}
+        documents = {d["document_id"]: d for d in current["documents"]}
+        scope: dict[str, Any] = {"products": [], "documents": []}
+        for raw in self.feed["overlay"]:
+            if raw["kind"] != "cable":
+                continue
+            canonical, revision = (
+                raw.get("canonical_product_id"),
+                raw.get("product_revision"),
+            )
+            source = products.get(canonical, {})
+            if (
+                source.get("engineering_role") != "reference_cable"
+                or source.get("engineering_id") != raw["id"]
+                or source.get("product_revision") != revision
+                or raw.get("reference_revision") != revision
+                or not raw["documents"]
+                or prepared
+                and source.get("ready", {}).get("engineering") is not True
+            ):
+                continue
+            refs = []
+            for doc in raw["documents"]:
+                current_doc = documents.get(doc.get("document_id"), {})
+                if (
+                    doc.get("document_revision") != current_doc.get("document_revision")
+                    or doc.get("blob_sha256") != current_doc.get("blob_sha256")
+                    or canonical not in current_doc.get("product_ids", [])
+                    or doc.get("document_id") not in source.get("documents", [])
+                    or doc["url"]
+                    not in {
+                        self._feed_url(url)
+                        for url in [
+                            current_doc.get("url"),
+                            *current_doc.get("aliases", []),
+                        ]
+                        if isinstance(url, str)
+                    }
+                ):
+                    break
+                refs.append(
+                    {
+                        "document_id": doc["document_id"],
+                        "document_revision": doc["document_revision"],
+                        "blob_sha256": doc["blob_sha256"],
+                        "product_id": canonical,
+                    }
+                )
+            else:
+                bound_documents = {doc["document_id"]: doc for doc in raw["documents"]}
+                facts = raw["cable_facts"]
+                if any(
+                    evidence["product_id"] != canonical
+                    or evidence["document_id"] not in bound_documents
+                    or any(
+                        evidence[key]
+                        != bound_documents[evidence["document_id"]].get(key)
+                        for key in ("document_revision", "blob_sha256", "url")
+                    )
+                    for evidence in [
+                        facts["source"],
+                        *(row["source"] for row in facts["parameter_sets"]),
+                    ]
+                ):
+                    continue
+                scope["products"].append(
+                    {"product_id": canonical, "product_revision": revision}
+                )
+                scope["documents"].extend(refs)
+        return scope
 
     def view(self, engine: Engine, *, require_reference: bool = False) -> View:
         return self._view(engine, self.read(), require_reference=require_reference)
 
-    def prepared_view(self, engine: Engine, *, include_reference: bool = False) -> View:
+    def prepared_view(
+        self,
+        engine: Engine,
+        *,
+        include_reference: bool = False,
+        include_cables: bool = False,
+    ) -> View:
         """Planner consumption of the current Woo-prepared intersection.
 
         Preparation workers still use view()/prepared_products() to prove a
@@ -273,6 +355,10 @@ class Publication:
             ),
         )
         view = self._view(prepared, current)
+        if include_cables:
+            cable_scope = self.cable_scope(current, prepared=True)
+            for kind in ("products", "documents"):
+                view.dependencies[kind].extend(cable_scope[kind])
         if include_reference and reference is not None:
             try:
                 scope = self._reference_scope(prepared, current)
@@ -312,7 +398,8 @@ class Publication:
                 not item
                 or not revision
                 or item.get("product_revision") != revision
-                or item.get("engineering_role") == "reference_pv_module"
+                or item.get("engineering_role")
+                in ("reference_pv_module", "reference_cable")
                 or canonical in reference_ids
             ):
                 continue

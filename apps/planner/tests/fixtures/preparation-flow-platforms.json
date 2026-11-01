@@ -4,12 +4,8 @@
 	"baselines": {
 		"darwin-arm64": {
 			"fixture": "preparation-flow-darwin-arm64.json",
-			"canonical_sorted_json_sha256": "c6cfd957d49c2d450e61e2b144e97f24b37b825a95bdb6152e769c0f682fee8b",
+			"canonical_sorted_json_sha256": "12e616dbeffe0a305640126024020930ea436302c20c6ba4757d4940a71aee8f",
 			"runtime": {
-				"python": "3.12.15",
-				"platform": "macOS-26.6.2-arm64-arm-64bit",
-				"machine": "arm64",
-				"libc": ["", ""],
 				"dependencies": {
 					"jsonschema": "4.26.0",
 					"numpy": "2.5.3",
@@ -23,18 +19,19 @@
 					"scipy": "1.18.1",
 					"shapely": "2.2.0",
 					"urllib3": "2.8.0"
-				}
-			}
+				},
+				"libc": ["", ""],
+				"machine": "arm64",
+				"platform": "macOS-26.6.2-arm64-arm-64bit",
+				"python": "3.12.15"
+			},
+			"export_run": "isolated:local:2026-11-01T04:16:27Z"
 		},
 		"linux-x86_64": {
 			"fixture": "preparation-flow-linux-x86_64.json",
-			"canonical_sorted_json_sha256": "35fbc3b14e20e9f2f7dba8e0335a28e8c4f1bd7996d31e18e85a01da4e5889c9",
-			"export_run": "isolated:linker-services:2026-10-31T16:00:36Z",
+			"canonical_sorted_json_sha256": "9503a61c1783359a3f558b52b4c5460b7c3480ffa76079bbe55f88d6c98b5c6b",
+			"export_run": "isolated:linker-services:2026-11-01T04:16:56Z",
 			"runtime": {
-				"python": "3.12.3",
-				"platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
-				"machine": "x86_64",
-				"libc": ["glibc", "2.39"],
 				"dependencies": {
 					"jsonschema": "4.26.0",
 					"numpy": "2.5.3",
@@ -48,7 +45,11 @@
 					"scipy": "1.18.1",
 					"shapely": "2.2.0",
 					"urllib3": "2.8.0"
-				}
+				},
+				"libc": ["glibc", "2.39"],
+				"machine": "x86_64",
+				"platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+				"python": "3.12.3"
 			}
 		}
 	}

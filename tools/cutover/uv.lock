@@ -205,7 +205,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "linker-local", directory = "../local" }]
+requires-dist = [{ name = "linker-local", editable = "../local" }]
 
 [package.metadata.requires-dev]
 dev = [
@@ -217,7 +217,7 @@ dev = [
 [[package]]
 name = "linker-local"
 version = "0.1.0"
-source = { directory = "../local" }
+source = { editable = "../local" }
 
 [package.metadata]
 

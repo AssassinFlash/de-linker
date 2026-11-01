@@ -115,23 +115,29 @@ export function NetworkViewport({
 					/>
 				)}
 				{plan.instances.flatMap((d) =>
-					d.ports.map((p) => (
-						<g key={d.id + ":" + p.id}>
-							<circle
-								cx={p.position.east_m}
-								cy={-p.position.north_m}
-								r={span / 120}
-								fill="currentColor"
-							/>
-							<text
-								x={p.position.east_m + span / 80}
-								y={-p.position.north_m - span / 100}
-								fontSize={span / 35}
-							>
-								{d.name} · {p.name}
-							</text>
-						</g>
-					)),
+					d.ports.map((p) => {
+						const right = p.position.east_m > (minX + maxX) / 2;
+						return (
+							<g key={d.id + ":" + p.id}>
+								<circle
+									cx={p.position.east_m}
+									cy={-p.position.north_m}
+									r={span / 120}
+									fill="currentColor"
+								/>
+								<text
+									// Opposite endpoints face inward on separate baselines.
+									textAnchor={right ? "end" : "start"}
+									x={p.position.east_m + (right ? -span / 80 : span / 80)}
+									dy={right ? "1.4em" : undefined}
+									y={-p.position.north_m - span / 100}
+									fontSize={span / 35}
+								>
+									{d.name} · {p.name}
+								</text>
+							</g>
+						);
+					}),
 				)}
 			</svg>
 			<p className="lp-profile-help">

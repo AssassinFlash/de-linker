@@ -592,7 +592,7 @@ def create_private_app(
                 inputs[field] = project.inputs[field]
         basis = product_basis(
             InstallationInputs.read(body.installation),
-            products.equipment_basis(),
+            products.equipment_basis(include_cables=True),
             allow_stale=inputs.get("pv_plant_string_plan") is not None,
         )
         reply = route_takeoff(

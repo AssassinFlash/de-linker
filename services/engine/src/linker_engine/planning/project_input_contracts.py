@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from .canonical import Object
 
 type InputContract = Literal[
+    "installation_circuit_electrical_v1",
     "pv_plant_string_plan_v1",
     "installation_pv_string_links_v1",
     "pv_string_links_direct_beam_visibility_v1",
@@ -24,11 +25,13 @@ GEOMETRIC_PV_INPUT_CONTRACT: InputContract = (
     "pv_string_links_direct_beam_geometric_pv_v1"
 )
 PLANT_PV_INPUT_CONTRACT: InputContract = "pv_plant_string_plan_v1"
+ELECTRICAL_INPUT_CONTRACT: InputContract = "installation_circuit_electrical_v1"
 SUPPORTED_INPUT_CONTRACTS: tuple[str, ...] = (
     INPUT_CONTRACT,
     DIRECT_BEAM_INPUT_CONTRACT,
     GEOMETRIC_PV_INPUT_CONTRACT,
     PLANT_PV_INPUT_CONTRACT,
+    ELECTRICAL_INPUT_CONTRACT,
 )
 
 
@@ -39,6 +42,22 @@ def required_contracts(inputs: Mapping[str, object]) -> tuple[str, ...]:
         required.append(PLANT_PV_INPUT_CONTRACT)
     if isinstance(installation, Mapping) and "pv_string_links" in installation:
         required.append(INPUT_CONTRACT)
+    if isinstance(installation, Mapping):
+        circuits, runs = installation.get("circuits"), installation.get("cable_runs")
+        electrical = any(
+            isinstance(row, Mapping) and "operating_conditions" in row
+            for row in (circuits if isinstance(circuits, list) else [])
+        ) or any(
+            isinstance(row, Mapping)
+            and (
+                "core_roles" in row
+                or isinstance(row.get("conductor"), Mapping)
+                and "cable_reference" in row["conductor"]
+            )
+            for row in (runs if isinstance(runs, list) else [])
+        )
+        if electrical:
+            required.append(ELECTRICAL_INPUT_CONTRACT)
     if "direct_beam_visibility" in inputs:
         required.append(DIRECT_BEAM_INPUT_CONTRACT)
     if "geometric_pv_preparation" in inputs:
@@ -62,6 +81,13 @@ def require_input_contract(
     # coverage sets separate: neither token silently covers future additions.
     covered = (
         SUPPORTED_INPUT_CONTRACTS
+        if input_contract == ELECTRICAL_INPUT_CONTRACT
+        else (
+            INPUT_CONTRACT,
+            DIRECT_BEAM_INPUT_CONTRACT,
+            GEOMETRIC_PV_INPUT_CONTRACT,
+            PLANT_PV_INPUT_CONTRACT,
+        )
         if input_contract == PLANT_PV_INPUT_CONTRACT
         else (INPUT_CONTRACT, DIRECT_BEAM_INPUT_CONTRACT, GEOMETRIC_PV_INPUT_CONTRACT)
         if input_contract == GEOMETRIC_PV_INPUT_CONTRACT

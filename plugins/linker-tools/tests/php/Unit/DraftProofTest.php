@@ -133,9 +133,26 @@ final class DraftProofTest extends TestCase {
 		$this->assertArrayNotHasKey( '999', $block['draft_proofs'] );
 	}
 
-	/** Engineering reference records cannot become sale-oriented Genie actions. */
-	public function test_reference_module_cannot_mint_a_card_or_partial_parts_list(): void {
-		$this->manifest['products'][1]['engineering_role'] = 'reference_pv_module';
+	/**
+	 * Noncommercial engineering roles covered by draft proof checks.
+	 *
+	 * @return array<string,array{string}>
+	 */
+	public static function reference_roles(): array {
+		return array(
+			'module' => array( 'reference_pv_module' ),
+			'cable'  => array( 'reference_cable' ),
+		);
+	}
+
+	/**
+	 * Engineering reference records cannot become sale-oriented Genie actions.
+	 *
+	 * @dataProvider reference_roles
+	 * @param string $role Noncommercial Woo engineering role.
+	 */
+	public function test_reference_cannot_mint_a_card_or_partial_parts_list( string $role ): void {
+		$this->manifest['products'][1]['engineering_role'] = $role;
 		$proof = $this->proof();
 		$this->assertSame( '', $this->token( $proof ) );
 		$stream = $proof->stream( "event: block\ndata: {\"type\":\"cards\",\"product_ids\":[5,6]}\n\n", $this->dependencies() );

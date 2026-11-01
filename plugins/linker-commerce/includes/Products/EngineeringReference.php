@@ -16,6 +16,8 @@ final class EngineeringReference {
 	public const ROLE_META_KEY = '_linker_engineering_role';
 	public const ID_META_KEY   = '_linker_engineering_id';
 	public const PV_MODULE     = 'reference_pv_module';
+	public const CABLE         = 'reference_cable';
+	public const ROLES         = array( self::PV_MODULE, self::CABLE );
 
 	/** Required fields of the engine's native PvModule.from_overlay loader. */
 	private const REQUIRED_NUMBERS = array( 'pmax_w', 'voc_v', 'vmpp_v', 'isc_a', 'impp_a', 'beta_voc_pct_per_c', 'max_series_fuse_a' );
@@ -56,7 +58,7 @@ final class EngineeringReference {
 	 * @param int $id Locale or source product ID.
 	 */
 	public static function is_reference( int $id ): bool {
-		return self::PV_MODULE === self::role( $id );
+		return in_array( self::role( $id ), self::ROLES, true );
 	}
 
 	/** Register ordinary Woo product administration, without another data source. */
@@ -79,6 +81,7 @@ final class EngineeringReference {
 				'options' => array(
 					''              => __( 'Product', 'linker-commerce' ),
 					self::PV_MODULE => __( 'Reference PV module', 'linker-commerce' ),
+					self::CABLE     => __( 'Reference cable', 'linker-commerce' ),
 				),
 			)
 		);
@@ -101,14 +104,14 @@ final class EngineeringReference {
 			return;
 		}
 		$role = sanitize_text_field( wp_unslash( $_POST[ self::ROLE_META_KEY ] ) );
-		if ( ! in_array( $role, array( '', self::PV_MODULE ), true ) ) {
+		if ( ! in_array( $role, array( '', self::PV_MODULE, self::CABLE ), true ) ) {
 			return;
 		}
 		$id = isset( $_POST[ self::ID_META_KEY ] ) && is_string( $_POST[ self::ID_META_KEY ] ) ? sanitize_text_field( wp_unslash( $_POST[ self::ID_META_KEY ] ) ) : '';
 		// phpcs:enable
 		$product->update_meta_data( self::ROLE_META_KEY, $role );
 		$product->update_meta_data( self::ID_META_KEY, $id );
-		if ( self::PV_MODULE === $role ) {
+		if ( in_array( $role, self::ROLES, true ) ) {
 			self::configure( $product );
 		}
 	}
@@ -170,7 +173,8 @@ final class EngineeringReference {
 				'linker_publication_internal' => true,
 				'cache_results'               => false,
 				'meta_key'                    => self::ROLE_META_KEY, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Native scheduled repair of reference records only.
-				'meta_value'                  => self::PV_MODULE, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- No public catalogue query.
+				'meta_value'                  => array( self::PV_MODULE, self::CABLE ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- No public catalogue query.
+				'meta_compare'                => 'IN',
 			)
 		);
 		foreach ( $ids as $id ) {

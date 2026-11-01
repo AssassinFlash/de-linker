@@ -933,6 +933,14 @@ final class GermanUrlsTest extends SiteTestCase {
 				self::assertSame( $title, trim( html_entity_decode( $match[1] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ), $path );
 			}
 			self::assertStringContainsString( 'Partner Account: Sign In or Register | Linker', self::get( '/my-account/' )['body'] );
+			foreach ( array(
+				'/my-account/register/'      => 'Create your business account | Linker',
+				'/my-account/lost-password/' => 'Reset your password | Linker',
+			) as $path => $title ) {
+				$page = self::get( $path );
+				preg_match( '#<title>(.*?)</title>#s', $page['body'], $match );
+				self::assertSame( $title, trim( html_entity_decode( $match[1] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ), $path );
+			}
 		} finally {
 			if ( $applied ) {
 				self::wp( array( 'linker-i18n', 'german-urls', '--rollback', '--apply' ) );

@@ -22,13 +22,19 @@ from __future__ import annotations
 
 import json
 import shlex
+import signal
 import subprocess
+import tempfile
+import time
 import urllib.error
 import urllib.request
-from dataclasses import dataclass
+from collections.abc import Iterator
+from contextlib import contextmanager
+from dataclasses import dataclass, replace
 from http.client import HTTPMessage
 from pathlib import Path
-from typing import IO, Any
+from types import FrameType
+from typing import IO, Any, NoReturn
 
 # The production host and its WordPress root, as tools/pull/src/linker_pull/live.py
 # records them (both read from the host on 2026-10-09).
@@ -148,6 +154,26 @@ def _local_entries(source: Path) -> list[Path]:
     return entries
 
 
+@contextmanager
+def _session_signals() -> Iterator[None]:
+    """Unwind task-owned resources on termination, then restore caller handlers."""
+    previous = {
+        signum: signal.getsignal(signum) for signum in (signal.SIGTERM, signal.SIGHUP)
+    }
+
+    def terminate(signum: int, frame: FrameType | None) -> NoReturn:
+        del frame
+        raise SystemExit(128 + signum)
+
+    try:
+        for signum in previous:
+            signal.signal(signum, terminate)
+        yield
+    finally:
+        for signum, handler in previous.items():
+            signal.signal(signum, handler)
+
+
 @dataclass(frozen=True)
 class Target:
     """One WordPress site a cutover can run against, and how to reach it."""
@@ -162,6 +188,98 @@ class Target:
     shell_prefix: tuple[str, ...] | None
     # Where `copy_in`/`copy_out` place the remote end: None for a local path.
     rsync_remote: str | None
+    ssh_options: tuple[str, ...] = ()
+
+    @property
+    def rsync_shell(self) -> str:
+        """Every rsync leg uses this target's explicit session, if one is open."""
+        return shlex.join(["ssh", "-o", "BatchMode=yes", *self.ssh_options])
+
+    @contextmanager
+    def session(self) -> Iterator[Target]:
+        """One task-owned SSH master, always terminated before its socket is removed.
+
+        No configuration, PATH change or persistent daemon. Local targets and
+        nested sessions reuse their current transport without creating resources.
+        """
+        if self.rsync_remote is None or self.ssh_options:
+            yield self
+            return
+        host = self.rsync_remote.split(":", 1)[0]
+        with (
+            _session_signals(),
+            tempfile.TemporaryDirectory(prefix="lc-ssh-", dir="/tmp") as folder,
+        ):
+            socket = str(Path(folder) / "socket")
+            # OpenSSH normally opens a new transport if the multiplex socket
+            # disappears. Only the master may connect directly to this host.
+            options = (
+                "-o",
+                f"ControlPath={socket}",
+                "-o",
+                "ControlMaster=no",
+                "-o",
+                "ProxyCommand=false",
+            )
+            started = time.monotonic()
+            print(f"deploy: opening task SSH session {host}", flush=True)
+            master = subprocess.Popen(
+                [
+                    "ssh",
+                    "-M",
+                    "-N",
+                    "-o",
+                    "BatchMode=yes",
+                    "-o",
+                    "ConnectTimeout=10",
+                    "-o",
+                    "ControlPersist=no",
+                    "-S",
+                    socket,
+                    host,
+                ],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            try:
+                while not Path(socket).exists():
+                    if master.poll() is not None:
+                        detail = (
+                            master.stderr.read() if master.stderr is not None else ""
+                        )
+                        raise CutoverError(f"SSH session failed: {detail.strip()}")
+                    if time.monotonic() - started > 10:
+                        raise CutoverError(
+                            "SSH session did not open within ConnectTimeout=10"
+                        )
+                    time.sleep(0.05)
+                print(
+                    f"deploy: SSH session ready in {time.monotonic() - started:.1f}s",
+                    flush=True,
+                )
+                assert self.shell_prefix is not None
+                yield replace(
+                    self,
+                    prefix=(self.prefix[0], *options, *self.prefix[1:]),
+                    shell_prefix=(
+                        self.shell_prefix[0],
+                        *options,
+                        *self.shell_prefix[1:],
+                    ),
+                    ssh_options=options,
+                )
+            finally:
+                if master.poll() is None:
+                    master.terminate()
+                    try:
+                        master.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        master.kill()
+                        master.wait()
+                if master.stderr is not None:
+                    master.stderr.close()
+                print("deploy: task SSH session closed", flush=True)
 
     def wp(self, *args: str, check: bool = True) -> str:
         """Run a WP-CLI command against the site and return its standard output.
@@ -228,7 +346,7 @@ class Target:
         """Copy `source` to `destination` with rsync, either end possibly a host:path."""
         command = ["rsync", "-az", "--delete", *(extra or [])]
         if source.startswith(f"{HOST}:") or destination.startswith(f"{HOST}:"):
-            command += ["-e", "ssh -o BatchMode=yes"]
+            command += ["-e", self.rsync_shell]
         command += [source, destination]
         return _run(command)
 
@@ -371,7 +489,7 @@ class Target:
                     "-az",
                     "--delete",
                     "-e",
-                    "ssh -o BatchMode=yes",
+                    self.rsync_shell,
                     *_link_dest(link_dest),
                     source_arg,
                     f"{destination}/",
@@ -397,7 +515,7 @@ class Target:
                     "-az",
                     "--delete",
                     "-e",
-                    "ssh -o BatchMode=yes",
+                    self.rsync_shell,
                     f"{source}/",
                     f"{HOST}:{destination}/",
                 ],
@@ -423,7 +541,7 @@ class Target:
                     "-az",
                     "--delete",
                     "-e",
-                    "ssh -o BatchMode=yes",
+                    self.rsync_shell,
                     source_arg,
                     f"{HOST}:{destination}",
                 ],

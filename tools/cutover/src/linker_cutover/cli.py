@@ -33,8 +33,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from linker_cutover import backup as backup_module
+from linker_cutover import backup_retention, deployment, plan, probe, steps
 from linker_cutover import drill as drill_module
-from linker_cutover import plan, probe, steps
 from linker_cutover import snapshot as snapshot_module
 from linker_cutover.target import CutoverError, Target, local_target, remote_target
 
@@ -92,6 +92,16 @@ def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("backup", parents=[common], help="step 1: the complete backup")
+    adopting = sub.add_parser(
+        "register-backup",
+        parents=[common],
+        help="register the confirmed source of an existing legacy backup; never deletes",
+    )
+    adopting.add_argument(
+        "--baseline",
+        action="store_true",
+        help="the one retained recovery baseline for this source",
+    )
     maintenance = sub.add_parser(
         "maintenance", parents=[common], help="steps 2 and 7: the maintenance window"
     )
@@ -108,7 +118,9 @@ def _parser() -> argparse.ArgumentParser:
     )
     restoring.add_argument("name", help="db-YYYYMMDDTHHMMSSZ.sql.gz (see `snapshots`)")
     sub.add_parser(
-        "resume-deploy", parents=[common], help="verify/archive a pending file deploy"
+        "resume-deploy",
+        parents=[common],
+        help="resume a staged candidate or verify/archive a pending file deploy",
     )
     sub.add_parser(
         "reconcile",
@@ -196,10 +208,34 @@ def main(argv: list[str] | None = None) -> int:
 
 def _run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     target = _target(args.target)
+    if args.write and args.command in ("deploy", "resume-deploy"):
+        with (
+            deployment.workspace(_workspace() / "staging"),
+            target.session() as connected,
+        ):
+            return _run_steps(args, parser, connected)
+    if args.write and args.command == "backup":
+        with target.session() as connected:
+            return _run_steps(args, parser, connected)
+    return _run_steps(args, parser, target)
+
+
+def _run_steps(
+    args: argparse.Namespace, parser: argparse.ArgumentParser, target: Target
+) -> int:
     repository = repository_root()
     acceptance = args.acceptance or repository / "docs" / "acceptance" / _today() / "17"
 
     try:
+        if args.command == "register-backup":
+            if args.backup is None:
+                raise CutoverError("register-backup requires --backup")
+            if args.write:
+                backup_retention.register(args.backup, target, baseline=args.baseline)
+                print(f"backup: registered {args.backup}")
+            else:
+                print(f"backup: would register {args.backup} as {target.label}")
+            return 0
         if args.command == "backup":
             print(f"cutover: backup at {_backup(target, args)}")
             return 0
@@ -255,7 +291,10 @@ def _run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
             _print(deployed)
             assert deployed.publication is not None
             checked = steps.finish_deploy(
-                target, deployed.publication, cache_buster=_cache_buster()
+                target,
+                deployed.publication,
+                cache_buster=_cache_buster(),
+                staging=staging,
             )
             _print(checked)
             return 1 if checked.notes else 0
@@ -271,11 +310,14 @@ def _run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         if args.command == "resume-deploy":
             if not args.write:
                 print(
-                    "resume-deploy: would verify/archive the pending deployment manifest"
+                    "resume-deploy: would resume the same staged candidate or verify/archive a legacy pending manifest"
                 )
                 return 0
             resumed = steps.resume_deploy(
-                target, repository=repository, cache_buster=_cache_buster()
+                target,
+                repository=repository,
+                cache_buster=_cache_buster(),
+                staging=_workspace() / "staging",
             )
             _print(resumed)
             return 1 if resumed.notes else 0

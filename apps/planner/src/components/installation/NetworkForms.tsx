@@ -1,3 +1,15 @@
+import {
+	ElectricalConditionFields,
+	operatingCondition,
+	ElectricalChoice,
+	electricalText,
+} from "./ElectricalConditionFields.tsx";
+import {
+	CableReferenceFacts,
+	cableReferenceLabel,
+} from "./CableReferenceFacts.tsx";
+import type { CableReference } from "../../data/cableReferences.ts";
+import type { CoreRole } from "../../domain/installationElectrical.ts";
 import { useState } from "react";
 import type { GeometryDocument } from "../../domain/geometry.ts";
 import type {
@@ -280,6 +292,22 @@ export function CircuitForm({
 	circuit: InstallationCircuit | null;
 	submit: (value: InstallationCircuit) => boolean;
 } & Common) {
+	const [conditions, setConditions] = useState<
+		{
+			id: string;
+			before:
+				| import("../../domain/installationElectrical.ts").CircuitOperatingCondition
+				| null;
+		}[]
+	>(
+		() =>
+			circuit?.operating_conditions?.map((before) => ({
+				id: before.id,
+				before,
+			})) ?? [],
+	);
+	const [conditionsTouched, setConditionsTouched] = useState(false);
+	const t = (en: string, de: string) => electricalText(locale, en, de);
 	return (
 		<GeometryForm
 			title={__("Circuit", "linker-tools")}
@@ -291,6 +319,14 @@ export function CircuitForm({
 					b = v.text("end").split(":");
 				if (a.length !== 2 || b.length !== 2) return false;
 				return submit({
+					...(circuit ?? {}),
+					...(conditionsTouched || circuit?.operating_conditions !== undefined
+						? {
+								operating_conditions: conditions.map((row) =>
+									operatingCondition(v, row.id),
+								),
+							}
+						: {}),
 					id: circuit?.id ?? installationId("circuit"),
 					name: v.text("name"),
 					kind: v.text("kind") as InstallationCircuit["kind"],
@@ -334,6 +370,44 @@ export function CircuitForm({
 				name="end"
 				{...(circuit ? { value: circuit.end } : {})}
 			/>
+			<p className="lp-profile-help">
+				{t(
+					"Operating conditions are optional. Enter the actual current, voltage, temperature and source. No electrical assumptions are supplied.",
+					"Betriebsbedingungen sind optional. Geben Sie tatsächlichen Strom, Spannung, Temperatur und Quelle an. Elektrische Annahmen werden nicht ergänzt.",
+				)}
+			</p>
+			{conditions.map((row) => (
+				<div key={row.id}>
+					<ElectricalConditionFields
+						id={row.id}
+						before={row.before}
+						locale={locale}
+					/>
+					<button
+						type="button"
+						className="lp-text-button"
+						onClick={() => {
+							setConditionsTouched(true);
+							setConditions((old) => old.filter((r) => r.id !== row.id));
+						}}
+					>
+						{t("Remove operating condition", "Betriebszustand entfernen")}
+					</button>
+				</div>
+			))}
+			<button
+				type="button"
+				className="lp-button lp-button-secondary"
+				onClick={() => {
+					setConditionsTouched(true);
+					setConditions((old) => [
+						...old,
+						{ id: installationId("condition"), before: null },
+					]);
+				}}
+			>
+				{t("Add operating condition", "Betriebszustand hinzufügen")}
+			</button>
 		</GeometryForm>
 	);
 }
@@ -508,9 +582,36 @@ export function CableForm({
 	cancel,
 	onValidity,
 	cable,
+	cableReferences = [],
 	submit,
-}: { cable: CableRun | null; submit: (value: CableRun) => boolean } & Common) {
+}: {
+	cable: CableRun | null;
+	cableReferences?: readonly CableReference[];
+	submit: (value: CableRun) => boolean;
+} & Common) {
 	const declared = cable?.conductor ?? null;
+	const t = (en: string, de: string) => electricalText(locale, en, de);
+	const savedReference = declared?.cable_reference;
+	const [referenceKey, setReferenceKey] = useState(
+		savedReference
+			? String(savedReference.product_id) +
+					":" +
+					savedReference.product_revision
+			: "",
+	);
+	const [roles, setRoles] = useState(() =>
+		(cable?.core_roles ?? []).map((role) => ({
+			id: installationId("core"),
+			role,
+		})),
+	);
+	const [rolesTouched, setRolesTouched] = useState(false);
+	const selectedReference = cableReferences.find(
+		(r) =>
+			String(r.canonical_product_id) + ":" + r.product_revision ===
+			referenceKey,
+	);
+
 	return (
 		<GeometryForm
 			title={__("Physical cable or conductor", "linker-tools")}
@@ -523,7 +624,27 @@ export function CableForm({
 				const conductor = v.paired("cross_section", "conductor_note", {
 					positive: true,
 				});
-				return submit({
+				if (referenceKey && !conductor)
+					throw new Error("cable_reference_requires_declaration");
+				const reference = selectedReference
+					? {
+							product_id: selectedReference.canonical_product_id,
+							product_revision: selectedReference.product_revision,
+						}
+					: savedReference &&
+						  referenceKey ===
+								String(savedReference.product_id) +
+									":" +
+									savedReference.product_revision
+						? savedReference
+						: null;
+				if (referenceKey && !reference)
+					throw new Error("cable_reference_unavailable");
+				const next = {
+					...(cable ?? {}),
+					...(rolesTouched || cable?.core_roles !== undefined
+						? { core_roles: roles.map((r) => v.text(r.id) as CoreRole) }
+						: {}),
 					id: cable?.id ?? installationId("cable"),
 					name: v.text("name"),
 					circuit_id: v.text("circuit"),
@@ -534,10 +655,13 @@ export function CableForm({
 								conductor: {
 									cross_section_mm2: conductor.value,
 									source_note: conductor.basis,
+									...(reference ? { cable_reference: reference } : {}),
 								},
 							}
 						: {}),
-				});
+				};
+				if (!conductor) delete next.conductor;
+				return submit(next);
 			}}
 		>
 			<GeometryText
@@ -615,6 +739,116 @@ export function CableForm({
 					"linker-tools",
 				)}
 			/>
+			<label className="lp-field">
+				<span>
+					{t(
+						"Cable manufacturer reference (optional)",
+						"Kabelherstellerreferenz (optional)",
+					)}
+				</span>
+				<select
+					name="cable_reference"
+					value={referenceKey}
+					onChange={(e) => setReferenceKey(e.currentTarget.value)}
+				>
+					<option value="">
+						{t(
+							"No manufacturer reference selected",
+							"Keine Herstellerreferenz ausgewählt",
+						)}
+					</option>
+					{savedReference &&
+						!cableReferences.some(
+							(r) =>
+								r.canonical_product_id === savedReference.product_id &&
+								r.product_revision === savedReference.product_revision,
+						) && (
+							<option
+								value={
+									String(savedReference.product_id) +
+									":" +
+									savedReference.product_revision
+								}
+							>
+								{t(
+									"Saved reference · current data unavailable",
+									"Gespeicherte Referenz · aktuelle Daten nicht verfügbar",
+								)}
+							</option>
+						)}
+					{cableReferences.map((r) => (
+						<option
+							key={r.canonical_product_id}
+							value={String(r.canonical_product_id) + ":" + r.product_revision}
+						>
+							{cableReferenceLabel(r, locale)}
+						</option>
+					))}
+				</select>
+			</label>
+			<p className="lp-profile-help">
+				{t(
+					"Selecting a reference does not change your declared cross-section or construction. They must match the manufacturer's facts. A saved revision is retained until you explicitly select a current one.",
+					"Die Auswahl ändert Ihren erklärten Querschnitt oder Aufbau nicht. Beide müssen den Herstellerdaten entsprechen. Eine gespeicherte Revision bleibt erhalten, bis Sie ausdrücklich eine aktuelle auswählen.",
+				)}
+			</p>
+			{selectedReference && (
+				<CableReferenceFacts reference={selectedReference} locale={locale} />
+			)}
+			<fieldset>
+				<legend>
+					{t("Physical core roles", "Funktionen der physischen Adern")}
+				</legend>
+				<p>
+					{t(
+						"Assign every physical core explicitly. Each row is one core; PE and unused cores carry no current in this calculation. Core count never multiplies purchased cable length.",
+						"Ordnen Sie jede physische Ader ausdrücklich zu. Jede Zeile steht für eine Ader; PE und unbenutzte Adern führen in dieser Berechnung keinen Strom. Die Aderzahl vervielfacht die Kabellänge nicht.",
+					)}
+				</p>
+				{roles.map((r) => (
+					<div key={r.id}>
+						<ElectricalChoice
+							name={r.id}
+							label={t("Core role", "Aderfunktion")}
+							value={r.role}
+							options={[
+								["dc_positive", "DC +"],
+								["dc_negative", "DC −"],
+								["line", t("Line", "Außenleiter")],
+								["neutral", t("Neutral", "Neutralleiter")],
+								["l1", "L1"],
+								["l2", "L2"],
+								["l3", "L3"],
+								["pe", "PE"],
+								["unused", t("Unused", "Unbenutzt")],
+							]}
+						/>
+						<button
+							type="button"
+							className="lp-text-button"
+							onClick={() => {
+								setRolesTouched(true);
+								setRoles((old) => old.filter((row) => row.id !== r.id));
+							}}
+						>
+							{t("Remove core", "Ader entfernen")}
+						</button>
+					</div>
+				))}
+				<button
+					type="button"
+					className="lp-text-button"
+					onClick={() => {
+						setRolesTouched(true);
+						setRoles((old) => [
+							...old,
+							{ id: installationId("core"), role: "" as CoreRole },
+						]);
+					}}
+				>
+					{t("Add core", "Ader hinzufügen")}
+				</button>
+			</fieldset>
 		</GeometryForm>
 	);
 }

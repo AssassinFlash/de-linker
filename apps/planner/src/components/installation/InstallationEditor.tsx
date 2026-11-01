@@ -1,3 +1,5 @@
+import { ElectricalResults } from "./ElectricalResults.tsx";
+import { electricalText } from "./ElectricalConditionFields.tsx";
 import { useEffect, useRef, useState } from "react";
 import type { GeometryDocument, Vec3 } from "../../domain/geometry.ts";
 import type { GeometryCommand } from "../../domain/geometryCommands.ts";
@@ -367,6 +369,28 @@ export function InstallationEditor({
 					)}
 				</Notice>
 			)}
+			{(products.isError || products.isFetching) && (
+				<Notice error={products.isError}>
+					{electricalText(
+						locale,
+						products.isFetching
+							? "Loading current product and cable data…"
+							: "Current product and cable data are unavailable. Saved declarations remain available; reload before choosing new references.",
+						products.isFetching
+							? "Aktuelle Produkt- und Kabeldaten werden geladen…"
+							: "Aktuelle Produkt- und Kabeldaten sind nicht verfügbar. Gespeicherte Angaben bleiben erhalten; laden Sie die Daten vor der Auswahl neuer Referenzen erneut.",
+					)}
+				</Notice>
+			)}
+			{products.error && (
+				<button
+					className="lp-text-button"
+					onClick={() => void products.refetch()}
+				>
+					{__("Reload product data", "linker-tools")}
+				</button>
+			)}
+
 			{newSource ? (
 				<GeometryForm
 					title={__("Measurement or drawing source", "linker-tools")}
@@ -473,6 +497,11 @@ export function InstallationEditor({
 					<CableForm
 						{...common}
 						cable={plan.cable_runs.find((d) => d.id === form.id) ?? null}
+						cableReferences={
+							products.isError || products.isFetching
+								? []
+								: (products.data?.cableReferences ?? [])
+						}
 						submit={(v) => edit("cable_runs", v)}
 					/>
 				)
@@ -605,14 +634,6 @@ export function InstallationEditor({
 							</button>
 						</section>
 					))}
-					{products.error && (
-						<button
-							className="lp-text-button"
-							onClick={() => void products.refetch()}
-						>
-							{__("Reload product data", "linker-tools")}
-						</button>
-					)}
 					<PvStringLinks
 						plan={plan}
 						savedInstallation={savedInstallation}
@@ -630,6 +651,7 @@ export function InstallationEditor({
 							busy ||
 							!linksValid ||
 							(!plan.cable_runs.length &&
+								!plan.circuits.some((c) => c.operating_conditions?.length) &&
 								plan.pv_string_links === undefined &&
 								savedInputs.pv_plant_string_plan === undefined) ||
 							((plan.pv_string_links !== undefined ||
@@ -642,8 +664,15 @@ export function InstallationEditor({
 							? __("Checking…", "linker-tools")
 							: plan.pv_string_links !== undefined
 								? __("Review routes and string links", "linker-tools")
-								: __("Check route quantities", "linker-tools")}
+								: electricalText(
+										locale,
+										"Review routes and circuit conditions",
+										"Strecken und Betriebsbedingungen prüfen",
+									)}
 					</button>
+					{shown?.electrical && (
+						<ElectricalResults review={shown.electrical} locale={locale} />
+					)}
 					{shown && shown.cables.length > 0 && (
 						<div className="lp-table-scroll">
 							<table>
