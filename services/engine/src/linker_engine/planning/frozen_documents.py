@@ -19,7 +19,7 @@ from __future__ import annotations
 
 from typing import Protocol
 
-from .canonical import Object, decode_object
+from .canonical import Object, decode_object, encode
 from .storage import Blobs
 
 # Request working-set ceiling, not an industry standard. One report in this
@@ -60,6 +60,7 @@ class FrozenDocuments:
         self.max_bytes = max_bytes
         self._content: dict[str, bytes] = {}
         self._objects: dict[str, Object] = {}
+        self._geometric_projections: dict[str, Object] = {}
         self._bytes = 0
         # Verified parses kept for this request; the regression asserts a
         # report parses each retained document once.
@@ -85,9 +86,27 @@ class FrozenDocuments:
             self._objects[sha256] = value
         return value
 
+    def geometric_witness(self, blobs: Blobs, sha256: str) -> Object:
+        """Reuse a verified small projection when a full witness exceeds the cap."""
+        cached = self._geometric_projections.get(sha256)
+        if cached is not None:
+            return cached
+        from .geometric_pv_witness import project_witness
+
+        value = project_witness(blobs, sha256)
+        size = len(encode(value))
+        self.parses += 1
+        if (
+            len(self._content) + len(self._geometric_projections) < self.max_documents
+            and self._bytes + size <= self.max_bytes
+        ):
+            self._geometric_projections[sha256] = value
+            self._bytes += size
+        return value
+
     def _keep(self, sha256: str, content: bytes) -> None:
         if (
-            len(self._content) < self.max_documents
+            len(self._content) + len(self._geometric_projections) < self.max_documents
             and self._bytes + len(content) <= self.max_bytes
         ):
             self._content[sha256] = content

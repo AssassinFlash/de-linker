@@ -50,7 +50,9 @@ def pv_components(
         bundle = (
             geometric_bundle
             if geometric_bundle is not None
-            else geometric_pv_bundle(blobs, raw_sha256, metadata, documents)
+            else geometric_pv_bundle(
+                blobs, raw_sha256, metadata, documents, include_modules=False
+            )
         )
         return saved_roof_components(
             _object(bundle["inputs"])["geometry"],

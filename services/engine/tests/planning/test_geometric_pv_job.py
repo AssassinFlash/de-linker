@@ -937,6 +937,21 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
     )
     started = time.monotonic()
     content = workspace.blobs.read(series_asset.content_sha256)
+    # Force the large-witness projection on this same frozen run and compare
+    # the actual CSV bytes, not just summary values or row counts.
+    from linker_engine.planning.geometric_pv_csv import series_csv
+    from linker_engine.planning.storage import Blobs
+
+    frozen_source = workspace.blobs.object(str(report_source_sha))
+    with monkeypatch.context() as forced:
+        forced.setattr(Blobs, "size", lambda _self, _sha: 97 * 1024 * 1024)
+        assert (
+            series_csv(
+                workspace.blobs,
+                cast(list[Any], frozen_source["geometric_pv_references"]),
+            )
+            == content
+        )
     rows = list(csv.DictReader(io.StringIO(content.decode("utf-8"))))
     print(
         f"SERIES_CSV_BYTES={len(content)} ROWS={len(rows)} READ_SECONDS={time.monotonic() - started:.3f}"

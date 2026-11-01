@@ -187,6 +187,63 @@ def policy() -> GeometricPvLimits:
     )
 
 
+@pytest.mark.parametrize("elevated", [False, True])
+def test_flat_roof_clearance_preserves_complete_hourly_witness(
+    monkeypatch: pytest.MonkeyPatch,
+    elevated: bool,
+) -> None:
+    from linker_engine.planning import geometric_pv_generation
+    from linker_engine.planning.model_numbers import canonical_witness_document
+
+    from .test_pvgis_tmy import parse
+
+    full = parse()
+    meteo = replace(full, points=full.points[4344:4368])
+    geo, par = geometry(), perez_parameters()
+    if elevated:
+        canopy = deepcopy(geo["roofs"][0])
+        canopy.update(
+            id="canopy",
+            origin_enu=[0, 0, 10],
+            boundary_uv=[[-100, -100], [100, -100], [100, 100], [-100, 100]],
+        )
+        geo["roofs"].append(canopy)
+    request = perez_request(par)
+    limits = GeometricPvLimits(
+        max_module_steps=1000,
+        max_samples=100000,
+        max_ray_face_checks=1000000,
+        max_bounds_checks=1000000,
+        index_leaf_size=2,
+    )
+    with monkeypatch.context() as old:
+        old.setattr(DirectBeamIndex, "upward_clearance", lambda *args, **kwargs: None)
+        old.setattr(
+            geometric_pv_generation,
+            "canonical_witness_in_place",
+            lambda value, **_kwargs: canonical_witness_document(value),
+        )
+        reference = generate_geometric_pv(
+            geo, meteo, request, limits, max_weather_rows=9000
+        )
+    result = generate_geometric_pv(geo, meteo, request, limits, max_weather_rows=9000)
+    assert result.profile.values_kw == reference.profile.values_kw
+    actual, expected = result.witness(), reference.witness()
+    actual_work = cast(Object, cast(Object, actual["inputs"])["work"])
+    expected_work = cast(Object, cast(Object, expected["inputs"])["work"])
+    actual_checks = cast(int, actual_work.pop("bounds_checks"))
+    expected_checks = cast(int, expected_work.pop("bounds_checks"))
+    if elevated:
+        assert any(
+            value == 0
+            for module in cast(list[Object], actual["modules"])
+            for value in cast(list[object], module["geometric_visible_fraction"])
+        )
+    else:
+        assert actual_checks < expected_checks
+    assert actual == expected
+
+
 def test_opaque_canopy_removes_only_beam_and_preserves_declared_diffuse_and_uniform_response() -> (
     None
 ):

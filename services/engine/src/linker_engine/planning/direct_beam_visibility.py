@@ -44,6 +44,12 @@ class VisibilityBudget:
             raise InvalidInput("direct-beam sample resource budget exhausted")
         self.samples += 1
 
+    def samples_clear(self, count: int) -> None:
+        """Charge every sample whose result was proved by a common bound."""
+        if count < 0 or self.samples + count > self.limits.max_samples:
+            raise InvalidInput("direct-beam sample resource budget exhausted")
+        self.samples += count
+
     def face(self) -> None:
         if self.ray_face_checks >= self.limits.max_ray_face_checks:
             raise InvalidInput("direct-beam ray resource budget exhausted")
@@ -117,6 +123,7 @@ def visibility_row(
     budget: VisibilityBudget,
     *,
     index: DirectBeamIndex,
+    upward_clearances: dict[str, float] | None = None,
 ) -> Object:
     if (
         any(not math.isfinite(value) for value in direction)
@@ -138,22 +145,39 @@ def visibility_row(
         coarse = fine = None
         delta = None
         if status == "sampled":
-            coarse = _grid(
-                scene,
-                receiver,
-                direction,
-                sampling.coarse_cells_per_edge,
-                budget,
-                index,
-            )
-            fine = _grid(
-                scene,
-                receiver,
-                direction,
-                sampling.fine_cells_per_edge,
-                budget,
-                index,
-            )
+            threshold = (upward_clearances or {}).get(receiver.id)
+            if threshold is not None and direction[2] > threshold:
+
+                def clear_grid(count: int) -> Object:
+                    samples = count * count
+                    budget.samples_clear(samples)
+                    return {
+                        "cells_per_edge": count,
+                        "sample_count": samples,
+                        "visible_sample_count": samples,
+                        "visible_fraction": 1.0,
+                        "blocker_sample_counts": {},
+                    }
+
+                coarse = clear_grid(sampling.coarse_cells_per_edge)
+                fine = clear_grid(sampling.fine_cells_per_edge)
+            else:
+                coarse = _grid(
+                    scene,
+                    receiver,
+                    direction,
+                    sampling.coarse_cells_per_edge,
+                    budget,
+                    index,
+                )
+                fine = _grid(
+                    scene,
+                    receiver,
+                    direction,
+                    sampling.fine_cells_per_edge,
+                    budget,
+                    index,
+                )
             # Same finite sample domain, not a certified error estimate/bound.
             delta = abs(
                 cast(float, fine["visible_fraction"])

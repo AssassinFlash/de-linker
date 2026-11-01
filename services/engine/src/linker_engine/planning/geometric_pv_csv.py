@@ -5,12 +5,14 @@ from __future__ import annotations
 import csv
 import io
 import json
+from collections.abc import Callable
 from typing import cast
 
 from .canonical import Json, Object
 from .errors import VersionUnavailable
 from .geometric_pv_inputs import MODEL_V3
 from .geometric_pv_profile import prepared_profile, reference_bundle
+from .geometric_pv_witness import project_witness
 from .storage import Blobs
 
 
@@ -27,7 +29,12 @@ def _array(values: object) -> str:
     return json.dumps(values, ensure_ascii=False, separators=(",", ":"))
 
 
-def series_csv(blobs: Blobs, references: list[Json]) -> bytes | None:
+def series_csv(
+    blobs: Blobs,
+    references: list[Json],
+    *,
+    checkpoint: Callable[[], None] = lambda: None,
+) -> bytes | None:
     """One row per timestamp and string; module conditions use matching JSON arrays.
 
     Module IDs and condition arrays share an order. Values come from the original
@@ -65,9 +72,21 @@ def series_csv(blobs: Blobs, references: list[Json]) -> bytes | None:
         reference = raw
         metadata = blobs.object(str(reference["metadata_sha256"]))
         sha = str(reference["content_sha256"])
-        bundle = reference_bundle(blobs, sha, metadata)
+        bundle = reference_bundle(blobs, sha, metadata, include_modules=False)
         profile = prepared_profile(blobs, sha, metadata, bundle=bundle)
         witness = cast(Object, bundle["witness"])
+        if not witness["modules"]:
+            witness = project_witness(
+                blobs,
+                str(cast(Object, bundle["dependencies"])["model.witness"]),
+                module_fields=(
+                    "module_id",
+                    "effective_irradiance_w_m2",
+                    "cell_temperature_c",
+                    "direct_beam_visible_fraction",
+                ),
+                checkpoint=checkpoint,
+            )
         modules = {
             str(row["module_id"]): row for row in cast(list[Object], witness["modules"])
         }
@@ -77,6 +96,7 @@ def series_csv(blobs: Blobs, references: list[Json]) -> bytes | None:
             selected = [modules[module_id] for module_id in ids]
             ids_json = _array(ids)
             for index, interval in enumerate(profile.intervals):
+                checkpoint()
                 try:
                     conditions = [
                         _array(

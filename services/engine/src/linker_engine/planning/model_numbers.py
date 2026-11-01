@@ -30,7 +30,7 @@ into any calculation.
 from __future__ import annotations
 
 import math
-from collections.abc import Iterable, Mapping
+from collections.abc import Callable, Iterable, Mapping
 from decimal import ROUND_HALF_EVEN, Decimal
 from typing import Any
 
@@ -97,6 +97,42 @@ def canonical_witness_document(document: Mapping[str, Any]) -> dict[str, Any]:
         else _canonical_node(value)
         for key, value in document.items()
     }
+
+
+def canonical_witness_in_place(
+    document: dict[str, Any], *, checkpoint: Callable[[], None] = lambda: None
+) -> dict[str, Any]:
+    """Normalize a private, finished witness without duplicating its arrays.
+
+    The caller gives up the mutable document; the emitted values and retained
+    exact subtrees are identical to canonical_witness_document().
+    """
+
+    def normalize(node: Any) -> Any:
+        if isinstance(node, float):
+            return derived_witness_number(node)
+        if isinstance(node, dict):
+            for key, value in node.items():
+                if key not in WITNESS_EXACT_SERIES_KEYS:
+                    node[key] = normalize(value)
+            return node
+        if isinstance(node, list):
+            for index, value in enumerate(node):
+                node[index] = normalize(value)
+            return node
+        if isinstance(node, tuple):
+            return [normalize(value) for value in node]
+        return node
+
+    for key, value in document.items():
+        if key != WITNESS_INPUTS_KEY and key not in WITNESS_EXACT_SERIES_KEYS:
+            if key == "modules" and isinstance(value, list):
+                for index, module in enumerate(value):
+                    checkpoint()
+                    value[index] = normalize(module)
+            else:
+                document[key] = normalize(value)
+    return document
 
 
 def _canonical_node(node: Any) -> Any:

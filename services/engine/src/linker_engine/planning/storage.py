@@ -7,6 +7,7 @@ references, so interrupted writes can leave unreferenced bytes, not broken refs.
 
 from __future__ import annotations
 
+import mmap
 import os
 import re
 import sqlite3
@@ -85,6 +86,26 @@ class Blobs:
         if digest(content) != sha256:
             raise VersionUnavailable("pinned content hash mismatch")
         return content
+
+    def size(self, sha256: str) -> int:
+        try:
+            return self._path(sha256).stat().st_size
+        except OSError as error:
+            raise VersionUnavailable("pinned content unavailable") from error
+
+    @contextmanager
+    def mapped(self, sha256: str) -> Iterator[mmap.mmap]:
+        """Read a large immutable blob without copying all its bytes to Python."""
+        try:
+            with self._path(sha256).open("rb") as stream:
+                with mmap.mmap(stream.fileno(), 0, access=mmap.ACCESS_READ) as view:
+                    if digest(view) != sha256:  # type: ignore[arg-type]
+                        raise VersionUnavailable("pinned content hash mismatch")
+                    yield view
+                    if digest(view) != sha256:  # type: ignore[arg-type]
+                        raise VersionUnavailable("pinned content hash mismatch")
+        except (OSError, ValueError) as error:
+            raise VersionUnavailable("pinned content unavailable") from error
 
     def object(self, sha256: str) -> Object:
         return decode_object(self.read(sha256))

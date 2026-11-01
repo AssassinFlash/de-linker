@@ -296,3 +296,62 @@ class DirectBeamIndex:
         return CandidateQuery(
             tuple(sorted(found, key=lambda item: (item.id, item.kind))), tested
         )
+
+    def upward_clearance(
+        self,
+        receiver_id: str,
+        points: tuple[Vector, ...],
+        *,
+        on_bounds_check: Callable[[], None] | None = None,
+    ) -> float | None:
+        """Prove a horizontal sample set clear above a conservative ray slope.
+
+        This uses the same outward bounds and negative-travel allowance as
+        query(). Unknown bounds, overlapping horizontal boxes, non-horizontal
+        sample sets, or a non-useful proof return None; callers then use query.
+        """
+        if (
+            not points
+            or self._uncertain
+            or any(not all(math.isfinite(value) for value in point) for point in points)
+        ):
+            return None
+        z = points[0][2]
+        if any(point[2] != z for point in points):
+            return None
+        x0, x1 = min(p[0] for p in points), max(p[0] for p in points)
+        y0, y1 = min(p[1] for p in points), max(p[1] for p in points)
+        threshold = 0.0
+        pending = [self._root] if self._root is not None else []
+        while pending:
+            node = pending.pop()
+            pending.extend(node.children)
+            for entry in node.entries:
+                if entry.item.kind == "module_volume" and entry.item.id == receiver_id:
+                    continue
+                if on_bounds_check is not None:
+                    on_bounds_check()
+                bounds = entry.bounds
+                if math.nextafter(bounds.high[2] + self.epsilon_m, math.inf) < z:
+                    continue
+                gap = max(
+                    bounds.low[0] - x1,
+                    x0 - bounds.high[0],
+                    bounds.low[1] - y1,
+                    y0 - bounds.high[1],
+                )
+                gap = math.nextafter(gap, -math.inf)
+                if not math.isfinite(gap) or gap <= self.epsilon_m:
+                    return None
+                margin = math.nextafter(
+                    max(0.0, bounds.high[2] - z) + 2 * self.epsilon_m + 8 * math.ulp(z),
+                    math.inf,
+                )
+                if not math.isfinite(margin):
+                    return None
+                threshold = max(
+                    threshold, math.nextafter(margin / (gap - self.epsilon_m), math.inf)
+                )
+                if threshold >= 1:
+                    return None
+        return threshold
