@@ -554,8 +554,7 @@ CMP 是 **CookieYes**（`cky-*`），统计是 **GA4 `G-N2TGDM3193`**（容器 `
 
 ### 边界
 
-验证的是**页面输出与默认状态**。没有在浏览器里实际点击「接受」后确认 GA 开始采集，
-也没有验证撤回后是否停止——那需要人工交互，与界面读回同属一类缺口。
+验证的是**页面输出与默认状态**。本次 HTML 抽查未点击同意。另核对 2026-10-19 私有生产 network-cookies.json 的原始七条记录：英德各 1440/390 首访和拒绝的 Google 请求与跟踪 Cookie 均为 0。仅统计、仅访问来源、双同意分别有 2、0、2 条测量相关请求，三种选择的撤回均通过。详见 [既有生产验收](../../2026-10-19/201-consent/README.md)。10 月 28 日的偏好弹窗焦点修改另计；这里没有重跑生产测量，也没有扩大到今天的 GA Realtime。
 ## 旧链接迁移：生产实测全部 301 到新地址
 
 目标完成标准点名「旧数据/链接迁移」。此前无独立证据，现补上。
@@ -1656,3 +1655,7 @@ Candidate verification: 26 legacy operator fixtures passed2.43s (native real int
 Production gate at 06:24 UTC. PR832 integrates ET/SEC, the Nexans noncommercial sources, saved-report and runtime/CI/resource corrections. Actual 508-file WordPress and live Planner/worker checks found no automatic Apify integration. The official JRC transports remain in use. Both local research credential shell exports and interactive autosourcing were removed from universal startup; private on-demand research returned HTTP 200 after the change. No credentials were revoked. The legacy immutable reader operator is under final independent incremental review. On acceptance, push the combined candidate once, follow its new CI, verify the exact merged tree and publish the compatible legacy Engine and dedicated Planner before the Woo writer. Existing validated full recovery point 0530 and current protected state are the starting point for the data write. Stable feed script/unit and its actual scheduled journal readback are separate from activating reader source. Wider engineering/visual/natural-customer scope remains open.
 
 Blog readback. Reused the prior TOC and adjacent-navigation coverage. English and German archives each displayed ten articles and no pagination link. Anonymous English response was 200, 288549 bytes. Its SHA-256 was 9da53331c57a8f6a27339f24936a50acefd0ecde1329709aafb26fd766266d73. The authenticated public-main visual check of article 552 and German 6885 preserved language pairing, all seven German contents targets, and the real next article navigation. Mobile document width stayed within the 390 viewport and neither adjacent card overflowed. No new blog template defect or source change was indicated. The one browser tab was closed.
+
+ET controller CLI research-environment boundary increment (owner electrical_backend_finish). Only 548-controller-facts.py and existing test_548_installation_facts.py; one private p548-migration-env-* TemporaryDirectory for the intercepted native transport fixture and one synthetic 0600 preview receipt, removed by wrapper finally. No SSH/WP/native instance/provider call or production write. Verify actual main() passes the shared case-insensitive APIFY_* filter before its direct subprocess transport, preserves ordinary environment and does not mutate caller configuration. Cable command stays in native WP-CLI/PHP with no shell/process launcher; reuse the already verified WpCli environment boundary.
+
+CI run 41281211574 diagnosed two mypy implicit module re-export errors in the synthetic environment fixtures. Commit 7036594c patches the standard os module directly. Full tools/local mypy checked all 42 files and both fixture files passed all eight tests. Commit 43bb9e9d also closes the direct controller migration subprocess environment; the matching actual-main regression passed after reproducing the inherited environment. No production data changed.
