@@ -304,6 +304,10 @@ class RuntimeControl(Protocol):
     def call(self, action: str) -> dict[str, Any]: ...
 
 
+class GuardRejected(RuntimeError):
+    """The explicitly supplied pre-activation guard refused this candidate."""
+
+
 class PairedPublisher:
     def __init__(
         self,
@@ -311,11 +315,11 @@ class PairedPublisher:
         journal: Path,
         state: dict[str, Any],
         loaded: Any,
-        resume_guard: Callable[[Path, dict[str, Any], int], None] | None = None,
+        guard: Callable[[Path, dict[str, Any], int], None] | None = None,
     ) -> None:
         self.runtime, self.journal, self.state = runtime, journal, state
         self.loaded = loaded
-        self.resume_guard = resume_guard
+        self.guard = guard
 
     def __call__(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
         from publish_index import (
@@ -339,14 +343,17 @@ class PairedPublisher:
             hook_started = True
             self.state["phase"] = "runtime_switch"
             save(self.journal, self.state)
-            if self.resume_guard is not None:
+            if self.guard is not None:
                 if self.loaded() != self.state["before_loaded"]:
                     raise RuntimeError("the original loaded pair changed before review")
-                self.resume_guard(
-                    Path(args[0]),
-                    self.state["before_loaded"],
-                    self.state["job"]["activation_epoch"],
-                )
+                try:
+                    self.guard(
+                        Path(args[0]),
+                        self.state["before_loaded"],
+                        self.state["job"]["activation_epoch"],
+                    )
+                except (Exception, SystemExit) as error:
+                    raise GuardRejected("pre-activation guard refused") from error
             self.runtime.call("activate")
             # Persist before publish can send any activation request. An
             # interrupted/lost response is now conservative, never rolled back.
@@ -369,6 +376,7 @@ class PairedPublisher:
                 if (
                     hook_started
                     and not hook_returned
+                    and isinstance(error, GuardRejected)
                     and type(expiry) is int
                     and expiry > time.time() + 1
                 ):
@@ -387,7 +395,7 @@ class PairedPublisher:
 def main(
     argv: list[str] | None = None,
     *,
-    resume_guard: Callable[[Path, dict[str, Any], int], None] | None = None,
+    guard: Callable[[Path, dict[str, Any], int], None] | None = None,
 ) -> int:
     from install_publication_worker import load_private_environment
 
@@ -434,7 +442,7 @@ def main(
         "--rest-config", type=Path, default=inventory.DEFAULT_REST_CONFIG
     )
     args = parser.parse_args(argv)
-    if args.command == "resume-candidate" and resume_guard is None:
+    if args.command == "resume-candidate" and guard is None:
         raise ValueError(
             "candidate recovery requires the operator's pre-activation guard"
         )
@@ -630,7 +638,7 @@ def main(
             lambda: worker_module.read_loaded(
                 args.loaded_url, os.environ["GENIE_SERVICE_TOKEN"], args.host
             ),
-            resume_guard=resume_guard if args.command == "resume-candidate" else None,
+            guard=guard,
         ),
         worker_factory=ReleaseWorker,
         embedding_factory=cached_embedder,

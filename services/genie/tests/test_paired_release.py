@@ -154,7 +154,7 @@ def test_hook_lost_response_restores_pair_before_any_index_activation(
     assert calls == ["activate", "restore"]
 
 
-def test_guard_refusal_retains_only_confirmed_old_pair_and_live_lease(
+def test_runtime_failure_restores_old_pair_without_deferring_lease(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     calls = []
@@ -179,7 +179,7 @@ def test_guard_refusal_retains_only_confirmed_old_pair_and_live_lease(
         pytest.fail("index activation must not run")
 
     monkeypatch.setattr(publish_index, "publish", publish)
-    with pytest.raises(publish_index.PreActivationDeferred):
+    with pytest.raises(RuntimeError, match="guard refused"):
         paired.PairedPublisher(
             Runtime(), tmp_path / "journal", state, lambda: {"version": "old"}
         )(tmp_path, "/index", "host")
@@ -218,7 +218,7 @@ def test_reused_candidate_runs_the_guard_again_before_activation(
 
     monkeypatch.setattr(publish_index, "publish", publish)
     publisher = paired.PairedPublisher(
-        Runtime(), tmp_path / "journal", state, lambda: {}, resume_guard=guard
+        Runtime(), tmp_path / "journal", state, lambda: {}, guard=guard
     )
     with pytest.raises(publish_index.PreActivationDeferred):
         publisher(tmp_path, "/index", "host")
@@ -250,13 +250,15 @@ def test_resume_never_activates_when_old_pair_changes_before_guard(
         pytest.fail("activation must not be reached")
 
     monkeypatch.setattr(publish_index, "publish", publish)
-    with pytest.raises(publish_index.PreActivationDeferred):
+    with pytest.raises(
+        RuntimeError, match="original loaded pair changed before review"
+    ):
         paired.PairedPublisher(
             Runtime(),
             tmp_path / "journal",
             state,
             lambda: next(reads),
-            resume_guard=lambda *_: pytest.fail("guard must not run"),
+            guard=lambda *_: pytest.fail("guard must not run"),
         )(tmp_path, "/index", "host")
     assert calls == ["restore"]
 
@@ -441,7 +443,7 @@ def test_resume_uses_exact_verify_and_never_claims_replacement(
                 "--worker-id",
                 "fixture",
             ],
-            resume_guard=lambda *_: None,
+            guard=lambda *_: None,
         )
         == 1
     )
@@ -552,7 +554,7 @@ def test_resume_candidate_requires_same_live_lease_and_original_pair(
                 "--worker-id",
                 "fixture",
             ],
-            resume_guard=lambda *_: None,
+            guard=lambda *_: None,
         )
         == 1
     )

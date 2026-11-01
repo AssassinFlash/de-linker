@@ -205,14 +205,16 @@ No-job and lock-busy exits are incomplete releases, not success. Semantic gaps r
 Before any possible index activation, runtime-switch or startup failure restores
 the old selector, starts both units even if the failed stop/start left them
 inactive, verifies actual PIDs/cwd and compares the entire old loaded receipt.
-If that readback succeeds after a pre-activation hook refused while the original
+If that readback succeeds after the explicitly supplied pre-activation guard refused while the original
 lease is still live, the worker retains the one pending local build and journal
 until that lease expires. It sends no failed ACK and ordinary polling does not
 replace the candidate during the lease. On the first ordinary poll after expiry,
 the owned pending build is removed before normal claiming resumes. The operator
 may instead explicitly continue within that exact lease by invoking
-`paired_release.main(arguments, resume_guard=guard)` with `resume-candidate` and
-the original release arguments. The guard must be a callable receiving the local
+`paired_release.main(arguments, guard=guard)` with `resume-candidate` and
+the original release arguments. The same guarded entry point must be used for
+the initial `publish`; other runtime failures retain their normal failure path.
+The guard must be a callable receiving the local
 build path, original loaded receipt and original epoch; it must rerun the actual
 release's pre-activation checks and raise if they fail. There is deliberately no
 unguarded CLI continuation. The command rechecks the original Woo lease, old
