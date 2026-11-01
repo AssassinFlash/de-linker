@@ -81,7 +81,9 @@ def series_plan(inputs: Object, basis: Object) -> SeriesPlan:
         raise InvalidInput(
             "the series scenario requires every included module assigned"
         )
-    model = derive_iv_model(compile_facts(cast(Object, raw_module["electrical_product"])))
+    model = derive_iv_model(
+        compile_facts(cast(Object, raw_module["electrical_product"]))
+    )
     if model["status"] != "available":
         raise InvalidInput("the cited module cannot produce an admissible I-V fit")
     inverter = cast(
