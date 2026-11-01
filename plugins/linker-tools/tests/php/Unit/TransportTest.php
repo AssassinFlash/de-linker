@@ -138,6 +138,7 @@ final class TransportTest extends TestCase {
 				self::assertTrue( $args['stream'] );
 				self::assertSame( SeriesDownload::MAX_BYTES + 1, $args['limit_response_size'] );
 				$path = $args['filename'];
+				self::assertSame( 0600, fileperms( $path ) & 0777 );
 				file_put_contents( $path, $actual ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- Synthetic request-owned test file.
 				return array(
 					'status' => 200,

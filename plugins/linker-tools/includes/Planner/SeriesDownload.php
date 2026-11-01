@@ -56,6 +56,10 @@ final class SeriesDownload {
 		}
 		$download = new self( $file, 0 );
 		register_shutdown_function( array( $download, 'remove' ) );
+		if ( ! chmod( $file, 0600 ) ) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod -- Private request-owned temporary file.
+			$download->remove();
+			return Failure::make( 'unavailable', 503 );
+		}
 		$reply = $transport->stream_series( $principal, $command, $file );
 		if ( is_wp_error( $reply ) ) {
 			$download->remove();
