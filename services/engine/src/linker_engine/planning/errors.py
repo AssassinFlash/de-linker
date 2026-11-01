@@ -1,5 +1,6 @@
 """Typed lifecycle failures; transport adapters map them without exposing other owners."""
 
+import logging
 import re
 
 
@@ -7,6 +8,23 @@ class PlanningError(Exception):
     """A recoverable, named planning operation failure."""
 
     code = "planning_error"
+
+
+def log_unavailable(job_id: str, phase: str, error: PlanningError) -> None:
+    """Locate a failed immutable read without logging customer or credential data."""
+    frame = error.__traceback__
+    if frame is None:
+        return
+    while frame.tb_next is not None:
+        frame = frame.tb_next
+    logging.getLogger(__name__).warning(
+        "planning job %s version_unavailable during %s at %s.%s:%d",
+        job_id,
+        phase,
+        frame.tb_frame.f_globals.get("__name__"),
+        frame.tb_frame.f_code.co_name,
+        frame.tb_lineno,
+    )
 
 
 class NotFound(PlanningError):

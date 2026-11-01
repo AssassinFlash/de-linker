@@ -10,7 +10,14 @@ from threading import Event, Thread
 from .asset_publication import AssetResult
 from .canonical import Object, encode
 from .dependencies import verify_dependencies
-from .errors import EvidenceMissing, InvalidInput, LeaseLost, PlanningError
+from .errors import (
+    EvidenceMissing,
+    InvalidInput,
+    LeaseLost,
+    PlanningError,
+    VersionUnavailable,
+    log_unavailable,
+)
 from .execution_identity import EvaluationRouting
 from .jobs import Jobs
 from .records import JobKind, Lease
@@ -132,6 +139,8 @@ class Worker:
             failure = {"code": error.code, "retryable": True}
             retry_after = self.retry_seconds
         except PlanningError as error:
+            if isinstance(error, VersionUnavailable):
+                log_unavailable(lease.id, "execute", error)
             # A local import avoids the existing retry-class import direction.
             from .weather_fetch_errors import WeatherSourceQualityInvalid
 
@@ -169,6 +178,8 @@ class Worker:
             # over its state. A lost heartbeat leaves durable retry recovery.
             LOG.info("planning publication fenced for job %s", lease.id)
         except PlanningError as error:
+            if isinstance(error, VersionUnavailable):
+                log_unavailable(lease.id, "publish", error)
             # A malformed prepared publication is a named task failure, not a
             # success or an unbounded lease-recovery loop. The same lease fence
             # still decides whether this attempt may publish that failure.

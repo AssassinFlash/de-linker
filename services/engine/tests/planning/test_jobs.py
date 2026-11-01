@@ -185,6 +185,7 @@ def test_corrupt_queue_request_fails_without_blocking_other_work(
     context: Context,
     clock: Clock,
     damage: str,
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     with workspace.database.read() as connection:
         sha = connection.execute(
@@ -209,3 +210,7 @@ def test_corrupt_queue_request_fails_without_blocking_other_work(
     broken = workspace.run(owner, run.id)
     assert broken.state == "failed"
     assert broken.error == {"code": "version_unavailable", "retryable": False}
+    assert (
+        "version_unavailable during claim at linker_engine.planning.storage."
+        in caplog.text
+    )

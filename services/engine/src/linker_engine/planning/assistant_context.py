@@ -1188,13 +1188,14 @@ def assistant_context(
             "result_sha256": run.result_sha256,
             "kind": run.result.get("kind") if run.result else None,
             "scope": {
-                key: run.result.get(key)
+                key: run.result[key]
                 for key in (
                     "country_assessment",
                     "equipment_release",
                     "scenario_constraint_status",
                     "near_shading_assessment",
                 )
+                if run.result.get(key) is not None
             }
             if run.result
             else {},
