@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import sqlite3
 from copy import deepcopy
 from pathlib import Path
@@ -15,7 +16,13 @@ from index import corpus, store
 from index.corpus import DocumentRow
 from index.publication import compile_publication
 from linker_genie.ground import check
-from linker_genie.hs3_evidence import DATA_MODELS, MANUAL_MODEL, SOURCES
+from linker_genie.hs3_evidence import (
+    DATA_MODELS,
+    DATASHEET,
+    MANUAL_MODEL,
+    SOURCES,
+    hs3_anchor_key,
+)
 from linker_genie.hydrate import hydrate
 from linker_genie.knowledge import KnowledgeSearch, model_view, record
 from linker_genie.publication import Snapshot
@@ -100,6 +107,39 @@ def test_hs3_conditional_sources_reach_the_consumer_and_revoke(tmp_path: Path) -
         )
 
     try:
+        # The same original datasheet table supports ordinary model-specific
+        # projections and the conditional certificate. Both must survive the
+        # index build and the runtime's independent source recheck.
+        expected_power = {2198: 5000, 1186: 6000, 1187: 8000, 2199: 10000, 1185: 12000}
+        datasheet = next(d for d in raw["documents"] if d["blob_sha256"] == DATASHEET)
+        for product_id, power in expected_power.items():
+            assert not any(
+                row["product_id"] == product_id
+                and row["document_id"] == datasheet["document_id"]
+                for row in index.loaded()["unprepared_documents"]
+            )
+            model = snap.products[product_id]["model"]
+            hits = index.search(
+                f"{model} Rated Output Power",
+                "en",
+                [product_id],
+                doc_types=["datasheet"],
+                publication=snap,
+            )
+            assert any(
+                hit.doc_sha256 == DATASHEET
+                and hit.product_ids == (product_id,)
+                and f"| Rated Output Power [W] | {power} |" in hit.text
+                for hit in hits
+            )
+            conditional = index.search(
+                f"{model} EU declaration battery modules",
+                "en",
+                [product_id],
+                publication=snap,
+            )
+            assert any(hit.conditional_certificate for hit in conditional)
+
         pid = next(
             p["product_id"]
             for p in raw["products"]
@@ -184,6 +224,44 @@ def test_hs3_conditional_sources_reach_the_consumer_and_revoke(tmp_path: Path) -
             ].remove(pid)
             result, _ = search(Snapshot.read(changed), pid)
             assert all(h["chunk_id"] != hit["chunk_id"] for h in result["hits"])
+            if ref == datasheet["document_id"]:
+                withdrawn = index.search(
+                    "Rated Output Power",
+                    "en",
+                    [pid],
+                    doc_types=["datasheet"],
+                    publication=Snapshot.read(changed),
+                )
+                assert all(item.doc_sha256 != DATASHEET for item in withdrawn)
+    finally:
+        index.close()
+
+    # Removing the native table digest must deny projections even though the
+    # separately verified HS3 source text can still support the certificate.
+    with sqlite3.connect(target) as db:
+        (serialized,) = db.execute(
+            "SELECT value FROM meta WHERE key = 'external_axis_anchors'"
+        ).fetchone()
+        anchors = json.loads(serialized)
+        assert anchors[DATA_MODELS]["source_table"] == "docling:p2:#/tables/0"
+        assert anchors[DATA_MODELS]["source_cells_sha256"]
+        assert anchors[hs3_anchor_key(DATA_MODELS)]["text"]
+        del anchors[DATA_MODELS]
+        db.execute(
+            "UPDATE meta SET value = ? WHERE key = 'external_axis_anchors'",
+            (json.dumps(anchors),),
+        )
+    index = DocumentIndex(target, encoder=None)
+    try:
+        assert not index.search(
+            "Rated Output Power",
+            "en",
+            [pid],
+            doc_types=["datasheet"],
+            publication=snap,
+        )
+        result, _ = search(snap, pid)
+        assert any(h.get("conditional_certificate") is True for h in result["hits"])
     finally:
         index.close()
 
