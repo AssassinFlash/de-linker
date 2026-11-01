@@ -26,7 +26,14 @@ try {
 			throw new RuntimeException( 'HS3 migration lock is unavailable.' );
 		}
 		try {
-			if ( ! is_callable( array( '\\Linker\\Commerce\\Products\\Materials', 'localized_document_title' ) ) ) {
+			$materials_class = '\\Linker\\Commerce\\Products\\Materials';
+			$methods         = class_exists( $materials_class ) ? get_class_methods( $materials_class ) : array();
+			$method_index    = array_search( 'localized_document_title', $methods, true );
+			if ( false === $method_index ) {
+				throw new RuntimeException( 'The German document title consumer is unavailable.' );
+			}
+			$method = new ReflectionMethod( $materials_class, $methods[ $method_index ] );
+			if ( ! $method->isPublic() || ! $method->isStatic() ) {
 				throw new RuntimeException( 'The German document title consumer is unavailable.' );
 			}
 			$pairs         = array(
@@ -363,10 +370,10 @@ try {
 						throw new RuntimeException( 'Final receipt state is incomplete: ' . wp_json_encode( $states ) );
 					}
 					$fresh = $authority();
-					if ( ( $receipt['authority'] ?? null ) !== array(
+					if ( array(
 						'products'  => $fresh['products'],
 						'documents' => $fresh['documents'],
-					) || $relations() !== $links ) {
+					) !== $receipt['authority'] || $relations() !== $links ) {
 						throw new RuntimeException( 'Final manifest or associations changed; inspect the receipt.' );
 					}
 					if ( 'after' === $expected ) {
