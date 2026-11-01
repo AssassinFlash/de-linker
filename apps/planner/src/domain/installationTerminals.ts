@@ -182,7 +182,18 @@ export function hasTerminalFeature(plan: InstallationInputs): boolean {
 export function hasReportableInstallation(plan: InstallationInputs): boolean {
 	return (
 		plan.cable_runs.length > 0 ||
-		(plan.circuits.length > 0 && hasTerminalFeature(plan))
+		plan.circuits.some(
+			(circuit) =>
+				(circuit.kind === "control" &&
+					circuit.communication_use !== undefined) ||
+				[circuit.start, circuit.end].some(
+					(endpoint) =>
+						plan.instances
+							.find((instance) => instance.id === endpoint.instance_id)
+							?.ports.find((port) => port.id === endpoint.port_id)
+							?.terminal_binding != null,
+				),
+		)
 	);
 }
 

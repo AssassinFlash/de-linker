@@ -161,6 +161,31 @@ test("report entry requires a circuit for terminal evidence and preserves cable-
 		hasReportableInstallation({ ...plan, circuits: [circuit] }),
 		true,
 	);
+	const unrelated = {
+		...instance,
+		ports: [point("p", binding(external, "device")), point("q"), point("r")],
+	};
+	const disconnected = {
+		...circuit,
+		start: { instance_id: "device", port_id: "q" },
+		end: { instance_id: "device", port_id: "r" },
+	};
+	assert.equal(
+		hasReportableInstallation({
+			...emptyInstallation(),
+			instances: [unrelated],
+			circuits: [disconnected],
+		}),
+		false,
+	);
+	assert.equal(
+		hasReportableInstallation({
+			...emptyInstallation(),
+			instances: [unrelated],
+			circuits: [{ ...disconnected, communication_use: null }],
+		}),
+		true,
+	);
 	assert.equal(
 		hasReportableInstallation({ ...emptyInstallation(), circuits: [circuit] }),
 		false,
