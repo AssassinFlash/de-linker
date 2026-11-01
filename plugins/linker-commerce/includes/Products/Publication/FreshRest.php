@@ -36,7 +36,11 @@ final class FreshRest {
 		if ( ! in_array( $route, array( '/linker/v1/publication/manifest', '/linker/v1/publication/validate', '/linker/v1/publication/identify', '/linker/v1/publication/jobs/claim', '/linker/v1/publication/jobs/ack', '/linker/v1/engineering-feed' ), true ) ) {
 			return $response;
 		}
-		DynamicHtml::forbid( 'current publication authority' );
+		// WordPress also runs this filter for REST preloads inside ordinary HTML.
+		// Only an external REST request may change the enclosing HTTP cache state.
+		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+			DynamicHtml::forbid( 'current publication authority' );
+		}
 		if ( $response instanceof WP_REST_Response ) {
 			$response->header( 'Cache-Control', 'no-store, private, max-age=0' );
 			$response->header( 'Pragma', 'no-cache' );

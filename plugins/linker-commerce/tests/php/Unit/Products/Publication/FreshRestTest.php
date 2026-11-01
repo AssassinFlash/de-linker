@@ -70,7 +70,8 @@ final class FreshRestTest extends TestCase {
 	}
 
 	/**
-	 * Both registered GET callbacks execute against an empty current authority.
+	 * A non-REST page can preload both real GET callbacks without changing its
+	 * global cache state or emitting HTTP headers for the outer HTML.
 	 *
 	 * @runInSeparateProcess
 	 * @preserveGlobalState disabled
@@ -84,7 +85,7 @@ final class FreshRestTest extends TestCase {
 			}
 		);
 		WP_Mock::userFunction( '__' )->andReturnUsing( static fn ( string $text ): string => $text );
-		WP_Mock::userFunction( 'nocache_headers' )->zeroOrMoreTimes();
+		WP_Mock::userFunction( 'nocache_headers' )->never();
 		WP_Mock::userFunction( 'wp_cache_supports' )->andReturn( true );
 		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturn( true );
 		WP_Mock::userFunction( 'get_posts' )->andReturn( array() );
@@ -108,6 +109,7 @@ final class FreshRestTest extends TestCase {
 			$this->assertSame( 'no-cache', $response->get_headers()['X-LiteSpeed-Cache-Control'] );
 			$this->assertNotEmpty( (array) $response->get_data() );
 		}
+		$this->assertFalse( defined( 'DONOTCACHEPAGE' ) );
 	}
 
 	/**
@@ -118,6 +120,7 @@ final class FreshRestTest extends TestCase {
 	 * @preserveGlobalState disabled
 	 */
 	public function test_current_authority_routes_are_not_cacheable(): void {
+		define( 'REST_REQUEST', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- simulate WordPress's direct REST request.
 		$policy = new FreshRest();
 		$other  = new WP_REST_Response( array( 'ok' => true ) );
 		$this->assertSame( $other, $policy->response( $other, null, new WP_REST_Request( 'GET', '/linker/v1/selection-facts' ) ) );

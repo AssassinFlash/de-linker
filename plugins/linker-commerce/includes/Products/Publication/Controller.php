@@ -63,7 +63,6 @@ final class Controller {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function dispatch( string $path, WP_REST_Request $request ): WP_REST_Response|WP_Error {
-		nocache_headers();
 		// Twenty 16,000-byte windows need at most six JSON escape bytes per byte.
 		// The 2 MiB envelope also bounds unrelated fields before JSON decoding.
 		if ( 'identify' === $path && strlen( $request->get_body() ) > 2 * 1024 * 1024 ) {
