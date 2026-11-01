@@ -458,3 +458,15 @@ Aladdin 不只提供画布。固定源码中已经能追到：
 两份第 2 页均已实际渲染并逐行检查。均为单芯、5 类软镀锡铜导体，绝缘和护套为交联无卤橡胶。4 mm² 为红色，6 mm² 为蓝色。导体 120°C、环境 60°C 时，空气中单根、表面单根、表面两根接触的原厂电流分别为 55/52/44 A 和 70/67/57 A。这些值与此前 Apify 抽取的官网表格一致。页脚的 `Generated 11/1/26` 是出表日期，原件没有标明技术修订号。资料没有给出 AC 电阻、电抗或温度换算系数。
 
 已从本机保存文件重新计算 SHA-256，两个文件合计 686,482 B，均在 `/Users/chesterjohn/de-linker-data/pdf/<SHA-256>.pdf`。PDF 文本与第 2 页渲染均经内存管道检查，没有额外图片或工作副本。此项解决了官方 PDF 字节、页码和出处的缺口。Woo 非商售参考、发布后 feed 及项目报告读回仍须各自完成。
+
+05:37 UTC 再查 Apify。官方 crawler 当前 build API 返回 HTTP 200，版本 0.3.102。用现有账号认证读取取得 Nexans 产品页的既有 run 也返回 HTTP 200，状态为 SUCCEEDED。本次确认的是账号 API 和已完成任务的可读性，没有新建采集任务。今后的外部研究仍按项目规则使用 Apify。
+
+### 10.10 过载动作方法的原厂指南
+
+既有 E6 地址返回 404，短路方法后已取得，过载保护器动作条件仍缺。负责人 root，本批默认走 Apify，最多一个已授权 Google 搜索 actor run 定位 Schneider Electric 官方指南，随后一个已授权 website-content-crawler run 读取实际命中的一至两页。两者均限时 180 秒，不递归。仅在内存保留可识别的公式、条件、来源 URL、页面版本与正文哈希。不创建本地正文副本或实例。每个 run 的自有默认 dataset、KV、queue 与自动生成的错误 dataset 在核对 owner、创建时间及无共享名称后删除，并读回不存在；保留小型 run 元数据。该资料只用于过载方法核查，不为具体断路器或现场接入给出放行。
+
+本轮精确搜索任务 `s4DWenE93rGvf9iRj` 运行成功，未从其输出筛得可确认的原厂链接。复用先前取得的 Schneider 官方指南链接，用已授权的 `apify/website-content-crawler` 单页取得 [Practical values for a protective scheme，General rules、Fig. G6 和 Applications](https://www.electrical-installation.org/enwiki/Practical_values_for_a_protective_scheme)。run `cwJdyAigIEvtJR2v7` 于 2026-11-01 05:40:49 UTC 启动并成功结束，正文 3,327 字符，UTF-8 SHA-256 `3d8920a1c99263e5898ffbe4532d4a53df7cb003f6c58580d07bdf98812aa4a8`。采集器返回了正文与 HTML，未取得可核实的页面历史版本号。
+
+指南区分设计电流 IB、保护器件额定或整定电流 In、回路允许载流量 Iz，以及保护器的约定动作电流 I2。其图 G6 及断路器应用段分别核查 IB ≤ In ≤ Iz 和 I2 ≤ 1.45 Iz。熔断器须使用型号对应的约定动作电流与规定时间。安装点的预期短路电流及器件分断能力另行核查。此处取得了原厂指南的过载方法，项目仍需提供具体器件、整定、安装条件，以及适用的国家规则。Nexans 在特定条件下的电缆载流数值不能自动满足全部条件。这批仍使用 Apify，官网直取仅限先前已经核验的两个 PDF。
+
+搜索任务自有 default dataset、KV、queue 已删除并分别读回 404。正文任务的两个 dataset 和 KV 也已删除并读回 404。队列回收最初遇到本地 API 网络超时；05:46 UTC 通过 Apify API 对该 run 已确认的默认队列 mEV8UsToFmQkJ9fqD 再读，返回 404。两次采集均无遗留的默认存储。

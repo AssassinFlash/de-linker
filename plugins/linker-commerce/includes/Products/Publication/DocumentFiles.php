@@ -26,13 +26,12 @@ final class DocumentFiles {
 	private static bool $reading = false;
 
 	/**
-	 * Hashes already read in this request, keyed by path and file identity.
+	 * Hashes of stable files already read in this request.
 	 *
 	 * One request can assemble the authority more than once; the documents are
-	 * the same bytes, so the second assembly must not read them again. The key
-	 * carries mtime, size, inode and ctime, so replaced content hashes afresh.
+	 * often unchanged. Keep the latest reusable identity per path.
 	 *
-	 * @var array<string,string>
+	 * @var array<string,array{identity:string,sha:string}>
 	 */
 	private static array $verified = array();
 
@@ -73,14 +72,24 @@ final class DocumentFiles {
 		if ( self::$reading && isset( self::$hashes[ $path ] ) ) {
 			return self::$hashes[ $path ];
 		}
-		$stat = stat( $path );
-		$key  = is_array( $stat ) ? $path . "\0" . $stat['mtime'] . ':' . $stat['size'] . ':' . $stat['ino'] . ':' . $stat['ctime'] : null;
-		if ( null !== $key && isset( self::$verified[ $key ] ) ) {
-			$sha = self::$verified[ $key ];
+		// PHP stat timestamps have whole-second precision. Reuse across authority
+		// reads only after that change interval has closed, using a fresh stat.
+		clearstatcache( false, $path );
+		$now   = time();
+		$stat  = stat( $path );
+		$key   = is_array( $stat ) && $stat['ctime'] < $now && $stat['mtime'] < $now
+			? implode( ':', array( $stat['dev'], $stat['ino'], $stat['size'], $stat['mtime'], $stat['ctime'] ) )
+			: null;
+		$known = self::$verified[ $path ] ?? null;
+		if ( null !== $key && null !== $known && $known['identity'] === $key ) {
+			$sha = $known['sha'];
 		} else {
 			$sha = hash_file( 'sha256', $path );
 			if ( false !== $sha && null !== $key ) {
-				self::$verified[ $key ] = $sha;
+				self::$verified[ $path ] = array(
+					'identity' => $key,
+					'sha'      => $sha,
+				);
 			}
 		}
 		if ( self::$reading && false !== $sha ) {
