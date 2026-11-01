@@ -215,21 +215,21 @@ def _signal_group(pid: int, sig: signal.Signals) -> None:
 
 def _group_running(pid: int) -> bool:
     """Find live members after reaping our leader; zombies hold no resources."""
-    if _alive(pid):
-        return True
-    try:
-        os.killpg(pid, 0)
-    except ProcessLookupError:
-        return False
-    except PermissionError:
-        pass  # Darwin also reports EPERM for empty groups; inspect members.
+    _alive(pid)  # Reap the leader when it is our child, but another parent may own it.
+    # Darwin selects a process group with -g; procps selects the numeric session.
+    # Our groups start with setsid(), so both IDs match. Filter the actual PGID
+    # as the session may also contain processes that left this group.
     result = subprocess.run(
-        ["ps", "-axo", "pgid=,stat="],
+        ["ps", "-g", str(pid), "-o", "pgid=,stat="],
         capture_output=True,
         text=True,
         check=False,
     )
-    if result.returncode != 0:
+    if result.returncode != 0 and not (
+        result.returncode == 1
+        and not result.stdout.strip()
+        and not result.stderr.strip()
+    ):
         raise ProcessError(f"cannot inspect process group {pid}")
     return any(
         len(fields := line.split()) == 2
