@@ -167,9 +167,10 @@ def cleanup(staging: Path) -> None:
     if stamp.is_dir() and not any(stamp.iterdir()):
         stamp.rmdir()
     if checkpoint.snapshot_pending:
-        snapshot.release(
+        snapshot.finish_checkpoint(
             Path(checkpoint.snapshot_pending["home"]),
             path(staging),
             checkpoint.deploy_id,
         )
-    path(staging).unlink()
+    else:
+        path(staging).unlink()

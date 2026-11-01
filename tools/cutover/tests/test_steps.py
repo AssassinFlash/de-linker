@@ -1720,6 +1720,135 @@ def test_custom_stage_reference_survives_later_snapshot_rotation(
 
 
 @pytest.mark.parametrize(
+    "interruption",
+    [
+        "before-marker",
+        "before-unlink",
+        "after-unlink",
+        "before-release",
+        "after-release",
+    ],
+)
+def test_archived_custom_checkpoint_cleanup_recovers_at_each_boundary(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, interruption: str
+) -> None:
+    """A live checkpoint keeps its snapshot; a removed one leaves no stale pin."""
+    import gzip
+
+    target = FilesystemTarget(tmp_path / "site")
+    repository = _repository(tmp_path)
+    staging = tmp_path / "custom-stage"
+    checkpoint = deployment.path(staging)
+    home = tmp_path / "data-home"
+
+    def dump(_target: Target, destination: Path, **_options: object) -> None:
+        destination.write_bytes(gzip.compress(b"CREATE TABLE fixture (id int);"))
+
+    monkeypatch.setattr(snapshot, "take", REAL_SNAPSHOT_TAKE)
+    monkeypatch.setattr(backup, "dump_to", dump)
+    monkeypatch.setattr(snapshot, "_unused", lambda _path: True)
+    deployed = steps.deploy(
+        target,
+        repository=repository,
+        staging=staging,
+        snapshot_home=home,
+        deploy_id="20261018T000000Z-cleanup-boundary",
+    )
+    assert deployed.publication is not None
+    old_name = json.loads(checkpoint.read_text())["snapshot"]["name"]
+    old = snapshot.directory(home) / old_name
+    future = datetime.now(UTC) + timedelta(days=20)
+    for day in range(3):
+        snapshot.take(target, home, now=future + timedelta(days=day))
+    assert old.exists()
+
+    original_save = snapshot._save
+    original_unlink = Path.unlink
+    marked = False
+
+    def save(folder: Path, state: dict[str, object]) -> None:
+        nonlocal marked
+        active = state["active"]
+        assert isinstance(active, dict)
+        completed = any(entry.get("completed") is True for entry in active.values())
+        if interruption == "before-marker" and completed:
+            raise SystemExit("before marker")
+        if interruption == "before-release" and marked and not active:
+            raise SystemExit("before release")
+        original_save(folder, state)
+        if completed:
+            marked = True
+        elif interruption == "after-release" and marked and not active:
+            raise SystemExit("after release")
+
+    def unlink(path: Path, *args: object, **kwargs: object) -> None:
+        if path == checkpoint and interruption == "before-unlink":
+            raise SystemExit("before unlink")
+        original_unlink(path, *args, **kwargs)
+        if path == checkpoint and interruption == "after-unlink":
+            raise SystemExit("after unlink")
+
+    monkeypatch.setattr(snapshot, "_save", save)
+    monkeypatch.setattr(Path, "unlink", unlink)
+    with pytest.raises(SystemExit):
+        steps.finish_deploy(
+            target, deployed.publication, cache_buster="fixture", staging=staging
+        )
+    monkeypatch.setattr(snapshot, "_save", original_save)
+    monkeypatch.setattr(Path, "unlink", original_unlink)
+    assert atomic.latest_manifest(target)[1].state == "archived"
+
+    snapshot.take(target, home, now=future + timedelta(days=4))
+    state = json.loads((snapshot.directory(home) / snapshot.STATE).read_text())
+    if interruption in ("before-marker", "before-unlink"):
+        assert checkpoint.is_file() and old.is_file()
+        assert str(checkpoint.resolve()) in state["active"]
+        resumed = steps.resume_deploy(
+            target, repository=repository, staging=staging, cache_buster="fixture"
+        )
+        assert not resumed.notes
+        snapshot.take(target, home, now=future + timedelta(days=5))
+        state = json.loads((snapshot.directory(home) / snapshot.STATE).read_text())
+    assert not checkpoint.exists() and not state["active"]
+    assert not old.exists() and not list(staging.glob("linker-*"))
+
+
+def test_archived_checkpoint_cleanup_with_a_staging_alias(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Sync the registered canonical parent when custom staging is a symlink."""
+    import gzip
+
+    target = FilesystemTarget(tmp_path / "site")
+    repository = _repository(tmp_path)
+    actual = tmp_path / "stage"
+    actual.mkdir()
+    staging = tmp_path / "stage-alias"
+    staging.symlink_to(actual, target_is_directory=True)
+    home = tmp_path / "data-home"
+
+    def dump(_target: Target, destination: Path, **_options: object) -> None:
+        destination.write_bytes(gzip.compress(b"SELECT fixture;"))
+
+    monkeypatch.setattr(snapshot, "take", REAL_SNAPSHOT_TAKE)
+    monkeypatch.setattr(backup, "dump_to", dump)
+    deployed = steps.deploy(
+        target,
+        repository=repository,
+        staging=staging,
+        snapshot_home=home,
+        deploy_id="20261018T000000Z-stage-alias",
+    )
+    assert deployed.publication is not None
+    result = steps.finish_deploy(
+        target, deployed.publication, cache_buster="fixture", staging=staging
+    )
+    state = json.loads((snapshot.directory(home) / snapshot.STATE).read_text())
+    assert not result.notes and not deployment.path(staging).exists()
+    assert not state["active"]
+
+
+@pytest.mark.parametrize(
     "damage", ["source", "target", "snapshot", "gzip", "stage", "live"]
 )
 def test_resume_refuses_changed_candidate_target_or_recovery_point(

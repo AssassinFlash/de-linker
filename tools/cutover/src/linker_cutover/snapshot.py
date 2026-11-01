@@ -149,6 +149,7 @@ def _state(folder: Path) -> dict[str, Any]:
         for path, record in active.items()
     ):
         raise CutoverError(f"invalid active snapshot references: {path}")
+    _reap_completed(folder, data)
     return data
 
 
@@ -172,6 +173,37 @@ def _save(folder: Path, state: dict[str, Any]) -> None:
     except BaseException:
         pending.unlink(missing_ok=True)
         raise
+
+
+def _sync_parent(path: Path) -> None:
+    """Make a checkpoint removal durable, even if its stage was removed too."""
+    parent = path.parent
+    while not parent.exists():
+        if parent.is_symlink() or parent == parent.parent:
+            raise CutoverError(f"invalid checkpoint parent: {parent}")
+        parent = parent.parent
+    fd = os.open(parent, os.O_RDONLY | os.O_NOFOLLOW)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
+def _reap_completed(folder: Path, state: dict[str, Any]) -> None:
+    """Finish only a recorded cleanup whose checkpoint no longer exists."""
+    removed = False
+    for name, record in list(state["active"].items()):
+        checkpoint = Path(name)
+        if (
+            record.get("completed") is True
+            and not checkpoint.exists()
+            and not checkpoint.is_symlink()
+        ):
+            _sync_parent(checkpoint)
+            del state["active"][name]
+            removed = True
+    if removed:
+        _save(folder, state)
 
 
 def _reap_transactions(folder: Path) -> None:
@@ -414,21 +446,28 @@ def reconcile(target: Target, home: Path, current: str) -> None:
         print(f"snapshot retention: preserved older snapshots ({error})")
 
 
-def release(home: Path, checkpoint: Path, deploy_id: str) -> None:
-    """After archive succeeds, release exactly this deployment's reference."""
+def finish_checkpoint(home: Path, checkpoint: Path, deploy_id: str) -> None:
+    """Remove an archived checkpoint before releasing its snapshot reference."""
     folder = directory(home)
+    if checkpoint.is_symlink():
+        raise CutoverError("linked deployment checkpoint")
+    canonical = checkpoint.resolve()
     if not (folder / STATE).exists():
+        checkpoint.unlink()
+        _sync_parent(canonical)
         return
     with _locked(folder):
         state = _state(folder)
-        key = str(checkpoint.resolve())
+        key = str(canonical)
         active = state["active"].get(key)
-        if active is None:
-            return  # Already released before an interrupted checkpoint cleanup.
-        if active["deploy_id"] != deploy_id:
-            raise CutoverError("snapshot reference belongs to another deployment")
-        del state["active"][key]
-        _save(folder, state)
+        if active is not None:
+            if active["deploy_id"] != deploy_id:
+                raise CutoverError("snapshot reference belongs to another deployment")
+            active["completed"] = True
+            _save(folder, state)
+        checkpoint.unlink()
+        _sync_parent(canonical)
+        _reap_completed(folder, state)
 
 
 def _reserve(
