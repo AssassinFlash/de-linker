@@ -180,10 +180,7 @@ def saved_roof_components(
 ) -> Object:
     """Equipment-only reports use the exact roof checked by that saved result."""
     geometry = read_geometry(geometry_json)
-    if any(s.permissions.export != "permitted" for s in geometry.sources):
-        raise ReportSourceExportRequired(
-            "material exports require permission for the roof sources"
-        )
+    _require_export_permission(geometry)
     return _components(
         geometry,
         proof,
@@ -194,6 +191,13 @@ def saved_roof_components(
         converter_id=None,
         dependencies={"geometry": blobs.put_object(cast(Object, geometry_json))},
     )
+
+
+def _require_export_permission(geometry: GeometryDocument) -> None:
+    if any(s.permissions.export != "permitted" for s in geometry.sources):
+        raise ReportSourceExportRequired(
+            "material exports require permission for the roof sources"
+        )
 
 
 def _components(
@@ -207,6 +211,7 @@ def _components(
     converter_id: str | None,
     dependencies: Object,
 ) -> Object:
+    _require_export_permission(geometry)
     included: dict[str, list[str]] = {}
     for pose in panel_poses(geometry):
         if pose.included:

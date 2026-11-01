@@ -41,6 +41,7 @@ from linker_engine.planning.equipment_service import EquipmentService
 from linker_engine.planning.errors import (
     InvalidInput,
     ProductEvidenceChanged,
+    ReportSourceExportRequired,
     VersionUnavailable,
 )
 from linker_engine.planning.execution_registry import service_registry
@@ -1344,6 +1345,22 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
     }
     full_parts = json_object(pv_components(workspace.blobs, raw_hash, metadata))
     assert full_parts["components"][0]["quantity"] == 6
+    for permission in ("unknown", "prohibited"):
+        restricted = copy.deepcopy(layout)
+        restricted["sources"][0]["permissions"]["export"] = permission
+        restricted_result = generate_pv(
+            restricted, meteo, parameters, max_array_steps=10
+        )
+        restricted_metadata = {
+            **metadata,
+            "geometry_sha256": digest(encode(restricted)),
+            "dependencies": {
+                "pv_model_inputs": workspace.blobs.put(restricted_result.inputs_json),
+                "pv_model_witness": workspace.blobs.put(restricted_result.witness_json),
+            },
+        }
+        with pytest.raises(ReportSourceExportRequired):
+            pv_components(workspace.blobs, raw_hash, restricted_metadata)
     roof_parts = json_object(
         saved_roof_components(
             layout,

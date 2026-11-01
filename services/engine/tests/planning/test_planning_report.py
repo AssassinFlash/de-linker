@@ -37,6 +37,7 @@ from linker_engine.planning.errors import (
     InvalidInput,
     NotFound,
     ProductEvidenceChanged,
+    ReportSourceExportRequired,
 )
 from linker_engine.planning.execution_registry import service_registry
 from linker_engine.planning.frozen_profiles import frozen_profile
@@ -624,12 +625,14 @@ def test_device_report_keeps_each_documents_result_and_unanswered_device(
     assert len(reader.pages) > 1
 
 
+@pytest.mark.parametrize("export_permission", ["permitted", "unknown", "prohibited"])
 def test_roof_ac_reference_consumption_and_frozen_report_keep_actual_model_scope(
     client: TestClient,
     workspace: Workspace,
     owner: Actor,
     context: Context,
     monkeypatch: pytest.MonkeyPatch,
+    export_permission: str,
 ) -> None:
     def current(publication: Publication) -> FixtureObject:
         value = publication_manifest(publication.feed)
@@ -640,7 +643,9 @@ def test_roof_ac_reference_consumption_and_frozen_report_keep_actual_model_scope
     monkeypatch.setattr(Publication, "read", current)
     assert isinstance(client.app, FastAPI)
     products = ProductSources(client.app.state.planning_product_provider)
-    roof, asset = prepared_reference_fixture(workspace, owner, products)
+    roof, asset = prepared_reference_fixture(
+        workspace, owner, products, export_permission=export_permission
+    )
     assets = Assets(workspace)
     profile = frozen_profile(
         workspace.blobs, asset.content_sha256, asset.metadata_sha256, None
@@ -697,6 +702,22 @@ def test_roof_ac_reference_consumption_and_frozen_report_keep_actual_model_scope
             },
         },
     )
+    if export_permission != "permitted":
+        with pytest.raises(ReportSourceExportRequired):
+            report_sources(
+                workspace,
+                products,
+                owner,
+                roof,
+                ReportOptions(
+                    locale="en",
+                    energy_run_id=None,
+                    pv_run_id=pv_run.id,
+                    equipment_run_id=None,
+                    logo=None,
+                ),
+            )
+        return
     explicit = report_sources(
         workspace,
         products,
