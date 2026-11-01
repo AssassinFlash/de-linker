@@ -17,13 +17,19 @@ from linker_genie.certificate_scope import (
     valid_certificate_scope,
 )
 from linker_genie.family_scope import valid_family_scope
+from linker_genie.manual_evidence import valid_reviewed_manual
 from linker_genie.source_models import model_pattern
 from linker_genie.source_roles import (
     manual_scope_models,
     meter_references,
     pack_model_row,
 )
-from linker_genie.table_projection import external_axis_anchored, valid_projection
+from linker_genie.table_projection import (
+    external_axis_anchored,
+    valid_compatibility_pair,
+    valid_compatibility_series,
+    valid_projection,
+)
 from linker_genie.warranty_scope import valid_warranty_scope
 
 
@@ -36,6 +42,12 @@ def binding(association: Mapping[str, Any]) -> tuple[str, str, str, int, str]:
         int(association["product_id"]),
         str(association["product_revision"]),
     )
+
+
+def _compatibility_document(document: Mapping[str, Any]) -> bool:
+    return str(document.get("role", "")).casefold() == "compatibility_list" or str(
+        document.get("type", "")
+    ).casefold() in {"compatibility", "kompatibilität"}
 
 
 def author_scope_allows(
@@ -133,6 +145,13 @@ def _authorize_core(
         if products is None or not author_scope_allows(scope, wanted, products):
             return []
     if scope is not None and (
+        scope.get("basis") == "reviewed_manual" or "reviewed_manual" in scope
+    ):
+        if products is None or not valid_reviewed_manual(
+            scope, product_ids, products, sha=sha, chunk_id=chunk_id, text=text
+        ):
+            return []
+    if scope is not None and (
         scope.get("basis") == "family_manual" or "family_scope" in scope
     ):
         if products is None or not valid_family_scope(
@@ -142,6 +161,52 @@ def _authorize_core(
             sha=sha,
             chunk_id=chunk_id,
             text=text,
+        ):
+            return []
+    if scope is not None and (
+        scope.get("basis") == "compatibility_series" or "compatibility_series" in scope
+    ):
+        if (
+            products is None
+            or documents is None
+            or not valid_compatibility_series(
+                scope,
+                product_ids,
+                products,
+                sha=sha,
+                chunk_id=chunk_id,
+                text=text,
+                anchors=external_axis_anchors,
+            )
+            or any(
+                did not in documents or not _compatibility_document(documents[did])
+                for did in scope.get("document_ids", [])
+            )
+        ):
+            return []
+    if scope is not None and (
+        scope.get("basis") == "compatibility_pair" or "compatibility_pair" in scope
+    ):
+        pair = scope.get("compatibility_pair")
+        if (
+            products is None
+            or documents is None
+            or not isinstance(pair, dict)
+            or not isinstance(pair.get("battery_source"), dict)
+            or has_explicit_exclusion(str(pair["battery_source"].get("text", "")))
+            or not valid_compatibility_pair(
+                scope,
+                product_ids,
+                products,
+                sha=sha,
+                chunk_id=chunk_id,
+                text=text,
+                anchors=external_axis_anchors,
+            )
+            or any(
+                did not in documents or not _compatibility_document(documents[did])
+                for did in scope.get("document_ids", [])
+            )
         ):
             return []
     if scope is not None and (

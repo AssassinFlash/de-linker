@@ -102,6 +102,7 @@ import { useEntryInbox } from './shared/useEntryInbox';
 import { useHelperDialog } from './shared/useHelperDialog';
 import { useComposerSize } from './shared/useComposerSize';
 import { useVerificationStage } from './shared/useVerificationStage';
+import { isVerificationFailure } from './shared/resourceFailure';
 import { MissingFiles } from './components/MissingFiles';
 import { OwnedRecovery } from './components/OwnedRecovery';
 import { EntryInbox } from './components/EntryInbox';
@@ -155,6 +156,81 @@ function enqueue( job: () => Promise< void > ): Promise< void > {
 export function resetTurnLane(): void {
 	turnLane = Promise.resolve();
 	historyEpoch = 0;
+}
+
+/**
+ * A fresh tab may carry only the already selected, saved report references.
+ * @param failed  The report bound to the rejected attempt.
+ * @param current The report currently selected in the original tab.
+ * @param href    The original tab's current address.
+ */
+export function reportRecoveryUrl(
+	failed: PageContext,
+	current: PageContext,
+	href: string
+): string | null {
+	const project = failed.planning_project_id;
+	const runs = failed.planning_run_ids;
+	if (
+		failed.planning_unsaved !== false ||
+		current.planning_unsaved !== false ||
+		! project ||
+		! /^[a-f0-9]{32}$/.test( project ) ||
+		! Number.isSafeInteger( failed.planning_revision ) ||
+		! failed.planning_revision ||
+		failed.planning_revision < 1 ||
+		failed.planning_revision !== current.planning_revision ||
+		project !== current.planning_project_id ||
+		! Array.isArray( runs ) ||
+		( runs.length !== 1 && runs.length !== 2 ) ||
+		runs.some( ( run ) => ! /^[a-f0-9]{32}$/.test( run ) ) ||
+		new Set( runs ).size !== runs.length ||
+		JSON.stringify( runs ) !== JSON.stringify( current.planning_run_ids ) ||
+		! failed.url ||
+		! current.url
+	) {
+		return null;
+	}
+	try {
+		const now = new URL( href );
+		const source = new URL( failed.url, now );
+		const selected = new URL( current.url, now );
+		const matches = ( url: URL ) => {
+			const params = url.searchParams;
+			return (
+				url.origin === now.origin &&
+				url.pathname === now.pathname &&
+				params.getAll( 'project' ).length === 1 &&
+				params.get( 'project' ) === project &&
+				( runs.length === 1
+					? params.getAll( 'run' ).length === 1 &&
+						params.get( 'run' ) === runs[ 0 ] &&
+						! params.has( 'compare' )
+					: params.getAll( 'compare' ).length === 1 &&
+						params.get( 'compare' ) === runs.join( ',' ) &&
+						! params.has( 'run' ) )
+			);
+		};
+		if (
+			! [ 'http:', 'https:' ].includes( now.protocol ) ||
+			! matches( source ) ||
+			! matches( selected ) ||
+			! matches( now )
+		) {
+			return null;
+		}
+		const target = new URL( now.origin );
+		target.pathname = now.pathname;
+		target.searchParams.set( 'project', project );
+		target.searchParams.set(
+			runs.length === 1 ? 'run' : 'compare',
+			runs.length === 1 ? runs[ 0 ] : runs.join( ',' )
+		);
+		target.hash = 'lp-calculations';
+		return target.href;
+	} catch {
+		return null;
+	}
 }
 
 /**
@@ -343,6 +419,10 @@ export function App( { config }: { config: GenieConfig } ) {
 	filesRef.current = files;
 	// Why the last turn's files were refused by the proxy, if they were.
 	const [ refused, setRefused ] = useState( '' );
+	const [ reportRecovery, setReportRecovery ] = useState< {
+		page: PageContext;
+		lease: DraftLease;
+	} | null >( null );
 	// The stored thread moved while Genie was answering (#373). The question
 	// was not stored; it stays in the field.
 	const [ conflict, setConflict ] = useState( '' );
@@ -431,6 +511,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		sending.current = false;
 		setPhase( 'ask' );
 		setRefused( '' );
+		setReportRecovery( null );
 		setConflict( '' );
 		currentThread.current = [];
 		setThread( [] );
@@ -887,7 +968,8 @@ export function App( { config }: { config: GenieConfig } ) {
 			error: unknown,
 			before: TurnMessage[],
 			draft: FailureDraft,
-			lease: DraftLease
+			lease: DraftLease,
+			postedPage?: PageContext
 		) => {
 			const settled = settleTurnFailure( error, before, draft );
 			// A newly accepted next question is a different editor from this turn.
@@ -923,6 +1005,17 @@ export function App( { config }: { config: GenieConfig } ) {
 					placeChips( draft.uploads );
 					setInput( settled.field );
 					setRefused( settled.reason );
+					setReportRecovery(
+						isVerificationFailure( error ) &&
+							postedPage &&
+							reportRecoveryUrl(
+								postedPage,
+								postedPage,
+								postedPage.url ?? ''
+							)
+							? { page: postedPage, lease }
+							: null
+					);
 				}
 				setPhase( 'ask' );
 				return;
@@ -1083,6 +1176,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			setRevealingAt( null );
 			setInput( '' );
 			setRefused( '' );
+			setReportRecovery( null );
 			setConflict( '' );
 			setPhotoPrompt( false );
 			setFilePrompt( false );
@@ -1115,6 +1209,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					setContacts( stored.contacts ?? [] );
 					setInquiries( stored.inquiries ?? [] );
 				}
+				let postedPage: PageContext | undefined;
 				try {
 					if (
 						! ( await draftContext.authorize( lease ) ) ||
@@ -1132,7 +1227,11 @@ export function App( { config }: { config: GenieConfig } ) {
 					];
 					currentThread.current = next;
 					setThread( next );
-					const postedPage = pageRef.current;
+					postedPage = {
+						...pageRef.current,
+						planning_run_ids:
+							pageRef.current.planning_run_ids?.slice(),
+					};
 					const pageWitness = JSON.stringify( postedPage );
 					const answer = await sendTurn( {
 						verification: turnVerification,
@@ -1192,7 +1291,13 @@ export function App( { config }: { config: GenieConfig } ) {
 					// its files. A cut stream keeps the question in the
 					// thread. A 502 puts it back in the field (#411).
 					if ( await draftContext.settle( lease ) ) {
-						await onTurnError( error, before, draft, lease );
+						await onTurnError(
+							error,
+							before,
+							draft,
+							lease,
+							postedPage
+						);
 					} else {
 						retainUnverifiedTurn( lease, draft );
 					}
@@ -1243,12 +1348,14 @@ export function App( { config }: { config: GenieConfig } ) {
 		setRevealingAt( null );
 		setInput( '' );
 		setRefused( '' );
+		setReportRecovery( null );
 		setConflict( '' );
 		return enqueue( async () => {
 			sending.current = true;
 			let before = currentThread.current;
 			let payload: ReturnType< typeof payloadOrRestore< TurnMessage > > =
 				null;
+			let postedPage: PageContext | undefined;
 			try {
 				const stored = await loadThread();
 				if (
@@ -1306,7 +1413,10 @@ export function App( { config }: { config: GenieConfig } ) {
 				currentThread.current = next;
 				setThread( next );
 				requestWitness.current = null;
-				const postedPage = pageRef.current;
+				postedPage = {
+					...pageRef.current,
+					planning_run_ids: pageRef.current.planning_run_ids?.slice(),
+				};
 				const pageWitness = JSON.stringify( postedPage );
 				const answer = await sendTurn( {
 					verification: turnVerification,
@@ -1374,7 +1484,8 @@ export function App( { config }: { config: GenieConfig } ) {
 								uploads: payload.uploads,
 							}
 						: draft,
-					lease
+					lease,
+					postedPage
 				);
 			} finally {
 				if ( draftContext.owns( lease ) ) {
@@ -2033,6 +2144,15 @@ export function App( { config }: { config: GenieConfig } ) {
 	// The rendered text and its accepted editor belong together. An old link
 	// must not bind that text to a principal verified before React commits.
 	const inquiryEditor = draftContext.editor;
+	const recoveryVisible =
+		! historyView &&
+		phase === 'ask' &&
+		!! refused &&
+		!! reportRecovery &&
+		draftContext.valid( reportRecovery.lease );
+	const recoveryUrl = recoveryVisible
+		? reportRecoveryUrl( reportRecovery!.page, page, window.location.href )
+		: null;
 	return (
 		<section
 			ref={ helperDialog.panel }
@@ -2826,6 +2946,76 @@ export function App( { config }: { config: GenieConfig } ) {
 									</>
 								) : null }
 							</p>
+						) : null }
+						{ recoveryVisible ? (
+							<section
+								className="linker-genie-app__photo-prompt"
+								aria-label={ __(
+									'Continue with this report',
+									'linker-tools'
+								) }
+							>
+								<p>
+									{ recoveryUrl
+										? __(
+												'Copy your question and open the report in a new tab. Choose Ask Genie, paste your question and send it.',
+												'linker-tools'
+											)
+										: __(
+												'The report selection has changed. Return to the original saved report before opening a new tab.',
+												'linker-tools'
+											) }
+								</p>
+								{ files.picked.length || omitted.length ? (
+									<p>
+										{ __(
+											'Attachments stay in this tab. Attach them again in the new tab.',
+											'linker-tools'
+										) }
+									</p>
+								) : null }
+								{ input.trim() ? (
+									<CopyReply
+										text={ input }
+										question
+										canCopy={ () =>
+											!! reportRecovery &&
+											draftContext.valid(
+												reportRecovery.lease
+											) &&
+											inputRef.current === input
+										}
+									/>
+								) : null }
+								{ recoveryUrl ? (
+									<a
+										className="linker-genie-app__prompt"
+										href={ recoveryUrl }
+										target="_blank"
+										rel="noopener noreferrer"
+										onClick={ ( event ) => {
+											if (
+												! reportRecovery ||
+												! draftContext.valid(
+													reportRecovery.lease
+												) ||
+												reportRecoveryUrl(
+													reportRecovery.page,
+													pageRef.current,
+													window.location.href
+												) !== recoveryUrl
+											) {
+												event.preventDefault();
+											}
+										} }
+									>
+										{ __(
+											'Open saved report in a new tab',
+											'linker-tools'
+										) }
+									</a>
+								) : null }
+							</section>
 						) : null }
 						{ ! historyView && conflict ? (
 							<p role="alert" className="linker-genie-app__error">

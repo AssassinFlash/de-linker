@@ -1,16 +1,14 @@
 """Policy values and cover families must agree with the original sources."""
 
-import gzip
 import hashlib
-import json
 from copy import deepcopy
 from dataclasses import replace
-from pathlib import Path
 from typing import Any
 
 import pytest
 from test_chunking import Words
 from test_publication_compiler import warranty_fixture
+from warranty_current_fixture import warranty_current_fixture
 
 from index.chunking import Chunk
 from index.publication import ScopeProof
@@ -155,18 +153,12 @@ def test_all_four_policy_columns_must_agree_with_native_row(
 
 
 def test_split_policy_row_requires_each_original_fragment_in_order() -> None:
-    path = (
-        Path(__file__).parent / "fixtures/publication-compiler/warranty-current.json.gz"
-    )
-    fixture = json.loads(gzip.decompress(path.read_bytes()))
-    raw = fixture["manifest"]
-    original = [Chunk(**item) for item in fixture["original"]]
-    compiled = [Chunk(**item) for item in fixture["compiled"]]
+    raw, original, compiled, fixture_scopes = warranty_current_fixture()
     source = Snapshot.read(raw)
     procedures, procedure_scopes = compile_procedures(
         original,
         compiled,
-        fixture["scopes"],
+        fixture_scopes,
         source,
         Words(),
         512,

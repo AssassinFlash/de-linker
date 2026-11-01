@@ -555,6 +555,27 @@ def _nearest_column(positions: Sequence[float], centre: float) -> int | None:
     return nearest[0] if len(nearest) == 1 else None
 
 
+def _value_column_start(cells: Sequence[SourceCell]) -> int:
+    """Respect an original technical-data heading spanning the label columns."""
+    external = next(
+        (cell["external_axis"] for cell in cells if "external_axis" in cell), None
+    )
+    if external is not None:
+        return external["value_col_start"]
+    heading = cell_at(cells, 0, 0)
+    if (
+        heading is not None
+        and heading["row_start"] == 0
+        and heading["row_end"] == 1
+        and heading["col_start"] == 0
+        and heading["col_end"] > 1
+        and heading["column_header"]
+        and re.fullmatch(r"(?:Technical Data|Technische Daten)", heading["text"], re.I)
+    ):
+        return heading["col_end"]
+    return 1
+
+
 def _external_axis_data(
     cells: Sequence[SourceCell], width: int
 ) -> tuple[list[str], list[float], tuple[float, float]] | None:
@@ -781,7 +802,7 @@ def _model_axis_data(
     axis: list[str] = []
     positions: list[float] = []
     page_size: tuple[float, float] | None = None
-    col = 1
+    col = _value_column_start(cells)
     while col < width:
         cell = cell_at(cells, 0, col)
         if (
@@ -853,7 +874,7 @@ def row_cells(
     external = next(
         (cell["external_axis"] for cell in cells if "external_axis" in cell), None
     )
-    offset = external["value_col_start"] if external is not None else 1
+    offset = _value_column_start(cells)
     native_column = column + offset - 1
     label, value = cell_at(cells, row, 0), cell_at(cells, row, native_column)
     if (
@@ -867,8 +888,21 @@ def row_cells(
         or value["column_header"]
         or label["row_section"]
         or value["row_section"]
-        or not label["text"]
-        or not value["text"]
+        or not label["text"].strip()
+        or not value["text"].strip()
+        # A trailing separator is a cut-off list, not a complete rating.
+        or value["text"].rstrip().endswith("/")
+        # In the Lynx source parse a shared value lost the word before its
+        # parenthetical qualifier. An orphan qualifier is not a complete fact.
+        or re.match(r"^\((?:integrated|optional)\)(?:\s*;|\s*$)", value["text"], re.I)
+        is not None
+        # The native ESA battery table has a multi-column value whose first
+        # word was lost by the parser. Keep only its independent model cells.
+        or (
+            external is None
+            and offset > 1
+            and value["col_end"] - value["col_start"] != 1
+        )
         or any("|" in cell["text"] or "\n" in cell["text"] for cell in [label, value])
         # A parser-merged pair of different unit-bearing properties is not a
         # single field. The source cannot tell which value belongs to which.
@@ -919,7 +953,7 @@ def aligned_column(cells: Sequence[SourceCell], value: SourceCell, column: int) 
     external = next(
         (cell["external_axis"] for cell in cells if "external_axis" in cell), None
     )
-    offset = external["value_col_start"] if external is not None else 1
+    offset = _value_column_start(cells)
     if not (
         0 <= box[0] < box[2] <= size[0]
         and 0 <= min(box[1], box[3]) < max(box[1], box[3]) <= size[1]
@@ -993,6 +1027,7 @@ def row_context(cells: Sequence[SourceCell], row: int) -> tuple[int, str] | None
     external = next(
         (cell["external_axis"] for cell in cells if "external_axis" in cell), None
     )
+    offset = _value_column_start(cells)
     sections = [
         (cell["row_start"], cell["text"])
         for cell in cells
@@ -1005,10 +1040,11 @@ def row_context(cells: Sequence[SourceCell], row: int) -> tuple[int, str] | None
             else (
                 cell["row_section"]
                 or (
-                    cell["col_end"] == 1
+                    offset == 1
+                    and cell["col_end"] == offset
                     and not cell["column_header"]
                     and not any(
-                        other["col_start"] >= 1
+                        other["col_start"] >= offset
                         and other["row_start"] <= cell["row_start"] < other["row_end"]
                         and other["text"]
                         for other in cells
@@ -1033,7 +1069,7 @@ def row_footnotes(
     external = next(
         (cell["external_axis"] for cell in cells if "external_axis" in cell), None
     )
-    offset = external["value_col_start"] if external is not None else 1
+    offset = _value_column_start(cells)
     label, value = cell_at(cells, row, 0), cell_at(cells, row, column + offset - 1)
     if label is None or value is None:
         return None
@@ -1182,6 +1218,470 @@ def projection_id(sha: str, page: int, table: str, model: str, text: str) -> str
     """A new answer unit cannot reuse the original multi-model chunk identity."""
     digest = hashlib.sha256(f"{table}\0{model}\0{text}".encode()).hexdigest()[:16]
     return f"{sha[:12]}-p{page}-model-{digest}"
+
+
+COMPATIBILITY_STATEMENT = (
+    "Object of the statement described above is compatible with the inverters "
+    "in the following table."
+)
+
+OVERVIEW_SECTIONS = {
+    "3) Commercial and Industrial Energy Storage Systems": "en",
+    "3) Gewerbliche und industrielle Energiespeichersysteme": "de",
+}
+OVERVIEW_ARM_NOTES = {
+    "en": "*3. For compatibility, the ET (40-50kW) series requires ARM10 and above.",
+    "de": "*3. Für die Kompatibilität ist für die ET (40-50kW)-Serie ARM10 oder höher erforderlich.",
+}
+OVERVIEW_POWER_NOTES = {
+    "en": "*3. The BAT series GW61.4-BAT-AC-G10 model paired with ET (80-100kW) cannot achieve full power output from the inverter.\n"
+    "Formula: Battery Charging/Discharging Power = Battery Working Voltage × MIN (Battery Charge/Discharge Current, 100A*).\n"
+    "*The Max. Continuous Charging/Discharging Current of ET50 is 100A.",
+    "de": "3. Das BAT-Serienmodell GW61.4-BAT-AC-G10 kann in Kombination mit ET (80-100kW) nicht die volle Ausgangsleistung des Wechselrichters erreichen. Formel: Batterielade-/Entladeleistung = Batteriespannung × MIN (Batterielade-/Entladestrom, 100A).\n"
+    "*Der maximale kontinuierliche Lade-/Entladestrom des ET50 beträgt 100A.",
+}
+
+
+def overview_notes(texts: Sequence[str], lang: str) -> tuple[str, str] | None:
+    """Resolve both distinct original *3 conditions without borrowing a variant."""
+    arm = OVERVIEW_ARM_NOTES.get(lang)
+    power = OVERVIEW_POWER_NOTES.get(lang)
+    if arm is None or power is None:
+        return None
+    arm_sources = [text for text in texts if text.splitlines().count(arm) == 1]
+    power_sources = [text for text in texts if text == power]
+    if (
+        len(arm_sources) != 1
+        or len(power_sources) != 1
+        or any(
+            line.startswith("*3.") and line != arm
+            for source in texts
+            if source != power
+            for line in source.splitlines()
+        )
+    ):
+        return None
+    return arm, power_sources[0]
+
+
+def overview_row(
+    cells: Sequence[SourceCell], row: int, column: int, lang: str
+) -> tuple[str, str] | None:
+    """Prove a literal battery model and its physical marked series column."""
+    if (
+        lang not in ("en", "de")
+        or type(row) is not int
+        or row < 2
+        or column not in (5, 6, 7)
+    ):
+        return None
+    heading = cell_at(cells, 1, column)
+    model = cell_at(cells, row, 2)
+    mark = cell_at(cells, row, column)
+    model_header = cell_at(cells, 0 if lang == "de" else 1, 2)
+    expected = {5: "ET(40-50kW)", 6: "ET (80-100kW)", 7: "ETR 80-125kW"}
+    if (
+        heading is None
+        or model is None
+        or mark is None
+        or model_header is None
+        or heading["text"] != expected[column]
+        or model_header["text"] != ("BatterieModell" if lang == "de" else "Model")
+        or model["row_start"] != row
+        or model["row_end"] != row + 1
+        or model["col_start"] != 2
+        or model["col_end"] != 3
+        or mark["row_start"] != row
+        or mark["row_end"] != row + 1
+        or mark["col_start"] != column
+        or mark["col_end"] != column + 1
+        or mark["text"] != "●"
+        or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9.-]*", model["text"])
+        or not re.search(r"[A-Za-z]", model["text"])
+        or not re.search(r"\d", model["text"])
+        or any(
+            cell["bbox"] is None or cell["bbox_origin"] != "TOPLEFT"
+            for cell in (heading, model, mark, model_header)
+        )
+    ):
+        return None
+    a, b, h, mh = model["bbox"], mark["bbox"], heading["bbox"], model_header["bbox"]
+    assert a is not None and b is not None and h is not None and mh is not None
+    am, bm = (a[1] + a[3]) / 2, (b[1] + b[3]) / 2
+    centres = [cell_at(cells, 1, col) for col in (3, 4, 5, 6, 7)]
+    if (
+        any(
+            cell is None
+            or cell["bbox"] is None
+            or cell["bbox_origin"] != "TOPLEFT"
+            or not _box(cell["bbox"])
+            for cell in centres
+        )
+        or not _box(a)
+        or not _box(b)
+        or not _box(h)
+        or not _box(mh)
+        or not mh[0] <= (a[0] + a[2]) / 2 <= mh[2]
+        or not (a[1] <= bm <= a[3] and b[1] <= am <= b[3])
+    ):
+        return None
+    positions = [
+        (cell["bbox"][0] + cell["bbox"][2]) / 2
+        for cell in centres
+        if cell and cell["bbox"]
+    ]
+    if (
+        any(a >= b for a, b in zip(positions, positions[1:], strict=False))
+        or _nearest_column(positions, (b[0] + b[2]) / 2) != column - 2
+    ):
+        return None
+    return model["text"], heading["text"]
+
+
+def overview_text(
+    model: str, series: str, lang: str, notes: Sequence[str]
+) -> str | None:
+    resolved = overview_notes(notes, lang)
+    if resolved is None:
+        return None
+    arm, power = resolved
+    header = (
+        "| Battery Model | Inverter Series | Compatibility |"
+        if lang == "en"
+        else "| Batteriemodell | Wechselrichterserie | Kompatibilität |"
+    )
+    text = f"{header}\n| {model} | {series} | ● |"
+    if series == "ET(40-50kW)":
+        text += "\n" + arm
+    if series == "ET (80-100kW)" and model.casefold() == "gw61.4-bat-ac-g10":
+        text += "\n" + power
+    return text
+
+
+def overview_row_in_source(
+    model: str, column: int, row: int, fragment: Mapping[str, Any]
+) -> bool:
+    rows, text = fragment.get("rows"), fragment.get("text")
+    if (
+        not isinstance(rows, list)
+        or not isinstance(text, str)
+        or any(type(n) is not int for n in rows)
+        or rows != sorted(set(rows))
+        or row not in rows
+        or len(rows) != len(text.splitlines())
+    ):
+        return False
+    values = [
+        part.strip() for part in text.splitlines()[rows.index(row)].split("|")[1:-1]
+    ]
+    return len(values) == 8 and values[2] == model and values[column] == "●"
+
+
+def overview_id(sha: str, page: int, table: str, text: str) -> str:
+    digest = hashlib.sha256(f"{table}\0{text}".encode()).hexdigest()[:16]
+    return f"{sha[:12]}-p{page}-series-{digest}"
+
+
+def valid_compatibility_series(
+    scope: Mapping[str, Any],
+    product_ids: Sequence[int],
+    products: Mapping[int, Mapping[str, Any]],
+    *,
+    sha: str,
+    chunk_id: str,
+    text: str,
+    anchors: Mapping[str, Any] | None,
+) -> bool:
+    proof = scope.get("compatibility_series")
+    if scope.get("basis") != "compatibility_series" or not isinstance(proof, dict):
+        return False
+    pid, model, lang = proof.get("product_id"), proof.get("model"), proof.get("lang")
+    page, table, row, col = (
+        proof.get(key)
+        for key in ("source_page", "source_table", "source_row", "source_column")
+    )
+    table_id, fragment_id = proof.get("table_chunk_id"), proof.get("fragment_chunk_id")
+    cells = read_cells(proof.get("source_cells"))
+    if (
+        type(pid) is not int
+        or list(product_ids) != [pid]
+        or scope.get("product_ids") != [pid]
+        or pid not in products
+        or not isinstance(model, str)
+        or products[pid].get("model") != model
+        or lang not in ("en", "de")
+        or proof.get("source_sha256") != sha
+        or type(page) is not int
+        or page < 1
+        or not isinstance(table, str)
+        or not table
+        or type(row) is not int
+        or type(col) is not int
+        or not isinstance(table_id, str)
+        or not isinstance(fragment_id, str)
+        or cells is None
+        or proof.get("source_cells_sha256") != cells_digest(cells)
+        or not isinstance(anchors, Mapping)
+    ):
+        return False
+    native = overview_row(cells, row, col, lang)
+    anchor = anchors.get(table_id)
+    if native is None or native[0] != model or not isinstance(anchor, Mapping):
+        return False
+    origins, fragments = anchor.get("axis_source"), anchor.get("overview_fragments")
+    if (
+        anchor.get("source_sha256") != sha
+        or anchor.get("source_page") != page
+        or anchor.get("source_table") != table
+        or anchor.get("source_cells_sha256") != cells_digest(cells)
+        or anchor.get("overview_lang") != lang
+        or not isinstance(origins, list)
+        or OVERVIEW_SECTIONS.get(str(anchor.get("overview_section"))) != lang
+        or any(
+            not isinstance(o, dict)
+            or not isinstance(o.get("text"), str)
+            or not isinstance(o.get("chunk_id"), str)
+            or not native_chunk_id_matches(sha, page, "text", o["text"], o["chunk_id"])
+            for o in origins
+        )
+        or not isinstance(fragments, list)
+        or any(
+            not isinstance(f, dict)
+            or not isinstance(f.get("chunk_id"), str)
+            or not isinstance(f.get("text"), str)
+            or not native_chunk_id_matches(sha, page, "table", f["text"], f["chunk_id"])
+            for f in fragments
+        )
+    ):
+        return False
+    candidates = [
+        fragment
+        for fragment in fragments
+        if isinstance(fragment, dict) and fragment.get("chunk_id") == fragment_id
+    ]
+    if len(candidates) != 1 or not overview_row_in_source(
+        model, col, row, candidates[0]
+    ):
+        return False
+    source_ids = scope.get("source_chunk_ids", [])
+    if not isinstance(source_ids, list) or not {
+        table_id,
+        fragment_id,
+        *(o["chunk_id"] for o in origins),
+    }.issubset(source_ids):
+        return False
+    rendered = overview_text(model, native[1], lang, [o["text"] for o in origins])
+    return rendered == text and chunk_id == overview_id(sha, page, table, text)
+
+
+def compatibility_batteries(text: str) -> list[str]:
+    """Exact model members of the source's positive battery declaration."""
+    matches = list(
+        re.finditer(
+            r"Product:\s*Rechargeable Li-ion Battery System\s*\n"
+            r"Model\(s\):\s*(.*?)\nDescription:",
+            text,
+            re.IGNORECASE | re.DOTALL,
+        )
+    )
+    if len(matches) != 1:
+        return []
+    value = matches[0][1]
+    labels = re.findall(r"[A-Za-z0-9][A-Za-z0-9.-]*", value)
+    if (
+        not labels
+        or re.sub(r"[A-Za-z0-9][A-Za-z0-9.-]*|[,，\s]", "", value)
+        or len({label.casefold() for label in labels}) != len(labels)
+        or any(not re.search(r"[A-Za-z]", x) or not re.search(r"\d", x) for x in labels)
+    ):
+        return []
+    return labels
+
+
+def compatibility_inverters(cells: Sequence[SourceCell], row: int) -> list[str]:
+    """Literal models in one physically aligned inverter model cell."""
+    if type(row) is not int or row < 1:
+        return []
+    headers = [cell_at(cells, 0, col) for col in range(3)]
+    if any(
+        cell is None
+        or not cell["column_header"]
+        or cell["col_start"] != col
+        or cell["col_end"] != col + 1
+        or cell["text"].casefold() != label.casefold()
+        for col, (cell, label) in enumerate(
+            zip(headers, ("Inverter Manufacture", "Product", "Model"), strict=True)
+        )
+    ):
+        return []
+    product, model = cell_at(cells, row, 1), cell_at(cells, row, 2)
+    if (
+        product is None
+        or model is None
+        or product["row_start"] != row
+        or product["row_end"] != row + 1
+        or model["row_start"] != row
+        or model["row_end"] != row + 1
+        or product["col_start"] != 1
+        or product["col_end"] != 2
+        or model["col_start"] != 2
+        or model["col_end"] != 3
+        or product["column_header"]
+        or model["column_header"]
+        or product["bbox"] is None
+        or model["bbox"] is None
+        or product["bbox_origin"] != "TOPLEFT"
+        or model["bbox_origin"] != "TOPLEFT"
+    ):
+        return []
+    first, second = product["bbox"], model["bbox"]
+    first_mid = (first[1] + first[3]) / 2
+    second_mid = (second[1] + second[3]) / 2
+    if not (
+        _box(first)
+        and _box(second)
+        and first[2] < second[0]
+        and first[1] <= second_mid <= first[3]
+        and second[1] <= first_mid <= second[3]
+    ):
+        return []
+    labels = [part.strip() for part in model["text"].split("/")]
+    if (
+        not labels
+        or len({label.casefold() for label in labels}) != len(labels)
+        or any(
+            re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9.-]*", label) is None
+            or not re.search(r"[A-Za-z]", label)
+            or not re.search(r"\d", label)
+            for label in labels
+        )
+    ):
+        return []
+    return labels
+
+
+def compatibility_row_in_source(
+    cells: Sequence[SourceCell], row: int, text: str, source_rows: Sequence[int]
+) -> bool:
+    """The exact row must also occur in the original emitted table fragment."""
+    lines = text.splitlines()
+    if (
+        not source_rows
+        or any(type(number) is not int or number < 0 for number in source_rows)
+        or len(source_rows) != len(lines)
+        or list(source_rows) != sorted(set(source_rows))
+        or 0 not in source_rows
+        or row not in source_rows
+    ):
+        return False
+    header = [v.strip() for v in lines[list(source_rows).index(0)].split("|")[1:-1]]
+    values = [v.strip() for v in lines[list(source_rows).index(row)].split("|")[1:-1]]
+    product, model = cell_at(cells, row, 1), cell_at(cells, row, 2)
+    return bool(
+        header == ["Inverter Manufacture", "Product", "Model"]
+        and len(values) == 3
+        and product is not None
+        and model is not None
+        and values[1:] == [product["text"], model["text"]]
+    )
+
+
+def compatibility_pair_text(battery: str, inverter: str) -> str:
+    return (
+        "The manufacturer states that rechargeable Li-ion battery system "
+        f"{battery} is compatible with inverter {inverter}."
+    )
+
+
+def compatibility_pair_id(sha: str, page: int, table: str, text: str) -> str:
+    digest = hashlib.sha256(f"{table}\0{text}".encode()).hexdigest()[:16]
+    return f"{sha[:12]}-p{page}-compatibility-{digest}"
+
+
+def valid_compatibility_pair(
+    scope: Mapping[str, Any],
+    product_ids: Sequence[int],
+    products: Mapping[int, Mapping[str, Any]],
+    *,
+    sha: str,
+    chunk_id: str,
+    text: str,
+    anchors: Mapping[str, Any] | None,
+) -> bool:
+    """Replay both literal subjects against the independent native anchors."""
+    proof = scope.get("compatibility_pair")
+    if scope.get("basis") != "compatibility_pair" or not isinstance(proof, dict):
+        return False
+    battery_id, inverter_id = proof.get("battery_id"), proof.get("inverter_id")
+    battery, inverter = proof.get("battery"), proof.get("inverter")
+    page, table, row = (
+        proof.get("source_page"),
+        proof.get("source_table"),
+        proof.get("source_row"),
+    )
+    table_id, source = proof.get("table_chunk_id"), proof.get("battery_source")
+    source_ids = scope.get("source_chunk_ids")
+    cells = read_cells(proof.get("source_cells"))
+    if (
+        type(battery_id) is not int
+        or type(inverter_id) is not int
+        or battery_id == inverter_id
+        or sorted(product_ids) != sorted([battery_id, inverter_id])
+        or scope.get("product_ids") != sorted(product_ids)
+        or battery_id not in products
+        or inverter_id not in products
+        or not isinstance(battery, str)
+        or not isinstance(inverter, str)
+        or products[battery_id].get("model") != battery
+        or products[inverter_id].get("model") != inverter
+        or proof.get("source_sha256") != sha
+        or type(page) is not int
+        or page < 1
+        or not isinstance(table, str)
+        or not table
+        or not isinstance(table_id, str)
+        or not isinstance(source, dict)
+        or not isinstance(source.get("chunk_id"), str)
+        or not isinstance(source.get("text"), str)
+        or cells is None
+        or proof.get("source_cells_sha256") != cells_digest(cells)
+        or type(row) is not int
+        or battery.casefold()
+        not in {x.casefold() for x in compatibility_batteries(source["text"])}
+        or inverter.casefold()
+        not in {x.casefold() for x in compatibility_inverters(cells, row)}
+        or text != compatibility_pair_text(battery, inverter)
+        or chunk_id != compatibility_pair_id(sha, page, table, text)
+        or not native_chunk_id_matches(
+            sha, page, "text", source["text"], source["chunk_id"]
+        )
+        or not isinstance(source_ids, list)
+        or any(not isinstance(value, str) for value in source_ids)
+        or not {table_id, source["chunk_id"]}.issubset(source_ids)
+        or not isinstance(anchors, Mapping)
+    ):
+        return False
+    anchor = anchors.get(table_id)
+    return bool(
+        isinstance(anchor, Mapping)
+        and anchor.get("source_sha256") == sha
+        and anchor.get("source_page") == page
+        and anchor.get("source_table") == table
+        and anchor.get("source_cells_sha256") == cells_digest(cells)
+        and anchor.get("axis_source") == [source]
+        and anchor.get("compatibility_section") == COMPATIBILITY_STATEMENT
+        and isinstance(anchor.get("compatibility_table_text"), str)
+        and isinstance(anchor.get("compatibility_source_rows"), list)
+        and native_chunk_id_matches(
+            sha, page, "table", anchor["compatibility_table_text"], table_id
+        )
+        and compatibility_row_in_source(
+            cells,
+            row,
+            anchor["compatibility_table_text"],
+            anchor["compatibility_source_rows"],
+        )
+    )
 
 
 def native_chunk_id_matches(

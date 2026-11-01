@@ -157,6 +157,24 @@ def export(directory: Path, path: Path) -> None:
             and isinstance(projection.get("source_sha256"), str)
             and isinstance(projection.get("source_table"), str)
         }
+        projected_tables.update(
+            (projection["source_sha256"], projection["source_table"])
+            for scope in proof.get("chunk_scopes", {}).values()
+            if isinstance(scope, dict)
+            for projection in [scope.get("compatibility_pair")]
+            if isinstance(projection, dict)
+            and isinstance(projection.get("source_sha256"), str)
+            and isinstance(projection.get("source_table"), str)
+        )
+        projected_tables.update(
+            (projection["source_sha256"], projection["source_table"])
+            for scope in proof.get("chunk_scopes", {}).values()
+            if isinstance(scope, dict)
+            for projection in [scope.get("compatibility_series")]
+            if isinstance(projection, dict)
+            and isinstance(projection.get("source_sha256"), str)
+            and isinstance(projection.get("source_table"), str)
+        )
         warranty_sources = {
             cid
             for scope in proof.get("chunk_scopes", {}).values()

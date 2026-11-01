@@ -22,7 +22,7 @@ import sqlite3
 import sys
 import time
 from collections.abc import Callable, Iterable, Sequence
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 from typing import Any
 
@@ -241,6 +241,47 @@ class Chunked:
     parse_seconds: float
 
 
+def attach_certificate_evidence(
+    chunks: list[Chunk], evidence_items: list[dict[str, object]]
+) -> list[Chunk]:
+    """Attach physical anchors only to the unique original body or table."""
+    output = list(chunks)
+    for evidence in evidence_items:
+        candidates = []
+        for index, chunk in enumerate(output):
+            if chunk.doc_sha256 != evidence.get(
+                "source_sha256"
+            ) or chunk.page != evidence.get("source_page"):
+                continue
+            if evidence.get("kind") == "certificate_page_marker":
+                if chunk.kind == "text" and "LCIE declares that" in chunk.text:
+                    candidates.append(index)
+            elif evidence.get("kind") == "certificate_model_wrap":
+                fragments = evidence.get("fragments")
+                if not isinstance(fragments, list) or len(fragments) != 2:
+                    continue
+                if not all(
+                    isinstance(item, dict) and isinstance(item.get("text"), str)
+                    for item in fragments
+                ):
+                    continue
+                written = str(fragments[0]["text"]) + " " + str(fragments[1]["text"])
+                if chunk.kind == "table" and any(
+                    cell["text"] == written for cell in chunk.source_cells
+                ):
+                    candidates.append(index)
+        if len(candidates) == 1:
+            index = candidates[0]
+            output[index] = replace(
+                output[index],
+                source_certificate_evidence=(
+                    *output[index].source_certificate_evidence,
+                    evidence,
+                ),
+            )
+    return output
+
+
 def chunk_all(
     inventory_path: Path,
     pdf_dir: Path,
@@ -288,6 +329,10 @@ def chunk_all(
             pdf_path=pdf_path if source_geometry else None,
         )
         chunks = chunk_document(_meta(document), pages, tokenizer, detect_lang)
+        if source_geometry and document.doc_type == "certificate":
+            chunks = attach_certificate_evidence(
+                chunks, extract.certificate_physical_evidence(pdf_path, document.models)
+            )
         if source_geometry and document.doc_type == "datasheet":
             cover = extract.pdf_series_cover(pdf_path)
             if cover:

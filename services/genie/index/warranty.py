@@ -23,6 +23,7 @@ from linker_genie.warranty_scope import (
     exclusion_category,
     family_signature,
     procedure_id,
+    procedure_series_matches,
     series_matches,
     terms_id,
     terms_text,
@@ -40,7 +41,8 @@ def _rows(chunk: Chunk) -> list[tuple[str, str]]:
     columns = {
         c["col_start"]
         for c in cells
-        if c["column_header"] and c["text"].strip().casefold() in {"series", "serien"}
+        if c["column_header"]
+        and c["text"].strip().casefold() in {"series", "serien", "product model"}
     }
     if len(columns) != 1:
         return []
@@ -356,7 +358,9 @@ def compile_procedures(
                         (sheet, row, cell, quote)
                         for sheet in sheets.get(pid, [])
                         for row, cell, quote in rows
-                        if series_matches(cell, sheet["family"])
+                        if procedure_series_matches(
+                            cell, sheet["family"], str(product.get("model", ""))
+                        )
                     ),
                     None,
                 )

@@ -19,6 +19,7 @@ from typing import Any, NotRequired, TypedDict, cast
 from index.chunking import MAX_TOKENS, Chunk, Tokenizer
 from index.inventory import doc_type_of, document_kind_of, lang_of
 from linker_genie.certificate_scope import (
+    attestation_table_valid,
     certificate_boundaries_allow,
     certificate_document,
     certificate_fragment_id,
@@ -28,7 +29,10 @@ from linker_genie.certificate_scope import (
     certificate_text,
     lcie_declaration,
     lcie_limitation,
+    red_table_valid,
+    report_table_text,
     split_declaration,
+    unit_table_text,
     valid_certificate_scope,
 )
 from linker_genie.embedding import sha256_of
@@ -50,6 +54,7 @@ from linker_genie.source_roles import (
     meter_references,
     pack_model_row,
 )
+from linker_genie.table_projection import cells_digest
 
 COMMON_SCOPE = re.compile(
     r"(?:covered\s+by|subject\s+to).{0,80}(?:these|this)\s+warranty"
@@ -790,6 +795,7 @@ def compile_certificate_subjects(
     scopes: dict[str, ScopeProof] = {}
     covered: set[tuple[str, int, str]] = set()
     originals = {chunk.id: chunk for chunk in chunks}
+    positions = {chunk.id: position for position, chunk in enumerate(chunks)}
     certificates: dict[str, list[tuple[str, dict[str, Any]]]] = {}
     for did, document in source.documents.items():
         if certificate_document(document):
@@ -829,6 +835,247 @@ def compile_certificate_subjects(
                         continue
                     model = str(product.get("model", ""))
                     text = certificate_text(chunk.text, model)
+                    declaration: Chunk | None = None
+                    between: list[Chunk] = []
+                    statement: Chunk | None = None
+                    statement_table: dict[str, Any] | None = None
+                    limitation: Chunk | None = None
+                    unit_standard: Chunk | None = None
+                    unit_statement: Chunk | None = None
+                    appendix_anchors: dict[str, Chunk] = {}
+                    red_anchors: dict[str, Any] = {}
+                    if text is None:
+                        position = positions[chunk.id]
+                        for start in range(position - 1, max(position - 3, -1), -1):
+                            candidate = chunks[start]
+                            middle = chunks[start + 1 : position]
+                            if (
+                                candidate.doc_sha256 != chunk.doc_sha256
+                                or candidate.page != chunk.page
+                                or candidate.section != chunk.section
+                                or not chunk.section
+                                or candidate.lang != chunk.lang
+                                or candidate.kind != "text"
+                                or candidate.source_picture
+                                or any(
+                                    item.doc_sha256 != chunk.doc_sha256
+                                    or item.page != chunk.page
+                                    or item.section != chunk.section
+                                    or item.kind != "text"
+                                    or not item.source_picture
+                                    or not re.fullmatch(
+                                        r"[A-Za-z]{1,8}", item.text.strip()
+                                    )
+                                    or item.text.strip().casefold()
+                                    in {"only", "nur", "not", "no"}
+                                    for item in middle
+                                )
+                            ):
+                                continue
+                            text = certificate_text(
+                                chunk.text, model, declaration_text=candidate.text
+                            )
+                            if text is not None:
+                                declaration, between = candidate, middle
+                                break
+                    if text is None:
+                        position = positions[chunk.id]
+                        if position + 2 < len(chunks):
+                            table, candidate = chunks[position + 1 : position + 3]
+                            table_evidence = {
+                                "page": table.page,
+                                "chunk_id": table.id,
+                                "kind": table.kind,
+                                "text": table.text,
+                                "source_table": table.source_table,
+                                "source_rows": list(table.source_rows),
+                                "source_cells": list(table.source_cells),
+                                "cells_sha256": cells_digest(table.source_cells),
+                            }
+                            if (
+                                table.doc_sha256 == chunk.doc_sha256
+                                and candidate.doc_sha256 == chunk.doc_sha256
+                                and candidate.page == chunk.page
+                                and candidate.kind == "text"
+                                and not candidate.source_picture
+                                and candidate.lang == chunk.lang
+                                and attestation_table_valid(
+                                    table_evidence, chunk.doc_sha256, chunk.page
+                                )
+                            ):
+                                for limit in chunks[position + 2 : position + 6]:
+                                    if (
+                                        limit.doc_sha256 != chunk.doc_sha256
+                                        or limit.page != chunk.page
+                                        or limit.kind != "text"
+                                        or limit.source_picture
+                                        or limit.lang != chunk.lang
+                                    ):
+                                        continue
+                                    text = certificate_text(
+                                        chunk.text,
+                                        model,
+                                        attestation_text=candidate.text,
+                                        limitation_text=limit.text,
+                                    )
+                                    if text is not None:
+                                        statement, statement_table, limitation = (
+                                            candidate,
+                                            table_evidence,
+                                            limit,
+                                        )
+                                        break
+                    if text is None:
+                        position = positions[chunk.id]
+                        if position + 2 < len(chunks):
+                            standard, candidate = chunks[position + 1 : position + 3]
+                            if all(
+                                item.doc_sha256 == chunk.doc_sha256
+                                and item.page == chunk.page
+                                and item.kind == "text"
+                                and not item.source_picture
+                                for item in (standard, candidate)
+                            ):
+                                text = certificate_text(
+                                    chunk.text,
+                                    model,
+                                    unit_standard_text=standard.text,
+                                    unit_statement_text=candidate.text,
+                                )
+                                if text is not None:
+                                    unit_standard, unit_statement = standard, candidate
+                    if (
+                        text is None
+                        and chunk.page > 1
+                        and "Type Designation" in chunk.text
+                        and "Input Voltage Range" in chunk.text
+                    ):
+                        previous_page_items = [
+                            item
+                            for item in chunks
+                            if item.doc_sha256 == chunk.doc_sha256
+                            and item.page == chunk.page - 1
+                            and item.kind == "text"
+                            and not item.source_picture
+                        ]
+                        matches = {
+                            "identity": [
+                                item
+                                for item in previous_page_items
+                                if "Certificate No.:" in item.text
+                            ],
+                            "standards": [
+                                item
+                                for item in previous_page_items
+                                if "IEC 61010-1:2010+A1" in item.text
+                            ],
+                            "claim": [
+                                item
+                                for item in previous_page_items
+                                if "This certificate is based on our Testing and Certification Regulation"
+                                in item.text
+                            ],
+                        }
+                        if all(len(items) == 1 for items in matches.values()):
+                            anchors = {
+                                role: items[0] for role, items in matches.items()
+                            }
+                            text = certificate_text(
+                                chunk.text,
+                                model,
+                                appendix={
+                                    role: item.text for role, item in anchors.items()
+                                },
+                            )
+                            if text is not None:
+                                appendix_anchors = anchors
+                    if (
+                        text is None
+                        and chunk.page == 1
+                        and "Composition du (of) document" in chunk.text
+                    ):
+                        position = positions[chunk.id]
+                        header_chunk = chunks[position - 1] if position else None
+                        statements = [
+                            c
+                            for c in chunks
+                            if c.doc_sha256 == chunk.doc_sha256
+                            and c.page == 2
+                            and c.kind == "text"
+                            and not c.source_picture
+                            and "LCIE declares that" in c.text
+                        ]
+                        if (
+                            header_chunk
+                            and header_chunk.doc_sha256 == chunk.doc_sha256
+                            and header_chunk.page == 1
+                            and header_chunk.kind == "text"
+                            and not header_chunk.source_picture
+                            and len(statements) == 1
+                        ):
+                            red_statement = statements[0]
+                            marker_candidates = [
+                                e
+                                for e in red_statement.source_certificate_evidence
+                                if e.get("kind") == "certificate_page_marker"
+                            ]
+                            index = positions[red_statement.id]
+                            if len(marker_candidates) == 1 and index + 2 < len(chunks):
+                                table, limit = chunks[index + 1 : index + 3]
+                                table_evidence = {
+                                    "page": table.page,
+                                    "chunk_id": table.id,
+                                    "kind": table.kind,
+                                    "text": table.text,
+                                    "source_table": table.source_table,
+                                    "source_rows": list(table.source_rows),
+                                    "source_cells": list(table.source_cells),
+                                    "cells_sha256": cells_digest(table.source_cells),
+                                }
+                                if (
+                                    table.doc_sha256 == chunk.doc_sha256
+                                    and limit.doc_sha256 == chunk.doc_sha256
+                                    and limit.page == 2
+                                    and limit.kind == "text"
+                                    and not limit.source_picture
+                                    and red_table_valid(
+                                        table_evidence, chunk.doc_sha256
+                                    )
+                                    and all(
+                                        contexts.get(item.id, [])
+                                        == contexts.get(chunk.id, [])
+                                        for item in (red_statement, table, limit)
+                                    )
+                                ):
+                                    red = {
+                                        "header": header_chunk.text,
+                                        "statement": red_statement.text,
+                                        "limitation": limit.text,
+                                    }
+                                    text = certificate_text(chunk.text, model, red=red)
+                                    if text is not None:
+                                        red_anchors = {
+                                            "header": {
+                                                "page": header_chunk.page,
+                                                "chunk_id": header_chunk.id,
+                                                "kind": header_chunk.kind,
+                                                "text": header_chunk.text,
+                                            },
+                                            "statement": {
+                                                "page": red_statement.page,
+                                                "chunk_id": red_statement.id,
+                                                "kind": red_statement.kind,
+                                                "text": red_statement.text,
+                                            },
+                                            "limitation": {
+                                                "page": limit.page,
+                                                "chunk_id": limit.id,
+                                                "kind": limit.kind,
+                                                "text": limit.text,
+                                            },
+                                            "table": table_evidence,
+                                            "page_marker": marker_candidates[0],
+                                        }
                     if text is None or not certificate_boundaries_allow(
                         boundaries,
                         sha=chunk.doc_sha256,
@@ -836,6 +1083,22 @@ def compile_certificate_subjects(
                         original=chunk.id,
                         source_text=chunk.text,
                         model=model,
+                        declaration_text=declaration.text if declaration else "",
+                        attestation_text=statement.text if statement else "",
+                        limitation_text=limitation.text if limitation else "",
+                        unit_standard_text=unit_standard.text if unit_standard else "",
+                        unit_statement_text=unit_statement.text
+                        if unit_statement
+                        else "",
+                        appendix={
+                            role: item.text for role, item in appendix_anchors.items()
+                        },
+                        red={
+                            role: red_anchors[role]["text"]
+                            for role in ("header", "statement", "limitation")
+                        }
+                        if red_anchors
+                        else {},
                     ):
                         continue
                     cid = certificate_id(
@@ -852,6 +1115,31 @@ def compile_certificate_subjects(
                             dict.fromkeys(
                                 [
                                     chunk.id,
+                                    *([declaration.id] if declaration else []),
+                                    *(item.id for item in between),
+                                    *([statement.id] if statement else []),
+                                    *(
+                                        [statement_table["chunk_id"]]
+                                        if statement_table
+                                        else []
+                                    ),
+                                    *([limitation.id] if limitation else []),
+                                    *([unit_standard.id] if unit_standard else []),
+                                    *([unit_statement.id] if unit_statement else []),
+                                    *(item.id for item in appendix_anchors.values()),
+                                    *(
+                                        [
+                                            red_anchors[role]["chunk_id"]
+                                            for role in (
+                                                "header",
+                                                "statement",
+                                                "limitation",
+                                                "table",
+                                            )
+                                        ]
+                                        if red_anchors
+                                        else []
+                                    ),
                                     *(
                                         cast(str, b["source_chunk_id"])
                                         for b in boundaries
@@ -879,6 +1167,90 @@ def compile_certificate_subjects(
                             "source_text": chunk.text,
                             "author_boundaries": boundaries,
                             "text_sha256": hashlib.sha256(text.encode()).hexdigest(),
+                            **({"red_anchors": red_anchors} if red_anchors else {}),
+                            **(
+                                {
+                                    "appendix_anchors": {
+                                        role: {
+                                            "page": item.page,
+                                            "chunk_id": item.id,
+                                            "kind": item.kind,
+                                            "text": item.text,
+                                        }
+                                        for role, item in appendix_anchors.items()
+                                    }
+                                }
+                                if appendix_anchors
+                                else {}
+                            ),
+                            **(
+                                {
+                                    "source_section": chunk.section,
+                                    "source_lang": chunk.lang,
+                                    "declaration_anchor": {
+                                        "page": declaration.page,
+                                        "chunk_id": declaration.id,
+                                        "kind": declaration.kind,
+                                        "text": declaration.text,
+                                        "section": declaration.section,
+                                        "lang": declaration.lang,
+                                    },
+                                    "between_anchors": [
+                                        {
+                                            "page": item.page,
+                                            "chunk_id": item.id,
+                                            "kind": item.kind,
+                                            "text": item.text,
+                                            "section": item.section,
+                                            "lang": item.lang,
+                                            "source_picture": item.source_picture,
+                                        }
+                                        for item in between
+                                    ],
+                                }
+                                if declaration
+                                else {}
+                            ),
+                            **(
+                                {
+                                    "unit_standard_anchor": {
+                                        "page": unit_standard.page,
+                                        "chunk_id": unit_standard.id,
+                                        "kind": unit_standard.kind,
+                                        "text": unit_standard.text,
+                                    },
+                                    "unit_statement_anchor": {
+                                        "page": unit_statement.page,
+                                        "chunk_id": unit_statement.id,
+                                        "kind": unit_statement.kind,
+                                        "text": unit_statement.text,
+                                    },
+                                }
+                                if unit_standard and unit_statement
+                                else {}
+                            ),
+                            **(
+                                {
+                                    "source_lang": chunk.lang,
+                                    "statement_anchor": {
+                                        "page": statement.page,
+                                        "chunk_id": statement.id,
+                                        "kind": statement.kind,
+                                        "text": statement.text,
+                                        "lang": statement.lang,
+                                    },
+                                    "statement_table": statement_table,
+                                    "limitation_anchor": {
+                                        "page": limitation.page,
+                                        "chunk_id": limitation.id,
+                                        "kind": limitation.kind,
+                                        "text": limitation.text,
+                                        "lang": limitation.lang,
+                                    },
+                                }
+                                if statement and statement_table and limitation
+                                else {}
+                            ),
                         },
                     }
                     if not valid_certificate_scope(
@@ -906,6 +1278,396 @@ def compile_certificate_subjects(
                     )
                     scopes[cid] = proof
                     covered.add((did, pid, chunk.lang))
+    report_units, report_scopes = _compile_report_certificate_subjects(
+        chunks, source, tokenizer, max_tokens, contexts, covered
+    )
+    output.extend(report_units)
+    scopes.update(report_scopes)
+    unit_units, unit_scopes = _compile_unit_table_certificate_subjects(
+        chunks, source, tokenizer, max_tokens, contexts, covered
+    )
+    output.extend(unit_units)
+    scopes.update(unit_scopes)
+    return output, scopes
+
+
+def _compile_unit_table_certificate_subjects(
+    chunks: list[Chunk],
+    source: Snapshot,
+    tokenizer: Tokenizer,
+    max_tokens: int,
+    contexts: dict[str, list[dict[str, Any]]],
+    covered: set[tuple[str, int, str]],
+) -> tuple[list[Chunk], dict[str, ScopeProof]]:
+    """Bind a unit certificate's visible wrapped model to its native table."""
+    originals = {chunk.id: chunk for chunk in chunks}
+    groups: dict[tuple[str, str], list[Chunk]] = {}
+    for chunk in chunks:
+        if chunk.kind == "table" and chunk.source_table and not chunk.source_picture:
+            groups.setdefault((chunk.doc_sha256, chunk.source_table), []).append(chunk)
+    output: list[Chunk] = []
+    scopes: dict[str, ScopeProof] = {}
+    for (sha, table_id), parts in groups.items():
+        first = parts[0]
+        wraps = [
+            e
+            for e in first.source_certificate_evidence
+            if e.get("kind") == "certificate_model_wrap"
+        ]
+        if (
+            not first.source_cells
+            or not wraps
+            or any(p.page != first.page for p in parts)
+        ):
+            continue
+        statements = [
+            c
+            for c in chunks
+            if c.doc_sha256 == sha
+            and c.page == first.page
+            and c.kind == "text"
+            and not c.source_picture
+            and "The power generating unit mentioned above meets the requirements"
+            in c.text
+        ]
+        if len(statements) != 1:
+            continue
+        statement = statements[0]
+        for did, document in source.documents.items():
+            if document["blob_sha256"] != sha or not certificate_document(document):
+                continue
+            for pid in document["product_ids"]:
+                product = source.products.get(pid)
+                if product is None or (did, pid, first.lang) in covered:
+                    continue
+                model = str(product.get("model", ""))
+                candidates = [w for w in wraps if w.get("model") == model]
+                if len(candidates) != 1:
+                    continue
+                found = unit_table_text(
+                    first.source_cells, model, candidates[0], sha, statement.text
+                )
+                if found is None:
+                    continue
+                text, fields = found
+                witnesses: list[Chunk] = []
+                for row, value in fields:
+                    witness = next(
+                        (p for p in parts if row in p.source_rows and value in p.text),
+                        None,
+                    )
+                    if witness is None:
+                        break
+                    if witness not in witnesses:
+                        witnesses.append(witness)
+                else:
+                    boundaries: list[dict[str, Any]] = []
+                    seen: set[tuple[str, str, str]] = set()
+                    for witness in [*witnesses, statement]:
+                        for boundary in contexts.get(witness.id, []):
+                            prior = originals.get(boundary.get("source_chunk_id", ""))
+                            if (
+                                prior is None
+                                or prior.kind != "text"
+                                or prior.doc_sha256 != sha
+                            ):
+                                break
+                            key = (
+                                str(boundary.get("kind")),
+                                str(boundary.get("quote")),
+                                prior.id,
+                            )
+                            if key not in seen:
+                                seen.add(key)
+                                boundaries.append(
+                                    {
+                                        "kind": key[0],
+                                        "quote": key[1],
+                                        "source_chunk_id": prior.id,
+                                        "source_page": prior.page,
+                                        "source_text": prior.text,
+                                        "source_section": prior.section,
+                                        "source_headings": list(prior.source_headings),
+                                    }
+                                )
+                        else:
+                            continue
+                        break
+                    else:
+                        cid = certificate_id(
+                            sha, first.page, model, first.id, did, text
+                        )
+                        header = f"{model} | {document['title']} | p. {first.page}"
+                        tokens = tokenizer.count(header + "\n" + text)
+                        if tokens > max_tokens:
+                            continue
+                        proof: ScopeProof = {
+                            "product_ids": [pid],
+                            "basis": "certificate_subject",
+                            "source_chunk_ids": list(
+                                dict.fromkeys(
+                                    [
+                                        first.id,
+                                        statement.id,
+                                        *(w.id for w in witnesses),
+                                        *(
+                                            str(b["source_chunk_id"])
+                                            for b in boundaries
+                                        ),
+                                    ]
+                                )
+                            ),
+                            "document_ids": [did],
+                            "associations": [
+                                {
+                                    "document_id": did,
+                                    "document_revision": document["document_revision"],
+                                    "blob_sha256": sha,
+                                    "product_id": pid,
+                                    "product_revision": product["product_revision"],
+                                }
+                            ],
+                            "certificate_scope": {
+                                "product_id": pid,
+                                "document_id": did,
+                                "model": model,
+                                "source_sha256": sha,
+                                "source_page": first.page,
+                                "source_chunk_id": first.id,
+                                "source_kind": "table",
+                                "source_text": first.text,
+                                "author_boundaries": boundaries,
+                                "text_sha256": hashlib.sha256(
+                                    text.encode()
+                                ).hexdigest(),
+                                "unit_table": {
+                                    "source_table": table_id,
+                                    "source_cells": list(first.source_cells),
+                                    "cells_sha256": cells_digest(first.source_cells),
+                                    "model_wrap": candidates[0],
+                                    "statement_anchor": {
+                                        "page": statement.page,
+                                        "chunk_id": statement.id,
+                                        "kind": statement.kind,
+                                        "text": statement.text,
+                                    },
+                                    "fragments": [
+                                        {
+                                            "page": w.page,
+                                            "chunk_id": w.id,
+                                            "kind": w.kind,
+                                            "text": w.text,
+                                            "source_table": w.source_table,
+                                            "source_rows": list(w.source_rows),
+                                        }
+                                        for w in witnesses
+                                    ],
+                                },
+                            },
+                        }
+                        if not valid_certificate_scope(
+                            proof,
+                            [pid],
+                            source.products,
+                            source.documents,
+                            sha=sha,
+                            chunk_id=cid,
+                            text=text,
+                        ):
+                            continue
+                        output.append(
+                            replace(
+                                first,
+                                id=cid,
+                                kind="text",
+                                header=header,
+                                text=text,
+                                tokens=tokens,
+                                source_table="",
+                                preceding_text=(),
+                                source_rows=(),
+                                source_cells=(),
+                                source_headings=(),
+                                source_certificate_evidence=(),
+                            )
+                        )
+                        scopes[cid] = proof
+                        covered.add((did, pid, first.lang))
+    return output, scopes
+
+
+def _compile_report_certificate_subjects(
+    chunks: list[Chunk],
+    source: Snapshot,
+    tokenizer: Tokenizer,
+    max_tokens: int,
+    contexts: dict[str, list[dict[str, Any]]],
+    covered: set[tuple[str, int, str]],
+) -> tuple[list[Chunk], dict[str, ScopeProof]]:
+    """Bind a test conclusion and exact subject to native rows of one table."""
+    originals = {chunk.id: chunk for chunk in chunks}
+    groups: dict[tuple[str, str], list[Chunk]] = {}
+    for chunk in chunks:
+        if chunk.kind == "table" and chunk.source_table and not chunk.source_picture:
+            groups.setdefault((chunk.doc_sha256, chunk.source_table), []).append(chunk)
+    output: list[Chunk] = []
+    scopes: dict[str, ScopeProof] = {}
+    for (sha, table_id), parts in groups.items():
+        first = parts[0]
+        if not first.source_cells or any(p.page != first.page for p in parts):
+            continue
+        for did, document in source.documents.items():
+            if document["blob_sha256"] != sha or not certificate_document(document):
+                continue
+            for pid in document["product_ids"]:
+                product = source.products.get(pid)
+                if product is None or (did, pid, first.lang) in covered:
+                    continue
+                model = str(product.get("model", ""))
+                found = report_table_text(first.source_cells, model)
+                if found is None:
+                    continue
+                text, fields = found
+                witnesses: list[Chunk] = []
+                for row, label, value in fields:
+                    witness = next(
+                        (
+                            p
+                            for p in parts
+                            if row in p.source_rows
+                            and label in p.text
+                            and value in p.text
+                        ),
+                        None,
+                    )
+                    if witness is None:
+                        break
+                    if witness not in witnesses:
+                        witnesses.append(witness)
+                else:
+                    boundaries: list[dict[str, Any]] = []
+                    seen: set[tuple[str, str, str]] = set()
+                    for witness in witnesses:
+                        for boundary in contexts.get(witness.id, []):
+                            prior = originals.get(boundary.get("source_chunk_id", ""))
+                            if (
+                                prior is None
+                                or prior.kind != "text"
+                                or prior.doc_sha256 != sha
+                            ):
+                                break
+                            key = (
+                                str(boundary.get("kind")),
+                                str(boundary.get("quote")),
+                                prior.id,
+                            )
+                            if key not in seen:
+                                seen.add(key)
+                                boundaries.append(
+                                    {
+                                        "kind": key[0],
+                                        "quote": key[1],
+                                        "source_chunk_id": prior.id,
+                                        "source_page": prior.page,
+                                        "source_text": prior.text,
+                                        "source_section": prior.section,
+                                        "source_headings": list(prior.source_headings),
+                                    }
+                                )
+                        else:
+                            continue
+                        break
+                    else:
+                        cid = certificate_id(
+                            sha, first.page, model, first.id, did, text
+                        )
+                        header = f"{model} | {document['title']} | p. {first.page}"
+                        tokens = tokenizer.count(header + "\n" + text)
+                        if tokens > max_tokens:
+                            continue
+                        proof: ScopeProof = {
+                            "product_ids": [pid],
+                            "basis": "certificate_subject",
+                            "source_chunk_ids": list(
+                                dict.fromkeys(
+                                    [
+                                        first.id,
+                                        *(w.id for w in witnesses),
+                                        *(
+                                            str(b["source_chunk_id"])
+                                            for b in boundaries
+                                        ),
+                                    ]
+                                )
+                            ),
+                            "document_ids": [did],
+                            "associations": [
+                                {
+                                    "document_id": did,
+                                    "document_revision": document["document_revision"],
+                                    "blob_sha256": sha,
+                                    "product_id": pid,
+                                    "product_revision": product["product_revision"],
+                                }
+                            ],
+                            "certificate_scope": {
+                                "product_id": pid,
+                                "document_id": did,
+                                "model": model,
+                                "source_sha256": sha,
+                                "source_page": first.page,
+                                "source_chunk_id": first.id,
+                                "source_kind": "table",
+                                "source_text": first.text,
+                                "author_boundaries": boundaries,
+                                "text_sha256": hashlib.sha256(
+                                    text.encode()
+                                ).hexdigest(),
+                                "report_table": {
+                                    "source_table": table_id,
+                                    "source_cells": list(first.source_cells),
+                                    "cells_sha256": cells_digest(first.source_cells),
+                                    "fragments": [
+                                        {
+                                            "page": w.page,
+                                            "chunk_id": w.id,
+                                            "kind": w.kind,
+                                            "text": w.text,
+                                            "source_table": w.source_table,
+                                            "source_rows": list(w.source_rows),
+                                        }
+                                        for w in witnesses
+                                    ],
+                                },
+                            },
+                        }
+                        if not valid_certificate_scope(
+                            proof,
+                            [pid],
+                            source.products,
+                            source.documents,
+                            sha=sha,
+                            chunk_id=cid,
+                            text=text,
+                        ):
+                            continue
+                        output.append(
+                            replace(
+                                first,
+                                id=cid,
+                                kind="text",
+                                header=header,
+                                text=text,
+                                tokens=tokens,
+                                source_table="",
+                                preceding_text=(),
+                                source_rows=(),
+                                source_cells=(),
+                                source_headings=(),
+                            )
+                        )
+                        scopes[cid] = proof
+                        covered.add((did, pid, first.lang))
     return output, scopes
 
 

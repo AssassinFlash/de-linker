@@ -895,8 +895,25 @@ class DocumentIndex:
                 or not native_chunk_id_matches(sha, page, "table", table[3], table_id)
             ):
                 continue
-            if anchor.get("kind") == "policy_table":
-                fragments = anchor.get("fragments")
+            if "compatibility_section" in anchor:
+                if (
+                    self._db.execute(
+                        "SELECT section FROM chunks WHERE id = ?", (table_id,)
+                    ).fetchone()
+                    != (anchor["compatibility_section"],)
+                    or anchor.get("compatibility_table_text") != table[3]
+                ):
+                    continue
+            if "overview_section" in anchor and self._db.execute(
+                "SELECT section FROM chunks WHERE id = ?", (table_id,)
+            ).fetchone() != (anchor["overview_section"],):
+                continue
+            if anchor.get("kind") == "policy_table" or "overview_fragments" in anchor:
+                fragments = (
+                    anchor.get("fragments")
+                    if anchor.get("kind") == "policy_table"
+                    else anchor.get("overview_fragments")
+                )
                 if (
                     not isinstance(fragments, list)
                     or not fragments

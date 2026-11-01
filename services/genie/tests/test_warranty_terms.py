@@ -16,6 +16,7 @@ from test_build import document
 from test_chunking import Words
 from test_publication import authority
 from test_publication_compiler import warranty_fixture
+from warranty_current_fixture import warranty_current_fixture
 
 from index import build, corpus, extract, parse, store
 from index.chunking import Chunk
@@ -56,6 +57,7 @@ from linker_genie.table_projection import (
     SourceCell,
     SourceWordWrap,
     display_cell_text,
+    valid_projection,
     valid_word_wrap,
 )
 from linker_genie.warranty_scope import exclusion_category, terms_id, terms_text
@@ -901,20 +903,49 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
     # Read-only capture from Woo revision 36c5b21f... and the corresponding
     # loaded index. The EHA cover anchor is from the SHA-matched original PDF
     # on physical page 1; this local corpus is not a production activation.
-    path = (
-        Path(__file__).parent / "fixtures/publication-compiler/warranty-current.json.gz"
-    )
-    data = json.loads(gzip.decompress(path.read_bytes()))
-    raw = data["manifest"]
-    # Upgrade only this local captured fixture to the current identity protocol.
-    raw["model_identity_revision"] = "fixture-identity-1"
-    for scope in data["scopes"].values():
-        scope["model_identity_revision"] = raw["model_identity_revision"]
-    original = [Chunk(**item) for item in data["original"]]
-    compiled = [Chunk(**item) for item in data["compiled"]]
+    raw, original, compiled, fixture_scopes = warranty_current_fixture()
+    products = Snapshot.read(raw).products
+    for pid in (6513, 6517):
+        stale = next(
+            chunk
+            for chunk in compiled
+            if fixture_scopes.get(chunk.id, {}).get("product_ids") == [pid]
+            and chunk.doc_sha256.startswith("b681fbb51b16")
+            and re.search(r"\| Max\. MPPT Current \(A\) \| [^|]*/ \|", chunk.text)
+        )
+        assert not valid_projection(
+            fixture_scopes[stale.id],
+            [pid],
+            products,
+            sha=stale.doc_sha256,
+            chunk_id=stale.id,
+            text=stale.text,
+        )
+        replacements = [
+            chunk
+            for chunk in compiled
+            if chunk.id != stale.id
+            and (scope := fixture_scopes.get(chunk.id))
+            and scope.get("basis") == "table_projection"
+            and scope.get("product_ids") == [pid]
+            and chunk.doc_sha256 == stale.doc_sha256
+        ]
+        assert replacements
+        assert all("| Max. MPPT Current (A) |" not in c.text for c in replacements)
+        assert all(
+            valid_projection(
+                fixture_scopes[c.id],
+                [pid],
+                products,
+                sha=c.doc_sha256,
+                chunk_id=c.id,
+                text=c.text,
+            )
+            for c in replacements
+        )
     source = Snapshot.read(raw)
     procedures, procedures_scope = compile_procedures(
-        original, compiled, data["scopes"], source, Words(), 512, restricted_contexts={}
+        original, compiled, fixture_scopes, source, Words(), 512, restricted_contexts={}
     )
     terms, term_scopes = compile_terms(
         original, procedures, procedures_scope, Words(), 512, restricted_contexts={}
@@ -1070,7 +1101,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
         require_table_anchor=True,
     )
 
-    all_scopes = {**data["scopes"], **procedures_scope, **term_scopes}
+    all_scopes = {**fixture_scopes, **procedures_scope, **term_scopes}
     chunks = {c.id: c for c in [*original, *compiled, *procedures, *terms]}
     root = tmp_path / "current-corpus"
     corpus.write(

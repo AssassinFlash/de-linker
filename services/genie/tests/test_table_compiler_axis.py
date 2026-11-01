@@ -109,6 +109,23 @@ def selected(
     return compile_publication(chunks, manifest, authority(manifest), Words())
 
 
+def test_orphaned_qualifier_does_not_become_a_projected_fact() -> None:
+    manifest, original = source()
+    native = next(c for c in original if c.source_cells)
+    cells = deepcopy(native.source_cells)
+    value = next(c for c in cells if c["text"] == "208.9")
+    value["text"] = "(Integrated); Aerosol fire extinguishing (Integrated)"
+    altered = [
+        replace(c, source_cells=cells) if c.id == native.id else c for c in original
+    ]
+    compiled, proofs = selected(manifest, altered)
+    assert not any(
+        "(Integrated); Aerosol" in c.text
+        for c in compiled
+        if c.id in proofs and proofs[c.id]["basis"] == "table_projection"
+    )
+
+
 def test_original_external_axis_projects_only_the_linked_model_column() -> None:
     manifest, original = source()
     compiled, proofs = selected(manifest, original)

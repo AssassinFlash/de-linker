@@ -85,6 +85,9 @@ class Chunk:
     # A cover line recovered directly from a visible PDF text layer. Its
     # physical provenance is stored independently and checked at retrieval.
     source_pdf_cover: dict[str, object] | None = None
+    # SHA-bound PDF text-layer evidence for a certificate page marker or a
+    # model split across two physically adjacent lines in its original cell.
+    source_certificate_evidence: tuple[dict[str, object], ...] = ()
 
 
 def context_header(meta: DocumentMeta, section: str, page: int) -> str:
