@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Inquiry\Assessment;
 
+use Automattic\WooCommerce\Utilities\OrderUtil;
+use Linker\Commerce\Protection\BusinessCapacity;
 use Linker\Commerce\Inquiry\Emails\NewInquiryEmail;
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Outbox;
@@ -17,13 +19,14 @@ use WC_Order;
 
 /** Woo stores evidence; Action Scheduler runs it; Outbox owns delivery. */
 final class Queue {
-	public const ENABLED   = 'linker_inquiry_assessment_enabled';
-	public const META      = '_linker_inquiry_assessment';
-	public const PENDING   = '_linker_inquiry_assessment_pending';
-	public const PROCESS   = 'linker_inquiry_assessment_process';
-	public const EXPIRE    = 'linker_inquiry_assessment_expire';
-	public const FINISH    = 'linker_inquiry_assessment_finish';
-	public const HEARTBEAT = 'linker_inquiry_assessment_recovery';
+	public const ENABLED         = 'linker_inquiry_assessment_enabled';
+	public const META            = '_linker_inquiry_assessment';
+	public const PENDING         = '_linker_inquiry_assessment_pending';
+	public const PROCESS         = 'linker_inquiry_assessment_process';
+	public const EXPIRE          = 'linker_inquiry_assessment_expire';
+	public const FINISH          = 'linker_inquiry_assessment_finish';
+	public const HEARTBEAT       = 'linker_inquiry_assessment_recovery';
+	public const RECOVERY_OFFSET = 'linker_inquiry_assessment_recovery_offset';
 	// Owner policy 2026-10-23: each claimed model attempt gets ten seconds; queue delay is excluded.
 	public const WAIT_SECONDS = 10;
 	// Recovery is a real once-per-minute CLI cron, not traffic-driven WP-Cron.
@@ -154,30 +157,91 @@ final class Queue {
 	public function expire( int $id ): void {
 		SendAuthorization::recover( $id ); }
 
-	/** Native independent minute heartbeat; no visitor or synchronous provider is needed. */
+	/** Native independent minute recovery; heartbeat records a completed bounded pass.
+	 *
+	 * @throws \Throwable First consumer failure, after the rest of the page is attempted.
+	 */
 	public function recover(): int {
 		// Cron loads WC email base classes lazily, before invoking native rebuilders.
 		WC()->mailer();
 		\Linker\Commerce\Proforma\Emails\ProformaIssuedEmail::recover();
 		\Linker\Commerce\Registration\VatNotice::recover();
-		update_option( self::HEARTBEAT, microtime( true ), false );
-		$orders = wc_get_orders(
-			array(
-				'limit'      => -1,
-				'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Native Woo private pending-work lookup, shared with its recovery lifecycle.
-					array(
-						'key'   => self::PENDING,
-						'value' => 'yes',
-					),
-				),
-			)
-		);
-		$count  = 0;
-		foreach ( is_array( $orders ) ? $orders : array() as $order ) {
-			SendAuthorization::recover( $order->get_id() );
-			++$count;
+		// Reuse the approved complete native intake envelope, not a new quota.
+		$limit  = array_sum( array_column( BusinessCapacity::LIMITS, 'count' ) );
+		$offset = max( 0, (int) get_option( self::RECOVERY_OFFSET, 0 ) );
+		$ids    = self::pending_ids( $offset, $limit );
+		if ( array() === $ids && $offset > 0 ) {
+			// Earlier completions/deletions can move the remaining page left.
+			$offset = 0;
+			$ids    = self::pending_ids( $offset, $limit );
 		}
+		$count   = 0;
+		$failure = null;
+		try {
+			foreach ( $ids as $id ) {
+				try {
+					SendAuthorization::recover( (int) $id );
+				} catch ( \Throwable $error ) {
+					// One failing source cannot block the rest of this bounded page.
+					$failure ??= $error;
+				}
+				++$count;
+			}
+		} finally {
+			// Round-robin even after a failed consumer: an old stuck page cannot
+			// starve later history. Re-entry may repeat work; per-source permits
+			// and locks remain authoritative. Short/empty pages wrap the scan.
+			update_option( self::RECOVERY_OFFSET, count( $ids ) === $limit ? $offset + $limit : 0, false );
+		}
+		if ( null !== $failure ) {
+			throw $failure;
+		}
+		update_option( self::HEARTBEAT, microtime( true ), false );
 		return $count;
+	}
+
+	/**
+	 * One ordered native ID page; only the authorization consumer loads sources.
+	 *
+	 * @param int $offset Position in the current pending set.
+	 * @param int $limit Existing total business capacity.
+	 * @return list<int> Native source IDs.
+	 */
+	private static function pending_ids( int $offset, int $limit ): array {
+		$meta = array(
+			array(
+				'key'   => self::PENDING,
+				'value' => 'yes',
+			),
+		); // phpcs:ignore WordPress.DB.SlowDBQuery -- Exact native pending-work lookup.
+		// Woo's meta_query/field_query are HPOS-only. Use WP's native query
+		// for CPT instead of hydrating unrelated orders or inventing SQL keysets.
+		// phpcs:disable WordPress.DB.SlowDBQuery -- One bounded, pending-only native source page.
+		$ids = OrderUtil::custom_orders_table_usage_is_enabled()
+			? wc_get_orders(
+				array(
+					'limit'      => $limit,
+					'offset'     => $offset,
+					'return'     => 'ids',
+					'orderby'    => 'ID',
+					'order'      => 'ASC',
+					'meta_query' => $meta,
+				)
+			)
+			: get_posts(
+				array(
+					'post_type'      => wc_get_order_types( 'view-orders' ),
+					'post_status'    => array_keys( wc_get_order_statuses() ),
+					'posts_per_page' => $limit,
+					'offset'         => $offset,
+					'fields'         => 'ids',
+					'orderby'        => 'ID',
+					'order'          => 'ASC',
+					'meta_query'     => $meta,
+				)
+			);
+		// phpcs:enable
+		return is_array( $ids ) ? array_values( array_map( 'absint', array_filter( $ids, 'is_numeric' ) ) ) : array();
 	}
 
 	/** Register background handlers without doing any work in a submit. */
