@@ -12,6 +12,7 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 import ci_scope
+import i18n_sources
 
 ROOT = Path(__file__).resolve().parents[2]
 TEXT = (ROOT / ".github/workflows/check.yml").read_text()
@@ -53,13 +54,61 @@ class ScopeTest(unittest.TestCase):
             ("assets/account-ui.js", ["php", "js", "build", "native"]),
             ("languages/linker-commerce-de_DE_formal.mo", ["php", "content", "native"]),
             ("tests/php/Integration/RegistrationCapacityTest.php", ["php", "native"]),
-            ("tests/js/library-ui.test.mjs", ["php", "js", "build", "native"]),
+            ("tests/js/library-ui.test.mjs", ["js"]),
         ):
             with self.subTest(path=path):
                 self.assertEqual(
                     self.classify(("M", "plugins/linker-commerce/" + path)),
                     expected,
                 )
+
+    def test_plugin_js_test_entrypoints_keep_only_their_actual_recipe(self):
+        for path, owner in (
+            (
+                "plugins/linker-tools/src/genie/verificationIdentity.consumer.test.tsx",
+                "tools",
+            ),
+            ("plugins/linker-tools/src/configurator/roof.test.ts", "tools"),
+            ("plugins/linker-commerce/src/protection/client.test.ts", "commerce"),
+            ("plugins/linker-commerce/tests/js/library-ui.test.mjs", "commerce"),
+            ("plugins/linker-tools/tests/e2e/failure.spec.ts", "tools"),
+        ):
+            for status in ("A", "M", "D"):
+                with self.subTest(path=path, status=status):
+                    self.assertEqual(
+                        ci_scope.selected_modules([(status, path)], "base", "head"),
+                        ["js:" + owner],
+                    )
+                    for module in ci_scope.FULL_MODULES:
+                        self.assertEqual(
+                            ci_scope.module_input_path(
+                                module, path, ci_scope.module_inputs(module)
+                            ),
+                            module == "js:" + owner,
+                            module,
+                        )
+        # Unmarked loader fixtures, schemas, runtime and configuration still
+        # retain their companion consumers; PHP executes these Node loaders.
+        for path in (
+            "plugins/linker-tools/tests/js/genie-loader-failure.mjs",
+            "plugins/linker-tools/src/genie/verificationIdentity.ts",
+            "plugins/linker-tools/src/configurator/schema/request.json",
+            "plugins/linker-tools/vitest.config.mts",
+            "plugins/linker-tools/package-lock.json",
+        ):
+            with self.subTest(path=path):
+                self.assertIsNone(ci_scope.plugin_js_test_owner(path))
+                selected = ci_scope.selected_modules([("M", path)], "base", "head")
+                self.assertIn("php:tools", selected)
+                self.assertIn("native:core", selected)
+        self.assertEqual(
+            ci_scope.selected_modules(
+                [("R100", "plugins/linker-tools/src/genie/old.test.tsx")],
+                "base",
+                "head",
+            ),
+            None,
+        )
 
     def test_general_php_mu_and_service_changes_do_not_select_unrelated_stacks(self):
         self.assertEqual(
@@ -1814,6 +1863,121 @@ class ModuleReuseTest(unittest.TestCase):
         ):
             with self.assertRaisesRegex(ValueError, "incomplete"):
                 ci_scope.run_module_jobs(self.prior_run)
+
+    def test_real_git_js_test_increment_reuses_successful_companion_modules(self):
+        # This test owns one small repository for its lifetime; no live checkout
+        # or build is modified. Both picker and final gate read native Git hashes.
+        with TemporaryDirectory(prefix="linker-ci-js-inputs-") as folder:
+            previous = Path.cwd()
+            self.addCleanup(os.chdir, previous)
+            os.chdir(folder)
+
+            def run(*args):
+                return subprocess.check_output(args, text=True).strip()
+
+            def write(name, text):
+                path = Path(name)
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(text)
+
+            def commit():
+                run("git", "add", ".")
+                run("git", "commit", "-qm", "synthetic input")
+                return run("git", "rev-parse", "HEAD")
+
+            run("git", "init", "-q")
+            run("git", "config", "user.email", "ci@example.invalid")
+            run("git", "config", "user.name", "CI fixture")
+            test = (
+                "plugins/linker-tools/src/genie/verificationIdentity.consumer.test.tsx"
+            )
+            runtime = "plugins/linker-tools/src/genie/verificationIdentity.ts"
+            write(test, "__('Synthetic test message', 'linker-tools')")
+            write(runtime, "__('Synthetic runtime message', 'linker-tools')")
+            write("tools/checks/i18n_sources.py", "synthetic scanner control")
+            base = commit()
+            # The actual content extractor skips the test, while preserving the
+            # runtime message; content proof cannot merely assume this boundary.
+            references = i18n_sources.code_references(Path("plugins/linker-tools"))
+            self.assertEqual(set(references), {"Synthetic runtime message"})
+            write(test, "changed test input")
+            head = commit()
+            cache = ci_scope.ProofCache()
+            self.assertEqual(
+                {
+                    module
+                    for module in ci_scope.FULL_MODULES
+                    if not ci_scope.same_module_inputs(base, head, module, cache)
+                },
+                {"js:tools"},
+            )
+            run_record = {
+                **self.prior_run,
+                "display_title": "check #820 | tree-ref=" + base,
+            }
+            modules = [
+                "js:tools",
+                "build:tools",
+                "php:tools",
+                "engine",
+                "genie",
+                "content",
+                "python:local",
+                "python:pull",
+                "python:cutover",
+                *("native:" + group for group in ci_scope.NATIVE_GROUPS),
+            ]
+            jobs = [
+                {
+                    "id": number,
+                    "name": ci_scope.module_job_name(module),
+                    "conclusion": "failure"
+                    if module in {"js:tools", "engine"}
+                    else "success",
+                    "steps": [
+                        {"name": name, "conclusion": "success"}
+                        for name in ci_scope.MODULE_PHASE_STEPS.get(
+                            module, ("Validate module",)
+                        )
+                    ],
+                }
+                for number, module in enumerate(modules, start=20)
+            ]
+
+            def api(endpoint):
+                if "workflows/check.yml/runs" in endpoint:
+                    return {"workflow_runs": [run_record]}
+                if endpoint.endswith("/10"):
+                    return run_record
+                return {"total_count": len(jobs), "jobs": jobs}
+
+            with patch.object(ci_scope, "api", side_effect=api):
+                proofs = ci_scope.reusable_modules(modules, head)
+                self.assertEqual(set(proofs), set(modules) - {"js:tools", "engine"})
+                self.assertTrue(ci_scope.validate_module_reuse(proofs, modules, head))
+                jobs[-1]["conclusion"] = "cancelled"
+                self.assertFalse(ci_scope.validate_module_reuse(proofs, modules, head))
+            write(runtime, "changed runtime input")
+            runtime_head = commit()
+            cache = ci_scope.ProofCache()
+            self.assertEqual(
+                {
+                    module
+                    for module in modules
+                    if not ci_scope.same_module_inputs(
+                        head, runtime_head, module, cache
+                    )
+                },
+                set(modules) - {"engine"},
+            )
+            # A scanner/control change remains unprovable for every module,
+            # even when its ordinary package fingerprint would be unchanged.
+            write("tools/checks/i18n_sources.py", "scanner starts reading tests")
+            control = commit()
+            for module in modules:
+                self.assertFalse(
+                    ci_scope.same_module_inputs(runtime_head, control, module), module
+                )
 
     def test_reuse_inputs_distinguish_local_tests_from_actual_consumers(self):
         with TemporaryDirectory() as folder:
