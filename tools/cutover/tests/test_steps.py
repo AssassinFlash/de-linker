@@ -1064,68 +1064,17 @@ def test_maintenance_refuses_to_claim_a_window_it_did_not_get(
         steps.maintenance(Deaf(tmp_path), on=True)
 
 
-def test_the_publish_stages_over_ssh_and_runs_there(
+def test_combined_services_refuses_before_any_network_or_source_write(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """release.sh copies from the machine it runs on, so the publish must too.
+    def unexpected(*args: object, **kwargs: object) -> object:
+        raise AssertionError("retired publisher must not invoke SSH or rsync")
 
-    Measured 2026-10-14: the old step ran the publish command with a local
-    bash, which cannot reach /opt on the VPS; the drill never ran step 5.
-    """
-    repository = tmp_path / "repo"
-    for _service, _root, directory in plan.SERVICES:
-        (repository / directory).mkdir(parents=True)
-        (repository / directory / "app.py").write_text("", encoding="utf-8")
-    release = repository / plan.RELEASE_SCRIPT
-    release.parent.mkdir(parents=True)
-    release.write_text("#!/usr/bin/env bash\n", encoding="utf-8")
-    (repository / plan.ACTIVATE_SCRIPT).write_text("#!/usr/bin/env bash\n")
-
-    seen: list[list[str]] = []
-
-    def capture(command: list[str], *args: object, **kwargs: object) -> object:
-        del args, kwargs
-        seen.append(command)
-        return SimpleNamespace(returncode=0)
-
-    monkeypatch.setattr("linker_cutover.steps.subprocess.run", capture)
-    steps.services(repository=repository, addresses={}, run=True)
-
-    assert [command[0] for command in seen] == [
-        "ssh",
-        "rsync",
-        "rsync",
-        "ssh",
-        "rsync",
-        "rsync",
-        "ssh",
-        "rsync",
-        "ssh",
-    ]
-    assert seen[-2][-1] == f"{plan.SERVICES_SSH}:{plan.SERVICES_STAGING}/activate.sh"
-    assert seen[-1][-1] == f"bash {plan.SERVICES_STAGING}/activate.sh"
-    assert seen[0] == [
-        "ssh",
-        "-o",
-        "BatchMode=yes",
-        plan.SERVICES_SSH,
-        f"mkdir -p {plan.SERVICES_STAGING}/engine {plan.SERVICES_STAGING}/genie",
-    ]
-    engine_tree, engine_script, engine_publish = seen[1], seen[2], seen[3]
-    assert engine_tree[-1] == f"{plan.SERVICES_SSH}:{plan.SERVICES_STAGING}/engine/"
-
-    assert "--exclude=.venv" in engine_tree, "the host builds its own venv"
-    assert (
-        engine_script[-1] == f"{plan.SERVICES_SSH}:{plan.SERVICES_STAGING}/release.sh"
-    )
-    assert engine_publish[-1] == (
-        "GENIE_RELEASE_ROOT=/opt/linker-engine "
-        f"bash {plan.SERVICES_STAGING}/release.sh publish {plan.SERVICES_STAGING}/engine"
-    )
-    assert seen[6][-1] == (
-        "GENIE_RELEASE_ROOT=/opt/linker-genie "
-        f"bash {plan.SERVICES_STAGING}/release.sh publish {plan.SERVICES_STAGING}/genie"
-    )
+    monkeypatch.setattr("linker_cutover.steps.subprocess.run", unexpected)
+    with pytest.raises(CutoverError, match="combined services publisher is retired"):
+        steps.services(
+            repository=tmp_path / "unread-repository", addresses={}, run=True
+        )
 
 
 class _SiteKit(_Pages):
@@ -1204,44 +1153,16 @@ def test_each_way_of_losing_the_verification_is_a_note(
     assert len(result.notes) == 1 and note in result.notes[0]
 
 
-def _services_repository(tmp_path: Path) -> Path:
-    repository = tmp_path / "repo"
-    for _service, _root, directory in plan.SERVICES:
-        (repository / directory).mkdir(parents=True)
-    (repository / plan.RELEASE_SCRIPT).parent.mkdir(parents=True, exist_ok=True)
-    (repository / plan.RELEASE_SCRIPT).write_text("#!/usr/bin/env bash\n")
-    (repository / plan.ACTIVATE_SCRIPT).write_text("#!/usr/bin/env bash\n")
-    return repository
-
-
-def test_a_missing_judge_token_is_a_note_not_a_silent_success(
+def test_services_dry_run_names_independent_operators_without_network(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    def answer(command: list[str], *args: object, **kwargs: object) -> object:
-        del args, kwargs
-        activating = command[-1] == f"bash {plan.SERVICES_STAGING}/activate.sh"
-        return SimpleNamespace(returncode=plan.ACTIVATE_NO_TOKEN if activating else 0)
+    def unexpected(*args: object, **kwargs: object) -> object:
+        raise AssertionError("dry run may not dispatch services")
 
-    monkeypatch.setattr("linker_cutover.steps.subprocess.run", answer)
-    result = steps.services(
-        repository=_services_repository(tmp_path), addresses={}, run=True
-    )
-    assert any("linker-genie-judge is not started" in note for note in result.notes)
-
-
-def test_a_unit_that_does_not_come_up_fails_the_step(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    def answer(command: list[str], *args: object, **kwargs: object) -> object:
-        del args, kwargs
-        activating = command[-1] == f"bash {plan.SERVICES_STAGING}/activate.sh"
-        return SimpleNamespace(returncode=1 if activating else 0)
-
-    monkeypatch.setattr("linker_cutover.steps.subprocess.run", answer)
-    with pytest.raises(CutoverError, match="activating the services failed"):
-        steps.services(
-            repository=_services_repository(tmp_path), addresses={}, run=True
-        )
+    monkeypatch.setattr("linker_cutover.steps.subprocess.run", unexpected)
+    result = steps.services(repository=tmp_path, addresses={}, run=False)
+    assert any("legacy_release.py" in action for action in result.actions)
+    assert any("paired_release.py" in action for action in result.actions)
 
 
 def test_the_deploy_snapshots_the_database_before_anything_is_uploaded(

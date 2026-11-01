@@ -54,8 +54,26 @@ os.replace(tmp, dest)
 PY
 }
 
+managed() {
+    [[ -f "$ROOT/index/.activation.json" || -f "$ROOT/.legacy-engine-owners.json" ||
+       -f "$ROOT/.legacy-engine-preparing.json" || -f "$ROOT/current/.git-source-manifest.json" ||
+       -d "$ROOT/current/src/linker_engine" ]]
+}
+
+refuse_managed() {
+    if managed; then
+        echo "managed runtime: use legacy_release.py or paired_release.py; shared publisher refused" >&2
+        exit 1
+    fi
+}
+
 publish() (
     local source="$1"
+    refuse_managed
+    if [[ -d "$source/src/linker_engine" ]]; then
+        echo "Engine uses legacy_release.py prepare/activate, never the shared publisher" >&2
+        exit 1
+    fi
     local version dest live extra stage
     version="$(python3 -c 'from datetime import datetime, timezone; print(datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ"))')"
     dest="$ROOT/$version"
@@ -90,6 +108,7 @@ publish() (
 )
 
 rollback() {
+    refuse_managed
     local live previous="" v
     live="$(current)"
     [[ -n "$live" ]] || { echo "no current release" >&2; exit 1; }

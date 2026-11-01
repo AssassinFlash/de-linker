@@ -1155,89 +1155,24 @@ def _rsync(source: Path, destination: str) -> None:
 
 
 def services(*, repository: Path, addresses: dict[str, str], run: bool) -> Result:
-    """Step 5: publish the two services to the VPS and write their addresses into the site.
-
-    The release script is the genie's `ops/release.sh` for both services: its
-    root is its parameter, so one implementation owns the release rule (version
-    directory, `current` symlink, rollback) for two services. It copies from a
-    directory on the machine it runs on, so a publish stages over ssh first
-    (the tree and the script into `plan.SERVICES_STAGING`) and runs there.
-    After both publishes it runs `ops/activate.sh` there (venvs, the quality
-    worker's unit, daemon-reload, restarts, every unit up), so a services
-    deploy is this one step; the environments, the tokens and the engine's
-    data files — state/feed.json and state/compatibility.json, refreshed
-    nightly by linker-engine-feed-sync.timer — stay host setup. The site's
-    feed now carries the compatibility contract, so a contract change reaches
-    the engine through that timer, not through a hand copy. The timer runs the
-    stable copy /opt/linker-engine/ops/sync-feed.py, which this step does not
-    install: copy services/engine/ops/sync-feed.py there once when it changes.
-    Without `run` it reports the command lines instead.
-    """
-    actions: list[str] = []
-    notes: list[str] = []
-    ssh = ("ssh", "-o", "BatchMode=yes", plan.SERVICES_SSH)
-    staging_root = plan.SERVICES_STAGING
+    """The combined publisher is retired; readers and paired knowledge own activation."""
     if run:
-        # macOS ships rsync 2.6.9, which cannot create the destination's
-        # parents; the staging root exists only after the first publish.
-        made = subprocess.run(
-            [*ssh, f"mkdir -p {staging_root}/engine {staging_root}/genie"],
-            check=False,
+        raise CutoverError(
+            "combined services publisher is retired: use services/engine/ops/legacy_release.py "
+            "for the Engine reader and services/genie/ops/paired_release.py for Genie; "
+            "neither may select a runtime before its locked environment is prepared"
         )
-        if made.returncode != 0:
-            raise CutoverError(
-                f"could not create {staging_root} on {plan.SERVICES_SSH}"
-            )
-    for service, root, directory in plan.SERVICES:
-        staging = f"{staging_root}/{service}"
-        if run:
-            _rsync(repository / directory, f"{staging}/")
-            _rsync(repository / plan.RELEASE_SCRIPT, f"{staging_root}/release.sh")
-            publish = (
-                f"GENIE_RELEASE_ROOT={shlex.quote(root)} "
-                f"bash {staging_root}/release.sh publish {staging}"
-            )
-            completed = subprocess.run([*ssh, publish], check=False)
-            if completed.returncode != 0:
-                raise CutoverError(f"publishing {service} failed")
-            actions.append(f"published {service} -> {root} (staged at {staging})")
-        else:
-            actions.append(
-                "would publish "
-                f"{service}: rsync {directory} -> {plan.SERVICES_SSH}:{staging}, then "
-                f"GENIE_RELEASE_ROOT={root} bash {staging_root}/release.sh publish {staging}"
-            )
-    activate = f"bash {staging_root}/activate.sh"
-    if run:
-        _rsync(repository / plan.ACTIVATE_SCRIPT, f"{staging_root}/activate.sh")
-        completed = subprocess.run([*ssh, activate], check=False)
-        if completed.returncode == plan.ACTIVATE_NO_TOKEN:
-            actions.append("activated engine and genie; quality worker installed")
-            notes.append(
-                "linker-genie-judge is not started: set GENIE_JUDGE_TOKEN in "
-                "/etc/linker-genie.env and LINKER_GENIE_JUDGE_TOKEN in wp-config.php, "
-                "then run this step again"
-            )
-        elif completed.returncode != 0:
-            raise CutoverError(
-                "activating the services failed (journalctl -u <unit> on the VPS)"
-            )
-        else:
-            actions.append("activated engine, genie and the quality worker")
-    else:
-        actions.append(
-            f"would activate: rsync {plan.ACTIVATE_SCRIPT} -> "
-            f"{plan.SERVICES_SSH}:{staging_root}/activate.sh, then {activate} "
-            "(uv sync, judge unit, daemon-reload, restart engine/genie/judge)"
-        )
+    actions = [
+        "Engine: services/engine/ops/legacy_release.py prepare/activate/verify",
+        "Genie: services/genie/ops/paired_release.py preflight/publish",
+        f"repository: {repository}",
+    ]
     for _service, option, variable in plan.SERVICE_OPTIONS:
-        value = addresses.get(variable, "")
-        if value:
-            actions.append(f"{option} <- {variable} ({value})")
-        else:
-            notes.append(f"{option}: {variable} is not set — the window writes it")
-    actions.append(f"repository: {repository}")
-    return Result("services", actions, notes)
+        if addresses.get(variable):
+            actions.append(f"{option} <- {variable} ({addresses[variable]})")
+    return Result(
+        "services", actions, ["combined staging/activation performs no writes"]
+    )
 
 
 def verify(target: Target, *, cache_buster: str) -> Result:
