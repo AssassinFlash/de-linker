@@ -16,6 +16,8 @@ MODEL_V1 = "opaque_direct_uniform_pvlib_reference_v1"
 POLICY_V1 = "retain_unobstructed_sky_and_ground_components_v1"
 MODEL_V2 = "opaque_perez_component_visibility_pvlib_reference_v1"
 POLICY_V2 = "cosine_weighted_perez_component_visibility_v1"
+MODEL_V3 = "opaque_perez_series_iv_forward_reference_v1"
+ELECTRICAL_V3 = "whole_module_forward_series_iv_single_string_per_tracker_v1"
 # Retained name of the immutable direct-only request. New requests use MODEL_V2.
 MODEL = MODEL_V1
 KIND = "prepare_geometric_pv_reference_v1"
@@ -23,12 +25,14 @@ PROFILE_PURPOSE = "geometric_pv_reference_profile_v1"
 MODEL_ROLES = {
     MODEL_V1: "direct_only_geometry_uniform_module_reference_scenario",
     MODEL_V2: "perez_component_visibility_uniform_module_reference_scenario",
+    MODEL_V3: "perez_component_visibility_forward_series_iv_reference_scenario",
 }
 SHADING_STATUS = {
     MODEL_V1: "direct_only_scenario_not_complete_assessment",
     MODEL_V2: "perez_component_visibility_not_complete_assessment",
+    MODEL_V3: "perez_component_visibility_not_complete_assessment",
 }
-_PAIRS = {(MODEL_V1, POLICY_V1), (MODEL_V2, POLICY_V2)}
+_PAIRS = {(MODEL_V1, POLICY_V1), (MODEL_V2, POLICY_V2), (MODEL_V3, POLICY_V2)}
 
 
 class GeometricPvInputs(Document):
@@ -36,6 +40,7 @@ class GeometricPvInputs(Document):
     model: Literal[
         "opaque_direct_uniform_pvlib_reference_v1",
         "opaque_perez_component_visibility_pvlib_reference_v1",
+        "opaque_perez_series_iv_forward_reference_v1",
     ]
     weather_asset_id: Annotated[str, Field(pattern=r"^[a-f0-9]{32}$")]
     sampling: DirectBeamSampling
@@ -44,7 +49,10 @@ class GeometricPvInputs(Document):
         "cosine_weighted_perez_component_visibility_v1",
     ]
     thermal_policy: Literal["sapm_from_module_mean_poa_v1"]
-    electrical_policy: Literal["uniform_module_pvwatts_independent_mpp_sum_v1"]
+    electrical_policy: Literal[
+        "uniform_module_pvwatts_independent_mpp_sum_v1",
+        "whole_module_forward_series_iv_single_string_per_tracker_v1",
+    ]
     # These are the existing explicit coefficients/converter assumptions. Their
     # nested reference identity does not give this new result an unshaded label.
     parameters: PvGenerationParameters
@@ -55,11 +63,28 @@ class GeometricPvInputs(Document):
             raise ValueError(
                 "geometric PV model and diffuse policy must be a declared pair"
             )
-        if self.model == MODEL_V2 and any(
+        if self.model in (MODEL_V2, MODEL_V3) and any(
             item.transposition != "perez" for item in self.parameters.arrays
         ):
             raise ValueError(
                 "Perez component visibility requires the declared Perez transposition"
+            )
+        expected_electrical = (
+            ELECTRICAL_V3
+            if self.model == MODEL_V3
+            else "uniform_module_pvwatts_independent_mpp_sum_v1"
+        )
+        expected_converter = (
+            "one_string_per_tracker_independent_mpp_sum"
+            if self.model == MODEL_V3
+            else "independent_mppt_array_mpp_sum"
+        )
+        if self.electrical_policy != expected_electrical or any(
+            group.input_assumption != expected_converter
+            for group in self.parameters.converters
+        ):
+            raise ValueError(
+                "electrical and converter policies must match the declared model"
             )
         return self
 

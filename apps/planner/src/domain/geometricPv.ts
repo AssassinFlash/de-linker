@@ -16,6 +16,10 @@ export const GEOMETRIC_PV_DIFFUSE_V1 =
 	"retain_unobstructed_sky_and_ground_components_v1";
 export const GEOMETRIC_PV_MODEL =
 	"opaque_perez_component_visibility_pvlib_reference_v1";
+export const GEOMETRIC_PV_MODEL_SERIES =
+	"opaque_perez_series_iv_forward_reference_v1";
+export const GEOMETRIC_PV_SERIES_ELECTRICAL =
+	"whole_module_forward_series_iv_single_string_per_tracker_v1";
 export const GEOMETRIC_PV_DIFFUSE =
 	"cosine_weighted_perez_component_visibility_v1";
 export const GEOMETRIC_PV_ROLE_V1 =
@@ -39,14 +43,24 @@ export const GEOMETRIC_PV_RESULTS = [
 		diffuse: GEOMETRIC_PV_DIFFUSE,
 		shading: GEOMETRIC_PV_SHADING,
 	},
+	{
+		model: GEOMETRIC_PV_MODEL_SERIES,
+		role: "perez_component_visibility_forward_series_iv_reference_scenario",
+		diffuse: GEOMETRIC_PV_DIFFUSE,
+		shading: GEOMETRIC_PV_SHADING,
+	},
 ] as const;
 const GEOMETRIC_PV_PAIRS: Record<string, string> = {
 	[GEOMETRIC_PV_MODEL_V1]: GEOMETRIC_PV_DIFFUSE_V1,
 	[GEOMETRIC_PV_MODEL]: GEOMETRIC_PV_DIFFUSE,
+	[GEOMETRIC_PV_MODEL_SERIES]: GEOMETRIC_PV_DIFFUSE,
 };
 export interface GeometricPvDraft extends JsonObject {
 	readonly schema_version: 1;
-	readonly model: typeof GEOMETRIC_PV_MODEL | typeof GEOMETRIC_PV_MODEL_V1;
+	readonly model:
+		| typeof GEOMETRIC_PV_MODEL
+		| typeof GEOMETRIC_PV_MODEL_V1
+		| typeof GEOMETRIC_PV_MODEL_SERIES;
 	readonly weather_asset_id: string | null;
 	readonly sampling: {
 		readonly coarse_cells_per_edge: number | null;
@@ -55,7 +69,9 @@ export interface GeometricPvDraft extends JsonObject {
 	readonly diffuse_policy:
 		typeof GEOMETRIC_PV_DIFFUSE | typeof GEOMETRIC_PV_DIFFUSE_V1;
 	readonly thermal_policy: "sapm_from_module_mean_poa_v1";
-	readonly electrical_policy: "uniform_module_pvwatts_independent_mpp_sum_v1";
+	readonly electrical_policy:
+		| "uniform_module_pvwatts_independent_mpp_sum_v1"
+		| typeof GEOMETRIC_PV_SERIES_ELECTRICAL;
 	readonly parameters: PvDraft;
 }
 export interface GeometricPvLimits {
@@ -100,7 +116,10 @@ export function geometricPvDraft(inputs: JsonObject): GeometricPvDraft {
 		GEOMETRIC_PV_PAIRS[String(row.model)] !== row.diffuse_policy ||
 		row.schema_version !== constants.schema_version ||
 		row.thermal_policy !== constants.thermal_policy ||
-		row.electrical_policy !== constants.electrical_policy ||
+		row.electrical_policy !==
+			(row.model === GEOMETRIC_PV_MODEL_SERIES
+				? GEOMETRIC_PV_SERIES_ELECTRICAL
+				: constants.electrical_policy) ||
 		(row.weather_asset_id !== null &&
 			(typeof row.weather_asset_id !== "string" ||
 				!/^[a-f0-9]{32}$/.test(row.weather_asset_id))) ||
@@ -125,7 +144,7 @@ export function compileGeometricPv(
 		Number(value.sampling.fine_cells_per_edge) <=
 			Number(value.sampling.coarse_cells_per_edge) ||
 		GEOMETRIC_PV_PAIRS[value.model] !== value.diffuse_policy ||
-		(value.model === GEOMETRIC_PV_MODEL &&
+		(value.model !== GEOMETRIC_PV_MODEL_V1 &&
 			value.parameters.arrays.some((array) => array.transposition !== "perez"))
 	)
 		throw new ApiError(422, "geometric_pv_inputs_invalid");

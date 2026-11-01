@@ -13386,3 +13386,48 @@ msgstr "Am 1. November 2026 geprüften Quellenstand verwenden"
 #: build/planner/assets/planner.js:1
 msgid "This is a conditional reference for the selected rule date and declared project scope and values. Verify whether the cited rules apply today and on the project's grid connection date. The grid operator, connection voltage, local requirements, equipment compliance and grid permission need separate verification."
 msgstr "Diese bedingte Orientierung bezieht sich auf das gewählte Regelungsdatum und die angegebenen Projektbedingungen und Werte. Prüfen Sie, ob die zitierten Regeln aktuell und zum Netzanschlussdatum des Projekts gelten. Netzbetreiber, Anschlussspannung, örtliche Anforderungen, Gerätekonformität und Anschlussgenehmigung müssen gesondert geprüft werden."
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
+#: build/planner/assets/planner.js:1
+msgid "Electrical scenario"
+msgstr "Elektrisches Szenario"
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
+#: build/planner/assets/planner.js:1
+msgid "Independent module reference"
+msgstr "Referenz mit unabhängigen Modulen"
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
+#: build/planner/assets/planner.js:1
+msgid "Series string reference"
+msgstr "Referenz mit Modulsträngen"
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
+#: build/planner/assets/planner.js:1
+msgid "Save one selected inverter and assign every included roof module to strings, with one string per tracker. Each string must belong to one roof array."
+msgstr "Speichern Sie einen ausgewählten Wechselrichter und ordnen Sie jedes berücksichtigte Dachmodul einem Strang zu, mit einem Strang je Tracker. Jeder Strang muss zu einem Dachmodulfeld gehören."
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
+#: build/planner/assets/planner.js:1
+msgid "Each declared string uses a common current and the selected inverter tracker window. The calculation models uniform irradiance within each module; bypass diodes, parallel strings and actual inverter tracking are not assessed."
+msgstr "Jeder angegebene Strang verwendet einen gemeinsamen Strom und den Tracker-Spannungsbereich des ausgewählten Wechselrichters. Innerhalb jedes Moduls wird eine gleichmäßige Einstrahlung angenommen; Bypassdioden, parallele Stränge und das tatsächliche Tracking des Wechselrichters werden nicht bewertet."
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
+#: build/planner/assets/planner.js:1
+msgid "The declared conversion curve and AC limit are applied after the modeled series strings. This is a reference, not manufacturer inverter tracking or equipment approval."
+msgstr "Die angegebene Umwandlungskurve und AC-Grenze werden nach den modellierten Modulsträngen angewendet. Dies ist eine Referenz; das Tracking des Herstellers und eine Gerätefreigabe werden damit nicht nachgewiesen."
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
+#: build/planner/assets/planner.js:1
+msgid "This profile combines geometric shading of direct and Perez diffuse components with a common-current series-string reference. The model assumes uniform irradiance within each module. Bypass diodes, parallel strings, actual inverter tracking, full shading accuracy and equipment or country approval remain unassessed."
+msgstr "Dieses Profil verbindet die geometrische Verschattung direkter und diffuser Perez-Anteile mit einer Strangreferenz mit gemeinsamem Strom. Das Modell nimmt innerhalb jedes Moduls eine gleichmäßige Einstrahlung an. Bypassdioden, parallele Stränge, das tatsächliche Tracking des Wechselrichters, die vollständige Verschattungsgenauigkeit und eine Geräte- oder Länderfreigabe werden nicht bewertet."
+
+#: ../../apps/planner/src/components/energy/PlanningReportResult.tsx
+#: build/planner/assets/planner.js:1
+msgid "Download PV string intervals (CSV)"
+msgstr "PV-Strangzeitreihe herunterladen (CSV)"
+
+#: ../../apps/planner/src/components/energy/PlanningReportResult.tsx
+#: build/planner/assets/planner.js:1
+msgid "The PV string CSV has one row per string and time interval. The module condition lists follow the order of module IDs in that row."
+msgstr "Die PV-Strang-CSV enthält je Strang und Zeitintervall eine Zeile. Die Listen der Modulbedingungen folgen der Reihenfolge der Modul-IDs in dieser Zeile."

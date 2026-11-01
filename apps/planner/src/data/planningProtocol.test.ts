@@ -286,6 +286,72 @@ test("report output keeps serialized fields mandatory and old column layout opti
 				manifest,
 			),
 		);
+	const withSeries = {
+		...full,
+		prepared_attachments: {
+			...full.prepared_attachments,
+			pv_series_csv: {
+				id: "series",
+				project_id: "project",
+				purpose: "planning_pv_series_csv_v1",
+				media_type: "text/csv",
+				content_sha256: sha,
+				metadata_sha256: sha,
+				metadata: { dependencies: pairedDependencies, locale: "en" },
+			},
+		},
+		dependencies: {
+			...full.dependencies,
+			"prepared_attachment.pv_series_csv.content": sha,
+			"prepared_attachment.pv_series_csv.metadata": sha,
+		},
+	};
+	assert.doesNotThrow(() => readReportResult(withSeries, run, manifest));
+	assert.throws(() =>
+		readReportResult(
+			{
+				...withSeries,
+				prepared_attachments: {
+					...withSeries.prepared_attachments,
+					pv_series_csv: {
+						...withSeries.prepared_attachments.pv_series_csv,
+						id: "rules",
+					},
+				},
+			},
+			run,
+			manifest,
+		),
+	);
+	assert.throws(() =>
+		readReportResult(
+			{
+				...withSeries,
+				prepared_attachments: {
+					...withSeries.prepared_attachments,
+					pv_series_csv: {
+						...withSeries.prepared_attachments.pv_series_csv,
+						metadata: { dependencies, locale: "en" },
+					},
+				},
+			},
+			run,
+			manifest,
+		),
+	);
+	assert.throws(() =>
+		readReportResult(
+			{
+				...withSeries,
+				dependencies: {
+					...withSeries.dependencies,
+					"prepared_attachment.pv_series_csv.content": materialsSha,
+				},
+			},
+			run,
+			manifest,
+		),
+	);
 	assert.throws(() =>
 		readReportResult({ ...paired, materials_sha256: sha }, run, manifest),
 	);

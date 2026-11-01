@@ -17,7 +17,7 @@ from linker_engine.planning.errors import ProjectInputContractRequired
 from linker_engine.planning.grid_connection import country_assessment
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.project_input_contracts import (
-    COUNTRY_RULES_INPUT_CONTRACT,
+    ENGINEERING_V10_INPUT_CONTRACT,
     MATERIALS_INPUT_CONTRACT,
     require_input_contract,
 )
@@ -227,13 +227,13 @@ def test_rule_input_is_revision_bound_and_requires_an_aware_writer(
     for before, after in ((None, values), (values, values), (values, initial)):
         with pytest.raises(ProjectInputContractRequired):
             require_input_contract(before, after, MATERIALS_INPUT_CONTRACT)
-        require_input_contract(before, after, COUNTRY_RULES_INPUT_CONTRACT)
+        require_input_contract(before, after, ENGINEERING_V10_INPUT_CONTRACT)
     project = workspace.create(
         owner,
         "Rules",
         values,
         key="create",
-        input_contract=COUNTRY_RULES_INPUT_CONTRACT,
+        input_contract=ENGINEERING_V10_INPUT_CONTRACT,
     )
     revision_one = country_assessment(project.inputs)
     run = workspace.evaluate(
@@ -256,7 +256,7 @@ def test_rule_input_is_revision_bound_and_requires_an_aware_writer(
         1,
         updated,
         key="revise",
-        input_contract=COUNTRY_RULES_INPUT_CONTRACT,
+        input_contract=ENGINEERING_V10_INPUT_CONTRACT,
     )
     assert outcomes(cast(Object, revision_one["rule_review"])) == {
         "fr_generation_type": "type_a"
@@ -271,7 +271,7 @@ def test_rule_input_is_revision_bound_and_requires_an_aware_writer(
     assert revision_one["connection_permission"] == "not_established"
     assert workspace.run(owner, run.id).result == {"assessment": revision_one}
     floor = read_project_input_floor(workspace.database.path.parent)
-    assert COUNTRY_RULES_INPUT_CONTRACT in floor["required_input_contracts"]
+    assert ENGINEERING_V10_INPUT_CONTRACT in floor["required_input_contracts"]
 
 
 def test_plant_reuses_electrical_cache_but_not_previous_rule_review(

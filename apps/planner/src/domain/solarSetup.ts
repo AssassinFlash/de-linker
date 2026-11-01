@@ -86,7 +86,9 @@ export interface ConverterDraft extends JsonObject {
 	readonly id: string;
 	readonly array_ids: readonly string[];
 	readonly model: "pvwatts";
-	readonly input_assumption: "independent_mppt_array_mpp_sum";
+	readonly input_assumption:
+		| "independent_mppt_array_mpp_sum"
+		| "one_string_per_tracker_independent_mpp_sum";
 	readonly reference_dc_power_w: number | null;
 	readonly eta_nominal: number | null;
 	readonly eta_reference: number | null;

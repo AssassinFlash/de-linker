@@ -278,6 +278,7 @@ for (const locale of ["en-GB", "de-DE"]) {
 				content_sha256: "a".repeat(64),
 			},
 			country_rule_review_csv: { id: "rules", content_sha256: "b".repeat(64) },
+			pv_series_csv: { id: "series", content_sha256: "c".repeat(64) },
 		};
 		const client = {
 			isCurrentScope: (value) => value === scope,
@@ -320,6 +321,14 @@ for (const locale of ["en-GB", "de-DE"]) {
 		);
 		assert.ok(ruleButton);
 		await act(async () => ruleButton.click());
+		const seriesLabel = locale.startsWith("de")
+			? "PV-Strangzeitreihe herunterladen (CSV)"
+			: "Download PV string intervals (CSV)";
+		const seriesButton = buttons().find(
+			(button) => button.textContent === seriesLabel,
+		);
+		assert.ok(seriesButton);
+		await act(async () => seriesButton.click());
 		await act(async () =>
 			buttons()
 				.find((button) =>
@@ -333,15 +342,19 @@ for (const locale of ["en-GB", "de-DE"]) {
 			calls.map((args) => [args[1], args[3]]),
 			[
 				["rules", "b".repeat(64)],
+				["series", "c".repeat(64)],
 				["materials", "a".repeat(64)],
 			],
 		);
 		assert.match(downloads[0], /-country-rules\.csv$/);
-		assert.ok(downloads[1].endsWith(`-${run.result.report.locale}.csv`));
+		assert.match(downloads[1], /-pv-strings\.csv$/);
+		assert.ok(downloads[2].endsWith(`-${run.result.report.locale}.csv`));
 		const legacy = structuredClone(run);
 		delete legacy.result.prepared_attachments.country_rule_review_csv;
+		delete legacy.result.prepared_attachments.pv_series_csv;
 		await act(async () => replace(legacy));
 		assert.ok(!buttons().some((button) => button.textContent === ruleLabel));
+		assert.ok(!buttons().some((button) => button.textContent === seriesLabel));
 	});
 }
 

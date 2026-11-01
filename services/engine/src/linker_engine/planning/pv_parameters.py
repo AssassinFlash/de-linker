@@ -49,7 +49,10 @@ class PvConversionParameters(Document):
     id: Identifier
     array_ids: Annotated[list[Identifier], Field(min_length=1)]
     model: Literal["pvwatts"]
-    input_assumption: Literal["independent_mppt_array_mpp_sum"]
+    input_assumption: Literal[
+        "independent_mppt_array_mpp_sum",
+        "one_string_per_tracker_independent_mpp_sum",
+    ]
     # PVWatts pdc0, not a module's STC rating or a hardware-port limit.
     reference_dc_power_w: Positive
     eta_nominal: Efficiency

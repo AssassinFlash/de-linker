@@ -205,7 +205,10 @@
           "type": "string"
         },
         "input_assumption": {
-          "const": "independent_mppt_array_mpp_sum",
+          "enum": [
+            "independent_mppt_array_mpp_sum",
+            "one_string_per_tracker_independent_mpp_sum"
+          ],
           "title": "Input Assumption",
           "type": "string"
         },
@@ -410,7 +413,8 @@
     "model": {
       "enum": [
         "opaque_direct_uniform_pvlib_reference_v1",
-        "opaque_perez_component_visibility_pvlib_reference_v1"
+        "opaque_perez_component_visibility_pvlib_reference_v1",
+        "opaque_perez_series_iv_forward_reference_v1"
       ],
       "title": "Model",
       "type": "string"
@@ -437,7 +441,10 @@
       "type": "string"
     },
     "electrical_policy": {
-      "const": "uniform_module_pvwatts_independent_mpp_sum_v1",
+      "enum": [
+        "uniform_module_pvwatts_independent_mpp_sum_v1",
+        "whole_module_forward_series_iv_single_string_per_tracker_v1"
+      ],
       "title": "Electrical Policy",
       "type": "string"
     },

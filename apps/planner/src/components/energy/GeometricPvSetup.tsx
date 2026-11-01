@@ -14,6 +14,8 @@ import {
 	compileGeometricPv,
 	GEOMETRIC_PV_MODEL,
 	GEOMETRIC_PV_MODEL_V1,
+	GEOMETRIC_PV_MODEL_SERIES,
+	GEOMETRIC_PV_SERIES_ELECTRICAL,
 	geometricDiffuseSampleUpperBound,
 	geometricPvDraft,
 	geometricPvInputs,
@@ -175,7 +177,7 @@ export function GeometricPvSetup({
 				? moduleSteps *
 						(Number(parsed.sampling.coarse_cells_per_edge) ** 2 +
 							Number(parsed.sampling.fine_cells_per_edge) ** 2) +
-					(parsed.model === GEOMETRIC_PV_MODEL
+					(parsed.model !== GEOMETRIC_PV_MODEL_V1
 						? geometricDiffuseSampleUpperBound(
 								moduleSteps / Number(rows),
 								Number(parsed.sampling.fine_cells_per_edge),
@@ -217,10 +219,15 @@ export function GeometricPvSetup({
 						)}
 			</p>
 			<p>
-				{__(
-					"Module temperature follows the declared SAPM model using mean irradiance across each module. Electrical response is uniform per module, with independent maximum-power outputs summed before the declared conversion groups. Cell substrings, bypass diodes, string I–V curves and actual inverter tracking are not modelled.",
-					"linker-tools",
-				)}
+				{parsed?.model === GEOMETRIC_PV_MODEL_SERIES
+					? __(
+							"Each declared string uses a common current and the selected inverter tracker window. The calculation models uniform irradiance within each module; bypass diodes, parallel strings and actual inverter tracking are not assessed.",
+							"linker-tools",
+						)
+					: __(
+							"Module temperature follows the declared SAPM model using mean irradiance across each module. Electrical response is uniform per module, with independent maximum-power outputs summed before the declared conversion groups. Cell substrings, bypass diodes, string I–V curves and actual inverter tracking are not modelled.",
+							"linker-tools",
+						)}
 			</p>
 			{!supported && (
 				<Notice>
@@ -253,6 +260,54 @@ export function GeometricPvSetup({
 			) : (
 				<>
 					<fieldset disabled={disabled}>
+						<label className="lp-field">
+							<span>{__("Electrical scenario", "linker-tools")}</span>
+							<select
+								value={
+									parsed.model === GEOMETRIC_PV_MODEL_SERIES
+										? "series"
+										: "independent"
+								}
+								onChange={(event) => {
+									const series = event.currentTarget.value === "series";
+									change({
+										...parsed,
+										model: series
+											? GEOMETRIC_PV_MODEL_SERIES
+											: GEOMETRIC_PV_MODEL,
+										diffuse_policy:
+											"cosine_weighted_perez_component_visibility_v1",
+										electrical_policy: series
+											? GEOMETRIC_PV_SERIES_ELECTRICAL
+											: "uniform_module_pvwatts_independent_mpp_sum_v1",
+										parameters: {
+											...parsed.parameters,
+											converters: parsed.parameters.converters.map((group) => ({
+												...group,
+												input_assumption: series
+													? "one_string_per_tracker_independent_mpp_sum"
+													: "independent_mppt_array_mpp_sum",
+											})),
+										},
+									});
+								}}
+							>
+								<option value="independent">
+									{__("Independent module reference", "linker-tools")}
+								</option>
+								<option value="series">
+									{__("Series string reference", "linker-tools")}
+								</option>
+							</select>
+						</label>
+						{parsed.model === GEOMETRIC_PV_MODEL_SERIES && (
+							<p>
+								{__(
+									"Save one selected inverter and assign every included roof module to strings, with one string per tracker. Each string must belong to one roof array.",
+									"linker-tools",
+								)}
+							</p>
+						)}
 						<label className="lp-field">
 							<span>{__("Project weather source", "linker-tools")}</span>
 							<select
@@ -416,11 +471,26 @@ export function GeometricPvSetup({
 							disabled={disabled}
 							valid={fieldsValid && invalidSampling.length === 0}
 							onValidity={setFieldsValid}
-							onChange={(parameters) => change({ ...parsed, parameters })}
+							onChange={(parameters) =>
+								change({
+									...parsed,
+									parameters: {
+										...parameters,
+										converters: parameters.converters.map((group) => ({
+											...group,
+											input_assumption:
+												parsed.model === GEOMETRIC_PV_MODEL_SERIES
+													? "one_string_per_tracker_independent_mpp_sum"
+													: "independent_mppt_array_mpp_sum",
+										})),
+									},
+								})
+							}
 							moduleTemplates={
 								catalog.error || catalog.isFetching ? undefined : catalog.data
 							}
 							geometric
+							series={parsed.model === GEOMETRIC_PV_MODEL_SERIES}
 						/>
 					)}
 				</>

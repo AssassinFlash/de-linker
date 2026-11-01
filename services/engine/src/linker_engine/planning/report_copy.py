@@ -3,6 +3,26 @@
 from __future__ import annotations
 
 TEXT = {
+    "geometric_pv_series_tracker": (
+        "Tracker / input / modules",
+        "Tracker / Eingang / Module",
+    ),
+    "geometric_pv_series_window": (
+        "Cited tracker window / maximum current",
+        "Belegter Tracker-Spannungsbereich / maximaler Strom",
+    ),
+    "geometric_pv_series_peak": (
+        "Scenario peak string current / DC power",
+        "Höchster Strangstrom / DC-Leistung im Szenario",
+    ),
+    "geometric_pv_title_series": (
+        "PV reference with geometric shading and series I–V",
+        "PV-Referenz mit geometrischer Verschattung und String-I–V",
+    ),
+    "geometric_pv_scope_series": (
+        "The declared geometry and weather determine each module's irradiance and temperature. A fitted whole-module single-diode curve combines the assigned modules at a common string current; one string per tracker is evaluated within the cited voltage and current limits, followed by the declared PVWatts converter scenario. This is not a validated manufacturer performance curve. Partial-cell shading, bypass diodes, reverse breakdown, parallel strings on one tracker, real MPPT dynamics and equipment or country approval remain unassessed.",
+        "Die angegebene Geometrie und Wetterquelle bestimmen Einstrahlung und Temperatur jedes Moduls. Eine angepasste Eindiodenkennlinie für das gesamte Modul verbindet die zugeordneten Module über einen gemeinsamen Stringstrom. Je Tracker wird ein String innerhalb der belegten Spannungs- und Stromgrenzen berechnet; anschließend folgt das angegebene PVWatts-Wechselrichterszenario. Dies ist keine validierte Herstellerkennlinie. Teilzellverschattung, Bypassdioden, Rückwärtsdurchbruch, parallele Strings an einem Tracker, das tatsächliche MPPT-Verhalten sowie Geräte- und Länderfreigaben bleiben ungeprüft.",
+    ),
     "geometric_pv_title": (
         "PV reference with geometric direct-beam shading",
         "PV-Referenz: geometrische Verschattung der Direktstrahlung",

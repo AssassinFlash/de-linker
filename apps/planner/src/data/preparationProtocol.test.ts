@@ -26,6 +26,7 @@ import {
 	GEOMETRIC_PV_MODEL_V1,
 	GEOMETRIC_PV_PURPOSE,
 	GEOMETRIC_PV_RESULTS,
+	GEOMETRIC_PV_MODEL_SERIES,
 	GEOMETRIC_PV_TASK,
 } from "../domain/geometricPv.ts";
 
@@ -503,12 +504,18 @@ test("geometric preparation requires the frozen executor generation to match the
 			"weather.metadata": sha,
 			"weather.raw": sha,
 			"woo.module_inputs": sha,
+			...(model === GEOMETRIC_PV_MODEL_SERIES
+				? { "woo.equipment_inputs": sha }
+				: {}),
 		};
 		const assets = {
 			runtime_bundle: sha,
 			"weather.raw": sha,
 			"weather.metadata": sha,
 			"woo.module_inputs": sha,
+			...(model === GEOMETRIC_PV_MODEL_SERIES
+				? { "woo.equipment_inputs": sha }
+				: {}),
 		};
 		return {
 			run: {
@@ -569,7 +576,10 @@ test("geometric preparation requires the frozen executor generation to match the
 				scope: {
 					diffuse_policy: item.diffuse,
 					thermal_policy: "sapm_from_module_mean_poa_v1",
-					electrical_policy: "uniform_module_pvwatts_independent_mpp_sum_v1",
+					electrical_policy:
+						model === GEOMETRIC_PV_MODEL_SERIES
+							? "whole_module_forward_series_iv_single_string_per_tracker_v1"
+							: "uniform_module_pvwatts_independent_mpp_sum_v1",
 				},
 				equipment_release: { status: "not_assessed" },
 				country_assessment: { status: "not_assessed" },
@@ -577,7 +587,11 @@ test("geometric preparation requires the frozen executor generation to match the
 			},
 		};
 	};
-	for (const model of [GEOMETRIC_PV_MODEL_V1, GEOMETRIC_PV_MODEL]) {
+	for (const model of [
+		GEOMETRIC_PV_MODEL_V1,
+		GEOMETRIC_PV_MODEL,
+		GEOMETRIC_PV_MODEL_SERIES,
+	]) {
 		const matched = packet(model, model);
 		assert.equal(
 			readPreparationResult(

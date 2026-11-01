@@ -8,13 +8,14 @@ from typing import cast
 from linker_engine.pdf import render
 
 from .asset_publication import AssetPublication, AssetResult
-from .canonical import Object
+from .canonical import Json, Object
 from .certificate_information import report_source_with_information
 from .certificate_sources import inspect_report_certificates
 from .equipment_conditions import review_device_conditions
 from .errors import VersionUnavailable
 from .execution_identity import execution_key, request_execution_key
 from .frozen_run import frozen_manifest
+from .geometric_pv_csv import series_csv
 from .grid_connection_report import country_rule_csv
 from .product_sources import ProductSources
 from .project_materials import materials_csv, project_materials
@@ -218,6 +219,28 @@ class ReportKernel:
                         "label": text("country_rule_title", report.locale),
                         "basis": "Frozen country-rule review shared with the planning report",
                         "rights_basis": "Private project output and cited public sources",
+                    },
+                    "dependencies": dependencies,
+                    "locale": report.locale,
+                },
+            )
+        series = series_csv(
+            self.workspace.blobs,
+            cast(list[Json], source.get("geometric_pv_references", [])),
+        )
+        if series is not None:
+            attachments["pv_series_csv"] = AssetPublication.prepare(
+                self.workspace.blobs,
+                cast(str, manifest["project_id"]),
+                series,
+                "text/csv",
+                "planning_pv_series_csv_v1",
+                {
+                    "retention": "permanent",
+                    "provenance": {
+                        "label": report.title,
+                        "basis": "Frozen geometric PV string conditions and forward-only operating points",
+                        "rights_basis": "Private project output",
                     },
                     "dependencies": dependencies,
                     "locale": report.locale,

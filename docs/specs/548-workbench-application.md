@@ -1121,7 +1121,7 @@ unresolved obligations. One matching cover field cannot approve them.
 ## Dated national and operator rule readings
 
 The optional `country_rule_inputs` belong to the saved project revision and
-require the cumulative `country_rules_v1` complete-writer capability. Older
+require the cumulative `project_engineering_v10` complete-writer capability shared with the forward series I–V inputs. Older
 writers cannot add, retain or remove these inputs; the retained revision floor
 prevents rollback to a reader that would discard them. A selected equipment,
 plant, search or energy-backed report cannot reuse a country result after its

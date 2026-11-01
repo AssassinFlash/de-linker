@@ -11,6 +11,7 @@ from .errors import InvalidInput, VersionUnavailable
 from .frozen_documents import FrozenDocuments
 from .geometric_pv_inputs import (
     MODEL_ROLES,
+    MODEL_V3,
     PROFILE_PURPOSE,
     GeometricPvInputs,
 )
@@ -60,7 +61,9 @@ def reference_bundle(
         manifest.get("schema_version") != 1
         or manifest.get("kind") not in MODEL_ROLES
         or manifest.get("dependencies") != dependencies
-        or set(dependencies) != DEPENDENCIES
+        or set(dependencies)
+        != DEPENDENCIES
+        | ({"woo.equipment_inputs"} if manifest.get("kind") == MODEL_V3 else set())
         or any(not isinstance(sha, str) for sha in dependencies.values())
     ):
         raise VersionUnavailable("geometric PV dependency manifest differs")
@@ -75,6 +78,18 @@ def reference_bundle(
     details = _object(witness.get("inputs"))
     basis = documents.object(str(dependencies["woo.module_inputs"]))
     weather_metadata = documents.object(str(dependencies["weather.metadata"]))
+    if manifest.get("kind") == MODEL_V3:
+        equipment = documents.object(str(dependencies["woo.equipment_inputs"]))
+        if (
+            metadata.get("woo_equipment_inputs") != equipment
+            or equipment.get("pv_module_inputs") != basis
+            or inputs.get("electrical_basis_sha256")
+            != dependencies["woo.equipment_inputs"]
+            or not isinstance(inputs.get("electrical_inputs"), dict)
+        ):
+            raise VersionUnavailable(
+                "geometric PV electrical source differs from frozen evidence"
+            )
     if (
         any(
             document.get("schema_version") != 1
@@ -242,6 +257,15 @@ def reference_dependencies(
             "geometric PV profile differs from saved geometry or parameters"
         )
     bundle = reference_bundle(blobs, asset.content_sha256, asset.metadata)
+    if _object(bundle["manifest"]).get("kind") == MODEL_V3:
+        from .geometric_pv_job import electrical_project_inputs
+
+        if _object(bundle["inputs"]).get(
+            "electrical_inputs"
+        ) != electrical_project_inputs(inputs):
+            raise InvalidInput(
+                "geometric PV profile differs from saved equipment or string assignments"
+            )
     return {
         key: cast(str, value) for key, value in _object(bundle["dependencies"]).items()
     }

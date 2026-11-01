@@ -97,6 +97,11 @@ export function PlanningReportResult({
 				? readObject(
 						readObject(run.result.prepared_attachments).country_rule_review_csv,
 					)
+				: null,
+		seriesCsv =
+			run.result?.prepared_attachments &&
+			readObject(run.result.prepared_attachments).pv_series_csv
+				? readObject(readObject(run.result.prepared_attachments).pv_series_csv)
 				: null;
 	const [busy, setBusy] = useState(false),
 		[error, setError] = useState(false);
@@ -112,9 +117,15 @@ export function PlanningReportResult({
 			objectUrl.current = null;
 		};
 	}, [run.id, scope]);
-	async function download(format: "pdf" | "materials" | "rules") {
+	async function download(format: "pdf" | "materials" | "rules" | "series") {
 		const file =
-			format === "pdf" ? asset : format === "materials" ? csv : ruleCsv;
+			format === "pdf"
+				? asset
+				: format === "materials"
+					? csv
+					: format === "rules"
+						? ruleCsv
+						: seriesCsv;
 		if (busy || !report || !file || !client.isCurrentScope(scope)) return;
 		const instance = lifetime.current,
 			controller = new AbortController();
@@ -144,7 +155,12 @@ export function PlanningReportResult({
 			objectUrl.current = URL.createObjectURL(blob);
 			const link = document.createElement("a");
 			link.href = objectUrl.current;
-			const suffix = format === "rules" ? "-country-rules" : "";
+			const suffix =
+				format === "rules"
+					? "-country-rules"
+					: format === "series"
+						? "-pv-strings"
+						: "";
 			link.download = `linker-planning-${run.project_id}-r${run.revision}-${report.locale}${suffix}.${format === "pdf" ? "pdf" : "csv"}`;
 			link.click();
 		} catch (cause) {
@@ -230,7 +246,25 @@ export function PlanningReportResult({
 						{__("Download country rule review (CSV)", "linker-tools")}
 					</button>
 				)}
+				{seriesCsv && (
+					<button
+						type="button"
+						className="lp-button lp-button-secondary"
+						disabled={busy || !client.isCurrentScope(scope)}
+						onClick={() => void download("series")}
+					>
+						{__("Download PV string intervals (CSV)", "linker-tools")}
+					</button>
+				)}
 			</div>
+			{seriesCsv && (
+				<p>
+					{__(
+						"The PV string CSV has one row per string and time interval. The module condition lists follow the order of module IDs in that row.",
+						"linker-tools",
+					)}
+				</p>
+			)}
 			{error && (
 				<Notice error>
 					{__("The file could not be downloaded. Try again.", "linker-tools")}

@@ -21,6 +21,7 @@ export function PvForm({
 	onValidity,
 	moduleTemplates,
 	geometric = false,
+	series = false,
 }: {
 	value: PvDraft;
 	geometry: GeometryDocument;
@@ -32,6 +33,7 @@ export function PvForm({
 	onValidity: (valid: boolean) => void;
 	moduleTemplates?: readonly ModuleTemplate[] | undefined;
 	geometric?: boolean;
+	series?: boolean;
 }) {
 	const [section, setSection] = useState<"modules" | "arrays" | "conversion">(
 			"modules",
@@ -169,15 +171,20 @@ export function PvForm({
 				<section className="lp-scenario-block">
 					<h3>{__("Shared power conversion", "linker-tools")}</h3>
 					<p>
-						{geometric
+						{series
 							? __(
-									"Each active array belongs to one conversion group. The model sums independent uniform module maximum-power outputs into each array and applies the declared shared PVWatts conversion curve and AC limit. It does not reconstruct physical strings or manufacturer inverter tracking.",
+									"The declared conversion curve and AC limit are applied after the modeled series strings. This is a reference, not manufacturer inverter tracking or equipment approval.",
 									"linker-tools",
 								)
-							: __(
-									"Each active array must belong to exactly one conversion group. The model sums each group's array DC power after the declared losses, then applies one shared PVWatts conversion curve and AC output limit. Each array is assumed to have independent maximum-power tracking. Electrical strings and physical inverter suitability need separate assessment.",
-									"linker-tools",
-								)}
+							: geometric
+								? __(
+										"Each active array belongs to one conversion group. The model sums independent uniform module maximum-power outputs into each array and applies the declared shared PVWatts conversion curve and AC limit. It does not reconstruct physical strings or manufacturer inverter tracking.",
+										"linker-tools",
+									)
+								: __(
+										"Each active array must belong to exactly one conversion group. The model sums each group's array DC power after the declared losses, then applies one shared PVWatts conversion curve and AC output limit. Each array is assumed to have independent maximum-power tracking. Electrical strings and physical inverter suitability need separate assessment.",
+										"linker-tools",
+									)}
 					</p>
 				</section>
 				{value.converters.map((group, index) => (

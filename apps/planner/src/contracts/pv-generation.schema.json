@@ -183,7 +183,10 @@
           "type": "string"
         },
         "input_assumption": {
-          "const": "independent_mppt_array_mpp_sum",
+          "enum": [
+            "independent_mppt_array_mpp_sum",
+            "one_string_per_tracker_independent_mpp_sum"
+          ],
           "title": "Input Assumption",
           "type": "string"
         },

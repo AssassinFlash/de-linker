@@ -247,6 +247,39 @@ export function readReportResult(
 				throw new ApiError(502, "invalid_planning_report");
 		}
 	}
+	const attachments =
+		result.prepared_attachments === undefined
+			? null
+			: readObject(result.prepared_attachments);
+	if (attachments?.pv_series_csv !== undefined) {
+		const csv = readObject(attachments.pv_series_csv),
+			meta = readObject(csv.metadata),
+			materials = readObject(attachments.bill_of_materials_csv),
+			rules =
+				attachments.country_rule_review_csv === undefined
+					? null
+					: readObject(attachments.country_rule_review_csv),
+			resultDependencies = readObject(result.dependencies);
+		if (
+			typeof csv.id !== "string" ||
+			!csv.id ||
+			csv.id === asset.id ||
+			csv.id === materials.id ||
+			csv.id === rules?.id ||
+			csv.project_id !== run.project_id ||
+			csv.purpose !== "planning_pv_series_csv_v1" ||
+			csv.media_type !== "text/csv" ||
+			!hash(csv.content_sha256) ||
+			!hash(csv.metadata_sha256) ||
+			!sameJson(readObject(meta.dependencies), dependencies) ||
+			meta.locale !== readObject(result.report).locale ||
+			resultDependencies["prepared_attachment.pv_series_csv.content"] !==
+				csv.content_sha256 ||
+			resultDependencies["prepared_attachment.pv_series_csv.metadata"] !==
+				csv.metadata_sha256
+		)
+			throw new ApiError(502, "invalid_planning_report");
+	}
 	return result;
 }
 export function reportFromRun(run: PlanningRun): PlanningReport {

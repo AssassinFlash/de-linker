@@ -8,7 +8,7 @@ from linker_engine.models import ReportRow, ReportSection
 
 from .canonical import Json, Object
 from .frozen_documents import FrozenDocuments
-from .geometric_pv_inputs import POLICY_V2
+from .geometric_pv_inputs import MODEL_V3, POLICY_V2
 from .geometric_pv_profile import prepared_profile, reference_bundle
 from .pv_profile_artifacts import _object
 from .report_copy import text
@@ -135,6 +135,29 @@ def geometric_pv_reference(
             blobs, raw_sha256, metadata, documents=documents, geometric_bundle=bundle
         ),
         "dependencies": bundle["dependencies"],
+        **(
+            {
+                "series_strings": [
+                    {
+                        "mppt": row["mppt"],
+                        "input": row["input"],
+                        "module_count": len(cast(list[Json], row["module_ids"])),
+                        "window_v": row["window_v"],
+                        "maximum_current_a": row["maximum_current_a"],
+                        "peak_model_current_a": max(
+                            cast(list[float], row["current_a"])
+                        ),
+                        "peak_model_dc_w": max(
+                            cast(list[float], row["dc_available_w"])
+                        ),
+                    }
+                    for row in cast(list[Object], witness["strings"])
+                ],
+                "series_inverter_facts": witness["inverter_operating_facts"],
+            }
+            if witness["kind"] == MODEL_V3
+            else {}
+        ),
     }
 
 
@@ -216,6 +239,26 @@ def geometric_pv_sections(references: list[Json], locale: str) -> list[ReportSec
                 value=str(interpretation["synthetic_energy_year"]),
             ),
         ]
+        if reference.get("model") == MODEL_V3:
+            for raw_string in cast(list[Json], reference["series_strings"]):
+                string = _object(raw_string)
+                window = cast(list[Json], string["window_v"])
+                rows.extend(
+                    [
+                        ReportRow(
+                            label=text("geometric_pv_series_tracker", locale),
+                            value=f"{string['mppt']} / {string['input']} / {string['module_count']}",
+                        ),
+                        ReportRow(
+                            label=text("geometric_pv_series_window", locale),
+                            value=f"{span(window[0], window[1], locale)} V / {number(string['maximum_current_a'], locale, 'A')}",
+                        ),
+                        ReportRow(
+                            label=text("geometric_pv_series_peak", locale),
+                            value=f"{number(string['peak_model_current_a'], locale, 'A')} / {number(string['peak_model_dc_w'], locale, 'W')}",
+                        ),
+                    ]
+                )
         rows.extend(_coefficient_rows(reference, locale))
         rows.extend(
             ReportRow(label=name + " SHA-256", value=str(sha))
@@ -232,14 +275,18 @@ def geometric_pv_sections(references: list[Json], locale: str) -> list[ReportSec
             ReportSection(
                 id=f"geometric-pv-reference-{index}",
                 title=text(
-                    _recorded_copy(
+                    "geometric_pv_title_series"
+                    if reference.get("model") == MODEL_V3
+                    else _recorded_copy(
                         facts, "geometric_pv_title", "geometric_pv_title_perez"
                     ),
                     locale,
                 ),
                 paragraphs=[
                     text(
-                        _recorded_copy(
+                        "geometric_pv_scope_series"
+                        if reference.get("model") == MODEL_V3
+                        else _recorded_copy(
                             facts, "geometric_pv_scope", "geometric_pv_scope_perez"
                         ),
                         locale,

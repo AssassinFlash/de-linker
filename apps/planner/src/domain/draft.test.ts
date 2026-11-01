@@ -31,7 +31,7 @@ test("a late acknowledgement preserves newer edits and their undo/redo history",
 	const intent = draft.pending;
 	assert.ok(intent);
 	const wire = intent.body;
-	assert.equal(projectInputContract, "country_rules_v1");
+	assert.equal(projectInputContract, "project_engineering_v10");
 	assert.equal(JSON.parse(wire).input_contract, projectInputContract);
 	draft = editDraft(draft, { ...project.inputs, value: 3 });
 	assert.equal(prepareSave(draft, crypto.randomUUID(), policy).pending, intent);

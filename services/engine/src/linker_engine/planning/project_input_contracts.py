@@ -22,9 +22,9 @@ type InputContract = Literal[
     "installation_terminal_bindings_v1",
     "installation_conductor_reference_current_v1",
     "installation_physical_materials_v1",
-    "country_rules_v1",
+    "project_engineering_v10",
 ]
-COUNTRY_RULES_INPUT_CONTRACT: InputContract = "country_rules_v1"
+ENGINEERING_V10_INPUT_CONTRACT: InputContract = "project_engineering_v10"
 MATERIALS_INPUT_CONTRACT: InputContract = "installation_physical_materials_v1"
 REFERENCE_CURRENT_INPUT_CONTRACT: InputContract = (
     "installation_conductor_reference_current_v1"
@@ -50,7 +50,7 @@ SUPPORTED_INPUT_CONTRACTS: tuple[str, ...] = (
     TERMINAL_INPUT_CONTRACT,
     REFERENCE_CURRENT_INPUT_CONTRACT,
     MATERIALS_INPUT_CONTRACT,
-    COUNTRY_RULES_INPUT_CONTRACT,
+    ENGINEERING_V10_INPUT_CONTRACT,
 )
 
 
@@ -58,7 +58,7 @@ def required_contracts(inputs: Mapping[str, object]) -> tuple[str, ...]:
     installation = inputs.get("installation")
     required = []
     if "country_rule_inputs" in inputs:
-        required.append(COUNTRY_RULES_INPUT_CONTRACT)
+        required.append(ENGINEERING_V10_INPUT_CONTRACT)
     if "grid_connection" in inputs:
         required.append(GRID_CONNECTION_INPUT_CONTRACT)
     if "pv_plant_string_plan" in inputs:
@@ -104,6 +104,12 @@ def required_contracts(inputs: Mapping[str, object]) -> tuple[str, ...]:
         required.append(DIRECT_BEAM_INPUT_CONTRACT)
     if "geometric_pv_preparation" in inputs:
         required.append(GEOMETRIC_PV_INPUT_CONTRACT)
+        geometric = inputs["geometric_pv_preparation"]
+        if (
+            isinstance(geometric, Mapping)
+            and geometric.get("model") == "opaque_perez_series_iv_forward_reference_v1"
+        ):
+            required.append(ENGINEERING_V10_INPUT_CONTRACT)
     return tuple(required)
 
 

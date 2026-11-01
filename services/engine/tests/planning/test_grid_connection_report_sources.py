@@ -19,7 +19,7 @@ from linker_engine.planning.equipment_search_kernel import EquipmentSearchKernel
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.product_sources import ProductSources
 from linker_engine.planning.project_input_contracts import (
-    COUNTRY_RULES_INPUT_CONTRACT,
+    ENGINEERING_V10_INPUT_CONTRACT,
     GRID_CONNECTION_INPUT_CONTRACT,
 )
 from linker_engine.planning.records import Actor, Context, Project, Run
@@ -47,7 +47,7 @@ def completed_equipment_source(
     kind: SourceKind,
 ) -> tuple[Project, Run]:
     contract = (
-        COUNTRY_RULES_INPUT_CONTRACT
+        ENGINEERING_V10_INPUT_CONTRACT
         if "country_rule_inputs" in values
         else GRID_CONNECTION_INPUT_CONTRACT
     )
@@ -136,7 +136,7 @@ def test_report_pin_rejects_changed_rule_inputs(
         project.revision,
         changed,
         key="edit-rules",
-        input_contract=COUNTRY_RULES_INPUT_CONTRACT,
+        input_contract=ENGINEERING_V10_INPUT_CONTRACT,
     )
     with pytest.raises(ReportInputsChanged):
         report_service(workspace, monkeypatch).evaluate(

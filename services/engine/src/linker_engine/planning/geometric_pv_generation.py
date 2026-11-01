@@ -26,6 +26,7 @@ from .geometric_pv_diffuse import diffuse_sample_upper_bound, module_diffuse_vis
 from .geometric_pv_inputs import (
     MODEL_ROLES,
     MODEL_V2,
+    MODEL_V3,
     SHADING_STATUS,
     GeometricPvInputs,
     GeometricPvLimits,
@@ -46,6 +47,8 @@ from .pv_physics import (
     values,
 )
 from .pv_reconstruction import PvReconstruction
+from .pv_series_operating import series_operating_point
+from .pv_series_plan import series_plan
 from .pv_weather import WeatherSeries
 from .series_source import SeriesSource
 
@@ -58,15 +61,17 @@ def generate_geometric_pv(
     *,
     max_weather_rows: int,
     checkpoint: Callable[[], None] = lambda: None,
+    electrical_inputs: Object | None = None,
+    electrical_basis: Object | None = None,
 ) -> PvGeneration:
     """Every retained weather row is used; no selected-row interpolation.
 
     Direct fractions attenuate beam POA before the declared mean-module thermal
-    and uniform PVWatts response. The retained policy leaves sky and ground
+    and whole-module electrical response. The retained policy leaves sky and ground
     unobstructed. The Perez policy scales isotropic sky, circumsolar, a positive
     horizon term and ground by visible fractions. A negative horizon correction
-    stays unchanged. This is not a bypass-diode, string I–V or real MPPT
-    performance model.
+    stays unchanged. The series scenario uses a fitted forward-quadrant string
+    I–V curve; bypass diodes and real MPPT performance are not modelled.
     """
     geometry = decode_object(encode(geometry))
     request = GeometricPvInputs.read(request.model_dump(mode="json"))
@@ -74,11 +79,9 @@ def generate_geometric_pv(
     parameters = request.parameters
     if pvlib.__version__ != parameters.pvlib_version:
         raise VersionUnavailable("the pinned geometric PV library is unavailable")
-    # `electrical_policy` declares that every module runs at its own MPP and the
-    # results are summed. Inter-module mismatch loss exists only because a
-    # series string cannot hold every module at its own MPP, so the declared
-    # array mismatch factor would contradict that policy. Refuse rather than
-    # silently apply a derate the policy says is not modelled.
+    # The independent scenario has no inter-module mismatch; the series
+    # scenario already accounts for its declared whole-module mismatch. Both
+    # require a unit factor to avoid adding an unrelated second derate.
     misdeclared = [
         item.array_id for item in parameters.arrays if item.dc_mismatch_factor != 1
     ]
@@ -95,7 +98,20 @@ def generate_geometric_pv(
     receiver_ids = [receiver.id for receiver in scene.receivers]
     if set(receiver_ids) != {module for array in arrays for module in array.module_ids}:
         raise InvalidInput("geometric PV receivers differ from included modules")
-    diffuse = request.model == MODEL_V2
+    diffuse = request.model in (MODEL_V2, MODEL_V3)
+    series = None
+    if request.model == MODEL_V3:
+        if electrical_inputs is None or electrical_basis is None:
+            raise InvalidInput(
+                "series PV needs the saved wiring and frozen Woo evidence"
+            )
+        if len(parameters.converters) != 1:
+            raise InvalidInput(
+                "the series scenario requires one declared inverter converter"
+            )
+        series = series_plan(
+            {**electrical_inputs, "geometry": geometry}, electrical_basis
+        )
     upper_samples = (
         len(receiver_ids)
         * size
@@ -157,6 +173,14 @@ def generate_geometric_pv(
             "weather": weather.document(),
             "parameters": request.model_dump(mode="json"),
             "limits": limits.model_dump(mode="json"),
+            **(
+                {
+                    "electrical_inputs": electrical_inputs,
+                    "electrical_basis_sha256": digest(encode(electrical_basis)),
+                }
+                if series is not None
+                else {}
+            ),
         }
     )
     input_hash = digest(inputs_json)
@@ -164,6 +188,9 @@ def generate_geometric_pv(
     array_parameters = {p.array_id: p for p in parameters.arrays}
     outputs: dict[str, ArrayPower] = {}
     module_witnesses: list[Json] = []
+    module_conditions: dict[str, tuple[np.ndarray, np.ndarray]] = {}
+    module_arrays: dict[str, str] = {}
+    string_witnesses: list[Json] = []
     try:
         with np.errstate(over="raise", invalid="raise"):
             for array in arrays:
@@ -194,9 +221,30 @@ def generate_geometric_pv(
                         ),
                     )
                     module_outputs.append(output.dc_w)
+                    if series is not None:
+                        assert output.effective_irradiance_w_m2 is not None
+                        assert output.cell_temperature_c is not None
+                        module_conditions[identifier] = (
+                            output.effective_irradiance_w_m2,
+                            output.cell_temperature_c,
+                        )
+                        module_arrays[identifier] = array.id
                     module_witnesses.append(
                         {
-                            **output.witness,
+                            **(
+                                {
+                                    **{
+                                        k: v
+                                        for k, v in output.witness.items()
+                                        if k != "dc_available_w"
+                                    },
+                                    "independent_pvwatts_reference_w": output.witness[
+                                        "dc_available_w"
+                                    ],
+                                }
+                                if series is not None
+                                else output.witness
+                            ),
                             "module_id": identifier,
                             "geometric_visible_fraction": visible[identifier],
                             "geometric_status": statuses[identifier],
@@ -222,6 +270,61 @@ def generate_geometric_pv(
                 outputs[array.id] = ArrayPower(
                     dc, {**array.document(), "dc_available_w": retained_watts(dc)}
                 )
+            if series is not None:
+                per_array: dict[str, list[np.ndarray]] = {
+                    array.id: [] for array in arrays
+                }
+                for string in series.strings:
+                    checkpoint()
+                    array_ids = {
+                        module_arrays[identifier] for identifier in string.module_ids
+                    }
+                    if len(array_ids) != 1:
+                        raise InvalidInput(
+                            "a modeled series string must use one roof array"
+                        )
+                    array_id = next(iter(array_ids))
+                    window, maximum = series.limits[string.mppt]
+                    operating = series_operating_point(
+                        [
+                            module_conditions[identifier]
+                            for identifier in string.module_ids
+                        ],
+                        series.parameters,
+                        window,
+                        maximum,
+                    )
+                    dc = operating.dc_w * array_parameters[array_id].dc_wiring_factor
+                    per_array[array_id].append(dc)
+                    string_witnesses.append(
+                        {
+                            "id": string.id,
+                            "mppt": string.mppt,
+                            "input": string.input,
+                            "module_ids": list(string.module_ids),
+                            "array_id": array_id,
+                            "window_v": list(window),
+                            "maximum_current_a": maximum,
+                            "voltage_v": values(operating.voltage_v),
+                            "current_a": values(operating.current_a),
+                            "dc_before_wiring_w": values(operating.dc_w),
+                            "dc_available_w": retained_watts(dc),
+                        }
+                    )
+                for array in arrays:
+                    if not per_array[array.id]:
+                        raise InvalidInput(
+                            "every included array must have an assigned string"
+                        )
+                    dc = checked(
+                        np.add.reduce(per_array[array.id]),
+                        size,
+                        "series array DC",
+                        nonnegative=True,
+                    )
+                    outputs[array.id] = ArrayPower(
+                        dc, {**array.document(), "dc_available_w": retained_watts(dc)}
+                    )
             converters = [
                 conversion_power(group, outputs, size)
                 for group in parameters.converters
@@ -265,11 +368,21 @@ def generate_geometric_pv(
         "diffuse_policy": request.diffuse_policy,
         "thermal_policy": request.thermal_policy,
         "electrical_policy": request.electrical_policy,
-        "electrical_policy_scope": {
-            "module_mpp": "independent_per_module",
-            "dc_wiring_factor": "applied_per_module",
-            "dc_mismatch_factor": "unit_required_not_applied",
-        },
+        "electrical_policy_scope": (
+            {
+                "module_iv": "whole_module_uniform_forward_quadrant",
+                "string_current": "common_series_current",
+                "tracker": "one_string_ideal_static_mpp_within_cited_window",
+                "dc_wiring_factor": "applied_once_per_string",
+                "dc_mismatch_factor": "unit_required_not_applied",
+            }
+            if series is not None
+            else {
+                "module_mpp": "independent_per_module",
+                "dc_wiring_factor": "applied_per_module",
+                "dc_mismatch_factor": "unit_required_not_applied",
+            }
+        ),
         "output_boundary": "scenario_ac_potential_before_site_export_and_storage_control",
         "sampling": request.sampling.model_dump(mode="json"),
         "work": {
@@ -282,7 +395,11 @@ def generate_geometric_pv(
         "limits": limits.model_dump(mode="json"),
         "not_assessed": [
             *([] if diffuse else ["occluded_sky_and_ground_diffuse_irradiance"]),
-            "cell_substring_bypass_diode_and_string_iv_response",
+            *(
+                ["cell_substring_bypass_diode_and_reverse_breakdown"]
+                if series is not None
+                else ["cell_substring_bypass_diode_and_string_iv_response"]
+            ),
             "actual_mppt_and_manufacturer_operating_performance",
             "equipment_and_country_release",
             "complete_shading_accuracy_or_sampling_error_bound",
@@ -314,6 +431,16 @@ def generate_geometric_pv(
         "arrays": [outputs[array.id].witness for array in arrays],
         "modules": module_witnesses,
         "converters": [item[1] for item in converters],
+        **(
+            {
+                "strings": string_witnesses,
+                "electrical_model": series.model,
+                "inverter_operating_facts": series.inverter_facts,
+                "electrical_assessment": series.assessment,
+            }
+            if series is not None
+            else {}
+        ),
         "available_ac_w": retained_watts(total),
         "energy_kwh": profile.total_kwh,
         "equipment_release": {"status": "not_assessed"},

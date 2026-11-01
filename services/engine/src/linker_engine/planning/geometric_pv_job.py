@@ -16,6 +16,7 @@ from .geometric_pv_inputs import (
     MODEL_ROLES,
     MODEL_V1,
     MODEL_V2,
+    MODEL_V3,
     PROFILE_PURPOSE,
     SHADING_STATUS,
     GeometricPvInputs,
@@ -24,6 +25,7 @@ from .geometric_pv_inputs import (
 from .product_sources import ProductSources
 from .pv_parameters import PvGenerationLimits
 from .pv_preparation import require_weather_source, selected_weather
+from .pv_series_plan import series_plan
 from .pv_source import PvSource
 from .records import Actor, Context, Lease
 from .worker import Control
@@ -59,6 +61,19 @@ def check_geometric_pv(
     selected_source(assets, actor, project_id, inputs)
 
 
+def electrical_project_inputs(inputs: Object) -> Object:
+    """Exact saved single-inverter selection and wiring, not caller assertions."""
+    return {
+        key: inputs.get(key)
+        for key in (
+            "equipment_selection",
+            "pv_string_plan",
+            "equipment_plant",
+            "pv_plant_string_plan",
+        )
+    }
+
+
 class GeometricPvKernel:
     kind = KIND
     _base_models = {
@@ -92,7 +107,7 @@ class GeometricPvKernel:
         }
 
     def models_for(self, generation: str) -> dict[str, str]:
-        if generation not in (MODEL_V1, MODEL_V2):
+        if generation not in (MODEL_V1, MODEL_V2, MODEL_V3):
             raise VersionUnavailable("geometric PV generation model is not executable")
         return {**self._base_models, "generation": generation}
 
@@ -106,7 +121,9 @@ class GeometricPvKernel:
         )
 
     def execution_keys(self) -> tuple[str, ...]:
-        return tuple(self.execution_key_for(model) for model in (MODEL_V1, MODEL_V2))
+        return tuple(
+            self.execution_key_for(model) for model in (MODEL_V1, MODEL_V2, MODEL_V3)
+        )
 
     def execution_key(self) -> str:
         return self.execution_keys()[0]
@@ -115,7 +132,18 @@ class GeometricPvKernel:
         request = GeometricPvInputs.read(inputs.get("geometric_pv_preparation"))
         source = selected_source(Assets(self.workspace), actor, project_id, inputs)
         self.workspace.blobs.read(source.content_sha256)
-        basis = self.products.pv_basis(request.product_inputs(inputs))
+        basis = (
+            self.products.electrical_module_basis()
+            if request.model == MODEL_V3
+            else self.products.pv_basis(request.product_inputs(inputs))
+        )
+        extra: dict[str, str] = {}
+        if request.model == MODEL_V3:
+            self.products.check_pv_inputs(request.product_inputs(inputs), basis)
+            equipment = self.products.equipment_basis()
+            equipment["pv_module_inputs"] = basis
+            series_plan(inputs, equipment)
+            extra["woo.equipment_inputs"] = self.workspace.blobs.put_object(equipment)
         return Context(
             self.runtime.sha256,
             self.models_for(request.model),
@@ -124,6 +152,7 @@ class GeometricPvKernel:
                 "weather.raw": source.content_sha256,
                 "weather.metadata": source.metadata_sha256,
                 "woo.module_inputs": self.workspace.blobs.put_object(basis),
+                **extra,
             },
             self.parameters(),
         )
@@ -156,13 +185,12 @@ class GeometricPvKernel:
         pinned = context.get("assets")
         if (
             not isinstance(pinned, dict)
-            or set(pinned)
-            != {
+            or not {
                 "runtime_bundle",
                 "weather.raw",
                 "weather.metadata",
                 "woo.module_inputs",
-            }
+            }.issubset(pinned)
             or pinned["runtime_bundle"] != self.runtime.sha256
             or any(not isinstance(value, str) for value in pinned.values())
         ):
@@ -171,6 +199,16 @@ class GeometricPvKernel:
             self.workspace.blobs.read(str(sha))
         inputs = self.workspace.pinned_inputs(manifest)
         request = GeometricPvInputs.read(inputs.get("geometric_pv_preparation"))
+        expected_assets = {
+            "runtime_bundle",
+            "weather.raw",
+            "weather.metadata",
+            "woo.module_inputs",
+        }
+        if request.model == MODEL_V3:
+            expected_assets.add("woo.equipment_inputs")
+        if set(pinned) != expected_assets:
+            raise VersionUnavailable("exact geometric PV source dependencies required")
         recorded = context.get("models")
         if (
             not isinstance(recorded, dict)
@@ -187,6 +225,15 @@ class GeometricPvKernel:
         basis = self.workspace.blobs.object(str(pinned["woo.module_inputs"]))
         self.products.confirm_basis(basis)
         self.products.check_pv_inputs(request.product_inputs(inputs), basis)
+        equipment = (
+            self.workspace.blobs.object(str(pinned["woo.equipment_inputs"]))
+            if request.model == MODEL_V3
+            else None
+        )
+        if equipment is not None:
+            self.products.confirm_basis(equipment, require_reference=False)
+            if equipment.get("pv_module_inputs") != basis:
+                raise VersionUnavailable("the frozen PV module and equipment differ")
         source_metadata = self._owned_source(project, request.weather_asset_id, pinned)
         source = PvSource.read(
             self.workspace.blobs, str(pinned["weather.raw"]), source_metadata
@@ -199,10 +246,16 @@ class GeometricPvKernel:
             self.limits,
             max_weather_rows=self.weather_limits.max_weather_rows,
             checkpoint=control.checkpoint,
+            electrical_inputs=electrical_project_inputs(inputs)
+            if equipment is not None
+            else None,
+            electrical_basis=equipment,
         )
         control.checkpoint()
         self._owned_source(project, request.weather_asset_id, pinned)
         self.products.confirm_basis(basis)
+        if equipment is not None:
+            self.products.confirm_basis(equipment, require_reference=False)
         dependencies: Object = {
             "model.inputs": self.workspace.blobs.put(result.inputs_json),
             "model.witness": self.workspace.blobs.put(result.witness_json),
@@ -210,6 +263,8 @@ class GeometricPvKernel:
             "weather.metadata": pinned["weather.metadata"],
             "woo.module_inputs": pinned["woo.module_inputs"],
         }
+        if equipment is not None:
+            dependencies["woo.equipment_inputs"] = pinned["woo.equipment_inputs"]
         # Bind the exact saved project JSON separately from normalized model
         # coefficients, preserving byte-level project invalidation semantics.
         raw_parameters = inputs["geometric_pv_preparation"]
@@ -238,6 +293,7 @@ class GeometricPvKernel:
             "parameters_sha256": dependencies["project.parameters"],
             "dependencies": dependencies,
             "woo_module_inputs": basis,
+            **({"woo_equipment_inputs": equipment} if equipment is not None else {}),
             "interpretation": summary,
             "weather": {
                 "interval_count": len(weather.points),

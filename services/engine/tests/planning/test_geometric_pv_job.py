@@ -530,3 +530,430 @@ def test_new_manifest_freezes_the_requested_generation_model(
     assert retained_models["generation"] == MODEL_V1
     assert current_models["generation"] == MODEL_V2
     assert kernel.execution_key_for(MODEL_V1) != kernel.execution_key_for(MODEL_V2)
+
+
+def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_and_report(
+    workspace: Workspace,
+    owner: Actor,
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from linker_engine.planning.equipment_kernel import EquipmentKernel
+    from linker_engine.planning.equipment_service import EquipmentService
+    from linker_engine.planning.geometric_pv_inputs import (
+        ELECTRICAL_V3,
+        MODEL_V3,
+        POLICY_V2,
+        GeometricPvInputs,
+    )
+    from linker_engine.planning.geometry import panel_poses, read_geometry
+    from linker_engine.planning.project_input_contracts import (
+        ENGINEERING_V10_INPUT_CONTRACT,
+    )
+
+    from .test_country_rules import rule_input
+    from .test_equipment import inputs as equipment_inputs
+    from .test_geometric_pv import perez_parameters
+    from .test_grid_connection import declared
+
+    def current(publication: Publication) -> dict[str, Any]:
+        value = publication_manifest(publication.feed)
+        for row in value["products"]:
+            row["ready"]["engineering"] = True
+        return value
+
+    monkeypatch.setattr(Publication, "read", current)
+    assert isinstance(client.app, FastAPI)
+    products = ProductSources(client.app.state.planning_product_provider)
+    provider = client.app.state.planning_product_provider()
+    feed = provider.publication.feed
+    feed.update(figure_projection_version=2, compatibility_origin="woocommerce")
+    basis = products.electrical_module_basis()
+    template = cast(dict[str, Any], basis["module"])
+    geo = geometry()
+    geo["module_specs"] = [{**template["specification"], "id": "module"}]
+    geo["arrays"][0].update(rows=1, columns=6, excluded_slots=[])
+    ids = [pose.id for pose in panel_poses(read_geometry(geo)) if pose.included]
+    selection = equipment_inputs(feed, 3)["equipment_selection"]
+    selection["pv_dc_kw"] = 2.76
+    wiring = {
+        "schema_version": 1,
+        "inverter_product_id": 4107,
+        "minimum_ambient_c": None,
+        "temperature_source": None,
+        "strings": [{"id": "s1", "mppt": 1, "input": 1, "module_ids": ids}],
+    }
+    country = declared(country="DE", complete=True)
+    rules = rule_input(
+        "de_pv_installed",
+        power_kw=2.76,
+        de_before_control_test=True,
+        de_remuneration="feed_in_or_tenant",
+    )
+    project = workspace.create(
+        owner,
+        "Berlin weather, cited equipment and declared country rules; synthetic layout",
+        {
+            **country,
+            "country_rule_inputs": rules,
+            "geometry": geo,
+            "equipment_selection": selection,
+            "pv_string_plan": wiring,
+        },
+        key="series-create",
+        input_contract=ENGINEERING_V10_INPUT_CONTRACT,
+    )
+    source = WeatherImport(Assets(workspace), LIMITS).tmy(
+        owner,
+        project.id,
+        PvSource(
+            raw(), weather_request(), capture(), interpretation(), encode(PROVENANCE)
+        ),
+        key="series-weather",
+    )
+    par = perez_parameters()
+    par["modules"] = [{**template["parameters"], "module_spec_id": "module"}]
+    par["converters"][0]["input_assumption"] = (
+        "one_string_per_tracker_independent_mpp_sum"
+    )
+    request = GeometricPvInputs.read(
+        {
+            "schema_version": 1,
+            "model": MODEL_V3,
+            "weather_asset_id": source.id,
+            "sampling": {"coarse_cells_per_edge": 1, "fine_cells_per_edge": 2},
+            "diffuse_policy": POLICY_V2,
+            "thermal_policy": "sapm_from_module_mean_poa_v1",
+            "electrical_policy": ELECTRICAL_V3,
+            "parameters": par,
+        }
+    )
+    project = workspace.revise(
+        owner,
+        project.id,
+        1,
+        {**project.inputs, "geometric_pv_preparation": request.model_dump(mode="json")},
+        key="series-parameters",
+        input_contract=ENGINEERING_V10_INPUT_CONTRACT,
+    )
+    kernel = GeometricPvKernel(
+        workspace,
+        LIMITS,
+        GeometricPvLimits(
+            max_module_steps=60000,
+            max_samples=300000,
+            max_ray_face_checks=10000000,
+            max_bounds_checks=10000000,
+            index_leaf_size=2,
+        ),
+        products=products,
+    )
+    service = GeometricPvService(workspace, kernel, max_attempts=1)
+    energy = EnergyService(
+        workspace,
+        EnergyKernel(workspace, TOLERANCE, max_intervals=9000, products=products),
+        max_attempts=1,
+    )
+    reports = ReportService(
+        workspace, ReportKernel(workspace, products), max_attempts=1
+    )
+    equipment = EquipmentService(
+        workspace, EquipmentKernel(workspace, products), max_attempts=1
+    )
+    registry = service_registry(
+        energy, None, equipment=equipment, reports=reports, geometric_pv=service
+    )
+    worker = Worker(
+        Jobs(workspace),
+        "series-full-source",
+        {"evaluate": registry},
+        lease_seconds=60,
+        heartbeat_seconds=5,
+        retry_seconds=1,
+        routing=registry.routing(1),
+    )
+    queued = service.evaluate(owner, project.id, 2, key="series-full")
+    assert worker.run_once()
+    completed = workspace.run(owner, queued.id)
+    assert completed.state == "succeeded", completed.error
+    assert completed.result is not None
+    asset = Assets(workspace).get(
+        owner, project.id, str(cast(Object, completed.result["prepared_asset"])["id"])
+    )
+    profile = prepared_profile(workspace.blobs, asset.content_sha256, asset.metadata)
+    assert len(profile.intervals) == 8760
+    assert profile.total_kwh > 0
+    bundle = reference_bundle(workspace.blobs, asset.content_sha256, asset.metadata)
+    assert (
+        cast(Object, bundle["inputs"])["electrical_inputs"]["pv_string_plan"] == wiring
+    )
+    changed = {**project.inputs, "pv_string_plan": {**wiring, "strings": []}}
+    with pytest.raises(InvalidInput, match="equipment or string assignments"):
+        profile_dependencies(asset, "pv_available_ac", changed, workspace.blobs)
+    with pytest.raises(ProjectInputContractRequired):
+        workspace.revise(
+            owner,
+            project.id,
+            2,
+            project.inputs,
+            key="old-series-editor",
+            input_contract=GEOMETRIC_PV_INPUT_CONTRACT,
+        )
+    from linker_engine.planning.project_input_contracts import MATERIALS_INPUT_CONTRACT
+
+    for key, attempted in (
+        ("preserve-both", project.inputs),
+        (
+            "remove-country",
+            {k: v for k, v in project.inputs.items() if k != "country_rule_inputs"},
+        ),
+        (
+            "remove-series",
+            {
+                k: v
+                for k, v in project.inputs.items()
+                if k != "geometric_pv_preparation"
+            },
+        ),
+    ):
+        with pytest.raises(ProjectInputContractRequired):
+            workspace.revise(
+                owner,
+                project.id,
+                2,
+                attempted,
+                key=key,
+                input_contract=MATERIALS_INPUT_CONTRACT,
+            )
+    assert workspace.get(owner, project.id).revision == 2
+    assets = Assets(workspace)
+    imported: dict[str, str] = {}
+    for role, power in (("gross_load", 2), ("aux_ac", 0)):
+        data = f"time,power\n2023-06-16T11:00:00Z,{power}\n2023-06-16T12:00:00Z,{power}\n".encode()
+        imported[role] = (
+            ProfileImport(assets)
+            .csv(
+                owner,
+                project.id,
+                data,
+                CsvMapping(
+                    "time",
+                    "power",
+                    cast(Measurement, role),
+                    "interval_average_kw",
+                    "start",
+                    "UTC",
+                    "synthetic",
+                    3600,
+                    ",",
+                    ".",
+                ),
+                SYNTHETIC,
+                key="series-" + role,
+            )
+            .id
+        )
+    battery = assets.add(
+        owner,
+        project.id,
+        encode(BATTERY),
+        "application/json",
+        "battery_parameters_v1",
+        {"retention": "permanent", "provenance": SYNTHETIC},
+        key="series-battery",
+    )
+    project = workspace.revise(
+        owner,
+        project.id,
+        2,
+        {
+            **project.inputs,
+            "profile_selections": {
+                "schema_version": 1,
+                "selected": {"pv_available_ac": asset.id},
+            },
+            "energy_replay": {
+                "schema_version": 1,
+                "gross_load_asset_id": imported["gross_load"],
+                "aux_ac_asset_id": imported["aux_ac"],
+                "critical_load_asset_id": None,
+                "pv_available_asset_id": asset.id,
+                "battery_parameters_asset_id": battery.id,
+                "initial_inventory": {
+                    "pv_kwh": 0,
+                    "grid_kwh": 0,
+                    "initial_unknown_kwh": 0,
+                    "basis": "synthetic_fixture",
+                    "source_note": "No battery",
+                },
+                "schedule": [
+                    {
+                        "start_utc": "2023-06-16T11:00:00Z",
+                        "end_utc": "2023-06-16T13:00:00Z",
+                        "mode": "connected",
+                        "reserve_kwh": 0,
+                        "import_cap_kw": None,
+                        "export_cap_kw": None,
+                        "pv_enabled": True,
+                        "allow_grid_charge": False,
+                    }
+                ],
+                "controller": "self_consumption_with_reserve_v1",
+                "terminal_min_kwh": 0,
+            },
+        },
+        key="series-energy-inputs",
+        input_contract=ENGINEERING_V10_INPUT_CONTRACT,
+    )
+    energy_run = energy.evaluate(owner, project.id, 3, key="series-energy")
+    assert worker.run_once()
+    energy_result = workspace.run(owner, energy_run.id)
+    assert energy_result.state == "succeeded", energy_result.error
+    metrics = cast(Object, cast(Object, energy_result.result)["metrics"])
+    assert metrics["solar_load_kwh"] == pytest.approx(
+        sum(min(2, value) for value in profile.values_kw[3995:3997]), abs=1e-7
+    )
+    assert cast(float, metrics["pv_charge_ac_kwh"]) > 0
+    equipment_run = equipment.evaluate(owner, project.id, 3, key="series-equipment")
+    assert worker.run_once()
+    assert workspace.run(owner, equipment_run.id).state == "succeeded"
+    report = reports.evaluate(
+        owner,
+        project.id,
+        3,
+        ReportOptions(
+            locale="de",
+            pv_run_id=queued.id,
+            energy_run_id=energy_run.id,
+            equipment_run_id=equipment_run.id,
+            logo=None,
+        ),
+        key="series-report",
+    )
+    import time
+
+    report_started = time.monotonic()
+    assert worker.run_once()
+    print(f"SERIES_REPORT_WORKER_SECONDS={time.monotonic() - report_started:.3f}")
+    report_run = workspace.run(owner, report.id)
+    assert report_run.state == "succeeded", report_run.error
+    report_result = cast(Object, report_run.result)
+    sections = cast(list[Object], cast(Object, report_result["report"])["sections"])
+    section = next(
+        item
+        for item in sections
+        if str(item["id"]).startswith("geometric-pv-reference-")
+    )
+    assert "String-I–V" in str(section["title"])
+    assert "Bypassdioden" in str(section["paragraphs"])
+    import csv
+    import hashlib
+    import io
+
+    from pypdf import PdfReader
+
+    from linker_engine.planning.report_copy import text
+
+    assert text("country_rule_de_eeg_export", "de") in str(sections)
+    assert report_result["revision"] == 3
+    source_runs = cast(list[Object], report_result["source_runs"])
+    assert {queued.id, energy_run.id, equipment_run.id} <= {
+        row["run_id"] for row in source_runs
+    }
+    assert all(row["revision"] in (2, 3) for row in source_runs)
+    attachments = cast(Object, report_result["prepared_attachments"])
+    assert set(attachments) == {
+        "bill_of_materials_csv",
+        "country_rule_review_csv",
+        "pv_series_csv",
+    }
+    report_source_sha = cast(Object, report_result["pinned_assets"])["report.source"]
+    for item in attachments.values():
+        entry = cast(Object, item)
+        assert (
+            cast(Object, cast(Object, entry["metadata"])["dependencies"])[
+                "report_source"
+            ]
+            == report_source_sha
+        )
+        stored = Assets(workspace).content(owner, project.id, str(entry["id"]))
+        assert hashlib.sha256(stored).hexdigest() == entry["content_sha256"]
+    report_asset = Assets(workspace).get(
+        owner, project.id, str(cast(Object, report_result["prepared_asset"])["id"])
+    )
+    pdf = workspace.blobs.read(report_asset.content_sha256)
+    assert pdf.startswith(b"%PDF-")
+    pdf_text = " ".join(
+        page.extract_text() for page in PdfReader(io.BytesIO(pdf)).pages
+    )
+    assert text("country_rule_de_eeg_export", "de") in pdf_text
+    assert "Bypassdioden" in pdf_text
+    rules_asset = cast(Object, attachments["country_rule_review_csv"])
+    country_bytes = Assets(workspace).content(owner, project.id, str(rules_asset["id"]))
+    country_reader = csv.DictReader(io.StringIO(country_bytes.decode("utf-8-sig")))
+    assert country_reader.fieldnames is not None
+    country_reader.fieldnames = [
+        name.rsplit(" [", 1)[1][:-1] for name in country_reader.fieldnames
+    ]
+    country_rows = list(country_reader)
+    assert country_rows
+    assert all(
+        row["project_id"] == project.id
+        and row["revision"] == "3"
+        and row["report_source_sha256"] == report_source_sha
+        for row in country_rows
+    )
+    assert all(
+        row["source_text_sha256"] and row["source_url"].startswith("https://")
+        for row in country_rows
+    )
+    csv_asset = Assets(workspace).get(
+        owner,
+        project.id,
+        str(
+            cast(
+                Object,
+                cast(Object, report_result["prepared_attachments"])[
+                    "bill_of_materials_csv"
+                ],
+            )["id"]
+        ),
+    )
+    assert workspace.blobs.read(csv_asset.content_sha256)
+    series_asset = Assets(workspace).get(
+        owner,
+        project.id,
+        str(
+            cast(
+                Object,
+                cast(Object, report_result["prepared_attachments"])["pv_series_csv"],
+            )["id"]
+        ),
+    )
+    started = time.monotonic()
+    content = workspace.blobs.read(series_asset.content_sha256)
+    rows = list(csv.DictReader(io.StringIO(content.decode("utf-8"))))
+    print(
+        f"SERIES_CSV_BYTES={len(content)} ROWS={len(rows)} READ_SECONDS={time.monotonic() - started:.3f}"
+    )
+    assert len(rows) == len(profile.intervals)
+    row = rows[3995]
+    witness = cast(Object, bundle["witness"])
+    string = cast(list[Object], witness["strings"])[0]
+    modules = cast(list[Object], witness["modules"])
+    assert row["start_utc"] == profile.intervals[3995].start.isoformat()
+    assert json.loads(row["module_ids_json"]) == string["module_ids"]
+    assert json.loads(row["effective_irradiance_w_m2_json"]) == [
+        cast(list[float], module["effective_irradiance_w_m2"])[3995]
+        for module in modules
+    ]
+    assert (
+        float(row["string_current_a"]) == cast(list[float], string["current_a"])[3995]
+    )
+    assert (
+        float(row["string_voltage_v"]) == cast(list[float], string["voltage_v"])[3995]
+    )
+    assert (
+        float(row["scenario_total_ac_w"])
+        == cast(list[float], witness["available_ac_w"])[3995]
+    )

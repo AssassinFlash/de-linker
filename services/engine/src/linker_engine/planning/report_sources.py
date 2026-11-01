@@ -445,6 +445,12 @@ def report_sources(
             selected_run.result is not None
             and selected_run.result.get("kind") == GEOMETRIC_PV_KIND
         )
+        series_iv = (
+            geometric
+            and selected_run.result is not None
+            and selected_run.result.get("model")
+            == "opaque_perez_series_iv_forward_reference_v1"
+        )
         run = owned(
             options.pv_run_id,
             GEOMETRIC_PV_KIND
@@ -452,7 +458,21 @@ def report_sources(
             else PvgisRoofReferenceKernel.kind
             if roof_ac
             else PvReferenceKernel.kind,
-            ("geometry", "geometric_pv_preparation", "weather_acquisition")
+            (
+                "geometry",
+                "geometric_pv_preparation",
+                "weather_acquisition",
+                *(
+                    (
+                        "equipment_selection",
+                        "pv_string_plan",
+                        "equipment_plant",
+                        "pv_plant_string_plan",
+                    )
+                    if series_iv
+                    else ()
+                ),
+            )
             if geometric
             else ("geometry", "pvgis_reference")
             if roof_ac

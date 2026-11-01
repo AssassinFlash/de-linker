@@ -941,6 +941,13 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
         geometric_pv_profile(workspace.blobs, raw_sha, metadata)
         bundle = geometric_pv_bundle(workspace.blobs, raw_sha, metadata)
         model_inputs = cast(Object, bundle["inputs"])
+        if result.get("model") == "opaque_perez_series_iv_forward_reference_v1":
+            from .geometric_pv_job import electrical_project_inputs
+
+            if model_inputs.get("electrical_inputs") != electrical_project_inputs(
+                inputs
+            ):
+                raise InvalidInput("saved geometric PV wiring differs from its source")
         witness = cast(Object, bundle["witness"])
         weather = cast(Object, model_inputs["weather"])
         weather_source = cast(Object, weather["source"])
