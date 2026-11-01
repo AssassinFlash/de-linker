@@ -441,3 +441,5 @@ Aladdin 不只提供画布。固定源码中已经能追到：
 独立 SSH 直通在未认证时已证实返回 Apify 407。前次认证尝试只收到 RemoteDisconnected，未区分 SSH 握手与代理拒绝。root 只用一个有界私有 master 复核这两阶段，最多两个具名源，socket 和临时根 /tmp/p548-oem-route-* 在 finally 删除；认证后失败则记录实际层级，不继续探测。
 
 同一 SSH master 下，未认证请求取得 Apify 407，正确认证请求取得 Apify 403；独立获取该拒绝响应的脱敏正文，x-apify-proxy-error=true，说明当前账户没有启用 Proxy external access。请求被 Apify 在建立原厂 CONNECT 前拒绝。这给出了此前传输断开的权限边界，但不能证明以前每一次断开都由同一原因造成。没有向原厂发送这次 GET，也没有取得 PDF、改变账号权限或升级套餐。两个原件仍缺。master、stdio 转发和临时 socket 目录均已回收，原始响应与凭据均未存盘。
+
+本机具名资料补核：既有 GoodWe-owner/GW_ET-100_Datasheet-EN.pdf 与已托管库原件 SHA256 4f7178042e8faf03bd926dc33a5ff0b85ffcd4f46e12f1dcf86d6db10befee4d 相同。另有两页 GW_BAT-C 208.9-261.2kWh_Datasheet-EN.pdf（305,878 B，SHA256 8634b8a56bcda45feb80c5244a5b295de1d9d5c259086ada0ecc54734e7c0546）。其字体文本映射不可靠，已在内存渲染并逐页核对。第一页是 208/261 kWh 系列概览，第二页为 208.9/261.2 kWh 两款规格，脚注说明电芯温度与 SOC 影响充放电限流/限功率，表内没有定量曲线。不能把这些数据用于当前 61.4/112.6 kWh 柜组，也不能用来补缺失的 BAT-C 定量包络。没有复制原件或修改 Woo。

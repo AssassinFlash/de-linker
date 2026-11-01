@@ -19,7 +19,12 @@ use WC_Product;
  * at their source (Gating\PriceDisplay).
  */
 final class Shortcodes {
-
+	/**
+	 * Authorized rows only while their enclosing LC content is being rendered.
+	 *
+	 * @var list<string>
+	 */
+	private array $faq_sections = array();
 
 	/**
 	 * Registers the shortcodes.
@@ -28,6 +33,7 @@ final class Shortcodes {
 		add_shortcode( 'linker_checkout', array( $this, 'checkout' ) );
 		add_shortcode( 'linker_draft_empty', array( $this, 'draft_empty' ) );
 		add_shortcode( 'linker_faqs', array( $this, 'faqs' ) );
+		add_shortcode( 'linker_faq_rows', array( $this, 'faq_rows' ) );
 		add_shortcode( 'linker_contact_link', array( $this, 'contact_link' ) );
 		add_shortcode( 'linker_contact_invitation', array( $this, 'contact_invitation' ) );
 		add_shortcode( 'linker_site_url', array( $this, 'site_url' ) );
@@ -377,9 +383,13 @@ final class Shortcodes {
 	 * question_de / answer_de. The section frame and its title live in the
 	 * template; this carries the rows.
 	 *
+	 * Optional enclosing LC content keeps its section and words in the template.
+	 * A single fresh authorized read both gates that content and supplies its rows.
+	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
+	 * @param string|null                  $content Enclosing LC content, or standalone rows.
 	 */
-	public function faqs( $atts = array() ): string {
+	public function faqs( $atts = array(), ?string $content = null ): string {
 		unset( $atts );
 		$product = $GLOBALS['product'] ?? null;
 		if ( ! $product instanceof WC_Product ) {
@@ -400,6 +410,20 @@ final class Shortcodes {
 			$html    .= '<details class="pdp-disclose"><summary>' . esc_html( $question ) . ProductShortcodes::icon( 'chevron' ) . '</summary>'
 				. '<div class="pdp-disclose-body pdp-reading">' . wp_kses_post( wpautop( $answer ) ) . '</div></details>';
 		}
-		return $html;
+		if ( null === $content || '' === $content ) {
+			return $html;
+		}
+		$this->faq_sections[] = $html;
+		try {
+			return do_shortcode( $content );
+		} finally {
+			array_pop( $this->faq_sections );
+		}
+	}
+
+	/** Rows are available only inside the current authorized enclosing shortcode. */
+	public function faq_rows(): string {
+		$key = array_key_last( $this->faq_sections );
+		return null === $key ? '' : $this->faq_sections[ $key ];
 	}
 }

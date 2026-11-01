@@ -21,6 +21,8 @@ import { panelPoses } from "../src/domain/panelPoses.ts";
 import { equipmentDraft } from "../src/domain/equipment.ts";
 import { DeviceConditionInputs } from "../src/components/equipment/DeviceConditionInputs.tsx";
 import { PlanningReportResult } from "../src/components/energy/PlanningReportResult.tsx";
+import { EquipmentResult } from "../src/components/equipment/EquipmentResult.tsx";
+import nativeI18n from "../../../plugins/linker-tools/node_modules/@wordpress/i18n/build/index.cjs";
 import { ApiError } from "../src/data/protocol.ts";
 import { readRun } from "../src/data/planningProtocol.ts";
 import { selectPreparation } from "../src/domain/preparationSelection.ts";
@@ -43,6 +45,142 @@ const session = {
 };
 const selectButton = () =>
 	document.querySelector(".lp-run-result > .lp-button");
+
+for (const locale of ["en-GB", "de-DE"]) {
+	test(`${locale}: controller network results load native translations and keep historical checks readable`, async (t) => {
+		const german = locale.startsWith("de");
+		const assessment = {
+			model: "woo_multi_converter_plant_v1",
+			overall_status: "unresolved",
+			selected_products: [],
+			provisional_bill_of_materials: [],
+			systems: [],
+			checks: [
+				{
+					id: "group:synthetic:controller_network_count",
+					semantic_id: "plant_controller_network_count",
+					group_name: "Synthetic owner scope",
+					status: "satisfied",
+					reason: "controller_network_limit_comparison",
+					actual: 2,
+					required: 10,
+					control_network: "lan",
+					facts: [],
+				},
+			],
+		};
+		let replace;
+		function Harness() {
+			const [value, setValue] = useState(assessment);
+			replace = setValue;
+			window.wp.i18n = {
+				...nativeI18n.createI18n(
+					german ? plannerGerman.locale_data.messages : undefined,
+					"linker-tools",
+				),
+				sprintf: nativeI18n.sprintf,
+			};
+			return React.createElement(EquipmentResult, {
+				run: { state: "succeeded", revision: 1 },
+				locale,
+				dirty: false,
+				confirmedRevision: 1,
+				assessmentOverride: value,
+				embedded: true,
+			});
+		}
+		await mount(t, React.createElement(Harness));
+		const text = document.body.textContent;
+		assert.ok(
+			text.includes(
+				german
+					? "Wechselrichter am Controller"
+					: "Inverters on the controller network",
+			),
+		);
+		assert.ok(
+			text.includes("Synthetic owner scope"),
+			"the owner's UI retains its group name",
+		);
+		const entries = () =>
+			new Map(
+				[...document.querySelectorAll("dl div")].map((row) => [
+					row.querySelector("dt")?.textContent,
+					row.querySelector("dd")?.textContent.trim(),
+				]),
+			);
+		assert.equal(
+			entries().get(
+				german ? "Controller-Kommunikation" : "Controller communication",
+			),
+			"LAN",
+		);
+		assert.equal(
+			entries().get(
+				german ? "Wechselrichter in dieser Gruppe" : "Inverters in this group",
+			),
+			"2",
+		);
+		assert.equal(
+			entries().get(
+				german ? "Maximal unterstützte Anzahl" : "Maximum supported",
+			),
+			"10",
+		);
+		assert.ok(
+			text.includes(
+				german
+					? "Die Betriebsgrenzen der Wechselrichtergruppe sind separat aufgeführt."
+					: "The operating limits of the inverter group are shown separately.",
+			),
+		);
+		await act(async () =>
+			replace({
+				...assessment,
+				checks: [
+					{
+						...assessment.checks[0],
+						control_network: undefined,
+						required: null,
+						status: "unresolved",
+						reason: "current_cited_controller_network_limit_required",
+					},
+				],
+			}),
+		);
+		assert.equal(
+			entries().get(
+				german ? "Controller-Kommunikation" : "Controller communication",
+			),
+			german ? "Nicht angegeben" : "Not specified",
+		);
+		assert.equal(
+			entries().get(
+				german ? "Maximal unterstützte Anzahl" : "Maximum supported",
+			),
+			"—",
+		);
+		await act(async () =>
+			replace({
+				...assessment,
+				checks: [
+					{
+						...assessment.checks[0],
+						semantic_id: "plant_parallel_count",
+						reason: "parallel_count_uses_applicable_manufacturer_limit",
+					},
+				],
+			}),
+		);
+		assert.equal(
+			entries().has(
+				german ? "Maximal unterstützte Anzahl" : "Maximum supported",
+			),
+			false,
+		);
+		assert.equal(entries().get(german ? "Ergebnis" : "Result"), "2");
+	});
+}
 
 test("a frozen English report marks its own language inside a German planner page", async (t) => {
 	const run = structuredClone(fixture.geometric_pv.report_run);

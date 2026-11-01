@@ -35,7 +35,7 @@ from .pvgis_reference_profile import (
     reference_bundle,
 )
 from .records import Actor, Run
-from .report_copy import text
+from .report_copy import check_label, text
 from .report_model import build_report
 from .report_numbers import number, percent
 from .workspace import Workspace
@@ -411,6 +411,91 @@ def _installation_report_projection(
     return {**report, "sections": sections}
 
 
+def _equipment_report_labels(
+    source: Object | None, locale: str
+) -> tuple[dict[str, str], dict[str, str]]:
+    """Use frozen semantic identities, never private names in saved headings."""
+    labels: dict[str, str] = {}
+    scopes: dict[str, str] = {}
+    if source is None:
+        return labels, scopes
+    plant = source.get("equipment_plant")
+    if isinstance(plant, dict):
+        units = cast(list[Object], plant.get("units", []))
+        names: dict[str, str] = {}
+        for unit in units:
+            raw_name, identity = unit.get("name"), unit.get("id")
+            if isinstance(raw_name, str) and raw_name and isinstance(identity, str):
+                names[identity] = raw_name
+        for index, unit_name in enumerate(names.values(), 1):
+            scopes[unit_name] = f"{text('plant_unit', locale)} {index}"
+        for index, group in enumerate(
+            cast(list[Object], plant.get("parallel_groups", [])), 1
+        ):
+            ids = group.get("unit_ids")
+            if isinstance(ids, list) and ids and all(str(uid) in names for uid in ids):
+                group_name = ", ".join(names[str(uid)] for uid in ids)
+                scopes[group_name] = f"{text('plant_group', locale)} {index}"
+    assessment = source.get("equipment")
+    if not isinstance(assessment, dict):
+        return labels, scopes
+    for index, system in enumerate(
+        cast(list[Object], assessment.get("systems", [])), 1
+    ):
+        name = system.get("name")
+        if isinstance(name, str) and name:
+            scopes[name] = f"{text('plant_unit', locale)} {index}"
+    for index, check in enumerate(cast(list[Object], assessment.get("checks", []))):
+        semantic = str(check.get("semantic_id", check["id"]))
+        identifier = (
+            f"check-controller-network-{index}"
+            if semantic == "plant_controller_network_count"
+            else f"check-{index}"
+        )
+        labels[identifier] = check_label(semantic, locale)
+        for key, label in (("unit_name", "plant_unit"), ("group_name", "plant_group")):
+            name = check.get(key)
+            if isinstance(name, str) and name:
+                scopes.setdefault(name, text(label, locale))
+    for requirement in cast(
+        list[Object], assessment.get("installation_requirements", [])
+    ):
+        for key, label in (("unit_name", "plant_unit"), ("group_name", "plant_group")):
+            name = requirement.get(key)
+            if isinstance(name, str) and name:
+                scopes.setdefault(name, text(label, locale))
+    return labels, scopes
+
+
+def _equipment_scope_text(
+    value: str, scopes: dict[str, str], *, exact: bool = True
+) -> str:
+    """Replace only producer scope prefixes; engineering numbers stay untouched."""
+    for name, label in sorted(scopes.items(), key=lambda item: -len(item[0])):
+        if exact and value == name:
+            return label
+        if value.startswith(name + " · "):
+            return (
+                label
+                + " · "
+                + _equipment_scope_text(value[len(name) + 3 :], scopes, exact=exact)
+            )
+    return value
+
+
+def _equipment_context(value: Json, *, system: bool = False) -> Json:
+    """Display names are owner text; preserve native IDs and engineering values."""
+    if isinstance(value, list):
+        return [_equipment_context(item, system=system) for item in value]
+    if isinstance(value, dict):
+        return {
+            key: _equipment_context(item, system=key in {"units", "systems"})
+            for key, item in value.items()
+            if key not in {"unit_name", "group_name"} and not (system and key == "name")
+        }
+    return value
+
+
 def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
     result = run.result
     if result is None:
@@ -434,14 +519,14 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
             for section in cast(list[Object], report.get("sections", []))
         )
         dependencies = cast(Object, result.get("dependencies", {}))
-        if report.get("locale") != locale or (
-            has_installation and isinstance(dependencies.get("report_source"), str)
+        source: Object | None = None
+        has_checks = any(
+            str(section.get("id", "")).startswith("check-")
+            for section in cast(list[Object], report.get("sections", []))
+        )
+        if isinstance(dependencies.get("report_source"), str) and (
+            has_installation or has_checks or report.get("locale") != locale
         ):
-            # Localize only presentation of its frozen source; no kernel, source
-            # refresh, PDF, job, or persistent artifact is produced by this read.
-            sha = dependencies.get("report_source")
-            if not isinstance(sha, str):
-                raise InvalidInput("saved report source is missing")
             source = report_source_with_information(workspace.blobs, dependencies)
             if (
                 source.get("project_id") != run.project_id
@@ -449,6 +534,13 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
                 or source.get("input_sha256") != run.manifest.get("input_sha256")
             ):
                 raise InvalidInput("saved report source differs from selected result")
+        if report.get("locale") != locale or (has_installation and source is not None):
+            # Localize only presentation of its frozen source; no kernel, source
+            # refresh, PDF, job, or persistent artifact is produced by this read.
+            sha = dependencies.get("report_source")
+            if not isinstance(sha, str):
+                raise InvalidInput("saved report source is missing")
+            assert source is not None
             if report.get("locale") == locale:
                 report = _installation_report_projection(report, source, locale)
             else:
@@ -480,19 +572,41 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
                 else:
                     sections.append(section)
             report = {**report, "sections": sections}
+        check_titles, scope_names = _equipment_report_labels(
+            source
+            if source is not None
+            else workspace.pinned_inputs(run.manifest)
+            if has_checks
+            else None,
+            locale,
+        )
         rows: list[Json] = []
         for section in cast(list[Object], report.get("sections", [])):
             if section.get("id") == "site":
                 continue  # Exact location labels and private project notes are unnecessary.
             title = str(section.get("title", ""))
+            if str(section.get("id", "")).startswith("check-controller-network-"):
+                # The saved owner heading contains the project’s free group name.
+                title = check_label("plant_controller_network_count", locale)
+            elif str(section.get("id", "")).startswith("check-"):
+                # Older source-less reports remain readable without releasing
+                # an unstructured customer-defined system/group heading.
+                title = check_titles.get(str(section["id"]), text("equipment", locale))
+            title = _equipment_scope_text(title, scope_names)
             # Comparison-side paragraphs contain the customer's free source note.
             paragraphs = (
                 []
                 if section.get("id") in {"comparison-baseline", "comparison-candidate"}
+                or (source is None and has_checks and section.get("id") == "conditions")
                 else section.get("paragraphs", [])
             )
             for paragraph in cast(list[str], paragraphs):
-                rows.append({"label": title, "value": paragraph})
+                rows.append(
+                    {
+                        "label": title,
+                        "value": _equipment_scope_text(paragraph, scope_names),
+                    }
+                )
             for row in cast(list[Object], section.get("rows", [])):
                 # The comparison also repeats site fields outside the site section.
                 if row.get("label") == text("location", locale):
@@ -529,7 +643,17 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
                     continue
                 # Original report text is history; current document access is separate.
                 rows.append(
-                    {"label": f"{title}: {row['label']}", "value": row["value"]}
+                    {
+                        "label": f"{title}: "
+                        + (
+                            text("source", locale)
+                            if source is None
+                            and has_checks
+                            and section.get("id") == "conditions"
+                            else _equipment_scope_text(str(row["label"]), scope_names)
+                        ),
+                        "value": row["value"],
+                    }
                 )
             table = section.get("table")
             if section.get("id") == "installation-pv-string-links":
@@ -537,12 +661,25 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
                 # user-defined string/circuit/endpoint IDs stay owner-only.
                 continue
             if isinstance(table, dict):
+                if source is None and has_checks and section.get("id") == "bom":
+                    continue  # Historical unstructured product labels can embed names.
                 columns = cast(list[str], table["columns"])
                 for cells in cast(list[list[str]], table["rows"]):
                     rows.append(
                         {
                             "label": title,
-                            "value": dict(zip(columns, cells, strict=True)),
+                            "value": {
+                                column: text("plant_unit", locale)
+                                if source is None
+                                and has_checks
+                                and column == text("plant_unit", locale)
+                                else _equipment_scope_text(
+                                    cell,
+                                    scope_names,
+                                    exact=column == text("plant_unit", locale),
+                                )
+                                for column, cell in zip(columns, cells, strict=True)
+                            },
                         }
                     )
         return rows
@@ -718,7 +855,7 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
     assessment = result.get("assessment")
     if isinstance(assessment, dict):
         # The assessment is a saved observation, not current recommendation permission.
-        return _rows(assessment, locale)
+        return _rows(_equipment_context(assessment), locale)
     return []
 
 
@@ -770,7 +907,7 @@ def assistant_context(
     for key in ("equipment_setup", "equipment_plant"):
         if isinstance(project.inputs.get(key), dict):
             cast(list[Json], result["rows"]).extend(
-                _rows(project.inputs[key], locale, key)
+                _rows(_equipment_context(project.inputs[key]), locale, key)
             )
     project_rows = cast(list[Json], result["rows"])
     if len(project_rows) > MAX_ROWS:
@@ -788,7 +925,7 @@ def assistant_context(
             )
             if selected["assessment_sha256"] != choice.get("assessment_sha256"):
                 raise InvalidInput("adopted assessment binding differs")
-            rows = _rows(selected["assessment"], locale)
+            rows = _rows(_equipment_context(selected["assessment"]), locale)
             result["adopted_equipment"] = {
                 "run_id": run_id,
                 "candidate_id": candidate_id,

@@ -22,7 +22,6 @@ from .report_copy import text
 from .report_inputs import ReportOptions
 from .report_model import build_report
 from .report_sources import confirm_report_sources, report_sources
-from .runtime_snapshot import RuntimeSnapshot
 from .worker import Control
 from .workspace import Workspace
 
@@ -39,8 +38,7 @@ class ReportKernel:
 
     def __init__(self, workspace: Workspace, products: ProductSources) -> None:
         self.workspace, self.products = workspace, products
-        self.runtime = RuntimeSnapshot.capture()
-        workspace.blobs.put(self.runtime.content)
+        self.runtime = workspace.kernel_runtime()
 
     def parameters(self) -> Object:
         return {"kind": self.kind, "policy": "selected_owned_analyses_current_woo_v1"}

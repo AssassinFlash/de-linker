@@ -38,6 +38,7 @@ from .pv_preparation import PvPreparationService, PvReferenceKernel
 from .pvgis_reference_kernel import PvgisRoofReferenceKernel
 from .pvgis_reference_service import PvgisRoofReferenceService
 from .report_kernel import ReportKernel, ReportService
+from .runtime_snapshot import RuntimeSnapshot
 from .weather_fetch_plan import WeatherFetchLimits
 from .weather_kernel import WeatherKernel
 from .weather_service import WeatherService
@@ -88,7 +89,7 @@ class RuntimeConfig(Document):
     def open(
         self, *, products: ProductSources | None = None
     ) -> tuple[Workspace, EnergyService]:
-        workspace = Workspace(Path(self.directory))
+        workspace = Workspace(Path(self.directory), runtime=RuntimeSnapshot.capture())
         source = products or ProductSources(worker_product_provider)
         kernel = EnergyKernel(
             workspace,

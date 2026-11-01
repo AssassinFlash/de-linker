@@ -6031,7 +6031,55 @@
      "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR-50-125kW_User-Manual-DE.pdf"
     }
    ]
+  },
+  {
+   "inverter": "^GW(80K|99\\.99K|100K)-ET-G10$",
+   "kind": "parallel_controller",
+   "included": false,
+   "phase": 3,
+   "applicability": {
+    "operating_mode": "grid_connected",
+    "topology": "parallel_group",
+    "control_network": "lan",
+    "controller_product_id": 2409
+   },
+   "accessories": [
+    {
+     "model": "^SEC3000C$",
+     "product_id": 2409,
+     "quantity": 1,
+     "per": "system"
+    }
+   ],
+   "conditions": [
+    {
+     "en": "The SEC3000C is optional for this grid-connected LAN configuration. If you select it, check the firmware on site before commissioning. The ET manual specifies SEC main program V7.5.32 or later. The SEC manual specifies WiFi/LAN Kit-20 V2.5.49 or later.",
+     "de": "Der SEC3000C ist für diese netzgekoppelte LAN-Konfiguration optional. Wenn Sie ihn einsetzen, prüfen Sie vor der Inbetriebnahme vor Ort die Firmwarestände. Laut ET-Handbuch ist für das SEC-Hauptprogramm mindestens V7.5.32 erforderlich. Für das WiFi/LAN Kit-20 nennt das SEC-Handbuch mindestens V2.5.49."
+    }
+   ],
+   "documents": [
+    {
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ET-100kW_User-Manual-EN_V1.2.pdf",
+     "page": 30
+    },
+    {
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ET-100kW_User-Manual-EN_V1.2.pdf",
+     "page": 32
+    },
+    {
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_User-Manual-EN.pdf",
+     "page": 41
+    },
+    {
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_User-Manual-EN.pdf",
+     "page": 54
+    },
+    {
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_Datasheet_EMEA-EN.pdf",
+     "page": 1
+    }
+   ]
   }
  ],
- "version": "5d2a85676432d1501620997a21359782defcd8aa64b644c7799eb32d054a23b8"
+ "version": "c642d3c9333ff453f4e1790d88c8c50dce7006b78b63e9a713e14027a24705c9"
 }

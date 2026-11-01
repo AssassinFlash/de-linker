@@ -239,6 +239,67 @@ def test_multi_converter_plant_keeps_unit_ownership_and_source_revisions(
         plant_products(EquipmentPlant.read(changed), {"products": feed["products"]})
 
 
+@pytest.mark.parametrize(
+    ("count", "change", "status"),
+    [
+        (10, "none", "satisfied"),
+        (11, "none", "violated"),
+        (2, "source", "unresolved"),
+        (2, "qualifier", "unresolved"),
+        (2, "rs485", "unresolved"),
+        (2, "zero", "unresolved"),
+    ],
+)
+def test_controller_network_limit_keeps_its_source_and_network_scope(
+    feed: FixtureObject, count: int, change: str, status: str
+) -> None:
+    from linker_engine.planning.plant_assessment import assess_plant
+
+    # The SEC numeric LAN field is explicitly maintained, not parsed from
+    # the older RS485/LAN prose or the unrelated 15-port switch statement.
+    controller = next(p for p in feed["products"] if p["id"] == 2409)
+    controller["figures"]["max_lan_inverters"] = {
+        "value": 10 if change != "zero" else 0,
+        "unit": "units",
+        "citation": copy.deepcopy(controller["figures"]["max_devices"]["citation"]),
+    }
+    basis = json_object(
+        publication_feed(feed, json.loads(SHIPPED_COMPATIBILITY.read_text()))
+    )
+    controller = next(p for p in basis["products"] if p["id"] == 2409)
+    fact = controller["figures"]["max_lan_inverters"]
+    if change == "source":
+        for doc in controller["documents"]:
+            if doc["url"] == fact["citation"]["url"]:
+                doc["product_ids"] = []
+    if change == "qualifier":
+        fact["qualifier"] = {"unresolved_condition": True}
+    plant = plant_inputs(basis, coordinated=True)
+    template = plant["units"][0]
+    plant["units"] = [
+        {**copy.deepcopy(template), "id": f"u{index}", "name": f"Unit {index}"}
+        for index in range(count)
+    ]
+    group = plant["parallel_groups"][0]
+    group["unit_ids"] = [unit["id"] for unit in plant["units"]]
+    group["control_network"] = "rs485" if change == "rs485" else "lan"
+    result = json_object(assess_plant({"equipment_plant": plant}, basis))
+    check = next(
+        c
+        for c in result["checks"]
+        if c.get("semantic_id") == "plant_controller_network_count"
+    )
+    assert check["status"] == status
+    assert check["actual"] == count
+    assert check["required"] == (10 if status != "unresolved" else None)
+    assert check["facts"][0]["raw_value"] == (0 if change == "zero" else 10)
+    assert all(
+        c["status"] == "unresolved"
+        for c in result["checks"]
+        if c.get("semantic_id") == "plant_joint_operation"
+    )
+
+
 def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
     feed: FixtureObject,
     engine: Engine,
@@ -249,6 +310,12 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
     from linker_engine.planning.project_materials import project_materials
 
     feed.update(figure_projection_version=2, compatibility_origin="woocommerce")
+    controller = next(p for p in feed["products"] if p["id"] == 2409)
+    controller["figures"]["max_lan_inverters"] = {
+        "value": 10,
+        "unit": "units",
+        "citation": copy.deepcopy(controller["figures"]["max_devices"]["citation"]),
+    }
     shared = SimpleNamespace(
         engine=replace(engine, products=Products.from_feed(feed)),
         publication=Publication(feed),
@@ -265,6 +332,7 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
     sources = ProductSources(lambda: shared)
     controller = next(p for p in feed["products"] if p["id"] == 2409)
     plant = plant_inputs(feed, coordinated=True)
+    plant["parallel_groups"][0]["control_network"] = "lan"
     setup = {
         "schema_version": 1,
         "requirements": copy.deepcopy(plant["requirements"]),
@@ -443,8 +511,23 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
         and source["equipment"]["overall_status"] == "unresolved"
     )
     frozen_source = copy.deepcopy(source)
+    network = next(
+        check
+        for check in source["equipment"]["checks"]
+        if check.get("semantic_id") == "plant_controller_network_count"
+    )
+    assert (network["status"], network["actual"], network["required"]) == (
+        "satisfied",
+        2,
+        10,
+    )
+    assert network["facts"][0]["source"]["figure_key"] == "max_lan_inverters"
     report = build_report(source)
     assert source == frozen_source
+    network_section = next(
+        s for s in report.sections if s.id.startswith("check-controller-network-")
+    )
+    assert any(r.value == "LAN" for r in network_section.rows)
     converter = next(s for s in report.sections if s.title == "A · Converter output")
     assert any(row.value.endswith(" kW") for row in converter.rows)
     accessory = next(s for s in report.sections if s.title == "A · Required accessory")
@@ -758,6 +841,26 @@ def test_plant_packaging_only_covers_the_owning_units_included_items() -> None:
                     },
                 },
                 {"product_id": 2, "model": "B"},
+                {
+                    "product_id": 3,
+                    "model": "Central controller",
+                    "package_contents": {
+                        "status": "documented",
+                        "items": [
+                            {
+                                "id": "central-meter",
+                                "quantity": 1,
+                                "unit": "piece",
+                                "role": "meter",
+                                "label": {
+                                    "en": "Central meter",
+                                    "de": "Zentraler Zähler",
+                                },
+                                "source": {},
+                            }
+                        ],
+                    },
+                },
             ],
             "provisional_bill_of_materials": [
                 {
@@ -772,9 +875,16 @@ def test_plant_packaging_only_covers_the_owning_units_included_items() -> None:
                     "basis": "selected_converter",
                     "unit_ids": ["b"],
                 },
+                {
+                    "product_id": 3,
+                    "quantity": 1,
+                    "basis": "selected_parallel_controller",
+                    "group_ids": ["ac"],
+                },
             ],
             "installation_requirements": [
                 {"kind": "meter", "included": True, "unit_id": "a", "unit_name": "A"},
+                {"kind": "meter", "included": True, "group_id": "ac"},
                 {
                     "kind": "meter",
                     "included": True,
@@ -793,6 +903,13 @@ def test_plant_packaging_only_covers_the_owning_units_included_items() -> None:
     assert material_name(unknown[0], "en").startswith("B · ")
     assert unknown[0]["source"]["documents"] == [
         {"url": "https://fixture.invalid/b.pdf"}
+    ]
+    # Both actually supplied meters remain available; a documented central
+    # meter only replaces the central unquantified statement, never B's gap.
+    supplied = [r for r in material["lines"] if str(r["id"]).startswith("package:")]
+    assert [(r["parent_product_id"], r["quantity"]) for r in supplied] == [
+        (1, 1),
+        (3, 1),
     ]
 
 

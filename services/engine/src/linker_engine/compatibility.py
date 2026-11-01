@@ -69,18 +69,26 @@ class RequirementScope:
     operating_mode: Literal["grid_connected", "backup"]
     topology: Literal["single_converter", "parallel_group"]
     control_network: Literal["lan", "rs485"] | None = None
+    # Optional equipment is a condition of the chosen control scheme, not a
+    # reason to require that equipment in every parallel installation.
+    controller_product_id: int | None = None
 
     def matches(
         self,
         operating_mode: str | None,
         topology: str | None,
         control_network: str | None,
+        controller_product_id: int | None = None,
     ) -> bool:
         return (
             self.operating_mode == operating_mode
             and self.topology == topology
             and (
                 self.control_network is None or self.control_network == control_network
+            )
+            and (
+                self.controller_product_id is None
+                or self.controller_product_id == controller_product_id
             )
         )
 
@@ -198,6 +206,7 @@ class Compatibility:
         operating_mode: str | None = None,
         topology: str | None = None,
         control_network: str | None = None,
+        controller_product_id: int | None = None,
     ) -> list[Requirement]:
         """Scoped claims require matching context, including a known network.
 
@@ -227,7 +236,7 @@ class Compatibility:
             and (
                 "applicability" not in item
                 or RequirementScope(**item["applicability"]).matches(
-                    operating_mode, topology, control_network
+                    operating_mode, topology, control_network, controller_product_id
                 )
             )
         ]

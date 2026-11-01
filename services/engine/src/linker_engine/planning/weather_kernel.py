@@ -11,7 +11,6 @@ from .execution_identity import execution_key, request_execution_key
 from .frozen_run import frozen_manifest
 from .pvgis_transport import PvgisTransport
 from .records import Context, Lease
-from .runtime_snapshot import RuntimeSnapshot
 from .weather_acquisition import WeatherAcquisition
 from .weather_download import WeatherDownloader
 from .weather_fetch_plan import WeatherFetchLimits, WeatherFetchPlan
@@ -40,8 +39,7 @@ class WeatherKernel:
         self.workspace = workspace
         self.limits = WeatherFetchLimits.read(limits.model_dump(mode="json"))
         self.transport_factory = transport_factory
-        self.runtime = RuntimeSnapshot.capture()
-        workspace.blobs.put(self.runtime.content)
+        self.runtime = workspace.kernel_runtime()
 
     def parameters(self) -> Object:
         return {"kind": self.kind, "limits": {**self.limits.model_dump(mode="json")}}

@@ -140,6 +140,7 @@ export function EquipmentResult({
 							? `MPPT ${suffix} · `
 							: "";
 		const explanation = equipmentReason(String(check.reason));
+		const networkCount = semantic === "plant_controller_network_count";
 		const facts = check.facts as JsonObject[];
 		const unit =
 			(
@@ -168,14 +169,32 @@ export function EquipmentResult({
 				)}
 				{(check.actual !== null || check.required !== null) && (
 					<dl className="lp-field-summary">
+						{networkCount && (
+							<div>
+								<dt>{__("Controller communication", "linker-tools")}</dt>
+								<dd>
+									{typeof check.control_network === "string"
+										? check.control_network.toUpperCase()
+										: __("Not specified", "linker-tools")}
+								</dd>
+							</div>
+						)}
 						<div>
-							<dt>{__("Result", "linker-tools")}</dt>
+							<dt>
+								{networkCount
+									? __("Inverters in this group", "linker-tools")
+									: __("Result", "linker-tools")}
+							</dt>
 							<dd>
 								{checkValue(check, "actual", semantic)} {unit}
 							</dd>
 						</div>
 						<div>
-							<dt>{__("Requirement", "linker-tools")}</dt>
+							<dt>
+								{networkCount
+									? __("Maximum supported", "linker-tools")
+									: __("Requirement", "linker-tools")}
+							</dt>
 							<dd>
 								{checkValue(check, "required", semantic)} {unit}
 							</dd>

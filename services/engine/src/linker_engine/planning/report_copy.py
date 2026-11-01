@@ -638,6 +638,26 @@ TEXT = {
         "Am Ende verbleibende Anfangsenergie unbekannter Herkunft",
     ),
     "not_specified": ("Not specified", "Nicht angegeben"),
+    "control_network": (
+        "Controller communication",
+        "Controller-Kommunikation",
+    ),
+    "controller_network_max": (
+        "Maximum supported",
+        "Maximal unterstützte Anzahl",
+    ),
+    "controller_group_size": (
+        "Inverters in this group",
+        "Wechselrichter in dieser Gruppe",
+    ),
+    "controller_network_limit_comparison": (
+        "The limit applies to the selected controller and network. The operating limits of the inverter group are shown separately.",
+        "Die Grenze gilt für den gewählten Controller und seine Netzwerkanbindung. Die Betriebsgrenzen der Wechselrichtergruppe sind separat aufgeführt.",
+    ),
+    "current_cited_controller_network_limit_required": (
+        "The comparison requires a network type and the manufacturer’s inverter limit for that network.",
+        "Für den Vergleich sind die Netzwerkanbindung und die dafür vom Hersteller angegebene Höchstzahl der Wechselrichter erforderlich.",
+    ),
     "manufacturer_requirement_matches_operating_context": (
         "The documented manufacturer requirement applies to the declared operating mode, topology and communication setup. Firmware, model combination and commissioning still require separate checks.",
         "Die dokumentierte Herstellervorgabe gilt für die angegebene Betriebsart, Topologie und Kommunikationsanbindung. Firmware, Modellkombination und Inbetriebnahme müssen weiterhin gesondert geprüft werden.",
@@ -1345,6 +1365,10 @@ CHECKS = {
     "plant_operating_scope": (
         "Manufacturer requirement applicability",
         "Anwendbarkeit der Herstellervorgabe",
+    ),
+    "plant_controller_network_count": (
+        "Inverters on the controller network",
+        "Wechselrichter am Controller",
     ),
     "plant_controller": ("Shared controller", "Gemeinsamer Controller"),
     "plant_pv_allocation": (

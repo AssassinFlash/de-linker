@@ -33,7 +33,6 @@ from .numerical_tolerance import Tolerance
 from .product_sources import ProductSources
 from .profile_assets import profile_dependencies
 from .records import Actor, Context, Lease
-from .runtime_snapshot import RuntimeSnapshot
 from .worker import Control
 from .workspace import Workspace
 
@@ -63,8 +62,7 @@ class EnergyKernel:
         self.tolerance = tolerance
         self.max_intervals = max_intervals
         self.products = products
-        self.runtime = RuntimeSnapshot.capture()
-        self.workspace.blobs.put(self.runtime.content)
+        self.runtime = self.workspace.kernel_runtime()
 
     def parameters(self) -> Object:
         return {

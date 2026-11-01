@@ -30,6 +30,138 @@ from .test_pv_generation import parameter_document
 
 
 @pytest.mark.parametrize("locale", ["en", "de"])
+@pytest.mark.parametrize("historical", [False, True])
+def test_controller_report_keeps_owner_group_name_out_of_assistant(
+    workspace: Workspace, owner: Actor, context: Context, locale: str, historical: bool
+) -> None:
+    project = workspace.create(
+        owner,
+        "Controller review",
+        {
+            "equipment_plant": {
+                "units": [
+                    {"id": "a", "name": "PRIVATE UNIT"},
+                    {"id": "b", "name": "PRIVATE SECOND"},
+                ]
+            }
+        },
+        key="new",
+    )
+    checks: list[Json] = [
+        {
+            "id": f"group:synthetic:{semantic}",
+            "semantic_id": semantic,
+            "group_name": "PRIVATE CUSTOMER GROUP",
+            "status": "satisfied",
+            "reason": reason,
+            "actual": 2,
+            "required": 10,
+            "control_network": "lan",
+            "facts": [],
+        }
+        for semantic, reason in (
+            ("plant_controller_network_count", "controller_network_limit_comparison"),
+            (
+                "plant_parallel_count",
+                "parallel_count_uses_applicable_manufacturer_limit",
+            ),
+        )
+    ]
+    source: Object = {
+        "title": project.title,
+        "project_id": project.id,
+        "revision": 1,
+        "input_sha256": project.input_sha256,
+        "generated_at": "2026-11-01T00:00:00Z",
+        "source_runs": [],
+        "locale": locale,
+        "equipment": {
+            "overall_status": "unresolved",
+            "selected_products": [],
+            "provisional_bill_of_materials": [],
+            "checks": checks,
+            "systems": [
+                {"id": "a", "name": "PRIVATE UNIT"},
+                {"id": "b", "name": "PRIVATE SECOND"},
+            ],
+            "installation_requirements": [
+                {
+                    "kind": "meter",
+                    "included": False,
+                    "group_name": "PRIVATE CUSTOMER GROUP",
+                    "conditions": [
+                        {"en": "Synthetic scope.", "de": "Synthetischer Umfang."}
+                    ],
+                    "documents": [
+                        {"url": "https://example.invalid/fixture.pdf", "page": 2}
+                    ],
+                }
+            ],
+        },
+        "brief": {
+            "site": {
+                "location_label": "PRIVATE LOCATION",
+                "country_code": "DE",
+                "timezone": "Europe/Berlin",
+            },
+            "project_note": "PRIVATE NOTE",
+        },
+    }
+    report = cast(Object, build_report(source).model_dump(mode="json"))
+    assert "PRIVATE CUSTOMER GROUP" in str(report)
+    cast(list[Json], report["sections"]).append(
+        {
+            "id": "pv-strings",
+            "title": text("pv_strings_title", locale),
+            "rows": [{"label": "PRIVATE UNIT · Ambient", "value": "-10 °C"}],
+            "table": {
+                "columns": [text("plant_unit", locale), "Count"],
+                "rows": [["PRIVATE UNIT", "2"]],
+            },
+        }
+    )
+    cast(list[Json], report["sections"]).append(
+        {
+            "id": "energy-capacity-reference-0",
+            "title": "PRIVATE UNIT · PRIVATE SECOND · Frozen capacity basis",
+            "rows": [{"label": "Capacity", "value": "2 kWh"}],
+        }
+    )
+    run = workspace.evaluate(owner, project.id, 1, context, key="run", max_attempts=1)
+    jobs = Jobs(workspace)
+    lease = jobs.claim("fixture", kinds=("evaluate",), lease_seconds=30)
+    assert lease is not None
+    jobs.complete(
+        lease,
+        {
+            "kind": "planning_report_v1",
+            "report": report,
+            "dependencies": {}
+            if historical
+            else {"report_source": workspace.blobs.put_object(source)},
+        },
+    )
+    shown = assistant_context(workspace, owner, project.id, 1, [run.id], locale)
+    assert "PRIVATE" not in str(shown)
+    rows = cast(list[Object], cast(list[Object], shown["runs"])[0]["rows"])
+    table_row = next(
+        row
+        for row in rows
+        if row["label"] == text("pv_strings_title", locale)
+        and isinstance(row["value"], dict)
+    )
+    assert cast(Object, table_row["value"])["Count"] == "2"
+    assert any(row["value"] == "-10 °C" for row in rows)
+    stored = workspace.run(owner, run.id).result
+    assert stored is not None and stored["report"] == report
+    if not historical:
+        translated = assistant_context(
+            workspace, owner, project.id, 1, [run.id], "de" if locale == "en" else "en"
+        )
+        assert "PRIVATE" not in str(translated)
+
+
+@pytest.mark.parametrize("locale", ["en", "de"])
 @pytest.mark.parametrize("missing_source", [False, True])
 @pytest.mark.parametrize("pinned_materials", [False, True])
 def test_electrical_report_projects_frozen_numbers_without_private_project_text(

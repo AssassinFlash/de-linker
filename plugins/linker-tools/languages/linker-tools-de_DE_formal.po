@@ -12948,3 +12948,28 @@ msgstr "PV-Strings aller Systeme"
 #: build/planner/assets/planner.js
 msgid "The multi-system PV wiring plan needs review. Check system identities, inverter selections and duplicate module assignments."
 msgstr "Der PV-Stringplan für mehrere Systeme muss geprüft werden. Prüfen Sie die Systemzuordnung, die ausgewählten Wechselrichter und mehrfach zugewiesene Module."
+
+#: build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+msgid "Inverters on the controller network"
+msgstr "Wechselrichter am Controller"
+
+#: build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+msgid "The comparison requires a network type and the manufacturer’s inverter limit for that network."
+msgstr "Für den Vergleich sind die Netzwerkanbindung und die dafür vom Hersteller angegebene Höchstzahl der Wechselrichter erforderlich."
+
+#: build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+msgid "The limit applies to the selected controller and network. The operating limits of the inverter group are shown separately."
+msgstr "Die Grenze gilt für den gewählten Controller und seine Netzwerkanbindung. Die Betriebsgrenzen der Wechselrichtergruppe sind separat aufgeführt."
+
+#: build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/equipment/EquipmentResult.tsx
+msgid "Inverters in this group"
+msgstr "Wechselrichter in dieser Gruppe"
+
+#: build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/equipment/EquipmentResult.tsx
+msgid "Maximum supported"
+msgstr "Maximal unterstützte Anzahl"
