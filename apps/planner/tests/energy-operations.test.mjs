@@ -376,6 +376,33 @@ test("only a specific proven pre-mutation stale-revision refusal releases a calc
 	assert.deepEqual(await r.durable.list([scope], projectId), []);
 });
 
+test("a native expanded-roof refusal releases the unqueued request for corrected input", async (t) => {
+	let refused = true;
+	const r = await rig(
+		t,
+		async () =>
+			refused
+				? json({ error: { code: "geometric_pv_expanded_scope_required" } }, 422)
+				: json(preparation.geometric_pv.run),
+		{ projectId: preparation.geometric_pv.run.project_id },
+	);
+	await act(async () =>
+		r.api.start("runs/geometric-pv", { expected_revision: 2 }),
+	);
+	await until(() => r.api.error && r.api.records.length === 0);
+	assert.equal(r.api.error.code, "geometric_pv_expanded_scope_required");
+	assert.deepEqual(
+		await r.durable.list([scope], preparation.geometric_pv.run.project_id),
+		[],
+	);
+	refused = false;
+	let reply;
+	await act(async () => {
+		reply = await r.api.start("runs/geometric-pv", { expected_revision: 2 });
+	});
+	assert.equal(reply.run.id, preparation.geometric_pv.run.id);
+});
+
 test("acknowledged battery settings remain recoverable until that asset is saved, or explicitly dismissed", async (t) => {
 	const asset = {
 		id: "d".repeat(32),

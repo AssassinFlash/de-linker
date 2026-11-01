@@ -242,12 +242,35 @@ final class Gateway {
 				}
 			}
 		}
+		if ( array_key_exists( 'geometric_pv_clear_flat_roof', $version['limits'] ) ) {
+			$expanded = $version['limits']['geometric_pv_clear_flat_roof'];
+			$bounds   = array(
+				'max_module_steps' => 841000,
+				'max_modules'      => 96,
+				'max_samples'      => 4300000,
+				'max_strings'      => 6,
+				'max_weather_rows' => 8760,
+			);
+			if ( ! $has_geometric || ! is_array( $expanded ) ) {
+				return Failure::make( 'invalid_reply', 502 );
+			}
+			$keys = array_keys( $expanded );
+			sort( $keys );
+			if ( array_keys( $bounds ) !== $keys ) {
+				return Failure::make( 'invalid_reply', 502 );
+			}
+			foreach ( $bounds as $key => $maximum ) {
+				if ( ! is_int( $expanded[ $key ] ) || $expanded[ $key ] < 1 || $expanded[ $key ] > $maximum ) {
+					return Failure::make( 'invalid_reply', 502 );
+				}
+			}
+		}
 		$version['limits']['max_body_bytes'] = min( self::MAX_BODY_BYTES, $version['limits']['max_body_bytes'] );
 		$version['limits']['max_json_depth'] = min( self::MAX_JSON_DEPTH, $version['limits']['max_json_depth'] );
 		// Keep operator process/storage identities on the private protocol; the
 		// browser uses its stable, strict runtime view during normal bootstrap.
 		$version           = array_intersect_key( $version, array_flip( array( 'schema_version', 'runtime_sha256', 'models', 'limits' ) ) );
-		$version['limits'] = array_intersect_key( $version['limits'], array_flip( array( 'max_body_bytes', 'max_csv_bytes', 'max_page_size', 'max_json_depth', 'direct_beam_visibility', 'geometric_pv_generation' ) ) );
+		$version['limits'] = array_intersect_key( $version['limits'], array_flip( array( 'max_body_bytes', 'max_csv_bytes', 'max_page_size', 'max_json_depth', 'direct_beam_visibility', 'geometric_pv_generation', 'geometric_pv_clear_flat_roof' ) ) );
 		return new WP_REST_Response(
 			array(
 				'schema_version'   => 1,

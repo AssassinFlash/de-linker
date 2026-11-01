@@ -9,6 +9,8 @@ import { useModuleTemplates } from "../../data/useModuleTemplates.ts";
 import { matchesModule } from "../../domain/productModules.ts";
 import { referenceRoof } from "../../domain/pvgisReference.ts";
 import { panelPoses } from "../../domain/panelPoses.ts";
+import { readPvStringPlan } from "../../domain/pvStrings.ts";
+import { readPvPlantStringPlan } from "../../domain/pvPlantStrings.ts";
 import {
 	GEOMETRIC_PV_TASK,
 	compileGeometricPv,
@@ -20,6 +22,7 @@ import {
 	geometricPvDraft,
 	geometricPvInputs,
 	readGeometricPvLimits,
+	readGeometricPvClearFlatRoofLimits,
 	removeGeometricPv,
 } from "../../domain/geometricPv.ts";
 import type { GeometricPvDraft } from "../../domain/geometricPv.ts";
@@ -85,6 +88,29 @@ export function GeometricPvSetup({
 			return null;
 		}
 	}, [session.runtime]);
+	const clearFlatRoof = useMemo(() => {
+		try {
+			return readGeometricPvClearFlatRoofLimits(
+				session.runtime.limits.geometric_pv_clear_flat_roof,
+			);
+		} catch {
+			return null;
+		}
+	}, [session.runtime]);
+	const stringCount = useMemo(() => {
+		try {
+			if (inputs.pv_plant_string_plan !== undefined)
+				return readPvPlantStringPlan(inputs.pv_plant_string_plan).units.reduce(
+					(sum, unit) => sum + unit.plan.strings.length,
+					0,
+				);
+			if (inputs.pv_string_plan !== undefined)
+				return readPvStringPlan(inputs.pv_string_plan).strings.length;
+		} catch {
+			// The native admission checks the complete saved wiring.
+		}
+		return null;
+	}, [inputs.pv_string_plan, inputs.pv_plant_string_plan]);
 	const supported =
 		session.runtime.models.geometric_pv_generation === GEOMETRIC_PV_TASK &&
 		limits !== null;
@@ -167,11 +193,10 @@ export function GeometricPvSetup({
 			binding.weather.longitude_deg ===
 				roof.geometry.coordinate_system.anchor?.longitude_deg,
 		rows = binding ? Number(binding.weather.interval_count) : null,
-		moduleSteps =
-			roof && rows
-				? panelPoses(roof.geometry).filter((pose) => pose.included).length *
-					rows
-				: null,
+		moduleCount = roof
+			? panelPoses(roof.geometry).filter((pose) => pose.included).length
+			: null,
+		moduleSteps = moduleCount !== null && rows ? moduleCount * rows : null,
 		samples =
 			moduleSteps !== null && parsed && complete
 				? moduleSteps *
@@ -184,14 +209,30 @@ export function GeometricPvSetup({
 							)
 						: 0)
 				: null,
-		withinBudget =
-			limits &&
+		withinStandardBudget =
+			!!limits &&
 			moduleSteps !== null &&
 			samples !== null &&
 			Number.isSafeInteger(moduleSteps) &&
 			moduleSteps <= limits.max_module_steps &&
 			Number.isSafeInteger(samples) &&
-			samples <= limits.max_samples;
+			samples <= limits.max_samples,
+		// This is only a numeric ceiling. The service proves the geometry and
+		// conversion-path conditions from the saved inputs before queuing work.
+		withinExpandedCeiling =
+			!!clearFlatRoof &&
+			moduleCount !== null &&
+			rows !== null &&
+			moduleSteps !== null &&
+			samples !== null &&
+			Number.isSafeInteger(moduleSteps) &&
+			Number.isSafeInteger(samples) &&
+			moduleSteps <= clearFlatRoof.max_module_steps &&
+			samples <= clearFlatRoof.max_samples &&
+			moduleCount <= clearFlatRoof.max_modules &&
+			rows <= clearFlatRoof.max_weather_rows &&
+			(stringCount === null || stringCount <= clearFlatRoof.max_strings),
+		withinBudget = withinStandardBudget || withinExpandedCeiling;
 	const change = (next: GeometricPvDraft) => {
 		if (!disabled && owned) edit((current) => geometricPvInputs(current, next));
 	};
@@ -460,6 +501,49 @@ export function GeometricPvSetup({
 								"The complete weather year exceeds this service's calculation budget at the selected sampling resolution. Reduce the sampling resolution or roof scope; the calculation does not silently omit weather intervals.",
 								"linker-tools",
 							)}
+						</Notice>
+					)}
+					{!withinStandardBudget && clearFlatRoof && (
+						<Notice>
+							<p>
+								{sprintf(
+									__(
+										"Larger flat-roof calculations: up to %s modules, %s strings and %s weather intervals; %s module intervals and %s midpoint samples.",
+										"linker-tools",
+									),
+									clearFlatRoof.max_modules.toLocaleString(locale),
+									clearFlatRoof.max_strings.toLocaleString(locale),
+									clearFlatRoof.max_weather_rows.toLocaleString(locale),
+									clearFlatRoof.max_module_steps.toLocaleString(locale),
+									clearFlatRoof.max_samples.toLocaleString(locale),
+								)}
+							</p>
+							<p>
+								{__(
+									"Select Series string reference. The service checks the saved roof, module layout, wiring and weather before creating a larger calculation.",
+									"linker-tools",
+								)}
+							</p>
+							<details>
+								<summary>
+									{__(
+										"Conditions for larger-roof calculations",
+										"linker-tools",
+									)}
+								</summary>
+								<p>
+									{__(
+										"One horizontal, four-corner roof without holes, obstacles or keep-out areas, up to 40 m along each roof axis. One level array with up to 8 rows and 12 columns, using one module specification.",
+										"linker-tools",
+									)}
+								</p>
+								<p>
+									{__(
+										"Modules up to 1.134 m wide, 1.762 m long and 0.03 m thick; row gaps of at least 0.4 m, column gaps of at least 0.2 m and clearance below the modules of at least 0.1 m. One system and conversion path, with no more than 16 modules per string. Weather intervals must be contiguous and hourly, with 1 × 1 and 2 × 2 midpoint sampling grids.",
+										"linker-tools",
+									)}
+								</p>
+							</details>
 						</Notice>
 					)}
 					{roof && (

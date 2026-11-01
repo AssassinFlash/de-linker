@@ -406,7 +406,8 @@ test("the geometric PV workspace uses all retained intervals, adopts frozen AC e
 	};
 	let current = beginDraft(native.project),
 		submitted,
-		setter;
+		setter,
+		setRuntime;
 	const sent = [];
 	const client = {
 		origin: "https://fixture.invalid",
@@ -479,10 +480,12 @@ test("the geometric PV workspace uses all retained intervals, adopts frozen AC e
 	};
 	function Harness() {
 		const [value, setValue] = useState(current);
+		const [runtime, changeRuntime] = useState(runtimeSession);
 		setter = setValue;
+		setRuntime = changeRuntime;
 		return React.createElement(EnergyWorkspace, {
 			draft: value,
-			session: runtimeSession,
+			session: runtime,
 			client,
 			locale: "en-GB",
 			active: true,
@@ -518,6 +521,68 @@ test("the geometric PV workspace uses all retained intervals, adopts frozen AC e
 	assert.match(
 		document.body.textContent,
 		/All 8,760 retained weather intervals/,
+	);
+	const tight = {
+		...runtimeSession,
+		runtime: {
+			...runtimeSession.runtime,
+			limits: {
+				...runtimeSession.runtime.limits,
+				geometric_pv_generation: {
+					...runtimeSession.runtime.limits.geometric_pv_generation,
+					max_module_steps: 1,
+					max_samples: 1,
+				},
+			},
+		},
+	};
+	await act(async () => setRuntime(tight));
+	await until(
+		() => button("Calculate saved PV reference with roof shading").disabled,
+	);
+	const expanded = {
+		...tight,
+		runtime: {
+			...tight.runtime,
+			limits: {
+				...tight.runtime.limits,
+				geometric_pv_clear_flat_roof: {
+					max_module_steps: 841000,
+					max_samples: 4300000,
+					max_modules: 96,
+					max_strings: 6,
+					max_weather_rows: 8760,
+				},
+			},
+		},
+	};
+	await act(async () => setRuntime(expanded));
+	await until(
+		() => !button("Calculate saved PV reference with roof shading").disabled,
+	);
+	assert.match(document.body.textContent, /service checks the saved roof/);
+	assert.match(document.body.textContent, /Supported larger-roof layout/);
+	await act(async () =>
+		setRuntime({
+			...expanded,
+			runtime: {
+				...expanded.runtime,
+				limits: {
+					...expanded.runtime.limits,
+					geometric_pv_clear_flat_roof: {
+						...expanded.runtime.limits.geometric_pv_clear_flat_roof,
+						max_weather_rows: 8759,
+					},
+				},
+			},
+		}),
+	);
+	await until(
+		() => button("Calculate saved PV reference with roof shading").disabled,
+	);
+	await act(async () => setRuntime(runtimeSession));
+	await until(
+		() => !button("Calculate saved PV reference with roof shading").disabled,
 	);
 	// The setup resolves the retained asset from the real listing: the saved
 	// identifier placeholder is not what a user is shown when the source exists.

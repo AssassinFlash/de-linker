@@ -1,7 +1,7 @@
 /** A separately named AC scenario; existing unshaded profiles keep their identity. */
 import Ajv2020 from "ajv/dist/2020.js";
 import schema from "../contracts/geometric-pv.schema.json" with { type: "json" };
-import type { JsonObject } from "../data/protocol.ts";
+import type { JsonObject, Session } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
 import { readObject } from "../data/readProtocol.ts";
 import type { PvDraft } from "./solarSetup.ts";
@@ -81,6 +81,9 @@ export interface GeometricPvLimits {
 	readonly max_bounds_checks: number;
 	readonly index_leaf_size: number;
 }
+export type GeometricPvClearFlatRoofLimits = NonNullable<
+	Session["runtime"]["limits"]["geometric_pv_clear_flat_roof"]
+>;
 const check = new Ajv2020({ strict: true, strictNumbers: true }).compile(
 	schema,
 );
@@ -176,4 +179,20 @@ export function readGeometricPvLimits(value: unknown): GeometricPvLimits {
 	)
 		throw new ApiError(502, "invalid_geometric_pv_limits");
 	return row as unknown as GeometricPvLimits;
+}
+
+export function readGeometricPvClearFlatRoofLimits(
+	value: unknown,
+): GeometricPvClearFlatRoofLimits | null {
+	if (value === undefined) return null;
+	const row = readObject(value);
+	if (
+		Object.keys(row).sort().join() !==
+			"max_module_steps,max_modules,max_samples,max_strings,max_weather_rows" ||
+		Object.values(row).some(
+			(n) => typeof n !== "number" || !Number.isSafeInteger(n) || n <= 0,
+		)
+	)
+		throw new ApiError(502, "invalid_geometric_pv_limits");
+	return row as unknown as GeometricPvClearFlatRoofLimits;
 }

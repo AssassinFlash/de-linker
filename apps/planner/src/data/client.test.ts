@@ -336,3 +336,72 @@ test("wire schemas reject coercion and extra response fields without changing th
 		{ code: "invalid_project_reply" },
 	);
 });
+
+test("the optional larger-roof budget is strictly read alongside the ordinary budget", () => {
+	const ordinary = {
+		max_module_steps: 220000,
+		max_samples: 2000000,
+		max_ray_face_checks: 20000000,
+		max_bounds_checks: 50000000,
+		index_leaf_size: 8,
+	};
+	const expanded = {
+		max_module_steps: 841000,
+		max_samples: 4300000,
+		max_modules: 96,
+		max_strings: 6,
+		max_weather_rows: 8760,
+	};
+	const session = {
+		...context,
+		runtime: {
+			...context.runtime,
+			models: { geometric_pv_generation: "prepare_geometric_pv_reference_v1" },
+			limits: {
+				...context.runtime.limits,
+				geometric_pv_generation: ordinary,
+				geometric_pv_clear_flat_roof: expanded,
+			},
+		},
+	};
+	assert.equal(readSession(session), session);
+	for (const value of [
+		null,
+		{ ...expanded, max_modules: "96" },
+		{ ...expanded, max_strings: 0 },
+		{ ...expanded, qualified: true },
+	])
+		assert.throws(
+			() =>
+				readSession({
+					...session,
+					runtime: {
+						...session.runtime,
+						limits: {
+							...session.runtime.limits,
+							geometric_pv_clear_flat_roof: value,
+						},
+					},
+				}),
+			{ code: "invalid_session_reply" },
+		);
+	assert.throws(
+		() =>
+			readSession({
+				...context,
+				runtime: {
+					...context.runtime,
+					limits: {
+						...context.runtime.limits,
+						geometric_pv_clear_flat_roof: expanded,
+					},
+				},
+			}),
+		{ code: "invalid_session_reply" },
+	);
+	assert.equal(
+		readSession(context),
+		context,
+		"older sessions keep the ordinary contract",
+	);
+});

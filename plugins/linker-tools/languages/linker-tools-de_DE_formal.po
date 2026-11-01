@@ -13441,3 +13441,27 @@ msgstr "Der Exportstatus einer Quelle in diesem Bericht ist „Unbekannt“ oder
 #: ../../apps/planner/src/components/design/GeometryForm.tsx
 msgid "Reports that include this geometry require export permission."
 msgstr "Berichte mit diesen Geometriedaten benötigen eine Exportfreigabe."
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx:511 build/planner/assets/planner.js
+msgid "Larger flat-roof calculations: up to %s modules, %s strings and %s weather intervals; %s module intervals and %s midpoint samples."
+msgstr "Erweiterte Berechnung für größere Flachdächer: bis zu %s Module, %s Strings und %s Wetterintervalle; höchstens %s Modul-Zeitintervalle und %s Abtastpunkte."
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx:523 build/planner/assets/planner.js
+msgid "Select Series string reference. The service checks the saved roof, module layout, wiring and weather before creating a larger calculation."
+msgstr "Wählen Sie „Referenz mit Modulsträngen“. Vor einer erweiterten Berechnung prüft der Dienst das gespeicherte Dach, die Modulanordnung, die Verschaltung und die Wetterdaten."
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx:529 build/planner/assets/planner.js
+msgid "Conditions for larger-roof calculations"
+msgstr "Voraussetzungen für die erweiterte Berechnung"
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx:533 build/planner/assets/planner.js
+msgid "One horizontal, four-corner roof without holes, obstacles or keep-out areas, up to 40 m along each roof axis. One level array with up to 8 rows and 12 columns, using one module specification."
+msgstr "Eine waagerechte Dachfläche mit vier Eckpunkten, ohne Öffnungen, Hindernisse oder Sperrflächen; höchstens 40 m entlang jeder Dachachse. Ein waagerechtes Modulfeld mit höchstens 8 Reihen und 12 Spalten und einer einheitlichen Modulspezifikation."
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx:539 build/planner/assets/planner.js
+msgid "Modules up to 1.134 m wide, 1.762 m long and 0.03 m thick; row gaps of at least 0.4 m, column gaps of at least 0.2 m and clearance below the modules of at least 0.1 m. One system and conversion path, with no more than 16 modules per string. Weather intervals must be contiguous and hourly, with 1 × 1 and 2 × 2 midpoint sampling grids."
+msgstr "Module höchstens 1,134 m breit, 1,762 m lang und 0,03 m dick. Mindestens 0,4 m Reihenabstand, 0,2 m Spaltenabstand und 0,1 m Abstand zwischen Modul und Dachfläche. Ein System und ein Umwandlungspfad mit höchstens 16 Modulen je String. Lückenlose stündliche Wetterintervalle; Abtastraster 1 × 1 und 2 × 2."
+
+#: ../../apps/planner/src/components/energy/EnergyError.tsx:159 build/planner/assets/planner.js
+msgid "This saved design is outside the supported larger-roof calculation scope. Review the larger-roof conditions in the PV reference setup, or reduce the setup to the standard calculation budget before trying again."
+msgstr "Der gespeicherte Entwurf liegt außerhalb des unterstützten Bereichs für größere Dachberechnungen. Prüfen Sie die Voraussetzungen in den PV-Referenzeinstellungen oder reduzieren Sie den Umfang auf das reguläre Berechnungsbudget, bevor Sie es erneut versuchen."

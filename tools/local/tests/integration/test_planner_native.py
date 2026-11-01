@@ -663,10 +663,12 @@ $cookie = $signed($expiry);
 $wpdb->insert($table, array('session_key' => $guest, 'session_value' => maybe_serialize(array('fixture' => 'existing-owner')), 'session_expiry' => $expiry));
 $status = 'active';
 $calls = array();
-$transport = new Transport(static function ($url, $args) use (&$status, &$calls) {
+$runtime_override = null;
+$transport = new Transport(static function ($url, $args) use (&$status, &$calls, &$runtime_override) {
     $path = str_ends_with($url, '/identity/status') ? 'identity/status' : (str_ends_with($url, '/version') ? 'version' : 'unexpected');
     $calls[] = $path;
     $data = 'identity/status' === $path ? array('schema_version' => 1, 'status' => $status) : array('schema_version' => 1, 'runtime_sha256' => str_repeat('a', 64), 'models' => array(), 'limits' => array('max_body_bytes' => 1000000, 'max_csv_bytes' => 100000, 'max_page_size' => 20, 'max_json_depth' => 32));
+    if ('version' === $path && null !== $runtime_override) { $data = $runtime_override; }
     return array('response' => array('code' => 200), 'headers' => array('content-type' => 'application/json'), 'body' => wp_json_encode($data));
 });
 $gateway = new Gateway(new NativeIdentity(), $transport, new ClaimOutbox($transport));
@@ -716,6 +718,28 @@ try {
     $cases['expired'] = $run($mode);
     $_COOKIE[$cookie_name] = $cookie;
     $cases['valid'] = $run(array('existing_owner_only' => true, 'schema_version' => 1));
+    // The service's optional expanded budget is forwarded only as a strict
+    // five-field extension to an otherwise valid ordinary geometry capability.
+    $original_calls = $calls;
+    $runtime_override = array('schema_version' => 1, 'runtime_sha256' => str_repeat('a', 64), 'models' => array('geometric_pv_generation' => 'prepare_geometric_pv_reference_v1'), 'limits' => array('max_body_bytes' => 1000000, 'max_csv_bytes' => 100000, 'max_page_size' => 20, 'max_json_depth' => 32, 'geometric_pv_generation' => array('index_leaf_size' => 8, 'max_bounds_checks' => 50000000, 'max_module_steps' => 220000, 'max_ray_face_checks' => 20000000, 'max_samples' => 2000000)));
+    $expanded = array('max_module_steps' => 841000, 'max_samples' => 4300000, 'max_modules' => 96, 'max_strings' => 6, 'max_weather_rows' => 8760);
+    $runtime_override['limits']['geometric_pv_clear_flat_roof'] = $expanded;
+    $expanded_ok = $run($mode);
+    unset($expanded_ok['data']['nonce'], $expanded_ok['data']['query_scope']);
+    $expanded_invalid = array();
+    foreach (array(array('max_modules', 0), array('max_modules', true), array('max_strings', 7), array('extra', 1)) as $bad) {
+        $runtime_override['limits']['geometric_pv_clear_flat_roof'] = $expanded;
+        $runtime_override['limits']['geometric_pv_clear_flat_roof'][$bad[0]] = $bad[1];
+        $expanded_invalid[] = $run($mode);
+    }
+    $runtime_override['limits']['geometric_pv_clear_flat_roof'] = $expanded;
+    unset($runtime_override['limits']['geometric_pv_clear_flat_roof']['max_samples']);
+    $expanded_invalid[] = $run($mode);
+    $runtime_override['limits']['geometric_pv_clear_flat_roof'] = $expanded;
+    unset($runtime_override['models']['geometric_pv_generation'], $runtime_override['limits']['geometric_pv_generation']);
+    $expanded_invalid[] = $run($mode);
+    $runtime_override = null;
+    $calls = $original_calls;
     $nonce = $cases['valid']['data']['nonce'] ?? '';
     // Only the fixture sets an in-memory native customer ID. Verification
     // uses Woo's real public nonce filter, not the new binding's closure.
@@ -765,7 +789,7 @@ try {
     $output = array('cases' => array_map(static function ($case) {
         unset($case['data']['nonce'], $case['data']['query_scope']);
         return $case;
-    }, $cases), 'malformed' => $malformed, 'legacy_allowed' => $legacy_allowed, 'native_nonce' => $native_nonce, 'wrong_action_refused' => $wrong_action, 'row_unchanged' => $row_unchanged, 'writes' => $writes, 'cookie_writes' => $cookie_writes, 'migrations' => $migrations, 'transport_paths' => $calls);
+    }, $cases), 'malformed' => $malformed, 'legacy_allowed' => $legacy_allowed, 'native_nonce' => $native_nonce, 'wrong_action_refused' => $wrong_action, 'row_unchanged' => $row_unchanged, 'writes' => $writes, 'cookie_writes' => $cookie_writes, 'migrations' => $migrations, 'transport_paths' => $calls, 'expanded_ok' => $expanded_ok, 'expanded_invalid' => $expanded_invalid);
 } finally {
     remove_filter('query', $query_guard);
     remove_filter('woocommerce_set_cookie_enabled', $cookie_guard);
@@ -801,6 +825,19 @@ echo wp_json_encode($output);
     assert cases["pending_ticket"]["data"]["claim_pending"] is True
     assert all(case["status"] == 400 for case in evidence["malformed"])
     assert all(case["unchanged"] for case in [*cases.values(), *evidence["malformed"]])
+    assert evidence["expanded_ok"]["status"] == 200
+    assert evidence["expanded_ok"]["data"]["runtime"]["limits"][
+        "geometric_pv_clear_flat_roof"
+    ] == {
+        "max_module_steps": 841000,
+        "max_samples": 4300000,
+        "max_modules": 96,
+        "max_strings": 6,
+        "max_weather_rows": 8760,
+    }
+    assert all(case["status"] == 502 for case in evidence["expanded_invalid"])
+    assert evidence["expanded_ok"]["unchanged"]
+    assert all(case["unchanged"] for case in evidence["expanded_invalid"])
     assert evidence["legacy_allowed"] and evidence["native_nonce"]
     assert evidence["wrong_action_refused"] and evidence["row_unchanged"]
     assert (
