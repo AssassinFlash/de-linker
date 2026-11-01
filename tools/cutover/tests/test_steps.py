@@ -1781,10 +1781,10 @@ def test_archived_custom_checkpoint_cleanup_recovers_at_each_boundary(
         elif interruption == "after-release" and marked and not active:
             raise SystemExit("after release")
 
-    def unlink(path: Path, *args: object, **kwargs: object) -> None:
+    def unlink(path: Path, missing_ok: bool = False) -> None:
         if path == checkpoint and interruption == "before-unlink":
             raise SystemExit("before unlink")
-        original_unlink(path, *args, **kwargs)
+        original_unlink(path, missing_ok=missing_ok)
         if path == checkpoint and interruption == "after-unlink":
             raise SystemExit("after unlink")
 

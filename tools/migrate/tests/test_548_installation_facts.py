@@ -12,6 +12,7 @@ import stat
 import subprocess
 from pathlib import Path
 from types import ModuleType
+from typing import Any
 
 import pytest
 
@@ -644,7 +645,7 @@ def test_terminal_patch_local_rebind_keeps_original_bytes_and_plan_in_memory() -
     selected = migration.terminal_use_plan(migration.load_plan(), "1958")
     entry = selected["products"]["1958"]
     source = entry["items"][0]["source"]
-    pinned = {
+    pinned: dict[str, Any] = {
         "products": {
             "1958": {
                 "product_revision": "e" * 64,
@@ -694,7 +695,7 @@ def test_terminal_patch_rejects_partial_production_or_invalid_actions(
 
 
 def test_terminal_receipt_refuses_unrelated_changes_and_conflicting_scope() -> None:
-    before = {
+    before: dict[str, Any] = {
         "schema_version": 1,
         "items": [
             {

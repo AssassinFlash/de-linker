@@ -664,10 +664,10 @@ def test_interrupted_retirement_rechecks_new_baseline_before_unlink(
     victim = snapshot.directory(tmp_path) / old[0]
     unlink = Path.unlink
 
-    def interrupt(path: Path, *args: object, **kwargs: object) -> None:
+    def interrupt(path: Path, missing_ok: bool = False) -> None:
         if path == victim:
             raise SystemExit("before unlink")
-        unlink(path, *args, **kwargs)
+        unlink(path, missing_ok=missing_ok)
 
     saved: list[snapshot.Snapshot] = []
     monkeypatch.setattr(Path, "unlink", interrupt)
