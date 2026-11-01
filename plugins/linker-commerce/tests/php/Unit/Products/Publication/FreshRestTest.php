@@ -89,6 +89,7 @@ final class FreshRestTest extends TestCase {
 		WP_Mock::userFunction( 'wp_cache_supports' )->andReturn( true );
 		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturn( true );
 		WP_Mock::userFunction( 'get_posts' )->andReturn( array() );
+		WP_Mock::userFunction( 'get_option' )->with( 'linker_de_document_titles', array() )->andReturn( array() );
 		WP_Mock::userFunction( '_prime_post_caches' );
 		WP_Mock::userFunction( 'update_postmeta_cache' );
 		WP_Mock::userFunction( 'update_object_term_cache' );
