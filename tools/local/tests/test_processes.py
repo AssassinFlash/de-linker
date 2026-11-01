@@ -15,7 +15,9 @@ SLEEPER = [sys.executable, "-c", "import time; time.sleep(60)"]
 
 def process_environment() -> dict[str, str]:
     """Fixtures need no application credentials, including in failure reports."""
-    return {key: os.environ[key] for key in ("PATH", "LC_ALL", "TZ") if key in os.environ}
+    return {
+        key: os.environ[key] for key in ("PATH", "LC_ALL", "TZ") if key in os.environ
+    }
 
 
 def background(tmp_path: Path) -> Background:

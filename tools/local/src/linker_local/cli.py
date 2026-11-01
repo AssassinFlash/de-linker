@@ -293,7 +293,7 @@ def require_php() -> Path:
     if found is not None:
         version = subprocess.run(
             [found, "-r", "echo PHP_MAJOR_VERSION, '.', PHP_MINOR_VERSION;"],
-            env=without_research_credentials(dict(os.environ)),
+            env=without_research_credentials(),
             capture_output=True,
             text=True,
             check=False,

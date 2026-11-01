@@ -15,6 +15,7 @@ import signal
 import socket
 import subprocess
 import time
+from collections.abc import Mapping
 from pathlib import Path
 
 from linker_local.instance import HOST
@@ -31,9 +32,16 @@ class ProcessError(RuntimeError):
     """A background process did not start or stop."""
 
 
-def without_research_credentials(env: dict[str, str]) -> dict[str, str]:
+def without_research_credentials(
+    env: Mapping[str, str] | None = None,
+) -> dict[str, str]:
     """Research credentials belong to the assistant, never project children."""
-    return {key: value for key, value in env.items() if not key.upper().startswith("APIFY_")}
+    source = os.environ if env is None else env
+    return {
+        key: value
+        for key, value in source.items()
+        if not key.upper().startswith("APIFY_")
+    }
 
 
 class Background:
@@ -75,7 +83,9 @@ class Background:
             try:
                 _stop_group(pid, started)
             except ProcessError as cleanup:
-                raise ProcessError(f"{error}\nStartup cleanup failed: {cleanup}") from error
+                raise ProcessError(
+                    f"{error}\nStartup cleanup failed: {cleanup}"
+                ) from error
             self.pid_file.unlink(missing_ok=True)
             raise
 
@@ -112,7 +122,9 @@ class Background:
             try:
                 _stop_group(pid, started)
             except ProcessError as cleanup:
-                raise ProcessError(f"{error}\nSpawn cleanup failed: {cleanup}") from error
+                raise ProcessError(
+                    f"{error}\nSpawn cleanup failed: {cleanup}"
+                ) from error
             self.pid_file.unlink(missing_ok=True)
             raise
         return pid

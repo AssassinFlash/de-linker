@@ -37,6 +37,8 @@ from pathlib import Path
 from types import FrameType
 from typing import IO, Any, NoReturn
 
+from linker_local.processes import without_research_credentials
+
 # The production host and its WordPress root, as tools/pull/src/linker_pull/live.py
 # records them (both read from the host on 2026-10-09).
 HOST = "hostinger-de-linker"
@@ -95,7 +97,12 @@ OPENER = urllib.request.build_opener(_NoRedirects)
 
 def _run(command: list[str], *, cwd: Path | None = None) -> str:
     result = subprocess.run(
-        command, capture_output=True, text=True, check=False, cwd=cwd
+        command,
+        env=without_research_credentials(),
+        capture_output=True,
+        text=True,
+        check=False,
+        cwd=cwd,
     )
     if result.returncode != 0:
         detail = (result.stderr or result.stdout).strip()
@@ -239,6 +246,7 @@ class Target:
                     socket,
                     host,
                 ],
+                env=without_research_credentials(),
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.PIPE,
                 text=True,
@@ -302,7 +310,11 @@ class Target:
             ]
         if not check:
             result = subprocess.run(
-                command, capture_output=True, text=True, check=False
+                command,
+                env=without_research_credentials(),
+                capture_output=True,
+                text=True,
+                check=False,
             )
             return result.stdout.rstrip("\n")
         return _run(command).rstrip("\n")
@@ -411,6 +423,7 @@ class Target:
             base = self.path_of(relative).rstrip("/")
             listed = subprocess.run(
                 remote_entries_command(HOST, base),
+                env=without_research_credentials(),
                 capture_output=True,
                 text=True,
                 check=False,
@@ -495,6 +508,7 @@ class Target:
                     source_arg,
                     f"{destination}/",
                 ],
+                env=without_research_credentials(),
                 capture_output=True,
                 text=True,
                 check=False,
@@ -520,6 +534,7 @@ class Target:
                     f"{source}/",
                     f"{HOST}:{destination}/",
                 ],
+                env=without_research_credentials(),
                 capture_output=True,
                 text=True,
                 check=False,
@@ -546,6 +561,7 @@ class Target:
                     source_arg,
                     f"{HOST}:{destination}",
                 ],
+                env=without_research_credentials(),
                 capture_output=True,
                 text=True,
                 check=False,

@@ -12,6 +12,7 @@ from pathlib import Path
 
 from linker_local import secret
 from linker_local.instance import SHARED
+from linker_local.processes import without_research_credentials
 
 USER = "linker_local"
 # Where the password of linker_local is kept: one per machine, as the user is.
@@ -40,6 +41,7 @@ class MySQL:
                 "--execute",
                 sql,
             ],
+            env=without_research_credentials(),
             capture_output=True,
             text=True,
             check=False,

@@ -151,7 +151,7 @@ def _serve(
     would answer every document question with its fallback.
     """
     uv = _uv()
-    service_environment = without_research_credentials(dict(os.environ))
+    service_environment = without_research_credentials()
     if only is not None and only not in ("engine", "genie"):
         raise ProcessError("unknown local service selection")
     selected = tuple(
