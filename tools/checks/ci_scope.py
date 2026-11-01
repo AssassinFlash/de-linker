@@ -200,6 +200,26 @@ def commerce_migration_input(path):
     return path.startswith("tools/migrate/") and not path.endswith(".py")
 
 
+def plugin_js_test_owner(path):
+    """Entrypoints consumed only by a plugin's complete JS check recipe.
+
+    Build manifests and gettext scans explicitly omit colocated .test files.
+    Keep unmarked JS/PHP loader fixtures and all configuration in their wider
+    scopes: PHP unit tests invoke tests/js/genie-loader-*.mjs themselves.
+    """
+    match = re.fullmatch(
+        r"plugins/linker-(commerce|tools)/src/.+\.test\.[jt]sx?",
+        path,
+    )
+    if match:
+        return match[1]
+    if re.fullmatch(r"plugins/linker-tools/tests/e2e/.+\.spec\.ts", path):
+        return "tools"
+    if re.fullmatch(r"plugins/linker-commerce/tests/js/.+\.test\.mjs", path):
+        return "commerce"
+    return None
+
+
 def fixture_consumers(path):
     modules: set[str] = set()
     if under(path, ENGINE_DOC_INPUTS):
@@ -257,6 +277,10 @@ def selected_modules(changes, base="", head=""):
             continue
         if path in CONTROL_INPUTS or path.startswith(".github/"):
             return None
+        test_owner = plugin_js_test_owner(path)
+        if test_owner is not None:
+            selected.add("js:" + test_owner)
+            continue
         if path.startswith(("apps/planner/", "plugins/linker-tools/build/planner/")):
             selected.add("planner")
             # Native Engine contracts read browser schemas and shared fixtures
@@ -592,6 +616,9 @@ def immutable_commit(commit):
 
 
 def module_input_path(module, path, paths):
+    test_owner = plugin_js_test_owner(path)
+    if test_owner is not None and module != "js:" + test_owner:
+        return False
     if module == "engine" and path.startswith("apps/planner/"):
         if not engine_planner_input(path):
             return False
