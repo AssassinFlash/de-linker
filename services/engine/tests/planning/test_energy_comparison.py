@@ -484,6 +484,22 @@ def test_geometric_weather_identity_follows_verified_frozen_inputs(
         _weather_key(workspace, other, documents)
     )
 
+    # Force the same bounded path used by an annual oversized witness. The
+    # comparison only needs its verified weather identity, not module arrays.
+    projected = FrozenDocuments(workspace.blobs, max_bytes=1)
+    projection_calls: list[str] = []
+    project_witness = projected.geometric_witness
+
+    def observe_projection(blobs: Any, sha: str) -> Object:
+        projection_calls.append(sha)
+        return project_witness(blobs, sha)
+
+    monkeypatch.setattr(projected, "geometric_witness", observe_projection)
+    assert identity == _weather_key(workspace, candidate, projected)
+    assert identity == _weather_key(workspace, revised, projected)
+    assert identity != _weather_key(workspace, other, projected)
+    assert len(projection_calls) == 3
+
     # The real comparison consumer must expose deltas only for matching weather.
     from linker_engine.planning.energy_comparison import compare_energy_runs
     from linker_engine.planning.profile_import import ProfileImport
