@@ -14,6 +14,14 @@ The build reconstructed 14,583 original chunks from the Docling cache. With proj
 | manual | 65 | 12 | 77 |
 | other | 0 | 9 | 9 |
 
+## Physical original documents and the HCA replacement
+
+The next candidate adds source-backed passages for 29 of the 58 incomplete associations in epoch 54's comparison. Eight are installation guides. Twenty-one are compatibility associations. This figure comes from the actual affected originals and local retrieval checks. The final leased build and serving index must establish whole-corpus availability. The 159 earlier associations and these 29 account for 188 distinct baseline associations.
+
+For five HS3 models, the DoC lists the individual W and G designations. The verified model-axis table on data sheet page 2 and manufacturer manual page 18 explain how to distinguish them. A conditional answer links all three documents and asks the customer to read the nameplate. The combined W/G model is still incomplete as a certificate association.
+
+GoodWe's EU EV charger warranty Rev. 1.2 names all three currently listed HCA-20 models. For Europe excluding the UK it specifies two years from the earlier of first installation and six months after production. The full policy contains regional, reporting and exclusion conditions. Source PDF SHA-256 is `88a8a5bd9e70bc398fe990069272526c660c1731103ff113e53f93f7fd789307`. It was parsed on the normal cached Docling path. Local EN/DE question, withdrawal and source-change tests used a simulated association. The three old policy links need to be superseded by the actual Woo associations and hosted customer downloads. [Manufacturer original](https://en.goodwe.com/Public/Uploads/uploadfile/files/20261014/GOODWELimitedWarrantyforEVChargerforEURev_1_220260917.pdf)
+
 ## Product and original document
 
 | Purpose | Original SHA-256 prefix | Woo ID | Published model | Candidate finding |
@@ -24,11 +32,11 @@ The build reconstructed 14,583 original chunks from the Docling cache. With proj
 | certificate | `0d33ea23ff2d` | 1956 | GW208.9-BAT-LC-G10 | Usable passage in candidate. |
 | certificate | `0d33ea23ff2d` | 1957 | GW208.9-BAT-LCD-G10 | Usable passage in candidate. |
 | certificate | `0d33ea23ff2d` | 1958 | GW261.2-BAT-LCD-G10 | Usable passage in candidate. |
-| certificate | `43d6efd869b4` | 1185 | HS3-12K-T2-W/G-PX | Certificate lists W and G separately. Woo uses W/G and the manufacturer has not established equivalence for this declaration. |
-| certificate | `43d6efd869b4` | 1186 | HS3-6K-T2-W/G-PX | Certificate lists W and G separately. Woo uses W/G and the manufacturer has not established equivalence for this declaration. |
-| certificate | `43d6efd869b4` | 1187 | HS3-8K-T2-W/G-PX | Certificate lists W and G separately. Woo uses W/G and the manufacturer has not established equivalence for this declaration. |
-| certificate | `43d6efd869b4` | 2198 | HS3-5K-T2-W/G-PX | Certificate lists W and G separately. Woo uses W/G and the manufacturer has not established equivalence for this declaration. |
-| certificate | `43d6efd869b4` | 2199 | HS3-10K-T2-W/G-PX | Certificate lists W and G separately. Woo uses W/G and the manufacturer has not established equivalence for this declaration. |
+| certificate | `43d6efd869b4` | 1185 | HS3-12K-T2-W/G-PX | Conditional evidence for the separate W and G variants, using declaration p1, data sheet p2 and manual p18. Combined-model certificate remains incomplete. |
+| certificate | `43d6efd869b4` | 1186 | HS3-6K-T2-W/G-PX | Conditional evidence for the separate W and G variants, using declaration p1, data sheet p2 and manual p18. Combined-model certificate remains incomplete. |
+| certificate | `43d6efd869b4` | 1187 | HS3-8K-T2-W/G-PX | Conditional evidence for the separate W and G variants, using declaration p1, data sheet p2 and manual p18. Combined-model certificate remains incomplete. |
+| certificate | `43d6efd869b4` | 2198 | HS3-5K-T2-W/G-PX | Conditional evidence for the separate W and G variants, using declaration p1, data sheet p2 and manual p18. Combined-model certificate remains incomplete. |
+| certificate | `43d6efd869b4` | 2199 | HS3-10K-T2-W/G-PX | Conditional evidence for the separate W and G variants, using declaration p1, data sheet p2 and manual p18. Combined-model certificate remains incomplete. |
 | certificate | `576232ede954` | 3557 | GW11K-HCA-20 | Usable passage in candidate. |
 | certificate | `576232ede954` | 3586 | GW7K-HCA-20 | Usable passage in candidate. |
 | certificate | `576232ede954` | 3587 | GW22K-HCA-20 | Usable passage in candidate. |
@@ -101,39 +109,39 @@ The build reconstructed 14,583 original chunks from the Docling cache. With proj
 | compatibility | `5e40da8282b1` | 1948 | GW100K-ET-G10 | Usable passage in candidate. |
 | compatibility | `5e40da8282b1` | 1954 | GW61.4-BAT-AC-G10 | Usable passage in candidate. |
 | compatibility | `5e40da8282b1` | 1955 | GW112.6-BAT-AC-G10 | Usable passage in candidate. |
-| compatibility | `6f33b8361fe2` | 2394 | GM330 | Parsed rows mix G10/G11 or lose the required version footnote, or the exact device pairing cannot be established. |
+| compatibility | `6f33b8361fe2` | 2394 | GM330 | Candidate binds G10 to GM330 and SEC3000C, with the full p7 single-unit condition and the p9 controller, firmware and parallel-operation restrictions. |
 | compatibility | `6f33b8361fe2` | 2397 | GMK330 | Parsed rows mix G10/G11 or lose the required version footnote, or the exact device pairing cannot be established. |
-| compatibility | `6f33b8361fe2` | 2409 | SEC3000C | Parsed rows mix G10/G11 or lose the required version footnote, or the exact device pairing cannot be established. |
+| compatibility | `6f33b8361fe2` | 2409 | SEC3000C | Candidate binds G10 to GM330 and SEC3000C, with the full p7 single-unit condition and the p9 controller, firmware and parallel-operation restrictions. |
 | compatibility | `6f33b8361fe2` | 2415 | EzManager3000 | Parsed rows mix G10/G11 or lose the required version footnote, or the exact device pairing cannot be established. |
-| compatibility | `6f33b8361fe2` | 6321 | GW125/261-ESA-LCN-G10 | Parsed rows mix G10/G11 or lose the required version footnote, or the exact device pairing cannot be established. |
-| compatibility | `8951dd1d8a64` | 1946 | GW80K-ET-G10 | Only the series is listed. No exact current-model mapping proven. |
-| compatibility | `8951dd1d8a64` | 1947 | GW99.99K-ET-G10 | Only the series is listed. No exact current-model mapping proven. |
-| compatibility | `8951dd1d8a64` | 1948 | GW100K-ET-G10 | Only the series is listed. No exact current-model mapping proven. |
+| compatibility | `6f33b8361fe2` | 6321 | GW125/261-ESA-LCN-G10 | Candidate binds G10 to GM330 and SEC3000C, with the full p7 single-unit condition and the p9 controller, firmware and parallel-operation restrictions. |
+| compatibility | `8951dd1d8a64` | 1946 | GW80K-ET-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `8951dd1d8a64` | 1947 | GW99.99K-ET-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `8951dd1d8a64` | 1948 | GW100K-ET-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
 | compatibility | `8951dd1d8a64` | 1954 | GW61.4-BAT-AC-G10 | Usable passage in candidate. |
 | compatibility | `8951dd1d8a64` | 1955 | GW112.6-BAT-AC-G10 | Usable passage in candidate. |
 | compatibility | `8951dd1d8a64` | 1956 | GW208.9-BAT-LC-G10 | Usable passage in candidate. |
 | compatibility | `8951dd1d8a64` | 1957 | GW208.9-BAT-LCD-G10 | LCD variant absent from matrix. |
 | compatibility | `8951dd1d8a64` | 1958 | GW261.2-BAT-LCD-G10 | Usable passage in candidate. |
-| compatibility | `8951dd1d8a64` | 3595 | GW125K-ETR-G10 | Only the series is listed. No exact current-model mapping proven. |
-| compatibility | `8951dd1d8a64` | 6507 | GW80K-ETR-G10 | Only the series is listed. No exact current-model mapping proven. |
-| compatibility | `8951dd1d8a64` | 6508 | GW99.99K-ETR-G10 | Only the series is listed. No exact current-model mapping proven. |
-| compatibility | `8951dd1d8a64` | 6509 | GW100K-ETR-G10 | Only the series is listed. No exact current-model mapping proven. |
-| compatibility | `8951dd1d8a64` | 6510 | GW110K-ETR-G10 | Only the series is listed. No exact current-model mapping proven. |
-| compatibility | `8951dd1d8a64` | 6511 | GW124.99K-ETR-G10 | Only the series is listed. No exact current-model mapping proven. |
-| compatibility | `ea081f6f6fb2` | 1946 | GW80K-ET-G10 | Only the series is listed. No exact current-model mapping proven. |
-| compatibility | `ea081f6f6fb2` | 1947 | GW99.99K-ET-G10 | Only the series is listed. No exact current-model mapping proven. |
-| compatibility | `ea081f6f6fb2` | 1948 | GW100K-ET-G10 | Only the series is listed. No exact current-model mapping proven. |
+| compatibility | `8951dd1d8a64` | 3595 | GW125K-ETR-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `8951dd1d8a64` | 6507 | GW80K-ETR-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `8951dd1d8a64` | 6508 | GW99.99K-ETR-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `8951dd1d8a64` | 6509 | GW100K-ETR-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `8951dd1d8a64` | 6510 | GW110K-ETR-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `8951dd1d8a64` | 6511 | GW124.99K-ETR-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `ea081f6f6fb2` | 1946 | GW80K-ET-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `ea081f6f6fb2` | 1947 | GW99.99K-ET-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `ea081f6f6fb2` | 1948 | GW100K-ET-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
 | compatibility | `ea081f6f6fb2` | 1954 | GW61.4-BAT-AC-G10 | Usable passage in candidate. |
 | compatibility | `ea081f6f6fb2` | 1955 | GW112.6-BAT-AC-G10 | Usable passage in candidate. |
 | compatibility | `ea081f6f6fb2` | 1956 | GW208.9-BAT-LC-G10 | Usable passage in candidate. |
 | compatibility | `ea081f6f6fb2` | 1957 | GW208.9-BAT-LCD-G10 | LCD variant absent from matrix. |
 | compatibility | `ea081f6f6fb2` | 1958 | GW261.2-BAT-LCD-G10 | Usable passage in candidate. |
-| compatibility | `ea081f6f6fb2` | 3595 | GW125K-ETR-G10 | Only the series is listed. No exact current-model mapping proven. |
-| compatibility | `ea081f6f6fb2` | 6507 | GW80K-ETR-G10 | Only the series is listed. No exact current-model mapping proven. |
-| compatibility | `ea081f6f6fb2` | 6508 | GW99.99K-ETR-G10 | Only the series is listed. No exact current-model mapping proven. |
-| compatibility | `ea081f6f6fb2` | 6509 | GW100K-ETR-G10 | Only the series is listed. No exact current-model mapping proven. |
-| compatibility | `ea081f6f6fb2` | 6510 | GW110K-ETR-G10 | Only the series is listed. No exact current-model mapping proven. |
-| compatibility | `ea081f6f6fb2` | 6511 | GW124.99K-ETR-G10 | Only the series is listed. No exact current-model mapping proven. |
+| compatibility | `ea081f6f6fb2` | 3595 | GW125K-ETR-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `ea081f6f6fb2` | 6507 | GW80K-ETR-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `ea081f6f6fb2` | 6508 | GW99.99K-ETR-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `ea081f6f6fb2` | 6509 | GW100K-ETR-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `ea081f6f6fb2` | 6510 | GW110K-ETR-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `ea081f6f6fb2` | 6511 | GW124.99K-ETR-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
 | datasheet | `31e691602178` | 3611 | GW6.0-BAT-D-G20 | Usable passage in candidate. |
 | datasheet | `31e691602178` | 3612 | GW9.0-BAT-D-G20 | Usable passage in candidate. |
 | datasheet | `31e691602178` | 6519 | GW5.1-BAT-D-G20 | Usable passage in candidate. |
@@ -162,12 +170,12 @@ The build reconstructed 14,583 original chunks from the Docling cache. With proj
 | manual | `29bb252c549a` | 6516 | GW25K-ETA-G20 | Usable passage in candidate. |
 | manual | `29bb252c549a` | 6517 | GW29.999K-ETA-G20 | Usable passage in candidate. |
 | manual | `29bb252c549a` | 6518 | GW30K-ETA-G20 | Usable passage in candidate. |
-| manual | `307b704c87f2` | 3595 | GW125K-ETR-G10 | Installation sequence relies on diagrams. Extracted text mixes equipment or omits the sequence. |
-| manual | `307b704c87f2` | 6507 | GW80K-ETR-G10 | Installation sequence relies on diagrams. Extracted text mixes equipment or omits the sequence. |
-| manual | `307b704c87f2` | 6508 | GW99.99K-ETR-G10 | Installation sequence relies on diagrams. Extracted text mixes equipment or omits the sequence. |
-| manual | `307b704c87f2` | 6509 | GW100K-ETR-G10 | Installation sequence relies on diagrams. Extracted text mixes equipment or omits the sequence. |
-| manual | `307b704c87f2` | 6510 | GW110K-ETR-G10 | Installation sequence relies on diagrams. Extracted text mixes equipment or omits the sequence. |
-| manual | `307b704c87f2` | 6511 | GW124.99K-ETR-G10 | Installation sequence relies on diagrams. Extracted text mixes equipment or omits the sequence. |
+| manual | `307b704c87f2` | 3595 | GW125K-ETR-G10 | Candidate adds p1 clearance and wall mounting figures. Both the figure region and the exact cover model list match the original PDF. |
+| manual | `307b704c87f2` | 6507 | GW80K-ETR-G10 | Candidate adds p1 clearance and wall mounting figures. Both the figure region and the exact cover model list match the original PDF. |
+| manual | `307b704c87f2` | 6508 | GW99.99K-ETR-G10 | Candidate adds p1 clearance and wall mounting figures. Both the figure region and the exact cover model list match the original PDF. |
+| manual | `307b704c87f2` | 6509 | GW100K-ETR-G10 | Candidate adds p1 clearance and wall mounting figures. Both the figure region and the exact cover model list match the original PDF. |
+| manual | `307b704c87f2` | 6510 | GW110K-ETR-G10 | Candidate adds p1 clearance and wall mounting figures. Both the figure region and the exact cover model list match the original PDF. |
+| manual | `307b704c87f2` | 6511 | GW124.99K-ETR-G10 | Candidate adds p1 clearance and wall mounting figures. Both the figure region and the exact cover model list match the original PDF. |
 | manual | `363be3f64d74` | 6508 | GW99.99K-ETR-G10 | Usable passage in candidate. |
 | manual | `363be3f64d74` | 6511 | GW124.99K-ETR-G10 | Usable passage in candidate. |
 | manual | `4b1a5d6dc379` | 6321 | GW125/261-ESA-LCN-G10 | Usable passage in candidate. |
@@ -185,8 +193,8 @@ The build reconstructed 14,583 original chunks from the Docling cache. With proj
 | manual | `5cd104b9e006` | 6526 | GW6K-EHA-G20 | Usable passage in candidate. |
 | manual | `5cd104b9e006` | 6527 | GW8K-EHA-G20 | Usable passage in candidate. |
 | manual | `5cd104b9e006` | 6528 | GW10K-EHA-G20 | Usable passage in candidate. |
-| manual | `627e5444f47b` | 1954 | GW61.4-BAT-AC-G10 | Installation sequence relies on diagrams. Extracted text does not preserve the required order. |
-| manual | `627e5444f47b` | 1955 | GW112.6-BAT-AC-G10 | Installation sequence relies on diagrams. Extracted text does not preserve the required order. |
+| manual | `627e5444f47b` | 1954 | GW61.4-BAT-AC-G10 | Candidate adds the p2 floor mounting figure and the exact model listed on the p1 cover. |
+| manual | `627e5444f47b` | 1955 | GW112.6-BAT-AC-G10 | Candidate adds the p2 floor mounting figure and the exact model listed on the p1 cover. |
 | manual | `67a7f715ca9d` | 3556 | GW10K-ETA-G20 | Usable passage in candidate. |
 | manual | `67a7f715ca9d` | 3584 | GW12K-ETA-G20 | Usable passage in candidate. |
 | manual | `67a7f715ca9d` | 3585 | GW15K-ETA-G20 | Usable passage in candidate. |
@@ -226,9 +234,9 @@ The build reconstructed 14,583 original chunks from the Docling cache. With proj
 | manual | `f66efb70d0d8` | 1948 | GW100K-ET-G10 | Usable passage in candidate. |
 | manual | `f66efb70d0d8` | 1956 | GW208.9-BAT-LC-G10 | Usable passage in candidate. |
 | manual | `f66efb70d0d8` | 6506 | GW75K-ET-G10 | Usable passage in candidate. |
-| other | `9f5b0d2b2430` | 3557 | GW11K-HCA-20 | Warranty lists HCA without the current -20 suffix. The covered generation has not been established. |
-| other | `9f5b0d2b2430` | 3586 | GW7K-HCA-20 | Warranty lists HCA without the current -20 suffix. The covered generation has not been established. |
-| other | `9f5b0d2b2430` | 3587 | GW22K-HCA-20 | Warranty lists HCA without the current -20 suffix. The covered generation has not been established. |
+| other | `9f5b0d2b2430` | 3557 | GW11K-HCA-20 | Legacy policy does not list the -20 model. Rev. 1.2 now provides the exact model and conditions; new hosted Woo association and publication pending. |
+| other | `9f5b0d2b2430` | 3586 | GW7K-HCA-20 | Legacy policy does not list the -20 model. Rev. 1.2 now provides the exact model and conditions; new hosted Woo association and publication pending. |
+| other | `9f5b0d2b2430` | 3587 | GW22K-HCA-20 | Legacy policy does not list the -20 model. Rev. 1.2 now provides the exact model and conditions; new hosted Woo association and publication pending. |
 | other | `be0569b4602a` | 1185 | HS3-12K-T2-W/G-PX | Page 4 conditional claims procedure searchable locally. Full policy terms remain unproven. |
 | other | `be0569b4602a` | 1186 | HS3-6K-T2-W/G-PX | Page 4 conditional claims procedure searchable locally. Full policy terms remain unproven. |
 | other | `be0569b4602a` | 1187 | HS3-8K-T2-W/G-PX | Page 4 conditional claims procedure searchable locally. Full policy terms remain unproven. |

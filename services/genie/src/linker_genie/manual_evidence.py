@@ -11,6 +11,8 @@ import re
 from collections.abc import Mapping, Sequence
 from typing import Any
 
+from linker_genie.manual_diagram import model_list_descriptor, physical_descriptor
+from linker_genie.manual_diagram_records import DIAGRAMS
 from linker_genie.manual_evidence_records import RECORDS
 from linker_genie.source_models import model_pattern
 
@@ -79,7 +81,7 @@ def valid_reviewed_manual(
         or value["source_page"] < 1
     ):
         return False
-    for record in RECORDS:
+    for record in [*RECORDS, *DIAGRAMS]:
         if (
             record["sha256"] != sha
             or record["anchor_id"] != value.get("anchor_id")
@@ -90,7 +92,17 @@ def valid_reviewed_manual(
             or record["source_sha256"] != _digest(value["source_text"])
             or record["anchor_quote"] not in value["anchor_text"]
             or record["excerpt"] != text
-            or text not in value["source_text"]
+            or (
+                (
+                    value.get("physical_evidence") != physical_descriptor(record)
+                    or value.get("physical_model_evidence")
+                    != model_list_descriptor(record)
+                )
+                if "figure" in record
+                else text not in value["source_text"]
+                or value.get("physical_evidence") is not None
+                or value.get("physical_model_evidence") is not None
+            )
             or not subject_matches(record, str(value["model"]))
         ):
             continue

@@ -88,6 +88,9 @@ class Chunk:
     # SHA-bound PDF text-layer evidence for a certificate page marker or a
     # model split across two physically adjacent lines in its original cell.
     source_certificate_evidence: tuple[dict[str, object], ...] = ()
+    # SHA-bound physical evidence attached to this unique native source chunk.
+    # It never changes the chunk's OCR text or its authored model restrictions.
+    source_physical_evidence: tuple[dict[str, object], ...] = ()
 
 
 def context_header(meta: DocumentMeta, section: str, page: int) -> str:

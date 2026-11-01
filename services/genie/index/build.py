@@ -35,8 +35,17 @@ from index.chunking import (
     chunk_document,
     context_header,
 )
+from index.compatibility_physical import (
+    extract_compatibility_evidence,
+    needs_compatibility_evidence,
+)
 from index.corpus import DocumentRow
 from index.paths import INDEX_DIR, INVENTORY_PATH, PARSED_DIR, PDF_DIR
+from index.physical_evidence import (
+    attach_physical_evidence,
+    extract_diagram_evidence,
+    needs_diagram_evidence,
+)
 from index.preparation import recipe_revision
 from linker_genie.embedding import (
     BGE_M3,
@@ -322,13 +331,58 @@ def chunk_all(
             continue
         result.parse_seconds += status.seconds
         result.parsers.add(status.docling)
-        pages = extract.extract(
-            doc_dir,
-            status.pages,
-            status.garbled_pages,
-            pdf_path=pdf_path if source_geometry else None,
+        physical_chunks: list[Chunk] | None = None
+        document_meta = _meta(document)
+
+        def collect_physical(
+            pdf: Any,
+            sha: str,
+            pages: list[extract.Page],
+            meta: DocumentMeta = document_meta,
+        ) -> None:
+            nonlocal physical_chunks
+            native = chunk_document(meta, pages, tokenizer, detect_lang)
+            evidence: list[dict[str, object]] = []
+            extractors = (
+                (needs_diagram_evidence, extract_diagram_evidence),
+                (needs_compatibility_evidence, extract_compatibility_evidence),
+            )
+            for needed, inspect in extractors:
+                if not needed(sha):
+                    continue
+                try:
+                    evidence.extend(inspect(pdf, sha, native))
+                except (OSError, ValueError, IndexError, RuntimeError) as exc:
+                    # Preserve the existing native chunks; optional proof is withheld.
+                    print(
+                        f"physical evidence unavailable ({inspect.__name__}): {exc}",
+                        file=sys.stderr,
+                    )
+            physical_chunks = attach_physical_evidence(native, evidence)
+
+        if source_geometry and (
+            needs_diagram_evidence(document.sha256)
+            or needs_compatibility_evidence(document.sha256)
+        ):
+            pages = extract.extract(
+                doc_dir,
+                status.pages,
+                status.garbled_pages,
+                pdf_path=pdf_path,
+                on_physical=collect_physical,
+            )
+        else:
+            pages = extract.extract(
+                doc_dir,
+                status.pages,
+                status.garbled_pages,
+                pdf_path=pdf_path if source_geometry else None,
+            )
+        chunks = (
+            physical_chunks
+            if physical_chunks is not None
+            else chunk_document(_meta(document), pages, tokenizer, detect_lang)
         )
-        chunks = chunk_document(_meta(document), pages, tokenizer, detect_lang)
         if source_geometry and document.doc_type == "certificate":
             chunks = attach_certificate_evidence(
                 chunks, extract.certificate_physical_evidence(pdf_path, document.models)

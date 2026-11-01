@@ -21,6 +21,8 @@ import sqlite_vec
 
 from index import corpus
 from index.table_compiler import external_axis_anchors
+from linker_genie.compatibility_physical import physical_key
+from linker_genie.hs3_evidence import hs3_anchors
 from linker_genie.publication import Snapshot
 from linker_genie.publication_scope import authorize_chunk, table_header
 from linker_genie.retrieval import SCHEMA_VERSION, is_passage
@@ -182,12 +184,21 @@ def export(directory: Path, path: Path) -> None:
             for cid in scope.get("source_chunk_ids", [])
             if isinstance(cid, str)
         }
+        physical_sources = {
+            physical_key(cid)
+            for scope in proof.get("chunk_scopes", {}).values()
+            if isinstance(scope, dict)
+            and scope.get("basis") in {"compatibility_inverter", "compatibility_iot"}
+            for cid in scope.get("source_chunk_ids", [])
+            if isinstance(cid, str)
+        }
         axis_anchors = {
             cid: anchor
             for cid, anchor in external_axis_anchors(
                 list(chunks_by_id.values())
             ).items()
             if anchor.get("kind") == "pdf_cover"
+            or cid in physical_sources
             or (
                 anchor.get("kind") in {"policy_table", "policy_text"}
                 and cid in warranty_sources
@@ -195,6 +206,14 @@ def export(directory: Path, path: Path) -> None:
             or (anchor.get("source_sha256"), anchor.get("source_table"))
             in projected_tables
         }
+        # Unlike serialized metadata, these anchors derive from the original
+        # chunks that will actually be written to this generation.
+        axis_anchors.update(
+            hs3_anchors(
+                (c.id, c.doc_sha256, c.page, c.kind, c.text)
+                for c in chunks_by_id.values()
+            )
+        )
         if axis_anchors:
             db.execute(
                 "INSERT INTO meta (key, value) VALUES (?, ?)",
@@ -255,7 +274,10 @@ def export(directory: Path, path: Path) -> None:
                     )
                     # A first-contact procedure makes a passage available, but
                     # alone does not prepare the policy's duration or terms.
-                    if not scope or scope.get("basis") != "warranty_procedure":
+                    if not scope or scope.get("basis") not in {
+                        "warranty_procedure",
+                        "hs3_conditional_certificate",
+                    }:
                         prepared.setdefault(item["product_id"], set()).add(
                             item["document_id"]
                         )

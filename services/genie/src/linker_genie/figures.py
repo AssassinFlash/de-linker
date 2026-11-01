@@ -344,6 +344,8 @@ _MONTH_NUMBER = {
 def localize(value: str, locale: str) -> str:
     """A figure's value in the turn's language: word units and written dates."""
     language = "de" if locale.startswith("de") else "en"
+    if language == "de" and value.casefold() == "one month":
+        return "1 Monat"
     if _DATE_PHRASE.fullmatch(value):
         day = re.search(r"\d{1,2}(?!\d)", value)
         year = re.search(r"\d{4}", value)

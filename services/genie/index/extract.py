@@ -13,7 +13,7 @@ import hashlib
 import logging
 import math
 import re
-from collections.abc import Iterable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any, Literal
@@ -1682,7 +1682,12 @@ def _pdf_word_wraps(pdf: object, number: int, sha: str) -> list[SourceWordWrap]:
         page.close()
 
 
-def enrich_model_axes(pages: list[Page], pdf_path: Path) -> list[Page]:
+def enrich_model_axes(
+    pages: list[Page],
+    pdf_path: Path,
+    *,
+    on_physical: Callable[[Any, str, list[Page]], None] | None = None,
+) -> list[Page]:
     """Supplement cached native cells with original physical model-label order.
 
     Neither PDF bytes nor cached Docling text are rewritten. A merged logical
@@ -1850,6 +1855,8 @@ def enrich_model_axes(pages: list[Page], pdf_path: Path) -> list[Page]:
                     )
                 blocks.append(replace(block, source_cells=tuple(cells)))
             output.append(Page(page.number, page.source, blocks))
+        if on_physical is not None:
+            on_physical(pdf, sha, output)
     finally:
         pdf.close()
     return output
@@ -1861,6 +1868,7 @@ def extract(
     garbled: Iterable[int],
     *,
     pdf_path: Path | None = None,
+    on_physical: Callable[[Any, str, list[Page]], None] | None = None,
 ) -> list[Page]:
     """Every physical page of one document, empty when nothing on it is text."""
     main = parsed_dir / "docling.json"
@@ -1876,4 +1884,8 @@ def extract(
             pages[number - 1] = Page(
                 number, "ocr", pages_of(load_document(ocr)).get(1, [])
             )
-    return enrich_model_axes(pages, pdf_path) if pdf_path is not None else pages
+    return (
+        enrich_model_axes(pages, pdf_path, on_physical=on_physical)
+        if pdf_path is not None
+        else pages
+    )

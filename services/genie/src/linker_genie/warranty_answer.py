@@ -68,6 +68,11 @@ def answers(hit: dict[str, Any], notes: Sequence[Any]) -> dict[str, str]:
     if any(piece is None for piece in pieces):
         return {}
     original = [piece for piece in pieces if piece is not None]
+    named_policy = any(line.startswith("| Model / Modell |") for line in lines)
+    if named_policy and hit.get("answer_language") == "de":
+        from linker_genie.warranty_named_de import german_named_answers
+
+        return german_named_answers(chunk, original, notes, period[0]) or {}
     labels = (
         {
             "period": "Limited warranty period",
@@ -113,10 +118,25 @@ def answers(hit: dict[str, Any], notes: Sequence[Any]) -> dict[str, str]:
         "geography": sentence("geography", original[4]),
         "coverage": sentence("coverage", original[5]),
     }
+    if named_policy and len(original) == 11:
+        # Each complete exclusion and condition retains its original source.
+        rendered["coverage"] += " GoodWe excludes: " + original[6]
+        rendered["geography"] += " " + " ".join(
+            sentence("geography", item) for item in original[7:11]
+        )
+        rendered["geography"] += (
+            " Check GoodWe's global website for the latest version."
+        )
+        rendered["period"] = period_answer + " " + sentence("start", original[2])
+        rendered["production"] = sentence("start", original[2])
     for note, piece in zip(notes[6:], original[6:], strict=True):
         category = exclusion_category(note.quote)
+        if named_policy and "Product failure is not reported to GOODWE" in note.quote:
+            category = "reporting"
         if category in labels:
-            rendered[category] = sentence(category, piece)
+            rendered[category] = sentence(
+                category, ("GoodWe excludes: " if named_policy else "") + piece
+            )
     rendered["general"] = "\n".join(
         rendered[role]
         for role in (
