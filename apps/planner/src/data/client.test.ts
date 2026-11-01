@@ -87,6 +87,36 @@ test("owned report downloads verify both frozen PDF and CSV bytes", async () => 
 	}
 });
 
+test("large PV series is the only larger verified report download", async () => {
+	const content = new Uint8Array(36_635_293);
+	content.fill(65);
+	const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", content));
+	const sha = Array.from(digest, (b) => b.toString(16).padStart(2, "0")).join(
+		"",
+	);
+	const { client, calls } = fixture([
+		guest(),
+		json(context),
+		new Response(content),
+		new Response(content),
+	]);
+	await client.bootstrap();
+	const blob = await client.reportCsv(
+		"project",
+		"asset",
+		context.query_scope,
+		sha,
+		undefined,
+		true,
+	);
+	assert.equal(blob.size, content.length);
+	assert.equal(JSON.parse(String(calls[2]!.init.body)).series_csv, true);
+	await assert.rejects(
+		client.reportCsv("project", "asset", context.query_scope, sha),
+		{ code: "reply_too_large" },
+	);
+});
+
 test("scope admission follows native confirmation immediately, independently of React cleanup", async () => {
 	const other = { ...context, query_scope: "c".repeat(64) };
 	const { client } = fixture([guest(), json(context), guest(), json(other)]);

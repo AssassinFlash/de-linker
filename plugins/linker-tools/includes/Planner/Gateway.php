@@ -299,6 +299,18 @@ final class Gateway {
 		if ( is_wp_error( $command ) ) {
 			return $command;
 		}
+		if ( 'assets/content' === $path && array_key_exists( 'series_csv', $command ) ) {
+			$download = SeriesDownload::fetch( $principal, $command, $this->transport );
+			return is_wp_error( $download ) ? $download : new WP_REST_Response(
+				$download,
+				200,
+				array(
+					'Content-Type'        => 'application/octet-stream',
+					'Content-Disposition' => 'attachment; filename="project-asset.csv"',
+					'Content-Length'      => (string) $download->size,
+				)
+			);
+		}
 		if ( 'sources/saved-solution' === $path ) {
 			$source = ( new SavedSolutionSource() )->read( $principal, $command );
 			return is_wp_error( $source ) ? $source : new WP_REST_Response( $source );
@@ -367,6 +379,10 @@ final class Gateway {
 		header_remove( 'Access-Control-Allow-Credentials' );
 		header_remove( 'Access-Control-Allow-Headers' );
 		header_remove( 'Access-Control-Expose-Headers' );
+		if ( ! $served && $response instanceof WP_REST_Response && 'application/octet-stream' === ( $response->get_headers()['Content-Type'] ?? '' ) && $response->get_data() instanceof SeriesDownload ) {
+			$response->get_data()->output();
+			return true;
+		}
 		if ( ! $served && $response instanceof WP_REST_Response && 'application/octet-stream' === ( $response->get_headers()['Content-Type'] ?? '' ) && is_string( $response->get_data() ) ) {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- exact owned asset bytes from the verified private RPC, served as attachment with nosniff.
 			echo $response->get_data();

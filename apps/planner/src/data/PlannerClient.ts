@@ -7,6 +7,8 @@ import { readProfileIssue } from "./profileIssue.ts";
 // Matches the reviewed native gateway. These are transport resource policy,
 // never a physical limit or a statement of production capacity.
 const MAX_REPLY_BYTES = 32 * 1024 * 1024;
+// Separate bounded policy for the verified PV interval attachment only.
+const MAX_SERIES_BYTES = 128 * 1024 * 1024;
 const INITIAL_BODY_BYTES = 16 * 1024 * 1024;
 const INITIAL_DEPTH = 32;
 
@@ -145,6 +147,7 @@ export class PlannerClient {
 		expectedScope: string,
 		expectedSha256: string,
 		signal?: AbortSignal,
+		series = false,
 	): Promise<Blob> {
 		return this.reportFile(
 			projectId,
@@ -153,6 +156,7 @@ export class PlannerClient {
 			"csv",
 			signal,
 			expectedSha256,
+			series,
 		);
 	}
 
@@ -163,6 +167,7 @@ export class PlannerClient {
 		format: "pdf" | "csv",
 		signal?: AbortSignal,
 		expectedSha256?: string,
+		series = false,
 	): Promise<Blob> {
 		const session = this.requireSession(),
 			generation = this.generation;
@@ -180,7 +185,12 @@ export class PlannerClient {
 				method: "POST",
 				headers,
 				body: wire(
-					{ schema_version: 1, project_id: projectId, asset_id: assetId },
+					{
+						schema_version: 1,
+						project_id: projectId,
+						asset_id: assetId,
+						...(series ? { series_csv: true } : {}),
+					},
 					session.runtime.limits.max_json_depth,
 					session.runtime.limits.max_body_bytes,
 				),
@@ -205,7 +215,7 @@ export class PlannerClient {
 				const chunk = await reader.read();
 				if (chunk.done) break;
 				size += chunk.value.byteLength;
-				if (size > MAX_REPLY_BYTES) {
+				if (size > (series ? MAX_SERIES_BYTES : MAX_REPLY_BYTES)) {
 					await reader.cancel();
 					throw new ApiError(502, "reply_too_large");
 				}

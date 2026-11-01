@@ -157,6 +157,7 @@ export function PlanningReportResult({
 							scope,
 							String(file.content_sha256),
 							controller.signal,
+							format === "series",
 						)
 					: await client.reportPdf(
 							run.project_id,
