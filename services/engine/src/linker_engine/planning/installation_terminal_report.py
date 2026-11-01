@@ -87,7 +87,7 @@ def terminal_section(
                 section.rows.append(
                     ReportRow(
                         label=str(cast(Object, fact["label"])[locale]),
-                        value=f"{'S.' if de else 'p.'} {doc['page']} · {doc['quote']} · {doc['document_revision']}",
+                        value=f"{'S.' if de else 'p.'} {doc['page']} · {doc['quote']} · {'Dokumentstand' if de else 'Document revision'} {doc['document_revision']}",
                         href=cast(str, doc["url"]),
                     )
                 )
