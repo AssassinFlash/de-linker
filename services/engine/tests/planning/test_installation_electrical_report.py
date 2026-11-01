@@ -118,17 +118,16 @@ def test_saved_terminal_checks_reach_pdf_and_materials_csv(
     inputs, basis = sample(1958)
     bind(inputs, basis, 0, "external-communication-terminal", "COM1")
     bind(inputs, basis, 1, "internal-communication-terminals", "COM2")
+    inputs["installation"]["cable_runs"] = []
     source: Object = {
         "project_id": "project",
         "revision": 2,
         "input_sha256": "a" * 64,
         "installation": json_object(route_takeoff(inputs, basis)),
     }
-    section = next(
-        s
-        for s in installation_sections(source, locale)
-        if s.id == "installation-terminals"
-    )
+    sections = installation_sections(source, locale)
+    assert "installation-routing" not in {section.id for section in sections}
+    section = next(s for s in sections if s.id == "installation-terminals")
     pdf = render(
         Report(
             title="Test",
