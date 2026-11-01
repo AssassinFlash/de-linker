@@ -200,6 +200,7 @@ export class ProtectionClient implements PublicProtection {
 		}
 		const token = await new Promise< string >( ( resolve, reject ) => {
 			let settled = false;
+			let lastChallengeFailure: { code: string; at: number } | undefined;
 			let resetTimer: ReturnType< typeof setTimeout > | undefined;
 			const clearTimers = () => {
 				clearTimeout( timer );
@@ -276,11 +277,26 @@ export class ProtectionClient implements PublicProtection {
 							attempt.container.dataset.linkerVerificationError =
 								diagnostic;
 						}
-						// The official error table marks these failures retryable.
-						// Removing the widget here cancels the provider's native
-						// retry and makes a genuine customer start over forever.
+						if ( /^(300|600)\d{3}$/.test( diagnostic ) ) {
+							// Let the provider make one native retry. Two challenge
+							// identical failures without reaching interaction make no progress.
+							if (
+								lastChallengeFailure?.code === diagnostic &&
+								Date.now() - lastChallengeFailure.at >= RETRY_MS
+							) {
+								fail( `verification_widget_${ diagnostic }` );
+								return;
+							}
+							if ( lastChallengeFailure?.code !== diagnostic ) {
+								lastChallengeFailure = {
+									code: diagnostic,
+									at: Date.now(),
+								};
+							}
+							retry();
+							return;
+						}
 						if (
-							/^(300|600)\d{3}$/.test( diagnostic ) ||
 							[ '110600', '110620', '200500' ].includes(
 								diagnostic
 							)
@@ -296,6 +312,8 @@ export class ProtectionClient implements PublicProtection {
 					},
 					'before-interactive-callback': () => {
 						if ( ! settled ) {
+							// A real interaction is progress, not another silent failure.
+							lastChallengeFailure = undefined;
 							attempt.container.hidden = false;
 							this.state(
 								attempt.container,

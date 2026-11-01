@@ -317,6 +317,98 @@ test.each( [ '110600', '110620', '200500' ] )(
 	}
 );
 
+test( 'one native challenge retry can still produce a real verified proof', async () => {
+	const f = fixture();
+	let options: TurnstileOptions;
+	f.render.mockImplementation( ( _container, received ) => {
+		options = received;
+		return 'retry-widget';
+	} );
+	const work = f.client.proof( 'genie', f.container );
+	await vi.waitFor( () => expect( f.render ).toHaveBeenCalledOnce() );
+	options![ 'error-callback' ]( '300030' );
+	options![ 'before-interactive-callback' ]();
+	options![ 'error-callback' ]( '300030' );
+	options!.callback( 'provider-retry-token' );
+	await expect( work ).resolves.toBe( 'server-proof' );
+	expect( f.fetch ).toHaveBeenCalledTimes( 2 );
+	expect( JSON.parse( f.fetch.mock.calls[ 1 ][ 1 ].body as string ) ).toEqual(
+		{
+			action: 'genie',
+			prepare: 'prepare-stamp',
+			token: 'provider-retry-token',
+		}
+	);
+	applySingleCompletion( f.client, f.container );
+} );
+
+test( 'a different challenge diagnostic is not treated as the same repeated failure', async () => {
+	const f = fixture();
+	let options: TurnstileOptions;
+	f.render.mockImplementation( ( _container, received ) => {
+		options = received;
+		return 'retry-widget';
+	} );
+	const work = f.client.proof( 'genie', f.container );
+	await vi.waitFor( () => expect( f.render ).toHaveBeenCalledOnce() );
+	options![ 'error-callback' ]( '300030' );
+	options![ 'error-callback' ]( '600010' );
+	expect( f.container.dataset.linkerVerificationState ).toBe( 'retrying' );
+	options!.callback( 'provider-retry-token' );
+	await expect( work ).resolves.toBe( 'server-proof' );
+	applySingleCompletion( f.client, f.container );
+} );
+
+test( 'two challenge execution failures without interaction stop the wait across timeout callbacks', async () => {
+	vi.useFakeTimers();
+	const f = fixture();
+	let options: TurnstileOptions;
+	f.render.mockImplementation( ( _container, received ) => {
+		options = received;
+		return 'retry-widget';
+	} );
+	const work = f.client.proof( 'genie', f.container );
+	const failure = work.catch( ( error: unknown ) => error );
+	await vi.waitFor( () => expect( f.render ).toHaveBeenCalledOnce() );
+	options![ 'error-callback' ]( '300030' );
+	expect( f.container.dataset.linkerVerificationState ).toBe( 'retrying' );
+	options![ 'error-callback' ]( '300030' );
+	expect( f.container.dataset.linkerVerificationState ).toBe( 'retrying' );
+	expect( window.turnstile?.remove ).not.toHaveBeenCalled();
+	await vi.advanceTimersByTimeAsync( 8000 );
+	options![ 'timeout-callback' ]();
+	options![ 'error-callback' ]( '300030' );
+	expect( await failure ).toEqual(
+		new Error( 'verification_widget_300030' )
+	);
+	expect( f.container.dataset.linkerVerificationState ).toBe( 'failed' );
+	expect( window.turnstile?.remove ).toHaveBeenCalledOnce();
+	expect( f.fetch ).toHaveBeenCalledOnce();
+	expect( vi.getTimerCount() ).toBe( 0 );
+	options!.callback( 'too-late' );
+	await Promise.resolve();
+	expect( f.fetch ).toHaveBeenCalledOnce();
+	expect( f.client.ready( 'genie', f.container ) ).toBe( '' );
+	f.render.mockImplementation( ( _container, received ) => {
+		queueMicrotask( () => received.callback( 'recovered-provider-token' ) );
+		return 'recovered-widget';
+	} );
+	await expect( f.client.proof( 'genie', f.container ) ).resolves.toBe(
+		'server-proof'
+	);
+	expect( f.fetch ).toHaveBeenCalledTimes( 3 );
+	applySingleCompletion( f.client, f.container );
+} );
+
+function applySingleCompletion(
+	client: ProtectionClient,
+	container: HTMLElement
+) {
+	expect( client.complete( 'genie', 'server-proof' ) ).toBe( true );
+	expect( client.complete( 'genie', 'server-proof' ) ).toBe( false );
+	expect( client.ready( 'genie', container ) ).toBe( '' );
+}
+
 test.each( [ 'prepare', 'verify' ] )(
 	'%s network/JSON failure stays a pre-dispatch verification failure',
 	async ( operation ) => {
