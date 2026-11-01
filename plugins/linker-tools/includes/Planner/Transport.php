@@ -82,6 +82,45 @@ final class Transport {
 		);
 	}
 
+
+	/**
+	 * Stream only a previously verified owned PV series into a request-owned file.
+	 *
+	 * @param Principal           $principal Verified project owner.
+	 * @param array<string,mixed> $command Native asset request.
+	 * @param string              $file Request-owned temporary destination.
+	 * @return true|WP_Error Completion or private refusal.
+	 */
+	public function stream_series( Principal $principal, array $command, string $file ): bool|WP_Error {
+		$base  = rtrim( (string) get_option( 'linker_planner_url', '' ), '/' );
+		$token = defined( 'LINKER_GENIE_SERVICE_TOKEN' ) ? (string) constant( 'LINKER_GENIE_SERVICE_TOKEN' ) : '';
+		$body  = wp_json_encode( $command );
+		if ( '' === $base || '' === $token || ! is_string( $body ) ) {
+			return Failure::make( 'configuration', 503 );
+		}
+		$args     = array(
+			'timeout'             => 30.0,
+			'redirection'         => 0,
+			'sslverify'           => true,
+			'stream'              => true,
+			'filename'            => $file,
+			'limit_response_size' => SeriesDownload::MAX_BYTES + 1,
+			'headers'             => array(
+				'Content-Type'                       => 'application/json; charset=utf-8',
+				'X-Linker-Service-Token'             => $token,
+				'X-Linker-Planner-Principal-Kind'    => $principal->kind,
+				'X-Linker-Planner-Principal-Subject' => $principal->subject,
+			),
+			'body'                => $body,
+		);
+		$response = is_callable( $this->fetch ) ? ( $this->fetch )( $base . '/assets/content', $args ) : wp_remote_post( $base . '/assets/content', $args );
+		if ( is_wp_error( $response ) ) {
+			return Failure::make( 'unavailable', 503 );
+		}
+		$type = wp_remote_retrieve_header( $response, 'content-type' );
+		return 200 === (int) wp_remote_retrieve_response_code( $response ) && is_string( $type ) && str_starts_with( $type, 'application/octet-stream' ) ? true : Failure::make( 'invalid_reply', 502 );
+	}
+
 	/**
 	 * JSON is used by bootstrap/claim handlers; raw assets keep the byte path.
 	 *

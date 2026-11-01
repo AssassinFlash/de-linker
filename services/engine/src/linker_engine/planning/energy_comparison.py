@@ -333,7 +333,11 @@ def _retained_weather_key(
         # Reuse the native reader: it checks manifest, model/witness, original
         # weather and Woo bindings before admitting a shared weather identity.
         bundle = reference_bundle(
-            workspace.blobs, str(side.pinned[f"{role}.raw"]), metadata, documents
+            workspace.blobs,
+            str(side.pinned[f"{role}.raw"]),
+            metadata,
+            documents,
+            include_modules=False,
         )
         weather = _object(_object(bundle["inputs"]).get("weather"))
         return digest(encode(weather))

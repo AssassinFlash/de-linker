@@ -7,7 +7,12 @@ import {
 	parseRing,
 	rectangularRoof,
 } from "../../domain/geometryEditing.ts";
-import { GeometryForm, GeometryNumber, GeometryText } from "./GeometryForm.tsx";
+import {
+	GeometryExportPermission,
+	GeometryForm,
+	GeometryNumber,
+	GeometryText,
+} from "./GeometryForm.tsx";
 import { __ } from "../../i18n.ts";
 
 export interface GeometryFormProps {
@@ -57,14 +62,15 @@ export function RoofForm({
 				if (!values.checked("rights")) return false;
 				const id = "roof_" + crypto.randomUUID().replaceAll("-", ""),
 					sourceId = "source_" + crypto.randomUUID().replaceAll("-", "");
-				const source = {
-					...manualSource(
-						sourceId,
-						values.text("source"),
-						values.text("rights_note"),
-					),
-					calibration_note: __("Not recorded.", "linker-tools"),
-				};
+				const source = manualSource(
+					sourceId,
+					values.text("source"),
+					values.text("rights_note"),
+				);
+				source.permissions.export = values.text(
+					"export",
+				) as typeof source.permissions.export;
+				source.calibration_note = __("Not recorded.", "linker-tools");
 				const next = rectangularRoof(
 					{ id, name: values.text("name"), source_id: sourceId },
 					{
@@ -202,6 +208,7 @@ export function RoofForm({
 						label={__("Basis for using these measurements", "linker-tools")}
 						multiline
 					/>
+					<GeometryExportPermission />
 					<label className="lp-geometry-check">
 						<input name="rights" type="checkbox" required />
 						{__(

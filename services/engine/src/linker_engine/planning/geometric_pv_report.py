@@ -103,7 +103,9 @@ def geometric_pv_reference(
     witness is parsed once for that request instead of once per section.
     """
     documents = FrozenDocuments(blobs) if documents is None else documents
-    bundle = reference_bundle(blobs, raw_sha256, metadata, documents)
+    bundle = reference_bundle(
+        blobs, raw_sha256, metadata, documents, include_modules=False
+    )
     profile = prepared_profile(blobs, raw_sha256, metadata, documents, bundle=bundle)
     inputs, witness = _object(bundle["inputs"]), _object(bundle["witness"])
     details = _object(witness["inputs"])

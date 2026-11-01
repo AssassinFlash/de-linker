@@ -1,6 +1,11 @@
 import type { Source } from "../../domain/geometry.ts";
 import type { GeometryFormProps } from "./RoofForm.tsx";
-import { GeometryForm, GeometryNumber, GeometryText } from "./GeometryForm.tsx";
+import {
+	GeometryExportPermission,
+	GeometryForm,
+	GeometryNumber,
+	GeometryText,
+} from "./GeometryForm.tsx";
 import { __ } from "../../i18n.ts";
 
 export function SourceForm({
@@ -101,14 +106,7 @@ export function SourceForm({
 				readOnly={referenceLocked}
 				optional
 			/>
-			<label className="lp-field">
-				<span>{__("Permission to export geometry", "linker-tools")}</span>
-				<select name="export" defaultValue={source.permissions.export}>
-					<option value="unknown">{__("Unknown", "linker-tools")}</option>
-					<option value="permitted">{__("Permitted", "linker-tools")}</option>
-					<option value="prohibited">{__("Prohibited", "linker-tools")}</option>
-				</select>
-			</label>
+			<GeometryExportPermission value={source.permissions.export} />
 		</GeometryForm>
 	);
 }

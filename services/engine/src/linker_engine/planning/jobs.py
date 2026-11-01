@@ -16,7 +16,13 @@ from uuid import uuid4
 from .asset_publication import AssetPublication
 from .canonical import Object
 from .dependencies import verify_dependencies
-from .errors import Conflict, InvalidInput, LeaseLost, VersionUnavailable
+from .errors import (
+    Conflict,
+    InvalidInput,
+    LeaseLost,
+    VersionUnavailable,
+    log_unavailable,
+)
 from .evaluation_routes import EvaluationRoutes
 from .execution_identity import EvaluationRouting
 from .records import JobKind, Lease
@@ -127,7 +133,8 @@ class Jobs:
                                 (actual, row["id"]),
                             )
                             continue
-                except (VersionUnavailable, InvalidInput):
+                except (VersionUnavailable, InvalidInput) as cause:
+                    log_unavailable(row["id"], "claim", cause)
                     error = workspace.blobs.put_object(
                         {"code": "version_unavailable", "retryable": False}
                     )

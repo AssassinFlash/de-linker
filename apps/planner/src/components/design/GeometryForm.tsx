@@ -301,3 +301,26 @@ export function GeometryNumber({
 		</label>
 	);
 }
+
+export function GeometryExportPermission({
+	value = "unknown",
+}: {
+	value?: "unknown" | "permitted" | "prohibited";
+}) {
+	return (
+		<label className="lp-field">
+			<span>{__("Permission to export geometry", "linker-tools")}</span>
+			<select name="export" defaultValue={value}>
+				<option value="unknown">{__("Unknown", "linker-tools")}</option>
+				<option value="permitted">{__("Permitted", "linker-tools")}</option>
+				<option value="prohibited">{__("Prohibited", "linker-tools")}</option>
+			</select>
+			<small>
+				{__(
+					"Reports that include this geometry require export permission.",
+					"linker-tools",
+				)}
+			</small>
+		</label>
+	);
+}

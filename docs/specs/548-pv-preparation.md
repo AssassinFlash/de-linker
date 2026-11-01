@@ -201,6 +201,23 @@ actual intersection counters are independently bounded. Exceeding policy
 fails the whole task, with no partially published profile. Cancellation is
 checked throughout the source-row and module loops.
 
+For a horizontal module's actual sample points, the full-axis worker may
+prove an upward ray clear using the same outward scene bounds and negative
+travel tolerance as the ordinary index. The proof is charged to the bounds
+budget and includes every opaque surface other than that receiving module;
+when it is unavailable or the direction is outside its safe range, the
+original per-sample intersection path remains authoritative. Proven-clear
+samples are still counted individually. The worker spells its private final
+witness in place and keeps its original canonical JSON bytes and CAS format.
+Large frozen witnesses can be read as a hash-verified projection that validates
+each module independently; the series CSV retains its module fields and row
+order, while legacy full-witness readers and old frozen reports remain valid.
+Cancellation is checked during module spelling, projected-module reads and
+CSV interval export. These optimizations do not change deployment limits or
+authorize a larger production workload; the bounded scale results and the
+remaining deployment-resource decision are recorded in the existing #548
+acceptance index.
+
 Admission freezes owner/revision, original weather and metadata, current Woo
 basis and runtime. The worker checks source and Woo permissions again after
 generation; the ordinary lease transaction publishes the profile only with

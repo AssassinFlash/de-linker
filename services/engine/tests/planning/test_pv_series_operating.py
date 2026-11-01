@@ -58,7 +58,15 @@ def test_fitted_module_series_conditions_follow_the_common_current() -> None:
     assert outside.dc_w[0] == 0
 
 
-def test_real_roof_irradiance_flows_through_the_selected_woo_string() -> None:
+def test_real_roof_irradiance_flows_through_the_selected_woo_string(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from dataclasses import replace
+    from datetime import timedelta
+
+    from linker_engine.planning import geometric_pv_generation
+    from linker_engine.planning.canonical import encode
+    from linker_engine.planning.direct_beam_index import DirectBeamIndex
     from linker_engine.planning.geometric_pv_generation import generate_geometric_pv
     from linker_engine.planning.geometric_pv_inputs import (
         ELECTRICAL_V3,
@@ -68,6 +76,7 @@ def test_real_roof_irradiance_flows_through_the_selected_woo_string() -> None:
         GeometricPvLimits,
     )
     from linker_engine.planning.geometry import panel_poses, read_geometry
+    from linker_engine.planning.model_numbers import canonical_witness_document
     from linker_engine.planning.woo_module import module_template
 
     from .test_geometric_pv import perez_parameters
@@ -127,15 +136,47 @@ def test_real_roof_irradiance_flows_through_the_selected_woo_string() -> None:
         "pv_module_inputs": {"module": template, "electrical_product": reference},
     }
     limits = GeometricPvLimits(
-        max_module_steps=10,
+        max_module_steps=20,
         max_samples=1000,
         max_ray_face_checks=100000,
         max_bounds_checks=100000,
         index_leaf_size=2,
     )
+    first = weather()
+    point = first.points[0]
+    second = replace(
+        point,
+        interval=replace(
+            point.interval,
+            start=point.interval.end,
+            end=point.interval.end + timedelta(hours=1),
+        ),
+        source_label_utc=point.source_label_utc + timedelta(hours=1),
+        irradiance_at_utc=point.irradiance_at_utc + timedelta(hours=1),
+    )
+    meteo = replace(first, points=(point, second))
+    with monkeypatch.context() as old:
+        old.setattr(DirectBeamIndex, "upward_clearance", lambda *_a, **_k: None)
+        old.setattr(
+            geometric_pv_generation,
+            "canonical_witness_in_place",
+            lambda value, **_kwargs: canonical_witness_document(value),
+        )
+        baseline = generate_geometric_pv(
+            geo,
+            meteo,
+            request,
+            limits,
+            max_weather_rows=10,
+            electrical_inputs={
+                "equipment_selection": selection,
+                "pv_string_plan": wiring,
+            },
+            electrical_basis=basis,
+        )
     result = generate_geometric_pv(
         geo,
-        weather(),
+        meteo,
         request,
         limits,
         max_weather_rows=10,
@@ -143,6 +184,16 @@ def test_real_roof_irradiance_flows_through_the_selected_woo_string() -> None:
         electrical_basis=basis,
     )
     witness = result.witness()
+    baseline_witness = baseline.witness()
+    cast(dict[str, Any], cast(dict[str, Any], witness["inputs"])["work"]).pop(
+        "bounds_checks"
+    )
+    cast(dict[str, Any], cast(dict[str, Any], baseline_witness["inputs"])["work"]).pop(
+        "bounds_checks"
+    )
+    assert witness == baseline_witness
+    assert encode(witness) == encode(baseline_witness)
+    assert result.profile.values_kw == baseline.profile.values_kw
     assert witness["kind"] == MODEL_V3
     string = cast(list[dict[str, Any]], witness["strings"])[0]
     assert string["module_ids"] == ids

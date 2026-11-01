@@ -98,6 +98,40 @@ def test_analytic_candidates_conservative_contacts_and_real_bvh_pruning(
     index = DirectBeamIndex.from_scene(scene, leaf_size=2)
     direction = (-1 / math.sqrt(2), 0.0, 1 / math.sqrt(2))
 
+    # An elevated wall must prevent a blanket same-roof fast path. If a
+    # direction can be proved clear, compare every actual sample with the
+    # unmodified point query rather than relying on a visual roof sketch.
+    for count in (1, 2, 4):
+        points = tuple(
+            receiver.midpoint(x, y, count) for y in range(count) for x in range(count)
+        )
+        threshold = index.upward_clearance(receiver.id, points)
+        assert threshold is None or threshold >= direction[2]
+
+    adjacent = prism(
+        "adjacent",
+        "module_volume",
+        Face((1.2, 0, 0.9), (1, 0, 0), (0, 1, 0), square),
+        (0, 0, 1),
+        0.1,
+    )
+    clear_index = DirectBeamIndex.from_scene(
+        replace(scene, opaque=(scene.opaque[0], own, adjacent)), leaf_size=2
+    )
+    for count in (1, 2, 4):
+        points = tuple(
+            receiver.midpoint(x, y, count) for y in range(count) for x in range(count)
+        )
+        threshold = clear_index.upward_clearance(receiver.id, points)
+        assert threshold is not None and threshold < 0.01
+        for z in (math.nextafter(threshold, math.inf), 0.01, 0.5, 1.0):
+            ray = (math.sqrt(1 - z * z), 0, z)
+            for point in points:
+                assert all(
+                    item.id == receiver.id
+                    for item in clear_index.query(point, ray).opaque
+                )
+
     def blockers(items: tuple[Opaque, ...], point: Vector) -> set[str]:
         result = set()
         for item in items:

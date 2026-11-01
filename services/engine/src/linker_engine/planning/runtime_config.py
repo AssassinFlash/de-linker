@@ -28,6 +28,7 @@ from .equipment_service import EquipmentService
 from .errors import InvalidInput
 from .geometric_pv_inputs import GeometricPvLimits
 from .geometric_pv_job import GeometricPvKernel
+from .geometric_pv_limits import ClearFlatRoofLimits
 from .geometric_pv_service import GeometricPvService
 from .http_app import HttpLimits
 from .numerical_tolerance import Tolerance
@@ -66,6 +67,7 @@ class RuntimeConfig(Document):
     equipment_search: EquipmentSearchLimits | None = None
     direct_beam_visibility: DirectBeamLimits | None = None
     geometric_pv_generation: GeometricPvLimits | None = None
+    geometric_pv_clear_flat_roof: ClearFlatRoofLimits | None = None
 
     @model_validator(mode="after")
     def absolute_directory(self) -> Self:
@@ -77,6 +79,11 @@ class RuntimeConfig(Document):
             raise ValueError("direct-beam visibility requires explicit weather limits")
         if self.geometric_pv_generation is not None and self.pv_preparation is None:
             raise ValueError("geometric PV requires explicit weather limits")
+        if (
+            self.geometric_pv_clear_flat_roof is not None
+            and self.geometric_pv_generation is None
+        ):
+            raise ValueError("expanded geometric PV requires the ordinary budget")
         return self
 
     @classmethod
@@ -190,6 +197,7 @@ class RuntimeConfig(Document):
                 self.pv_preparation,
                 self.geometric_pv_generation,
                 products=products or ProductSources(worker_product_provider),
+                expanded_limits=self.geometric_pv_clear_flat_roof,
             ),
             max_attempts=self.max_attempts,
         )

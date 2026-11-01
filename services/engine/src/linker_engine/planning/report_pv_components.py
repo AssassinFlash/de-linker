@@ -10,7 +10,7 @@ import math
 from typing import cast
 
 from .canonical import Json, Object, digest, encode
-from .errors import InvalidInput, VersionUnavailable
+from .errors import InvalidInput, ReportSourceExportRequired, VersionUnavailable
 from .frozen_documents import FrozenDocuments
 from .geometric_pv_inputs import PROFILE_PURPOSE as GEOMETRIC_PV_PURPOSE
 from .geometric_pv_profile import reference_bundle as geometric_pv_bundle
@@ -50,7 +50,9 @@ def pv_components(
         bundle = (
             geometric_bundle
             if geometric_bundle is not None
-            else geometric_pv_bundle(blobs, raw_sha256, metadata, documents)
+            else geometric_pv_bundle(
+                blobs, raw_sha256, metadata, documents, include_modules=False
+            )
         )
         return saved_roof_components(
             _object(bundle["inputs"])["geometry"],
@@ -178,8 +180,7 @@ def saved_roof_components(
 ) -> Object:
     """Equipment-only reports use the exact roof checked by that saved result."""
     geometry = read_geometry(geometry_json)
-    if any(s.permissions.export != "permitted" for s in geometry.sources):
-        raise InvalidInput("material exports require permission for the roof sources")
+    _require_export_permission(geometry)
     return _components(
         geometry,
         proof,
@@ -190,6 +191,13 @@ def saved_roof_components(
         converter_id=None,
         dependencies={"geometry": blobs.put_object(cast(Object, geometry_json))},
     )
+
+
+def _require_export_permission(geometry: GeometryDocument) -> None:
+    if any(s.permissions.export != "permitted" for s in geometry.sources):
+        raise ReportSourceExportRequired(
+            "material exports require permission for the roof sources"
+        )
 
 
 def _components(
@@ -203,6 +211,7 @@ def _components(
     converter_id: str | None,
     dependencies: Object,
 ) -> Object:
+    _require_export_permission(geometry)
     included: dict[str, list[str]] = {}
     for pose in panel_poses(geometry):
         if pose.included:

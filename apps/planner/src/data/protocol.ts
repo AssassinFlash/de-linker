@@ -45,6 +45,13 @@ export interface Session {
 				readonly max_bounds_checks: number;
 				readonly index_leaf_size: number;
 			};
+			readonly geometric_pv_clear_flat_roof?: {
+				readonly max_module_steps: number;
+				readonly max_samples: number;
+				readonly max_modules: number;
+				readonly max_strings: number;
+				readonly max_weather_rows: number;
+			};
 		};
 	};
 }

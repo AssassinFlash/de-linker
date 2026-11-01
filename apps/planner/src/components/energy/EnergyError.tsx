@@ -149,6 +149,16 @@ export function energyErrorText(error: unknown): string {
 				"The logo could not be used. Choose a PNG or JPG of up to 500 kB.",
 				"linker-tools",
 			);
+		case "report_source_export_required":
+			return __(
+				"The export status of a source used in this report is Unknown or Prohibited. Check Source properties in Roof design. If your rights allow export, save the permission and generate new results for the affected parts of the report.",
+				"linker-tools",
+			);
+		case "geometric_pv_expanded_scope_required":
+			return __(
+				"This saved design is outside the supported larger-roof calculation scope. Review the larger-roof conditions in the PV reference setup, or reduce the setup to the standard calculation budget before trying again.",
+				"linker-tools",
+			);
 		case "report_inputs_changed":
 			return __(
 				"A selected result does not match the saved project inputs. Choose a matching result.",

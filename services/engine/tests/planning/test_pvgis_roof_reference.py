@@ -173,11 +173,16 @@ def fixture_inputs(basis: FixtureObject) -> FixtureObject:
 
 
 def prepared_reference_fixture(
-    workspace: Workspace, owner: Actor, products: ProductSources
+    workspace: Workspace,
+    owner: Actor,
+    products: ProductSources,
+    *,
+    export_permission: str = "permitted",
 ) -> tuple[Project, Asset]:
     """Reuse the exact producer artifact for consumer tests, without a PV replay."""
     basis = json_object(products.module_basis())
     values = fixture_inputs(basis)
+    values["geometry"]["sources"][0]["permissions"]["export"] = export_permission
     project = workspace.create(
         owner, "Synthetic reference consumer", values, key="reference-consumer"
     )

@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Tools\Tests\Unit;
 
 use Linker\Tools\Planner\Principal;
+use Linker\Tools\Planner\SeriesDownload;
 use Linker\Tools\Planner\Transport;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
@@ -33,7 +34,8 @@ final class TransportTest extends TestCase {
 		WP_Mock::userFunction( 'is_wp_error' )->andReturnUsing( static fn ( $value ): bool => $value instanceof \WP_Error );
 		WP_Mock::userFunction( 'wp_remote_retrieve_response_code' )->andReturnUsing( static fn ( array $reply ): int => $reply['status'] );
 		WP_Mock::userFunction( 'wp_remote_retrieve_body' )->andReturnUsing( static fn ( array $reply ): string => $reply['body'] );
-		WP_Mock::userFunction( 'wp_remote_retrieve_header' )->andReturnUsing( static fn (): string => 'application/json' );
+		WP_Mock::userFunction( 'wp_remote_retrieve_header' )->andReturnUsing( static fn ( array $reply ): string => $reply['type'] ?? 'application/json' );
+		WP_Mock::userFunction( 'wp_tempnam' )->andReturnUsing( static fn (): string => (string) tempnam( sys_get_temp_dir(), 'lps' ) );
 	}
 
 	/**
@@ -109,5 +111,60 @@ final class TransportTest extends TestCase {
 		$refusal = $this->send( $this->replying( 409, (string) wp_json_encode( array( 'error' => array( 'code' => 'Product Evidence Changed!' ) ) ) ) );
 		self::assertInstanceOf( \WP_Error::class, $refusal );
 		self::assertSame( 'linker_planner_claim_conflict', $refusal->get_error_code() );
+	}
+	/** A series stream must be owned, purpose-bound and match the frozen hash. */
+	public function test_owned_series_is_streamed_and_removed_on_refusal(): void {
+		$bytes     = "interval,value\n0,1\n";
+		$path      = '';
+		$purpose   = 'planning_pv_series_csv_v1';
+		$actual    = $bytes;
+		$transport = new Transport(
+			static function ( string $url, array $args ) use ( &$path, &$purpose, &$actual, $bytes ): array {
+				if ( str_ends_with( $url, '/assets/read' ) ) {
+					return array(
+						'status' => 200,
+						'type'   => 'application/json',
+						'body'   => (string) wp_json_encode(
+							array(
+								'id'             => 'asset',
+								'project_id'     => 'project',
+								'purpose'        => $purpose,
+								'media_type'     => 'text/csv',
+								'content_sha256' => hash( 'sha256', $bytes ),
+							)
+						),
+					);
+				}
+				self::assertTrue( $args['stream'] );
+				self::assertSame( SeriesDownload::MAX_BYTES + 1, $args['limit_response_size'] );
+				$path = $args['filename'];
+				self::assertSame( 0600, fileperms( $path ) & 0777 );
+				file_put_contents( $path, $actual ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- Synthetic request-owned test file.
+				return array(
+					'status' => 200,
+					'type'   => 'application/octet-stream',
+					'body'   => '',
+				);
+			}
+		);
+		$command   = array(
+			'schema_version' => 1,
+			'project_id'     => 'project',
+			'asset_id'       => 'asset',
+			'series_csv'     => true,
+		);
+		$owner     = new Principal( 'user', 'wp:1:user:1' );
+		$result    = SeriesDownload::fetch( $owner, $command, $transport );
+		self::assertInstanceOf( SeriesDownload::class, $result );
+		self::assertSame( strlen( $bytes ), $result->size );
+		ob_start();
+		$result->output();
+		self::assertSame( $bytes, ob_get_clean() );
+		self::assertFileDoesNotExist( $path );
+		$actual = 'changed';
+		self::assertInstanceOf( \WP_Error::class, SeriesDownload::fetch( $owner, $command, $transport ) );
+		self::assertFileDoesNotExist( $path );
+		$purpose = 'planning_report_pdf_v1';
+		self::assertInstanceOf( \WP_Error::class, SeriesDownload::fetch( $owner, $command, $transport ) );
 	}
 }

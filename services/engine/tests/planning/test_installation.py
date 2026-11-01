@@ -469,7 +469,7 @@ def test_physical_lengths_unknowns_and_owned_frozen_exports(
     with pytest.raises(ReportInputsChanged):
         json_object(report_sources(workspace, sources, owner, legacy_project, mixed))
     unsafe_project = replace(project, inputs=unsafe)
-    with pytest.raises(InvalidInput, match="export permission"):
+    with pytest.raises(InvalidInput, match="export permission") as rejected:
         json_object(
             report_sources(
                 workspace,
@@ -479,6 +479,7 @@ def test_physical_lengths_unknowns_and_owned_frozen_exports(
                 ReportOptions.read({**legacy_options, "include_installation": True}),
             )
         )
+    assert rejected.value.code == "report_source_export_required"
     app = create_private_app(
         workspace,
         energy,

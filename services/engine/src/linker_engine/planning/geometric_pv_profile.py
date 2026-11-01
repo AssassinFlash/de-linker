@@ -38,6 +38,8 @@ def reference_bundle(
     raw_sha256: str,
     metadata: Object,
     documents: FrozenDocuments | None = None,
+    *,
+    include_modules: bool = True,
 ) -> Object:
     """Verify the manifest, then read its artifacts through one bounded reader.
 
@@ -67,10 +69,17 @@ def reference_bundle(
         or any(not isinstance(sha, str) for sha in dependencies.values())
     ):
         raise VersionUnavailable("geometric PV dependency manifest differs")
+    witness_sha = str(dependencies["model.witness"])
+    projected = not include_modules and blobs.size(witness_sha) > documents.max_bytes
     for sha in dependencies.values():
-        documents.read(str(sha))
+        if not projected or sha != witness_sha:
+            documents.read(str(sha))
     inputs = documents.object(str(dependencies["model.inputs"]))
-    witness = documents.object(str(dependencies["model.witness"]))
+    witness = (
+        documents.geometric_witness(blobs, witness_sha)
+        if projected
+        else documents.object(witness_sha)
+    )
     original_parameters = documents.object(str(dependencies["project.parameters"]))
     parameters = GeometricPvInputs.read(original_parameters)
     weather = _object(inputs.get("weather"))
@@ -141,7 +150,7 @@ def prepared_profile(
     bundle: Object | None = None,
 ) -> PowerSeries:
     verified = (
-        reference_bundle(blobs, raw_sha256, metadata, documents)
+        reference_bundle(blobs, raw_sha256, metadata, documents, include_modules=False)
         if bundle is None
         else bundle
     )
@@ -256,7 +265,9 @@ def reference_dependencies(
         raise InvalidInput(
             "geometric PV profile differs from saved geometry or parameters"
         )
-    bundle = reference_bundle(blobs, asset.content_sha256, asset.metadata)
+    bundle = reference_bundle(
+        blobs, asset.content_sha256, asset.metadata, include_modules=False
+    )
     if _object(bundle["manifest"]).get("kind") == MODEL_V3:
         from .geometric_pv_job import electrical_project_inputs
 

@@ -87,6 +87,36 @@ test("owned report downloads verify both frozen PDF and CSV bytes", async () => 
 	}
 });
 
+test("large PV series is the only larger verified report download", async () => {
+	const content = new Uint8Array(36_635_293);
+	content.fill(65);
+	const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", content));
+	const sha = Array.from(digest, (b) => b.toString(16).padStart(2, "0")).join(
+		"",
+	);
+	const { client, calls } = fixture([
+		guest(),
+		json(context),
+		new Response(content),
+		new Response(content),
+	]);
+	await client.bootstrap();
+	const blob = await client.reportCsv(
+		"project",
+		"asset",
+		context.query_scope,
+		sha,
+		undefined,
+		true,
+	);
+	assert.equal(blob.size, content.length);
+	assert.equal(JSON.parse(String(calls[2]!.init.body)).series_csv, true);
+	await assert.rejects(
+		client.reportCsv("project", "asset", context.query_scope, sha),
+		{ code: "reply_too_large" },
+	);
+});
+
 test("scope admission follows native confirmation immediately, independently of React cleanup", async () => {
 	const other = { ...context, query_scope: "c".repeat(64) };
 	const { client } = fixture([guest(), json(context), guest(), json(other)]);
@@ -304,5 +334,74 @@ test("wire schemas reject coercion and extra response fields without changing th
 				inputs: [],
 			}),
 		{ code: "invalid_project_reply" },
+	);
+});
+
+test("the optional larger-roof budget is strictly read alongside the ordinary budget", () => {
+	const ordinary = {
+		max_module_steps: 220000,
+		max_samples: 2000000,
+		max_ray_face_checks: 20000000,
+		max_bounds_checks: 50000000,
+		index_leaf_size: 8,
+	};
+	const expanded = {
+		max_module_steps: 841000,
+		max_samples: 4300000,
+		max_modules: 96,
+		max_strings: 6,
+		max_weather_rows: 8760,
+	};
+	const session = {
+		...context,
+		runtime: {
+			...context.runtime,
+			models: { geometric_pv_generation: "prepare_geometric_pv_reference_v1" },
+			limits: {
+				...context.runtime.limits,
+				geometric_pv_generation: ordinary,
+				geometric_pv_clear_flat_roof: expanded,
+			},
+		},
+	};
+	assert.equal(readSession(session), session);
+	for (const value of [
+		null,
+		{ ...expanded, max_modules: "96" },
+		{ ...expanded, max_strings: 0 },
+		{ ...expanded, qualified: true },
+	])
+		assert.throws(
+			() =>
+				readSession({
+					...session,
+					runtime: {
+						...session.runtime,
+						limits: {
+							...session.runtime.limits,
+							geometric_pv_clear_flat_roof: value,
+						},
+					},
+				}),
+			{ code: "invalid_session_reply" },
+		);
+	assert.throws(
+		() =>
+			readSession({
+				...context,
+				runtime: {
+					...context.runtime,
+					limits: {
+						...context.runtime.limits,
+						geometric_pv_clear_flat_roof: expanded,
+					},
+				},
+			}),
+		{ code: "invalid_session_reply" },
+	);
+	assert.equal(
+		readSession(context),
+		context,
+		"older sessions keep the ordinary contract",
 	);
 });

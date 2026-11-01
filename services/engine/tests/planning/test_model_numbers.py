@@ -122,6 +122,25 @@ def test_witness_document_encoding_spells_diagnostics_but_not_output_series() ->
         "release": {"status": "not_assessed"},
     }
 
+    # A freshly built worker witness can be normalized in place, avoiding a
+    # second complete annual document; its retained bytes must stay identical.
+    from copy import deepcopy
+
+    from linker_engine.planning.model_numbers import canonical_witness_in_place
+
+    owned = deepcopy(document)
+    assert encode(canonical_witness_in_place(owned)) == encode(
+        canonical_witness_document(document)
+    )
+
+    from linker_engine.planning.errors import LeaseLost
+
+    def cancelled() -> None:
+        raise LeaseLost("fixture cancellation")
+
+    with pytest.raises(LeaseLost):
+        canonical_witness_in_place({"modules": [{"value": 1.1}]}, checkpoint=cancelled)
+
     def bump(node: object) -> object:
         if isinstance(node, float):
             return math.nextafter(node, math.inf)

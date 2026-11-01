@@ -227,6 +227,7 @@ class ReportKernel:
         series = series_csv(
             self.workspace.blobs,
             cast(list[Json], source.get("geometric_pv_references", [])),
+            checkpoint=control.checkpoint,
         )
         if series is not None:
             attachments["pv_series_csv"] = AssetPublication.prepare(

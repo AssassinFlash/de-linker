@@ -22,7 +22,12 @@ from .equipment_condition_inputs import validate_condition_inputs
 from .equipment_inputs import EquipmentSelection
 from .equipment_kernel import EquipmentKernel
 from .equipment_plant import EquipmentPlant, assert_plant_exclusivity
-from .errors import InvalidInput, ProductEvidenceChanged, VersionUnavailable
+from .errors import (
+    InvalidInput,
+    ProductEvidenceChanged,
+    ReportSourceExportRequired,
+    VersionUnavailable,
+)
 from .frozen_documents import FrozenDocuments
 from .geometric_pv_inputs import KIND as GEOMETRIC_PV_KIND
 from .geometric_pv_inputs import PROFILE_PURPOSE as GEOMETRIC_PV_PURPOSE
@@ -689,7 +694,7 @@ def report_sources(
                 source.permissions.export != "permitted"
                 for source in read_geometry(project.inputs.get("geometry")).sources
             ):
-                raise InvalidInput(
+                raise ReportSourceExportRequired(
                     "PV wiring reports require export permission for the roof sources"
                 )
             if project.inputs.get("pv_plant_string_plan") is not None:
@@ -759,14 +764,16 @@ def report_sources(
             s.id in instance_sources and s.permissions.export != "permitted"
             for s in geometry.sources
         ):
-            raise InvalidInput(
+            raise ReportSourceExportRequired(
                 "installation instance source export permission is unconfirmed"
             )
         if any(
             "source_export_unconfirmed" in cast(list[str], cable["reasons"])
             for cable in cast(list[Object], installation["cables"])
         ):
-            raise InvalidInput("installation source export permission is unconfirmed")
+            raise ReportSourceExportRequired(
+                "installation source export permission is unconfirmed"
+            )
         bases["installation"] = workspace.blobs.put_object(basis)
         if isinstance(assessment, dict):
             counts: dict[tuple[int, str], int] = {}

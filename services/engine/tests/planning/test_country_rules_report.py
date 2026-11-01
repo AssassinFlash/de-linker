@@ -238,6 +238,10 @@ def test_saved_rules_reach_all_consumers_and_remain_frozen(
             shown = assistant_context(
                 workspace, owner, project.id, 1, [selected], language
             )
+            if selected == completed.id:
+                assert (
+                    "country_assessment" not in json_object(shown)["runs"][0]["scope"]
+                )
             rendered = str(shown)
             assert "PRIVATE" not in rendered
             assert text(expected, language) in rendered

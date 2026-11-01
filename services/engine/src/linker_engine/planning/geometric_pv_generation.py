@@ -32,7 +32,7 @@ from .geometric_pv_inputs import (
     GeometricPvLimits,
 )
 from .geometry import sin_cos_degrees
-from .model_numbers import canonical_witness_document
+from .model_numbers import canonical_witness_in_place
 from .power_series import PowerSeries
 from .pv_arrays import generation_arrays
 from .pv_generation import PvGeneration
@@ -129,6 +129,27 @@ def generate_geometric_pv(
     budget = VisibilityBudget(limits.visibility_ray_limits())
     index = DirectBeamIndex.from_scene(scene, leaf_size=limits.index_leaf_size)
     checkpoint()
+    upward_clearances: dict[str, float] = {}
+    # Proof construction has its own charged BVH-bound work. Never consume
+    # the whole declared budget trying an optional optimization.
+    proof_bound = len(scene.receivers) * len(scene.opaque)
+    if size > 1 and proof_bound < limits.max_bounds_checks:
+        for receiver in scene.receivers:
+            checkpoint()
+            points = tuple(
+                receiver.midpoint(x, y, count)
+                for count in (
+                    request.sampling.coarse_cells_per_edge,
+                    request.sampling.fine_cells_per_edge,
+                )
+                for y in range(count)
+                for x in range(count)
+            )
+            threshold = index.upward_clearance(
+                receiver.id, points, on_bounds_check=budget.bounds
+            )
+            if threshold is not None:
+                upward_clearances[receiver.id] = threshold
     static_diffuse = {}
     if diffuse:
         for receiver in scene.receivers:
@@ -146,7 +167,12 @@ def generate_geometric_pv(
         sz, cz = sin_cos_degrees(float(solar["apparent_zenith_deg"][ordinal]))
         sa, ca = sin_cos_degrees(float(solar["azimuth_deg"][ordinal]))
         row = visibility_row(
-            scene, (sz * sa, sz * ca, cz), request.sampling, budget, index=index
+            scene,
+            (sz * sa, sz * ca, cz),
+            request.sampling,
+            budget,
+            index=index,
+            upward_clearances=upward_clearances,
         )
         modules = row["modules"]
         assert isinstance(modules, list)
@@ -450,5 +476,5 @@ def generate_geometric_pv(
     return PvGeneration(
         profile,
         inputs_json,
-        encode(canonical_witness_document(witness)),
+        encode(canonical_witness_in_place(witness, checkpoint=checkpoint)),
     )
