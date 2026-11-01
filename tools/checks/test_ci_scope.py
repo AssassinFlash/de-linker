@@ -1156,12 +1156,14 @@ class ScopeTest(unittest.TestCase):
             runner = fixture / "runner"
             runner.write_text(
                 f"#!{sys.executable}\n"
-                "import os,sys\nfrom pathlib import Path\n"
+                "import json,os,sys\nfrom pathlib import Path\n"
                 "name=Path(sys.argv[0]).name\n"
+                "with Path(os.environ['COMMAND_LOG']).open('a') as log:\n"
+                "    log.write(json.dumps([name,*sys.argv[1:]])+'\\n')\n"
                 "marker=Path(os.environ['BROWSER_MARKER'])\n"
                 "if name == 'npx' and sys.argv[1:] == ['playwright','install','--only-shell','chromium']:\n"
                 "    marker.touch()\n"
-                "if name == 'npm' and sys.argv[1:] == ['run','test:unit'] and not marker.exists():\n"
+                "if name == 'npm' and Path.cwd().name == 'linker-tools' and sys.argv[1:] == ['run','test:unit'] and not marker.exists():\n"
                 "    sys.exit('browser-backed unit test ran before Chromium installation')\n"
             )
             runner.chmod(0o755)
@@ -1169,13 +1171,15 @@ class ScopeTest(unittest.TestCase):
                 (fixture / name).symlink_to(runner)
             just = shutil.which("just")
             assert just is not None
+            environment = {
+                **os.environ,
+                "PATH": str(fixture) + os.pathsep + os.environ["PATH"],
+                "BROWSER_MARKER": str(fixture / "installed"),
+                "COMMAND_LOG": str(fixture / "commands.jsonl"),
+            }
             result = subprocess.run(
                 [just, "--justfile", str(ROOT / "justfile"), "js-test"],
-                env={
-                    **os.environ,
-                    "PATH": str(fixture) + os.pathsep + os.environ["PATH"],
-                    "BROWSER_MARKER": str(fixture / "installed"),
-                },
+                env=environment,
                 capture_output=True,
                 text=True,
                 check=False,
@@ -1183,6 +1187,44 @@ class ScopeTest(unittest.TestCase):
             )
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertTrue((fixture / "installed").exists())
+            # JS-only source tests still run all existing static and runtime
+            # guards through the actual selected package recipe.
+            for package in ("tools", "commerce"):
+                with self.subTest(package=package):
+                    (fixture / "commands.jsonl").write_text("")
+                    result = subprocess.run(
+                        [
+                            just,
+                            "--justfile",
+                            str(ROOT / "justfile"),
+                            "ci-js-package",
+                            package,
+                        ],
+                        env=environment,
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                        timeout=30,
+                    )
+                    self.assertEqual(
+                        result.returncode, 0, result.stdout + result.stderr
+                    )
+                    commands = [
+                        json.loads(line)
+                        for line in (fixture / "commands.jsonl")
+                        .read_text()
+                        .splitlines()
+                    ]
+                    self.assertEqual(
+                        [
+                            command[2]
+                            for command in commands
+                            if command[:2] == ["npm", "run"]
+                        ][:4],
+                        ["lint:js", "lint:types", "lint:format", "test:unit"],
+                    )
+                    if package == "tools":
+                        self.assertIn(["npm", "run", "test:e2e"], commands)
 
     def test_tools_php_prepares_its_node_reader_dependencies(self):
         # Run the actual package/dependency recipes with command shims. They
