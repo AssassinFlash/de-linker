@@ -178,6 +178,14 @@ export function hasTerminalFeature(plan: InstallationInputs): boolean {
 	);
 }
 
+/** Include a terminal-only circuit or a recorded cable run in a report. */
+export function hasReportableInstallation(plan: InstallationInputs): boolean {
+	return (
+		plan.cable_runs.length > 0 ||
+		(plan.circuits.length > 0 && hasTerminalFeature(plan))
+	);
+}
+
 /** Bind every returned end to the requested circuit; never infer a whole-circuit approval. */
 export function readTerminalAssessment(
 	value: unknown,

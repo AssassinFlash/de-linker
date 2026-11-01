@@ -18,6 +18,7 @@ import {
 import {
 	terminalCandidates,
 	readTerminalAssessment,
+	hasReportableInstallation,
 } from "../src/domain/installationTerminals.ts";
 
 const revision = "a".repeat(64),
@@ -150,6 +151,23 @@ test("terminal choices come from documented manufacturer maps with explicit sour
 			"device",
 		),
 		[],
+	);
+});
+
+test("report entry requires a circuit for terminal evidence and preserves cable-only behavior", () => {
+	const plan = { ...emptyInstallation(), instances: [instance] };
+	assert.equal(hasReportableInstallation(plan), false);
+	assert.equal(
+		hasReportableInstallation({ ...plan, circuits: [circuit] }),
+		true,
+	);
+	assert.equal(
+		hasReportableInstallation({ ...emptyInstallation(), circuits: [circuit] }),
+		false,
+	);
+	assert.equal(
+		hasReportableInstallation({ ...emptyInstallation(), cable_runs: [{}] }),
+		true,
 	);
 });
 
