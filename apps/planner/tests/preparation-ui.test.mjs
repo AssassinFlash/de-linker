@@ -22,7 +22,6 @@ import { equipmentDraft } from "../src/domain/equipment.ts";
 import { DeviceConditionInputs } from "../src/components/equipment/DeviceConditionInputs.tsx";
 import { PlanningReportResult } from "../src/components/energy/PlanningReportResult.tsx";
 import { EquipmentResult } from "../src/components/equipment/EquipmentResult.tsx";
-import nativeI18n from "../../../plugins/linker-tools/node_modules/@wordpress/i18n/build/index.cjs";
 import { ApiError } from "../src/data/protocol.ts";
 import { readRun } from "../src/data/planningProtocol.ts";
 import { selectPreparation } from "../src/domain/preparationSelection.ts";
@@ -47,7 +46,7 @@ const selectButton = () =>
 	document.querySelector(".lp-run-result > .lp-button");
 
 for (const locale of ["en-GB", "de-DE"]) {
-	test(`${locale}: controller network results load native translations and keep historical checks readable`, async (t) => {
+	test(`${locale}: controller network results load the shipped translations and keep historical checks readable`, async (t) => {
 		const german = locale.startsWith("de");
 		const assessment = {
 			model: "woo_multi_converter_plant_v1",
@@ -73,13 +72,10 @@ for (const locale of ["en-GB", "de-DE"]) {
 		function Harness() {
 			const [value, setValue] = useState(assessment);
 			replace = setValue;
-			window.wp.i18n = {
-				...nativeI18n.createI18n(
-					german ? plannerGerman.locale_data.messages : undefined,
-					"linker-tools",
-				),
-				sprintf: nativeI18n.sprintf,
-			};
+			window.wp.i18n.__ = (message) =>
+				german
+					? (plannerGerman.locale_data.messages[message]?.[0] ?? message)
+					: message;
 			return React.createElement(EquipmentResult, {
 				run: { state: "succeeded", revision: 1 },
 				locale,

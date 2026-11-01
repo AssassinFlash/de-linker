@@ -337,6 +337,40 @@ class ScopeTest(unittest.TestCase):
                 list(ci_scope.FULL_LANES),
             )
 
+    def test_planner_chunk_hash_rotation_retains_both_checked_paths(self):
+        source = "plugins/linker-tools/build/planner/assets/"
+        old = source + "planner-core-12A4_bC0.js"
+        new = source + "planner-core-78x0Y-z1.js"
+
+        def detected(destination, status="R099"):
+            records = [["D", old, "A", destination], [status, old, destination]]
+            with patch.object(
+                ci_scope,
+                "git",
+                side_effect=[("\0".join(row) + "\0").encode() for row in records],
+            ):
+                return ci_scope.diff_changes("base", "head")
+
+        self.assertEqual(detected(new), [("D", old), ("A", new)])
+        self.assertEqual(self.classify(*detected(new)), ["planner"])
+        for result in (
+            detected(source + "different-78x0Y-z1.js"),
+            detected("apps/planner/src/planner-core-78x0Y-z1.js"),
+            detected(new, "C099"),
+        ):
+            self.assertEqual(self.classify(*result), list(ci_scope.FULL_LANES))
+        self.assertEqual(
+            set(ci_scope.selected_modules([("M", ci_scope.COMMERCE_COMPATIBILITY)])),
+            {
+                "engine",
+                "content",
+                "python:migrate",
+                "php:commerce",
+                "php:tools",
+                *("native:" + group for group in ci_scope.NATIVE_GROUPS),
+            },
+        )
+
     def test_real_git_diff_detects_rename_and_symlink(self):
         self.regular.stop()
         self.non_runtime.stop()

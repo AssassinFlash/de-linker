@@ -443,3 +443,18 @@ Aladdin 不只提供画布。固定源码中已经能追到：
 同一 SSH master 下，未认证请求取得 Apify 407，正确认证请求取得 Apify 403；独立获取该拒绝响应的脱敏正文，x-apify-proxy-error=true，说明当前账户没有启用 Proxy external access。请求被 Apify 在建立原厂 CONNECT 前拒绝。这给出了此前传输断开的权限边界，但不能证明以前每一次断开都由同一原因造成。没有向原厂发送这次 GET，也没有取得 PDF、改变账号权限或升级套餐。两个原件仍缺。master、stdio 转发和临时 socket 目录均已回收，原始响应与凭据均未存盘。
 
 本机具名资料补核：既有 GoodWe-owner/GW_ET-100_Datasheet-EN.pdf 与已托管库原件 SHA256 4f7178042e8faf03bd926dc33a5ff0b85ffcd4f46e12f1dcf86d6db10befee4d 相同。另有两页 GW_BAT-C 208.9-261.2kWh_Datasheet-EN.pdf（305,878 B，SHA256 8634b8a56bcda45feb80c5244a5b295de1d9d5c259086ada0ecc54734e7c0546）。其字体文本映射不可靠，已在内存渲染并逐页核对。第一页是 208/261 kWh 系列概览，第二页为 208.9/261.2 kWh 两款规格，脚注说明电芯温度与 SOC 影响充放电限流/限功率，表内没有定量曲线。不能把这些数据用于当前 61.4/112.6 kWh 柜组，也不能用来补缺失的 BAT-C 定量包络。没有复制原件或修改 Woo。
+
+### 10.9 业主授权的两份官网 PDF 原件核验
+
+2026-11-01 业主确认保留 Apify 默认渠道，仅本次允许先从 Nexans 官网上述两个已知料号端点读取 PDF。负责人 root，每个响应上限 5 MiB，校验 HTTPS 原域、HTTP 200、PDF 签名、实际页数与料号后，按 SHA-256 各保存一份到既有 /Users/chesterjohn/de-linker-data/pdf。原件在对应来源或冻结报告仍引用时保留，可信新版接替且无引用时复核回收。逐页文本与渲染在内存中检查，无工作副本。此前 Apify 查得的页面与各次失败证据继续有效。
+
+两份原件均已取得。首次本机连接在 TLS 握手时中断。独立网络出口发送 `Accept: application/pdf` 时，官网两次均返回 HTTP 406。用普通浏览器接受的 `Accept: */*` 请求相同 HTTPS URL 后，两者均返回 HTTP 200 和 `application/pdf;charset=UTF-8`。传输仅将原厂响应送回本机，在网络出口没有落盘。
+
+| Nexans 料号 | 本机保存文件的 SHA-256 | 文件大小 | 原件页码与核实值 |
+| --- | --- | ---: | --- |
+| [038021106](https://latrivenetacavi.nexans.com/.rest/catalog/v1/product/pdf/038021106) | `0fed83cc110b0689361193d2241cccd6a22b4a15fbba4756a1c1cc78aa805ce3` | 343,244 B | 共 3 页。第 1 页标识料号。第 2 页为 1 × 4 mm²，20°C 单导体最大直流电阻 5.09 Ω/km。 |
+| [038023102](https://latrivenetacavi.nexans.com/.rest/catalog/v1/product/pdf/038023102) | `217bfaf2296673fc499a1886fc0a5967bd2d4d1de7071336c04806018abf3d69` | 343,238 B | 共 3 页。第 1 页标识料号。第 2 页为 1 × 6 mm²，20°C 单导体最大直流电阻 3.39 Ω/km。 |
+
+两份第 2 页均已实际渲染并逐行检查。均为单芯、5 类软镀锡铜导体，绝缘和护套为交联无卤橡胶。4 mm² 为红色，6 mm² 为蓝色。导体 120°C、环境 60°C 时，空气中单根、表面单根、表面两根接触的原厂电流分别为 55/52/44 A 和 70/67/57 A。这些值与此前 Apify 抽取的官网表格一致。页脚的 `Generated 11/1/26` 是出表日期，原件没有标明技术修订号。资料没有给出 AC 电阻、电抗或温度换算系数。
+
+已从本机保存文件重新计算 SHA-256，两个文件合计 686,482 B，均在 `/Users/chesterjohn/de-linker-data/pdf/<SHA-256>.pdf`。PDF 文本与第 2 页渲染均经内存管道检查，没有额外图片或工作副本。此项解决了官方 PDF 字节、页码和出处的缺口。Woo 非商售参考、发布后 feed 及项目报告读回仍须各自完成。
