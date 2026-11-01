@@ -141,7 +141,7 @@ def country_assessment(inputs: Object) -> Object:
                 "source_url": "https://www.vde.com/de/fnn/themen/tar/tar-mittelspannung-vde-ar-n-4110",
                 "title": "VDE FNN TAR Mittelspannung FAQ",
                 "edition": "VDE-AR-N 4110:2023-09",
-                "clause": "1 Anwendungsbereich: 350 kWp low-voltage example",
+                "clause": "1 Anwendungsbereich",
                 "evidence_snapshot_date": "2026-10-27",
                 "raw_sha256": None,
                 "evidence_basis": "existing_country_dossier_primary_reading",
