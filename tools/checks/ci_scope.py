@@ -7,6 +7,7 @@ import os
 import re
 import subprocess
 import sys
+from functools import lru_cache
 from pathlib import Path
 
 LANES = (
@@ -132,6 +133,12 @@ LOCAL_ENGINE_INPUTS = (
     "services/engine/src/linker_engine/planning/project_input_floor.py",
     "services/engine/src/linker_engine/planning/project_input_contracts.py",
 )
+LOCAL_PREFLIGHT_INPUTS = (
+    "tools/local/src/linker_local/__init__.py",
+    "tools/local/src/linker_local/instance.py",
+    "tools/local/src/linker_local/registry.py",
+    "tools/local/src/linker_local/processes.py",
+)
 
 # Engine's browser contract tests execute Planner domain/data modules via Node;
 # npm ci also runs the package's postinstall. Keep those inputs in both the
@@ -176,6 +183,20 @@ def engine_planner_input(path):
     ):
         return False
     return under(path, ENGINE_PLANNER_INPUTS)
+
+
+def local_test_module(path):
+    return (
+        path.startswith("tools/local/tests/")
+        and path.rsplit("/", 1)[-1].startswith("test_")
+        and path.endswith(".py")
+    )
+
+
+def commerce_migration_input(path):
+    # PHP analyzers visit migration PHP and the Commerce fixture reads migration
+    # data; the Python CLI and its tests have their own migration lane.
+    return path.startswith("tools/migrate/") and not path.endswith(".py")
 
 
 def fixture_consumers(path):
@@ -268,7 +289,12 @@ def selected_modules(changes, base="", head=""):
         ):
             selected.update(("engine", "planner"))
         elif path.startswith("tools/local/"):
-            selected.update(("python:local", "python:pull", "python:cutover"))
+            selected.add("python:local")
+            if not local_test_module(path):
+                selected.update(("python:pull", "python:cutover"))
+                selected.update(native)
+                if path in LOCAL_PREFLIGHT_INPUTS:
+                    selected.add("content")
             if path.endswith(".php") or path.split("/")[-1].startswith(
                 ("composer", "phpstan", "phpcs")
             ):
@@ -276,6 +302,8 @@ def selected_modules(changes, base="", head=""):
                 selected.update(native)
         elif path.startswith(("tools/migrate/", "tools/pull/", "tools/cutover/")):
             selected.add("python:" + path.split("/")[1])
+            if commerce_migration_input(path):
+                selected.add("php:commerce")
         elif path.startswith("tools/faq/") or re.match(
             r"docs/research/2026-10-20-campaign-\d+/harness/", path
         ):
@@ -531,21 +559,67 @@ def module_inputs(module):
     )
 
 
-def module_fingerprint(commit, module):
+class ProofCache:
+    """Bounded, invocation-local memoization of immutable Git proof inputs."""
+
+    def __init__(self):
+        # One head and one prior candidate; the API searches at most ten runs.
+        # A pair's module hashes need at most two complete module sets.
+        self.tree = lru_cache(maxsize=2)(
+            lambda commit: git("ls-tree", "-r", "-z", commit)
+        )
+        self.pair = lru_cache(maxsize=10)(proof_increment_known)
+        self.fingerprint = lru_cache(maxsize=2 * len(MODULE_COMMANDS))(
+            lambda commit, module: _module_fingerprint(commit, module, self)
+        )
+
+
+def immutable_commit(commit):
+    return isinstance(commit, str) and re.fullmatch(r"[0-9a-f]{40}", commit) is not None
+
+
+def module_input_path(module, path, paths):
+    if module == "engine" and path.startswith("apps/planner/"):
+        if not engine_planner_input(path):
+            return False
+    # These Python test entrypoints are run only by linker-local's own pytest;
+    # companion consumers use its runtime, PHP, config, and test fixtures.
+    if local_test_module(path) and (
+        module
+        in {"php:local", "presentation", "content", "python:pull", "python:cutover"}
+        or module.startswith("native:")
+    ):
+        return False
+    # Commerce PHPCS/PHPStan analyze migration PHP; its product fixture reads
+    # 7-facts.json. The migration Python CLI and pytest are separate consumers.
+    if (
+        module == "php:commerce"
+        and path.startswith("tools/migrate/")
+        and not commerce_migration_input(path)
+    ):
+        return False
+    return under(path, paths) and not non_runtime_path(path)
+
+
+def module_fingerprint(commit, module, cache=None):
+    if cache is not None and immutable_commit(commit):
+        return cache.fingerprint(commit, module)
+    return _module_fingerprint(commit, module, None)
+
+
+def _module_fingerprint(commit, module, cache):
     paths = module_inputs(module)
-    entries = git("ls-tree", "-r", "-z", commit).split(b"\0")
+    if cache is not None:
+        tree = cache.tree(commit)
+    else:
+        tree = git("ls-tree", "-r", "-z", commit)
+    entries = tree.split(b"\0")
     selected = []
     for entry in entries:
         if not entry:
             continue
         path = entry.split(b"\t", 1)[1].decode()
-        if (
-            module == "engine"
-            and path.startswith("apps/planner/")
-            and not engine_planner_input(path)
-        ):
-            continue
-        if under(path, paths) and not non_runtime_path(path):
+        if module_input_path(module, path, paths):
             selected.append(entry)
     return hashlib.sha256(module.encode() + b"\0" + b"\0".join(selected)).hexdigest()
 
@@ -921,7 +995,7 @@ def successful_module_job(job, module, *, planner_build_changed=None):
     return True
 
 
-def same_module_inputs(before, head, module):
+def proof_increment_known(before, head):
     try:
         git("cat-file", "-e", before + "^{commit}")
     except subprocess.CalledProcessError:
@@ -932,7 +1006,19 @@ def same_module_inputs(before, head, module):
     # the cumulative PR diff, which can remain full after an earlier workflow.
     if changes and selected_modules(changes, before, head) is None:
         return False
-    return module_fingerprint(before, module) == module_fingerprint(head, module)
+    return True
+
+
+def same_module_inputs(before, head, module, cache=None):
+    if cache is not None and immutable_commit(before) and immutable_commit(head):
+        known = cache.pair(before, head)
+    else:
+        known = proof_increment_known(before, head)
+    if not known:
+        return False
+    return module_fingerprint(before, module, cache) == module_fingerprint(
+        head, module, cache
+    )
 
 
 def planner_build_flag(commit, *, source=None, base=None):
@@ -1014,6 +1100,7 @@ def reusable_modules(modules, head):
         f"repos/{os.environ['REPOSITORY']}/actions/workflows/check.yml/runs?event=pull_request&per_page=10"
     )["workflow_runs"]
     proofs = {}
+    cache = ProofCache()
     for run in runs:
         if (
             run.get("status") != "completed"
@@ -1051,14 +1138,14 @@ def reusable_modules(modules, head):
             if (
                 job is not None
                 and same_module_conditions(run, commit, head, module)
-                and same_module_inputs(commit, head, module)
+                and same_module_inputs(commit, head, module, cache)
             ):
                 proofs[module] = {
                     "run": run["id"],
                     "attempt": run["run_attempt"],
                     "job": job["id"],
                     "commit": commit,
-                    "inputs": module_fingerprint(head, module),
+                    "inputs": module_fingerprint(head, module, cache),
                 }
         if len(proofs) == len(modules):
             break
@@ -1073,6 +1160,7 @@ def validate_module_reuse(proofs, required, head):
     ):
         return False
     runs = {}
+    cache = ProofCache()
     for module, proof in proofs.items():
         if not isinstance(proof, dict) or set(proof) != {
             "run",
@@ -1117,8 +1205,8 @@ def validate_module_reuse(proofs, required, head):
             return False
         if (
             not same_module_conditions(run, proof["commit"], head, module)
-            or proof["inputs"] != module_fingerprint(head, module)
-            or not same_module_inputs(proof["commit"], head, module)
+            or proof["inputs"] != module_fingerprint(head, module, cache)
+            or not same_module_inputs(proof["commit"], head, module, cache)
         ):
             return False
     return True

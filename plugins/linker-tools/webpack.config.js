@@ -10,6 +10,12 @@ const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
 
 module.exports = {
 	...defaultConfig,
+	output: {
+		...defaultConfig.output,
+		// Planner is built independently into this shared output directory.
+		// Retain wp-scripts' fonts and images while protecting that subtree.
+		clean: { keep: /^(fonts|images|planner)(\/|$)/ },
+	},
 	entry: {
 		genie: './src/genie/index.tsx',
 		marketing: './src/marketing/index.ts',

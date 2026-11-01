@@ -47,6 +47,7 @@ import { MissingFiles } from '../genie/components/MissingFiles';
 import { OwnedRecovery } from '../genie/components/OwnedRecovery';
 import { Reply } from '../genie/components/Reply';
 import { Transcript } from '../genie/components/Transcript';
+import { TurnProgress } from '../genie/components/TurnProgress';
 import type { GenieConfig } from '../genie/config';
 import { idsOf, pricesOf } from '../genie/shared/blocks';
 import { useCardActions } from '../genie/shared/cardActions';
@@ -133,6 +134,7 @@ export function HeroConversation( {
 	const {
 		slot: verificationSlot,
 		pending: verificationPending,
+		cancel: cancelVerification,
 		begin: beginVerification,
 	} = useVerificationStage( phase === 'waiting' );
 	const [ refused, setRefused ] = useState( '' );
@@ -1043,26 +1045,10 @@ export function HeroConversation( {
 							</li>
 						) ) }
 						{ 'waiting' === phase ? (
-							<li className="linker-genie-app__message linker-genie-app__message--assistant linker-genie-wait">
-								<div
-									role="status"
-									className="linker-genie-wait__status"
-								>
-									<span
-										className="linker-genie-wait__dot"
-										aria-hidden="true"
-									/>
-									{ verificationPending
-										? __(
-												'Checking verification…',
-												'linker-tools'
-											)
-										: __(
-												'Genie is thinking…',
-												'linker-tools'
-											) }
-								</div>
-							</li>
+							<TurnProgress
+								verificationPending={ verificationPending }
+								onCancel={ cancelVerification }
+							/>
 						) : null }
 					</ol>
 					{ conflict ? (

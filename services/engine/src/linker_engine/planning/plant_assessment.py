@@ -12,6 +12,7 @@ from .equipment_assessment import assess_equipment, selection_products
 from .equipment_evidence import EquipmentEvidence
 from .equipment_plant import EquipmentPlant
 from .errors import InvalidInput, ProductEvidenceChanged
+from .grid_connection import country_assessment
 from .pv_string_inputs import PvPlantStringPlan, plant_instance_statuses
 
 
@@ -90,6 +91,11 @@ def assess_plant(
             else assess_equipment(
                 {
                     "brief": inputs.get("brief"),
+                    **(
+                        {"grid_connection": inputs["grid_connection"]}
+                        if "grid_connection" in inputs
+                        else {}
+                    ),
                     "equipment_selection": unit.selection.model_dump(mode="json"),
                     **(
                         {
@@ -111,6 +117,13 @@ def assess_plant(
                 else None,
             )
         )
+        if "grid_connection" in inputs:
+            # Cached electrical qualification may be reused, but project-wide
+            # grid declarations must come from this exact plant revision.
+            assessment = {
+                **assessment,
+                "country_assessment": country_assessment(inputs),
+            }
         if (
             wiring is not None
             and unit_wiring is None
@@ -492,8 +505,6 @@ def assess_plant(
         if "unresolved" in statuses
         else "satisfied"
     )
-    brief = inputs.get("brief")
-    site = brief.get("site") if isinstance(brief, dict) else None
     return decode_object(
         encode(
             cast(
@@ -513,13 +524,7 @@ def assess_plant(
                     "selected_products": [selected[k] for k in sorted(selected)],
                     "provisional_bill_of_materials": list(merged.values()),
                     "bill_of_materials_status": "unresolved",
-                    "country_assessment": {
-                        "status": "unresolved",
-                        "country_code": site.get("country_code")
-                        if isinstance(site, dict)
-                        else None,
-                        "reason": "versioned_country_rules_required",
-                    },
+                    "country_assessment": country_assessment(inputs),
                     "overall_status": "violated"
                     if status == "violated"
                     else "unresolved",

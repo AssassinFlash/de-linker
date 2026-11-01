@@ -14,7 +14,7 @@ export interface TurnstileOptions {
 	action: string;
 	language: 'en' | 'de';
 	appearance: 'always';
-	size: 'flexible';
+	size: 'flexible' | 'compact';
 	retry: 'auto';
 	'retry-interval': number;
 	'refresh-timeout': 'manual';

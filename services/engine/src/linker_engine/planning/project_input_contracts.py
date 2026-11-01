@@ -18,7 +18,9 @@ type InputContract = Literal[
     "installation_pv_string_links_v1",
     "pv_string_links_direct_beam_visibility_v1",
     "pv_string_links_direct_beam_geometric_pv_v1",
+    "grid_connection_evidence_v1",
 ]
+GRID_CONNECTION_INPUT_CONTRACT: InputContract = "grid_connection_evidence_v1"
 INPUT_CONTRACT: InputContract = "installation_pv_string_links_v1"
 DIRECT_BEAM_INPUT_CONTRACT: InputContract = "pv_string_links_direct_beam_visibility_v1"
 GEOMETRIC_PV_INPUT_CONTRACT: InputContract = (
@@ -32,12 +34,15 @@ SUPPORTED_INPUT_CONTRACTS: tuple[str, ...] = (
     GEOMETRIC_PV_INPUT_CONTRACT,
     PLANT_PV_INPUT_CONTRACT,
     ELECTRICAL_INPUT_CONTRACT,
+    GRID_CONNECTION_INPUT_CONTRACT,
 )
 
 
 def required_contracts(inputs: Mapping[str, object]) -> tuple[str, ...]:
     installation = inputs.get("installation")
     required = []
+    if "grid_connection" in inputs:
+        required.append(GRID_CONNECTION_INPUT_CONTRACT)
     if "pv_plant_string_plan" in inputs:
         required.append(PLANT_PV_INPUT_CONTRACT)
     if isinstance(installation, Mapping) and "pv_string_links" in installation:
@@ -77,10 +82,25 @@ def require_input_contract(
     required = set(required_contracts(incoming))
     if existing is not None:
         required.update(required_contracts(existing))
-    # The new writer explicitly understands both features. Keep these concrete
-    # coverage sets separate: neither token silently covers future additions.
+    # Each complete writer understands only its declared feature generation.
+    # Concrete coverage sets keep older tokens from covering future additions.
     covered = (
-        SUPPORTED_INPUT_CONTRACTS
+        (
+            INPUT_CONTRACT,
+            DIRECT_BEAM_INPUT_CONTRACT,
+            GEOMETRIC_PV_INPUT_CONTRACT,
+            PLANT_PV_INPUT_CONTRACT,
+            ELECTRICAL_INPUT_CONTRACT,
+            GRID_CONNECTION_INPUT_CONTRACT,
+        )
+        if input_contract == GRID_CONNECTION_INPUT_CONTRACT
+        else (
+            INPUT_CONTRACT,
+            DIRECT_BEAM_INPUT_CONTRACT,
+            GEOMETRIC_PV_INPUT_CONTRACT,
+            PLANT_PV_INPUT_CONTRACT,
+            ELECTRICAL_INPUT_CONTRACT,
+        )
         if input_contract == ELECTRICAL_INPUT_CONTRACT
         else (
             INPUT_CONTRACT,

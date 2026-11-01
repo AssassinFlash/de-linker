@@ -491,7 +491,12 @@ def _equipment_context(value: Json, *, system: bool = False) -> Json:
         return {
             key: _equipment_context(item, system=key in {"units", "systems"})
             for key, item in value.items()
-            if key not in {"unit_name", "group_name"} and not (system and key == "name")
+            if key not in {"unit_name", "group_name"}
+            and not (
+                key == "project_facts"
+                and value.get("model") == "declared_grid_connection_evidence_v1"
+            )
+            and not (system and key == "name")
         }
     return value
 
@@ -582,8 +587,8 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
         )
         rows: list[Json] = []
         for section in cast(list[Object], report.get("sections", [])):
-            if section.get("id") == "site":
-                continue  # Exact location labels and private project notes are unnecessary.
+            if section.get("id") in {"site", "grid-connection-declarations"}:
+                continue  # Owner-entered addresses, references and notes stay in the report.
             title = str(section.get("title", ""))
             if str(section.get("id", "")).startswith("check-controller-network-"):
                 # The saved owner heading contains the project’s free group name.
@@ -851,7 +856,7 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
             locale,
         )
     if kind == "search_woo_equipment_v1":
-        return _rows(result.get("search"), locale)
+        return _rows(_equipment_context(result.get("search")), locale)
     assessment = result.get("assessment")
     if isinstance(assessment, dict):
         # The assessment is a saved observation, not current recommendation permission.

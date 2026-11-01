@@ -1,3 +1,4 @@
+import { GridConnectionResult } from "./GridConnectionResult.tsx";
 import type { PlanningRun } from "../../data/planningProtocol.ts";
 import { runTask } from "../../data/planningProtocol.ts";
 import type { ReactNode } from "react";
@@ -366,12 +367,13 @@ export function EquipmentResult({
 						checks?.map(renderCheck)
 					)}
 
-					<p>
-						{__(
-							"Country requirements: not assessed by this calculation.",
-							"linker-tools",
-						)}
-					</p>
+					<GridConnectionResult
+						assessment={
+							assessment.country_assessment
+								? readObject(assessment.country_assessment)
+								: undefined
+						}
+					/>
 					<EquipmentConditions assessment={assessment} locale={locale} />
 					<h4>{__("Provisional bill of materials", "linker-tools")}</h4>
 					<p>

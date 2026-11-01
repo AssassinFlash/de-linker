@@ -59,24 +59,32 @@ function snapshot() {
 		const contracts = JSON.parse(
 			readFileSync( join( root, 'project-input-contracts.json' ), 'utf8' )
 		);
-		const plannerManifest = join(
-			root,
-			'build/planner/source-manifest.json'
+		const plannerDirectory = join( root, 'build/planner' );
+		const planner = JSON.parse(
+			readFileSync(
+				join( plannerDirectory, 'source-manifest.json' ),
+				'utf8'
+			)
 		);
-		// wp-scripts cleans build/ before the planner's second build phase. A
-		// present planner bundle must agree; publication also requires its presence.
-		if ( existsSync( plannerManifest ) ) {
-			const planner = JSON.parse(
-				readFileSync( plannerManifest, 'utf8' )
-			);
-			if (
-				JSON.stringify( planner.project_input_contracts ) !==
-				JSON.stringify( contracts.project_input_contracts )
-			) {
-				throw new Error(
-					'Planner build and Tools input contracts differ'
-				);
-			}
+		const vite = JSON.parse(
+			readFileSync(
+				join( plannerDirectory, 'vite-manifest.json' ),
+				'utf8'
+			)
+		);
+		const entry = vite?.[ 'src/main.tsx' ]?.file;
+		if (
+			typeof entry !== 'string' ||
+			! /^assets\/[a-zA-Z0-9_.-]+\.js$/.test( entry ) ||
+			! existsSync( join( plannerDirectory, entry ) )
+		) {
+			throw new Error( 'Planner build entry is missing or invalid' );
+		}
+		if (
+			JSON.stringify( planner.project_input_contracts ) !==
+			JSON.stringify( contracts.project_input_contracts )
+		) {
+			throw new Error( 'Planner build and Tools input contracts differ' );
 		}
 	}
 	return {

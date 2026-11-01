@@ -11,6 +11,9 @@ const CHALLENGE_MS = 120000;
 // Cloudflare's documented default retry interval; the original challenge
 // deadline stays absolute across retries (widget-configurations, 2026-10-28).
 const RETRY_MS = 8000;
+// Cloudflare's flexible widget requires at least 300 CSS pixels of width:
+// https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/widget-configurations/
+const FLEXIBLE_MIN_WIDTH = 300;
 const API_SCRIPT =
 	'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 
@@ -200,6 +203,7 @@ export class ProtectionClient implements PublicProtection {
 		}
 		const token = await new Promise< string >( ( resolve, reject ) => {
 			let settled = false;
+			let lastChallengeFailure: { code: string; at: number } | undefined;
 			let resetTimer: ReturnType< typeof setTimeout > | undefined;
 			const clearTimers = () => {
 				clearTimeout( timer );
@@ -244,6 +248,7 @@ export class ProtectionClient implements PublicProtection {
 				}
 			};
 			try {
+				const width = attempt.container.getBoundingClientRect().width;
 				attempt.widget = api.render( attempt.container, {
 					sitekey: prepared.site_key,
 					action,
@@ -251,7 +256,14 @@ export class ProtectionClient implements PublicProtection {
 					// Loaded only after interaction. Keep the provider's check,
 					// failure feedback and recovery visible in that interaction.
 					appearance: 'always',
-					size: 'flexible',
+					// No measurable width is not evidence of a narrow mount (for
+					// example in a non-layout environment); preserve the default.
+					size:
+						Number.isFinite( width ) &&
+						width > 0 &&
+						width < FLEXIBLE_MIN_WIDTH
+							? 'compact'
+							: 'flexible',
 					retry: 'auto',
 					'retry-interval': RETRY_MS,
 					'refresh-timeout': 'manual',
@@ -276,11 +288,26 @@ export class ProtectionClient implements PublicProtection {
 							attempt.container.dataset.linkerVerificationError =
 								diagnostic;
 						}
-						// The official error table marks these failures retryable.
-						// Removing the widget here cancels the provider's native
-						// retry and makes a genuine customer start over forever.
+						if ( /^(300|600)\d{3}$/.test( diagnostic ) ) {
+							// Let the provider make one native retry. Two challenge
+							// identical failures without reaching interaction make no progress.
+							if (
+								lastChallengeFailure?.code === diagnostic &&
+								Date.now() - lastChallengeFailure.at >= RETRY_MS
+							) {
+								fail( `verification_widget_${ diagnostic }` );
+								return;
+							}
+							if ( lastChallengeFailure?.code !== diagnostic ) {
+								lastChallengeFailure = {
+									code: diagnostic,
+									at: Date.now(),
+								};
+							}
+							retry();
+							return;
+						}
 						if (
-							/^(300|600)\d{3}$/.test( diagnostic ) ||
 							[ '110600', '110620', '200500' ].includes(
 								diagnostic
 							)
@@ -296,6 +323,8 @@ export class ProtectionClient implements PublicProtection {
 					},
 					'before-interactive-callback': () => {
 						if ( ! settled ) {
+							// A real interaction is progress, not another silent failure.
+							lastChallengeFailure = undefined;
 							attempt.container.hidden = false;
 							this.state(
 								attempt.container,

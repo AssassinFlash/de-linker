@@ -1,3 +1,8 @@
+import { GridConnectionForm } from "./GridConnectionForm.tsx";
+import {
+	readGridConnection,
+	replaceGridConnection,
+} from "../domain/gridConnection.ts";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Configuration } from "../data/config.ts";
 import type { PlannerClient } from "../data/PlannerClient.ts";
@@ -132,11 +137,13 @@ export function ProjectEditor({
 		recoveries,
 		restore,
 	} = useProjectDraft(project, session, client, store, recheck);
+	const [gridValid, setGridValid] = useState(true);
 	const [briefValid, setBriefValid] = useState(true);
 	const [designValid, setDesignValid] = useState(true);
 	const [energyValid, setEnergyValid] = useState(true);
 	const [installationValid, setInstallationValid] = useState(true);
-	const valid = briefValid && designValid && energyValid && installationValid;
+	const valid =
+		gridValid && briefValid && designValid && energyValid && installationValid;
 	const [workspace, setWorkspace] =
 		useState<ProjectWorkspace>(workspaceFromHash);
 	const [calculationsOpened, setCalculationsOpened] = useState(() =>
@@ -280,11 +287,13 @@ export function ProjectEditor({
 	);
 	if (!draft)
 		return <p role="status">{__("Opening project…", "linker-tools")}</p>;
+	let gridConnection;
 	let brief;
 	let selections;
 	let geometry;
 	let geometryImports;
 	try {
+		gridConnection = readGridConnection(draft.history.current.grid_connection);
 		brief =
 			draft.history.current.brief === undefined
 				? emptyBrief()
@@ -363,7 +372,10 @@ export function ProjectEditor({
 							? __("Saving…", "linker-tools")
 							: draft.pending
 								? __("Save not confirmed", "linker-tools")
-								: !briefValid || !energyValid || !installationValid
+								: !gridValid ||
+									  !briefValid ||
+									  !energyValid ||
+									  !installationValid
 									? __("Input needs attention", "linker-tools")
 									: !designValid
 										? __("Roof editing in progress", "linker-tools")
@@ -416,7 +428,7 @@ export function ProjectEditor({
 						(dirty || draft.pending))) && (
 					<div className="lp-navigation-refusal">
 						<Notice error>
-							{!briefValid || !energyValid || !installationValid
+							{!gridValid || !briefValid || !energyValid || !installationValid
 								? __(
 										"Correct the highlighted input before leaving this project.",
 										"linker-tools",
@@ -687,6 +699,20 @@ export function ProjectEditor({
 								)
 							}
 						/>
+						<div hidden={workspace !== "site"}>
+							<GridConnectionForm
+								value={gridConnection}
+								onValidity={setGridValid}
+								onChange={(next) =>
+									update((previous) =>
+										editDraft(
+											previous,
+											replaceGridConnection(previous.history.current, next),
+										),
+									)
+								}
+							/>
+						</div>
 						<section
 							className="lp-section"
 							id="lp-profiles"
@@ -899,6 +925,7 @@ export function ProjectEditor({
 									busy ||
 									recoveries.length > 0 ||
 									Boolean(draft.conflict) ||
+									!gridValid ||
 									!briefValid ||
 									!designValid ||
 									recoveryChecking ||

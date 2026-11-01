@@ -812,6 +812,27 @@ def report_sources(
     if assessment is not None and "equipment" in bases:
         if equipment_source_run is None or equipment_source_inputs is None:
             raise VersionUnavailable("the equipment source calculation is missing")
+        if (
+            "grid_connection" in equipment_source_inputs
+            or "grid_connection" in project.inputs
+        ):
+
+            def grid_context(values: Object) -> tuple[bool, Json, Json]:
+                brief = values.get("brief")
+                site = brief.get("site") if isinstance(brief, dict) else None
+                return (
+                    "grid_connection" in values,
+                    values.get("grid_connection"),
+                    site.get("country_code") if isinstance(site, dict) else None,
+                )
+
+            # The declarations and country scope belong to the selected
+            # assessment/search/energy source, not the report's editable site.
+            # No new field on either side preserves the legacy projection.
+            if grid_context(equipment_source_inputs) != grid_context(project.inputs):
+                raise ReportInputsChanged(
+                    "report grid entries or country differ from the selected result; check the selection again"
+                )
         condition_key = "equipment_condition_inputs"
         if (
             condition_key in equipment_source_inputs,

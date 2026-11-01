@@ -132,6 +132,15 @@ check. Terminal, unsupported and configuration failures retain the input and
 permit a fresh explicit attempt. Only a fixed six-digit provider diagnostic may
 remain on the verification container, never tokens or provider response bodies.
 
+On November 1, the real signed-in buyer's second Send encountered the same
+300030 callback on successive retry intervals without reaching an interactive
+challenge. The SDK gets its first native retry. If the same 300/600 error returns
+at least one retry interval later without progress, restore the unsent draft
+and remove that attempt. A callback announcing an interactive challenge clears
+the repetition count so a customer can still complete it. The original deadline
+also applies when callbacks stop. A successful Siteverify proof remains required
+before the conversation request can be dispatched.
+
 Genie preparation allows the existing three 15-second network steps plus the
 120-second interaction window, a total bound of 165 seconds. Once a validated
 proof dispatches the turn, its existing separate 90-second response/body deadline

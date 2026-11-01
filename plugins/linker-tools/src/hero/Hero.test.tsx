@@ -1022,6 +1022,15 @@ test( 'the real hero keeps a pending check distinct from a dispatched message an
 			screen.queryByText( 'Genie is thinking…' )
 		).not.toBeInTheDocument();
 		expect( screen.getByText( 'Checking verification…' ) ).toBeVisible();
+		expect(
+			screen
+				.getByText( 'Checking verification…' )
+				.closest( '.linker-genie-app__message--assistant' )
+		).toBeNull();
+		expect(
+			screen.getByRole( 'button', { name: 'Cancel verification' } )
+		).toBeVisible();
+
 		const slot = document.querySelector< HTMLElement >(
 			'.linker-genie-hero__surface [data-linker-resource-verification-slot]'
 		)!;

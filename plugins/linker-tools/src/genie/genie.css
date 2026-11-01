@@ -2310,3 +2310,25 @@ body:has(.pdp-buy-inner)
 		text-align: left;
 	}
 }
+
+/* The flexible provider mounts into an initially empty flex item. Stretch the
+ * owned host instead of shrinking it to its empty max-content width. Reserve
+ * the existing control-height token while the provider inserts its own frame;
+ * the provider remains responsible for its eventual frame dimensions. */
+.linker-genie-app__status[data-linker-resource-verification-slot]
+	> [data-linker-resource-verification="genie"] {
+	align-self: stretch;
+	flex: 0 0 auto;
+	width: 100%;
+	min-width: 0;
+	min-height: var(--proto-control-height, 44px);
+}
+
+.linker-genie-app__verification {
+	padding-block: 8px;
+}
+.linker-genie-app__verification p {
+	margin: 0 0 8px;
+	color: #5d5d5d;
+	font-size: 14px;
+}

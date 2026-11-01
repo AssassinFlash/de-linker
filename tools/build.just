@@ -15,10 +15,9 @@ all:
     # A module recipe cannot depend on a recipe of the parent justfile (just 1.58
     # rejects `super::js-install` as an unknown dependency), so it calls just.
     {{ just_executable() }} --justfile {{ justfile() }} js-install
-    cd {{ tools_dir }} && npm run build
-    # wp-scripts cleans build/: the isolated application must be built after it.
+    # Tools' aggregate manifest requires the independent Planner build first.
     cd {{ planner_dir }} && npm run build
-    cd {{ tools_dir }} && node bin/build-manifest.mjs write
+    cd {{ tools_dir }} && npm run build
     cd {{ commerce_dir }} && npm run build
 
 # Fail if a source or a built file changed since the last `just build`.

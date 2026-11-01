@@ -9,13 +9,16 @@ from __future__ import annotations
 
 import argparse
 import base64
+import copy
 import json
 import os
+import re
 import shlex
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT / "tools/cutover/src"), str(ROOT / "tools/local/src")]
@@ -31,6 +34,28 @@ from linker_local.processes import (  # type: ignore[import-not-found]  # noqa: 
 STEM = "548-controller-facts"
 MARKER = f"@@{STEM}@@"
 HERE = Path(__file__).resolve().parent
+
+
+def plan_for_target(plan: dict[str, Any], origin: str) -> dict[str, Any]:
+    """Select only an explicitly reviewed site version of the same original."""
+    selected = copy.deepcopy(plan)
+    controller = selected.get("controller")
+    versions = (
+        controller.get("installation_document_revisions")
+        if isinstance(controller, dict)
+        else None
+    )
+    revision = versions.get(origin) if isinstance(versions, dict) else None
+    if not isinstance(revision, str) or re.fullmatch(r"[a-f0-9]{64}", revision) is None:
+        raise ValueError("No reviewed installation document version for this target.")
+    item = controller.get("installation_item") if isinstance(controller, dict) else None
+    source = item.get("source") if isinstance(item, dict) else None
+    if not isinstance(source, dict):
+        raise ValueError("The reviewed installation source is missing.")
+    # SHA, product owner, page and quote remain untouched. Native PHP still
+    # requires this selected revision to match the current associated original.
+    source["document_revision"] = revision
+    return selected
 
 
 def main() -> int:
@@ -56,16 +81,19 @@ def main() -> int:
             parser.error("Use the regular private file issued by preview.")
         path = receipt
     saved = path.read_bytes()
+    site = remote_target() if args.production else local_target(args.instance)
+    value = json.loads(saved)
+    if preview:
+        value = plan_for_target(value, site.base_url)
     request = {
         "action": args.action,
-        "plan" if preview else "receipt": json.loads(saved),
+        "plan" if preview else "receipt": value,
     }
     encoded = base64.b64encode(json.dumps(request).encode()).decode()
     source = (HERE / f"{STEM}.php").read_text()
     placeholder = f"'{STEM}-payload'"
     if source.count(placeholder) != 1:
         raise ValueError("Missing or ambiguous WordPress action payload.")
-    site = remote_target() if args.production else local_target(args.instance)
     command = site.shell_command(shlex.join([*site.wp_on_target(), "eval-file", "-"]))
     result = subprocess.run(
         command,

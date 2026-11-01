@@ -78,7 +78,7 @@ class ScopeTest(unittest.TestCase):
         cases = (
             (
                 "tools/local/src/linker_local/registry.py",
-                {"python:local", "python:pull", "python:cutover"},
+                {"content", "python:local", "python:pull", "python:cutover", *native},
             ),
             (
                 "services/engine/src/linker_engine/assistant_context.py",
@@ -1597,6 +1597,172 @@ class ModuleReuseTest(unittest.TestCase):
         ):
             with self.assertRaisesRegex(ValueError, "incomplete"):
                 ci_scope.run_module_jobs(self.prior_run)
+
+    def test_reuse_inputs_distinguish_local_tests_from_actual_consumers(self):
+        with TemporaryDirectory() as folder:
+            previous = Path.cwd()
+            os.chdir(folder)
+            self.addCleanup(os.chdir, previous)
+
+            def run(*args):
+                return subprocess.check_output(args, text=True).strip()
+
+            run("git", "init", "-q")
+            run("git", "config", "user.email", "ci@example.invalid")
+            run("git", "config", "user.name", "CI fixture")
+            paths = (
+                "tools/local/tests/test_wpcli.py",
+                "tools/local/src/linker_local/wpcli.py",
+                "tools/local/tests/fixtures/wordpress.php",
+                "tools/migrate/548-controller-facts.py",
+                "tools/migrate/548-controller-facts.php",
+                "tools/migrate/7-facts.json",
+            )
+            for name in paths:
+                path = Path(name)
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("original")
+            run("git", "add", ".")
+            run("git", "commit", "-qm", "base")
+            base = run("git", "rev-parse", "HEAD")
+            native = {"native:" + group for group in ci_scope.NATIVE_GROUPS}
+            local_consumers = {
+                "php:local",
+                "python:local",
+                "python:pull",
+                "python:cutover",
+                "content",
+                *native,
+            }
+            modules = [*local_consumers, "php:commerce", "python:migrate"]
+            cases = (
+                (paths[0], {"python:local"}, {"python:local"}),
+                (
+                    paths[1],
+                    local_consumers,
+                    {"python:local", "python:pull", "python:cutover", *native},
+                ),
+                (
+                    paths[2],
+                    local_consumers,
+                    {
+                        "php:local",
+                        "python:local",
+                        "python:pull",
+                        "python:cutover",
+                        *native,
+                    },
+                ),
+                (paths[3], {"python:migrate"}, {"python:migrate"}),
+                (
+                    paths[4],
+                    {"php:commerce", "python:migrate"},
+                    {"php:commerce", "python:migrate"},
+                ),
+                (
+                    paths[5],
+                    {"php:commerce", "python:migrate"},
+                    {"php:commerce", "python:migrate"},
+                ),
+            )
+            for name, invalidated, selected in cases:
+                Path(name).write_text("changed")
+                run("git", "add", ".")
+                run("git", "commit", "-qm", "change")
+                head = run("git", "rev-parse", "HEAD")
+                changes = ci_scope.diff_changes(base, head)
+                with self.subTest(path=name):
+                    self.assertEqual(
+                        set(ci_scope.selected_modules(changes, base, head)), selected
+                    )
+                    cache = ci_scope.ProofCache()
+                    for module in modules:
+                        with self.subTest(module=module):
+                            self.assertEqual(
+                                not ci_scope.same_module_inputs(
+                                    base, head, module, cache
+                                ),
+                                module in invalidated,
+                            )
+                run("git", "reset", "--hard", base)
+
+    def test_immutable_proof_cache_reuses_only_local_git_inputs(self):
+        with TemporaryDirectory() as folder:
+            previous = Path.cwd()
+            os.chdir(folder)
+            self.addCleanup(os.chdir, previous)
+
+            def run(*args):
+                return subprocess.check_output(args, text=True).strip()
+
+            run("git", "init", "-q")
+            run("git", "config", "user.email", "ci@example.invalid")
+            run("git", "config", "user.name", "CI fixture")
+            path = Path("services/genie/app.py")
+            path.parent.mkdir(parents=True)
+            path.write_text("first")
+            run("git", "add", ".")
+            run("git", "commit", "-qm", "base")
+            base = run("git", "rev-parse", "HEAD")
+            path.write_text("second")
+            run("git", "add", ".")
+            run("git", "commit", "-qm", "head")
+            head = run("git", "rev-parse", "HEAD")
+            expected = {
+                module: ci_scope.same_module_inputs(base, head, module)
+                for module in ("engine", "genie", "php:local")
+            }
+            with patch.object(ci_scope, "git", wraps=ci_scope.git) as git:
+                cache = ci_scope.ProofCache()
+                for module, value in expected.items():
+                    self.assertEqual(
+                        ci_scope.same_module_inputs(base, head, module, cache), value
+                    )
+                    ci_scope.module_fingerprint(head, module, cache)
+                calls = [call.args for call in git.call_args_list]
+                self.assertEqual(
+                    sum(args[:3] == ("ls-tree", "-r", "-z") for args in calls), 2
+                )
+                self.assertEqual(
+                    sum(args[:2] == ("diff", "--name-status") for args in calls), 2
+                )
+                self.assertEqual(
+                    sum(args[:2] == ("cat-file", "-e") for args in calls), 1
+                )
+            self.assertEqual(
+                expected, {"engine": True, "genie": False, "php:local": True}
+            )
+            # An unknown new root remains unprovable even with a warm cache.
+            unknown = Path("unclassified/new.py")
+            unknown.parent.mkdir()
+            unknown.write_text("new")
+            run("git", "add", ".")
+            run("git", "commit", "-qm", "unknown")
+            changed = run("git", "rev-parse", "HEAD")
+            self.assertFalse(
+                ci_scope.same_module_inputs(base, changed, "engine", cache)
+            )
+            self.assertFalse(
+                ci_scope.same_module_inputs(base, changed, "php:local", cache)
+            )
+            # Symbolic references are mutable and are never cached by name.
+            before_head = ci_scope.module_fingerprint("HEAD", "engine", cache)
+            engine = Path("services/engine/app.py")
+            engine.parent.mkdir(parents=True)
+            engine.write_text("changed")
+            run("git", "add", ".")
+            run("git", "commit", "-qm", "move HEAD")
+            self.assertNotEqual(
+                before_head, ci_scope.module_fingerprint("HEAD", "engine", cache)
+            )
+            with patch.object(
+                ci_scope, "proof_increment_known", side_effect=[RuntimeError(), True]
+            ) as checked:
+                retry_cache = ci_scope.ProofCache()
+                with self.assertRaises(RuntimeError):
+                    retry_cache.pair(base, head)
+                self.assertTrue(retry_cache.pair(base, head))
+                self.assertEqual(checked.call_count, 2)
 
     def test_real_git_input_hash_preserves_unrelated_service_but_invalidates_consumed_inputs(
         self,

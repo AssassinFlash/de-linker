@@ -252,12 +252,6 @@ ci-build-package package:
     echo "== $project: committed build contract / reproduce"
     npm run build:check
     npm run build
-    if [ "$1" = tools ]; then
-        # wp-scripts clears build/, so restore the existing isolated Planner.
-        just --justfile "{{ justfile() }}" ci-planner-deps
-        (cd "{{ justfile_directory() }}/apps/planner" && npm run build)
-        node bin/build-manifest.mjs write
-    fi
     npm run build:check
     git diff --exit-code -- build
     test -z "$(git status --porcelain -- build)"
