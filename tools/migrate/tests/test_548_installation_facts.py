@@ -85,17 +85,21 @@ def test_controller_cli_selects_reviewed_site_binding_and_filters_credentials(
     monkeypatch.setattr(
         controller,
         "remote_target",
-        lambda: Target(
-            "fixture", "/fixture", site_url, ("wp",), None, None
-        ),
+        lambda: Target("fixture", "/fixture", site_url, ("wp",), None, None),
     )
-    monkeypatch.setattr(controller, "local_target", lambda _: controller.remote_target())
+    monkeypatch.setattr(
+        controller, "local_target", lambda _: controller.remote_target()
+    )
     monkeypatch.setattr(
         controller.sys,
         "argv",
         [
             "controller",
-            *(["--production"] if site_url.startswith("https") else ["--instance", "p548"]),
+            *(
+                ["--production"]
+                if site_url.startswith("https")
+                else ["--instance", "p548"]
+            ),
             "preview",
             "--receipt",
             str(tmp_path / "receipt"),
@@ -125,9 +129,7 @@ def test_controller_binding_refuses_unreviewed_target_without_mutating_plan() ->
     new_source = selected["controller"]["installation_item"]["source"]
     assert {
         key: value for key, value in old_source.items() if key != "document_revision"
-    } == {
-        key: value for key, value in new_source.items() if key != "document_revision"
-    }
+    } == {key: value for key, value in new_source.items() if key != "document_revision"}
 
 
 def load_script() -> ModuleType:
