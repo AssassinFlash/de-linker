@@ -226,6 +226,46 @@ def _report_materials(workspace: Workspace, run: Run, result: Object) -> Json | 
     }
 
 
+def _string_link_projection(link: Object, private: str) -> Object:
+    """v2 unit bindings are owner identifiers, not engineering scope text."""
+    return (
+        {
+            **link,
+            "unit_id": private if link["unit_id"] is not None else None,
+            "inverter_instance_id": private
+            if link.get("inverter_instance_id") is not None
+            else None,
+        }
+        if "unit_id" in link
+        else link
+    )
+
+
+def _materials_projection(source: Object, private: str) -> Object:
+    """Apply the same boundary after either pinned or historical BOM loading."""
+    materials = source.get("materials")
+    if not isinstance(materials, dict):
+        materials = project_materials(source)
+    plan = source.get("installation")
+    method = plan.get("method") if isinstance(plan, dict) else None
+    lines: list[Json] = []
+    for index, line in enumerate(cast(list[Object], materials["lines"]), 1):
+        safe = {key: value for key, value in line.items() if key != "unit_name"}
+        lines.append(safe)
+        if line.get("handling") != "installation_requirement":
+            continue
+        if line.get("basis") == method:
+            safe["label"] = {
+                lang: f"{text('installation_conductor', lang)} {index}"
+                for lang in ("en", "de")
+            }
+        origin = line.get("source")
+        link = origin.get("link") if isinstance(origin, dict) else None
+        if isinstance(origin, dict) and isinstance(link, dict):
+            safe["source"] = {**origin, "link": _string_link_projection(link, private)}
+    return {**materials, "lines": lines}
+
+
 def _report_source_projection(source: Object, locale: str) -> Object:
     """Keep frozen engineering facts; project labels/notes remain owner-only.
 
@@ -235,11 +275,12 @@ def _report_source_projection(source: Object, locale: str) -> Object:
     """
     projected = {**source, "locale": locale}
     raw_plan = source.get("installation")
-    if not isinstance(raw_plan, dict):
-        return projected
     private = (
         "Im eigenen Bericht erfasst" if locale == "de" else "Recorded in owned report"
     )
+    if not isinstance(raw_plan, dict):
+        projected["materials"] = _materials_projection(projected, private)
+        return projected
     # Copy only edited branches. Unrelated saved profiles and evidence are read
     # as-is, and no persistent blob or source object is changed.
     plan = {**raw_plan, "sources": []}
@@ -269,6 +310,15 @@ def _report_source_projection(source: Object, locale: str) -> Object:
         }
         for index, cable in enumerate(cast(list[Object], raw_plan["cables"]), 1)
     ]
+    reconciliation = raw_plan.get("pv_string_reconciliation")
+    if isinstance(reconciliation, dict):
+        plan["pv_string_reconciliation"] = {
+            **reconciliation,
+            "rows": [
+                _string_link_projection(row, private)
+                for row in cast(list[Object], reconciliation["rows"])
+            ],
+        }
     electrical = raw_plan.get("electrical")
     if isinstance(electrical, dict):
         circuits: list[Json] = []
@@ -316,34 +366,7 @@ def _report_source_projection(source: Object, locale: str) -> Object:
                         ],
                     }
                 )
-    # Modern reports pin a materials model instead of deriving it at display
-    # time. Only the project-defined installation labels need redaction there.
-    materials = source.get("materials")
-    if isinstance(materials, dict):
-        lines: list[Json] = []
-        projected["materials"] = {**materials, "lines": lines}
-        for index, line in enumerate(cast(list[Object], materials["lines"]), 1):
-            if line.get("handling") != "installation_requirement":
-                lines.append(line)
-                continue
-            safe = dict(line)
-            lines.append(safe)
-            if line.get("basis") == plan.get("method"):
-                safe["label"] = {
-                    lang: f"{text('installation_conductor', lang)} {index}"
-                    for lang in ("en", "de")
-                }
-            origin = line.get("source")
-            link = origin.get("link") if isinstance(origin, dict) else None
-            if (
-                isinstance(origin, dict)
-                and isinstance(link, dict)
-                and "unit_id" in link
-            ):
-                safe["source"] = {
-                    **origin,
-                    "link": {**link, "unit_id": private, "inverter_instance_id": None},
-                }
+    projected["materials"] = _materials_projection(projected, private)
     return projected
 
 

@@ -61,6 +61,34 @@ def test_electrical_report_projects_frozen_numbers_without_private_project_text(
         instance["name"] = "PRIVATE INSTANCE"
         for port in instance["ports"]:
             port["name"] = "PRIVATE PORT"
+    # Native v2 reconciliation carries editable unit and inverter identities
+    # into derived BOM scopes as well as the owner's string-link table.
+    inputs["pv_plant_string_plan"] = {
+        "schema_version": 1,
+        "units": [
+            {
+                "unit_id": "PRIVATE_CUSTOMER_UNIT",
+                "inverter_instance_id": "PRIVATE_CUSTOMER_INVERTER",
+                "plan": {
+                    "schema_version": 1,
+                    "inverter_product_id": 9103,
+                    "minimum_ambient_c": None,
+                    "temperature_source": None,
+                    "strings": [
+                        {
+                            "id": "PRIVATE_STRING",
+                            "mppt": 1,
+                            "input": 1,
+                            "module_ids": ["PRIVATE_MODULE"],
+                        }
+                    ],
+                },
+            }
+        ],
+    }
+    plan["pv_string_links"] = [
+        {"string_id": "PRIVATE_STRING", "circuit_id": circuit["id"]}
+    ]
     if missing_source:
         basis["cable_references"] = []
     project = workspace.create(owner, "Conductor scenario", {}, key="new")
@@ -74,6 +102,19 @@ def test_electrical_report_projects_frozen_numbers_without_private_project_text(
         "locale": locale,
         "installation": route_takeoff(cast(Object, inputs), cast(Object, basis)),
         "unrelated_hourly_profile": [{"value": 123.4}],
+        "equipment": {
+            "overall_status": "unresolved",
+            "selected_products": [],
+            "provisional_bill_of_materials": [],
+            "checks": [],
+            "installation_requirements": [
+                {
+                    "included": True,
+                    "kind": "meter",
+                    "unit_name": "PRIVATE INCLUDED COMPONENT UNIT NAME",
+                }
+            ],
+        },
     }
     if pinned_materials:
         source["materials"] = project_materials(source)
@@ -84,14 +125,25 @@ def test_electrical_report_projects_frozen_numbers_without_private_project_text(
         "rows": [{"label": "Preserved section", "value": "UNCHANGED STORED SECTION"}],
     }
     cast(list[Json], recorded["sections"]).append(unrelated_section)
+    original_source, original_report = deepcopy(source), deepcopy(recorded)
+    saved_installation = cast(Object, source["installation"])
+    reconciliation = cast(Object, saved_installation["pv_string_reconciliation"])
+    assert reconciliation["schema_version"] == 2
     safe_source = _report_source_projection(source, locale)
     assert safe_source["unrelated_hourly_profile"] is source["unrelated_hourly_profile"]
     same_language_report = _installation_report_projection(recorded, source, locale)
     assert cast(list[Object], same_language_report["sections"])[-1] is unrelated_section
-    original_source, original_report = deepcopy(source), deepcopy(recorded)
+    safe_installation = cast(Object, safe_source["installation"])
+    safe_reconciliation = cast(Object, safe_installation["pv_string_reconciliation"])
+    safe_link = cast(list[Object], safe_reconciliation["rows"])[0]
+    assert safe_link["unit_id"] is not None
+    assert safe_link["inverter_instance_id"] is not None
+    assert source == original_source and recorded == original_report
     assert "PRIVATE CONDITION SOURCE" in str(recorded)
     assert "PRIVATE LIMIT SOURCE" in str(recorded)
     assert "PRIVATE-RUN-0" in str(source)
+    assert "PRIVATE_CUSTOMER_UNIT" in str(recorded)
+    assert "PRIVATE INCLUDED COMPONENT UNIT NAME" in str(recorded)
     run = workspace.evaluate(owner, project.id, 1, context, key="run", max_attempts=1)
     jobs = Jobs(workspace)
     lease = jobs.claim("fixture", kinds=("evaluate",), lease_seconds=30)
@@ -156,6 +208,12 @@ def test_electrical_report_projects_frozen_numbers_without_private_project_text(
                 else "Within recorded project limit"
             ) in shown
         assert ("Strombelastbarkeit" if requested == "de" else "ampacity") in shown
+        assert text("installation_string_link_material_scope", requested) in shown
+        assert (
+            text("installation_string_link_inverter_endpoint_unresolved", requested)
+            in shown
+        )
+        assert text("material_meter", requested) in shown
         assert projection["current_product_permission"] == "not_granted_by_this_context"
     assert workspace.blobs.object(source_sha) == original_source
     saved = workspace.run(owner, run.id).result
