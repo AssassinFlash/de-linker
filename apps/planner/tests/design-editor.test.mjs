@@ -265,6 +265,12 @@ test("manual roof intake marks the unsupported vertical boundary at its field", 
 	}))
 		await enter(document.querySelector(`[name="${name}"]`), value);
 	await act(async () => document.querySelector('[name="rights"]').click());
+	const exportField = document.querySelector('[name="export"]');
+	assert.equal(exportField.value, "unknown");
+	await act(async () => {
+		exportField.value = "permitted";
+		exportField.dispatchEvent(new Event("change", { bubbles: true }));
+	});
 	await click("Apply properties");
 	assert.equal(app.edits, 0);
 	assert.equal(
@@ -275,4 +281,5 @@ test("manual roof intake marks the unsupported vertical boundary at its field", 
 	await enter(document.querySelector('[name="pitch"]'), "89.9");
 	await click("Apply properties");
 	assert.equal(app.edits, 1);
+	assert.equal(app.current.sources.at(-1).permissions.export, "permitted");
 });

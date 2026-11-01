@@ -10,7 +10,7 @@ import math
 from typing import cast
 
 from .canonical import Json, Object, digest, encode
-from .errors import InvalidInput, VersionUnavailable
+from .errors import InvalidInput, ReportSourceExportRequired, VersionUnavailable
 from .frozen_documents import FrozenDocuments
 from .geometric_pv_inputs import PROFILE_PURPOSE as GEOMETRIC_PV_PURPOSE
 from .geometric_pv_profile import reference_bundle as geometric_pv_bundle
@@ -181,7 +181,9 @@ def saved_roof_components(
     """Equipment-only reports use the exact roof checked by that saved result."""
     geometry = read_geometry(geometry_json)
     if any(s.permissions.export != "permitted" for s in geometry.sources):
-        raise InvalidInput("material exports require permission for the roof sources")
+        raise ReportSourceExportRequired(
+            "material exports require permission for the roof sources"
+        )
     return _components(
         geometry,
         proof,

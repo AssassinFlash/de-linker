@@ -57,6 +57,12 @@ class InvalidInput(PlanningError):
     code = "invalid_input"
 
 
+class ReportSourceExportRequired(InvalidInput):
+    """A source retained by the report does not permit export."""
+
+    code = "report_source_export_required"
+
+
 class ProjectInputContractRequired(InvalidInput):
     """An unaware editor was refused before replacing complete project inputs."""
 

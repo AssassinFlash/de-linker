@@ -13431,3 +13431,13 @@ msgstr "PV-Strangzeitreihe herunterladen (CSV)"
 #: build/planner/assets/planner.js:1
 msgid "The PV string CSV has one row per string and time interval. The module condition lists follow the order of module IDs in that row."
 msgstr "Die PV-Strang-CSV enthält je Strang und Zeitintervall eine Zeile. Die Listen der Modulbedingungen folgen der Reihenfolge der Modul-IDs in dieser Zeile."
+
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/energy/EnergyError.tsx
+msgid "A source used in this report has no recorded permission for export. Check Source properties in Roof design. If your rights allow export, save the permission and generate new results for the affected parts of the report."
+msgstr "Für eine Quelle dieses Berichts ist keine Exportfreigabe hinterlegt. Prüfen Sie die Quelleneigenschaften in der Dachplanung. Wenn Sie die Daten exportieren dürfen, speichern Sie die Freigabe und berechnen Sie die betroffenen Ergebnisse neu."
+
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/design/GeometryForm.tsx
+msgid "Reports that include this geometry require export permission."
+msgstr "Berichte mit diesen Geometriedaten benötigen eine Exportfreigabe."

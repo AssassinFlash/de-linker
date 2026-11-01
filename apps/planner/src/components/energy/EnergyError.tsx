@@ -149,6 +149,11 @@ export function energyErrorText(error: unknown): string {
 				"The logo could not be used. Choose a PNG or JPG of up to 500 kB.",
 				"linker-tools",
 			);
+		case "report_source_export_required":
+			return __(
+				"A source used in this report has no recorded permission for export. Check Source properties in Roof design. If your rights allow export, save the permission and generate new results for the affected parts of the report.",
+				"linker-tools",
+			);
 		case "report_inputs_changed":
 			return __(
 				"A selected result does not match the saved project inputs. Choose a matching result.",
