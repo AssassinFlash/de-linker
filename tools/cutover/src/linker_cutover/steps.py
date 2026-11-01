@@ -15,7 +15,6 @@ that assumes one would quietly match nothing on a site that changed it.
 from __future__ import annotations
 
 import base64
-import hashlib
 import json
 import re
 import shlex
@@ -27,7 +26,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 
-from linker_cutover import atomic, plan
+from linker_cutover import atomic, deployment, plan
 from linker_cutover import backup as backup_module
 from linker_cutover import snapshot as snapshot_module
 from linker_cutover.target import HOST_URL, CutoverError, Target, wp_prefix_for
@@ -106,8 +105,8 @@ def stage_plugin(repository: Path, slug: str, staging: Path) -> Path:
     ):
         # Nothing changed since the last build: the staged tree already is the
         # source with its runtime vendor (the Composer build was ~8 minutes of
-        # every deploy, 2026-10-18). The fingerprint covers every source file,
-        # dev files included: a test edit rebuilds, which is merely slower.
+        # every deploy, 2026-10-18). The fingerprint uses the same exclusions
+        # as the actual transfer; dependency caches and tests cannot invalidate it.
         return destination
     destination.mkdir(parents=True, exist_ok=True)
     excludes: list[str] = []
@@ -151,13 +150,10 @@ def stage_plugin(repository: Path, slug: str, staging: Path) -> Path:
 
 
 def _stage_fingerprint(source: Path) -> str:
-    """sha256 over every source file's path and content: the staging cache key."""
-    digest = hashlib.sha256()
-    for path in sorted(item for item in source.rglob("*") if item.is_file()):
-        digest.update(path.relative_to(source).as_posix().encode("utf-8"))
-        digest.update(b"\0")
-        digest.update(hashlib.sha256(path.read_bytes()).digest())
-    return digest.hexdigest()
+    """Hash the shipped source and Composer inputs, using the transfer exclusions."""
+    return atomic.source_digest(
+        source, tuple(pattern.rstrip("/") for pattern in plan.DEPLOY_EXCLUDES)
+    )
 
 
 def deployment_artifacts(repository: Path) -> list[atomic.Artifact]:
@@ -267,6 +263,7 @@ def deploy(
     on_switch: Callable[[], None] | None = None,
     snapshot_home: Path | None = None,
     now: datetime | None = None,
+    resume: bool = False,
 ) -> Result:
     """Snapshot the database, build all trees, upload all artifacts, then switch the batch.
 
@@ -278,90 +275,233 @@ def deploy(
     before the same verification runs.
     """
     home = snapshot_home or backup_module.DATA_HOME
-    # Each phase says what it is doing and how long it took: the deploy used to
-    # say nothing until the end, so a slow phase looked like a hang (2026-10-18).
-    print("deploy: database snapshot", flush=True)
-    started = time.monotonic()
-    taken = snapshot_module.take(target, home)
-    print(f"deploy: snapshot done in {time.monotonic() - started:.1f}s", flush=True)
-    reminder = full_backup_reminder(home, now=now)
     artifacts = deployment_artifacts(repository)
-    # Finish every local Composer build before starting any remote upload.
-    print("deploy: staging and Composer builds", flush=True)
-    started = time.monotonic()
-    prepared = [
-        atomic.Artifact(
-            stage_plugin(repository, item.source.name, staging), item.relative
+    source = deployment.source_identity(repository, artifacts)
+    state_path = deployment.path(staging)
+    if state_path.exists() and not resume:
+        raise CutoverError(f"unfinished deployment at {state_path}; use resume-deploy")
+    if resume:
+        checkpoint = deployment.load(staging, target, source)
+        if deploy_id is not None and deploy_id != checkpoint.deploy_id:
+            raise CutoverError("deployment id mismatch; checkpoint retained")
+    else:
+        root = atomic.backup_root(target)
+        pointer = shlex.quote(str(Path(root) / "latest"))
+        if target.shell(f"if [ -f {pointer} ]; then cat {pointer}; fi").strip():
+            _, previous = atomic.latest_manifest(target)
+            if previous.state == "pending":
+                raise CutoverError(
+                    f"deployment {previous.deploy_id} still needs resume-deploy or rollback"
+                )
+        checkpoint = deployment.Checkpoint(
+            deploy_id or deployment_id(repository),
+            source,
+            deployment.target_identity(target),
+            atomic.identities(
+                target, [target.path_of(item.relative) for item in artifacts]
+            ),
         )
-        if item.source.is_dir()
-        else item
-        for item in artifacts
-    ]
-    print(f"deploy: staging done in {time.monotonic() - started:.1f}s", flush=True)
-    receipt = atomic.publish(
+        deployment.save(staging, checkpoint)
+    # A switch reply may have been lost. Consult its authoritative manifest
+    # before deciding whether any transfer is permitted.
+    receipt: atomic.Receipt | None = None
+    root = atomic.backup_root(target)
+    latest = target.shell(
+        f"if [ -f {shlex.quote(str(Path(root) / 'latest'))} ]; then cat {shlex.quote(str(Path(root) / 'latest'))}; fi"
+    ).strip()
+    if latest:
+        _, manifest = atomic.latest_manifest(target)
+        if manifest.deploy_id == checkpoint.deploy_id:
+            if manifest.state == "pending":
+                receipt = atomic.pending_receipt(
+                    target, [item.relative for item in artifacts]
+                )
+            elif manifest.state == "archived":
+                # The manifest commit may have succeeded before its reply or
+                # final readback. Resume the same idempotent archive finalizer.
+                if set(checkpoint.completed) != {
+                    "plugin activation and language packs",
+                    "present (templates and the WindPress volume)",
+                    "opcode reset and page cache purge",
+                }:
+                    raise CutoverError(
+                        "archive completed before post-switch phases; checkpoint retained"
+                    )
+                atomic.archive(
+                    target,
+                    atomic.Receipt(
+                        checkpoint.deploy_id,
+                        None,
+                        str(Path(root) / checkpoint.deploy_id),
+                        tuple(item.relative for item in artifacts),
+                    ),
+                )
+                deployment.cleanup(staging)
+                return Result(
+                    "deploy",
+                    [f"deploy id: {checkpoint.deploy_id}", "archive already completed"],
+                    [],
+                )
+            else:
+                raise CutoverError(
+                    "deployment already rolled back; checkpoint retained"
+                )
+        elif manifest.state == "pending":
+            raise CutoverError(
+                f"deployment {latest} still needs verify/archive or rollback"
+            )
+    if receipt is None:
+        live = atomic.identities(target, list(checkpoint.live))
+        if live != checkpoint.live:
+            raise CutoverError(
+                "deployment live identity changed before switch; checkpoint retained"
+            )
+        if checkpoint.snapshot:
+            print(
+                f"deploy: reusing verified snapshot {checkpoint.snapshot['path']}",
+                flush=True,
+            )
+        else:
+            print("deploy: database snapshot", flush=True)
+            started = time.monotonic()
+            taken = snapshot_module.take(target, home)
+            deployment.record_snapshot(staging, checkpoint, taken)
+            print(
+                f"deploy: snapshot done in {time.monotonic() - started:.1f}s",
+                flush=True,
+            )
+        print("deploy: staging and Composer builds", flush=True)
+        started = time.monotonic()
+        prepared: list[atomic.Artifact] = []
+        for item in artifacts:
+            if item.source.is_dir():
+                staged = staging / item.source.name
+                if item.relative in checkpoint.prepared:
+                    if (
+                        atomic.source_digest(staged)
+                        != checkpoint.prepared[item.relative]
+                    ):
+                        raise CutoverError(
+                            f"staged artifact changed: {item.relative}; checkpoint retained"
+                        )
+                    print(f"deploy: reusing stage {item.relative}", flush=True)
+                else:
+                    staged = stage_plugin(repository, item.source.name, staging)
+                    checkpoint.prepared[item.relative] = atomic.source_digest(staged)
+                    deployment.save(staging, checkpoint)
+                prepared.append(atomic.Artifact(staged, item.relative))
+            else:
+                prepared.append(item)
+        print(f"deploy: staging done in {time.monotonic() - started:.1f}s", flush=True)
+
+        def uploaded(relative: str, digest: str) -> None:
+            checkpoint.uploaded[relative] = digest
+            deployment.save(staging, checkpoint)
+
+        receipt = atomic.publish(
+            target,
+            prepared,
+            deploy_id=checkpoint.deploy_id,
+            on_switch=on_switch,
+            after_switch=opcache_reset_script(target),
+            completed_uploads=checkpoint.uploaded,
+            on_uploaded=uploaded,
+        )
+    return _post_deploy(
         target,
-        prepared,
-        deploy_id=deploy_id or deployment_id(repository),
-        on_switch=on_switch,
-        after_switch=opcache_reset_script(target),
+        repository=repository,
+        staging=staging,
+        checkpoint=checkpoint,
+        receipt=receipt,
+        reminder=full_backup_reminder(home, now=now),
     )
-    assert receipt.switch_seconds is not None
+
+
+def _post_deploy(
+    target: Target,
+    *,
+    repository: Path,
+    staging: Path,
+    checkpoint: deployment.Checkpoint,
+    receipt: atomic.Receipt,
+    reminder: str | None,
+) -> Result:
+    """Resume idempotent post-switch phases; completed phases never re-upload files."""
+    saved = checkpoint.snapshot
     actions = [
-        f"database snapshot {taken.path} ({taken.size} bytes, sha256 {taken.sha256[:16]}…, "
+        f"database snapshot {saved['path']} ({saved['size']} bytes, sha256 {str(saved['sha256'])[:16]}…, "
         f"{', '.join(snapshot_module.SKIPPED_TABLES)} left out); "
-        f"restore with `just cutover restore-snapshot {taken.name}`"
+        f"restore with `just cutover restore-snapshot {saved['name']}`"
     ]
-    actions += [f"deployed {item.relative} by rename" for item in artifacts]
+    actions += [f"deployed {relative} by rename" for relative in receipt.paths]
     actions += [
         f"deploy id: {receipt.deploy_id}",
-        f"total switch duration: {receipt.switch_seconds:.3f} s",
+        f"total switch duration: {receipt.switch_seconds:.3f} s"
+        if receipt.switch_seconds is not None
+        else "switch duration unavailable (resumed manifest)",
     ]
     actions += [f"after switch: {line}" for line in receipt.after_switch]
-    print("deploy: plugin activation and language packs", flush=True)
-    started = time.monotonic()
-    installed = {
-        str(entry["name"])
-        for entry in target.wp_json("plugin", "list", "--fields=name")
-        if isinstance(entry, dict) and "name" in entry
-    }
-    missing = [slug for slug in plan.INSTALLED_PLUGINS if slug not in installed]
-    present = [slug for slug in plan.INSTALLED_PLUGINS if slug in installed]
-    if missing:
-        target.wp("plugin", "install", *missing, "--activate")
-        actions.append("wp plugin install " + " ".join(missing) + " --activate")
-    if present:
-        target.wp("plugin", "activate", *present)
-        actions.append(
-            "wp plugin activate " + " ".join(present) + " (already installed)"
-        )
 
-    target.wp("plugin", "activate", *plan.NEW_PLUGINS)
-    actions.append("wp plugin activate " + " ".join(plan.NEW_PLUGINS))
-    actions += deploy_language_packs(target)
-    actions += configure_consent(target, repository=repository)
-    # Templates and the WindPress volume are data, not files: without present a
-    # deploy keeps the previous volume, and a page whose fragment changed (the
-    # inquiry form on 2026-10-18) renders unstyled. Idempotent; present keeps its
-    # own rollback copy. --allow-stale because a stylesheet change makes the
-    # cache stale by definition and present would refuse after the switch; the
-    # browser-side WindPress compile that follows is the step that clears it.
-    print(f"deploy: activation done in {time.monotonic() - started:.1f}s", flush=True)
-    print("deploy: present (templates and the WindPress volume)", flush=True)
-    started = time.monotonic()
-    target.wp("linker-commerce", "present", "--user=1", "--allow-stale")
-    actions.append(
-        "wp linker-commerce present --user=1 --allow-stale (now run the WindPress "
-        "admin compile: npm tools/windpress-compile.mjs with an admin login)"
-    )
-    # The switch-time reset covers the rename itself; present and the plugin
-    # activation run afterwards, and a request can still meet a tree the
-    # workers compiled before them (one 500 in the 2026-10-18 probe window).
-    # A second reset at the end leaves every worker compiling the final tree.
-    print(f"deploy: present done in {time.monotonic() - started:.1f}s", flush=True)
-    refresh = target.shell(opcache_reset_script(target))
-    line = refresh.replace(atomic.AFTER_SWITCH_MARKER, "").strip().splitlines()[-1:]
-    actions.append("after present: " + (" ".join(line) or "opcache-reset=unknown"))
-    actions += purge_page_cache(target, installed)
+    def phase(name: str, run: Callable[[], list[str]]) -> None:
+        if name in checkpoint.completed:
+            print(f"deploy: reusing completed {name}", flush=True)
+            return
+        print(f"deploy: {name}", flush=True)
+        started = time.monotonic()
+        checkpoint.actions.extend(run())
+        checkpoint.completed.append(name)
+        deployment.save(staging, checkpoint)
+        print(f"deploy: {name} done in {time.monotonic() - started:.1f}s", flush=True)
+
+    def activate() -> list[str]:
+        phase_actions: list[str] = []
+        installed = {
+            str(entry["name"])
+            for entry in target.wp_json("plugin", "list", "--fields=name")
+            if isinstance(entry, dict) and "name" in entry
+        }
+        missing = [slug for slug in plan.INSTALLED_PLUGINS if slug not in installed]
+        present = [slug for slug in plan.INSTALLED_PLUGINS if slug in installed]
+        if missing:
+            target.wp("plugin", "install", *missing, "--activate")
+            phase_actions.append(
+                "wp plugin install " + " ".join(missing) + " --activate"
+            )
+        if present:
+            target.wp("plugin", "activate", *present)
+            phase_actions.append(
+                "wp plugin activate " + " ".join(present) + " (already installed)"
+            )
+
+        target.wp("plugin", "activate", *plan.NEW_PLUGINS)
+        phase_actions.append("wp plugin activate " + " ".join(plan.NEW_PLUGINS))
+        phase_actions += deploy_language_packs(target)
+        phase_actions += configure_consent(target, repository=repository)
+        return phase_actions
+
+    def present() -> list[str]:
+        target.wp("linker-commerce", "present", "--user=1", "--allow-stale")
+        return [
+            "wp linker-commerce present --user=1 --allow-stale (now run the WindPress admin compile: npm tools/windpress-compile.mjs with an admin login)"
+        ]
+
+    def refresh() -> list[str]:
+        output = target.shell(opcache_reset_script(target))
+        lines = output.replace(atomic.AFTER_SWITCH_MARKER, "").strip().splitlines()[-1:]
+        installed = {
+            str(entry["name"])
+            for entry in target.wp_json("plugin", "list", "--fields=name")
+            if isinstance(entry, dict) and "name" in entry
+        }
+        return [
+            "after present: " + (" ".join(lines) or "opcache-reset=unknown"),
+            *purge_page_cache(target, installed),
+        ]
+
+    phase("plugin activation and language packs", activate)
+    phase("present (templates and the WindPress volume)", present)
+    phase("opcode reset and page cache purge", refresh)
+    actions.extend(checkpoint.actions)
     if reminder:
         # Last, so it is the line the log ends on and never shifts the others.
         actions.append(reminder)
@@ -546,13 +686,25 @@ def verify_site(target: Target, *, cache_buster: str) -> Result:
 
 
 def finish_deploy(
-    target: Target, receipt: atomic.Receipt, *, cache_buster: str
+    target: Target,
+    receipt: atomic.Receipt,
+    *,
+    cache_buster: str,
+    staging: Path | None = None,
 ) -> Result:
     """Only a passing verify allows backups to leave the web root."""
+    print("deploy: verify site", flush=True)
+    started = time.monotonic()
     checked = verify_site(target, cache_buster=cache_buster)
+    print(f"deploy: verify done in {time.monotonic() - started:.1f}s", flush=True)
     if checked.notes:
         return Result("deploy-verify", checked.actions, checked.notes)
+    print("deploy: archive and readback", flush=True)
+    started = time.monotonic()
     atomic.archive(target, receipt)
+    print(f"deploy: archive done in {time.monotonic() - started:.1f}s", flush=True)
+    if staging is not None and deployment.path(staging).exists():
+        deployment.cleanup(staging)
     return Result(
         "deploy-verify",
         checked.actions
@@ -581,8 +733,20 @@ def reconcile(target: Target) -> Result:
     return Result("reconcile", [action], [])
 
 
-def resume_deploy(target: Target, *, repository: Path, cache_buster: str) -> Result:
-    """Verify/archive a pending batch after an interrupted reply or failed verify."""
+def resume_deploy(
+    target: Target, *, repository: Path, cache_buster: str, staging: Path | None = None
+) -> Result:
+    """Resume a checkpointed candidate, or verify/archive a legacy pending batch."""
+    if staging is not None and deployment.path(staging).exists():
+        resumed = deploy(target, repository=repository, staging=staging, resume=True)
+        if resumed.publication is None:
+            return resumed
+        checked = finish_deploy(
+            target, resumed.publication, cache_buster=cache_buster, staging=staging
+        )
+        return Result(
+            "resume-deploy", [*resumed.actions, *checked.actions], checked.notes
+        )
     receipt = atomic.pending_receipt(
         target, [item.relative for item in deployment_artifacts(repository)]
     )

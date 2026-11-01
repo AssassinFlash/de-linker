@@ -11,6 +11,7 @@ about the command line itself rather than about the step's prose.
 
 from __future__ import annotations
 
+import fcntl
 import json
 from datetime import UTC, datetime
 from pathlib import Path
@@ -1403,3 +1404,261 @@ def test_purge_page_cache_stops_when_query_strings_would_be_cached(
         steps.purge_page_cache(target, {plan.PAGE_CACHE_PLUGIN})
     assert ("wp", plan.PAGE_CACHE_PURGE) not in target.calls
     assert not any(call[1][:2] == ("option", "update") for call in target.calls)
+
+
+@pytest.fixture
+def interrupted_candidate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> tuple[FilesystemTarget, Path, Path, list[Path]]:
+    """One real .next transfer completes, then the second loses its connection."""
+    import gzip
+
+    repository = _repository(tmp_path)
+    target = FilesystemTarget(tmp_path / "site")
+    staging = tmp_path / "staging"
+    snapshots: list[Path] = []
+
+    def take(site: Target, home: Path, **_: object) -> snapshot.Snapshot:
+        del site
+        path = home / "snapshots/db-20261018T000000Z.sql.gz"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(gzip.compress(b"CREATE TABLE fixture (id int);"))
+        snapshots.append(path)
+        return snapshot.Snapshot(
+            path.name, path, path.stat().st_size, backup.sha256(path)
+        )
+
+    monkeypatch.setattr(snapshot, "take", take)
+    original_copy = FilesystemTarget.copy_file_in
+    failed = False
+
+    def dropping(site: Target, source: Path, relative: str) -> None:
+        nonlocal failed
+        if source.name == "linker-engine-ca.pem" and not failed:
+            failed = True
+            raise CutoverError("fixture transfer disconnected")
+        original_copy(site, source, relative)
+
+    monkeypatch.setattr(FilesystemTarget, "copy_file_in", dropping)
+    with pytest.raises(CutoverError, match="transfer disconnected"):
+        steps.deploy(
+            target,
+            repository=repository,
+            staging=staging,
+            deploy_id="20261018T000000Z-resumable",
+        )
+    return target, repository, staging, snapshots
+
+
+def test_pre_switch_resume_reuses_snapshot_stage_and_completed_uploads(
+    interrupted_candidate: tuple[FilesystemTarget, Path, Path, list[Path]],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A dropped transfer resumes without another backup, build or completed upload."""
+    target, repository, staging, snapshots = interrupted_candidate
+    transferred = list(target.rsyncs)
+
+    def unexpected_build(*args: object) -> Path:
+        raise AssertionError("completed stage must not be rebuilt")
+
+    monkeypatch.setattr(steps, "stage_plugin", unexpected_build)
+    assert not list(Path(target.root).rglob("*.prev*"))
+    with pytest.raises(CutoverError, match="resume-deploy"):
+        steps.deploy(target, repository=repository, staging=staging)
+
+    result = steps.resume_deploy(
+        target, repository=repository, staging=staging, cache_buster="fixture"
+    )
+
+    assert not result.notes
+    assert len(snapshots) == 1
+    assert target.rsyncs.count(transferred[0]) == 1
+    assert atomic.latest_manifest(target)[1].state == "archived"
+    assert not (staging / ".deploy.json").exists()
+    assert not list(staging.glob("linker-*"))
+
+
+@pytest.mark.parametrize(
+    "damage", ["source", "target", "snapshot", "gzip", "stage", "live"]
+)
+def test_resume_refuses_changed_candidate_target_or_recovery_point(
+    interrupted_candidate: tuple[FilesystemTarget, Path, Path, list[Path]],
+    damage: str,
+) -> None:
+    target, repository, staging, snapshots = interrupted_candidate
+    state_path = staging / ".deploy.json"
+    state = json.loads(state_path.read_text())
+    expected = damage
+    if damage == "source":
+        (repository / plan.MU_PLUGINS_REPO / "linker-error-recorder.php").write_text(
+            "changed"
+        )
+    elif damage == "target":
+        target = FilesystemTarget(Path(target.root).with_name("another-site"))
+    elif damage in ("snapshot", "gzip"):
+        snapshots[0].write_bytes(b"invalid-gzip")
+        if damage == "gzip":
+            state["snapshot"]["sha256"] = backup.sha256(snapshots[0])
+            state["snapshot"]["size"] = snapshots[0].stat().st_size
+            state_path.write_text(json.dumps(state))
+        expected = "snapshot"
+    elif damage == "stage":
+        (staging / plan.NEW_PLUGINS[0] / f"{plan.NEW_PLUGINS[0]}.php").write_text(
+            "changed"
+        )
+        expected = "staged artifact"
+    else:
+        live = Path(next(iter(state["live"])))
+        live.write_text("foreign live")
+        expected = "live identity"
+    before = list(target.rsyncs)
+    with pytest.raises(CutoverError, match=expected):
+        steps.resume_deploy(
+            target, repository=repository, staging=staging, cache_buster="fixture"
+        )
+    assert target.rsyncs == before
+    assert state_path.exists()
+    assert len(snapshots) == 1
+
+
+def test_resume_ignores_unrelated_docs_but_rechecks_completed_upload(
+    interrupted_candidate: tuple[FilesystemTarget, Path, Path, list[Path]],
+) -> None:
+    target, repository, staging, snapshots = interrupted_candidate
+    (repository / "README.md").write_text("an unrelated documentation edit")
+    state = json.loads((staging / ".deploy.json").read_text())
+    relative = next(iter(state["uploaded"]))
+    Path(target.path_of(atomic._siblings(relative).next)).write_text("damaged next")
+    copied = target.rsyncs[0]
+    assert not steps.resume_deploy(
+        target, repository=repository, staging=staging, cache_buster="fixture"
+    ).notes
+    assert target.rsyncs.count(copied) == 2
+    assert len(snapshots) == 1
+
+
+@pytest.mark.parametrize(
+    "failure", ["switch-reply", "present", "verify", "archive-reply"]
+)
+def test_resume_after_switch_never_reuploads_and_reuses_completed_post_phases(
+    interrupted_candidate: tuple[FilesystemTarget, Path, Path, list[Path]],
+    monkeypatch: pytest.MonkeyPatch,
+    failure: str,
+) -> None:
+    target, repository, staging, snapshots = interrupted_candidate
+    shell = FilesystemTarget.shell
+    wp = FilesystemTarget.wp
+    fail = True
+
+    def dropped(site: Target, script: str) -> str:
+        nonlocal fail
+        output = shell(site, script)
+        if fail and (
+            (failure == "switch-reply" and "TIMEFORMAT=" in script)
+            or (failure == "archive-reply" and "restore_archive()" in script)
+        ):
+            fail = False
+            raise CutoverError("fixture lost reply")
+        return output
+
+    def failing_wp(site: FilesystemTarget, *args: str, check: bool = True) -> str:
+        nonlocal fail
+        if fail and failure == "present" and args[:2] == ("linker-commerce", "present"):
+            fail = False
+            raise CutoverError("fixture present failure")
+        return wp(site, *args, check=check)
+
+    monkeypatch.setattr(FilesystemTarget, "shell", dropped)
+    monkeypatch.setattr(FilesystemTarget, "wp", failing_wp)
+    if failure == "verify":
+        target.failed_page = "/"
+        assert steps.resume_deploy(
+            target, repository=repository, staging=staging, cache_buster="fixture"
+        ).notes
+        target.failed_page = ""
+    else:
+        with pytest.raises(CutoverError, match="fixture"):
+            steps.resume_deploy(
+                target, repository=repository, staging=staging, cache_buster="fixture"
+            )
+    uploads = list(target.rsyncs)
+    activated = target.calls.count(("plugin", "activate", *plan.NEW_PLUGINS))
+    retired = Path(atomic.backup_root(target)) / "20261017T000000Z-retired"
+    retired.mkdir()
+    result = steps.resume_deploy(
+        target, repository=repository, staging=staging, cache_buster="fixture"
+    )
+    assert not result.notes
+    assert target.rsyncs == uploads
+    assert target.calls.count(("plugin", "activate", *plan.NEW_PLUGINS)) == max(
+        activated, 1
+    )
+    assert len(snapshots) == 1
+    assert not (staging / ".deploy.json").exists()
+    assert not retired.exists()
+
+
+def test_archived_resume_checks_siblings_before_cleanup_and_retirement(
+    interrupted_candidate: tuple[FilesystemTarget, Path, Path, list[Path]],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target, repository, staging, _ = interrupted_candidate
+    shell = FilesystemTarget.shell
+
+    def lost_archive_reply(site: Target, script: str) -> str:
+        output = shell(site, script)
+        if "restore_archive()" in script:
+            raise CutoverError("fixture lost archive reply")
+        return output
+
+    monkeypatch.setattr(FilesystemTarget, "shell", lost_archive_reply)
+    with pytest.raises(CutoverError, match="lost archive reply"):
+        steps.resume_deploy(
+            target, repository=repository, staging=staging, cache_buster="fixture"
+        )
+    assert atomic.latest_manifest(target)[1].state == "archived"
+    retired = Path(atomic.backup_root(target)) / "20261017T000000Z-retired"
+    retired.mkdir()
+    relative = steps.deployment_artifacts(repository)[0].relative
+    sibling = Path(target.path_of(atomic._siblings(relative).next))
+    sibling.write_text("unfinished artifact")
+
+    with pytest.raises(CutoverError, match="artifacts remain in web root"):
+        steps.resume_deploy(
+            target, repository=repository, staging=staging, cache_buster="fixture"
+        )
+    assert (staging / ".deploy.json").exists()
+    assert retired.exists()
+
+    sibling.unlink()
+    result = steps.resume_deploy(
+        target, repository=repository, staging=staging, cache_buster="fixture"
+    )
+    assert not result.notes
+    assert not (staging / ".deploy.json").exists()
+    assert not retired.exists()
+
+
+def test_checkpoint_workspace_keeps_one_stable_empty_lock_inode(
+    tmp_path: Path,
+) -> None:
+    from linker_cutover import deployment
+
+    lock = tmp_path / ".deploy.lock"
+    with deployment.workspace(tmp_path), lock.open("a") as contender:
+        inode = lock.stat().st_ino
+        with pytest.raises(CutoverError, match="workspace is in use"):
+            with deployment.workspace(tmp_path):
+                raise AssertionError("a second writer must not enter")
+        assert lock.stat().st_ino == inode
+    # A contender can open before the owner exits and acquire afterwards.
+    # Its descriptor and a later workspace owner must still share the inode.
+    with lock.open("a") as contender:
+        with deployment.workspace(tmp_path):
+            assert lock.stat().st_ino == inode
+        fcntl.flock(contender, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        with pytest.raises(CutoverError, match="workspace is in use"):
+            with deployment.workspace(tmp_path):
+                raise AssertionError("an old descriptor must exclude a new writer")
+    assert lock.stat().st_ino == inode
+    assert lock.stat().st_size == 0

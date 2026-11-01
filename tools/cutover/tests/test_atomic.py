@@ -2,6 +2,7 @@
 
 import json
 import os
+import shlex
 import shutil
 from pathlib import Path
 
@@ -272,6 +273,122 @@ def batch_fixture(tmp_path: Path) -> tuple[Target, list[atomic.Artifact]]:
         else:
             live.write_text("old file")
     return target, artifacts
+
+
+@pytest.mark.parametrize("boundary", ["mkdir", "copy", "absence-marker"])
+@pytest.mark.parametrize("termination", ["TERM", "HUP", "reply-loss"])
+def test_preswitch_preparation_interrupt_keeps_live_and_reuses_candidate(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    boundary: str,
+    termination: str,
+) -> None:
+    """Actual shell signals at preparation boundaries leave the same batch retryable."""
+    target, artifacts = batch_fixture(tmp_path)
+    artifacts.append(
+        atomic.Artifact(artifacts[1].source, "wp-content/mu-plugins/added.php")
+    )
+    deploy_id = "20261018T000000Z-preparation"
+    live_paths = [target.path_of(item.relative) for item in artifacts]
+    original_live = atomic.identities(target, live_paths)
+    uploaded: dict[str, str] = {}
+    shell = Target.shell
+    interrupted = False
+
+    def interrupt(site: Target, script: str) -> str:
+        nonlocal interrupted
+        if "preparing=1" not in script or interrupted:
+            return shell(site, script)
+        interrupted = True
+        if boundary == "mkdir":
+            command = (
+                f"mkdir {shlex.quote(str(Path(atomic.backup_root(site)) / deploy_id))}"
+            )
+        elif boundary == "copy":
+            command = (
+                f"cp -p {shlex.quote(site.path_of(artifacts[1].relative))} "
+                f"{shlex.quote(site.path_of(atomic._siblings(artifacts[1].relative).previous))}"
+            )
+        else:
+            command = f"printf '%s' {shlex.quote(deploy_id)} > " + shlex.quote(
+                site.path_of(atomic._siblings(artifacts[-1].relative).absent)
+            )
+        signum = "HUP" if termination == "reply-loss" else termination
+        script = script.replace(command, command + f"\nkill -{signum} $$", 1)
+        try:
+            return shell(site, script)
+        except CutoverError:
+            if termination == "reply-loss":
+                raise CutoverError("fixture lost preparation reply") from None
+            raise
+
+    monkeypatch.setattr(Target, "shell", interrupt)
+    with pytest.raises(CutoverError):
+        atomic.publish(
+            target,
+            artifacts,
+            deploy_id=deploy_id,
+            on_uploaded=lambda relative, digest: uploaded.__setitem__(relative, digest),
+        )
+    assert atomic.identities(target, live_paths) == original_live
+    assert not (Path(atomic.backup_root(target)) / deploy_id).exists()
+    assert not (Path(atomic.backup_root(target)) / "latest").exists()
+    for artifact in artifacts:
+        names = atomic._siblings(artifact.relative)
+        assert Path(target.path_of(names.next)).exists()
+        assert not Path(target.path_of(names.previous)).exists()
+        assert not Path(target.path_of(names.absent)).exists()
+
+    def unexpected_upload(*args: object, **kwargs: object) -> None:
+        raise AssertionError("the completed candidate must not be uploaded again")
+
+    monkeypatch.setattr(Target, "copy_in", unexpected_upload)
+    monkeypatch.setattr(Target, "copy_file_in", unexpected_upload)
+    receipt = atomic.publish(
+        target,
+        artifacts,
+        deploy_id=deploy_id,
+        completed_uploads=uploaded,
+        on_uploaded=lambda relative, digest: uploaded.__setitem__(relative, digest),
+    )
+    assert atomic.latest_manifest(target)[1].state == "pending"
+    atomic.archive(target, receipt)
+
+
+@pytest.mark.parametrize("damage", ["live", "backup"])
+def test_preparation_cleanup_preserves_ambiguous_or_changed_state(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    damage: str,
+) -> None:
+    target, artifacts = batch_fixture(tmp_path)
+    deploy_id = "20261018T000000Z-preserve"
+    relative = artifacts[1].relative
+    changed = target.path_of(
+        relative if damage == "live" else atomic._siblings(relative).previous
+    )
+    shell = Target.shell
+
+    def interrupt(site: Target, script: str) -> str:
+        if "preparing=1" in script:
+            injection = (
+                f"mv {shlex.quote(changed)} {shlex.quote(changed + '.kept')}\n"
+                f"printf foreign > {shlex.quote(changed)}\nkill -TERM $$\n"
+            )
+            script = script.replace(
+                'test "$prepare_status" = 0',
+                injection + 'test "$prepare_status" = 0',
+                1,
+            )
+        return shell(site, script)
+
+    monkeypatch.setattr(Target, "shell", interrupt)
+    with pytest.raises(CutoverError):
+        atomic.publish(target, artifacts, deploy_id=deploy_id)
+    assert Path(changed).read_text() == "foreign"
+    assert Path(changed + ".kept").exists()
+    assert (Path(atomic.backup_root(target)) / deploy_id).is_dir()
+    assert not (Path(atomic.backup_root(target)) / "latest").exists()
 
 
 @pytest.mark.parametrize("operation", ["publish", "rollback"])

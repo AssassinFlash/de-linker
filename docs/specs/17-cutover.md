@@ -17,7 +17,17 @@
 
 PR #299 第 3 轮裁定的恢复边界：已有目录的失败恢复先 `mv live .<slug>.failed && mv previous live`，最后才删除 `.failed`；清理失败不损坏已恢复 live，残留 `.failed` 会阻止下一次发布覆盖它。live 尚未装回时直接 rename previous 回来。切换计时只解析独立的 `LINKER_CUTOVER_SWITCH_SECONDS=` 行；其他输出不参与数值解析，缺失、损坏或重复的计时记录均报 `CutoverError`。切换成功但回执丢失或解析失败时，pending manifest 继续可用。
 
-`just cutover resume-deploy` 从同一发布检出版本读取 pending manifest，预检同批库存、备份与新 live inode，重新运行同一 verify，通过后归档；不重建、不上传、不切换 live，不补造丢失的切换耗时。verify 继续失败则保持 pending。下一次成功归档并读回后，专用 `~/deploy-prev/` 根下的较早批次连同被强制中止、尚未写出 `manifest.json` 的批次目录一并清理；归档失败时不清理这些目录。
+`just cutover resume-deploy` 续同一批次。普通 deploy 在本机 `~/de-linker-data/cutover-workspace/staging/.deploy.json` 保留唯一进行中记录：发布 ID、实际产物与构建输入/模板/部署控制源码摘要、目标身份、切换前 live inode、原数据库快照路径/大小/sha256、完成的 stage/上传摘要及后置阶段。仅无关文档或 HEAD 变化不使候选失效；再次普通 deploy 遇到记录立即拒绝并指出续传命令，不新取快照。CLI 对这个 workspace 使用非等待独占锁；固定保留一个空的 `.deploy.lock` inode，关闭句柄即释放锁，不删除或替换该文件，避免已打开旧 inode 的竞争者与新写入者同时取得锁。
+
+切换前续传先核对候选、目标、原快照的大小/sha256/gzip 完整性和原 live inode；任何不符保留记录并拒绝，不自行换恢复点。已完成的 stage 必须匹配原摘要；已完成上传的 `.next` 在目标端逐项核对字节、相对路径、权限及链接摘要，匹配者复用，缺失或损坏者重新传输。中断所在的尚未完成产物仍使用原有传输入口重传，不能把半成品记为完成。发布继续使用原子 rename、同盘/公开资源/Planner 合同 guards；失败与可捕获中断仍沿用整批恢复 trap。
+
+批次目录创建、备份副本／缺席标记准备与切换在同一次远端 shell 内完成，先安装恢复 trap，再创建目录。准备阶段的 HUP/TERM 先标记中断，当前准备项实际 inode 捕获后退出；只在原 live、已上传 `.next`、原 `latest`、本批目录和所有准备文件身份均匹配且批次目录仍为空时清理本 shell 的准备项，不改 live，也不删除已完成上传。后续继续同一个 `.deploy.json` 候选；切换完成却丢回执时仍以现有 manifest 为准。被替换的文件、未知旧兄弟路径及 SIGKILL 遗留的歧义准备状态原样保留并阻止覆盖，须先核实，不推测其归属。这里不增加第二套恢复记录。
+
+切换后以远端同批 manifest 为准，预检库存、备份及新 live inode，绝不重新上传或切换。本机记录存在时按完成标记恢复激活/语言包/consent、present、opcode reset/页面缓存清理，再运行同一 verify 和 archive；阶段内中断会重跑这个幂等阶段。无本机记录的旧版 pending 保持原有 verify/archive 入口。不补造丢失的切换耗时。verify 继续失败则保持 pending。各阶段打印命令边界与实耗时，复用阶段明确显示 reused。
+
+完成 archive 及读回后回收本机记录、其生成的插件 stage 与 stamp；原数据库快照继续服从最多三份的既有保留规则。失败只保留这一个候选记录与仍需续传的 stage/`.next`，不另建报告或恢复点。若 archive 回执丢失，下次续传核对全部后置阶段，并调用与正常归档相同的幂等收尾：读回同批已归档备份与 live 身份，确认 web root 中所有保留兄弟路径均不存在，清理专用 `~/deploy-prev/` 根下较早批次，然后回收本机记录。任一读回失败均保留本机记录和旧批次。
+
+部署与续传的 CLI 使用 `Target.session()` 显式打开任务私有 SSH master，WP-CLI、shell 与上传 rsync 共享其 socket；正常、失败和可捕获中断退出均终止该进程并删除临时 socket 目录。任务会话临时处理 SIGTERM/SIGHUP，使其展开 Python 退出清理，随后恢复原信号处理器，以 `128 + signal` 退出。不改全局 SSH/PATH，不设置持久 ControlPersist。SIGKILL 等不可捕获的进程终止不能执行 Python finally，仍须按任务资源纪律核实并回收原任务句柄。
 
 `just cutover rollback-deploy` 从同一发布检出版本读取同一个库存函数。预检逐项比较 manifest 的 deploy ID、库存与实际备份 inode，明确列出混批、缺失、被替换的备份，任一不符则零写入；还拒绝 live 在发布后发生未登记变更。回滚从 pending 同目录或 archived 站外目录把整批文件 rename 回来，可捕获失败时恢复整批当前版本。完成后逐路径读回恢复的 device/inode（原先不存在则确认不存在），用 `wp plugin list --fields=name,status` 确认三个插件 active，再运行与部署相同的 verify；输出实际读回结果，任何检查不通过均非零。回滚会消耗上一版，不提供 redo，不导入数据库，也不改插件激活状态。原完整备份回滚入口不变。
 
@@ -26,7 +36,7 @@ PR #299 第 3 轮裁定的恢复边界：已有目录的失败恢复先 `mv live
 业主 2026-10-18 问：每次部署前都做一次完整备份是否必要（4.6 GB，30–60 分钟）。结论按"部署能改动什么"分层：
 
 - **代码**（三个插件、mu-plugin、子主题文件）：原子切换保留上一版，`just cutover rollback-deploy` 一条命令改回（上文）。
-- **数据库**（插件激活、选项、语言包会改）：`just cutover deploy` 的**第一步**是数据库快照，在构建与上传之前；快照失败则部署在切换前停止。快照由主机上的 mysqldump 经标准流**直接传到本机** `~/de-linker-data/snapshots/db-<UTC>.sql.gz`，主机上不写任何文件（业主 2026-10-18：服务器空间留给站点）；先写隐藏的 partial 文件，gzip 读到结尾才改名，失败不留残件；本机保留最新 20 份。快照**不含** `wp_genie_chunks`：它占数据库 817.9 MB（2026-10-18 线上实测，其余表合计约 110 MB），是已退役的库内知识索引（Genie 读 VPS 上的 SQLite 索引，#257），站点代码不读不写，部署改不到它；完整备份仍包含它。实测（2026-10-18 线上）：快照 6,200,721 字节，用时 14 秒；导入本机空库得到 61 张表（线上 62 张减去该表）、`siteurl` 为 https://de-linker.com。还原：`just cutover snapshots` 列出；`just cutover restore-snapshot <名称>` 只预览并校验名称与文件，加 `--write` 才执行：先把**当前**数据库再存一份快照（还原本身是数据写入，还原错了也能一条命令撤回；该次修剪不会删掉正要读取的那份），再导入并清缓存。导入只替换快照里有的表：被排除的那张不动，快照之后才建的表（例如新插件激活时建的）连同数据保留。代码与数据库要一起回到同一时刻时，与 `just cutover rollback-deploy` 一起用。
+- **数据库**（插件激活、选项、语言包会改）：`just cutover deploy` 的**第一步**是数据库快照，在构建与上传之前；快照失败则部署在切换前停止。快照由主机上的 mysqldump 经标准流**直接传到本机** `~/de-linker-data/snapshots/db-<UTC>.sql.gz`，主机上不写任何文件（业主 2026-10-18：服务器空间留给站点）；先写隐藏的 partial 文件，gzip 读到结尾才改名，失败不留残件；本机保留最新 3 份（遵循本地存储规则）。快照**不含** `wp_genie_chunks`：它占数据库 817.9 MB（2026-10-18 线上实测，其余表合计约 110 MB），是已退役的库内知识索引（Genie 读 VPS 上的 SQLite 索引，#257），站点代码不读不写，部署改不到它；完整备份仍包含它。实测（2026-10-18 线上）：快照 6,200,721 字节，用时 14 秒；导入本机空库得到 61 张表（线上 62 张减去该表）、`siteurl` 为 https://de-linker.com。还原：`just cutover snapshots` 列出；`just cutover restore-snapshot <名称>` 只预览并校验名称与文件，加 `--write` 才执行：先把**当前**数据库再存一份快照（还原本身是数据写入，还原错了也能一条命令撤回；该次修剪不会删掉正要读取的那份），再导入并清缓存。导入只替换快照里有的表：被排除的那张不动，快照之后才建的表（例如新插件激活时建的）连同数据保留。代码与数据库要一起回到同一时刻时，与 `just cutover rollback-deploy` 一起用。
 - **uploads**：代码部署碰不到，不随部署复制。
 
 主机上唯一保留的是原子切换的上一版代码（`~/deploy-prev/`，只留最近一批，约 28 MB：三个插件实测 22 + 4.2 + 2.1 MB），供 `rollback-deploy` 同盘改名即时回滚；它是部署机制的一部分，不是备份。备份（快照与完整备份）只存本机。

@@ -9,7 +9,10 @@ whose answer is not the answer the caller asked for.
 from __future__ import annotations
 
 import shutil
+import signal
 import subprocess
+import sys
+import textwrap
 import threading
 from collections.abc import Iterator
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -662,3 +665,131 @@ def test_a_plain_remote_wp_call_reads_the_same_after_quoting(
 
     plain = remote_target().prefix[-1]
     assert seen[0][4] == f"{plain} plugin list --fields=name"
+
+
+@pytest.mark.parametrize("failure", [False, True])
+def test_task_session_shares_transport_and_closes_master_on_every_exit(
+    monkeypatch: pytest.MonkeyPatch, failure: bool
+) -> None:
+    """No real SSH process: exercise the context's owned handle and socket cleanup."""
+    import io
+    import shlex
+
+    commands: list[list[str]] = []
+    masters: list[object] = []
+    sockets: list[Path] = []
+
+    class Master:
+        def __init__(self, command: list[str], **kwargs: object) -> None:
+            del kwargs
+            self.stderr = io.StringIO()
+            self.code: int | None = None
+            self.terminated = False
+            socket = Path(command[command.index("-S") + 1])
+            socket.touch()
+            sockets.append(socket)
+            masters.append(self)
+
+        def poll(self) -> int | None:
+            return self.code
+
+        def terminate(self) -> None:
+            self.terminated = True
+            self.code = 0
+
+        def wait(self, *, timeout: int = 0) -> int:
+            del timeout
+            return 0
+
+    monkeypatch.setattr(subprocess, "Popen", Master)
+
+    def record(command: list[str]) -> str:
+        commands.append(command)
+        return ""
+
+    monkeypatch.setattr("linker_cutover.target._run", record)
+    target = remote_target()
+    with (
+        pytest.raises(CutoverError)
+        if failure
+        else __import__("contextlib").nullcontext()
+    ):
+        with target.session() as session:
+            session.shell("true")
+            session.wp("plugin", "list")
+            session.rsync("source", session.address("destination"))
+            transport = shlex.split(commands[-1][commands[-1].index("-e") + 1])
+            assert f"ControlPath={sockets[0]}" in transport
+            assert all(
+                f"ControlPath={sockets[0]}" in command for command in commands[:-1]
+            )
+            assert session.ssh_options
+            if failure:
+                raise CutoverError("fixture body failed")
+    assert len(masters) == 1
+    assert not sockets[0].parent.exists()
+    assert not target.ssh_options
+    assert masters[0].terminated  # type: ignore[attr-defined]
+
+
+@pytest.mark.parametrize("signum", [signal.SIGTERM, signal.SIGHUP])
+def test_task_session_unwinds_on_termination_signal(signum: int) -> None:
+    """A real child receives the signal; its SSH master is only an in-memory fake."""
+    script = textwrap.dedent(
+        """
+        import io
+        import os
+        import signal
+        import sys
+        from pathlib import Path
+        from unittest.mock import patch
+        from linker_cutover.target import remote_target
+
+        masters = []
+        sockets = []
+        def original_handler(signum, frame):
+            raise AssertionError("the temporary session handler must unwind")
+        signals = (signal.SIGTERM, signal.SIGHUP)
+        for number in signals:
+            signal.signal(number, original_handler)
+
+        class Master:
+            def __init__(self, command, **kwargs):
+                self.stderr = io.StringIO()
+                self.code = None
+                self.reaped = False
+                socket = Path(command[command.index("-S") + 1])
+                socket.touch()
+                sockets.append(socket)
+                masters.append(self)
+            def poll(self):
+                return self.code
+            def terminate(self):
+                self.code = 0
+            def wait(self, **kwargs):
+                self.reaped = True
+                return 0
+
+        try:
+            with patch("linker_cutover.target.subprocess.Popen", Master):
+                with remote_target().session():
+                    os.kill(os.getpid(), int(sys.argv[1]))
+                    raise AssertionError("signal did not stop the session")
+        finally:
+            assert len(masters) == 1
+            assert masters[0].code == 0 and masters[0].reaped
+            assert masters[0].stderr.closed
+            assert not sockets[0].parent.exists()
+            assert all(signal.getsignal(n) is original_handler for n in signals)
+            print("signal cleanup and handlers verified", flush=True)
+        """
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", script, str(signum)],
+        capture_output=True,
+        text=True,
+        timeout=10,
+        check=False,
+    )
+    assert result.returncode == 128 + signum, result.stderr
+    assert "signal cleanup and handlers verified" in result.stdout

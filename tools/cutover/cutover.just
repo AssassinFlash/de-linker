@@ -63,7 +63,7 @@ deploy *options:
 reconcile *options:
     PHP={{ php }} {{ linker_cutover }} reconcile "$@" --write
 
-# Finish verify/archive for a pending batch without building or uploading again.
+# Resume the same staged candidate; pending batches only finish post-switch/verify.
 [positional-arguments]
 resume-deploy *options:
     PHP={{ php }} {{ linker_cutover }} resume-deploy "$@" --write

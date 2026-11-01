@@ -199,7 +199,10 @@ class Drill:
         self._record(cutover.maintenance(self.target, on=False))
         assert deployed.publication is not None
         checked = cutover.finish_deploy(
-            self.target, deployed.publication, cache_buster=f"drill{number}"
+            self.target,
+            deployed.publication,
+            cache_buster=f"drill{number}",
+            staging=self.staging,
         )
         self._record(checked)
         if checked.notes:
