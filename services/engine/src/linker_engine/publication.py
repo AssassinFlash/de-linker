@@ -398,7 +398,8 @@ class Publication:
                 not item
                 or not revision
                 or item.get("product_revision") != revision
-                or item.get("engineering_role") == "reference_pv_module"
+                or item.get("engineering_role")
+                in ("reference_pv_module", "reference_cable")
                 or canonical in reference_ids
             ):
                 continue

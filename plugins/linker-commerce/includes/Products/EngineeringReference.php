@@ -17,6 +17,7 @@ final class EngineeringReference {
 	public const ID_META_KEY   = '_linker_engineering_id';
 	public const PV_MODULE     = 'reference_pv_module';
 	public const CABLE         = 'reference_cable';
+	public const ROLES         = array( self::PV_MODULE, self::CABLE );
 
 	/** Required fields of the engine's native PvModule.from_overlay loader. */
 	private const REQUIRED_NUMBERS = array( 'pmax_w', 'voc_v', 'vmpp_v', 'isc_a', 'impp_a', 'beta_voc_pct_per_c', 'max_series_fuse_a' );
@@ -57,7 +58,7 @@ final class EngineeringReference {
 	 * @param int $id Locale or source product ID.
 	 */
 	public static function is_reference( int $id ): bool {
-		return in_array( self::role( $id ), array( self::PV_MODULE, self::CABLE ), true );
+		return in_array( self::role( $id ), self::ROLES, true );
 	}
 
 	/** Register ordinary Woo product administration, without another data source. */
@@ -110,7 +111,7 @@ final class EngineeringReference {
 		// phpcs:enable
 		$product->update_meta_data( self::ROLE_META_KEY, $role );
 		$product->update_meta_data( self::ID_META_KEY, $id );
-		if ( in_array( $role, array( self::PV_MODULE, self::CABLE ), true ) ) {
+		if ( in_array( $role, self::ROLES, true ) ) {
 			self::configure( $product );
 		}
 	}

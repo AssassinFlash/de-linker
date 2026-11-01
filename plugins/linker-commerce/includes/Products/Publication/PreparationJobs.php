@@ -373,7 +373,7 @@ final class PreparationJobs {
 					unset( $job['lease_token'] );
 					if ( 'ready' === $job['status'] ) {
 						$job['loaded_revision'] = $request['loaded_revision'];
-						$expected_products      = 'knowledge' === $consumer ? array_filter( $manifest['products'], static fn ( array $product ): bool => ! in_array( $product['engineering_role'] ?? '', array( \Linker\Commerce\Products\EngineeringReference::PV_MODULE, \Linker\Commerce\Products\EngineeringReference::CABLE ), true ) ) : $manifest['products'];
+						$expected_products      = 'knowledge' === $consumer ? array_filter( $manifest['products'], static fn ( array $product ): bool => ! in_array( $product['engineering_role'] ?? '', \Linker\Commerce\Products\EngineeringReference::ROLES, true ) ) : $manifest['products'];
 						$expected               = array_column( $expected_products, 'product_revision', 'product_id' );
 						$prepared               = $request['prepared_products'] ?? ( 'engineering' === $consumer ? $manifest['products'] : null );
 						if ( ! is_array( $prepared ) || ! array_is_list( $prepared ) ) {
@@ -561,7 +561,7 @@ final class PreparationJobs {
 		if ( $loaded['recipe_revision'] !== $recipe ) {
 			return false;
 		}
-		$expected = array_column( array_filter( $manifest['products'], static fn ( array $product ): bool => ! in_array( $product['engineering_role'] ?? '', array( \Linker\Commerce\Products\EngineeringReference::PV_MODULE, \Linker\Commerce\Products\EngineeringReference::CABLE ), true ) ), 'product_revision', 'product_id' );
+		$expected = array_column( array_filter( $manifest['products'], static fn ( array $product ): bool => ! in_array( $product['engineering_role'] ?? '', \Linker\Commerce\Products\EngineeringReference::ROLES, true ) ), 'product_revision', 'product_id' );
 		foreach ( $loaded['products'] as $product ) {
 			if ( ! isset( $expected[ $product['product_id'] ] ) || $product['product_revision'] !== $expected[ $product['product_id'] ] ) {
 				return false;

@@ -156,7 +156,7 @@ final class EngineeringFeed {
 		$references = array();
 		foreach ( $publication['products'] as $product ) {
 			$role = $product['engineering_role'] ?? '';
-			if ( ! in_array( $role, array( EngineeringReference::PV_MODULE, EngineeringReference::CABLE ), true ) || ! is_string( $product['engineering_id'] ?? null ) || '' === $product['engineering_id'] ) {
+			if ( ! in_array( $role, EngineeringReference::ROLES, true ) || ! is_string( $product['engineering_id'] ?? null ) || '' === $product['engineering_id'] ) {
 				continue;
 			}
 			$id      = $product['product_id'];

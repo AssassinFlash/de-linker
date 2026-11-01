@@ -83,7 +83,8 @@ def authority(
             known = {
                 **{
                     p["model"]: "unavailable"
-                    if p.get("engineering_role") == "reference_pv_module"
+                    if p.get("engineering_role")
+                    in ("reference_pv_module", "reference_cable")
                     else "published"
                     for p in raw["products"]
                 },
@@ -720,11 +721,13 @@ def test_multiword_unavailable_model_is_detected_from_original_text_not_code_sha
     ) == {"A"}
 
 
-def test_reference_module_never_enters_genie_snapshot_index_or_product_scope(
+@pytest.mark.parametrize("role", ["reference_pv_module", "reference_cable"])
+def test_reference_never_enters_genie_snapshot_index_or_product_scope(
     tmp_path: Path,
+    role: str,
 ) -> None:
     raw = manifest()
-    raw["products"][1]["engineering_role"] = "reference_pv_module"
+    raw["products"][1]["engineering_role"] = role
     raw["documents"][0]["type"] = "warranty"
     raw["documents"].append(
         {**raw["documents"][0], "document_id": "reference-only", "product_ids": [2]}

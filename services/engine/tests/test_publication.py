@@ -24,9 +24,16 @@ def ids(value: Any) -> set[int]:
     return set()
 
 
-@pytest.mark.parametrize("mode", ["off", "enforce"])
+@pytest.mark.parametrize(
+    ("mode", "withdrawal"),
+    [("off", "remove"), ("enforce", "remove"), ("enforce", "reference_cable")],
+)
 def test_withdrawal_before_feed_sync(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, mode: str
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    mode: str,
+    withdrawal: str,
 ) -> None:
     monkeypatch.setenv("LINKER_ENGINE_GATE_MODE", mode)
     monkeypatch.setenv("GENIE_SERVICE_TOKEN", "test-service")
@@ -38,9 +45,16 @@ def test_withdrawal_before_feed_sync(
         withdrawn.update(
             p["id"] for p in self.feed["products"] if p["brand"] == "EcoFlow"
         )
-        data["products"] = [
-            p for p in data["products"] if p["product_id"] not in withdrawn
-        ]
+        if withdrawal == "remove":
+            data["products"] = [
+                p for p in data["products"] if p["product_id"] not in withdrawn
+            ]
+        else:
+            # An older feed still offers these as devices. Current Woo instead
+            # identifies noncommercial cables, including ones without a ready overlay.
+            for product in data["products"]:
+                if product["product_id"] in withdrawn:
+                    product["engineering_role"] = withdrawal
         return data
 
     monkeypatch.setattr(Publication, "read", current)

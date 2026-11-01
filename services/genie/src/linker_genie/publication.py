@@ -92,7 +92,8 @@ class Snapshot:
             products = {
                 int(p["product_id"]): p
                 for p in value["products"]
-                if p.get("engineering_role") != "reference_pv_module"
+                if p.get("engineering_role")
+                not in ("reference_pv_module", "reference_cable")
             }
             documents = {
                 str(d["document_id"]): {

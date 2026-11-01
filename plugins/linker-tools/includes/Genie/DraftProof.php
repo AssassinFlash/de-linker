@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 namespace Linker\Tools\Genie;
 
 use Linker\Commerce\Account\DesignProof;
+use Linker\Commerce\Products\EngineeringReference;
 use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Protection\Identity;
 use WP_Error;
@@ -134,7 +135,7 @@ class DraftProof {
 			$id      = $item['product_id'];
 			$product = null;
 			foreach ( $manifest['products'] as $candidate ) {
-				if ( 'reference_pv_module' !== ( $candidate['engineering_role'] ?? '' ) && ( $id === $candidate['product_id'] || in_array( $id, $candidate['published_locale_ids'], true ) ) ) {
+				if ( ! in_array( $candidate['engineering_role'] ?? '', EngineeringReference::ROLES, true ) && ( $id === $candidate['product_id'] || in_array( $id, $candidate['published_locale_ids'], true ) ) ) {
 					$product = $candidate;
 					break;
 				}
