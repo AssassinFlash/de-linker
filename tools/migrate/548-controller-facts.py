@@ -24,6 +24,9 @@ from linker_cutover.target import (  # type: ignore[import-not-found]  # noqa: E
     local_target,
     remote_target,
 )
+from linker_local.processes import (  # type: ignore[import-not-found]  # noqa: E402
+    without_research_credentials,
+)
 
 STEM = "548-controller-facts"
 MARKER = f"@@{STEM}@@"
@@ -66,6 +69,7 @@ def main() -> int:
     command = site.shell_command(shlex.join([*site.wp_on_target(), "eval-file", "-"]))
     result = subprocess.run(
         command,
+        env=without_research_credentials(),
         input=source.replace(placeholder, repr(encoded)),
         text=True,
         capture_output=True,

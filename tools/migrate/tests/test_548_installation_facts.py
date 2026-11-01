@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import os
 import stat
 import subprocess
 from pathlib import Path
@@ -13,6 +14,59 @@ from types import ModuleType
 import pytest
 
 HERE = Path(__file__).resolve().parent
+
+
+def test_controller_cli_drops_research_credentials_before_transport(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    spec = importlib.util.spec_from_file_location(
+        "controller_facts_migration", HERE.parent / "548-controller-facts.py"
+    )
+    assert spec is not None and spec.loader is not None
+    controller = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(controller)
+    monkeypatch.setattr(
+        os,
+        "environ",
+        {
+            "APIFY_TOKEN_ALT": "fake-research-token",
+            "apify_Token_alias": "fake-case-alias",
+            "LINKER_DEPLOYMENT_SENTINEL": "preserved",
+        },
+    )
+    observed: dict[str, object] = {}
+
+    def transport(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        observed["env"] = kwargs.get("env")
+        payload = {
+            "schema_version": 1,
+            "products": {},
+            "site": "https://fixture.invalid",
+            "state": "restored",
+            "observed_source_revision": "a" * 64,
+            "changes": [],
+        }
+        return subprocess.CompletedProcess(
+            command, 0, controller.MARKER + json.dumps(payload), ""
+        )
+
+    monkeypatch.setattr(controller.subprocess, "run", transport)
+    monkeypatch.setattr(
+        controller,
+        "remote_target",
+        lambda: Target(
+            "fixture", "/fixture", "https://fixture.invalid", ("wp",), None, None
+        ),
+    )
+    monkeypatch.setattr(
+        controller.sys,
+        "argv",
+        ["controller", "--production", "preview", "--receipt", str(tmp_path / "receipt")],
+    )
+
+    assert controller.main() == 0
+    assert observed["env"] == {"LINKER_DEPLOYMENT_SENTINEL": "preserved"}
+    assert os.environ["APIFY_TOKEN_ALT"] == "fake-research-token"
 
 
 def load_script() -> ModuleType:
