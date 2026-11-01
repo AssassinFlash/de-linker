@@ -273,3 +273,11 @@ DSO 侧结构（[Enedis 生产接入流程页](https://www.enedis.fr/raccordemen
 | NL 官方入口定位（wetten.overheid.nl / ACM） | `apify/google-search-scraper` · `W88CDSCECYgiwPgjf` | dataset `YeYcwY6eIZ0gssMe0` |
 
 **本轮收口：** 新增了 FR / DE / NL 三国的国家层法定条文证据、荷兰 Netcode 已废止这一前提纠正、以及“Type 阈值与功率口径不可跨国外推”的硬约束。**未取得**德国具体 DSO 的低压 TAB 正文、法国 arrêté 全文与附录、荷兰 RfG 条文与概念定义、`§14a` 对储能的适用性结论。据此**没有任何一个国家的规则包可以标为完成**，也没有任何设备或项目因此获得并网放行。
+
+### 2026-11-01 德国接网适用域核对
+
+VDE FNN 的中压规则页面列出 VDE-AR-N 4110:2023-09，自 2023-09-01 起适用。其 FAQ “1 Anwendungsbereich” 以 350 kWp 光伏接入低压公共电网为例，区分低压接网点的连接评价和发电单元须提供的电气特性证据。FAQ 指向 4105 第 8.4 章。不能将项目填报的接入容量 kVA 与有功功率 kW 直接比较后，给整个接网点指定 4110。本次读的是 2026-10-27 00:26 UTC 留存的官方页面内容。它没有证明 4105:2026-03 的过渡条款或当前项目取得 DSO 放行。[VDE FNN 中压接入规则与 FAQ](https://www.vde.com/de/fnn/themen/tar/tar-mittelspannung-vde-ar-n-4110)
+
+本次尝试获取 Westnetz 原文。首次采集的浏览器进程在 1 GiB 限额内存压力下超时，结果为空。改用静态 HTTP 精确请求 Westnetz 官方单页，原站返回 403，无正文。10 月 28 日登记的 EnWG §19 数据集本次也未获读取权限。复用上表的既有条文核对，不补写原件哈希、法规生效日期或 Westnetz 数值。两个运行均已结束，分别为 c56M3SKLiUH26q1mt 与 nDS78XVMulbNA0UgP。
+
+现行 WordPress 的旧配置器短代码转入统一 Planner，旧商用代理返回退休响应；隔离的商用计算接口不能证明客户已获得国家规则判定。统一 Planner 的国家结果目前仍为待核。项目提供的接网点电压、运营商和适用 TAB 来源，应与独立核实的文件版本、法规适用性、最终并网许可分别记录。
