@@ -45,6 +45,19 @@ test("native grid declarations retain partial and historical inputs, reject malf
 	for (const value of Object.values(native))
 		assert.equal(readCountryAssessment(value.assessment), value.assessment);
 	assert.equal(readGridConnection(undefined), undefined);
+	assert.equal(
+		readGridConnection({
+			...native.complete_de.inputs.grid_connection,
+			dso_source_url: "HTTPS://example.invalid/operator",
+		}).dso_source_url,
+		"HTTPS://example.invalid/operator",
+	);
+	assert.throws(() =>
+		readGridConnection({
+			...native.complete_de.inputs.grid_connection,
+			dso_source_url: "https://@example.invalid/operator",
+		}),
+	);
 	for (const value of [
 		null,
 		{},

@@ -22,7 +22,8 @@ export function publicSourceUrl(value: string): boolean {
 	try {
 		const url = new URL(value);
 		return (
-			/^https?:\/\//.test(value) &&
+			/^https?:\/\//i.test(value) &&
+			!/^https?:\/\/[^/?#]*@/i.test(value) &&
 			!!url.hostname &&
 			!url.username &&
 			!url.password &&
