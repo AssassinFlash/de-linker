@@ -1,280 +1,350 @@
 {
-	"legacy": {
-		"inputs": {},
-		"assessment": {
-			"status": "unresolved",
-			"country_code": null,
-			"reason": "versioned_country_rules_required"
-		}
-	},
-	"partial_de": {
-		"inputs": {
-			"brief": {
-				"site": {
-					"country_code": "DE"
-				}
-			},
-			"grid_connection": {
-				"schema_version": 1,
-				"dso_name": "Synthetic operator",
-				"dso_source_url": null,
-				"voltage_level": null,
-				"tab": {
-					"title": null,
-					"source_url": null,
-					"edition": null,
-					"date": null
-				}
-			}
-		},
-		"assessment": {
-			"status": "unresolved",
-			"country_code": "DE",
-			"reason": "dso_tab_evidence_requires_independent_verification",
-			"model": "declared_grid_connection_evidence_v1",
-			"project_facts": {
-				"schema_version": 1,
-				"dso_name": "Synthetic operator",
-				"dso_source_url": null,
-				"voltage_level": null,
-				"tab": {
-					"title": null,
-					"source_url": null,
-					"edition": null,
-					"date": null
-				}
-			},
-			"declaration_status": "project_provided_not_independently_verified",
-			"checks": [
-				{
-					"id": "responsible_dso",
-					"status": "unresolved",
-					"reason": "project_declaration_requires_operator_territory_verification"
-				},
-				{
-					"id": "connection_voltage",
-					"status": "unresolved",
-					"reason": "voltage_is_at_the_grid_connection_point_not_device_terminals"
-				},
-				{
-					"id": "applicable_tab",
-					"status": "unresolved",
-					"reason": "project_source_and_edition_or_date_are_not_verified_applicability"
-				},
-				{
-					"id": "independent_dso_tab_verification",
-					"status": "unresolved",
-					"reason": "dso_territory_voltage_edition_and_project_applicability_not_verified"
-				},
-				{
-					"id": "connection_permission",
-					"status": "unresolved",
-					"reason": "project_grid_assessment_and_operator_permission_require_separate_evidence"
-				}
-			],
-			"missing_inputs": [
-				"dso_source_url",
-				"voltage_level",
-				"tab.source_url",
-				"tab.edition_or_date"
-			],
-			"rule_sources": [
-				{
-					"id": "de_enwg_19_dso_tab",
-					"source_url": "https://www.gesetze-im-internet.de/enwg_2005/__19.html",
-					"title": "EnWG §19 Technische Vorschriften",
-					"edition": null,
-					"clause": "19(1), 19(1a)",
-					"evidence_snapshot_date": "2026-10-28",
-					"raw_sha256": null,
-					"evidence_basis": "existing_country_dossier_primary_reading",
-					"scope": "storage_in_dso_technical_requirements_and_tab_effectiveness"
-				},
-				{
-					"id": "de_fnn_connection_scope",
-					"source_url": "https://www.vde.com/de/fnn/themen/tar/tar-mittelspannung-vde-ar-n-4110",
-					"title": "VDE FNN TAR Mittelspannung FAQ",
-					"edition": "VDE-AR-N 4110:2023-09",
-					"clause": "1 Anwendungsbereich: 350 kWp low-voltage example",
-					"evidence_snapshot_date": "2026-10-27",
-					"raw_sha256": null,
-					"evidence_basis": "existing_country_dossier_primary_reading",
-					"scope": "connection_voltage_scope_differs_from_unit_electrical_evidence"
-				}
-			],
-			"independent_verification": "not_assessed",
-			"connection_permission": "not_established",
-			"numeric_rules": "not_assessed",
-			"standard_transition": "not_assessed"
-		}
-	},
-	"complete_de": {
-		"inputs": {
-			"brief": {
-				"site": {
-					"country_code": "DE"
-				}
-			},
-			"grid_connection": {
-				"schema_version": 1,
-				"dso_name": "Synthetic operator",
-				"dso_source_url": "https://example.invalid/operator",
-				"voltage_level": "medium",
-				"tab": {
-					"title": "Synthetic connection requirements",
-					"source_url": "https://example.invalid/requirements",
-					"edition": "Synthetic edition",
-					"date": "2026-10-28"
-				}
-			}
-		},
-		"assessment": {
-			"status": "unresolved",
-			"country_code": "DE",
-			"reason": "dso_tab_evidence_requires_independent_verification",
-			"model": "declared_grid_connection_evidence_v1",
-			"project_facts": {
-				"schema_version": 1,
-				"dso_name": "Synthetic operator",
-				"dso_source_url": "https://example.invalid/operator",
-				"voltage_level": "medium",
-				"tab": {
-					"title": "Synthetic connection requirements",
-					"source_url": "https://example.invalid/requirements",
-					"edition": "Synthetic edition",
-					"date": "2026-10-28"
-				}
-			},
-			"declaration_status": "project_provided_not_independently_verified",
-			"checks": [
-				{
-					"id": "responsible_dso",
-					"status": "provided",
-					"reason": "project_declaration_requires_operator_territory_verification"
-				},
-				{
-					"id": "connection_voltage",
-					"status": "provided",
-					"reason": "voltage_is_at_the_grid_connection_point_not_device_terminals"
-				},
-				{
-					"id": "applicable_tab",
-					"status": "provided",
-					"reason": "project_source_and_edition_or_date_are_not_verified_applicability"
-				},
-				{
-					"id": "independent_dso_tab_verification",
-					"status": "unresolved",
-					"reason": "dso_territory_voltage_edition_and_project_applicability_not_verified"
-				},
-				{
-					"id": "connection_permission",
-					"status": "unresolved",
-					"reason": "project_grid_assessment_and_operator_permission_require_separate_evidence"
-				}
-			],
-			"missing_inputs": [],
-			"rule_sources": [
-				{
-					"id": "de_enwg_19_dso_tab",
-					"source_url": "https://www.gesetze-im-internet.de/enwg_2005/__19.html",
-					"title": "EnWG §19 Technische Vorschriften",
-					"edition": null,
-					"clause": "19(1), 19(1a)",
-					"evidence_snapshot_date": "2026-10-28",
-					"raw_sha256": null,
-					"evidence_basis": "existing_country_dossier_primary_reading",
-					"scope": "storage_in_dso_technical_requirements_and_tab_effectiveness"
-				},
-				{
-					"id": "de_fnn_connection_scope",
-					"source_url": "https://www.vde.com/de/fnn/themen/tar/tar-mittelspannung-vde-ar-n-4110",
-					"title": "VDE FNN TAR Mittelspannung FAQ",
-					"edition": "VDE-AR-N 4110:2023-09",
-					"clause": "1 Anwendungsbereich: 350 kWp low-voltage example",
-					"evidence_snapshot_date": "2026-10-27",
-					"raw_sha256": null,
-					"evidence_basis": "existing_country_dossier_primary_reading",
-					"scope": "connection_voltage_scope_differs_from_unit_electrical_evidence"
-				}
-			],
-			"independent_verification": "not_assessed",
-			"connection_permission": "not_established",
-			"numeric_rules": "not_assessed",
-			"standard_transition": "not_assessed"
-		}
-	},
-	"complete_at": {
-		"inputs": {
-			"brief": {
-				"site": {
-					"country_code": "AT"
-				}
-			},
-			"grid_connection": {
-				"schema_version": 1,
-				"dso_name": "Synthetic operator",
-				"dso_source_url": "https://example.invalid/operator",
-				"voltage_level": "medium",
-				"tab": {
-					"title": "Synthetic connection requirements",
-					"source_url": "https://example.invalid/requirements",
-					"edition": "Synthetic edition",
-					"date": "2026-10-28"
-				}
-			}
-		},
-		"assessment": {
-			"status": "unresolved",
-			"country_code": "AT",
-			"reason": "country_rules_not_available",
-			"model": "declared_grid_connection_evidence_v1",
-			"project_facts": {
-				"schema_version": 1,
-				"dso_name": "Synthetic operator",
-				"dso_source_url": "https://example.invalid/operator",
-				"voltage_level": "medium",
-				"tab": {
-					"title": "Synthetic connection requirements",
-					"source_url": "https://example.invalid/requirements",
-					"edition": "Synthetic edition",
-					"date": "2026-10-28"
-				}
-			},
-			"declaration_status": "project_provided_not_independently_verified",
-			"checks": [
-				{
-					"id": "responsible_dso",
-					"status": "provided",
-					"reason": "project_declaration_requires_operator_territory_verification"
-				},
-				{
-					"id": "connection_voltage",
-					"status": "provided",
-					"reason": "voltage_is_at_the_grid_connection_point_not_device_terminals"
-				},
-				{
-					"id": "applicable_tab",
-					"status": "provided",
-					"reason": "project_source_and_edition_or_date_are_not_verified_applicability"
-				},
-				{
-					"id": "independent_dso_tab_verification",
-					"status": "unresolved",
-					"reason": "dso_territory_voltage_edition_and_project_applicability_not_verified"
-				},
-				{
-					"id": "connection_permission",
-					"status": "unresolved",
-					"reason": "project_grid_assessment_and_operator_permission_require_separate_evidence"
-				}
-			],
-			"missing_inputs": [],
-			"rule_sources": [],
-			"independent_verification": "not_assessed",
-			"connection_permission": "not_established",
-			"numeric_rules": "not_assessed",
-			"standard_transition": "not_assessed"
-		}
-	}
+  "legacy": {
+    "inputs": {},
+    "assessment": {
+      "status": "unresolved",
+      "country_code": null,
+      "reason": "versioned_country_rules_required"
+    }
+  },
+  "partial_de": {
+    "inputs": {
+      "brief": {
+        "site": {
+          "country_code": "DE"
+        }
+      },
+      "grid_connection": {
+        "schema_version": 1,
+        "dso_name": "Synthetic operator",
+        "dso_source_url": null,
+        "voltage_level": null,
+        "tab": {
+          "title": null,
+          "source_url": null,
+          "edition": null,
+          "date": null
+        }
+      }
+    },
+    "assessment": {
+      "status": "unresolved",
+      "country_code": "DE",
+      "reason": "dso_tab_evidence_requires_independent_verification",
+      "model": "declared_grid_connection_evidence_v1",
+      "project_facts": {
+        "schema_version": 1,
+        "dso_name": "Synthetic operator",
+        "dso_source_url": null,
+        "voltage_level": null,
+        "tab": {
+          "title": null,
+          "source_url": null,
+          "edition": null,
+          "date": null
+        }
+      },
+      "declaration_status": "project_provided_not_independently_verified",
+      "checks": [
+        {
+          "id": "responsible_dso",
+          "status": "unresolved",
+          "reason": "project_declaration_requires_operator_territory_verification"
+        },
+        {
+          "id": "connection_voltage",
+          "status": "unresolved",
+          "reason": "voltage_is_at_the_grid_connection_point_not_device_terminals"
+        },
+        {
+          "id": "applicable_tab",
+          "status": "unresolved",
+          "reason": "project_source_and_edition_or_date_are_not_verified_applicability"
+        },
+        {
+          "id": "independent_dso_tab_verification",
+          "status": "unresolved",
+          "reason": "dso_territory_voltage_edition_and_project_applicability_not_verified"
+        },
+        {
+          "id": "connection_permission",
+          "status": "unresolved",
+          "reason": "project_grid_assessment_and_operator_permission_require_separate_evidence"
+        }
+      ],
+      "missing_inputs": [
+        "dso_source_url",
+        "voltage_level",
+        "tab.source_url",
+        "tab.edition_or_date"
+      ],
+      "rule_sources": [
+        {
+          "id": "de_enwg_19_dso_tab",
+          "source_url": "https://www.gesetze-im-internet.de/enwg_2005/__19.html",
+          "title": "EnWG §19 Technische Vorschriften",
+          "edition": null,
+          "clause": "19(1), 19(1a)",
+          "evidence_snapshot_date": "2026-10-28",
+          "raw_sha256": null,
+          "evidence_basis": "existing_country_dossier_primary_reading",
+          "scope": "storage_in_dso_technical_requirements_and_tab_effectiveness"
+        },
+        {
+          "id": "de_fnn_connection_scope",
+          "source_url": "https://www.vde.com/de/fnn/themen/tar/tar-mittelspannung-vde-ar-n-4110",
+          "title": "VDE FNN TAR Mittelspannung FAQ",
+          "edition": "VDE-AR-N 4110:2023-09",
+          "clause": "1 Anwendungsbereich",
+          "evidence_snapshot_date": "2026-10-27",
+          "raw_sha256": null,
+          "evidence_basis": "existing_country_dossier_primary_reading",
+          "scope": "connection_voltage_scope_differs_from_unit_electrical_evidence"
+        }
+      ],
+      "independent_verification": "not_assessed",
+      "connection_permission": "not_established",
+      "numeric_rules": "not_assessed",
+      "standard_transition": "not_assessed"
+    }
+  },
+  "complete_de": {
+    "inputs": {
+      "brief": {
+        "site": {
+          "country_code": "DE"
+        }
+      },
+      "grid_connection": {
+        "schema_version": 1,
+        "dso_name": "Synthetic operator",
+        "dso_source_url": "https://example.invalid/operator",
+        "voltage_level": "medium",
+        "tab": {
+          "title": "Synthetic connection requirements",
+          "source_url": "https://example.invalid/requirements",
+          "edition": "Synthetic edition",
+          "date": "2026-10-28"
+        }
+      }
+    },
+    "assessment": {
+      "status": "unresolved",
+      "country_code": "DE",
+      "reason": "dso_tab_evidence_requires_independent_verification",
+      "model": "declared_grid_connection_evidence_v1",
+      "project_facts": {
+        "schema_version": 1,
+        "dso_name": "Synthetic operator",
+        "dso_source_url": "https://example.invalid/operator",
+        "voltage_level": "medium",
+        "tab": {
+          "title": "Synthetic connection requirements",
+          "source_url": "https://example.invalid/requirements",
+          "edition": "Synthetic edition",
+          "date": "2026-10-28"
+        }
+      },
+      "declaration_status": "project_provided_not_independently_verified",
+      "checks": [
+        {
+          "id": "responsible_dso",
+          "status": "provided",
+          "reason": "project_declaration_requires_operator_territory_verification"
+        },
+        {
+          "id": "connection_voltage",
+          "status": "provided",
+          "reason": "voltage_is_at_the_grid_connection_point_not_device_terminals"
+        },
+        {
+          "id": "applicable_tab",
+          "status": "provided",
+          "reason": "project_source_and_edition_or_date_are_not_verified_applicability"
+        },
+        {
+          "id": "independent_dso_tab_verification",
+          "status": "unresolved",
+          "reason": "dso_territory_voltage_edition_and_project_applicability_not_verified"
+        },
+        {
+          "id": "connection_permission",
+          "status": "unresolved",
+          "reason": "project_grid_assessment_and_operator_permission_require_separate_evidence"
+        }
+      ],
+      "missing_inputs": [],
+      "rule_sources": [
+        {
+          "id": "de_enwg_19_dso_tab",
+          "source_url": "https://www.gesetze-im-internet.de/enwg_2005/__19.html",
+          "title": "EnWG §19 Technische Vorschriften",
+          "edition": null,
+          "clause": "19(1), 19(1a)",
+          "evidence_snapshot_date": "2026-10-28",
+          "raw_sha256": null,
+          "evidence_basis": "existing_country_dossier_primary_reading",
+          "scope": "storage_in_dso_technical_requirements_and_tab_effectiveness"
+        },
+        {
+          "id": "de_fnn_connection_scope",
+          "source_url": "https://www.vde.com/de/fnn/themen/tar/tar-mittelspannung-vde-ar-n-4110",
+          "title": "VDE FNN TAR Mittelspannung FAQ",
+          "edition": "VDE-AR-N 4110:2023-09",
+          "clause": "1 Anwendungsbereich",
+          "evidence_snapshot_date": "2026-10-27",
+          "raw_sha256": null,
+          "evidence_basis": "existing_country_dossier_primary_reading",
+          "scope": "connection_voltage_scope_differs_from_unit_electrical_evidence"
+        }
+      ],
+      "independent_verification": "not_assessed",
+      "connection_permission": "not_established",
+      "numeric_rules": "not_assessed",
+      "standard_transition": "not_assessed"
+    }
+  },
+  "complete_at": {
+    "inputs": {
+      "brief": {
+        "site": {
+          "country_code": "AT"
+        }
+      },
+      "grid_connection": {
+        "schema_version": 1,
+        "dso_name": "Synthetic operator",
+        "dso_source_url": "https://example.invalid/operator",
+        "voltage_level": "medium",
+        "tab": {
+          "title": "Synthetic connection requirements",
+          "source_url": "https://example.invalid/requirements",
+          "edition": "Synthetic edition",
+          "date": "2026-10-28"
+        }
+      }
+    },
+    "assessment": {
+      "status": "unresolved",
+      "country_code": "AT",
+      "reason": "country_rules_not_available",
+      "model": "declared_grid_connection_evidence_v1",
+      "project_facts": {
+        "schema_version": 1,
+        "dso_name": "Synthetic operator",
+        "dso_source_url": "https://example.invalid/operator",
+        "voltage_level": "medium",
+        "tab": {
+          "title": "Synthetic connection requirements",
+          "source_url": "https://example.invalid/requirements",
+          "edition": "Synthetic edition",
+          "date": "2026-10-28"
+        }
+      },
+      "declaration_status": "project_provided_not_independently_verified",
+      "checks": [
+        {
+          "id": "responsible_dso",
+          "status": "provided",
+          "reason": "project_declaration_requires_operator_territory_verification"
+        },
+        {
+          "id": "connection_voltage",
+          "status": "provided",
+          "reason": "voltage_is_at_the_grid_connection_point_not_device_terminals"
+        },
+        {
+          "id": "applicable_tab",
+          "status": "provided",
+          "reason": "project_source_and_edition_or_date_are_not_verified_applicability"
+        },
+        {
+          "id": "independent_dso_tab_verification",
+          "status": "unresolved",
+          "reason": "dso_territory_voltage_edition_and_project_applicability_not_verified"
+        },
+        {
+          "id": "connection_permission",
+          "status": "unresolved",
+          "reason": "project_grid_assessment_and_operator_permission_require_separate_evidence"
+        }
+      ],
+      "missing_inputs": [],
+      "rule_sources": [],
+      "independent_verification": "not_assessed",
+      "connection_permission": "not_established",
+      "numeric_rules": "not_assessed",
+      "standard_transition": "not_assessed"
+    }
+  },
+  "complete_unknown": {
+    "inputs": {
+      "grid_connection": {
+        "schema_version": 1,
+        "dso_name": "Synthetic operator",
+        "dso_source_url": "https://example.invalid/operator",
+        "voltage_level": "medium",
+        "tab": {
+          "title": "Synthetic connection requirements",
+          "source_url": "https://example.invalid/requirements",
+          "edition": "Synthetic edition",
+          "date": "2026-10-28"
+        }
+      }
+    },
+    "assessment": {
+      "status": "unresolved",
+      "country_code": null,
+      "reason": "country_rules_not_available",
+      "model": "declared_grid_connection_evidence_v1",
+      "project_facts": {
+        "schema_version": 1,
+        "dso_name": "Synthetic operator",
+        "dso_source_url": "https://example.invalid/operator",
+        "voltage_level": "medium",
+        "tab": {
+          "title": "Synthetic connection requirements",
+          "source_url": "https://example.invalid/requirements",
+          "edition": "Synthetic edition",
+          "date": "2026-10-28"
+        }
+      },
+      "declaration_status": "project_provided_not_independently_verified",
+      "checks": [
+        {
+          "id": "responsible_dso",
+          "status": "provided",
+          "reason": "project_declaration_requires_operator_territory_verification"
+        },
+        {
+          "id": "connection_voltage",
+          "status": "provided",
+          "reason": "voltage_is_at_the_grid_connection_point_not_device_terminals"
+        },
+        {
+          "id": "applicable_tab",
+          "status": "provided",
+          "reason": "project_source_and_edition_or_date_are_not_verified_applicability"
+        },
+        {
+          "id": "independent_dso_tab_verification",
+          "status": "unresolved",
+          "reason": "dso_territory_voltage_edition_and_project_applicability_not_verified"
+        },
+        {
+          "id": "connection_permission",
+          "status": "unresolved",
+          "reason": "project_grid_assessment_and_operator_permission_require_separate_evidence"
+        }
+      ],
+      "missing_inputs": [
+        "country_code"
+      ],
+      "rule_sources": [],
+      "independent_verification": "not_assessed",
+      "connection_permission": "not_established",
+      "numeric_rules": "not_assessed",
+      "standard_transition": "not_assessed"
+    }
+  }
 }

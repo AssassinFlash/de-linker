@@ -259,6 +259,28 @@ for (const de of [false, true]) {
 					de ? "Noch fehlende Angaben" : "Information still missing",
 				),
 			);
+			await act(async () =>
+				root.render(
+					React.createElement(EquipmentResult, {
+						run: { state: "succeeded", revision: 1 },
+						locale: de ? "de-DE" : "en-GB",
+						dirty: false,
+						confirmedRevision: 1,
+						assessmentOverride: {
+							...assessment,
+							country_assessment: native.complete_unknown.assessment,
+						},
+						embedded: true,
+					}),
+				),
+			);
+			assert.ok(
+				document.body.textContent.includes(
+					de ? "Nicht angegeben" : "Not specified",
+				),
+			);
+			assert.ok(document.body.textContent.includes(de ? "Land" : "Country"));
+			assert.equal(document.body.textContent.includes("EnWG §19"), false);
 		}
 	});
 }

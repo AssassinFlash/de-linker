@@ -64,6 +64,7 @@ export function readCountryAssessment(value: unknown): JsonObject {
 		ids.add(c.id);
 	}
 	const missing = [
+		"country_code",
 		"dso_name",
 		"dso_source_url",
 		"voltage_level",

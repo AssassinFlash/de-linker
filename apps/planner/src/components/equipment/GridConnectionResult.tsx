@@ -20,6 +20,7 @@ export function GridConnectionResult({
 		);
 	const facts = readGridConnection(assessment.project_facts)!;
 	const labels: Record<string, string> = {
+		country_code: __("Country", "linker-tools"),
 		responsible_dso: __(
 			"Responsible distribution system operator (DSO)",
 			"linker-tools",
@@ -72,6 +73,14 @@ export function GridConnectionResult({
 				</p>
 			)}
 			<dl className="lp-profile-facts">
+				<div>
+					<dt>{labels.country_code}</dt>
+					<dd>
+						{typeof assessment.country_code === "string"
+							? assessment.country_code
+							: __("Not specified", "linker-tools")}
+					</dd>
+				</div>
 				<div>
 					<dt>{labels.dso_name}</dt>
 					<dd>{facts.dso_name ?? "—"}</dd>
