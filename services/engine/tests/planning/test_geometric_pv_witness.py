@@ -30,13 +30,14 @@ def test_projection_preserves_summary_selected_fields_and_blob_integrity(
     raw = encode(witness)
     sha = blobs.put(raw)
     assert project_witness(blobs, sha) == {**witness, "modules": []}
-    assert project_witness(blobs, sha, module_fields=("module_id", "values")) == {
+    selected: Object = {
         **witness,
         "modules": [
             {"module_id": "α", "values": [1.0, 2.0]},
             {"module_id": "β", "values": [4.0, 5.0]},
         ],
     }
+    assert project_witness(blobs, sha, module_fields=("module_id", "values")) == selected
     assert blobs.object(sha) == witness
     reader = FrozenDocuments(blobs)
     assert reader.geometric_witness(blobs, sha)["modules"] == []
