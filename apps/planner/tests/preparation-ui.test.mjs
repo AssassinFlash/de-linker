@@ -561,7 +561,10 @@ test("the geometric PV workspace uses all retained intervals, adopts frozen AC e
 		() => !button("Calculate saved PV reference with roof shading").disabled,
 	);
 	assert.match(document.body.textContent, /service checks the saved roof/);
-	assert.match(document.body.textContent, /Supported larger-roof layout/);
+	assert.match(
+		document.body.textContent,
+		/Conditions for larger-roof calculations/,
+	);
 	await act(async () =>
 		setRuntime({
 			...expanded,
