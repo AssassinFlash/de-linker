@@ -31,7 +31,6 @@ from typing import Any
 FEED_URL = "https://de-linker.com/wp-json/linker/v1/engineering-feed"
 TARGET = Path("/opt/linker-engine/state/feed.json")
 COMPATIBILITY_TARGET = Path("/opt/linker-engine/state/compatibility.json")
-STATE = Path("/var/log/linker-engine-feed-sync.log")
 PROBE_PYTHON = "/opt/linker-engine/current/.venv/bin/python"
 MANAGED_STATE = Path("/opt/linker-engine/state")
 PROBE = "import pathlib,sys; from linker_engine.products import Products; Products.load(pathlib.Path(sys.argv[1])); print('validated')"
@@ -39,13 +38,9 @@ COMPATIBILITY_PROBE = "import pathlib,sys; from linker_engine.compatibility impo
 
 
 def log(message: str) -> None:
-    line = f"{dt.datetime.now(dt.UTC).isoformat(timespec='seconds')} {message}"
-    print(line, flush=True)
-    try:
-        with STATE.open("a", encoding="utf-8") as handle:
-            handle.write(line + "\n")
-    except OSError:
-        pass
+    print(
+        f"{dt.datetime.now(dt.UTC).isoformat(timespec='seconds')} {message}", flush=True
+    )
 
 
 def fetch_feed(url: str) -> bytes:

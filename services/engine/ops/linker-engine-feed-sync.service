@@ -16,4 +16,4 @@ NoNewPrivileges=true
 PrivateTmp=true
 ProtectHome=true
 ProtectSystem=strict
-ReadWritePaths=/opt/linker-engine/state /var/log /run/systemd
+ReadWritePaths=/opt/linker-engine/state /run/systemd

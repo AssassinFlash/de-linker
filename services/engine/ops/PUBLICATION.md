@@ -53,6 +53,10 @@ these checks. Local fixture tests cover the contract; production acceptance
 still requires the deployed Woo producer, runtime generation and actual
 consumer/readback paths.
 
+The feed timer writes its diagnostics to the system journal. Read them with
+`journalctl -u linker-engine-feed-sync.service`. Earlier plain-text logs can
+contain historical release evidence.
+
 ## One writable cache for both units
 
 The engine and `linker-engine-feed-sync.service` must both use
@@ -138,7 +142,7 @@ already run. Follow the repository's backup, rollback and retention rules.
      --property=PrivateTmp=true \
      --property=ProtectHome=true \
      --property=ProtectSystem=strict \
-     --property='ReadWritePaths=/opt/linker-engine/state /var/log /run/systemd' \
+     --property='ReadWritePaths=/opt/linker-engine/state /run/systemd' \
      /usr/bin/python3 /opt/linker-engine/ops/sync-feed.py --cache-preflight
    ```
 
