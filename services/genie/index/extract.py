@@ -16,7 +16,7 @@ import re
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field, replace
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from docling_core.types.doc.base import BoundingBox
 from docling_core.types.doc.common.reference import ProvenanceItem
@@ -194,6 +194,8 @@ def _visible_pdf_line(
     start: int,
     end: int,
     page_box: tuple[float, float, float, float],
+    *,
+    allow_disjoint_annotations: bool = False,
 ) -> bool:
     """Require the original characters to make a visible mark on the page.
 
@@ -216,10 +218,45 @@ def _visible_pdf_line(
         # A genuine series title is short; bound work on malformed text layers.
         if end <= start or end - start > 256:
             return False
-        # Widgets and annotations can have viewer-dependent appearance streams.
-        # Reject them rather than omit a possible cover or transparency.
-        if raw.FPDFPage_GetAnnotCount(pdf_page.raw) != 0:
+        # Annotations may cover text. A certificate line may use this narrow
+        # exception only after every annotation's original rectangle is shown
+        # to be disjoint from all of the line's original glyph boxes.
+        count = raw.FPDFPage_GetAnnotCount(pdf_page.raw)
+        if count < 0:
             return False
+        if count and not allow_disjoint_annotations:
+            return False
+        if count:
+            glyphs = [
+                text_page.get_charbox(i)
+                for i in range(start, end)
+                if not text[i].isspace()
+            ]
+            if not glyphs:
+                return False
+            for index in range(count):
+                annotation = raw.FPDFPage_GetAnnot(pdf_page.raw, index)
+                if not annotation:
+                    return False
+                try:
+                    rect = raw.FS_RECTF()
+                    if not raw.FPDFAnnot_GetRect(annotation, ctypes.byref(rect)):
+                        return False
+                    bounds = (rect.left, rect.bottom, rect.right, rect.top)
+                    if (
+                        not all(math.isfinite(value) for value in bounds)
+                        or bounds[0] >= bounds[2]
+                        or bounds[1] >= bounds[3]
+                    ):
+                        return False
+                    if any(
+                        max(box[0], bounds[0]) < min(box[2], bounds[2])
+                        and max(box[1], bounds[1]) < min(box[3], bounds[3])
+                        for box in glyphs
+                    ):
+                        return False
+                finally:
+                    raw.FPDFPage_CloseAnnot(annotation)
         left, bottom, right, top = page_box
         if (
             not all(math.isfinite(v) for v in page_box)
@@ -453,6 +490,135 @@ def _visible_pdf_line(
         # PDFium may report unsupported or malformed content through different
         # exceptions. Inability to prove visibility must never become an anchor.
         return False
+
+
+def certificate_physical_evidence(
+    pdf_path: Path, models: Sequence[str]
+) -> list[dict[str, object]]:
+    """Recover a repeated page marker or an exact model split at a line break."""
+    import pypdfium2
+
+    with pdf_path.open("rb") as handle:
+        sha = hashlib.file_digest(handle, "sha256").hexdigest()
+    if pdf_path.stem != sha:
+        raise ValueError("source PDF bytes do not match their content identity")
+    pdf = pypdfium2.PdfDocument(pdf_path)
+    output: list[dict[str, object]] = []
+    try:
+        if len(pdf) not in (1, 2):
+            return []
+        previous_marker = ""
+        for number in range(1, len(pdf) + 1):
+            page = pdf[number - 1]
+            try:
+                if page.get_rotation() != 0:
+                    continue
+                box = page.get_bbox()
+                left, bottom, right, top = box
+                textpage = page.get_textpage()
+                try:
+                    text = textpage.get_text_range()
+                    if len(text) != textpage.count_chars():
+                        continue
+
+                    def fragment(
+                        start: int,
+                        end: int,
+                        *,
+                        source_page: Any = page,
+                        source_textpage: Any = textpage,
+                        source_text: str = text,
+                        source_box: tuple[float, float, float, float] = box,
+                        source_left: float = left,
+                        source_top: float = top,
+                    ) -> dict[str, object] | None:
+                        if not _visible_pdf_line(
+                            pdf,
+                            source_page,
+                            source_textpage,
+                            source_text,
+                            start,
+                            end,
+                            source_box,
+                            allow_disjoint_annotations=True,
+                        ):
+                            return None
+                        boxes = [
+                            source_textpage.get_charbox(i)
+                            for i in range(start, end)
+                            if not source_text[i].isspace()
+                        ]
+                        if not boxes:
+                            return None
+                        return {
+                            "text": source_text[start:end],
+                            "char_start": start,
+                            "char_end": end,
+                            "bbox": [
+                                min(b[0] for b in boxes) - source_left,
+                                source_top - max(b[3] for b in boxes),
+                                max(b[2] for b in boxes) - source_left,
+                                source_top - min(b[1] for b in boxes),
+                            ],
+                        }
+
+                    markers = list(re.finditer(r"N°:\s*RED_\d{1,8}", text))
+                    if len(pdf) == 2 and len(markers) == 1:
+                        marker = markers[0]
+                        literal = re.sub(r"\s+", "", marker.group(0)).casefold()
+                        if number == 1:
+                            previous_marker = literal
+                        elif literal == previous_marker:
+                            item = fragment(marker.start(), marker.end())
+                            if item:
+                                output.append(
+                                    {
+                                        "kind": "certificate_page_marker",
+                                        "source_sha256": sha,
+                                        "source_page": number,
+                                        "page_count": len(pdf),
+                                        "page_size": [right - left, top - bottom],
+                                        "marker": item,
+                                    }
+                                )
+                    if number != 1:
+                        continue
+                    for model in set(models):
+                        for index, character in enumerate(model):
+                            if character != "-" or index == len(model) - 1:
+                                continue
+                            pattern = (
+                                re.escape(model[: index + 1])
+                                + r"\r?\n"
+                                + re.escape(model[index + 1 :])
+                            )
+                            found = list(re.finditer(pattern, text))
+                            if len(found) != 1:
+                                continue
+                            match = found[0]
+                            gap = "\r\n" if "\r\n" in match.group(0) else "\n"
+                            first_end = match.start() + index + 1
+                            a = fragment(match.start(), first_end)
+                            b = fragment(first_end + len(gap), match.end())
+                            if a and b:
+                                output.append(
+                                    {
+                                        "kind": "certificate_model_wrap",
+                                        "source_sha256": sha,
+                                        "source_page": number,
+                                        "page_size": [right - left, top - bottom],
+                                        "model": model,
+                                        "line_break": gap,
+                                        "fragments": [a, b],
+                                    }
+                                )
+                finally:
+                    textpage.close()
+            finally:
+                page.close()
+    finally:
+        pdf.close()
+    return output
 
 
 def pdf_series_cover(pdf_path: Path) -> dict[str, object] | None:

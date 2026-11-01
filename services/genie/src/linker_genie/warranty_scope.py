@@ -22,9 +22,13 @@ from linker_genie.table_projection import (
     subtitle_above_title,
 )
 
-# Literal manufacturer cover vocabulary in the hosted ESA/ET/STSs originals.
-# Power ranges must agree; an ESA family name alone cannot cross its ranges.
-FAMILY = re.compile(r"\b([a-z][a-z0-9]*)[-\s]+(?:series|serie)\b", re.IGNORECASE)
+# Literal manufacturer cover vocabulary in the hosted GoodWe and SAJ originals.
+# An ESA family name alone cannot cross its ranges.
+FAMILY = re.compile(
+    r"\b([a-z][a-z0-9]*)[-\s]+(?:series|serie|"
+    r"three[ -]+phase\s+all[- ]in[- ]one\s+solution)\b",
+    re.IGNORECASE,
+)
 POWER_RANGE = re.compile(
     r"(?<!\w)(\d+(?:[.,]\d+)?)\s*[-–]\s*(\d+(?:[.,]\d+)?)\s*kW\b",
     re.IGNORECASE,
@@ -80,6 +84,25 @@ def series_matches(cell: str, family: Sequence[str]) -> bool:
         tuple(str(Decimal(n.replace(",", ".")).normalize()) for n in m.groups())
         == (lower, upper)
         for m in matches
+    )
+
+
+def procedure_series_matches(cell: str, family: Sequence[str], model: str) -> bool:
+    """Permit an explicit whole series only for a directly named model family.
+
+    This weaker chain supports the manufacturer's first-contact procedure only.
+    It is never used to infer a duration, performance guarantee or other term.
+    Range-qualified families whose product code names another family (e.g. an
+    ESA system containing an ETA inverter) continue to require the exact range.
+    """
+    if series_matches(cell, family):
+        return True
+    if len(family) != 3 or not family[1] or not family[2]:
+        return False
+    name = family[0]
+    return bool(
+        model.casefold().startswith(name.casefold() + "-")
+        and re.fullmatch(rf"\s*{re.escape(name)}[-\s]+(?:series|serie)\s*", cell, re.I)
     )
 
 
@@ -709,7 +732,13 @@ def valid_warranty_scope(
     if (
         family is None
         or list(family) != value.get("family")
-        or not series_matches(str(policy.get("series_cell", "")), family)
+        or not (
+            procedure_series_matches(
+                str(policy.get("series_cell", "")), family, str(value["model"])
+            )
+            if basis == "warranty_procedure"
+            else series_matches(str(policy.get("series_cell", "")), family)
+        )
         or not policy.get("row_quote")
         or policy["series_cell"] not in policy["row_quote"]
         or not isinstance(model_quote, str)

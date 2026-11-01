@@ -12,6 +12,21 @@ export function isVerificationCancellation( error: unknown ): boolean {
 }
 
 /**
+ * A failed proof is distinct from quota, attachment and provider failures.
+ * @param error The original rejected request.
+ */
+export function isVerificationFailure( error: unknown ): boolean {
+	return (
+		! isVerificationCancellation( error ) &&
+		error instanceof Error &&
+		( error.message.startsWith( 'verification_' ) ||
+			( 'code' in error &&
+				typeof error.code === 'string' &&
+				error.code.startsWith( 'linker_verification_' ) ) )
+	);
+}
+
+/**
  * Reviewed customer explanation; API diagnostics never become visible copy.
  * @param error
  */
@@ -20,13 +35,7 @@ export function resourceRefusalReason( error: unknown ): string | null {
 	if ( isVerificationCancellation( error ) ) {
 		return null;
 	}
-	if (
-		error instanceof Error &&
-		( error.message.startsWith( 'verification_' ) ||
-			( 'code' in error &&
-				typeof error.code === 'string' &&
-				error.code.startsWith( 'linker_verification_' ) ) )
-	) {
+	if ( isVerificationFailure( error ) ) {
 		return __(
 			'Verification could not be completed. No request has been sent in this attempt. Please try again.',
 			'linker-tools'

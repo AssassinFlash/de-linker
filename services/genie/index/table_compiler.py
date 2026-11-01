@@ -6,7 +6,7 @@ import hashlib
 import re
 from collections.abc import Sequence
 from dataclasses import replace
-from typing import Any
+from typing import Any, cast
 
 from index.chunking import Chunk, Tokenizer
 from index.inventory import document_kind_of
@@ -31,9 +31,21 @@ from linker_genie.source_models import (
     unknown_models,
 )
 from linker_genie.table_projection import (
+    COMPATIBILITY_STATEMENT,
+    OVERVIEW_SECTIONS,
     SourceCell,
     cells_digest,
+    compatibility_batteries,
+    compatibility_inverters,
+    compatibility_pair_id,
+    compatibility_pair_text,
+    compatibility_row_in_source,
     model_axis,
+    overview_id,
+    overview_notes,
+    overview_row,
+    overview_row_in_source,
+    overview_text,
     projection_id,
     read_cells,
     render_projection,
@@ -413,6 +425,43 @@ def _axis_source(
     return None
 
 
+def _series_cover_for_axis(
+    boundary: dict[str, Any], axis: Sequence[str], by_id: dict[str, Chunk]
+) -> bool:
+    """A generic cover can be narrower only if it conflicts with the source axis.
+
+    The Lynx D G2 cover and its original D-G20 model columns establish the
+    observed letter and generation pattern.  A different letter, generation,
+    declaration, exclusion or explicit model stays a binding restriction.
+    """
+    quote = boundary.get("quote")
+    origin = by_id.get(str(boundary.get("source_chunk_id", "")))
+    if (
+        boundary.get("kind") != "heading"
+        or not isinstance(quote, str)
+        or origin is None
+        or origin.page != 1
+        or quote not in origin.source_headings
+        or has_explicit_exclusion(quote)
+    ):
+        return False
+    match = re.fullmatch(
+        r"[A-Za-z]+\s+([A-Za-z])\s+(G\d+)\s+Series", quote, re.IGNORECASE
+    )
+    return bool(
+        match
+        and axis
+        and all(
+            re.search(
+                r"-" + re.escape(match[1]) + r"-" + re.escape(match[2]) + r"\d$",
+                label,
+                re.IGNORECASE,
+            )
+            for label in axis
+        )
+    )
+
+
 def _footnote_sources(
     table: Chunk, cells: Sequence[SourceCell], by_id: dict[str, Chunk]
 ) -> list[dict[str, Any]]:
@@ -483,6 +532,87 @@ def external_axis_anchors(chunks: list[Chunk]) -> dict[str, dict[str, Any]]:
             if external
             else [],
         }
+        if (
+            chunk.page == 1
+            and chunk.section == COMPATIBILITY_STATEMENT
+            and chunk.section in chunk.source_headings
+        ):
+            candidates = [
+                other
+                for other in chunks[: chunks.index(chunk)]
+                if other.doc_sha256 == chunk.doc_sha256
+                and other.page == chunk.page
+                and other.kind == "text"
+                and compatibility_batteries(other.text)
+                and not has_explicit_exclusion(other.text)
+            ]
+            between = (
+                chunks[chunks.index(candidates[0]) + 1 : chunks.index(chunk)]
+                if len(candidates) == 1
+                else []
+            )
+            if len(candidates) == 1 and not any(
+                other.doc_sha256 == chunk.doc_sha256
+                and (
+                    (other.kind == "text" and other.text.strip())
+                    or has_explicit_exclusion(other.text)
+                )
+                for other in between
+            ):
+                anchors[chunk.id]["axis_source"] = [
+                    {"chunk_id": candidates[0].id, "text": candidates[0].text}
+                ]
+                anchors[chunk.id]["compatibility_section"] = chunk.section
+                anchors[chunk.id]["compatibility_table_text"] = chunk.text
+                anchors[chunk.id]["compatibility_source_rows"] = list(chunk.source_rows)
+        if (
+            chunk.section in OVERVIEW_SECTIONS
+            and chunk.source_headings
+            and chunk.source_headings[-1] == chunk.section
+            and set(chunk.source_headings).issubset(
+                {
+                    chunk.section,
+                    "Battery Compatibility Overview",
+                    "Batteriekompatibilitätsübersicht",
+                }
+            )
+        ):
+            lang = OVERVIEW_SECTIONS[chunk.section]
+            possible = [
+                other
+                for other in chunks
+                if other.doc_sha256 == chunk.doc_sha256
+                and other.page == chunk.page
+                and other.kind == "text"
+                and native_chunk_id_matches(
+                    other.doc_sha256, other.page, "text", other.text, other.id
+                )
+            ]
+            notes = overview_notes([other.text for other in possible], lang)
+            if notes is not None:
+                sources = [
+                    other
+                    for other in possible
+                    if notes[0] in other.text.splitlines() or other.text == notes[1]
+                ]
+                if len(sources) == 2:
+                    anchors[chunk.id]["axis_source"] = [
+                        {"chunk_id": other.id, "text": other.text} for other in sources
+                    ]
+                    anchors[chunk.id]["overview_lang"] = lang
+                    anchors[chunk.id]["overview_section"] = chunk.section
+                    anchors[chunk.id]["overview_fragments"] = [
+                        {
+                            "chunk_id": other.id,
+                            "text": other.text,
+                            "rows": list(other.source_rows),
+                        }
+                        for other in chunks
+                        if other.doc_sha256 == chunk.doc_sha256
+                        and other.page == chunk.page
+                        and other.kind == "table"
+                        and other.source_table == chunk.source_table
+                    ]
         headers = {
             c["col_start"]: re.sub(r"\s+", "", c["text"]).casefold()
             for c in cells
@@ -525,6 +655,239 @@ def external_axis_anchors(chunks: list[Chunk]) -> dict[str, dict[str, Any]]:
                 "section": chunk.section,
             }
     return anchors
+
+
+def _compatibility_units(
+    chunks: list[Chunk],
+    source: Snapshot,
+    statuses: dict[str, str],
+    tokenizer: Tokenizer,
+    max_tokens: int,
+    anchors: dict[str, dict[str, Any]],
+) -> tuple[list[Chunk], dict[str, ScopeProof]]:
+    """Make a two-product unit only from an explicit statement and exact row."""
+    models = {
+        str(p.get("model", "")).casefold(): pid for pid, p in source.products.items()
+    }
+    output: list[Chunk] = []
+    scopes: dict[str, ScopeProof] = {}
+    for table in chunks:
+        anchor = anchors.get(table.id, {})
+        origins = anchor.get("axis_source", [])
+        if (
+            anchor.get("compatibility_section") != COMPATIBILITY_STATEMENT
+            or len(origins) != 1
+        ):
+            continue
+        cells = read_cells(table.source_cells)
+        if cells is None:
+            continue
+        batteries = compatibility_batteries(origins[0]["text"])
+        for row in sorted({c["row_start"] for c in cells if c["row_start"] > 0}):
+            if not compatibility_row_in_source(
+                cells, row, table.text, table.source_rows
+            ):
+                continue
+            for inverter in compatibility_inverters(cells, row):
+                for battery in batteries:
+                    bid, iid = (
+                        models.get(battery.casefold()),
+                        models.get(inverter.casefold()),
+                    )
+                    if (
+                        bid is None
+                        or iid is None
+                        or bid == iid
+                        or statuses.get(battery.casefold()) != "published"
+                        or statuses.get(inverter.casefold()) != "published"
+                    ):
+                        continue
+                    for did, doc in source.documents.items():
+                        if (
+                            doc["blob_sha256"] != table.doc_sha256
+                            or document_kind_of(
+                                str(doc["type"]), str(doc.get("role", ""))
+                            )
+                            != "compatibility"
+                            or not {bid, iid}.issubset(doc["product_ids"])
+                            or did not in source.products[bid]["documents"]
+                            or did not in source.products[iid]["documents"]
+                        ):
+                            continue
+                        battery_model = str(source.products[bid]["model"])
+                        inverter_model = str(source.products[iid]["model"])
+                        text = compatibility_pair_text(battery_model, inverter_model)
+                        header = f"{battery_model} | {inverter_model} | p. {table.page}"
+                        tokens = tokenizer.count(header + "\n" + text)
+                        if tokens > max_tokens:
+                            continue
+                        cid = compatibility_pair_id(
+                            table.doc_sha256, table.page, table.source_table, text
+                        )
+                        if cid in scopes:
+                            continue
+                        ids = sorted([bid, iid])
+                        proof: dict[str, Any] = {
+                            "product_ids": ids,
+                            "basis": "compatibility_pair",
+                            "source_chunk_ids": [origins[0]["chunk_id"], table.id],
+                            "document_ids": [did],
+                            "associations": [
+                                {
+                                    "document_id": did,
+                                    "document_revision": doc["document_revision"],
+                                    "blob_sha256": table.doc_sha256,
+                                    "product_id": pid,
+                                    "product_revision": source.products[pid][
+                                        "product_revision"
+                                    ],
+                                }
+                                for pid in ids
+                            ],
+                            "compatibility_pair": {
+                                "battery_id": bid,
+                                "inverter_id": iid,
+                                "battery": battery_model,
+                                "inverter": inverter_model,
+                                "source_sha256": table.doc_sha256,
+                                "source_page": table.page,
+                                "source_table": table.source_table,
+                                "source_row": row,
+                                "source_cells": list(cells),
+                                "source_cells_sha256": cells_digest(cells),
+                                "table_chunk_id": table.id,
+                                "battery_source": origins[0],
+                            },
+                        }
+                        output.append(
+                            replace(
+                                table,
+                                id=cid,
+                                kind="text",
+                                header=header,
+                                text=text,
+                                tokens=tokens,
+                                source_table="",
+                                source_cells=(),
+                                source_rows=(),
+                                source_headings=(),
+                                preceding_text=(),
+                            )
+                        )
+                        scopes[cid] = cast(ScopeProof, proof)
+    return output, scopes
+
+
+def _overview_units(
+    chunks: list[Chunk],
+    source: Snapshot,
+    statuses: dict[str, str],
+    tokenizer: Tokenizer,
+    max_tokens: int,
+    anchors: dict[str, dict[str, Any]],
+) -> tuple[list[Chunk], dict[str, ScopeProof]]:
+    models = {
+        str(p.get("model", "")).casefold(): pid for pid, p in source.products.items()
+    }
+    output: list[Chunk] = []
+    scopes: dict[str, ScopeProof] = {}
+    for table in chunks:
+        anchor = anchors.get(table.id, {})
+        lang = anchor.get("overview_lang")
+        origins, fragments = (
+            anchor.get("axis_source", []),
+            anchor.get("overview_fragments", []),
+        )
+        if lang not in ("en", "de") or len(origins) != 2:
+            continue
+        cells = read_cells(table.source_cells)
+        if cells is None:
+            continue
+        for row in sorted({c["row_start"] for c in cells if c["row_start"] >= 2}):
+            for col in (5, 6, 7):
+                native = overview_row(cells, row, col, lang)
+                if native is None:
+                    continue
+                model, series = native
+                pid = models.get(model.casefold())
+                if pid is None or statuses.get(model.casefold()) != "published":
+                    continue
+                matches = [
+                    f for f in fragments if overview_row_in_source(model, col, row, f)
+                ]
+                if len(matches) != 1:
+                    continue
+                text = overview_text(model, series, lang, [o["text"] for o in origins])
+                if text is None:
+                    continue
+                proof = _scope(source, table.doc_sha256, pid)
+                proof["basis"] = "compatibility_series"
+                proof["associations"] = [
+                    a
+                    for a in proof["associations"]
+                    if document_kind_of(
+                        str(source.documents[a["document_id"]]["type"]),
+                        str(source.documents[a["document_id"]].get("role", "")),
+                    )
+                    == "compatibility"
+                ]
+                proof["document_ids"] = sorted(
+                    {a["document_id"] for a in proof["associations"]}
+                )
+                if not proof["associations"]:
+                    continue
+                header = f"{model} | p. {table.page}"
+                tokens = tokenizer.count(header + "\n" + text)
+                if tokens > max_tokens:
+                    continue
+                cid = overview_id(
+                    table.doc_sha256, table.page, table.source_table, text
+                )
+                if cid in scopes:
+                    continue
+                proof["source_chunk_ids"] = list(
+                    dict.fromkeys(
+                        [
+                            table.id,
+                            matches[0]["chunk_id"],
+                            *(o["chunk_id"] for o in origins),
+                        ]
+                    )
+                )
+                extended: dict[str, Any] = {
+                    **proof,
+                    "compatibility_series": {
+                        "product_id": pid,
+                        "model": model,
+                        "lang": lang,
+                        "source_sha256": table.doc_sha256,
+                        "source_page": table.page,
+                        "source_table": table.source_table,
+                        "source_row": row,
+                        "source_column": col,
+                        "source_cells": list(cells),
+                        "source_cells_sha256": cells_digest(cells),
+                        "table_chunk_id": table.id,
+                        "fragment_chunk_id": matches[0]["chunk_id"],
+                    },
+                }
+                output.append(
+                    replace(
+                        table,
+                        id=cid,
+                        kind="text",
+                        header=header,
+                        text=text,
+                        tokens=tokens,
+                        source_table="",
+                        source_cells=(),
+                        source_rows=(),
+                        source_headings=(),
+                        preceding_text=(),
+                    )
+                )
+                scopes[cid] = cast(ScopeProof, extended)
+    return output, scopes
 
 
 def compile_scopes(
@@ -628,6 +991,7 @@ def compile_scopes(
                     boundary
                     for boundary in contexts[first.id]
                     if boundary.get("rating_cover") is not True
+                    and not _series_cover_for_axis(boundary, axis, by_id)
                 ]
                 if boundaries:
                     proof = _constrain(proof, boundaries)
@@ -695,11 +1059,29 @@ def compile_scopes(
                         **({"footnote_sources": used_sources} if used_sources else {}),
                     },
                 }
+    source_anchors = external_axis_anchors(relevant)
+    compatibility, compatibility_scopes = _compatibility_units(
+        relevant, source, statuses, tokenizer, max_tokens, source_anchors
+    )
+    output.extend(compatibility)
+    result.update(compatibility_scopes)
+    overviews, overview_scopes = _overview_units(
+        relevant, source, statuses, tokenizer, max_tokens, source_anchors
+    )
+    output.extend(overviews)
+    result.update(overview_scopes)
     manual_units, manual_scopes = _family_units(
         relevant, source, statuses, tokenizer, max_tokens, result, contexts
     )
     output.extend(manual_units)
     result.update(manual_scopes)
+    from index.manual_evidence import compile_manual_evidence
+
+    reviewed_manuals, reviewed_scopes = compile_manual_evidence(
+        relevant, source, tokenizer, max_tokens, restricted_contexts=contexts
+    )
+    output.extend(reviewed_manuals)
+    result.update(reviewed_scopes)
     from index.warranty import compile_procedures, compile_terms
 
     procedures, procedure_scopes = compile_procedures(

@@ -8,8 +8,9 @@ import json
 import sqlite3
 from copy import deepcopy
 from dataclasses import replace
+from functools import partial
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import pytest
 from docling_core.types.doc.base import BoundingBox
@@ -26,13 +27,25 @@ from index.corpus import DocumentRow
 from index.extract import Block, Page, enrich_model_axes, pages_of
 from index.inventory import doc_type_of
 from index.publication import ScopeProof, _recognized, compile_publication, scope_proofs
-from index.table_compiler import _author_contexts
+from index.table_compiler import (
+    _author_contexts,
+    _series_cover_for_axis,
+    external_axis_anchors,
+)
 from index.warranty import compile_procedures
 from linker_genie.figures import tag
 from linker_genie.publication import Snapshot
 from linker_genie.publication_scope import authorize_chunk
 from linker_genie.retrieval import DocumentIndex
-from linker_genie.table_projection import cells_digest, projection_id
+from linker_genie.table_projection import (
+    COMPATIBILITY_STATEMENT,
+    OVERVIEW_ARM_NOTES,
+    OVERVIEW_POWER_NOTES,
+    SourceCell,
+    cells_digest,
+    projection_id,
+    render_projection,
+)
 
 FIXTURES = Path(__file__).parent / "fixtures" / "publication-compiler"
 H2_DE = "be488dc6630cddc8381e38c61c6bc7b41c50c711042cdb2547170bd85e68a752"
@@ -706,6 +719,317 @@ def test_compiler_keeps_originals_and_uses_ordered_merged_native_axis() -> None:
     ]
     _, denied = compile_publication(bad, raw, authority(raw), Words())
     assert not any(p["basis"] == "table_projection" for p in denied.values())
+
+
+def test_native_technical_heading_can_span_two_label_columns() -> None:
+    """A wider label does not shift model values or permit a nearby variant."""
+    original = chunks(H2_DE[:12])
+    raw = manifest()
+    native = next(c for c in original if c.source_cells)
+    cells = deepcopy(native.source_cells)
+    for cell in cells:
+        if cell["col_start"] == 0:
+            cell["col_end"] += 1
+            if cell["row_start"] == 0:
+                cell["text"] = "Technische Daten"
+        else:
+            cell["col_start"] += 1
+            cell["col_end"] += 1
+    widened = [
+        replace(c, source_cells=cells) if c.id == native.id else c for c in original
+    ]
+    selected, scopes = compile_publication(widened, raw, authority(raw), Words())
+    model = next(
+        c
+        for c in selected
+        if product_ids(scopes, c.id) == [1179]
+        and "| Nennleistung AC [W] | 25000 |" in c.text
+    )
+    scope = scopes[model.id]
+    snapshot = Snapshot.read(raw)
+    assert authorize_chunk(
+        model.doc_sha256,
+        [1179],
+        scope["associations"],
+        scope,
+        products=snapshot.products,
+        documents=snapshot.documents,
+        chunk_id=model.id,
+        text=model.text,
+    )
+    assert "| Nennleistung AC [W] | 30000 |" not in model.text
+    assert not authorize_chunk(
+        model.doc_sha256,
+        [1181],
+        scope["associations"],
+        scope,
+        products=snapshot.products,
+        documents=snapshot.documents,
+        chunk_id=model.id,
+        text=model.text,
+    )
+
+    partial = deepcopy(cells)
+    row = next(c["row_start"] for c in partial if c["text"] == "Nennleistung AC [W]")
+    rated = next(c for c in partial if c["row_start"] == row and c["col_start"] == 4)
+    rated["text"] = "25000 /"
+    assert render_projection(partial, 3, [row]) is None
+    rated["text"] = "25000"
+    # A parser-merged value may have dropped words. Even if its remaining text
+    # and logical span touch a column, it cannot become a model-specific fact.
+    partial = tuple(
+        c
+        for c in partial
+        if c is rated or not (c["row_start"] == row and c["col_start"] == 5)
+    )
+    rated["col_end"] += 1
+    assert render_projection(partial, 3, [row]) is None
+
+    changed = deepcopy(cells)
+    header = next(c for c in changed if c["row_start"] == c["col_start"] == 0)
+    header["text"] = "Different heading"
+    denied = [
+        replace(c, source_cells=changed) if c.id == native.id else c for c in original
+    ]
+    _, proofs = compile_publication(denied, raw, authority(raw), Words())
+    assert not any(p["basis"] == "table_projection" for p in proofs.values())
+
+
+def test_cover_series_must_match_the_complete_native_axis() -> None:
+    chunk = chunks(H2_DE[:12])[0]
+    heading = "Lynx D G2 Series"
+    chunk = replace(chunk, page=1, source_headings=(heading,))
+    origin = {chunk.id: chunk}
+    boundary = {"kind": "heading", "quote": heading, "source_chunk_id": chunk.id}
+    axis = ["GW5.1-BAT-D-G20", "GW9.0-BAT-D-G20"]
+    assert _series_cover_for_axis(boundary, axis, origin)
+    assert not _series_cover_for_axis(boundary, [*axis, "GW9.0-BAT-D-G30"], origin)
+    assert not _series_cover_for_axis(boundary, [*axis, "GW9.0-BAT-LC-G20"], origin)
+    assert not _series_cover_for_axis({**boundary, "kind": "declaration"}, axis, origin)
+    assert not _series_cover_for_axis(
+        {**boundary, "quote": "Lynx D G2 Series only"}, axis, origin
+    )
+
+
+def test_compatibility_pair_binds_both_exact_subjects_and_original_statement() -> None:
+    raw = basic_manifest()
+    raw["documents"][0]["type"] = "compatibility"
+    sha = raw["documents"][0]["blob_sha256"]
+    battery_text = (
+        "Product: Rechargeable Li-ion Battery System\n"
+        "Model(s): MODEL-1, MODEL-11\nDescription: Battery system."
+    )
+    table_text = (
+        "| Inverter Manufacture | Product | Model |\n"
+        "| Manufacturer | Series | MODEL-2 / MODEL-20 |"
+    )
+
+    def native_id(kind: str, text: str) -> str:
+        digest = hashlib.sha256(f"{kind}\0{text}".encode()).hexdigest()[:8]
+        return f"{sha[:12]}-p1-{digest}"
+
+    def cell(row: int, col: int, value: str) -> SourceCell:
+        return {
+            "row_start": row,
+            "row_end": row + 1,
+            "col_start": col,
+            "col_end": col + 1,
+            "text": value,
+            "column_header": row == 0,
+            "row_header": False,
+            "row_section": False,
+            "bbox": (col * 40 + 1, row * 20 + 1, col * 40 + 30, row * 20 + 15),
+            "bbox_origin": "TOPLEFT",
+        }
+
+    source = Chunk(
+        native_id("text", battery_text), sha, 1, "", "text", "", battery_text, "en", 20
+    )
+    table = Chunk(
+        native_id("table", table_text),
+        sha,
+        1,
+        COMPATIBILITY_STATEMENT,
+        "table",
+        "",
+        table_text,
+        "en",
+        20,
+        source_table="docling:p1:#/tables/0",
+        source_rows=(0, 1),
+        source_cells=tuple(
+            cell(r, c, text)
+            for r, row in enumerate(
+                [
+                    ("Inverter Manufacture", "Product", "Model"),
+                    ("Manufacturer", "Series", "MODEL-2 / MODEL-20"),
+                ]
+            )
+            for c, text in enumerate(row)
+        ),
+        source_headings=(COMPATIBILITY_STATEMENT,),
+    )
+    original = [source, table]
+    compiled, scopes = compile_publication(original, raw, authority(raw), Words())
+    result = [
+        c
+        for c in compiled
+        if c.id in scopes and scopes[c.id]["basis"] == "compatibility_pair"
+    ]
+    assert len(result) == 1
+    match = result[0]
+    proof = scopes[match.id]
+    assert proof["product_ids"] == [1, 2]
+    assert "MODEL-11" not in match.text and "MODEL-20" not in match.text
+    snapshot = Snapshot.read(raw)
+    check = partial(
+        authorize_chunk,
+        products=snapshot.products,
+        documents=snapshot.documents,
+        chunk_id=match.id,
+        text=match.text,
+        external_axis_anchors=external_axis_anchors(original),
+        require_table_anchor=True,
+    )
+    assert check(sha, [1, 2], proof["associations"], proof)
+    assert not check(sha, [1, 2], proof["associations"][:1], proof)
+    assert not check(sha, [1], proof["associations"], proof)
+    assert not check(
+        sha,
+        [1, 2],
+        proof["associations"],
+        proof,
+        external_axis_anchors={},
+    )
+    forged = deepcopy(proof)
+    forged["compatibility_pair"]["inverter"] = "MODEL-20"
+    assert not check(sha, [1, 2], proof["associations"], forged)
+    intervening = replace(
+        source,
+        id=native_id("text", "A different product is described here."),
+        text="A different product is described here.",
+    )
+    _, blocked = compile_publication(
+        [source, intervening, table], raw, authority(raw), Words()
+    )
+    assert not any(p["basis"] == "compatibility_pair" for p in blocked.values())
+
+
+def test_overview_series_proves_exact_battery_and_keeps_the_condition() -> None:
+    raw = basic_manifest()
+    raw["documents"][0]["type"] = "compatibility"
+    raw["products"][0]["model"] = "GW208.9-BAT-LC-G10"
+    raw["products"][1]["model"] = "GW208.9-BAT-LCD-G10"
+    sha = raw["documents"][0]["blob_sha256"]
+    section = "3) Commercial and Industrial Energy Storage Systems"
+    lines = [
+        "| Battery | Battery | Battery | Inverter Series | Inverter Series | Inverter Series | Inverter Series | Inverter Series |",
+        "| Brand | Series | Model | ETC | BTC | ET(40-50kW) | ET (80-100kW) | ETR 80-125kW |",
+        "| GOODWE | BAT *3 | GW208.9-BAT-LC-G10 |  |  | ● |  |  |",
+    ]
+
+    def chunk(kind: Literal["text", "table"], text: str, **kwargs: Any) -> Chunk:
+        digest = hashlib.sha256(f"{kind}\0{text}".encode()).hexdigest()[:8]
+        return Chunk(
+            f"{sha[:12]}-p1-{digest}",
+            sha,
+            1,
+            section,
+            kind,
+            "",
+            text,
+            "en",
+            30,
+            **kwargs,
+        )
+
+    def cell(row: int, col: int, value: str) -> SourceCell:
+        return {
+            "row_start": row,
+            "row_end": row + 1,
+            "col_start": col,
+            "col_end": col + 1,
+            "text": value,
+            "column_header": row < 2,
+            "row_header": False,
+            "row_section": False,
+            "bbox": (col * 40 + 1, row * 20 + 1, col * 40 + 30, row * 20 + 15),
+            "bbox_origin": "TOPLEFT",
+        }
+
+    header = (
+        "Brand",
+        "Series",
+        "Model",
+        "ETC",
+        "BTC",
+        "ET(40-50kW)",
+        "ET (80-100kW)",
+        "ETR 80-125kW",
+    )
+    cells = [cell(1, col, value) for col, value in enumerate(header)]
+    cells += [cell(2, 2, "GW208.9-BAT-LC-G10"), cell(2, 5, "●")]
+    table = chunk(
+        "table",
+        "\n".join(lines),
+        source_table="docling:p1:#/tables/0",
+        source_rows=(0, 1, 2),
+        source_cells=tuple(cells),
+        source_headings=(section,),
+    )
+    arm = chunk("text", OVERVIEW_ARM_NOTES["en"])
+    power = chunk("text", OVERVIEW_POWER_NOTES["en"])
+    original = [table, arm, power]
+    compiled, proofs = compile_publication(original, raw, authority(raw), Words())
+    found = [
+        c
+        for c in compiled
+        if c.id in proofs and proofs[c.id]["basis"] == "compatibility_series"
+    ]
+    assert len(found) == 1
+    result = found[0]
+    proof = proofs[result.id]
+    assert proof["product_ids"] == [1] and OVERVIEW_ARM_NOTES["en"] in result.text
+    assert "GW208.9-BAT-LCD-G10" not in result.text
+    snap = Snapshot.read(raw)
+    check = partial(
+        authorize_chunk,
+        products=snap.products,
+        documents=snap.documents,
+        chunk_id=result.id,
+        text=result.text,
+        external_axis_anchors=external_axis_anchors(original),
+        require_table_anchor=True,
+    )
+    assert check(sha, [1], proof["associations"], proof)
+    assert not check(sha, [2], proof["associations"], proof)
+    assert not check(sha, [1], [], proof)
+    assert not check(sha, [1], proof["associations"], proof, external_axis_anchors={})
+    changed_note = replace(power, text=power.text.replace("cannot", "can"))
+    _, changed_proofs = compile_publication(
+        [table, arm, changed_note], raw, authority(raw), Words()
+    )
+    assert not any(
+        p["basis"] == "compatibility_series" for p in changed_proofs.values()
+    )
+    narrow_table = replace(table, source_headings=("GW208.9-BAT-LCD-G10 only", section))
+    _, changed_proofs = compile_publication(
+        [narrow_table, arm, power], raw, authority(raw), Words()
+    )
+    assert not any(
+        p["basis"] == "compatibility_series" for p in changed_proofs.values()
+    )
+    changed_cells = deepcopy(table.source_cells)
+    next(cell for cell in changed_cells if cell["text"] == "●")["text"] = ""
+    _, changed_proofs = compile_publication(
+        [replace(table, source_cells=changed_cells), arm, power],
+        raw,
+        authority(raw),
+        Words(),
+    )
+    assert not any(
+        p["basis"] == "compatibility_series" for p in changed_proofs.values()
+    )
 
 
 @pytest.mark.parametrize(

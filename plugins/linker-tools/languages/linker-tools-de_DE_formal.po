@@ -540,6 +540,30 @@ msgstr ""
 msgid "Copy response"
 msgstr "Antwort kopieren"
 
+#: src/genie/components/CopyReply.tsx build/genie.js
+msgid "Copy question"
+msgstr "Frage kopieren"
+
+#: src/genie/App.tsx build/genie.js
+msgid "Continue with this report"
+msgstr "Mit diesem Bericht fortfahren"
+
+#: src/genie/App.tsx build/genie.js
+msgid "Copy your question and open the report in a new tab. Choose Ask Genie, paste your question and send it."
+msgstr "Kopieren Sie Ihre Frage und öffnen Sie den Bericht in einem neuen Tab. Wählen Sie „Genie fragen“, fügen Sie Ihre Frage ein und senden Sie sie."
+
+#: src/genie/App.tsx build/genie.js
+msgid "The report selection has changed. Return to the original saved report before opening a new tab."
+msgstr "Die Berichtsauswahl hat sich geändert. Kehren Sie zum ursprünglichen gespeicherten Bericht zurück, bevor Sie einen neuen Tab öffnen."
+
+#: src/genie/App.tsx build/genie.js
+msgid "Attachments stay in this tab. Attach them again in the new tab."
+msgstr "Anhänge bleiben in diesem Tab. Fügen Sie sie im neuen Tab erneut hinzu."
+
+#: src/genie/App.tsx build/genie.js
+msgid "Open saved report in a new tab"
+msgstr "Gespeicherten Bericht in neuem Tab öffnen"
+
 #: src/genie/components/EntryInbox.tsx src/hero/Hero.tsx build/genie.js
 #: build/hero.js
 msgid "Current unsent draft"

@@ -16,12 +16,14 @@ import {
  */
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
+import { __, resetLocaleData, setLocaleData } from '@wordpress/i18n';
+import germanMessages from '../../languages/linker-tools-de_DE_formal-c2be3a742ec1f5e619cd2beb8d234138.json';
 
 /**
  * Internal dependencies
  */
 import type { GenieConfig } from './config';
-import { App, resetTurnLane, type Dictation } from './App';
+import { App, reportRecoveryUrl, resetTurnLane, type Dictation } from './App';
 import { PlanningSourcesCard } from './components/PlanningSourcesCard';
 import type { PlanningSourcesBlock } from './api/turn';
 
@@ -169,6 +171,516 @@ afterEach( () => {
 	resetTurnLane();
 	delete window.linkerPublicProtection;
 	delete window.linkerPublicProtectionConfig;
+} );
+
+test( 'fresh report URLs carry only the exact saved project and run', () => {
+	const project = 'a'.repeat( 32 );
+	const run = 'b'.repeat( 32 );
+	const href = `${ window.location.origin }/configurator/?project=${ project }&run=${ run }&nonce=private&question=private#lp-calculations`;
+	const page = {
+		type: 'other' as const,
+		url: href,
+		planning_project_id: project,
+		planning_revision: 5,
+		planning_run_ids: [ run ],
+		planning_unsaved: false,
+	};
+	expect( reportRecoveryUrl( page, page, href ) ).toBe(
+		`${ window.location.origin }/configurator/?project=${ project }&run=${ run }#lp-calculations`
+	);
+	const doubled = href.replace( '/configurator/', '//outside.example/' );
+	const doubledPage = { ...page, url: doubled };
+	expect(
+		new URL( reportRecoveryUrl( doubledPage, doubledPage, doubled )! )
+			.origin
+	).toBe( window.location.origin );
+	expect(
+		reportRecoveryUrl( page, { ...page, planning_revision: 6 }, href )
+	).toBeNull();
+	expect(
+		reportRecoveryUrl( page, { ...page, planning_unsaved: true }, href )
+	).toBeNull();
+	expect(
+		reportRecoveryUrl(
+			page,
+			{ ...page, planning_run_ids: [ 'c'.repeat( 32 ) ] },
+			href
+		)
+	).toBeNull();
+	const secondRun = 'c'.repeat( 32 );
+	const compareHref = `${ window.location.origin }/configurator/?project=${ project }&compare=${ run },${ secondRun }`;
+	const comparison = {
+		...page,
+		url: compareHref,
+		planning_run_ids: [ run, secondRun ],
+	};
+	expect(
+		new URL(
+			reportRecoveryUrl( comparison, comparison, compareHref )!
+		).searchParams.get( 'compare' )
+	).toBe( `${ run },${ secondRun }` );
+	expect(
+		reportRecoveryUrl(
+			{ ...comparison, planning_run_ids: [ run, run ] },
+			comparison,
+			compareHref
+		)
+	).toBeNull();
+	expect(
+		reportRecoveryUrl(
+			page,
+			page,
+			href.replace( `run=${ run }`, `run=${ 'c'.repeat( 32 ) }` )
+		)
+	).toBeNull();
+	expect(
+		reportRecoveryUrl(
+			page,
+			page,
+			href.replace( window.location.origin, 'https://outside.example' )
+		)
+	).toBeNull();
+} );
+
+test( 'a refused saved-report question can be copied and opened in a fresh report tab', async () => {
+	const original = window.location.href;
+	const project = 'a'.repeat( 32 );
+	const run = 'b'.repeat( 32 );
+	window.history.replaceState(
+		{},
+		'',
+		`/configurator/?project=${ project }&run=${ run }&nonce=private#lp-calculations`
+	);
+	const page = {
+		type: 'other' as const,
+		title: 'Saved report',
+		url: window.location.href,
+		planning_project_id: project,
+		planning_revision: 5,
+		planning_run_ids: [ run ],
+		planning_unsaved: false,
+	};
+	const writeText = vi.fn( async () => undefined );
+	Object.defineProperty( navigator, 'clipboard', {
+		configurable: true,
+		value: { writeText },
+	} );
+	vi.mocked( sendTurn ).mockRejectedValue(
+		new Error( 'verification_widget_300030' )
+	);
+	try {
+		await renderOwned( <App config={ config() } /> );
+		fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+		act( () =>
+			window.dispatchEvent(
+				new CustomEvent( 'linker-genie-planning-context', {
+					detail: { page },
+				} )
+			)
+		);
+		fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+			target: { value: 'My exact report question' },
+		} );
+		await act( async () =>
+			fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) )
+		);
+		expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue(
+			'My exact report question'
+		);
+		const link = screen.getByRole( 'link', {
+			name: 'Open saved report in a new tab',
+		} );
+		expect( link ).toHaveAttribute(
+			'href',
+			`${ window.location.origin }/configurator/?project=${ project }&run=${ run }#lp-calculations`
+		);
+		expect( link ).toHaveAttribute( 'target', '_blank' );
+		expect( link ).toHaveAttribute( 'rel', 'noopener noreferrer' );
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Copy question' } )
+		);
+		await waitFor( () =>
+			expect( writeText ).toHaveBeenCalledWith(
+				'My exact report question'
+			)
+		);
+		expect( await screen.findByText( 'Copied' ) ).toBeVisible();
+		expect( sendTurn ).toHaveBeenCalledTimes( 1 );
+		const next = {
+			...page,
+			planning_run_ids: [ 'c'.repeat( 32 ) ],
+			url: page.url.replace( run, 'c'.repeat( 32 ) ),
+		};
+		window.history.replaceState( {}, '', next.url );
+		const staleClick = new MouseEvent( 'click', {
+			bubbles: true,
+			cancelable: true,
+		} );
+		link.dispatchEvent( staleClick );
+		expect( staleClick.defaultPrevented ).toBe( true );
+		act( () =>
+			window.dispatchEvent(
+				new CustomEvent( 'linker-genie-planning-context', {
+					detail: { page: next },
+				} )
+			)
+		);
+		expect(
+			screen.queryByRole( 'link', {
+				name: 'Open saved report in a new tab',
+			} )
+		).toBeNull();
+		expect(
+			screen.getByText( /The report selection has changed/ )
+		).toBeVisible();
+		expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue(
+			'My exact report question'
+		);
+	} finally {
+		window.history.replaceState( {}, '', original );
+	}
+} );
+
+test( 'a selection changed while verification waits cannot open the wrong report', async () => {
+	const original = window.location.href;
+	const project = 'a'.repeat( 32 );
+	const run = 'b'.repeat( 32 );
+	window.history.replaceState(
+		{},
+		'',
+		`/configurator/?project=${ project }&run=${ run }#lp-calculations`
+	);
+	const page = {
+		type: 'other' as const,
+		title: 'Report',
+		url: window.location.href,
+		planning_project_id: project,
+		planning_revision: 5,
+		planning_run_ids: [ run ],
+		planning_unsaved: false,
+	};
+	let reject!: ( error: Error ) => void;
+	vi.mocked( sendTurn ).mockImplementation(
+		() =>
+			new Promise( ( _resolve, fail ) => {
+				reject = fail;
+			} )
+	);
+	try {
+		await renderOwned( <App config={ config() } /> );
+		fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+		act( () =>
+			window.dispatchEvent(
+				new CustomEvent( 'linker-genie-planning-context', {
+					detail: { page },
+				} )
+			)
+		);
+		fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+			target: { value: 'Keep my original question' },
+		} );
+		fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
+		await waitFor( () => expect( sendTurn ).toHaveBeenCalledOnce() );
+		const next = {
+			...page,
+			planning_run_ids: [ 'c'.repeat( 32 ) ],
+			url: page.url.replace( run, 'c'.repeat( 32 ) ),
+		};
+		window.history.replaceState( {}, '', next.url );
+		act( () =>
+			window.dispatchEvent(
+				new CustomEvent( 'linker-genie-planning-context', {
+					detail: { page: next },
+				} )
+			)
+		);
+		await act( async () =>
+			reject( new Error( 'verification_widget_300030' ) )
+		);
+		expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue(
+			'Keep my original question'
+		);
+		expect(
+			screen.getByText( /The report selection has changed/ )
+		).toBeVisible();
+		expect(
+			screen.queryByRole( 'link', {
+				name: 'Open saved report in a new tab',
+			} )
+		).toBeNull();
+	} finally {
+		window.history.replaceState( {}, '', original );
+	}
+} );
+
+test( 'the actual verification adapter exposes saved-report recovery without dispatching', async () => {
+	const actual =
+		await vi.importActual< typeof import( './api/turn' ) >( './api/turn' );
+	const { webcrypto } = await import( 'node:crypto' );
+	vi.stubGlobal( 'crypto', webcrypto );
+	const original = window.location.href;
+	const project = 'a'.repeat( 32 );
+	const run = 'b'.repeat( 32 );
+	window.history.replaceState(
+		{},
+		'',
+		`/configurator/?project=${ project }&run=${ run }#lp-calculations`
+	);
+	const page = {
+		type: 'other' as const,
+		title: 'Report',
+		url: window.location.href,
+		planning_project_id: project,
+		planning_revision: 5,
+		planning_run_ids: [ run ],
+		planning_unsaved: false,
+	};
+	window.linkerPublicProtectionConfig = {
+		api: '/proof',
+		nonce: 'synthetic',
+		mode: 'enforce',
+		language: 'en',
+	};
+	window.linkerPublicProtection = {
+		proof: vi.fn( async () => {
+			throw new Error( 'verification_widget_300030' );
+		} ),
+		reset: vi.fn(),
+	};
+	const transport = vi.fn< typeof fetch >();
+	vi.mocked( sendTurn ).mockImplementationOnce( ( request ) =>
+		actual.sendTurn( { ...request, fetcher: transport } )
+	);
+	try {
+		await renderOwned( <App config={ config() } /> );
+		fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+		act( () =>
+			window.dispatchEvent(
+				new CustomEvent( 'linker-genie-planning-context', {
+					detail: { page },
+				} )
+			)
+		);
+		fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+			target: { value: 'Saved report question' },
+		} );
+		await act( async () =>
+			fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) )
+		);
+		expect(
+			await screen.findByRole( 'link', {
+				name: 'Open saved report in a new tab',
+			} )
+		).toBeVisible();
+		expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue(
+			'Saved report question'
+		);
+		expect( transport ).not.toHaveBeenCalled();
+	} finally {
+		window.history.replaceState( {}, '', original );
+		delete window.linkerPublicProtection;
+		delete window.linkerPublicProtectionConfig;
+	}
+} );
+
+test( 'recovery keeps attachments in the original tab and copies only the question', async () => {
+	const original = window.location.href;
+	const project = 'a'.repeat( 32 );
+	const run = 'b'.repeat( 32 );
+	window.history.replaceState(
+		{},
+		'',
+		`/configurator/?project=${ project }&run=${ run }#lp-calculations`
+	);
+	const page = {
+		type: 'other' as const,
+		title: 'Report',
+		url: window.location.href,
+		planning_project_id: project,
+		planning_revision: 5,
+		planning_run_ids: [ run ],
+		planning_unsaved: false,
+	};
+	const writeText = vi.fn( async () => undefined );
+	Object.defineProperty( navigator, 'clipboard', {
+		configurable: true,
+		value: { writeText },
+	} );
+	vi.mocked( sendTurn ).mockRejectedValue(
+		new Error( 'verification_widget_300030' )
+	);
+	try {
+		await renderOwned( <App config={ config() } /> );
+		fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+		act( () =>
+			window.dispatchEvent(
+				new CustomEvent( 'linker-genie-planning-context', {
+					detail: { page },
+				} )
+			)
+		);
+		fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+			target: { value: 'Question with a file' },
+		} );
+		fireEvent.change(
+			document.querySelector( 'input[type="file"]' ) as HTMLInputElement,
+			{
+				target: {
+					files: [
+						new File( [ '%PDF-1.7' ], 'datasheet.pdf', {
+							type: 'application/pdf',
+						} ),
+					],
+				},
+			}
+		);
+		const send = screen.getByRole( 'button', { name: 'Send' } );
+		await waitFor( () => expect( send ).toBeEnabled() );
+		await act( async () => fireEvent.click( send ) );
+		expect( screen.getByText( 'datasheet.pdf' ) ).toBeVisible();
+		expect(
+			screen.getByText(
+				'Attachments stay in this tab. Attach them again in the new tab.'
+			)
+		).toBeVisible();
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Copy question' } )
+		);
+		await waitFor( () =>
+			expect( writeText ).toHaveBeenCalledWith( 'Question with a file' )
+		);
+		const href = screen
+			.getByRole( 'link', { name: 'Open saved report in a new tab' } )
+			.getAttribute( 'href' );
+		expect( href ).not.toContain( 'datasheet' );
+		expect( href ).not.toContain( 'Question' );
+	} finally {
+		window.history.replaceState( {}, '', original );
+	}
+} );
+
+test.each( [
+	[ true, 'verification_widget_300030' ],
+	[ false, 'linker_admission_quota' ],
+] )(
+	'recovery is unavailable for an unsaved report or a different refusal',
+	async ( unsaved, reason ) => {
+		const original = window.location.href;
+		const project = 'a'.repeat( 32 );
+		const run = 'b'.repeat( 32 );
+		window.history.replaceState(
+			{},
+			'',
+			`/configurator/?project=${ project }&run=${ run }#lp-calculations`
+		);
+		const page = {
+			type: 'other' as const,
+			title: 'Report',
+			url: window.location.href,
+			planning_project_id: project,
+			planning_revision: 5,
+			planning_run_ids: [ run ],
+			planning_unsaved: unsaved,
+		};
+		vi.mocked( sendTurn ).mockRejectedValue(
+			unsaved ? new Error( reason ) : new TurnError( 429, reason )
+		);
+		try {
+			await renderOwned( <App config={ config() } /> );
+			fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+			act( () =>
+				window.dispatchEvent(
+					new CustomEvent( 'linker-genie-planning-context', {
+						detail: { page },
+					} )
+				)
+			);
+			fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+				target: { value: 'Keep this question' },
+			} );
+			await act( async () =>
+				fireEvent.click(
+					screen.getByRole( 'button', { name: 'Send' } )
+				)
+			);
+			expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue(
+				'Keep this question'
+			);
+			expect(
+				screen.queryByRole( 'link', {
+					name: 'Open saved report in a new tab',
+				} )
+			).toBeNull();
+		} finally {
+			window.history.replaceState( {}, '', original );
+		}
+	}
+);
+
+test( 'German recovery uses the generated German script catalog', async () => {
+	const original = window.location.href;
+	const project = 'a'.repeat( 32 );
+	const run = 'b'.repeat( 32 );
+	window.history.replaceState(
+		{},
+		'',
+		`/de/konfigurator/?project=${ project }&run=${ run }#lp-calculations`
+	);
+	const page = {
+		type: 'other' as const,
+		title: 'Bericht',
+		url: window.location.href,
+		planning_project_id: project,
+		planning_revision: 5,
+		planning_run_ids: [ run ],
+		planning_unsaved: false,
+	};
+	setLocaleData( germanMessages.locale_data.messages, 'linker-tools' );
+	vi.mocked( sendTurn ).mockRejectedValue(
+		new Error( 'verification_widget_300030' )
+	);
+	try {
+		await renderOwned( <App config={ config( 'de' ) } /> );
+		fireEvent.click(
+			screen.getByRole( 'button', { name: __( 'Open', 'linker-tools' ) } )
+		);
+		act( () =>
+			window.dispatchEvent(
+				new CustomEvent( 'linker-genie-planning-context', {
+					detail: { page },
+				} )
+			)
+		);
+		fireEvent.change( screen.getByLabelText( 'Genie fragen' ), {
+			target: { value: 'Meine Frage zum Bericht' },
+		} );
+		await act( async () =>
+			fireEvent.click(
+				screen.getByRole( 'button', {
+					name: __( 'Send', 'linker-tools' ),
+				} )
+			)
+		);
+		expect(
+			screen.getByRole( 'button', { name: 'Frage kopieren' } )
+		).toBeVisible();
+		expect(
+			screen.getByRole( 'link', {
+				name: 'Gespeicherten Bericht in neuem Tab öffnen',
+			} )
+		).toBeVisible();
+		expect(
+			screen.getByText(
+				/Kopieren Sie Ihre Frage und öffnen Sie den Bericht/
+			)
+		).toBeVisible();
+		expect( screen.getByLabelText( 'Genie fragen' ) ).toHaveValue(
+			'Meine Frage zum Bericht'
+		);
+	} finally {
+		resetLocaleData( {}, 'linker-tools' );
+		window.history.replaceState( {}, '', original );
+	}
 } );
 
 test( 'saved source card shows exact UTC ranges without private bindings or sizing choices', async () => {
