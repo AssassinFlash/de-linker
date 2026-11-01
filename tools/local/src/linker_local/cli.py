@@ -23,6 +23,7 @@ from linker_local import (
 from linker_local.checkout import Checkout
 from linker_local.instance import Instance, check_name, database_of, directory_of, home
 from linker_local.mysql import CREDENTIALS, MySQL
+from linker_local.processes import without_research_credentials
 from linker_local.registry import Registry
 from linker_local.wpcli import WpCli
 
@@ -292,6 +293,7 @@ def require_php() -> Path:
     if found is not None:
         version = subprocess.run(
             [found, "-r", "echo PHP_MAJOR_VERSION, '.', PHP_MINOR_VERSION;"],
+            env=without_research_credentials(dict(os.environ)),
             capture_output=True,
             text=True,
             check=False,

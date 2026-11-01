@@ -124,7 +124,9 @@ def test_genie_launch_omits_weather_credential_and_keeps_its_own_model_environme
             commands.append(argv)
             launches.append(env)
 
-    monkeypatch.setenv("APIFY_TOKEN", "synthetic-private-weather")
+    monkeypatch.setattr(
+        services.os, "environ", {"APIFY_TOKEN": "synthetic-private-weather"}
+    )
     monkeypatch.setenv("APIFY_TOKEN_PRIMARY", "synthetic-research-alias")
     monkeypatch.setenv("DEEPSEEK_API_KEY", "synthetic-private-genie-model")
     monkeypatch.setattr(services, "_uv", lambda: Path(sys.executable))
