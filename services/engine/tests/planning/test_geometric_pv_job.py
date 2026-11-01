@@ -15,7 +15,7 @@ from fastapi.testclient import TestClient
 from linker_engine.planning.assets import Assets
 from linker_engine.planning.assistant_calculation_sources import calculation_sources
 from linker_engine.planning.assistant_context import assistant_context
-from linker_engine.planning.canonical import Object, encode
+from linker_engine.planning.canonical import Json, Object, encode
 from linker_engine.planning.csv_mapping import CsvMapping
 from linker_engine.planning.energy_kernel import EnergyKernel
 from linker_engine.planning.energy_service import EnergyService
@@ -573,10 +573,12 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
     geo = geometry()
     geo["module_specs"] = [{**template["specification"], "id": "module"}]
     geo["arrays"][0].update(rows=1, columns=6, excluded_slots=[])
-    ids = [pose.id for pose in panel_poses(read_geometry(geo)) if pose.included]
+    ids: list[Json] = [
+        pose.id for pose in panel_poses(read_geometry(geo)) if pose.included
+    ]
     selection = equipment_inputs(feed, 3)["equipment_selection"]
     selection["pv_dc_kw"] = 2.76
-    wiring = {
+    wiring: Object = {
         "schema_version": 1,
         "inverter_product_id": 4107,
         "minimum_ambient_c": None,
@@ -685,9 +687,12 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
     assert profile.total_kwh > 0
     bundle = reference_bundle(workspace.blobs, asset.content_sha256, asset.metadata)
     assert (
-        cast(Object, bundle["inputs"])["electrical_inputs"]["pv_string_plan"] == wiring
+        cast(Object, cast(Object, bundle["inputs"])["electrical_inputs"])[
+            "pv_string_plan"
+        ]
+        == wiring
     )
-    changed = {**project.inputs, "pv_string_plan": {**wiring, "strings": []}}
+    changed: Object = {**project.inputs, "pv_string_plan": {**wiring, "strings": []}}
     with pytest.raises(InvalidInput, match="equipment or string assignments"):
         profile_dependencies(asset, "pv_available_ac", changed, workspace.blobs)
     with pytest.raises(ProjectInputContractRequired):
@@ -784,7 +789,7 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
                     "grid_kwh": 0,
                     "initial_unknown_kwh": 0,
                     "basis": "synthetic_fixture",
-                    "source_note": "No battery",
+                    "source_note": "Initially empty synthetic battery",
                 },
                 "schedule": [
                     {

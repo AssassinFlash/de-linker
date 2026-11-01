@@ -17,7 +17,9 @@ from linker_engine.planning.equipment_assessment import assess_equipment
 from linker_engine.planning.equipment_kernel import EquipmentKernel
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.product_sources import ProductSources
-from linker_engine.planning.project_input_contracts import ENGINEERING_V10_INPUT_CONTRACT
+from linker_engine.planning.project_input_contracts import (
+    ENGINEERING_V10_INPUT_CONTRACT,
+)
 from linker_engine.planning.records import Actor, Context
 from linker_engine.planning.report_copy import text
 from linker_engine.planning.report_inputs import ReportOptions
@@ -93,7 +95,7 @@ def test_saved_rules_reach_all_consumers_and_remain_frozen(
         {
             "kind": EquipmentKernel.kind,
             "assessment": assessment,
-            "pinned_assets": equipment_context.assets,
+            "pinned_assets": cast(Object, equipment_context.assets),
             "runtime_sha256": equipment_context.code_sha256,
         },
     )

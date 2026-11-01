@@ -10,9 +10,9 @@ import numpy as np
 import pytest
 from conftest import SHIPPED_COMPATIBILITY, publication_feed
 from pvlib import pvsystem
-from scipy.optimize import minimize_scalar
+from scipy.optimize import minimize_scalar  # type: ignore[import-untyped]
 
-from linker_engine.planning.canonical import Object
+from linker_engine.planning.canonical import Json, Object
 from linker_engine.planning.equipment_facts import compile_facts
 from linker_engine.planning.pv_iv_model import derive_iv_model, model_point
 from linker_engine.planning.pv_series_operating import series_operating_point
@@ -22,7 +22,7 @@ def test_fitted_module_series_conditions_follow_the_common_current() -> None:
     raw = json.loads((Path(__file__).parents[1] / "fixtures/feed.json").read_text())
     feed = publication_feed(raw, json.loads(SHIPPED_COMPATIBILITY.read_text()))
     facts = compile_facts(feed["overlay"][0])
-    model = derive_iv_model(cast(Object, facts))
+    model = derive_iv_model(facts)
     assert model["status"] == "available"
     params = cast(dict[str, Any], model["parameters"])
     first = (np.array([1000.0, 1000.0, 0.0]), np.array([25.0, 25.0, 25.0]))
@@ -78,11 +78,11 @@ def test_real_roof_irradiance_flows_through_the_selected_woo_string() -> None:
     reference = feed["overlay"][0]
     template = module_template(reference)
     geo = geometry()
-    geo["module_specs"] = [{**template["specification"], "id": "module"}]
+    geo["module_specs"] = [{**cast(Object, template["specification"]), "id": "module"}]
     geo["arrays"][0].update(rows=1, columns=6, excluded_slots=[])
-    ids = [p.id for p in panel_poses(read_geometry(geo)) if p.included]
+    ids: list[Json] = [p.id for p in panel_poses(read_geometry(geo)) if p.included]
     inverter = next(item for item in feed["products"] if item["id"] == 4107)
-    selection = {
+    selection: Object = {
         "schema_version": 1,
         "inverter_product_id": 4107,
         "battery_product_id": None,
@@ -96,7 +96,7 @@ def test_real_roof_irradiance_flows_through_the_selected_woo_string() -> None:
         "required_discharge_ac_kw": None,
         "product_revisions": {"4107": inverter["product_revision"]},
     }
-    wiring = {
+    wiring: Object = {
         "schema_version": 1,
         "inverter_product_id": 4107,
         "minimum_ambient_c": None,
@@ -104,7 +104,9 @@ def test_real_roof_irradiance_flows_through_the_selected_woo_string() -> None:
         "strings": [{"id": "s1", "mppt": 1, "input": 1, "module_ids": ids}],
     }
     par = perez_parameters()
-    par["modules"] = [{**template["parameters"], "module_spec_id": "module"}]
+    par["modules"] = [
+        {**cast(Object, template["parameters"]), "module_spec_id": "module"}
+    ]
     par["converters"][0]["input_assumption"] = (
         "one_string_per_tracker_independent_mpp_sum"
     )
@@ -147,7 +149,6 @@ def test_real_roof_irradiance_flows_through_the_selected_woo_string() -> None:
     assert 180 <= string["voltage_v"][0] <= 900
     assert string["dc_available_w"][0] > 0
     assert result.profile.values_kw[0] > 0
-    assert (
-        "cell_substring_bypass_diode_and_reverse_breakdown"
-        in witness["inputs"]["not_assessed"]
+    assert "cell_substring_bypass_diode_and_reverse_breakdown" in cast(
+        list[str], cast(Object, witness["inputs"])["not_assessed"]
     )
