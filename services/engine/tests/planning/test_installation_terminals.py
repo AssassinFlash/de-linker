@@ -18,14 +18,18 @@ from linker_engine.engine import Engine
 from linker_engine.planning.canonical import Object, digest, encode
 from linker_engine.planning.energy_kernel import EnergyKernel
 from linker_engine.planning.energy_service import EnergyService
+from linker_engine.planning.equipment_kernel import EquipmentKernel
+from linker_engine.planning.equipment_service import EquipmentService
 from linker_engine.planning.errors import (
     InvalidInput,
     ProductEvidenceChanged,
     ProjectInputContractRequired,
 )
+from linker_engine.planning.execution_registry import service_registry
 from linker_engine.planning.http_app import HttpLimits, create_private_app
 from linker_engine.planning.installation_inputs import InstallationInputs
 from linker_engine.planning.installation_takeoff import product_basis, route_takeoff
+from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.product_sources import ProductProvider, ProductSources
 from linker_engine.planning.project_input_contracts import (
     SUPPORTED_INPUT_CONTRACTS,
@@ -38,7 +42,9 @@ from linker_engine.planning.project_input_floor import (
 )
 from linker_engine.planning.records import Actor
 from linker_engine.planning.report_inputs import ReportOptions
-from linker_engine.planning.report_kernel import ReportKernel
+from linker_engine.planning.report_kernel import ReportKernel, ReportService
+from linker_engine.planning.report_sources import ReportInputsChanged
+from linker_engine.planning.worker import Worker
 from linker_engine.planning.workspace import Workspace
 from linker_engine.products import Products
 from linker_engine.publication import Publication
@@ -46,6 +52,7 @@ from linker_engine.publication import Publication
 from .conftest import FixtureObject, json_object
 from .test_energy_kernel import TOLERANCE
 from .test_equipment import feed as equipment_feed  # noqa: F401
+from .test_equipment import inputs as equipment_inputs
 from .test_installation_electrical import circuit_fixture
 from .test_private_http import TOKEN, headers
 
@@ -353,6 +360,10 @@ def test_scoped_report_source_and_retained_floor_are_frozen(
 ) -> None:
     inputs, basis = sample()
     bind(inputs, basis, 0, "external-communication-terminal", "COM1")
+    # A bound endpoint is sufficient even before a communication cable or a
+    # circuit-use declaration has been recorded.
+    inputs["installation"]["circuits"][0].pop("communication_use")
+    inputs["installation"]["cable_runs"] = []
     source = ProductSources(lambda: None)  # type: ignore[arg-type,return-value]
     monkeypatch.setattr(source, "equipment_basis", lambda **_: copy.deepcopy(basis))
     monkeypatch.setattr(source, "confirm_basis", lambda *_args, **_kwargs: None)
@@ -379,6 +390,8 @@ def test_scoped_report_source_and_retained_floor_are_frozen(
     frozen = json_object(workspace.blobs.object(context.assets["report.source"]))
     row = frozen["installation"]["terminal_assessment"]["circuits"][0]["endpoints"][0]
     assert row["status"] == "documented" and row["fact"]["source"]["page"] == 23
+    assert frozen["installation"]["cables"] == []
+    assert all(line["quantity"] is None for line in frozen["materials"]["lines"])
     basis["products"] = []
     assert workspace.blobs.object(context.assets["report.source"]) == frozen
     floor = read_project_input_floor(workspace.database.path.parent)
@@ -510,6 +523,204 @@ def test_current_woo_to_owned_save_preview_and_report(
             "/installation/review", json=body, headers=headers(owner)
         )
         assert rejected.status_code == 409, rejected.text
+
+
+def test_combined_report_requires_assessed_revision_and_supports_terminal_only(
+    engine: Engine,
+    workspace: Workspace,
+    owner: Actor,
+    request: pytest.FixtureRequest,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    feed = copy.deepcopy(request.getfixturevalue("equipment_feed"))
+    feed.update(figure_projection_version=2, compatibility_origin="woocommerce")
+
+    def current(self: Publication) -> FixtureObject:
+        manifest = publication_manifest(self.feed)
+        for row in manifest["products"]:
+            row["ready"]["engineering"] = True
+        return manifest
+
+    monkeypatch.setattr(Publication, "read", current)
+    shared = cast(
+        ProductProvider,
+        SimpleNamespace(
+            engine=replace(engine, products=Products.from_feed(feed)),
+            publication=Publication(feed),
+            version="synthetic-loaded-generation",
+        ),
+    )
+    sources = ProductSources(lambda: shared)
+    inputs, _ = sample()
+    inputs.update(equipment_inputs(feed, 3))
+    plan = inputs["installation"]
+    revision_b = next(
+        p["product_revision"] for p in feed["products"] if p["id"] == 4107
+    )
+    plan["instances"][0].update(product_id=4107, product_revision=revision_b)
+    plan["instances"][1].update(product_id=None, product_revision=None)
+    plan["cable_runs"] = []
+    project = workspace.create(
+        owner,
+        "Terminal-only equipment scope",
+        cast(Object, inputs),
+        key="combined-scope",
+        input_contract=TERMINAL_INPUT_CONTRACT,
+    )
+    equipment = EquipmentService(
+        workspace, EquipmentKernel(workspace, sources), max_attempts=1
+    )
+    reports = ReportService(workspace, ReportKernel(workspace, sources), max_attempts=1)
+    energy = EnergyService(
+        workspace, EnergyKernel(workspace, TOLERANCE, max_intervals=10), max_attempts=1
+    )
+    registry = service_registry(energy, None, None, equipment, None, reports)
+    worker = Worker(
+        Jobs(workspace),
+        "terminal-scope",
+        {"evaluate": registry},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+        routing=registry.routing(8),
+    )
+    checked = equipment.evaluate(owner, project.id, 1, key="equipment")
+    assert worker.run_once()
+    completed = workspace.run(owner, checked.id)
+    assert completed.state == "succeeded", completed.error
+    assessment = json_object(json_object(completed.result)["assessment"])
+    selected = next(
+        p for p in assessment["selected_products"] if p["product_id"] == 4107
+    )
+    assert selected["product_revision"] == revision_b
+    assert (
+        next(
+            p
+            for p in assessment["provisional_bill_of_materials"]
+            if p["product_id"] == 4107
+        )["quantity"]
+        == 1
+    )
+    options = ReportOptions.read(
+        {
+            "locale": "en",
+            "energy_run_id": None,
+            "pv_run_id": None,
+            "equipment_run_id": checked.id,
+            "logo": None,
+            "include_installation": True,
+        }
+    )
+    generated = reports.evaluate(owner, project.id, 1, options, key="combined-report")
+    assert worker.run_once()
+    report_run = workspace.run(owner, generated.id)
+    assert report_run.state == "succeeded", report_run.error
+    original = copy.deepcopy(json_object(report_run.result))
+    frozen = json_object(
+        workspace.blobs.object(original["dependencies"]["report_source"])
+    )
+    assert frozen["installation"]["cables"] == []
+    assert (
+        frozen["installation"]["terminal_assessment"]["circuits"][0]["endpoints"][0][
+            "status"
+        ]
+        == "not_bound"
+    )
+    terminal_lines = [
+        line
+        for line in frozen["materials"]["lines"]
+        if line["basis"] == "manufacturer_one_end_mapping"
+    ]
+    assert len(terminal_lines) == 1 and terminal_lines[0]["quantity"] is None
+    assert not any(
+        line["basis"] == "installation_route_takeoff_v1"
+        for line in frozen["materials"]["lines"]
+    )
+
+    # The same selected product and count with an older physical instance
+    # revision must not be merged into this equipment assessment.
+    stale = copy.deepcopy(inputs)
+    stale["installation"]["instances"][0]["product_revision"] = "a" * 64
+    changed = workspace.revise(
+        owner,
+        project.id,
+        1,
+        cast(Object, stale),
+        key="stale",
+        input_contract=TERMINAL_INPUT_CONTRACT,
+    )
+    with pytest.raises(ReportInputsChanged, match="assessment scope"):
+        reports.kernel.context(owner, project.id, changed.revision, options)
+
+    route_only = reports.kernel.context(
+        owner,
+        project.id,
+        changed.revision,
+        options.model_copy(update={"equipment_run_id": None}),
+    )
+    route_source = json_object(
+        workspace.blobs.object(route_only.assets["report.source"])
+    )
+    assert (
+        route_source["installation"]["instances"][0]["product_status"]
+        == "product_revision_changed"
+    )
+    assert route_source["installation"]["cables"] == []
+    assert all(line["quantity"] is None for line in route_source["materials"]["lines"])
+    assert workspace.run(owner, generated.id).result == original
+    assert workspace.blobs.object(original["dependencies"]["report_source"]) == frozen
+
+    # The source assessment permits one converter, not two physical copies.
+    extra = copy.deepcopy(inputs)
+    extra["installation"]["instances"][1].update(
+        product_id=4107, product_revision=revision_b
+    )
+    changed = workspace.revise(
+        owner,
+        project.id,
+        changed.revision,
+        cast(Object, extra),
+        key="extra",
+        input_contract=TERMINAL_INPUT_CONTRACT,
+    )
+    with pytest.raises(ReportInputsChanged, match="assessment scope"):
+        reports.kernel.context(owner, project.id, changed.revision, options)
+
+    other = copy.deepcopy(inputs)
+    selected_other = next(p for p in feed["products"] if p["id"] == 1956)
+    other["installation"]["instances"][0].update(
+        product_id=1956, product_revision=selected_other["product_revision"]
+    )
+    changed = workspace.revise(
+        owner,
+        project.id,
+        changed.revision,
+        cast(Object, other),
+        key="other",
+        input_contract=TERMINAL_INPUT_CONTRACT,
+    )
+    with pytest.raises(ReportInputsChanged, match="assessment scope"):
+        reports.kernel.context(owner, project.id, changed.revision, options)
+
+    # With neither a cable, a terminal declaration nor a string link, the
+    # original routing admission remains closed.
+    legacy = copy.deepcopy(inputs)
+    legacy["installation"]["circuits"][0].pop("communication_use")
+    changed = workspace.revise(
+        owner,
+        project.id,
+        changed.revision,
+        cast(Object, legacy),
+        key="no-terminal-or-cable",
+        input_contract=TERMINAL_INPUT_CONTRACT,
+    )
+    with pytest.raises(InvalidInput, match="physical cable"):
+        reports.kernel.context(
+            owner,
+            project.id,
+            changed.revision,
+            options.model_copy(update={"equipment_run_id": None}),
+        )
 
 
 def test_feed_schema_restricts_structured_usage_to_communication_maps() -> None:

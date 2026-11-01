@@ -699,15 +699,32 @@ def report_sources(
     installation: Object | None = None
     if options.include_installation:
         plan = InstallationInputs.read(project.inputs.get("installation"))
+        from .installation_terminals import has_terminal_feature
+
+        ports = {
+            (device.id, port.id): port
+            for device in plan.instances
+            for port in device.ports
+        }
+        has_terminal_circuit = has_terminal_feature(plan) and any(
+            circuit.kind == "control"
+            and "communication_use" in circuit.model_fields_set
+            or any(
+                ports[(endpoint.instance_id, endpoint.port_id)].terminal_binding
+                is not None
+                for endpoint in (circuit.start, circuit.end)
+            )
+            for circuit in plan.circuits
+        )
         if (
             not plan.cable_runs
             and "pv_string_links" not in plan.model_fields_set
             and project.inputs.get("pv_plant_string_plan") is None
+            and not has_terminal_circuit
         ):
             raise InvalidInput(
                 "select at least one physical cable for the routing report"
             )
-        from .installation_terminals import has_terminal_feature
 
         basis = product_basis(
             plan,
@@ -731,20 +748,29 @@ def report_sources(
             raise InvalidInput("installation source export permission is unconfirmed")
         bases["installation"] = workspace.blobs.put_object(basis)
         if isinstance(assessment, dict):
-            counts: dict[int, int] = {}
+            counts: dict[tuple[int, str], int] = {}
             for instance in plan.instances:
                 if instance.product_id is not None:
-                    counts[instance.product_id] = counts.get(instance.product_id, 0) + 1
-            checked = {
-                p["product_id"]: p.get("quantity")
-                for p in cast(list[Object], assessment["provisional_bill_of_materials"])
-            }
+                    assert instance.product_revision is not None
+                    product_identity = (instance.product_id, instance.product_revision)
+                    counts[product_identity] = counts.get(product_identity, 0) + 1
+            selected = cast(list[Object], assessment["selected_products"])
+            bom = cast(list[Object], assessment["provisional_bill_of_materials"])
             if any(
-                type(checked.get(pid)) is not int or quantity > cast(int, checked[pid])
-                for pid, quantity in counts.items()
+                len(
+                    products_for_id := [
+                        p for p in selected if p.get("product_id") == pid
+                    ]
+                )
+                != 1
+                or products_for_id[0].get("product_revision") != revision
+                or len(lines := [p for p in bom if p.get("product_id") == pid]) != 1
+                or type(lines[0].get("quantity")) is not int
+                or quantity > cast(int, lines[0]["quantity"])
+                for (pid, revision), quantity in counts.items()
             ):
                 raise ReportInputsChanged(
-                    "installation instances exceed the selected equipment assessment scope"
+                    "installation instances differ from the selected equipment assessment scope"
                 )
 
     if not sources and installation is None:
