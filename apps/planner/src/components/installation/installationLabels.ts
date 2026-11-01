@@ -5,6 +5,33 @@ import type {
 } from "../../domain/installation.ts";
 import { formatDecimal } from "../../domain/decimal.ts";
 import { __ } from "../../i18n.ts";
+import type {
+	CommunicationUse,
+	TerminalDomain,
+} from "../../domain/installationTerminals.ts";
+import { electricalText } from "./ElectricalConditionFields.tsx";
+
+export function terminalDomainLabel(
+	domain: TerminalDomain,
+	locale: string,
+): string {
+	const t = (en: string, de: string) => electricalText(locale, en, de);
+	return {
+		ac: "AC",
+		pe: t("Protective earth", "Schutzleiter"),
+		battery_dc: t("Battery DC", "Batterie-DC"),
+		pv_dc: "PV DC",
+		communication: t("Communication", "Kommunikation"),
+	}[domain];
+}
+export function communicationUseLabel(
+	use: CommunicationUse,
+	locale: string,
+): string {
+	return use === "external_communication"
+		? electricalText(locale, "External communication", "Externe Kommunikation")
+		: electricalText(locale, "Internal communication", "Interne Kommunikation");
+}
 
 /** A declared cross-section is shown as declared, never as a sizing result. */
 export function conductorLabel(

@@ -13,6 +13,11 @@ import { sameJson } from "./draft.ts";
 import type { PvPlantStringPlan } from "./pvPlantStrings.ts";
 import type { EquipmentPlant } from "./equipmentPlant.ts";
 import type { PvStringPlan } from "./pvStrings.ts";
+import { readTerminalAssessment } from "./installationTerminals.ts";
+import type {
+	TerminalAssessment,
+	TerminalBinding,
+} from "./installationTerminals.ts";
 
 export interface RoutePoint {
 	east_m: number;
@@ -23,6 +28,7 @@ export interface ConnectionPoint {
 	id: string;
 	name: string;
 	position: RoutePoint;
+	terminal_binding?: TerminalBinding | null;
 }
 export interface DeviceInstance {
 	id: string;
@@ -38,6 +44,8 @@ export interface Endpoint {
 }
 export interface InstallationCircuit {
 	operating_conditions?: CircuitOperatingCondition[];
+	communication_use?:
+		"external_communication" | "internal_communication" | null;
 	id: string;
 	name: string;
 	kind:
@@ -152,6 +160,7 @@ export function readInstallation(value: unknown): InstallationInputs {
 		) ||
 		value.circuits.some(
 			(c) =>
+				(c.communication_use != null && c.kind !== "control") ||
 				!distinct((c.operating_conditions ?? []).map((row) => row.id)) ||
 				!ports.has(c.start.instance_id + ":" + c.start.port_id) ||
 				!ports.has(c.end.instance_id + ":" + c.end.port_id) ||
@@ -191,6 +200,7 @@ export interface CableQuantity extends JsonObject {
 }
 export interface InstallationReview {
 	electrical?: ElectricalReview;
+	terminal_assessment?: TerminalAssessment;
 	prepared_inputs: InstallationInputs;
 	geometry_sha256: string;
 	cables: CableQuantity[];
@@ -530,8 +540,10 @@ export function readInstallationReview(
 	)
 		throw new ApiError(502, "invalid_installation_review");
 	const electrical = readElectricalReview(row.electrical, requested, cables);
+	const terminals = readTerminalAssessment(row.terminal_assessment, requested);
 	return {
 		...(electrical ? { electrical } : {}),
+		...(terminals ? { terminal_assessment: terminals } : {}),
 		prepared_inputs: prepared,
 		geometry_sha256: row.geometry_sha256,
 		cables,
