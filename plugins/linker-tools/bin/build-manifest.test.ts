@@ -9,11 +9,13 @@ import {
 	copyFileSync,
 	mkdirSync,
 	mkdtempSync,
+	readFileSync,
 	rmSync,
 	unlinkSync,
 	writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
+import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, beforeEach, expect, test } from 'vitest';
@@ -47,6 +49,24 @@ function run( command: 'write' | 'check' ) {
 		[ file( 'bin/build-manifest.mjs' ), command ],
 		{ encoding: 'utf8' }
 	);
+}
+
+function addPlannerFixture() {
+	writeFileSync( file( 'package.json' ), '{"name":"linker-tools"}\n' );
+	writeFileSync(
+		file( 'project-input-contracts.json' ),
+		'{"project_input_contracts":["fixture"]}\n'
+	);
+	for ( const [ path, content ] of Object.entries( {
+		'build/planner/source-manifest.json':
+			'{"project_input_contracts":["fixture"]}\n',
+		'build/planner/vite-manifest.json':
+			'{"src/main.tsx":{"file":"assets/planner.js","isEntry":true}}\n',
+		'build/planner/assets/planner.js': 'console.log("planner");\n',
+	} ) ) {
+		mkdirSync( dirname( file( path ) ), { recursive: true } );
+		writeFileSync( file( path ), content );
+	}
 }
 
 beforeEach( () => {
@@ -121,4 +141,53 @@ test( 'fails without a manifest', () => {
 
 	expect( result.status ).toBe( 1 );
 	expect( result.stderr ).toContain( 'build/manifest.json is unreadable' );
+} );
+
+test( 'webpack keeps the independent Planner and the default asset directories', () => {
+	const require = createRequire( import.meta.url );
+	const config = require( '../webpack.config.js' );
+	for ( const path of [
+		'planner',
+		'planner/assets/planner.js',
+		'fonts/example.woff2',
+		'images/example.png',
+	] ) {
+		expect( config.output.clean.keep.test( path ) ).toBe( true );
+	}
+	expect( config.output.clean.keep.test( 'stale.js' ) ).toBe( false );
+} );
+
+test.each( [
+	'build/planner/source-manifest.json',
+	'build/planner/vite-manifest.json',
+	'build/planner/assets/planner.js',
+] )( 'Tools refuses a missing %s for both write and check', ( path ) => {
+	addPlannerFixture();
+	expect( run( 'write' ).status ).toBe( 0 );
+	const recorded = readFileSync( file( 'build/manifest.json' ), 'utf8' );
+	unlinkSync( file( path ) );
+	expect( run( 'check' ).status ).not.toBe( 0 );
+	expect( run( 'write' ).status ).not.toBe( 0 );
+	expect( readFileSync( file( 'build/manifest.json' ), 'utf8' ) ).toBe(
+		recorded
+	);
+} );
+
+test( 'Tools refuses a Vite manifest with no Planner entry', () => {
+	addPlannerFixture();
+	expect( run( 'write' ).status ).toBe( 0 );
+	writeFileSync( file( 'build/planner/vite-manifest.json' ), '{}\n' );
+	for ( const command of [ 'write', 'check' ] as const ) {
+		const result = run( command );
+		expect( result.status ).not.toBe( 0 );
+		expect( result.stderr ).toContain(
+			'Planner build entry is missing or invalid'
+		);
+	}
+} );
+
+test( 'Commerce does not require a Planner build', () => {
+	writeFileSync( file( 'package.json' ), '{"name":"linker-commerce"}\n' );
+	expect( run( 'write' ).status ).toBe( 0 );
+	expect( run( 'check' ).status ).toBe( 0 );
 } );

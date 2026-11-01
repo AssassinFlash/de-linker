@@ -112,7 +112,7 @@
 		"src/protection/request.ts": "68328c68147ab8f50ef7ced68fac3946d6526e928434cdabd6c8d8a9e3639d05",
 		"src/shared/ProductCard.tsx": "6c051ee07c94c2a3f9e566a87e8588d2cec99508d0fdce77cf360dfc604d467c",
 		"src/shared/product-card.css": "c2e248be045f0b9b9a8bde964933b44e5132a6b345bb546c6558814a05a2db56",
-		"webpack.config.js": "f2280f865fcec5d51d0de922f72522f7c1502b5294a315845f11451e1ebcfbba"
+		"webpack.config.js": "70bed0527af0bd320783bece61a6260319c17bfb179b886082ff42f7ce7b530c"
 	},
 	"build": {
 		"build/52.js": "f008f307aac608e12d9e5609edc3e9d3611944f5ff667660959135efb86ac498",
