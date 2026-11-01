@@ -154,6 +154,7 @@ GENIE_COMMERCE_INPUTS = (
     "plugins/linker-commerce/includes/Products/SelectionFacts.php",
     *ENGINE_PUBLICATION_INPUTS,
 )
+CABLE_ADOPTION = "plugins/linker-commerce/data/cable-references.json"
 COMMERCE_COMPATIBILITY = "plugins/linker-commerce/data/compatibility.json"
 PLANNER_CHUNK = re.compile(
     r"plugins/linker-tools/build/planner/assets/([A-Za-z0-9_-]+)-[A-Za-z0-9_-]{8}\.js"
@@ -284,6 +285,10 @@ def selected_modules(changes, base="", head=""):
         elif path.startswith("mu-plugins/"):
             selected.add("php:mu")
             selected.update(native)
+        elif path == CABLE_ADOPTION:
+            # The CLI reads this once for adoption. Engine/Genie consume Woo
+            # publications, never this input file as a runtime data source.
+            selected.update(("php:commerce", "content"))
         elif path.startswith("plugins/"):
             parts = path.split("/")
             package = parts[1]

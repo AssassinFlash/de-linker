@@ -371,6 +371,17 @@ class ScopeTest(unittest.TestCase):
             },
         )
 
+    def test_reviewed_cable_adoption_input_selects_its_native_consumer(self):
+        self.assertEqual(
+            set(ci_scope.selected_modules([("A", ci_scope.CABLE_ADOPTION)])),
+            {"php:commerce", "content"},
+        )
+        self.assertIsNone(
+            ci_scope.selected_modules(
+                [("A", "plugins/linker-commerce/data/unknown.json")]
+            )
+        )
+
     def test_real_git_diff_detects_rename_and_symlink(self):
         self.regular.stop()
         self.non_runtime.stop()
