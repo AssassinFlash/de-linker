@@ -478,3 +478,9 @@ Aladdin 不只提供画布。固定源码中已经能追到：
 Apify run `nhPfDmNMgtWfE3VZY` 完成，结果包含 6 条搜索项。逐项检查后未定位可确认的原厂指南正文链接，本次没有依据这些结果采用组串熔断倍率。run 自有 dataset、KV、队列均已通过 Apify 读回 404。本机读取 dataset 删除状态时曾网络超时，后经独立网络出口确认删除已生效，其余两项随后按各自所有权删除并核对。
 
 现有工程参考 8349 的本地 Woo feed（source `e1773a35f189…`）已维护 `max_series_fuse_a=25 A`，出处为 Trina 原件第 2 页。本轮实际重新核对两页原件字节 SHA-256 `f4d280f9a0d89475cf575fbb99906e2b091da27f08b848fc51877cc1d24e8e22` 和第 2 页的 Max Series Fuse Rating。该值是模块允许的串联熔断器额定电流上限。判断某个并联方案是否需要保护、选择实际熔断器、核算反向故障电流和电缆保护仍需要相应器件与项目依据。[Trina Vertex S+ NEG9R.28 原厂数据手册，第 2 页](https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf#page=2)
+
+沿用已核实的 Trina Vertex O 手册取证，负责人 root。既有 Apify run MvqRIQ2KHBaQlPPUr 的 KV 原件仍可读（9,843,677 字节），无需新建 actor 或再次访问官网。因本手册同时支持冷态 Voc 与本次新核查的组串保护章节，将哈希核实过的原件私有保存一份至 /Users/chesterjohn/de-linker-data/pdf/b1f566099b1e5e6e001a62d6ae417239e8b0d3e67477f3ce6bf9f160a50ff535.pdf，避免不同章节重复下载。仅内部取证使用，不上传到公开网站。同 SHA 保留一份；工程证据不再引用且有可信替代版本时复核回收。文本/渲染只经内存，旧 run 的取证存储原样保留。
+
+已从既有 Apify KV 读回 48 页、9,843,677 字节的原件，与此前记录的 SHA-256 完全一致。PDF 第 41 页（印刷页 36）§6.4.3 已实际渲染核对，避免把缺失的公式下标误读为普通系数。厂家给出的 IEC 形式为 `(1.5 / Kf) × Isc ≤ In ≤ Max Series Fuse Rating`，同页另列 NEC 系数 1.56。In 是熔断器额定电流，Isc 是组件短路电流，Kf 是熔断器工作温度修正系数。第 42 页要求按工作温度确定系数，并由合格设计方和熔断器厂家确认最终选型。这是 Trina 对该手册所列组件的说明，未取得 IEC 标准全文或当地采用条件。[Trina Vertex 安装手册，§6.4.3，PDF 第 41–42 页](https://www-cdn.trinasolar.com/wwwstorage/sites/7/UM-M-0002-_O_User-Manual-1.pdf#page=41)
+
+对已绑定的 NEG9R.28 460 W 原件，仅能得到该厂商 IEC 分支的符号区间 `16.215 A / Kf ≤ In ≤ 25 A`，其中 Isc 为 10.81 A。当前项目还没有选定熔断器的 Kf 来源，且本段没有给出何种反向故障工况必须安装熔断器，因此不生成一个 20 A 或 25 A 的选型，也不授予电缆、分断或上下级配合放行。新增本机私有原件一份，精确字节与哈希已复读；没有新建 Apify run、公开 Woo 附件或输出图片文件。
