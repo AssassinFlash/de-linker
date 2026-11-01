@@ -10,6 +10,7 @@ from .canonical import Object, digest, encode
 from .errors import InvalidInput, VersionUnavailable
 from .execution_identity import execution_key, request_execution_key
 from .frozen_run import frozen_manifest
+from .geometric_pv_admission import admitted_limits
 from .geometric_pv_generation import generate_geometric_pv
 from .geometric_pv_inputs import (
     KIND,
@@ -22,6 +23,7 @@ from .geometric_pv_inputs import (
     GeometricPvInputs,
     GeometricPvLimits,
 )
+from .geometric_pv_limits import ClearFlatRoofLimits
 from .product_sources import ProductSources
 from .pv_parameters import PvGenerationLimits
 from .pv_preparation import require_weather_source, selected_weather
@@ -90,12 +92,18 @@ class GeometricPvKernel:
         limits: GeometricPvLimits,
         *,
         products: ProductSources,
+        expanded_limits: ClearFlatRoofLimits | None = None,
     ) -> None:
         self.workspace, self.products = workspace, products
         self.weather_limits = PvGenerationLimits.read(
             weather_limits.model_dump(mode="json")
         )
         self.limits = GeometricPvLimits.read(limits.model_dump(mode="json"))
+        self.expanded_limits = (
+            ClearFlatRoofLimits.read(expanded_limits.model_dump(mode="json"))
+            if expanded_limits is not None
+            else None
+        )
         self.runtime = workspace.kernel_runtime()
 
     def parameters(self) -> Object:
@@ -103,6 +111,11 @@ class GeometricPvKernel:
             "kind": KIND,
             "weather_limits": self.weather_limits.model_dump(mode="json"),
             "limits": self.limits.model_dump(mode="json"),
+            **(
+                {"clear_flat_roof": self.expanded_limits.model_dump(mode="json")}
+                if self.expanded_limits is not None
+                else {}
+            ),
             "product_policy": "current_woo_reference_v1",
         }
 
@@ -138,12 +151,27 @@ class GeometricPvKernel:
             else self.products.pv_basis(request.product_inputs(inputs))
         )
         extra: dict[str, str] = {}
+        selected = self.limits
+        if self.expanded_limits is not None:
+            weather = PvSource.read(
+                self.workspace.blobs, source.content_sha256, source.metadata
+            ).weather(self.weather_limits)
+            selected = admitted_limits(
+                inputs, weather, request, self.limits, self.expanded_limits
+            )
         if request.model == MODEL_V3:
             self.products.check_pv_inputs(request.product_inputs(inputs), basis)
             equipment = self.products.equipment_basis()
             equipment["pv_module_inputs"] = basis
             series_plan(inputs, equipment)
             extra["woo.equipment_inputs"] = self.workspace.blobs.put_object(equipment)
+        if selected != self.limits:
+            extra["work_budget"] = self.workspace.blobs.put_object(
+                {
+                    "profile": "clear_flat_roof_v1",
+                    "limits": selected.model_dump(mode="json"),
+                }
+            )
         return Context(
             self.runtime.sha256,
             self.models_for(request.model),
@@ -207,6 +235,8 @@ class GeometricPvKernel:
         }
         if request.model == MODEL_V3:
             expected_assets.add("woo.equipment_inputs")
+        if "work_budget" in pinned:
+            expected_assets.add("work_budget")
         if set(pinned) != expected_assets:
             raise VersionUnavailable("exact geometric PV source dependencies required")
         recorded = context.get("models")
@@ -239,11 +269,26 @@ class GeometricPvKernel:
             self.workspace.blobs, str(pinned["weather.raw"]), source_metadata
         )
         weather = source.weather(self.weather_limits)
+        selected = self.limits
+        if self.expanded_limits is not None:
+            selected = admitted_limits(
+                inputs, weather, request, self.limits, self.expanded_limits
+            )
+        if selected != self.limits:
+            if "work_budget" not in pinned or self.workspace.blobs.object(
+                str(pinned["work_budget"])
+            ) != {
+                "profile": "clear_flat_roof_v1",
+                "limits": selected.model_dump(mode="json"),
+            }:
+                raise VersionUnavailable("frozen geometric PV work budget differs")
+        elif "work_budget" in pinned:
+            raise VersionUnavailable("unexpected expanded geometric PV work budget")
         result = generate_geometric_pv(
             inputs.get("geometry"),
             weather,
             request,
-            self.limits,
+            selected,
             max_weather_rows=self.weather_limits.max_weather_rows,
             checkpoint=control.checkpoint,
             electrical_inputs=electrical_project_inputs(inputs)

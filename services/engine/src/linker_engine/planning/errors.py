@@ -75,6 +75,12 @@ class InvalidInput(PlanningError):
     code = "invalid_input"
 
 
+class GeometricPvExpandedScopeRequired(InvalidInput):
+    """The request exceeds ordinary limits and the measured expanded scope."""
+
+    code = "geometric_pv_expanded_scope_required"
+
+
 class ReportSourceExportRequired(InvalidInput):
     """A source retained by the report does not permit export."""
 

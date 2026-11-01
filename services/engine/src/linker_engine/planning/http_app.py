@@ -379,6 +379,16 @@ def create_private_app(
                     if geometric_pv is not None
                     else {}
                 ),
+                **(
+                    {
+                        "geometric_pv_clear_flat_roof": geometric_pv.kernel.expanded_limits.model_dump(
+                            mode="json"
+                        )
+                    }
+                    if geometric_pv is not None
+                    and geometric_pv.kernel.expanded_limits is not None
+                    else {}
+                ),
             },
         }
 

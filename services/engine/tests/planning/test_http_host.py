@@ -185,6 +185,60 @@ def test_legacy_lifespan_is_forwarded_once() -> None:
     assert calls == ["start", "stop"]
 
 
+def test_expanded_geometric_budget_is_explicit_and_visible_to_clients(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from pydantic import ValidationError
+
+    from .test_pv_profile import LIMITS
+
+    monkeypatch.setenv("GENIE_SERVICE_TOKEN", TOKEN)
+    values = settings(tmp_path / "private").model_dump(mode="json")
+    ordinary = {
+        "max_module_steps": 220000,
+        "max_samples": 2000000,
+        "max_ray_face_checks": 20000000,
+        "max_bounds_checks": 50000000,
+        "index_leaf_size": 8,
+    }
+    expanded = {
+        "max_module_steps": 841000,
+        "max_samples": 4300000,
+        "max_modules": 96,
+        "max_strings": 6,
+        "max_weather_rows": 8760,
+    }
+    with pytest.raises(ValidationError):
+        RuntimeConfig.model_validate(
+            {**values, "geometric_pv_clear_flat_roof": expanded}
+        )
+    with pytest.raises(ValidationError):
+        RuntimeConfig.model_validate(
+            {
+                **values,
+                "pv_preparation": LIMITS.model_dump(mode="json"),
+                "geometric_pv_generation": ordinary,
+                "geometric_pv_clear_flat_roof": {**expanded, "max_modules": 97},
+            }
+        )
+    config = RuntimeConfig.model_validate(
+        {
+            **values,
+            "pv_preparation": LIMITS.model_dump(mode="json"),
+            "geometric_pv_generation": ordinary,
+            "geometric_pv_clear_flat_roof": expanded,
+        }
+    )
+    app = EngineApplications(legacy_app(), configured_private_app(config))
+    with TestClient(app) as client:
+        response = client.post(
+            "/planning/version", json={"schema_version": 1}, headers=authority()
+        )
+        assert response.status_code == 200
+        assert response.json()["limits"]["geometric_pv_generation"] == ordinary
+        assert response.json()["limits"]["geometric_pv_clear_flat_roof"] == expanded
+
+
 def test_status_and_limits_describe_only_the_authenticated_principal(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

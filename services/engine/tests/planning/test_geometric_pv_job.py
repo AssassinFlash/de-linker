@@ -77,6 +77,120 @@ from .test_pvgis_tmy import capture, interpretation, raw
 from .test_pvgis_tmy import request as weather_request
 
 
+def test_clear_flat_roof_admission_rejects_outside_measured_scope() -> None:
+    from copy import deepcopy
+
+    from linker_engine.planning.errors import GeometricPvExpandedScopeRequired
+    from linker_engine.planning.geometric_pv_admission import admitted_limits
+    from linker_engine.planning.geometric_pv_inputs import (
+        ELECTRICAL_V3,
+        MODEL_V3,
+        POLICY_V2,
+        GeometricPvInputs,
+    )
+    from linker_engine.planning.geometric_pv_limits import ClearFlatRoofLimits
+    from linker_engine.planning.geometry import panel_poses, read_geometry
+
+    from .test_geometric_pv import perez_parameters
+    from .test_pvgis_tmy import parse
+
+    geo = geometry()
+    geo["roofs"][0]["boundary_uv"] = [[0, 0], [40, 0], [40, 40], [0, 40]]
+    geo["module_specs"][0].update(width_m=1.134, length_m=1.762, thickness_m=0.03)
+    geo["arrays"][0].update(rows=8, columns=12, excluded_slots=[])
+    par = perez_parameters()
+    par["converters"][0]["input_assumption"] = (
+        "one_string_per_tracker_independent_mpp_sum"
+    )
+    request = GeometricPvInputs.read(
+        {
+            "schema_version": 1,
+            "model": MODEL_V3,
+            "weather_asset_id": "a" * 32,
+            "sampling": {"coarse_cells_per_edge": 1, "fine_cells_per_edge": 2},
+            "diffuse_policy": POLICY_V2,
+            "thermal_policy": "sapm_from_module_mean_poa_v1",
+            "electrical_policy": ELECTRICAL_V3,
+            "parameters": par,
+        }
+    )
+    module_ids: list[Json] = [
+        pose.id for pose in panel_poses(read_geometry(geo)) if pose.included
+    ]
+    wiring: Object = {
+        "schema_version": 1,
+        "inverter_product_id": 1961,
+        "minimum_ambient_c": None,
+        "temperature_source": None,
+        "strings": [
+            {
+                "id": f"s{i + 1}",
+                "mppt": i + 1,
+                "input": 1,
+                "module_ids": module_ids[i * 16 : (i + 1) * 16],
+            }
+            for i in range(6)
+        ],
+    }
+    inputs: dict[str, Any] = {"geometry": geo, "pv_string_plan": wiring}
+    ordinary = GeometricPvLimits(
+        max_module_steps=220000,
+        max_samples=2000000,
+        max_ray_face_checks=20000000,
+        max_bounds_checks=50000000,
+        index_leaf_size=8,
+    )
+    expanded = ClearFlatRoofLimits(
+        max_module_steps=841000,
+        max_samples=4300000,
+        max_modules=96,
+        max_strings=6,
+        max_weather_rows=8760,
+    )
+    weather = parse()
+    assert (
+        admitted_limits(inputs, weather, request, ordinary, expanded).max_module_steps
+        == 841000
+    )
+    mutations = []
+    for field, value in (("mount_tilt_deg", 10), ("columns", 13), ("row_gap_m", 0.1)):
+        changed = deepcopy(inputs)
+        changed["geometry"]["arrays"][0][field] = value
+        mutations.append(changed)
+    changed = deepcopy(inputs)
+    changed["equipment_plant"] = {"schema_version": 1}
+    mutations.append(changed)
+    changed = deepcopy(inputs)
+    changed["pv_string_plan"]["strings"][0]["module_ids"] = [f"p{i}" for i in range(17)]
+    mutations.append(changed)
+    changed = deepcopy(inputs)
+    changed["geometry"]["obstacles"] = [
+        {
+            "id": "parapet",
+            "name": "Parapet",
+            "source_id": "survey",
+            "roof_id": "roof",
+            "footprint_uv": [[30, 30], [31, 30], [31, 31], [30, 31]],
+            "extrusion_axis_enu": [0, 0, 1],
+            "height_m": 4,
+        }
+    ]
+    mutations.append(changed)
+    changed = deepcopy(inputs)
+    changed["geometry"]["roofs"][0]["holes_uv"] = [[[1, 1], [2, 1], [2, 2], [1, 2]]]
+    mutations.append(changed)
+    for changed in mutations:
+        with pytest.raises(GeometricPvExpandedScopeRequired):
+            admitted_limits(changed, weather, request, ordinary, expanded)
+    ordinary_wide = ordinary.model_copy(
+        update={"max_module_steps": 841000, "max_samples": 4300000}
+    )
+    assert (
+        admitted_limits(mutations[0], weather, request, ordinary_wide, expanded)
+        == ordinary_wide
+    )
+
+
 def test_owned_complete_weather_to_profile_two_hour_energy_report_and_frozen_read(
     workspace: Workspace,
     owner: Actor,
@@ -532,11 +646,13 @@ def test_new_manifest_freezes_the_requested_generation_model(
     assert kernel.execution_key_for(MODEL_V1) != kernel.execution_key_for(MODEL_V2)
 
 
+@pytest.mark.parametrize("mode", ["ordinary", "clear-flat-roof", "budget-tamper"])
 def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_and_report(
     workspace: Workspace,
     owner: Actor,
     client: TestClient,
     monkeypatch: pytest.MonkeyPatch,
+    mode: str,
 ) -> None:
     from linker_engine.planning.equipment_kernel import EquipmentKernel
     from linker_engine.planning.equipment_service import EquipmentService
@@ -546,6 +662,7 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
         POLICY_V2,
         GeometricPvInputs,
     )
+    from linker_engine.planning.geometric_pv_limits import ClearFlatRoofLimits
     from linker_engine.planning.geometry import panel_poses, read_geometry
     from linker_engine.planning.project_input_contracts import (
         ENGINEERING_V10_INPUT_CONTRACT,
@@ -570,25 +687,50 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
     feed.update(figure_projection_version=2, compatibility_origin="woocommerce")
     basis = products.electrical_module_basis()
     template = cast(dict[str, Any], basis["module"])
+    expanded = mode != "ordinary"
     geo = geometry()
     geo["module_specs"] = [{**template["specification"], "id": "module"}]
-    geo["arrays"][0].update(rows=1, columns=6, excluded_slots=[])
+    if expanded:
+        geo["roofs"][0]["boundary_uv"] = [[0, 0], [40, 0], [40, 40], [0, 40]]
+    geo["arrays"][0].update(
+        rows=8 if expanded else 1, columns=12 if expanded else 6, excluded_slots=[]
+    )
     ids: list[Json] = [
         pose.id for pose in panel_poses(read_geometry(geo)) if pose.included
     ]
     selection = equipment_inputs(feed, 3)["equipment_selection"]
-    selection["pv_dc_kw"] = 2.76
+    selection["pv_dc_kw"] = 44.16 if expanded else 2.76
+    if expanded:
+        inverter = next(
+            product for product in feed["products"] if product["id"] == 1961
+        )
+        revisions = selection["product_revisions"]
+        revisions.pop(str(selection["inverter_product_id"]))
+        revisions["1961"] = inverter["product_revision"]
+        selection["inverter_product_id"] = 1961
     wiring: Object = {
         "schema_version": 1,
-        "inverter_product_id": 4107,
+        "inverter_product_id": 1961 if expanded else 4107,
         "minimum_ambient_c": None,
         "temperature_source": None,
-        "strings": [{"id": "s1", "mppt": 1, "input": 1, "module_ids": ids}],
+        "strings": (
+            [
+                {
+                    "id": f"s{i + 1}",
+                    "mppt": i + 1,
+                    "input": 1,
+                    "module_ids": ids[i * 16 : (i + 1) * 16],
+                }
+                for i in range(6)
+            ]
+            if expanded
+            else [{"id": "s1", "mppt": 1, "input": 1, "module_ids": ids}]
+        ),
     }
     country = declared(country="DE", complete=True)
     rules = rule_input(
         "de_pv_installed",
-        power_kw=2.76,
+        power_kw=44.16 if expanded else 2.76,
         de_before_control_test=True,
         de_remuneration="feed_in_or_tenant",
     )
@@ -618,6 +760,8 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
     par["converters"][0]["input_assumption"] = (
         "one_string_per_tracker_independent_mpp_sum"
     )
+    if expanded:
+        par["converters"][0]["reference_dc_power_w"] = 50000
     request = GeometricPvInputs.read(
         {
             "schema_version": 1,
@@ -642,13 +786,22 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
         workspace,
         LIMITS,
         GeometricPvLimits(
-            max_module_steps=60000,
-            max_samples=300000,
-            max_ray_face_checks=10000000,
-            max_bounds_checks=10000000,
-            index_leaf_size=2,
+            max_module_steps=220000 if expanded else 60000,
+            max_samples=2000000 if expanded else 300000,
+            max_ray_face_checks=20000000 if expanded else 10000000,
+            max_bounds_checks=50000000 if expanded else 10000000,
+            index_leaf_size=8 if expanded else 2,
         ),
         products=products,
+        expanded_limits=ClearFlatRoofLimits(
+            max_module_steps=841000,
+            max_samples=4300000,
+            max_modules=96,
+            max_strings=6,
+            max_weather_rows=8760,
+        )
+        if expanded
+        else None,
     )
     service = GeometricPvService(workspace, kernel, max_attempts=1)
     energy = EnergyService(
@@ -674,7 +827,55 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
         retry_seconds=1,
         routing=registry.routing(1),
     )
-    queued = service.evaluate(owner, project.id, 2, key="series-full")
+    source_revision = 2
+    if expanded:
+        from copy import deepcopy
+
+        from linker_engine.planning.errors import GeometricPvExpandedScopeRequired
+
+        bad_inputs = cast(dict[str, Any], deepcopy(project.inputs))
+        bad_inputs["geometry"]["arrays"][0]["mount_tilt_deg"] = 10
+        bad = workspace.revise(
+            owner,
+            project.id,
+            source_revision,
+            bad_inputs,
+            key="series-outside-scope",
+            input_contract=ENGINEERING_V10_INPUT_CONTRACT,
+        )
+        with pytest.raises(GeometricPvExpandedScopeRequired):
+            service.evaluate(owner, project.id, bad.revision, key="series-rejected")
+        project = workspace.revise(
+            owner,
+            project.id,
+            bad.revision,
+            project.inputs,
+            key="series-recovered",
+            input_contract=ENGINEERING_V10_INPUT_CONTRACT,
+        )
+        source_revision = project.revision
+    queued = service.evaluate(owner, project.id, source_revision, key="series-full")
+    if expanded:
+        frozen_assets = cast(Object, cast(Object, queued.manifest["context"])["assets"])
+        budget_sha = str(frozen_assets["work_budget"])
+        budget = workspace.blobs.object(budget_sha)
+        assert budget["profile"] == "clear_flat_roof_v1"
+        assert cast(Object, budget["limits"])["max_module_steps"] == 841000
+        if mode == "budget-tamper":
+            original_object = workspace.blobs.object
+
+            def altered(sha: str) -> Object:
+                if sha == budget_sha:
+                    return {**budget, "profile": "different"}
+                return original_object(sha)
+
+            with monkeypatch.context() as changed_budget:
+                changed_budget.setattr(workspace.blobs, "object", altered)
+                assert worker.run_once()
+            rejected = workspace.run(owner, queued.id)
+            assert rejected.state == "failed"
+            assert cast(Object, rejected.error)["code"] == "version_unavailable"
+            return
     assert worker.run_once()
     completed = workspace.run(owner, queued.id)
     assert completed.state == "succeeded", completed.error
@@ -685,7 +886,12 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
     profile = prepared_profile(workspace.blobs, asset.content_sha256, asset.metadata)
     assert len(profile.intervals) == 8760
     assert profile.total_kwh > 0
-    bundle = reference_bundle(workspace.blobs, asset.content_sha256, asset.metadata)
+    bundle = reference_bundle(
+        workspace.blobs,
+        asset.content_sha256,
+        asset.metadata,
+        include_modules=not expanded,
+    )
     assert (
         cast(Object, cast(Object, bundle["inputs"])["electrical_inputs"])[
             "pv_string_plan"
@@ -699,7 +905,7 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
         workspace.revise(
             owner,
             project.id,
-            2,
+            source_revision,
             project.inputs,
             key="old-series-editor",
             input_contract=GEOMETRIC_PV_INPUT_CONTRACT,
@@ -725,16 +931,26 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
             workspace.revise(
                 owner,
                 project.id,
-                2,
+                source_revision,
                 attempted,
                 key=key,
                 input_contract=MATERIALS_INPUT_CONTRACT,
             )
-    assert workspace.get(owner, project.id).revision == 2
+    assert workspace.get(owner, project.id).revision == source_revision
     assets = Assets(workspace)
     imported: dict[str, str] = {}
     for role, power in (("gross_load", 2), ("aux_ac", 0)):
-        data = f"time,power\n2023-06-16T11:00:00Z,{power}\n2023-06-16T12:00:00Z,{power}\n".encode()
+        data = (
+            (
+                "time,power\n"
+                + "".join(
+                    f"{interval.start.isoformat()},{power}\n"
+                    for interval in profile.intervals
+                )
+            ).encode()
+            if expanded
+            else f"time,power\n2023-06-16T11:00:00Z,{power}\n2023-06-16T12:00:00Z,{power}\n".encode()
+        )
         imported[role] = (
             ProfileImport(assets)
             .csv(
@@ -770,7 +986,7 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
     project = workspace.revise(
         owner,
         project.id,
-        2,
+        source_revision,
         {
             **project.inputs,
             "profile_selections": {
@@ -793,8 +1009,12 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
                 },
                 "schedule": [
                     {
-                        "start_utc": "2023-06-16T11:00:00Z",
-                        "end_utc": "2023-06-16T13:00:00Z",
+                        "start_utc": profile.intervals[0].start.isoformat()
+                        if expanded
+                        else "2023-06-16T11:00:00Z",
+                        "end_utc": profile.intervals[-1].end.isoformat()
+                        if expanded
+                        else "2023-06-16T13:00:00Z",
                         "mode": "connected",
                         "reserve_kwh": 0,
                         "import_cap_kw": None,
@@ -810,22 +1030,35 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
         key="series-energy-inputs",
         input_contract=ENGINEERING_V10_INPUT_CONTRACT,
     )
-    energy_run = energy.evaluate(owner, project.id, 3, key="series-energy")
+    energy_revision = source_revision + 1
+    energy_run = energy.evaluate(
+        owner, project.id, energy_revision, key="series-energy"
+    )
     assert worker.run_once()
     energy_result = workspace.run(owner, energy_run.id)
     assert energy_result.state == "succeeded", energy_result.error
     metrics = cast(Object, cast(Object, energy_result.result)["metrics"])
-    assert metrics["solar_load_kwh"] == pytest.approx(
-        sum(min(2, value) for value in profile.values_kw[3995:3997]), abs=1e-7
+    assert metrics[
+        "pv_direct_load_kwh" if expanded else "solar_load_kwh"
+    ] == pytest.approx(
+        sum(
+            min(2, value)
+            for value in (
+                profile.values_kw if expanded else profile.values_kw[3995:3997]
+            )
+        ),
+        abs=1e-7,
     )
     assert cast(float, metrics["pv_charge_ac_kwh"]) > 0
-    equipment_run = equipment.evaluate(owner, project.id, 3, key="series-equipment")
+    equipment_run = equipment.evaluate(
+        owner, project.id, energy_revision, key="series-equipment"
+    )
     assert worker.run_once()
     assert workspace.run(owner, equipment_run.id).state == "succeeded"
     report = reports.evaluate(
         owner,
         project.id,
-        3,
+        energy_revision,
         ReportOptions(
             locale="de",
             pv_run_id=queued.id,
@@ -860,12 +1093,14 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
     from linker_engine.planning.report_copy import text
 
     assert text("country_rule_de_eeg_export", "de") in str(sections)
-    assert report_result["revision"] == 3
+    assert report_result["revision"] == energy_revision
     source_runs = cast(list[Object], report_result["source_runs"])
     assert {queued.id, energy_run.id, equipment_run.id} <= {
         row["run_id"] for row in source_runs
     }
-    assert all(row["revision"] in (2, 3) for row in source_runs)
+    assert all(
+        row["revision"] in (source_revision, energy_revision) for row in source_runs
+    )
     attachments = cast(Object, report_result["prepared_attachments"])
     assert set(attachments) == {
         "bill_of_materials_csv",
@@ -904,7 +1139,7 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
     assert country_rows
     assert all(
         row["project_id"] == project.id
-        and row["revision"] == "3"
+        and row["revision"] == str(energy_revision)
         and row["report_source_sha256"] == report_source_sha
         for row in country_rows
     )
@@ -943,16 +1178,23 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
     from linker_engine.planning.storage import Blobs
 
     frozen_source = workspace.blobs.object(str(report_source_sha))
-    with monkeypatch.context() as forced:
-        forced.setattr(Blobs, "size", lambda _self, _sha: 97 * 1024 * 1024)
-        assert (
-            series_csv(
-                workspace.blobs,
-                cast(list[Any], frozen_source["geometric_pv_references"]),
+    if not expanded:
+        with monkeypatch.context() as forced:
+            forced.setattr(Blobs, "size", lambda _self, _sha: 97 * 1024 * 1024)
+            assert (
+                series_csv(
+                    workspace.blobs,
+                    cast(list[Any], frozen_source["geometric_pv_references"]),
+                )
+                == content
             )
-            == content
-        )
-    rows = list(csv.DictReader(io.StringIO(content.decode("utf-8"))))
+    reader = csv.DictReader(io.StringIO(content.decode("utf-8")))
+    if expanded:
+        first = next(reader)
+        assert json.loads(first["module_ids_json"]) == ids[:16]
+        assert 1 + sum(1 for _ in reader) == 6 * 8760
+        return
+    rows = list(reader)
     print(
         f"SERIES_CSV_BYTES={len(content)} ROWS={len(rows)} READ_SECONDS={time.monotonic() - started:.3f}"
     )

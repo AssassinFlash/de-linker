@@ -1,6 +1,9 @@
 """Explicit work envelope for full-source geometric PV preparation."""
 
 from dataclasses import dataclass
+from typing import Annotated
+
+from pydantic import Field
 
 from .energy_inputs import Document
 from .geometry_documents import PositiveInteger
@@ -35,3 +38,13 @@ class GeometricPvLimits(Document):
             max_ray_face_checks=self.max_ray_face_checks,
             max_bounds_checks=self.max_bounds_checks,
         )
+
+
+class ClearFlatRoofLimits(Document):
+    """Optional envelope bounded by the measured 96-module host workload."""
+
+    max_module_steps: Annotated[int, Field(strict=True, gt=0, le=841_000)]
+    max_samples: Annotated[int, Field(strict=True, gt=0, le=4_300_000)]
+    max_modules: Annotated[int, Field(strict=True, gt=0, le=96)]
+    max_strings: Annotated[int, Field(strict=True, gt=0, le=6)]
+    max_weather_rows: Annotated[int, Field(strict=True, gt=0, le=8_760)]
