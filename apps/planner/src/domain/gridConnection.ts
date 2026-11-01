@@ -69,7 +69,9 @@ export function replaceGridConnection(
 	value: GridConnection | undefined,
 ): JsonObject {
 	const { grid_connection: _removed, ...rest } = inputs;
-	return value === undefined
-		? rest
-		: { ...rest, grid_connection: readGridConnection(value)! };
+	if (value === undefined) {
+		const { country_rule_inputs: _removedRules, ...withoutRules } = rest;
+		return withoutRules;
+	}
+	return { ...rest, grid_connection: readGridConnection(value)! };
 }

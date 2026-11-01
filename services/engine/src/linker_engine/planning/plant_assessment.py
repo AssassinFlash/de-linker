@@ -96,6 +96,11 @@ def assess_plant(
                         if "grid_connection" in inputs
                         else {}
                     ),
+                    **(
+                        {"country_rule_inputs": inputs["country_rule_inputs"]}
+                        if "country_rule_inputs" in inputs
+                        else {}
+                    ),
                     "equipment_selection": unit.selection.model_dump(mode="json"),
                     **(
                         {

@@ -2257,7 +2257,7 @@ msgstr "Ohne Wärmepumpe und Elektroauto; diese wählen Sie unten aus."
 msgid "Write to our team"
 msgstr "Unserem Team schreiben"
 
-#: build/genie.js:1 build/hero.js
+#: build/genie.js:1 build/hero.js build/planner/assets/planner.js:1
 msgid "Yes"
 msgstr "Ja"
 
@@ -13123,3 +13123,271 @@ msgstr "Prüfung abbrechen"
 #: build/genie.js:1
 msgid "This source card belongs to an earlier response, not the current request."
 msgstr "Diese Quellenkarte gehört zu einer früheren Antwort und bezieht sich nicht auf die aktuelle Anfrage."
+
+#: build/planner/assets/planner.js:1
+msgid "All conditions include a plug-in solar device behind the consumer's withdrawal point, up to 2 kW installed power and up to 800 VA inverter power."
+msgstr "Alle Bedingungen umfassen ein Steckersolargerät hinter der Entnahmestelle des Verbrauchers, höchstens 2 kW installierte Leistung und höchstens 800 VA Wechselrichterleistung."
+
+#: build/planner/assets/planner.js:1
+msgid "Date for this rule reading (YYYY-MM-DD)"
+msgstr "Datum dieser Regelbetrachtung (JJJJ-MM-TT)"
+
+#: build/planner/assets/planner.js:1
+msgid "Declared power"
+msgstr "Angegebene Leistung"
+
+#: build/planner/assets/planner.js:1
+msgid "Do not assess a national rule"
+msgstr "Keine Landesregel prüfen"
+
+#: build/planner/assets/planner.js:1
+msgid "Does the complete plug-in solar exception apply?"
+msgstr "Sind alle Voraussetzungen für die Steckersolar-Ausnahme erfüllt?"
+
+#: build/planner/assets/planner.js:1
+msgid "EEG remuneration for this installation"
+msgstr "EEG-Vergütungsform dieser Anlage"
+
+#: build/planner/assets/planner.js:1
+msgid "Enter Pmax for the generation unit under Regulation (EU) 2016/631, not a device rating or Article 3 installed power by assumption."
+msgstr "Geben Sie Pmax der Erzeugungseinheit nach Verordnung (EU) 2016/631 ein. Übernehmen Sie dafür nicht ungeprüft einen Gerätenennwert oder die installierte Leistung nach Artikel 3."
+
+#: build/planner/assets/planner.js:1
+msgid "Enter a valid date and positive numbers, or leave them empty. Your entries remain available for correction."
+msgstr "Geben Sie ein gültiges Datum und positive Zahlen ein oder lassen Sie die Felder leer. Ihre Eingaben bleiben zur Korrektur erhalten."
+
+#: build/planner/assets/planner.js:1
+msgid "Enter installed solar power calculated for EEG section 9, including its aggregation conditions. A single inverter rating is not that calculation."
+msgstr "Geben Sie die für EEG § 9 berechnete installierte PV-Leistung einschließlich der Zusammenfassungsbedingungen ein. Der Nennwert eines einzelnen Wechselrichters ist keine solche Berechnung."
+
+#: build/planner/assets/planner.js:1
+msgid "Enter the storage unit's maximum deliverable active power. Confirm the unit boundary separately; do not automatically add units."
+msgstr "Geben Sie die maximal abgebbare Wirkleistung der Speichereinheit ein. Prüfen Sie die Abgrenzung der Einheit gesondert; addieren Sie Einheiten nicht automatisch."
+
+#: build/planner/assets/planner.js:1
+msgid "Feed-in tariff or tenant-electricity supplement"
+msgstr "Einspeisevergütung oder Mieterstromzuschlag"
+
+#: build/planner/assets/planner.js:1
+msgid "France: generation-unit Pmax"
+msgstr "Frankreich: Pmax der Erzeugungseinheit"
+
+#: build/planner/assets/planner.js:1
+msgid "German source text checked 1 November 2026; earlier transition rules are not established here."
+msgstr "Deutscher Quellentext geprüft am 1. November 2026; frühere Übergangsregeln sind hier nicht geklärt."
+
+#: build/planner/assets/planner.js:1
+msgid "Germany: EEG solar installed power"
+msgstr "Deutschland: installierte PV-Leistung nach EEG"
+
+#: build/planner/assets/planner.js:1
+msgid "Is the smart meter or control equipment not yet installed, or is the first successful operator control test still pending?"
+msgstr "Fehlt noch das intelligente Messsystem oder die Steuerungseinrichtung, oder steht die erste erfolgreiche Ansteuerungsprüfung durch den Netzbetreiber noch aus?"
+
+#: build/planner/assets/planner.js:1
+msgid "National rule inputs"
+msgstr "Eingaben zu Landesregeln"
+
+#: build/planner/assets/planner.js:1
+msgid "Netherlands: grid-feeding storage unit"
+msgstr "Niederlande: netzeinspeisende Speichereinheit"
+
+#: build/planner/assets/planner.js:1
+msgid "No"
+msgstr "Nein"
+
+#: build/planner/assets/planner.js:1
+msgid "Other or none"
+msgstr "Andere oder keine"
+
+#: build/planner/assets/planner.js:1
+msgid "Rule scope and power basis"
+msgstr "Regelungsbereich und Leistungsbezug"
+
+#: build/planner/assets/planner.js:1
+msgid "Source version: 1 October 2026, checked 1 November 2026."
+msgstr "Quellenfassung: 1. Oktober 2026, geprüft am 1. November 2026."
+
+#: build/planner/assets/planner.js:1
+msgid "Source version: 26 June 2020, checked 1 November 2026."
+msgstr "Quellenfassung: 26. Juni 2020, geprüft am 1. November 2026."
+
+#: build/planner/assets/planner.js:1
+msgid "The selected rule does not match this project's country. No rule result will be added until they match."
+msgstr "Die ausgewählte Regel passt nicht zum Land dieses Projekts. Ein Regelergebnis wird erst ergänzt, wenn beides übereinstimmt."
+
+#: build/planner/assets/planner.js:1
+msgid "These inputs select a dated rule reading. They are project declarations; operator requirements, device evidence and grid permission still require separate verification."
+msgstr "Diese Angaben wählen eine Regelbetrachtung für ein bestimmtes Datum. Sie stammen aus dem Projekt; Netzbetreiberanforderungen, Gerätenachweise und Anschlussgenehmigung müssen gesondert geprüft werden."
+
+#: build/planner/assets/planner.js:1
+msgid "Voltage at the grid connection point"
+msgstr "Spannung am Netzanschlusspunkt"
+
+#: build/planner/assets/planner.js:1
+msgid "1% in storage and generation modes"
+msgstr "1 % im Speicher- und Erzeugungsbetrieb"
+
+#: build/planner/assets/planner.js:1
+msgid "2% in storage and generation modes"
+msgstr "2 % im Speicher- und Erzeugungsbetrieb"
+
+#: build/planner/assets/planner.js:1
+msgid "60% of installed power at the grid connection point, under the stated conditions"
+msgstr "60 % der installierten Leistung am Netzverknüpfungspunkt unter den angegebenen Bedingungen"
+
+#: build/planner/assets/planner.js:1
+msgid "Actual export retrieval and remote reduction"
+msgstr "Abruf der Ist-Einspeisung und ferngesteuerte Reduzierung"
+
+#: build/planner/assets/planner.js:1
+msgid "Below the range covered by this rule reading"
+msgstr "Unterhalb des Bereichs dieser Regelbetrachtung"
+
+#: build/planner/assets/planner.js:1
+msgid "Dated national rule reading"
+msgstr "Landesregel zum gewählten Datum"
+
+#: build/planner/assets/planner.js:1
+msgid "Dutch storage-unit corresponding requirements"
+msgstr "Entsprechende Anforderungen für die niederländische Speichereinheit"
+
+#: build/planner/assets/planner.js:1
+msgid "Dutch storage-unit low-frequency statism"
+msgstr "Statik bei Unterfrequenz für die niederländische Speichereinheit"
+
+#: build/planner/assets/planner.js:1
+msgid "EEG pre-test export limitation"
+msgstr "EEG-Einspeisebegrenzung vor erfolgreicher Prüfung"
+
+#: build/planner/assets/planner.js:1
+msgid "EEG pre-test remote control"
+msgstr "EEG-Fernsteuerung vor erfolgreicher Prüfung"
+
+#: build/planner/assets/planner.js:1
+msgid "EEG remuneration"
+msgstr "EEG-Vergütungsform"
+
+#: build/planner/assets/planner.js:1
+msgid "French generation-unit category"
+msgstr "Kategorie der französischen Erzeugungseinheit"
+
+#: build/planner/assets/planner.js:1
+msgid "More project information is needed"
+msgstr "Weitere Projektangaben sind erforderlich"
+
+#: build/planner/assets/planner.js:1
+msgid "No 60% limit from § 9(2) sentence 1 nos. 2(b)–3 for this power"
+msgstr "Für diese Leistung ergibt sich keine 60-%-Grenze aus § 9 Absatz 2 Satz 1 Nummer 2 Buchstabe b bis Nummer 3"
+
+#: build/planner/assets/planner.js:1
+msgid "No requirement under § 9(2) sentence 1 nos. 1–2 for this power"
+msgstr "Für diese Leistung ergibt sich keine Anforderung aus § 9 Absatz 2 Satz 1 Nummer 1 bis 2"
+
+#: build/planner/assets/planner.js:1
+msgid "Remote reduction"
+msgstr "Ferngesteuerte Reduzierung"
+
+#: build/planner/assets/planner.js:1
+msgid "Results are conditional on the declared scope and values. The operator, applicable local requirements, equipment compliance and grid permission still need separate verification."
+msgstr "Die Ergebnisse gelten unter dem angegebenen Anwendungsbereich und den eingetragenen Werten. Netzbetreiber, örtliche Anforderungen, Gerätekonformität und Anschlussgenehmigung müssen gesondert geprüft werden."
+
+#: build/planner/assets/planner.js:1
+msgid "The 0.8 kW boundary is not established by this clause"
+msgstr "Die Grenze von 0,8 kW ist durch diese Vorschrift nicht geklärt"
+
+#: build/planner/assets/planner.js:1
+msgid "The chosen date is outside the documented version"
+msgstr "Das gewählte Datum liegt außerhalb der dokumentierten Fassung"
+
+#: build/planner/assets/planner.js:1
+msgid "The declared plug-in solar exception applies to this provision"
+msgstr "Die angegebene Steckersolar-Ausnahme gilt für diese Vorschrift"
+
+#: build/planner/assets/planner.js:1
+msgid "The declared project is beyond the pre-test phase; other requirements remain open"
+msgstr "Das angegebene Projekt befindet sich nach der Phase vor der Prüfung; weitere Anforderungen bleiben offen"
+
+#: build/planner/assets/planner.js:1
+msgid "The declared remuneration is outside this 60% provision"
+msgstr "Die angegebene Vergütungsform fällt nicht unter diese 60-%-Vorschrift"
+
+#: build/planner/assets/planner.js:1
+msgid "Type A"
+msgstr "Typ A"
+
+#: build/planner/assets/planner.js:1
+msgid "Type B"
+msgstr "Typ B"
+
+#: build/planner/assets/planner.js:1
+msgid "Type C"
+msgstr "Typ C"
+
+#: build/planner/assets/planner.js:1
+msgid "Type D"
+msgstr "Typ D"
+
+#: build/planner/assets/planner.js:1
+msgid "complete plug-in solar exception"
+msgstr "vollständige Steckersolar-Ausnahme"
+
+#: build/planner/assets/planner.js:1
+msgid "connection-point voltage"
+msgstr "Spannung am Netzanschlusspunkt"
+
+#: build/planner/assets/planner.js:1
+msgid "declared power"
+msgstr "angegebene Leistung"
+
+#: build/planner/assets/planner.js:1
+msgid "meter and control-test stage"
+msgstr "Stand von Messsystem und Ansteuerungsprüfung"
+
+#: build/planner/assets/planner.js:1
+msgid "rule date"
+msgstr "Regelungsdatum"
+
+#: build/planner/assets/planner.js:1
+msgid "Will all PV generation be consumed on site without any public-grid injection?"
+msgstr "Wird die gesamte PV-Erzeugung vor Ort verbraucht, ohne ins öffentliche Netz einzuspeisen?"
+
+#: build/planner/assets/planner.js:1
+msgid "The Enedis declaration route is shown only when Enedis is the project-declared operator. Its service area and the project conditions still need verification."
+msgstr "Der Enedis-Anmeldeweg wird nur angezeigt, wenn Enedis im Projekt als Netzbetreiber angegeben ist. Zuständigkeit und Projektbedingungen müssen noch geprüft werden."
+
+#: build/planner/assets/planner.js:1
+msgid "Enedis declaration and agreement"
+msgstr "Enedis-Anmeldung und Vereinbarung"
+
+#: build/planner/assets/planner.js:1
+msgid "Enedis supporting documentation"
+msgstr "Enedis-Unterlagen"
+
+#: build/planner/assets/planner.js:1
+msgid "Declare the installation through Enedis-Connect and accept the CACSI no-injection agreement"
+msgstr "Melden Sie die Anlage über Enedis-Connect an und akzeptieren Sie die CACSI-Vereinbarung ohne Netzeinspeisung"
+
+#: build/planner/assets/planner.js:1
+msgid "Provide a Consuel certificate or declaration on honour. The source requires Consuel when modifying existing electrical circuits or adding a battery, with a possible plug-and-play exception subject to its stated conditions."
+msgstr "Legen Sie eine Consuel-Bescheinigung oder eine Erklärung auf Ehrenwort vor. Laut Quelle ist bei Änderungen bestehender Stromkreise oder beim Hinzufügen einer Batterie eine Consuel-Bescheinigung erforderlich; für Plug-and-play-Geräte kann unter den dort genannten Bedingungen eine Ausnahme gelten."
+
+#: build/planner/assets/planner.js:1
+msgid "Download country rule review (CSV)"
+msgstr "Landesregelprüfung herunterladen (CSV)"
+
+#: build/planner/assets/planner.js:1
+msgid "Remove grid connection information and national rule inputs"
+msgstr "Netzanschlussangaben und Eingaben zu Landesregeln entfernen"
+
+#: build/planner/assets/planner.js:1
+msgid "The rule date selects a documented source reading. It does not change the project connection date or establish whether the rule applies today."
+msgstr "Das Regelungsdatum wählt einen dokumentierten Quellenstand. Es ändert nicht das Anschlussdatum des Projekts und belegt nicht, ob die Regel heute gilt."
+
+#: build/planner/assets/planner.js:1
+msgid "Use the source checked on 1 November 2026"
+msgstr "Am 1. November 2026 geprüften Quellenstand verwenden"
+
+#: build/planner/assets/planner.js:1
+msgid "This is a reference to the source on the selected date. Its applicability today and on the project connection date still needs verification."
+msgstr "Dies ist ein Verweis auf den Quellenstand zum gewählten Datum. Ob er heute und am Anschlussdatum des Projekts gilt, muss noch geprüft werden."

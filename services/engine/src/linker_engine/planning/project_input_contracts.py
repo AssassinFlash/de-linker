@@ -22,7 +22,9 @@ type InputContract = Literal[
     "installation_terminal_bindings_v1",
     "installation_conductor_reference_current_v1",
     "installation_physical_materials_v1",
+    "country_rules_v1",
 ]
+COUNTRY_RULES_INPUT_CONTRACT: InputContract = "country_rules_v1"
 MATERIALS_INPUT_CONTRACT: InputContract = "installation_physical_materials_v1"
 REFERENCE_CURRENT_INPUT_CONTRACT: InputContract = (
     "installation_conductor_reference_current_v1"
@@ -53,12 +55,18 @@ _MATERIALS_COVERED_CONTRACTS: tuple[str, ...] = (
     *_REFERENCE_CURRENT_COVERED_CONTRACTS,
     MATERIALS_INPUT_CONTRACT,
 )
-SUPPORTED_INPUT_CONTRACTS = _MATERIALS_COVERED_CONTRACTS
+_COUNTRY_RULES_COVERED_CONTRACTS: tuple[str, ...] = (
+    *_MATERIALS_COVERED_CONTRACTS,
+    COUNTRY_RULES_INPUT_CONTRACT,
+)
+SUPPORTED_INPUT_CONTRACTS = _COUNTRY_RULES_COVERED_CONTRACTS
 
 
 def required_contracts(inputs: Mapping[str, object]) -> tuple[str, ...]:
     installation = inputs.get("installation")
     required = []
+    if "country_rule_inputs" in inputs:
+        required.append(COUNTRY_RULES_INPUT_CONTRACT)
     if "grid_connection" in inputs:
         required.append(GRID_CONNECTION_INPUT_CONTRACT)
     if "pv_plant_string_plan" in inputs:
@@ -122,7 +130,9 @@ def require_input_contract(
     # Each complete writer understands only its declared feature generation.
     # Concrete coverage sets keep older tokens from covering future additions.
     covered = (
-        _MATERIALS_COVERED_CONTRACTS
+        _COUNTRY_RULES_COVERED_CONTRACTS
+        if input_contract == COUNTRY_RULES_INPUT_CONTRACT
+        else _MATERIALS_COVERED_CONTRACTS
         if input_contract == MATERIALS_INPUT_CONTRACT
         else _REFERENCE_CURRENT_COVERED_CONTRACTS
         if input_contract == REFERENCE_CURRENT_INPUT_CONTRACT

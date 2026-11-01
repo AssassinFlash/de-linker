@@ -183,6 +183,11 @@ def search_plant(
                             if "grid_connection" in inputs
                             else {}
                         ),
+                        **(
+                            {"country_rule_inputs": inputs["country_rule_inputs"]}
+                            if "country_rule_inputs" in inputs
+                            else {}
+                        ),
                     },
                     basis,
                     checkpoint,

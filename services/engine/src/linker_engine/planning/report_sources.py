@@ -848,14 +848,18 @@ def report_sources(
         if (
             "grid_connection" in equipment_source_inputs
             or "grid_connection" in project.inputs
+            or "country_rule_inputs" in equipment_source_inputs
+            or "country_rule_inputs" in project.inputs
         ):
 
-            def grid_context(values: Object) -> tuple[bool, Json, Json]:
+            def grid_context(values: Object) -> tuple[bool, Json, bool, Json, Json]:
                 brief = values.get("brief")
                 site = brief.get("site") if isinstance(brief, dict) else None
                 return (
                     "grid_connection" in values,
                     values.get("grid_connection"),
+                    "country_rule_inputs" in values,
+                    values.get("country_rule_inputs"),
                     site.get("country_code") if isinstance(site, dict) else None,
                 )
 

@@ -1,10 +1,13 @@
 import type { JsonObject } from "../../data/protocol.ts";
 import { readGridConnection } from "../../domain/gridConnection.ts";
 import { __ } from "../../i18n.ts";
+import { CountryRuleResult } from "./CountryRuleResult.tsx";
 export function GridConnectionResult({
 	assessment,
+	locale,
 }: {
 	assessment: JsonObject | undefined;
+	locale: string;
 }) {
 	if (
 		!assessment ||
@@ -64,7 +67,7 @@ export function GridConnectionResult({
 					"linker-tools",
 				)}
 			</p>
-			{assessment.country_code !== "DE" && (
+			{assessment.country_code !== "DE" && !assessment.rule_review && (
 				<p>
 					{__(
 						"Country-specific connection rules have not been assessed. German TAB requirements are not assumed for this project.",
@@ -187,6 +190,12 @@ export function GridConnectionResult({
 						))}
 					</ul>
 				</>
+			)}
+			{assessment.rule_review && (
+				<CountryRuleResult
+					review={assessment.rule_review as JsonObject}
+					locale={locale}
+				/>
 			)}
 		</section>
 	);

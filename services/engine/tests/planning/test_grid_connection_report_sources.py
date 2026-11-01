@@ -19,6 +19,7 @@ from linker_engine.planning.equipment_search_kernel import EquipmentSearchKernel
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.product_sources import ProductSources
 from linker_engine.planning.project_input_contracts import (
+    COUNTRY_RULES_INPUT_CONTRACT,
     GRID_CONNECTION_INPUT_CONTRACT,
 )
 from linker_engine.planning.records import Actor, Context, Project, Run
@@ -28,6 +29,7 @@ from linker_engine.planning.report_sources import ReportInputsChanged
 from linker_engine.planning.workspace import Workspace
 
 from .conftest import FixtureObject, json_object
+from .test_country_rules import rule_input
 from .test_energy_kernel import TOLERANCE, create_scenario, worker
 from .test_equipment import feed as feed
 from .test_equipment import inputs
@@ -44,12 +46,17 @@ def completed_equipment_source(
     values: Object,
     kind: SourceKind,
 ) -> tuple[Project, Run]:
+    contract = (
+        COUNTRY_RULES_INPUT_CONTRACT
+        if "country_rule_inputs" in values
+        else GRID_CONNECTION_INPUT_CONTRACT
+    )
     project = workspace.create(
         owner,
         "Grid source binding",
         values,
         key="create",
-        input_contract=GRID_CONNECTION_INPUT_CONTRACT,
+        input_contract=contract,
     )
     proof = workspace.blobs.put_object(feed)
     context = replace(context, assets={**context.assets, "woo.equipment_inputs": proof})
@@ -93,9 +100,52 @@ def completed_equipment_source(
                 },
             },
             key="adopt",
-            input_contract=GRID_CONNECTION_INPUT_CONTRACT,
+            input_contract=contract,
         )
     return project, workspace.run(owner, run.id)
+
+
+@pytest.mark.parametrize("kind", ["assessment", "search"])
+@pytest.mark.parametrize("change", ["add", "change", "remove"])
+def test_report_pin_rejects_changed_rule_inputs(
+    workspace: Workspace,
+    owner: Actor,
+    context: Context,
+    feed: FixtureObject,
+    monkeypatch: pytest.MonkeyPatch,
+    kind: SourceKind,
+    change: str,
+) -> None:
+    values = cast(Object, {**inputs(feed, 3), **declared(complete=True)})
+    rules = rule_input("de_pv_installed", power_kw=30, de_before_control_test=True)
+    if change != "add":
+        values["country_rule_inputs"] = rules
+    project, source = completed_equipment_source(
+        workspace, owner, context, feed, values, kind
+    )
+    changed = copy.deepcopy(project.inputs)
+    if change == "add":
+        changed["country_rule_inputs"] = rules
+    elif change == "remove":
+        changed.pop("country_rule_inputs")
+    else:
+        cast(Object, changed["country_rule_inputs"])["power_kw"] = 10
+    revised = workspace.revise(
+        owner,
+        project.id,
+        project.revision,
+        changed,
+        key="edit-rules",
+        input_contract=COUNTRY_RULES_INPUT_CONTRACT,
+    )
+    with pytest.raises(ReportInputsChanged):
+        report_service(workspace, monkeypatch).evaluate(
+            owner,
+            revised.id,
+            revised.revision,
+            options(source, kind),
+            key="report-rules",
+        )
 
 
 def report_service(

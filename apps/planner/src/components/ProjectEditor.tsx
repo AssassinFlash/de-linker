@@ -1,4 +1,9 @@
 import { GridConnectionForm } from "./GridConnectionForm.tsx";
+import { CountryRuleForm } from "./CountryRuleForm.tsx";
+import {
+	readCountryRuleInputs,
+	replaceCountryRuleInputs,
+} from "../domain/countryRules.ts";
 import {
 	readGridConnection,
 	replaceGridConnection,
@@ -138,12 +143,18 @@ export function ProjectEditor({
 		restore,
 	} = useProjectDraft(project, session, client, store, recheck);
 	const [gridValid, setGridValid] = useState(true);
+	const [ruleValid, setRuleValid] = useState(true);
 	const [briefValid, setBriefValid] = useState(true);
 	const [designValid, setDesignValid] = useState(true);
 	const [energyValid, setEnergyValid] = useState(true);
 	const [installationValid, setInstallationValid] = useState(true);
 	const valid =
-		gridValid && briefValid && designValid && energyValid && installationValid;
+		gridValid &&
+		ruleValid &&
+		briefValid &&
+		designValid &&
+		energyValid &&
+		installationValid;
 	const [workspace, setWorkspace] =
 		useState<ProjectWorkspace>(workspaceFromHash);
 	const [calculationsOpened, setCalculationsOpened] = useState(() =>
@@ -288,12 +299,18 @@ export function ProjectEditor({
 	if (!draft)
 		return <p role="status">{__("Opening project…", "linker-tools")}</p>;
 	let gridConnection;
+	let countryRuleInputs;
 	let brief;
 	let selections;
 	let geometry;
 	let geometryImports;
 	try {
 		gridConnection = readGridConnection(draft.history.current.grid_connection);
+		countryRuleInputs = readCountryRuleInputs(
+			draft.history.current.country_rule_inputs,
+		);
+		if (countryRuleInputs && !gridConnection)
+			throw new Error("country_rules_without_grid");
 		brief =
 			draft.history.current.brief === undefined
 				? emptyBrief()
@@ -373,6 +390,7 @@ export function ProjectEditor({
 							: draft.pending
 								? __("Save not confirmed", "linker-tools")
 								: !gridValid ||
+									  !ruleValid ||
 									  !briefValid ||
 									  !energyValid ||
 									  !installationValid
@@ -428,7 +446,11 @@ export function ProjectEditor({
 						(dirty || draft.pending))) && (
 					<div className="lp-navigation-refusal">
 						<Notice error>
-							{!gridValid || !briefValid || !energyValid || !installationValid
+							{!gridValid ||
+							!ruleValid ||
+							!briefValid ||
+							!energyValid ||
+							!installationValid
 								? __(
 										"Correct the highlighted input before leaving this project.",
 										"linker-tools",
@@ -702,6 +724,7 @@ export function ProjectEditor({
 						<div hidden={workspace !== "site"}>
 							<GridConnectionForm
 								value={gridConnection}
+								hasRules={Boolean(countryRuleInputs)}
 								onValidity={setGridValid}
 								onChange={(next) =>
 									update((previous) =>
@@ -712,6 +735,25 @@ export function ProjectEditor({
 									)
 								}
 							/>
+							{gridConnection && (
+								<CountryRuleForm
+									value={countryRuleInputs}
+									country={brief.site.country_code}
+									locale={config.locale}
+									onValidity={setRuleValid}
+									onChange={(next) =>
+										update((previous) =>
+											editDraft(
+												previous,
+												replaceCountryRuleInputs(
+													previous.history.current,
+													next,
+												),
+											),
+										)
+									}
+								/>
+							)}
 						</div>
 						<section
 							className="lp-section"
@@ -929,6 +971,7 @@ export function ProjectEditor({
 									recoveries.length > 0 ||
 									Boolean(draft.conflict) ||
 									!gridValid ||
+									!ruleValid ||
 									!briefValid ||
 									!designValid ||
 									recoveryChecking ||

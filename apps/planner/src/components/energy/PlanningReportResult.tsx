@@ -90,7 +90,14 @@ export function PlanningReportResult({
 			? readObject(
 					readObject(run.result.prepared_attachments).bill_of_materials_csv,
 				)
-			: null;
+			: null,
+		ruleCsv =
+			run.result?.prepared_attachments &&
+			readObject(run.result.prepared_attachments).country_rule_review_csv
+				? readObject(
+						readObject(run.result.prepared_attachments).country_rule_review_csv,
+					)
+				: null;
 	const [busy, setBusy] = useState(false),
 		[error, setError] = useState(false);
 	const lifetime = useRef(0),
@@ -105,8 +112,9 @@ export function PlanningReportResult({
 			objectUrl.current = null;
 		};
 	}, [run.id, scope]);
-	async function download(format: "pdf" | "csv") {
-		const file = format === "pdf" ? asset : csv;
+	async function download(format: "pdf" | "materials" | "rules") {
+		const file =
+			format === "pdf" ? asset : format === "materials" ? csv : ruleCsv;
 		if (busy || !report || !file || !client.isCurrentScope(scope)) return;
 		const instance = lifetime.current,
 			controller = new AbortController();
@@ -115,7 +123,7 @@ export function PlanningReportResult({
 		setError(false);
 		try {
 			const blob =
-				format === "csv"
+				format !== "pdf"
 					? await client.reportCsv(
 							run.project_id,
 							String(file.id),
@@ -136,7 +144,8 @@ export function PlanningReportResult({
 			objectUrl.current = URL.createObjectURL(blob);
 			const link = document.createElement("a");
 			link.href = objectUrl.current;
-			link.download = `linker-planning-${run.project_id}-r${run.revision}-${report.locale}.${format}`;
+			const suffix = format === "rules" ? "-country-rules" : "";
+			link.download = `linker-planning-${run.project_id}-r${run.revision}-${report.locale}${suffix}.${format === "pdf" ? "pdf" : "csv"}`;
 			link.click();
 		} catch (cause) {
 			if (instance === lifetime.current) {
@@ -206,9 +215,19 @@ export function PlanningReportResult({
 						type="button"
 						className="lp-button lp-button-secondary"
 						disabled={busy || !client.isCurrentScope(scope)}
-						onClick={() => void download("csv")}
+						onClick={() => void download("materials")}
 					>
 						{__("Download bill of materials (CSV)", "linker-tools")}
+					</button>
+				)}
+				{ruleCsv && (
+					<button
+						type="button"
+						className="lp-button lp-button-secondary"
+						disabled={busy || !client.isCurrentScope(scope)}
+						onClick={() => void download("rules")}
+					>
+						{__("Download country rule review (CSV)", "linker-tools")}
 					</button>
 				)}
 			</div>

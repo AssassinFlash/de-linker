@@ -219,6 +219,33 @@ export function readReportResult(
 			csvMetadata.locale !== readObject(result.report).locale
 		)
 			throw new ApiError(502, "invalid_planning_report");
+		const ruleValue = readObject(
+			result.prepared_attachments,
+		).country_rule_review_csv;
+		if (ruleValue !== undefined) {
+			const rules = readObject(ruleValue),
+				ruleMetadata = readObject(rules.metadata);
+			if (
+				typeof rules.id !== "string" ||
+				!rules.id ||
+				rules.id === csv.id ||
+				rules.id === asset.id ||
+				rules.project_id !== run.project_id ||
+				rules.purpose !== "planning_country_rule_review_csv_v1" ||
+				rules.media_type !== "text/csv" ||
+				!hash(rules.content_sha256) ||
+				!hash(rules.metadata_sha256) ||
+				!sameJson(ruleMetadata.dependencies, dependencies) ||
+				ruleMetadata.locale !== readObject(result.report).locale ||
+				resultDependencies[
+					"prepared_attachment.country_rule_review_csv.content"
+				] !== rules.content_sha256 ||
+				resultDependencies[
+					"prepared_attachment.country_rule_review_csv.metadata"
+				] !== rules.metadata_sha256
+			)
+				throw new ApiError(502, "invalid_planning_report");
+		}
 	}
 	return result;
 }

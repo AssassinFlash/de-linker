@@ -246,6 +246,46 @@ test("report output keeps serialized fields mandatory and old column layout opti
 	v3.prepared_attachments.bill_of_materials_csv.purpose =
 		"planning_materials_csv_v3";
 	assert.doesNotThrow(() => readReportResult(v3, run, manifest));
+	const withRules = structuredClone(v3);
+	const ruleCsv = {
+		...withRules.prepared_attachments.bill_of_materials_csv,
+		id: "rules",
+		purpose: "planning_country_rule_review_csv_v1",
+	};
+	const full = {
+		...withRules,
+		prepared_attachments: {
+			...withRules.prepared_attachments,
+			country_rule_review_csv: ruleCsv,
+		},
+		dependencies: {
+			...withRules.dependencies,
+			"prepared_attachment.country_rule_review_csv.content": sha,
+			"prepared_attachment.country_rule_review_csv.metadata": sha,
+		},
+	};
+	assert.doesNotThrow(() => readReportResult(full, run, manifest));
+	for (const altered of [
+		{ ...ruleCsv, id: "csv" },
+		{ ...ruleCsv, project_id: "other" },
+		{ ...ruleCsv, purpose: "planning_materials_csv_v3" },
+		{ ...ruleCsv, metadata: { ...ruleCsv.metadata, locale: "de" } },
+		{ ...ruleCsv, metadata: { ...ruleCsv.metadata, dependencies } },
+		{ ...ruleCsv, content_sha256: "d".repeat(64) },
+	])
+		assert.throws(() =>
+			readReportResult(
+				{
+					...full,
+					prepared_attachments: {
+						...full.prepared_attachments,
+						country_rule_review_csv: altered,
+					},
+				},
+				run,
+				manifest,
+			),
+		);
 	assert.throws(() =>
 		readReportResult({ ...paired, materials_sha256: sha }, run, manifest),
 	);

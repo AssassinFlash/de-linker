@@ -15,6 +15,7 @@ from .equipment_conditions import review_device_conditions
 from .errors import VersionUnavailable
 from .execution_identity import execution_key, request_execution_key
 from .frozen_run import frozen_manifest
+from .grid_connection_report import country_rule_csv
 from .product_sources import ProductSources
 from .project_materials import materials_csv, project_materials
 from .records import Actor, Context, Lease, Run
@@ -194,6 +195,34 @@ class ReportKernel:
                 "locale": report.locale,
             },
         )
+        attachments = {"bill_of_materials_csv": csv_asset}
+        equipment = source.get("equipment")
+        review_csv = country_rule_csv(
+            equipment.get("country_assessment")
+            if isinstance(equipment, dict)
+            else None,
+            report.locale,
+            source,
+            cast(str, pinned["report.source"]),
+        )
+        if review_csv is not None:
+            attachments["country_rule_review_csv"] = AssetPublication.prepare(
+                self.workspace.blobs,
+                cast(str, manifest["project_id"]),
+                review_csv,
+                "text/csv",
+                "planning_country_rule_review_csv_v1",
+                {
+                    "retention": "permanent",
+                    "provenance": {
+                        "label": text("country_rule_title", report.locale),
+                        "basis": "Frozen country-rule review shared with the planning report",
+                        "rights_basis": "Private project output and cited public sources",
+                    },
+                    "dependencies": dependencies,
+                    "locale": report.locale,
+                },
+            )
         return AssetResult(
             {
                 "schema": 1,
@@ -216,7 +245,7 @@ class ReportKernel:
                 "dependencies": dependencies,
             },
             asset,
-            {"bill_of_materials_csv": csv_asset},
+            attachments,
         )
 
 

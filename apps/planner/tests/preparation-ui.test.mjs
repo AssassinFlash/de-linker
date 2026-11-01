@@ -266,6 +266,85 @@ test("a frozen English report marks its own language inside a German planner pag
 	assert.ok(reportSections.every((section) => section.lang === "en"));
 });
 
+for (const locale of ["en-GB", "de-DE"]) {
+	test(`${locale}: report downloads the selected materials or country-rule asset`, async (t) => {
+		const run = structuredClone(fixture.geometric_pv.report_run),
+			calls = [],
+			downloads = [];
+		run.result.has_draft_items = false;
+		run.result.prepared_attachments = {
+			bill_of_materials_csv: {
+				id: "materials",
+				content_sha256: "a".repeat(64),
+			},
+			country_rule_review_csv: { id: "rules", content_sha256: "b".repeat(64) },
+		};
+		const client = {
+			isCurrentScope: (value) => value === scope,
+			async reportCsv(...args) {
+				calls.push(args);
+				return new Blob(["saved CSV"], { type: "text/csv" });
+			},
+		};
+		let replace;
+		function Harness() {
+			const [currentRun, setRun] = useState(run);
+			replace = setRun;
+			window.wp.i18n.__ = (message) =>
+				locale.startsWith("de")
+					? (plannerGerman.locale_data.messages[message]?.[0] ?? message)
+					: message;
+			return React.createElement(PlanningReportResult, {
+				run: currentRun,
+				client,
+				scope,
+				recheck() {},
+				operations: {},
+				current: true,
+				blocked: false,
+				locale,
+			});
+		}
+		await mount(t, React.createElement(Harness));
+		window.HTMLAnchorElement.prototype.click = function () {
+			downloads.push(this.download);
+		};
+		const buttons = () => [
+			...document.querySelectorAll(".lp-run-heading button"),
+		];
+		const ruleLabel = locale.startsWith("de")
+			? "Landesregelprüfung herunterladen (CSV)"
+			: "Download country rule review (CSV)";
+		const ruleButton = buttons().find(
+			(button) => button.textContent === ruleLabel,
+		);
+		assert.ok(ruleButton);
+		await act(async () => ruleButton.click());
+		await act(async () =>
+			buttons()
+				.find((button) =>
+					button.textContent.includes(
+						locale.startsWith("de") ? "Stückliste" : "bill of materials",
+					),
+				)
+				.click(),
+		);
+		assert.deepEqual(
+			calls.map((args) => [args[1], args[3]]),
+			[
+				["rules", "b".repeat(64)],
+				["materials", "a".repeat(64)],
+			],
+		);
+		assert.match(downloads[0], /-country-rules\.csv$/);
+		assert.ok(downloads[1].endsWith(`-${run.result.report.locale}.csv`));
+		const legacy = structuredClone(run);
+		delete legacy.result.prepared_attachments.country_rule_review_csv;
+		await act(async () => replace(legacy));
+		assert.ok(!buttons().some((button) => button.textContent === ruleLabel));
+	});
+}
+
 test("the geometric PV workspace uses all retained intervals, adopts frozen AC explicitly and selects its report run", async (t) => {
 	const native = fixture.geometric_pv;
 	// The retained source is listed exactly as the service derives it from the

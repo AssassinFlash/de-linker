@@ -13,6 +13,7 @@ from urllib.parse import urlsplit
 from pydantic import Field, field_validator
 
 from .canonical import Json, Object
+from .country_rules import review_country_rules
 from .energy_inputs import Document, SchemaVersion
 
 # Private project text/URL transport limits, not engineering restrictions.
@@ -151,7 +152,7 @@ def country_assessment(inputs: Object) -> Object:
         if is_de
         else []
     )
-    return {
+    result: Object = {
         "status": "unresolved",
         "country_code": country,
         "reason": "dso_tab_evidence_requires_independent_verification"
@@ -182,3 +183,27 @@ def country_assessment(inputs: Object) -> Object:
         "numeric_rules": "not_assessed",
         "standard_transition": "not_assessed",
     }
+    if "country_rule_inputs" in inputs:
+        review = review_country_rules(
+            country if isinstance(country, str) else None,
+            inputs["country_rule_inputs"],
+            operator=facts.dso_name,
+        )
+        if review is not None:
+            result["rule_review"] = review
+            result["reason"] = "country_rules_require_project_verification"
+            if any(
+                isinstance(check, dict)
+                and check.get("status") == "conditional"
+                and check.get("id")
+                in {
+                    "fr_generation_type",
+                    "nl_storage_type",
+                    "nl_storage_lfsm",
+                    "de_eeg_control",
+                    "de_eeg_export",
+                }
+                for check in cast(list[Json], review["checks"])
+            ):
+                result["numeric_rules"] = "partially_assessed"
+    return result

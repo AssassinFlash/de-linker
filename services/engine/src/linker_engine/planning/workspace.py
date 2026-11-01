@@ -18,6 +18,7 @@ from . import commands
 from .access import active_actor, positive_integer, project_row
 from .brief import validate_new_brief
 from .canonical import Object, digest, encode
+from .country_rules import validate_country_rule_inputs
 from .equipment_condition_inputs import validate_condition_inputs
 from .errors import (
     Conflict,
@@ -119,6 +120,7 @@ class Workspace:
             require_input_contract(None, inputs, input_contract)
             validate_new_brief(inputs)
             validate_grid_connection(inputs)
+            validate_country_rule_inputs(inputs)
             validate_project_geometry(inputs)
             validate_installation_project(inputs)
             validate_condition_inputs(inputs)
@@ -199,6 +201,7 @@ class Workspace:
             require_input_contract(previous.inputs, inputs, input_contract)
             validate_new_brief(inputs)
             validate_grid_connection(inputs)
+            validate_country_rule_inputs(inputs)
             validate_project_geometry(inputs)
             validate_installation_project(inputs)
             validate_condition_inputs(inputs)
