@@ -133,11 +133,44 @@ LOCAL_ENGINE_INPUTS = (
     "services/engine/src/linker_engine/planning/project_input_contracts.py",
 )
 
+# Engine's browser contract tests execute Planner domain/data modules via Node;
+# npm ci also runs the package's postinstall. Keep those inputs in both the
+# selection and proof, alongside the schemas and shared fixture families.
+ENGINE_PLANNER_INPUTS = (
+    "apps/planner/src/domain/",
+    "apps/planner/src/data/",
+    "apps/planner/src/contracts/",
+    "apps/planner/tests/fixtures/",
+    "apps/planner/package.json",
+    "apps/planner/package-lock.json",
+    "apps/planner/bin/echarts-types.mjs",
+)
+ENGINE_PUBLICATION_INPUTS = (
+    "plugins/linker-commerce/includes/Products/Publication.php",
+    "plugins/linker-commerce/includes/Products/Publication/",
+)
+GENIE_COMMERCE_INPUTS = (
+    "plugins/linker-commerce/includes/Abilities/",
+    "plugins/linker-commerce/includes/Products/SelectionFacts.php",
+    *ENGINE_PUBLICATION_INPUTS,
+)
+ENGINE_TOOLS_SCHEMAS = "plugins/linker-tools/src/configurator/schema/"
+
 
 def under(path, roots):
     return any(
         path == root or path.startswith(root.rstrip("/") + "/") for root in roots
     )
+
+
+def engine_planner_input(path):
+    # Engine invokes specific runtime modules with Node, not Planner's separate
+    # `node --test` entrypoints. Keep the naming rule shared by picker/proof.
+    if path.startswith("apps/planner/src/") and re.search(
+        r"\.test\.[cm]?[jt]sx?$", path
+    ):
+        return False
+    return under(path, ENGINE_PLANNER_INPUTS)
 
 
 def fixture_consumers(path):
@@ -201,9 +234,7 @@ def selected_modules(changes, base="", head=""):
             selected.add("planner")
             # Native Engine contracts read browser schemas and shared fixtures
             # directly, beyond the solar preparation-flow fixture family.
-            if path.startswith(
-                ("apps/planner/src/contracts/", "apps/planner/tests/fixtures/")
-            ):
+            if engine_planner_input(path):
                 selected.add("engine")
         elif path == "plugins/linker-tools/build/manifest.json":
             if not planner_changed or not planner_manifest_isolated(base, head):
@@ -267,6 +298,10 @@ def selected_modules(changes, base="", head=""):
                     return None
                 selected.update(("js:" + name, "build:" + name, "php:" + name))
                 selected.update(native)
+                if under(path, (ENGINE_TOOLS_SCHEMAS,)):
+                    selected.add("engine")
+                if name == "tools" and relative.startswith("src/genie/"):
+                    selected.add("genie")
             elif (
                 path.endswith(".php")
                 or relative.startswith(("content/", "languages/", "tests/php/"))
@@ -284,6 +319,8 @@ def selected_modules(changes, base="", head=""):
                     "includes/Products/Publication"
                 ):
                     selected.update(("engine", "genie"))
+                if name == "commerce" and under(path, GENIE_COMMERCE_INPUTS):
+                    selected.add("genie")
                 # Outbox scheduling is a native PHP/AS contract; neither the
                 # engine nor the frontend recipe reads this implementation.
                 if (
@@ -425,18 +462,22 @@ def module_inputs(module):
         return (
             *shared,
             "services/engine/",
-            "apps/planner/",
+            *ENGINE_PLANNER_INPUTS,
             "fixtures/planning/",
             commerce + "data/compatibility.json",
+            *ENGINE_PUBLICATION_INPUTS,
+            ENGINE_TOOLS_SCHEMAS,
             *ENGINE_DOC_INPUTS,
         )
     if lane == "genie":
         return (
             *shared,
             "services/genie/",
-            engine_feed,
-            commerce + "includes/",
+            "services/engine/tests/fixtures/",
+            *GENIE_COMMERCE_INPUTS,
+            "services/engine/src/linker_engine/planning/assistant_context.py",
             tools + "includes/Genie/",
+            tools + "includes/Protection/",
             tools + "src/genie/",
             tools + "tests/php/Integration/PageCacheChainTest.php",
             *GENIE_DOC_INPUTS,
@@ -486,6 +527,12 @@ def module_fingerprint(commit, module):
         if not entry:
             continue
         path = entry.split(b"\t", 1)[1].decode()
+        if (
+            module == "engine"
+            and path.startswith("apps/planner/")
+            and not engine_planner_input(path)
+        ):
+            continue
         if under(path, paths) and not non_runtime_path(path):
             selected.append(entry)
     return hashlib.sha256(module.encode() + b"\0" + b"\0".join(selected)).hexdigest()

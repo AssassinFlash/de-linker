@@ -145,7 +145,8 @@ class ScopeTest(unittest.TestCase):
 
     def test_packages_compose_without_an_instance_for_service_changes(self):
         self.assertEqual(
-            self.classify(("A", "apps/planner/src/domain/new.ts")), ["planner"]
+            self.classify(("A", "apps/planner/src/domain/new.ts")),
+            ["planner", "engine"],
         )
         self.assertEqual(
             self.classify(
@@ -172,7 +173,7 @@ class ScopeTest(unittest.TestCase):
         for additional, expected in (
             ([], ["php", "content", "native"]),
             ([engine], ["php", "content", "native", "engine"]),
-            ([planner], ["php", "content", "native", "planner"]),
+            ([planner], ["php", "content", "native", "planner", "engine"]),
             ([engine, planner], ["php", "content", "native", "planner", "engine"]),
         ):
             with self.subTest(additional=additional):
@@ -187,6 +188,11 @@ class ScopeTest(unittest.TestCase):
             "apps/planner/tests/fixtures/energy-invalid.json",
             "apps/planner/tests/fixtures/dc-energy-run.json",
             "apps/planner/tests/fixtures/preparation-flow-linux-x86_64.json",
+            "apps/planner/src/domain/solarSetup.ts",
+            "apps/planner/src/domain/draft.ts",
+            "apps/planner/src/data/readProtocol.ts",
+            "apps/planner/package-lock.json",
+            "apps/planner/bin/echarts-types.mjs",
         ):
             for status in ("A", "M", "D"):
                 with self.subTest(path=path, status=status):
@@ -196,11 +202,33 @@ class ScopeTest(unittest.TestCase):
                         ci_scope.selected_modules(changes, "base", "head"),
                         ["planner", "engine"],
                     )
-        # Interface-only work still keeps its independent, smaller lane.
+        # Component and standalone frontend tests are not Engine inputs.
         self.assertEqual(
             self.classify(("M", "apps/planner/src/components/ReportView.tsx")),
             ["planner"],
         )
+        self.assertEqual(
+            self.classify(("M", "apps/planner/src/domain/draft.test.ts")),
+            ["planner"],
+        )
+        self.assertEqual(
+            self.classify(("M", "apps/planner/src/data/client.test.ts")),
+            ["planner"],
+        )
+
+    def test_cross_service_sources_select_their_actual_consumers(self):
+        for path in (
+            "plugins/linker-commerce/includes/Abilities/SearchProducts.php",
+            "plugins/linker-commerce/includes/Products/SelectionFacts.php",
+        ):
+            with self.subTest(path=path):
+                self.assertIn("genie", ci_scope.selected_modules([("M", path)]))
+        path = "plugins/linker-tools/src/configurator/schema/roof.schema.json"
+        self.assertIn("engine", ci_scope.selected_modules([("M", path)]))
+        path = "plugins/linker-tools/src/genie/attachments/prepare.ts"
+        self.assertIn("genie", ci_scope.selected_modules([("M", path)]))
+        path = "plugins/linker-commerce/includes/Account/AuthTemplates.php"
+        self.assertNotIn("genie", ci_scope.selected_modules([("M", path)]))
 
     def test_shared_unknown_empty_and_structural_changes_are_full(self):
         for path in (
@@ -1578,6 +1606,46 @@ class ModuleReuseTest(unittest.TestCase):
                 ("tools/checks/ci_phase.sh", set(originals)),
                 (".editorconfig", set(originals)),
                 ("services/engine/uv.lock", {"engine"}),
+                ("apps/planner/src/domain/draft.test.ts", set()),
+                ("apps/planner/src/data/client.test.ts", set()),
+                ("apps/planner/src/components/ReportView.tsx", set()),
+                ("apps/planner/src/domain/draft.ts", {"engine"}),
+                ("apps/planner/src/domain/solarSetup.ts", {"engine"}),
+                ("apps/planner/tests/fixtures/energy-invalid.json", {"engine"}),
+                ("apps/planner/src/contracts/geometry.schema.json", {"engine"}),
+                ("apps/planner/package-lock.json", {"engine"}),
+                ("apps/planner/bin/echarts-types.mjs", {"engine"}),
+                ("plugins/linker-tools/src/configurator/schema/roof.json", {"engine"}),
+                (
+                    "plugins/linker-commerce/includes/Account/AuthTemplates.php",
+                    {"php:commerce"},
+                ),
+                (
+                    "plugins/linker-commerce/includes/Abilities/SearchProducts.php",
+                    {"php:commerce", "genie"},
+                ),
+                (
+                    "plugins/linker-commerce/includes/Products/SelectionFacts.php",
+                    {"php:commerce", "genie"},
+                ),
+                (
+                    "plugins/linker-commerce/includes/Products/Publication.php",
+                    {"php:commerce", "engine", "genie"},
+                ),
+                (
+                    "services/engine/src/linker_engine/planning/assistant_context.py",
+                    {"engine", "genie"},
+                ),
+                ("plugins/linker-tools/includes/Protection/Policy.php", {"genie"}),
+                ("plugins/linker-tools/src/genie/attachments/prepare.ts", {"genie"}),
+                (
+                    "services/engine/tests/fixtures/compatibility.json",
+                    {"engine", "genie"},
+                ),
+                (
+                    "services/engine/tests/fixtures/feed.json",
+                    {"php:commerce", "engine", "genie"},
+                ),
                 (
                     "docs/research/2026-10-23-pv-inputs/raw/era5-berlin-2020.seriescalc.json",
                     {"engine"},
