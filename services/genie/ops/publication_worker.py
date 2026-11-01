@@ -20,7 +20,7 @@ import subprocess
 import sys
 import syslog
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
@@ -471,6 +471,8 @@ class Worker:
         loaded_recipe_revision: str = "",
         serving_revision: str = "",
         loaded_model_identity_revision: str = "",
+        *,
+        require_complete: bool = False,
     ) -> None:
         body = {
             "job_id": job["job_id"],
@@ -509,9 +511,14 @@ class Worker:
                 else:
                     response = self.client.post(self.jobs + "/ack", json=body)
                 response.raise_for_status()
-                if response.json().get("accepted") is not True:
+                receipt = response.json()
+                if receipt.get("accepted") is not True:
                     raise RuntimeError(
                         "Woo did not acknowledge the prepared generation"
+                    )
+                if require_complete and receipt.get("complete") is not True:
+                    raise RuntimeError(
+                        "Woo accepted the generation but native readiness remains incomplete"
                     )
                 return
             except (httpx.TransportError, httpx.HTTPStatusError) as error:
@@ -727,7 +734,14 @@ def run_job(
         discard_pending(index_dir)
 
 
-def main() -> int:
+def main(
+    argv: Sequence[str] | None = None,
+    *,
+    publisher: Any = publish,
+    worker_factory: Any = Worker,
+    embedding_factory: Any = build.document_embedder,
+    busy_exit: int = 0,
+) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--rest-config", type=Path, default=inventory.DEFAULT_REST_CONFIG
@@ -748,7 +762,7 @@ def main() -> int:
         required=True,
         help="Private service loopback /knowledge/loaded; --host checks it over the same SSH alias",
     )
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     if args.lease_seconds <= 0:
         parser.error("--lease-seconds must be positive")
     if sys.platform != "darwin":
@@ -765,8 +779,10 @@ def main() -> int:
         try:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
-            return 0
-        worker = Worker(jobs, user, password, args.worker_id, args.lease_seconds)
+            return busy_exit
+        worker = worker_factory(
+            jobs, user, password, args.worker_id, args.lease_seconds
+        )
 
         def prepare(manifest: dict[str, Any]) -> str:
             phase = "inventory_source"
@@ -798,7 +814,7 @@ def main() -> int:
                 from index.tokenizer import HFTokenizer
 
                 stage("embedding_setup")
-                embedder = build.document_embedder(build.DEFAULT_MODEL)
+                embedder = embedding_factory(build.DEFAULT_MODEL)
                 stage("tokenizer_setup")
                 tokenizer = HFTokenizer.from_pretrained(build.CHUNK_TOKENIZER)
                 stage("build")
@@ -819,7 +835,9 @@ def main() -> int:
                 activation = worker.activation()
                 activation.update(loaded_url=args.loaded_url, service_token=token)
                 stage("publish")
-                report = publish(directory, args.root, args.host, activation=activation)
+                report = publisher(
+                    directory, args.root, args.host, activation=activation
+                )
                 worker.publication_confirmed()
                 stage("complete")
                 return str(report["index_version"])

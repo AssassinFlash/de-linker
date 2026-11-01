@@ -87,7 +87,8 @@ def main() -> int:
     return 0
 
 
-def run_private(path: Path, arguments: list[str]) -> int:
+def load_private_environment(path: Path) -> None:
+    """Load the existing private worker settings and preserve model proxy routing."""
     if path.stat().st_mode & 0o077:
         raise PermissionError("worker environment is not private")
     for line in path.read_text().splitlines():
@@ -113,6 +114,10 @@ def run_private(path: Path, arguments: list[str]) -> int:
         if direct not in bypass:
             bypass.append(direct)
         os.environ["NO_PROXY"] = os.environ["no_proxy"] = ",".join(bypass)
+
+
+def run_private(path: Path, arguments: list[str]) -> int:
+    load_private_environment(path)
     return subprocess.call(
         [
             sys.executable,
