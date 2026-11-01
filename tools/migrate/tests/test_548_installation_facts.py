@@ -888,7 +888,7 @@ namespace {
 }
 """.replace("__FIXTURE__", encoded)
     result = subprocess.run(
-        ["/opt/homebrew/opt/php@8.3/bin/php"],
+        [os.environ.get("PHP", "php")],
         input=php,
         capture_output=True,
         text=True,
