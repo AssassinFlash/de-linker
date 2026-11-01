@@ -72,6 +72,8 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'template_redirect', array( $download, 'serve' ), 1 );
 		WP_Mock::expectFilterAdded( 'woocommerce_get_query_vars', array( $auth, 'query_vars' ) );
 		WP_Mock::expectFilterAdded( 'wc_get_template', array( $auth, 'template' ), 30, 2 );
+		WP_Mock::expectFilterAdded( 'seopress_titles_title', array( $auth, 'document_title' ), 40 );
+		WP_Mock::expectFilterAdded( 'pre_get_document_title', array( $auth, 'document_title' ), 40 );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $auth, 'signed_out_notice' ) );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $auth, 'register_redirect' ) );
 

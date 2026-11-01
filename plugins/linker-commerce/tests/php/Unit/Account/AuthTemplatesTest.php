@@ -31,6 +31,8 @@ final class AuthTemplatesTest extends TestCase {
 		$auth = new AuthTemplates();
 		WP_Mock::expectFilterAdded( 'woocommerce_get_query_vars', array( $auth, 'query_vars' ) );
 		WP_Mock::expectFilterAdded( 'wc_get_template', array( $auth, 'template' ), 30, 2 );
+		WP_Mock::expectFilterAdded( 'seopress_titles_title', array( $auth, 'document_title' ), 40 );
+		WP_Mock::expectFilterAdded( 'pre_get_document_title', array( $auth, 'document_title' ), 40 );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $auth, 'signed_out_notice' ) );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $auth, 'register_redirect' ) );
 		$auth->register();
@@ -457,5 +459,81 @@ final class AuthTemplatesTest extends TestCase {
 			),
 			AuthTemplates::split_field_blocks( $no_name )
 		);
+	}
+	/** Native registration and recovery headings replace the parent SEO title. */
+	public function test_english_authentication_endpoints_use_their_existing_headings(): void {
+		$this->plain_text();
+		WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
+		WP_Mock::userFunction( 'is_404', array( 'return' => false ) );
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'en' ) );
+		WP_Mock::userFunction(
+			'get_bloginfo',
+			array(
+				'args'   => array( 'name' ),
+				'return' => 'Linker',
+			)
+		);
+		$auth              = new AuthTemplates();
+		$selected_endpoint = '';
+		WP_Mock::userFunction(
+			'is_wc_endpoint_url',
+			array(
+				'return' => static function ( string $key ) use ( &$selected_endpoint ): bool {
+					return $key === $selected_endpoint;
+				},
+			)
+		);
+		foreach ( array(
+			'register'      => 'Create your business account',
+			'lost-password' => 'Reset your password',
+		) as $endpoint => $heading ) {
+			$selected_endpoint = $endpoint;
+			$this->assertSame( $heading . ' | Linker', $auth->document_title( 'Partner Account: Sign In or Register | Linker' ) );
+			$this->assertSame( $heading . ' | Linker', $auth->document_title( '' ), 'WordPress and SEOPress receive the same native title even when the original title is empty.' );
+		}
+	}
+
+	/** Login marketing copy and unrelated account endpoints keep their own titles. */
+	public function test_other_english_account_titles_remain_unchanged(): void {
+		WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
+		WP_Mock::userFunction( 'is_404', array( 'return' => false ) );
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'en' ) );
+		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
+		$existing = 'Partner Account: Sign In or Register | Linker';
+		$this->assertSame( $existing, ( new AuthTemplates() )->document_title( $existing ) );
+	}
+
+	/** German and any other page language preserve their independent title owner. */
+	public function test_non_english_titles_are_not_rewritten(): void {
+		WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
+		WP_Mock::userFunction( 'is_404', array( 'return' => false ) );
+		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => true ) );
+		$current_language = '';
+		WP_Mock::userFunction(
+			'pll_current_language',
+			array(
+				'return' => static function () use ( &$current_language ): string {
+					return $current_language;
+				},
+			)
+		);
+		foreach ( array(
+			'de' => 'Passwort zurücksetzen | Linker',
+			'fr' => 'Titre indépendant',
+			''   => 'Unresolved language',
+		) as $language => $existing ) {
+			$current_language = $language;
+			$this->assertSame( $existing, ( new AuthTemplates() )->document_title( $existing ) );
+		}
+	}
+
+	/** Account query vars cannot rewrite unrelated or not-found page metadata. */
+	public function test_authentication_titles_require_the_real_account_page(): void {
+		WP_Mock::userFunction( 'is_account_page', array( 'return' => false ) );
+		$this->assertSame( 'Other page | Linker', ( new AuthTemplates() )->document_title( 'Other page | Linker' ) );
+		WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
+		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => true ) );
+		WP_Mock::userFunction( 'is_404', array( 'return' => true ) );
+		$this->assertSame( 'Not found | Linker', ( new AuthTemplates() )->document_title( 'Not found | Linker' ) );
 	}
 }
