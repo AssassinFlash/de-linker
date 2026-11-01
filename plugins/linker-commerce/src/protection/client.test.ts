@@ -46,6 +46,63 @@ function fixture( api = 'https://example.test/wp-json/linker/v1/protection' ) {
 }
 
 test.each( [
+	[ 286.8, 'compact' ],
+	[ 299.9, 'compact' ],
+	[ 300, 'flexible' ],
+	[ 326, 'flexible' ],
+	[ 0, 'flexible' ],
+] as const )(
+	'a mount width of %s selects %s when rendering',
+	async ( width, expected ) => {
+		const f = fixture();
+		vi.spyOn( f.container, 'getBoundingClientRect' ).mockReturnValue( {
+			width,
+		} as DOMRect );
+		await expect( f.client.proof( 'genie', f.container ) ).resolves.toBe(
+			'server-proof'
+		);
+		expect( f.options().size ).toBe( expected );
+		expect( f.fetch ).toHaveBeenCalledTimes( 2 );
+		f.client.reset( 'genie' );
+	}
+);
+
+test( 'a running narrow challenge keeps its size, then a new retry measures its mount again', async () => {
+	const f = fixture();
+	let width = 286.8;
+	vi.spyOn( f.container, 'getBoundingClientRect' ).mockImplementation(
+		() => ( { width } ) as DOMRect
+	);
+	let options: TurnstileOptions;
+	f.render.mockImplementation( ( _container, received ) => {
+		options = received;
+		return 'widget-id';
+	} );
+	const first = f.client.proof( 'genie', f.container );
+	const failure = first.catch( ( error: unknown ) => error );
+	await vi.waitFor( () => expect( f.render ).toHaveBeenCalledOnce() );
+	expect( options!.size ).toBe( 'compact' );
+	width = 326;
+	expect( f.client.proof( 'genie', f.container ) ).toBe( first );
+	expect( f.render ).toHaveBeenCalledOnce();
+	options![ 'error-callback' ]( '110100' );
+	expect( await failure ).toEqual(
+		new Error( 'verification_widget_110100' )
+	);
+	f.render.mockImplementation( ( _container, received ) => {
+		options = received;
+		queueMicrotask( () => received.callback( 'provider-token' ) );
+		return 'new-widget-id';
+	} );
+	await expect( f.client.proof( 'genie', f.container ) ).resolves.toBe(
+		'server-proof'
+	);
+	expect( options!.size ).toBe( 'flexible' );
+	expect( f.fetch ).toHaveBeenCalledTimes( 3 );
+	f.client.reset( 'genie' );
+} );
+
+test.each( [
 	'https://example.test/wp-json/linker/v1/protection',
 	'https://example.test/?rest_route=%2Flinker%2Fv1%2Fprotection',
 ] )( 'lazy, scoped proof and concurrent reuse for %s', async ( api ) => {

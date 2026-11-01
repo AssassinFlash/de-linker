@@ -11,6 +11,9 @@ const CHALLENGE_MS = 120000;
 // Cloudflare's documented default retry interval; the original challenge
 // deadline stays absolute across retries (widget-configurations, 2026-10-28).
 const RETRY_MS = 8000;
+// Cloudflare's flexible widget requires at least 300 CSS pixels of width:
+// https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/widget-configurations/
+const FLEXIBLE_MIN_WIDTH = 300;
 const API_SCRIPT =
 	'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 
@@ -245,6 +248,7 @@ export class ProtectionClient implements PublicProtection {
 				}
 			};
 			try {
+				const width = attempt.container.getBoundingClientRect().width;
 				attempt.widget = api.render( attempt.container, {
 					sitekey: prepared.site_key,
 					action,
@@ -252,7 +256,14 @@ export class ProtectionClient implements PublicProtection {
 					// Loaded only after interaction. Keep the provider's check,
 					// failure feedback and recovery visible in that interaction.
 					appearance: 'always',
-					size: 'flexible',
+					// No measurable width is not evidence of a narrow mount (for
+					// example in a non-layout environment); preserve the default.
+					size:
+						Number.isFinite( width ) &&
+						width > 0 &&
+						width < FLEXIBLE_MIN_WIDTH
+							? 'compact'
+							: 'flexible',
 					retry: 'auto',
 					'retry-interval': RETRY_MS,
 					'refresh-timeout': 'manual',
