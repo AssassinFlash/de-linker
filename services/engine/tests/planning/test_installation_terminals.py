@@ -32,8 +32,6 @@ from linker_engine.planning.installation_takeoff import product_basis, route_tak
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.product_sources import ProductProvider, ProductSources
 from linker_engine.planning.project_input_contracts import (
-    MATERIALS_INPUT_CONTRACT,
-    REFERENCE_CURRENT_INPUT_CONTRACT,
     SUPPORTED_INPUT_CONTRACTS,
     TERMINAL_INPUT_CONTRACT,
     require_input_contract,
@@ -341,25 +339,13 @@ def test_legacy_bytes_and_complete_input_contract() -> None:
     assert legacy.project_document() == plan
     assert digest(encode(legacy.project_document())) == digest(encode(plan))
     plan["instances"][0]["ports"][0]["terminal_binding"] = None
-    for token in (
-        None,
-        *(
-            t
-            for t in SUPPORTED_INPUT_CONTRACTS
-            if t
-            not in (
-                TERMINAL_INPUT_CONTRACT,
-                REFERENCE_CURRENT_INPUT_CONTRACT,
-                MATERIALS_INPUT_CONTRACT,
-            )
-        ),
-    ):
-        for before, after in ((None, inputs), (inputs, inputs), (inputs, {})):
+    floor = SUPPORTED_INPUT_CONTRACTS.index(TERMINAL_INPUT_CONTRACT)
+    for before, after in ((None, inputs), (inputs, inputs), (inputs, {})):
+        for token in (None, *SUPPORTED_INPUT_CONTRACTS[:floor]):
             with pytest.raises(ProjectInputContractRequired):
                 require_input_contract(before, after, token)
-    require_input_contract(None, inputs, TERMINAL_INPUT_CONTRACT)
-    for before, after in ((None, inputs), (inputs, inputs), (inputs, {})):
-        require_input_contract(before, after, REFERENCE_CURRENT_INPUT_CONTRACT)
+        for token in SUPPORTED_INPUT_CONTRACTS[floor:]:
+            require_input_contract(before, after, token)
     invalid = copy.deepcopy(inputs)
     invalid["installation"]["circuits"][0].update(
         kind="ac", communication_use="internal_communication"
