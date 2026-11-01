@@ -15,6 +15,7 @@ export function isPreMutationInputRefusal(error: unknown): boolean {
 		planning_draft_changed: [409],
 		linker_solution_changed: [409],
 		report_inputs_changed: [422],
+		report_source_export_required: [422],
 		report_logo_invalid: [422],
 		product_evidence_changed: [409],
 		body_too_large: [413],
