@@ -133,7 +133,11 @@ final class DraftProofTest extends TestCase {
 		$this->assertArrayNotHasKey( '999', $block['draft_proofs'] );
 	}
 
-	/** @return array<string,array{string}> */
+	/**
+	 * Noncommercial engineering roles covered by draft proof checks.
+	 *
+	 * @return array<string,array{string}>
+	 */
 	public static function reference_roles(): array {
 		return array(
 			'module' => array( 'reference_pv_module' ),
