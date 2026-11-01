@@ -151,7 +151,7 @@ export function energyErrorText(error: unknown): string {
 			);
 		case "report_source_export_required":
 			return __(
-				"A source used in this report has no recorded permission for export. Check Source properties in Roof design. If your rights allow export, save the permission and generate new results for the affected parts of the report.",
+				"The export status of a source used in this report is Unknown or Prohibited. Check Source properties in Roof design. If your rights allow export, save the permission and generate new results for the affected parts of the report.",
 				"linker-tools",
 			);
 		case "report_inputs_changed":

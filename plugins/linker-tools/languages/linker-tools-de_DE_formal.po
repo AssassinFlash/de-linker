@@ -13434,8 +13434,8 @@ msgstr "Die PV-Strang-CSV enthält je Strang und Zeitintervall eine Zeile. Die L
 
 #: build/planner/assets/planner.js
 #: ../../apps/planner/src/components/energy/EnergyError.tsx
-msgid "A source used in this report has no recorded permission for export. Check Source properties in Roof design. If your rights allow export, save the permission and generate new results for the affected parts of the report."
-msgstr "Für eine Quelle dieses Berichts ist keine Exportfreigabe hinterlegt. Prüfen Sie die Quelleneigenschaften in der Dachplanung. Wenn Sie die Daten exportieren dürfen, speichern Sie die Freigabe und berechnen Sie die betroffenen Ergebnisse neu."
+msgid "The export status of a source used in this report is Unknown or Prohibited. Check Source properties in Roof design. If your rights allow export, save the permission and generate new results for the affected parts of the report."
+msgstr "Der Exportstatus einer Quelle in diesem Bericht ist „Unbekannt“ oder „Untersagt“. Prüfen Sie die Quelleneigenschaften in der Dachplanung. Wenn Sie die Daten exportieren dürfen, speichern Sie die Freigabe und berechnen Sie die betroffenen Ergebnisse neu."
 
 #: build/planner/assets/planner.js
 #: ../../apps/planner/src/components/design/GeometryForm.tsx
