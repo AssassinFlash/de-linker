@@ -33,7 +33,7 @@ test("a late acknowledgement preserves newer edits and their undo/redo history",
 	const wire = intent.body;
 	assert.equal(
 		projectInputContract,
-		"installation_conductor_reference_current_v1",
+		"installation_physical_materials_v1",
 	);
 	assert.equal(JSON.parse(wire).input_contract, projectInputContract);
 	draft = editDraft(draft, { ...project.inputs, value: 3 });

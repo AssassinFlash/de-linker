@@ -31,6 +31,7 @@ from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.product_sources import ProductSources
 from linker_engine.planning.project_input_contracts import (
     ELECTRICAL_INPUT_CONTRACT,
+    MATERIALS_INPUT_CONTRACT,
     PLANT_PV_INPUT_CONTRACT,
     require_input_contract,
 )
@@ -430,6 +431,18 @@ def test_native_woo_selection_review_frozen_report_pdf_csv_and_revocation(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     inputs, fixture_basis = circuit_fixture()
+    inputs["installation"]["materials"] = [
+        {
+            "id": "synthetic-protection",
+            "name": "Synthetic protective device",
+            "kind": "protection",
+            "circuit_id": "circuit",
+            "quantity": 1,
+            "unit": "piece",
+            "specification": "Project declaration only",
+            "source_note": "Synthetic project source",
+        }
+    ]
     feed = request.getfixturevalue("equipment_feed")
     feed.update(figure_projection_version=2, compatibility_origin="woocommerce")
     feed["overlay"].extend(fixture_basis["cable_references"])
@@ -493,7 +506,7 @@ def test_native_woo_selection_review_frozen_report_pdf_csv_and_revocation(
             "key": "electrical-project",
             "title": "Electrical fixture",
             "inputs": inputs,
-            "input_contract": ELECTRICAL_INPUT_CONTRACT,
+            "input_contract": MATERIALS_INPUT_CONTRACT,
         }
         forged = copy.deepcopy(create)
         forged["key"] = "forged"
@@ -520,6 +533,9 @@ def test_native_woo_selection_review_frozen_report_pdf_csv_and_revocation(
             headers=headers(),
         )
         assert reviewed.status_code == 200, reviewed.text
+        material_review = reviewed.json()["material_review"]
+        assert material_review["qualified"] is False
+        assert material_review["rows"][0]["circuit_status"] == "linked"
         frozen = reviewed.json()["electrical"]["circuits"][0]["conditions"][0]
         assert frozen["voltage_drop_v"] == pytest.approx(5.088)
         for locale in ("en", "de"):
@@ -547,8 +563,20 @@ def test_native_woo_selection_review_frozen_report_pdf_csv_and_revocation(
             assert run.state == "succeeded", run.error
             result = json_object(run.result)
             materials = json_object(workspace.blobs.object(result["materials_sha256"]))
-            assert [row["quantity"] for row in materials["lines"]] == [30, 30]
-            for row in materials["lines"]:
+            declared = [
+                row
+                for row in materials["lines"]
+                if row["id"] == "installation-material:synthetic-protection"
+            ]
+            assert declared[0]["quantity"] == 1
+            assert declared[0]["source"]["declaration"] == material_review["rows"][0]
+            cables = [
+                row
+                for row in materials["lines"]
+                if row["id"] != "installation-material:synthetic-protection"
+            ]
+            assert [row["quantity"] for row in cables] == [30, 30]
+            for row in cables:
                 assert row["source"]["electrical"]["circuit"]["conditions"][0] == frozen
             csv_bytes = Assets(workspace).content(
                 owner,
@@ -557,11 +585,12 @@ def test_native_woo_selection_review_frozen_report_pdf_csv_and_revocation(
             )
             csv_rows = list(csv.reader(io.StringIO(csv_bytes.decode("utf-8-sig"))))
             assert (
-                json.loads(csv_rows[1][6])["source"]["electrical"]["circuit"][
-                    "conditions"
-                ][0]
+                json.loads(
+                    next(row[6] for row in csv_rows[1:] if "electrical" in row[6])
+                )["source"]["electrical"]["circuit"]["conditions"][0]
                 == frozen
             )
+            assert "Synthetic protective device" in csv_bytes.decode("utf-8-sig")
             table = next(
                 section["table"]
                 for section in result["report"]["sections"]
@@ -571,9 +600,10 @@ def test_native_woo_selection_review_frozen_report_pdf_csv_and_revocation(
             pdf_bytes = Assets(workspace).content(
                 owner, project["id"], result["prepared_asset"]["id"]
             )
-            assert "5.088" in "\n".join(
+            pdf_text = "\n".join(
                 page.extract_text() for page in PdfReader(io.BytesIO(pdf_bytes)).pages
             )
+            assert "5.088" in pdf_text and "Synthetic protective device" in pdf_text
         equipment_basis = sources.equipment_basis()
         assert "cable_references" not in equipment_basis
         basis = sources.equipment_basis(include_cables=True)
@@ -585,7 +615,4 @@ def test_native_woo_selection_review_frozen_report_pdf_csv_and_revocation(
             sources.confirm_basis(basis, require_reference=False)
         sources.confirm_basis(equipment_basis, require_reference=False)
         assert len(json_object(sources.current())["cable_references"]) == 1
-        assert (
-            materials["lines"][0]["source"]["electrical"]["circuit"]["conditions"][0]
-            == frozen
-        )
+        assert cables[0]["source"]["electrical"]["circuit"]["conditions"][0] == frozen

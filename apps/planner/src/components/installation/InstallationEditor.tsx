@@ -45,6 +45,7 @@ import type { PvStringPlan } from "../../domain/pvStrings.ts";
 import { PvStringLinks } from "./PvStringLinks.tsx";
 import { conductorLabel } from "./installationLabels.ts";
 import { TerminalResults } from "./TerminalResults.tsx";
+import { InstallationMaterials } from "./InstallationMaterials.tsx";
 import { hasTerminalFeature } from "../../domain/installationTerminals.ts";
 
 type Kind = "instances" | "circuits" | "routes" | "cable_runs";
@@ -142,6 +143,7 @@ export function InstallationEditor({
 		[failed, setFailed] = useState(false),
 		[conflicted, setConflicted] = useState(false),
 		[linksValid, setLinksValid] = useState(true),
+		[materialsValid, setMaterialsValid] = useState(true),
 		[reviewStrings, setReviewStrings] = useState<unknown>(null),
 		[reviewContext, setReviewContext] = useState<{
 			projectId: string;
@@ -174,9 +176,9 @@ export function InstallationEditor({
 		};
 	}, []);
 	useEffect(() => {
-		onValidity(form === null && !newSource && linksValid);
+		onValidity(form === null && !newSource && linksValid && materialsValid);
 		return () => onValidity(true);
-	}, [form, newSource, linksValid, onValidity]);
+	}, [form, newSource, linksValid, materialsValid, onValidity]);
 	// Saving the prepared inputs advances the revision without changing the
 	// accepted review basis. Pending replies still require the exact revision.
 	const shown =
@@ -518,7 +520,7 @@ export function InstallationEditor({
 					<button
 						type="button"
 						className="lp-text-button"
-						disabled={!linksValid}
+						disabled={!linksValid || !materialsValid}
 						onClick={() => setNewSource(true)}
 					>
 						{__("Add measurement or drawing source", "linker-tools")}
@@ -575,14 +577,14 @@ export function InstallationEditor({
 										<div className="lp-inline-actions">
 											<button
 												className="lp-text-button"
-												disabled={!linksValid}
+												disabled={!linksValid || !materialsValid}
 												onClick={() => setForm({ kind, id: row.id })}
 											>
 												{__("Edit", "linker-tools")}
 											</button>
 											<button
 												className="lp-text-button"
-												disabled={dependent || !linksValid}
+												disabled={dependent || !linksValid || !materialsValid}
 												title={
 													dependent
 														? __(
@@ -605,7 +607,7 @@ export function InstallationEditor({
 												) && (
 													<button
 														className="lp-text-button"
-														disabled={!linksValid}
+														disabled={!linksValid || !materialsValid}
 														onClick={() => {
 															const p = products.data!.products.find(
 																(p) => p.id === row.product_id,
@@ -627,6 +629,7 @@ export function InstallationEditor({
 								className="lp-button lp-button-secondary"
 								disabled={
 									!linksValid ||
+									!materialsValid ||
 									!geometry.sources.length ||
 									(kind === "instances"
 										? products.isFetching || !products.data?.prepared
@@ -642,6 +645,15 @@ export function InstallationEditor({
 							</button>
 						</section>
 					))}
+					<InstallationMaterials
+						plan={plan}
+						products={products.data?.products ?? []}
+						review={shown?.material_review}
+						locale={locale}
+						disabled={busy || !linksValid}
+						change={change}
+						onValidity={setMaterialsValid}
+					/>
 					<PvStringLinks
 						plan={plan}
 						savedInstallation={savedInstallation}
@@ -649,7 +661,7 @@ export function InstallationEditor({
 						stringPlanChanged={stringPlanChanged}
 						review={shown?.pv_string_reconciliation ?? null}
 						locale={locale}
-						disabled={busy}
+						disabled={busy || !materialsValid}
 						change={change}
 						onValidity={setLinksValid}
 					/>
@@ -658,9 +670,11 @@ export function InstallationEditor({
 						disabled={
 							busy ||
 							!linksValid ||
+							!materialsValid ||
 							(!plan.cable_runs.length &&
 								!plan.circuits.some((c) => c.operating_conditions?.length) &&
 								!hasTerminalFeature(plan) &&
+								!plan.materials?.length &&
 								plan.pv_string_links === undefined &&
 								savedInputs.pv_plant_string_plan === undefined) ||
 							((plan.pv_string_links !== undefined ||

@@ -249,6 +249,48 @@ class PvStringLink(Document):
     circuit_id: Identifier
 
 
+class MaterialComparisonCircuit(Document):
+    id: Identifier
+    kind: Literal["pv_dc", "battery_dc", "ac", "control", "protective_earth", "other"]
+    start: Endpoint
+    end: Endpoint
+
+
+class MaterialFactComparison(Document):
+    instance_id: Identifier
+    product_id: Count
+    product_revision: Hash
+    fact_id: Text
+    document_id: Text
+    document_revision: Hash
+    cross_section_mm2: Positive | None
+    rated_current_a: Positive | None
+    rated_voltage_v: Positive | None
+    conditions_confirmed: bool
+    circuit_context: MaterialComparisonCircuit
+
+
+class InstallationMaterial(Document):
+    """A project declaration, not a manufacturer fact or a sales product."""
+
+    id: Identifier
+    name: Text
+    kind: Literal["connector", "protection", "earthing", "mounting", "other"]
+    circuit_id: Identifier | None
+    quantity: Annotated[Positive, Field(le=2**53 - 1)] | None
+    unit: Literal["piece", "m"]
+    specification: Text
+    source_note: Text
+    comparison: MaterialFactComparison | None = None
+
+    @model_validator(mode="after")
+    def physical_quantity(self) -> Self:
+        if self.unit == "piece" and self.quantity is not None:
+            if not float(self.quantity).is_integer():
+                raise ValueError("piece quantity must be a whole number")
+        return self
+
+
 class InstallationInputs(Document):
     schema_version: SchemaVersion
     geometry_sha256: Hash | None
@@ -259,11 +301,19 @@ class InstallationInputs(Document):
     # Absent retains the historical routing scope; [] explicitly requests a
     # review with no declared links. Cross-document stale IDs remain saveable.
     pv_string_links: list[PvStringLink] = Field(default_factory=list)
+    # User-declared physical items. Absence preserves historic project bytes.
+    materials: list[InstallationMaterial] = Field(default_factory=list)
 
     def project_document(self) -> Object:
         value = self.model_dump(mode="json")
         if "pv_string_links" not in self.model_fields_set:
             value.pop("pv_string_links")
+        if "materials" not in self.model_fields_set:
+            value.pop("materials")
+        else:
+            for item, dumped in zip(self.materials, value["materials"], strict=True):
+                if item.comparison is None:
+                    dumped.pop("comparison")
         # A run without a declared conductor keeps its historical bytes, so the
         # frozen input hash of an unchanged project revision does not move.
         # Omitted and explicit null describe the same physical run, so both
@@ -298,7 +348,13 @@ class InstallationInputs(Document):
             identities = [getattr(link, key) for link in self.pv_string_links]
             if len(identities) != len(set(identities)):
                 raise ValueError("PV string links must not have competing assignments")
-        for rows in (self.instances, self.circuits, self.routes, self.cable_runs):
+        for rows in (
+            self.instances,
+            self.circuits,
+            self.routes,
+            self.cable_runs,
+            self.materials,
+        ):
             if len({row.id for row in rows}) != len(rows):
                 raise ValueError("installation IDs must be distinct in their scope")
         ports = {(d.id, p.id) for d in self.instances for p in d.ports}

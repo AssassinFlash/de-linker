@@ -32,6 +32,7 @@ from linker_engine.planning.installation_takeoff import product_basis, route_tak
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.product_sources import ProductProvider, ProductSources
 from linker_engine.planning.project_input_contracts import (
+    MATERIALS_INPUT_CONTRACT,
     REFERENCE_CURRENT_INPUT_CONTRACT,
     SUPPORTED_INPUT_CONTRACTS,
     TERMINAL_INPUT_CONTRACT,
@@ -345,7 +346,12 @@ def test_legacy_bytes_and_complete_input_contract() -> None:
         *(
             t
             for t in SUPPORTED_INPUT_CONTRACTS
-            if t not in (TERMINAL_INPUT_CONTRACT, REFERENCE_CURRENT_INPUT_CONTRACT)
+            if t
+            not in (
+                TERMINAL_INPUT_CONTRACT,
+                REFERENCE_CURRENT_INPUT_CONTRACT,
+                MATERIALS_INPUT_CONTRACT,
+            )
         ),
     ):
         for before, after in ((None, inputs), (inputs, inputs), (inputs, {})):

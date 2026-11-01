@@ -9,6 +9,7 @@ from linker_engine.models import ReportRow, ReportSection, ReportTable
 from .canonical import Object
 from .installation_current_report import current_sections
 from .installation_electrical_report import electrical_sections
+from .installation_material_report import material_section
 from .installation_terminal_report import terminal_section
 from .project_materials import conductor_specification, material_quantity
 from .report_copy import text
@@ -84,6 +85,9 @@ def installation_sections(source: Object, locale: str) -> list[ReportSection]:
             ),
         ),
     ]
+    material_review = plan.get("material_review")
+    if isinstance(material_review, dict):
+        sections.append(material_section(material_review, locale))
     source_rows = [
         ReportRow(
             label=f"{text('source', locale)} · {s['id']}",

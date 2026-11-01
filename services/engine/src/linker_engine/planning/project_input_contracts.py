@@ -21,7 +21,9 @@ type InputContract = Literal[
     "grid_connection_evidence_v1",
     "installation_terminal_bindings_v1",
     "installation_conductor_reference_current_v1",
+    "installation_physical_materials_v1",
 ]
+MATERIALS_INPUT_CONTRACT: InputContract = "installation_physical_materials_v1"
 REFERENCE_CURRENT_INPUT_CONTRACT: InputContract = (
     "installation_conductor_reference_current_v1"
 )
@@ -47,7 +49,11 @@ _REFERENCE_CURRENT_COVERED_CONTRACTS: tuple[str, ...] = (
     *_TERMINAL_COVERED_CONTRACTS,
     REFERENCE_CURRENT_INPUT_CONTRACT,
 )
-SUPPORTED_INPUT_CONTRACTS = _REFERENCE_CURRENT_COVERED_CONTRACTS
+_MATERIALS_COVERED_CONTRACTS: tuple[str, ...] = (
+    *_REFERENCE_CURRENT_COVERED_CONTRACTS,
+    MATERIALS_INPUT_CONTRACT,
+)
+SUPPORTED_INPUT_CONTRACTS = _MATERIALS_COVERED_CONTRACTS
 
 
 def required_contracts(inputs: Mapping[str, object]) -> tuple[str, ...]:
@@ -60,6 +66,8 @@ def required_contracts(inputs: Mapping[str, object]) -> tuple[str, ...]:
     if isinstance(installation, Mapping) and "pv_string_links" in installation:
         required.append(INPUT_CONTRACT)
     if isinstance(installation, Mapping):
+        if "materials" in installation:
+            required.append(MATERIALS_INPUT_CONTRACT)
         circuits, runs = installation.get("circuits"), installation.get("cable_runs")
         instances = installation.get("instances")
         if any(
@@ -114,7 +122,9 @@ def require_input_contract(
     # Each complete writer understands only its declared feature generation.
     # Concrete coverage sets keep older tokens from covering future additions.
     covered = (
-        _REFERENCE_CURRENT_COVERED_CONTRACTS
+        _MATERIALS_COVERED_CONTRACTS
+        if input_contract == MATERIALS_INPUT_CONTRACT
+        else _REFERENCE_CURRENT_COVERED_CONTRACTS
         if input_contract == REFERENCE_CURRENT_INPUT_CONTRACT
         else _TERMINAL_COVERED_CONTRACTS
         if input_contract == TERMINAL_INPUT_CONTRACT

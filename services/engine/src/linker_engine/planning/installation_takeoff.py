@@ -10,6 +10,7 @@ from .errors import InvalidInput, ProductEvidenceChanged
 from .geometry_documents import GeometryDocument
 from .installation_electrical import electrical_review
 from .installation_inputs import InstallationInputs, RoutePoint
+from .installation_materials import material_review
 from .installation_terminals import has_terminal_feature, terminal_assessment
 from .pv_string_inputs import PvPlantStringPlan, PvStringPlan, plant_instance_statuses
 
@@ -278,6 +279,11 @@ def product_basis(
         for port in device.ports
         if (b := port.terminal_binding) is not None
     }
+    bound_documents.update(
+        (binding.product_id, binding.document_id, binding.document_revision)
+        for item in plan.materials
+        if (binding := item.comparison) is not None
+    )
     scoped_documents: list[Json] = []
     for document in cast(list[Object], scope["documents"]):
         key = (
@@ -470,6 +476,11 @@ def route_takeoff(
         "geometry_sha256": geometry_sha,
         "input_sha256": input_sha,
         "prepared_inputs": prepared,
+        **(
+            {"material_review": material_review(plan, selected)}
+            if "materials" in plan.model_fields_set
+            else {}
+        ),
         **(
             {"terminal_assessment": terminal_assessment(plan, selected)}
             if has_terminal_feature(plan)

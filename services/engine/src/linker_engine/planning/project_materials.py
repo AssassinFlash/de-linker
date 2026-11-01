@@ -191,6 +191,24 @@ def project_materials(source: Object) -> Object:
             )
     installation = source.get("installation")
     if isinstance(installation, dict):
+        declared = installation.get("material_review")
+        if isinstance(declared, dict):
+            for item in cast(list[Object], declared["rows"]):
+                lines.append(
+                    {
+                        "id": f"installation-material:{item['id']}",
+                        "handling": "installation_requirement",
+                        "label": {"en": item["name"], "de": item["name"]},
+                        "quantity": item["quantity"],
+                        "unit": item["unit"],
+                        "basis": "project_declared_installation_materials_v1",
+                        "source": {
+                            "installation_input_sha256": installation["input_sha256"],
+                            "qualified": False,
+                            "declaration": item,
+                        },
+                    }
+                )
         electrical = installation.get("electrical")
         current_checks: dict[str, list[Json]] = {}
         if isinstance(electrical, dict):
@@ -358,6 +376,12 @@ def material_reference(line: Object) -> str:
 
 
 def material_scope(line: Object, locale: str) -> str:
+    if line.get("basis") == "project_declared_installation_materials_v1":
+        return (
+            "Projektangabe · technische Eignung nicht geprüft"
+            if locale == "de"
+            else "Project declaration · technical suitability not assessed"
+        )
     if line.get("basis") == "manufacturer_one_end_mapping":
         return "Klemmenprüfung" if locale == "de" else "Terminal check"
     if line.get("basis") in {

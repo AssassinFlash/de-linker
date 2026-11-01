@@ -8,6 +8,7 @@
     "installation_circuit_electrical_v1",
     "grid_connection_evidence_v1",
     "installation_terminal_bindings_v1",
-    "installation_conductor_reference_current_v1"
+    "installation_conductor_reference_current_v1",
+    "installation_physical_materials_v1"
   ]
 }
