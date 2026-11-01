@@ -20,6 +20,60 @@ UNCHANGED = r"""<p>Current wording: Grüße, inquiry details and approved copy.<
 """
 
 
+def thank_you_pair() -> tuple[str, str]:
+    """Actual relevant fragments, without copying either full WordPress page."""
+    en = """the contact page and the full project request both reach the same colleague.
+<a href="/solution-configurator/">Request a project</a>
+<a href="/solution-configurator/">Request a Project</a>
+<a href="/solution-configurator/">Request a Project</a>
+The full intake. Loads, phase supply, existing PV and timeline sharpen the reply.
+Should I send a full project request as well?
+If you already know the site type, system goal and rough size, yes. Send the <a href="/solution-configurator/">full project request</a> and the reply comes back scoped to design, availability and price.
+The full project request carries loads, phase supply, existing PV and timeline, so the reply starts from the whole picture. A single addition fits better through the contact page.
+Site type, system goal, product family and timeline, for a reply scoped to design, availability and price.
+"""
+    de = """erreichen sowohl die Kontaktseite als auch die vollständige Projektanfrage denselben Kollegen.
+<a href="/de/loesungskonfigurator/">Projekt anfragen</a>
+<a href="/de/loesungskonfigurator/">Projekt anfragen</a>
+<a href="/de/loesungskonfigurator/">Projekt anfragen</a>
+Die vollständige Erfassung. Lasten, Phasenversorgung, bestehende PV und Zeitplan präzisieren die Antwort.
+Soll ich auch eine vollständige Projektanfrage senden?
+Wenn Sie die Projektart, das Systemziel und die ungefähre Größe bereits kennen, ja. Senden Sie die <a href="/de/loesungskonfigurator/">vollständige Projektanfrage</a> und die Antwort kommt auf Auslegung, Verfügbarkeit und Preis zugeschnitten zurück.
+Die vollständige Projektanfrage enthält Lasten, Phasenversorgung, bestehende PV und Zeitplan, sodass die Antwort vom Gesamtbild ausgeht. Eine einzelne Ergänzung passt besser über die Kontaktseite.
+Standorttyp, Systemziel, Produktfamilie und Zeitplan, für eine Antwort, die auf Planung, Verfügbarkeit und Preis ausgerichtet ist.
+"""
+    card = '<a href="/blog/" class="lk-path-row">Blog</a>'
+    return en + card + UNCHANGED, de + card + UNCHANGED
+
+
+def test_thank_you_plan_preserves_claims_and_unrelated_bytes() -> None:
+    before = thank_you_pair()
+    after = controls.plan_pair(
+        "thank_you_blog", *controls.plan_pair("thank_you_inquiry", *before)
+    )
+    assert controls.plan_pair("thank_you_inquiry", *after) == after
+    assert controls.plan_pair("thank_you_blog", *after) == after
+    assert after[0].count("/proforma-request/") == 4
+    assert after[1].count("/de/proforma-anfrage/") == 4
+    assert '<a href="/de/blog/" class="lk-path-row">Blog</a>' in after[1]
+    assert all(UNCHANGED in text for text in after)
+    assert "design, availability and price" in after[0]
+    assert "Auslegung, Verfügbarkeit und Preis" in after[1]
+
+
+def test_thank_you_plan_rejects_partial_or_ambiguous_changes() -> None:
+    en, de = thank_you_pair()
+    final_en, _ = controls.plan_pair("thank_you_inquiry", en, de)
+    with pytest.raises(ValueError, match="Partially changed"):
+        controls.plan_pair("thank_you_inquiry", final_en, de)
+    with pytest.raises(ValueError, match="changed or is partial"):
+        controls.plan_pair("thank_you_inquiry", en.replace("full intake", "intake"), de)
+    with pytest.raises(ValueError, match="ambiguous"):
+        controls.plan_pair(
+            "thank_you_blog", en, de + '<a href="/blog/" class="lk-path-row">'
+        )
+
+
 def test_installer_native_consumer_initializes_without_scrolling() -> None:
     source = (Path(__file__).parent / "fixtures" / "installer-tabset.html").read_text()
     before = (source + UNCHANGED, source + UNCHANGED)

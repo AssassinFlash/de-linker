@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 /** Actual App, native DraftContext and protected turn transport share one owner. */
 import { webcrypto } from 'node:crypto';
+import { setImmediate as realImmediate } from 'node:timers';
 import {
 	act,
 	cleanup,
@@ -13,6 +14,16 @@ import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import { App, resetTurnLane } from './App';
 import { readConfig } from './config';
 import { FailureJournal } from './shared/ownedFailure';
+
+const commerceModules = import.meta.glob(
+	'../../../linker-commerce/src/protection/client.ts',
+	{ eager: true }
+);
+const { ProtectionClient } = Object.values( commerceModules )[ 0 ] as {
+	ProtectionClient: new (
+		config: NonNullable< Window[ 'linkerPublicProtectionConfig' ] >
+	) => NonNullable< Window[ 'linkerPublicProtection' ] >;
+};
 
 const scopeA = 'a'.repeat( 64 );
 const scopeB = 'b'.repeat( 64 );
@@ -44,14 +55,277 @@ afterEach( () => {
 	stop();
 	stop = () => {};
 	cleanup();
+	window.linkerPublicProtection?.reset( 'genie' );
 	delete window.linkerPublicProtection;
 	delete window.linkerPublicProtectionConfig;
+	Reflect.deleteProperty( window, 'turnstile' );
+	Reflect.deleteProperty( document, 'visibilityState' );
+	vi.useRealTimers();
 	document.body.replaceChildren();
 	sessionStorage.clear();
 	vi.restoreAllMocks();
 	vi.unstubAllGlobals();
 	resetTurnLane();
 } );
+
+test.each( [
+	[ 'new', 'timeout' ],
+	[ 'new', 'cancel' ],
+	[ 'delete', 'timeout' ],
+] as const )(
+	'sending during a pending %s conversation preserves the question through verification %s',
+	async ( operation, outcome ) => {
+		let interactive!: () => void;
+		let complete!: ( token: string ) => void;
+		const selection = deferred< Response >();
+		let opened = false;
+		const history = [ { id: 547, title: 'Earlier conversation' } ];
+		const renderWidget = vi.fn(
+			(
+				_node: HTMLElement,
+				options: {
+					callback: ( token: string ) => void;
+					'before-interactive-callback': () => void;
+				}
+			) => {
+				interactive = options[ 'before-interactive-callback' ];
+				complete = options.callback;
+				return 'synthetic-widget';
+			}
+		);
+		Object.assign( window, {
+			turnstile: { render: renderWidget, remove: vi.fn() },
+		} );
+		const config = {
+			api: 'https://site.test/proof',
+			nonce: 'synthetic',
+			mode: 'enforce',
+			language: 'de' as const,
+		};
+		const sentBodies: string[] = [];
+		const turn = vi.fn(
+			async () =>
+				new Response(
+					JSON.stringify( {
+						stream: `event: block\ndata: ${ JSON.stringify( { type: 'text', text: answer, refs: [] } ) }\n\nevent: done\ndata: {"ok":true}\n\n`,
+					} )
+				)
+		);
+		vi.stubGlobal(
+			'fetch',
+			vi.fn< typeof fetch >( async ( url, init ) => {
+				const path = String( url );
+				if ( path.includes( '/entry-context' ) ) {
+					return new Response( JSON.stringify( { scope: scopeA } ) );
+				}
+				if (
+					path.endsWith( '/conversations' ) &&
+					init?.method === 'POST'
+				) {
+					return selection.promise;
+				}
+				if (
+					path.endsWith( '/conversations/547' ) &&
+					init?.method === 'DELETE'
+				) {
+					return selection.promise;
+				}
+				if ( path.endsWith( '/conversations' ) ) {
+					return new Response(
+						JSON.stringify( {
+							conversations: history,
+							current_id: opened ? 548 : 547,
+						} )
+					);
+				}
+				if (
+					path.includes( '/conversation?' ) ||
+					path.endsWith( '/conversation' )
+				) {
+					return new Response(
+						JSON.stringify( {
+							conversation_id: opened ? 548 : 547,
+							messages: opened
+								? []
+								: [
+										{
+											role: 'user',
+											content: 'Previous question',
+										},
+									],
+							stream: '',
+						} )
+					);
+				}
+				if ( path.includes( '/prepare?' ) ) {
+					return new Response(
+						JSON.stringify( {
+							site_key: 'synthetic',
+							prepare: 'synthetic',
+						} )
+					);
+				}
+				if ( path.includes( '/verify?' ) ) {
+					return new Response(
+						JSON.stringify( { proof: 'synthetic', ttl: 300 } )
+					);
+				}
+				if ( path.endsWith( '/genie/turn' ) ) {
+					if ( ! opened ) {
+						return new Response( '', { status: 503 } );
+					}
+					sentBodies.push( String( init?.body ) );
+					return turn();
+				}
+				throw new Error( `Unexpected fixture HTTP: ${ path }` );
+			} )
+		);
+		const mount = document.createElement( 'div' );
+		mount.dataset.surface = 'workspace';
+		mount.dataset.locale = 'de';
+		mount.dataset.restNonce = 'synthetic';
+		const ui = render( <App config={ readConfig( mount ) } /> );
+		stop = ui.unmount;
+		await screen.findByText( 'Previous question' );
+		fireEvent.input( field(), {
+			target: { value: 'Previous unsent question' },
+		} );
+		await act( async () =>
+			fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) )
+		);
+		await waitFor( () =>
+			expect( field() ).toHaveValue( 'Previous unsent question' )
+		);
+		if ( operation === 'new' ) {
+			await act( async () =>
+				fireEvent.click(
+					screen.getByRole( 'button', { name: 'New conversation' } )
+				)
+			);
+		} else {
+			fireEvent.click(
+				await screen.findByRole( 'button', {
+					name: 'Delete conversation: Earlier conversation',
+				} )
+			);
+			await act( async () =>
+				fireEvent.click(
+					screen.getByRole( 'button', { name: 'Delete' } )
+				)
+			);
+		}
+		await waitFor( () =>
+			expect(
+				vi
+					.mocked( fetch )
+					.mock.calls.some( ( [ url, init ] ) =>
+						operation === 'new'
+							? String( url ).endsWith( '/conversations' ) &&
+								init?.method === 'POST'
+							: String( url ).endsWith( '/conversations/547' ) &&
+								init?.method === 'DELETE'
+					)
+			).toBe( true )
+		);
+		expect( field() ).not.toBeDisabled();
+		window.linkerPublicProtectionConfig = config;
+		window.linkerPublicProtection = new ProtectionClient( config );
+		vi.useFakeTimers();
+		fireEvent.input( field(), { target: { value: question } } );
+		await act( async () => {
+			fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
+		} );
+		expect(
+			new FailureJournal( sessionStorage, {
+				scope: scopeA,
+				persistent: true,
+			} ).candidate()?.record
+		).toMatchObject( { text: question } );
+		opened = true;
+		await act( async () =>
+			selection.resolve(
+				new Response(
+					JSON.stringify( {
+						conversation_id: 548,
+						current_id: operation === 'delete' ? 0 : 548,
+						conversations: history,
+					} )
+				)
+			)
+		);
+		expect(
+			new FailureJournal( sessionStorage, {
+				scope: scopeA,
+				persistent: true,
+			} ).candidate()?.record
+		).toMatchObject( { text: question } );
+		await act( async () => {
+			for ( let i = 0; i < 20 && ! renderWidget.mock.calls.length; i++ ) {
+				await new Promise( ( resolve ) => realImmediate( resolve ) );
+			}
+		} );
+		expect( renderWidget ).toHaveBeenCalledOnce();
+		await act( async () => interactive() );
+		expect( screen.getByText( question ) ).toBeVisible();
+		expect( screen.getByText( 'Checking verification…' ) ).toBeVisible();
+		expect( turn ).not.toHaveBeenCalled();
+		if ( outcome === 'timeout' ) {
+			Object.defineProperty( document, 'visibilityState', {
+				configurable: true,
+				value: 'hidden',
+			} );
+			await act( async () =>
+				document.dispatchEvent( new Event( 'visibilitychange' ) )
+			);
+			await act( async () => {
+				await vi.advanceTimersByTimeAsync( 120_001 );
+			} );
+			Object.defineProperty( document, 'visibilityState', {
+				configurable: true,
+				value: 'visible',
+			} );
+			await act( async () => {
+				document.dispatchEvent( new Event( 'visibilitychange' ) );
+				window.dispatchEvent( new Event( 'focus' ) );
+			} );
+		} else {
+			await act( async () =>
+				fireEvent.click(
+					screen.getByRole( 'button', {
+						name: 'Cancel verification',
+					} )
+				)
+			);
+		}
+		expect( field() ).toHaveValue( question );
+		expect(
+			screen
+				.queryAllByRole( 'alert' )
+				.some( ( alert ) =>
+					alert.textContent?.includes(
+						'Verification could not be completed'
+					)
+				)
+		).toBe( outcome === 'timeout' );
+		expect( turn ).not.toHaveBeenCalled();
+		await act( async () => {
+			fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
+		} );
+		expect( renderWidget ).toHaveBeenCalledTimes( 2 );
+		await act( async () => complete( 'synthetic-token' ) );
+		expect( screen.getByText( answer ) ).toBeVisible();
+		expect( turn ).toHaveBeenCalledOnce();
+		expect( JSON.parse( sentBodies[ 0 ] ).messages ).toEqual( [
+			{ role: 'user', content: question },
+		] );
+		expect(
+			new FailureJournal( sessionStorage, {
+				scope: scopeA,
+				persistent: true,
+			} ).candidate()
+		).toBeNull();
+	}
+);
 
 const field = () =>
 	screen.getByRole< HTMLTextAreaElement >( 'textbox', { name: 'Ask Genie' } );

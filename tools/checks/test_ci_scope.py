@@ -76,7 +76,14 @@ class ScopeTest(unittest.TestCase):
     def test_declared_package_dependencies_and_module_matrices(self):
         native = {"native:" + name for name in ci_scope.NATIVE_GROUPS}
         planner_gateway = {"php:tools", "content", "engine", "planner", *native}
+        self.assertIn(
+            ci_scope.COMMERCE_PROTECTION_CLIENT, ci_scope.module_inputs("js:tools")
+        )
         cases = (
+            (
+                ci_scope.COMMERCE_PROTECTION_CLIENT,
+                {"js:commerce", "build:commerce", "php:commerce", "js:tools", *native},
+            ),
             (
                 "tools/local/src/linker_local/registry.py",
                 {"content", "python:local", "python:pull", "python:cutover", *native},

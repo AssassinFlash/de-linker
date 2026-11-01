@@ -458,6 +458,8 @@ export function App( { config }: { config: GenieConfig } ) {
 		omitted,
 		setOmitted,
 		commitFailure,
+		captureFailure,
+		abandonCaptured,
 		placeChips,
 		openRetry,
 		payloadOrRestore,
@@ -1617,6 +1619,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			stopDictation();
 			cancelVerification();
 			draftContext.invalidate();
+			const departedFailure = captureFailure();
 			setInput( '' );
 			setOmitted( [] );
 			filesRef.current.clear();
@@ -1634,7 +1637,7 @@ export function App( { config }: { config: GenieConfig } ) {
 						return;
 					}
 					// The failed turn belonged to the conversation just left.
-					commitFailure( { type: 'abandon' } );
+					abandonCaptured( departedFailure );
 					setHistoryPhase( 'ready' );
 					setHistory( selected.conversations );
 					show( selected.currentId );
@@ -1660,11 +1663,12 @@ export function App( { config }: { config: GenieConfig } ) {
 			config.restNonce,
 			showStored,
 			show,
-			commitFailure,
 			draftContext,
 			setOmitted,
 			stopDictation,
 			cancelVerification,
+			captureFailure,
+			abandonCaptured,
 		]
 	);
 
@@ -1674,10 +1678,12 @@ export function App( { config }: { config: GenieConfig } ) {
 	const removeConversation = useCallback(
 		( id: number ): Promise< boolean > => {
 			historyEpoch += 1;
+			let departedFailure: ReturnType< typeof captureFailure > = null;
 			if ( id === shownId.current ) {
 				stopDictation();
 				cancelVerification();
 				draftContext.invalidate();
+				departedFailure = captureFailure();
 				setInput( '' );
 				setOmitted( [] );
 				filesRef.current.clear();
@@ -1702,7 +1708,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				if ( id !== shownId.current ) {
 					return;
 				}
-				commitFailure( { type: 'abandon' } );
+				abandonCaptured( departedFailure );
 				show( remaining.currentId );
 				if ( remaining.currentId > 0 ) {
 					await showStored();
@@ -1713,7 +1719,9 @@ export function App( { config }: { config: GenieConfig } ) {
 				setContacts( [] );
 				setInquiries( [] );
 				setTurn( null );
-				setPhase( 'ask' );
+				if ( ! sending.current ) {
+					setPhase( 'ask' );
+				}
 				setMail( 'idle' );
 			} ).then(
 				() => removed,
@@ -1725,11 +1733,12 @@ export function App( { config }: { config: GenieConfig } ) {
 			config.restNonce,
 			showStored,
 			show,
-			commitFailure,
 			draftContext,
 			setOmitted,
 			stopDictation,
 			cancelVerification,
+			captureFailure,
+			abandonCaptured,
 		]
 	);
 
