@@ -16,10 +16,7 @@ export function CountryRuleResult({
 			"Dutch storage-unit corresponding requirements",
 			"linker-tools",
 		),
-		nl_storage_lfsm: __(
-			"Dutch storage-unit low-frequency statism",
-			"linker-tools",
-		),
+		nl_storage_lfsm: __("Dutch storage-unit LFSM-U droop", "linker-tools"),
 		de_eeg_control: __("EEG pre-test remote control", "linker-tools"),
 		de_eeg_export: __("EEG pre-test export limitation", "linker-tools"),
 		fr_enedis_declaration: __(
@@ -105,13 +102,7 @@ export function CountryRuleResult({
 			<h5>{__("Dated national rule reading", "linker-tools")}</h5>
 			<p>
 				{__(
-					"Results are conditional on the declared scope and values. The operator, applicable local requirements, equipment compliance and grid permission still need separate verification.",
-					"linker-tools",
-				)}
-			</p>
-			<p>
-				{__(
-					"This is a reference to the source on the selected date. Its applicability today and on the project connection date still needs verification.",
+					"This is a conditional reference for the selected rule date and declared project scope and values. Verify whether the cited rules apply today and on the project's grid connection date. The grid operator, connection voltage, local requirements, equipment compliance and grid permission need separate verification.",
 					"linker-tools",
 				)}
 			</p>

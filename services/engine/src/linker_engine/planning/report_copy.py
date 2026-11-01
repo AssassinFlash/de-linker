@@ -1122,8 +1122,8 @@ TEXT = {
         "Landesregel zum gewählten Datum",
     ),
     "country_rule_scope": (
-        "This is a conditional reference for the selected rule date and declared project scope and values. Verify whether the cited rules apply today and on the project's grid connection date. The grid operator, local requirements, equipment compliance and grid permission need separate verification.",
-        "Diese bedingte Orientierung bezieht sich auf das gewählte Regelungsdatum und die angegebenen Projektbedingungen und Werte. Prüfen Sie, ob die zitierten Regeln aktuell und zum Netzanschlussdatum des Projekts gelten. Netzbetreiber, örtliche Anforderungen, Gerätekonformität und Anschlussgenehmigung müssen gesondert geprüft werden.",
+        "This is a conditional reference for the selected rule date and declared project scope and values. Verify whether the cited rules apply today and on the project's grid connection date. The grid operator, connection voltage, local requirements, equipment compliance and grid permission need separate verification.",
+        "Diese bedingte Orientierung bezieht sich auf das gewählte Regelungsdatum und die angegebenen Projektbedingungen und Werte. Prüfen Sie, ob die zitierten Regeln aktuell und zum Netzanschlussdatum des Projekts gelten. Netzbetreiber, Anschlussspannung, örtliche Anforderungen, Gerätekonformität und Anschlussgenehmigung müssen gesondert geprüft werden.",
     ),
     "country_rule_date": ("Rule date", "Regelungsdatum"),
     "country_rule_basis": ("Power basis", "Leistungsbezug"),
@@ -1181,8 +1181,8 @@ TEXT = {
         "Entsprechende Anforderungen für die niederländische Speichereinheit",
     ),
     "country_rule_nl_storage_lfsm": (
-        "Dutch storage-unit low-frequency statism",
-        "Statik bei Unterfrequenz für die niederländische Speichereinheit",
+        "Dutch storage-unit LFSM-U droop",
+        "LFSM-U / Statik bei Unterfrequenz der niederländischen Speichereinheit",
     ),
     "country_rule_de_eeg_control": (
         "EEG pre-test remote control",

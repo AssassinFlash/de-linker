@@ -12998,7 +12998,6 @@ msgstr "Wechselrichter in dieser Gruppe"
 msgid "Maximum supported"
 msgstr "Maximal unterstützte Anzahl"
 
-
 #: build/planner/assets/planner.js:1
 msgid "Grid connection information"
 msgstr "Angaben zum Netzanschluss"
@@ -13253,8 +13252,8 @@ msgid "Dutch storage-unit corresponding requirements"
 msgstr "Entsprechende Anforderungen für die niederländische Speichereinheit"
 
 #: build/planner/assets/planner.js:1
-msgid "Dutch storage-unit low-frequency statism"
-msgstr "Statik bei Unterfrequenz für die niederländische Speichereinheit"
+msgid "Dutch storage-unit LFSM-U droop"
+msgstr "LFSM-U / Statik bei Unterfrequenz der niederländischen Speichereinheit"
 
 #: build/planner/assets/planner.js:1
 msgid "EEG pre-test export limitation"
@@ -13287,10 +13286,6 @@ msgstr "Für diese Leistung ergibt sich keine Anforderung aus § 9 Absatz 2 Satz
 #: build/planner/assets/planner.js:1
 msgid "Remote reduction"
 msgstr "Ferngesteuerte Reduzierung"
-
-#: build/planner/assets/planner.js:1
-msgid "Results are conditional on the declared scope and values. The operator, applicable local requirements, equipment compliance and grid permission still need separate verification."
-msgstr "Die Ergebnisse gelten unter dem angegebenen Anwendungsbereich und den eingetragenen Werten. Netzbetreiber, örtliche Anforderungen, Gerätekonformität und Anschlussgenehmigung müssen gesondert geprüft werden."
 
 #: build/planner/assets/planner.js:1
 msgid "The 0.8 kW boundary is not established by this clause"
@@ -13389,5 +13384,5 @@ msgid "Use the source checked on 1 November 2026"
 msgstr "Am 1. November 2026 geprüften Quellenstand verwenden"
 
 #: build/planner/assets/planner.js:1
-msgid "This is a reference to the source on the selected date. Its applicability today and on the project connection date still needs verification."
-msgstr "Dies ist ein Verweis auf den Quellenstand zum gewählten Datum. Ob er heute und am Anschlussdatum des Projekts gilt, muss noch geprüft werden."
+msgid "This is a conditional reference for the selected rule date and declared project scope and values. Verify whether the cited rules apply today and on the project's grid connection date. The grid operator, connection voltage, local requirements, equipment compliance and grid permission need separate verification."
+msgstr "Diese bedingte Orientierung bezieht sich auf das gewählte Regelungsdatum und die angegebenen Projektbedingungen und Werte. Prüfen Sie, ob die zitierten Regeln aktuell und zum Netzanschlussdatum des Projekts gelten. Netzbetreiber, Anschlussspannung, örtliche Anforderungen, Gerätekonformität und Anschlussgenehmigung müssen gesondert geprüft werden."

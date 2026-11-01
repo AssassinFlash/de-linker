@@ -300,6 +300,8 @@ VDE FNN 的中压规则页面列出 VDE-AR-N 4110:2023-09，自 2023-09-01 起�
 
 本次原文读取分别来自 Apify run `ED2yCmajhagfn79oK`（FR/DE 与 NL 原始决定）、`KtT6I586EX7bSj1bV`（NL 汇编）和 `IUOM0bLjiD5BrC2Js`（Enedis）；`HXikWGnxV8JsEsQVH` 只定位荷兰官方汇编，不作为规则证据。下方保留直接用于实现的原文节选及上方正文哈希，远端临时存储在核实归属后回收。
 
+术语补核：Apify run `krGV0floSodS5o5mQ` 于 2026-11-01 21:19:08 UTC 读取 [Regulation (EU) 2016/631 英文原文](https://eur-lex.europa.eu/eli/reg/2016/631/oj/eng)，HTTP 200，提取正文 SHA-256 `3ed71f6044da5b7a1ed22268ca01d8451b6fd24afd94231555b497edc99bb69f`。Article 2(23) 使用 `droop`，Article 2(38) 将 `LFSM-U` 定义为 limited frequency sensitive mode — underfrequency；Article 15(2)(c) 将二者用于同一频率响应要求。荷兰已保留的 Article 2.9(3)(g) 原文以 `statiek` 表述该设定，因此客户英文用 **LFSM-U droop**，德文用 **LFSM-U / Statik bei Unterfrequenz**。采集错误记录中英德 URL 均为 HTTP 200 但处理状态 UNKNOWN、各尝试两次；英文另有一份成功正文，德文没有产出正文。数值与边界仍由上述荷兰正式汇编，而非欧盟示例范围，提供依据。
+
 具名 DSO 的流程也在同一 Apify 通道重新核对：[Enedis 全自发自用](https://www.enedis.fr/autoconsommer-la-totalite-de-lenergie-produite-par-vos-panneaux) 2026-11-01 21:01:20 UTC HTTP 200，正文提取 SHA-256 `3741f1e39b855240554fc7348cd130d08f8b186e2e3a38dd831b2c708b4ff673`；[Enedis 发电接入流程](https://www.enedis.fr/raccordement-installation-production-electrique) 同时 HTTP 200，正文提取 SHA-256 `f170c4b32846d4c1dd1a618a2a0391b3693e398fa366d53d1f2e7d341fc1f366`。前者限定全部光伏发电现场自用且不向公共电网注入；要求通过 Enedis-Connect 申报、接受 CACSI，并提交 Consuel 或荣誉声明。页面对修改既有电路或加装电池写明须 Consuel，同时提到某些符合其原文标准表述的 plug-and-play 设备可能例外；不据此推断任一产品符合例外或项目已获许可。该页面未给可确认的生效版本日期，只记录本次读取日；运营区域和适用性仍须核实。
 
 本次尝试获取 Westnetz 原文。首次采集的浏览器进程在 1 GiB 限额内存压力下超时，结果为空。改用静态 HTTP 精确请求 Westnetz 官方单页，原站返回 403，无正文。10 月 28 日登记的 EnWG §19 数据集本次也未获读取权限。复用上表的既有条文核对，不补写原件哈希、法规生效日期或 Westnetz 数值。两个运行均已结束，分别为 c56M3SKLiUH26q1mt 与 nDS78XVMulbNA0UgP。

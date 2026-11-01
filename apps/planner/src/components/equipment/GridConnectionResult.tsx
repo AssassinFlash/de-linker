@@ -61,12 +61,14 @@ export function GridConnectionResult({
 	return (
 		<section>
 			<h4>{__("Grid connection information", "linker-tools")}</h4>
-			<p>
-				{__(
-					"These are project-provided details. Operator territory, connection voltage and the applicable edition still need independent verification. Grid connection permission has not been established.",
-					"linker-tools",
-				)}
-			</p>
+			{!assessment.rule_review && (
+				<p>
+					{__(
+						"These are project-provided details. Operator territory, connection voltage and the applicable edition still need independent verification. Grid connection permission has not been established.",
+						"linker-tools",
+					)}
+				</p>
+			)}
 			{assessment.country_code !== "DE" && !assessment.rule_review && (
 				<p>
 					{__(

@@ -178,7 +178,7 @@ for (const de of [false, true]) {
 		assert.equal(valid, true);
 	});
 	test(`${de ? "DE" : "EN"}: rule results display the correct frozen source and scoped outcome`, async (t) => {
-		await mount(
+		const root = await mount(
 			t,
 			React.createElement(GridConnectionResult, {
 				assessment: native.nl.assessment,
@@ -188,6 +188,22 @@ for (const de of [false, true]) {
 		);
 		assert.match(document.body.textContent, /0[,.]8 kW/);
 		assert.match(document.body.textContent, /Type A|Typ A/);
+		assert.match(
+			document.body.textContent,
+			de ? /LFSM-U \/ Statik bei Unterfrequenz/ : /LFSM-U droop/,
+		);
+		assert.equal(
+			[...document.querySelectorAll("p")].filter((paragraph) =>
+				paragraph.textContent.includes(
+					de ? "bedingte Orientierung" : "conditional reference",
+				),
+			).length,
+			1,
+		);
+		assert.match(
+			document.body.textContent,
+			de ? /zum Netzanschlussdatum/ : /project's grid connection date/,
+		);
 		assert.match(
 			document.body.textContent,
 			de ? /Grenze von 0,8 kW/ : /0\.8 kW boundary/,
@@ -200,6 +216,28 @@ for (const de of [false, true]) {
 		assert.doesNotMatch(
 			document.body.textContent,
 			de ? /Anschluss ist genehmigt/ : /connection is approved/,
+		);
+		assert.doesNotMatch(
+			document.body.textContent,
+			de
+				? /Dies sind Angaben aus dem Projekt/
+				: /These are project-provided details/,
+		);
+		const legacy = structuredClone(native.nl.assessment);
+		delete legacy.rule_review;
+		await act(async () =>
+			root.render(
+				React.createElement(GridConnectionResult, {
+					assessment: legacy,
+					locale: de ? "de-DE" : "en-GB",
+				}),
+			),
+		);
+		assert.match(
+			document.body.textContent,
+			de
+				? /Dies sind Angaben aus dem Projekt/
+				: /These are project-provided details/,
 		);
 	});
 	test(`${de ? "DE" : "EN"}: Enedis route keeps the conditional process and its source`, async (t) => {

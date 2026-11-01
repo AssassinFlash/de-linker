@@ -175,6 +175,14 @@ def test_saved_rules_reach_all_consumers_and_remain_frozen(
         else "apply today and on the project's grid connection date"
     )
     assert text(expected, locale) in pdf_text
+    if country == "NL":
+        lfsm_label = (
+            "LFSM-U / Statik bei Unterfrequenz der niederländischen Speichereinheit"
+            if locale == "de"
+            else "Dutch storage-unit LFSM-U droop"
+        )
+        assert lfsm_label in report_text
+        assert lfsm_label in pdf_text
     assert date_condition in " ".join(pdf_text.split())
     assert "2026-11-01" in pdf_text
     assert "PRIVATE TAB TITLE" in pdf_text
@@ -190,6 +198,8 @@ def test_saved_rules_reach_all_consumers_and_remain_frozen(
     ) in reader.fieldnames
     reader.fieldnames = [name.rsplit(" [", 1)[1][:-1] for name in reader.fieldnames]
     rows = list(reader)
+    if country == "NL":
+        assert any(row["check_label"] == lfsm_label for row in rows)
     assert [row["check_id"] for row in rows] == [check["id"] for check in checks]
     assert all(
         row["project_id"] == project.id
@@ -229,6 +239,12 @@ def test_saved_rules_reach_all_consumers_and_remain_frozen(
             rendered = str(shown)
             assert "PRIVATE" not in rendered
             assert text(expected, language) in rendered
+            if country == "NL":
+                assert (
+                    "LFSM-U / Statik bei Unterfrequenz"
+                    if language == "de"
+                    else "LFSM-U droop"
+                ) in rendered
             assert text("country_rule_scope", language) in rendered
             assert (
                 "aktuell und zum Netzanschlussdatum des Projekts gelten"
