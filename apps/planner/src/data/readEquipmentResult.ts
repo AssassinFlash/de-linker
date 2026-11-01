@@ -1,3 +1,4 @@
+import { readCountryAssessment } from "./readCountryAssessment.ts";
 import { readPvOperatingResult } from "./readPvOperatingResult.ts";
 import type { JsonObject } from "./protocol.ts";
 import { ApiError } from "./protocol.ts";
@@ -264,6 +265,7 @@ export function readEquipmentAssessment(value: unknown): JsonObject {
 			}
 		}
 	}
+	readCountryAssessment(assessment.country_assessment);
 	const checks = assessment.checks.map((value) => readObject(value)),
 		expected = checks.some((c) => c.status === "violated")
 			? "violated"

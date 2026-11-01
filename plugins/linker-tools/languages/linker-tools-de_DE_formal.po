@@ -12973,3 +12973,120 @@ msgstr "Wechselrichter in dieser Gruppe"
 #: ../../apps/planner/src/components/equipment/EquipmentResult.tsx
 msgid "Maximum supported"
 msgstr "Maximal unterstützte Anzahl"
+
+
+#: build/planner/assets/planner.js:1
+msgid "Grid connection information"
+msgstr "Angaben zum Netzanschluss"
+
+#: build/planner/assets/planner.js:1
+msgid "Project-provided information can be saved in stages. The responsible operator, connection voltage and applicable requirements need independent verification; recording them does not establish connection permission."
+msgstr "Projektangaben können schrittweise gespeichert werden. Der zuständige Netzbetreiber, die Anschlussspannung und die geltenden Anforderungen müssen unabhängig geprüft werden. Ihre Erfassung belegt keine Anschlussgenehmigung."
+
+#: build/planner/assets/planner.js:1
+msgid "Add grid connection information"
+msgstr "Angaben zum Netzanschluss ergänzen"
+
+#: build/planner/assets/planner.js:1
+msgid "Responsible distribution system operator (DSO)"
+msgstr "Zuständiger Verteilnetzbetreiber (VNB)"
+
+#: build/planner/assets/planner.js:1
+msgid "DSO source URL"
+msgstr "Quellen-URL zum Netzbetreiber"
+
+#: build/planner/assets/planner.js:1
+msgid "Voltage level at the grid connection point"
+msgstr "Spannungsebene am Netzanschlusspunkt"
+
+#: build/planner/assets/planner.js:1
+msgid "Low voltage"
+msgstr "Niederspannung"
+
+#: build/planner/assets/planner.js:1
+msgid "Medium voltage"
+msgstr "Mittelspannung"
+
+#: build/planner/assets/planner.js:1
+msgid "High voltage"
+msgstr "Hochspannung"
+
+#: build/planner/assets/planner.js:1
+msgid "This is the connection point's voltage level, separate from the equipment's terminal voltage."
+msgstr "Dies ist die Spannungsebene am Netzanschlusspunkt. Die Klemmenspannung der Geräte wird separat betrachtet."
+
+#: build/planner/assets/planner.js:1
+msgid "Technical connection requirements (TAB or local equivalent)"
+msgstr "Technische Anschlussbedingungen (TAB bzw. lokale Entsprechung)"
+
+#: build/planner/assets/planner.js:1
+msgid "Document title"
+msgstr "Dokumenttitel"
+
+#: build/planner/assets/planner.js:1
+msgid "Requirements source URL"
+msgstr "Quellen-URL der Anschlussbedingungen"
+
+#: build/planner/assets/planner.js:1
+msgid "Edition or version"
+msgstr "Ausgabe oder Version"
+
+#: build/planner/assets/planner.js:1
+msgid "Document date (YYYY-MM-DD)"
+msgstr "Dokumentdatum (JJJJ-MM-TT)"
+
+#: build/planner/assets/planner.js:1
+msgid "Use a complete HTTP(S) source URL without login details and a valid calendar date in YYYY-MM-DD format. Your entries remain available for correction."
+msgstr "Erforderlich sind vollständige HTTP(S)-Quellen-URLs ohne Zugangsdaten und ein gültiges Kalenderdatum im Format JJJJ-MM-TT. Ihre Eingaben bleiben zur Korrektur erhalten."
+
+#: build/planner/assets/planner.js:1
+msgid "Remove grid connection information"
+msgstr "Angaben zum Netzanschluss entfernen"
+
+#: build/planner/assets/planner.js:1
+msgid "Independent verification of operator and requirements"
+msgstr "Unabhängige Prüfung von Netzbetreiber und Anschlussbedingungen"
+
+#: build/planner/assets/planner.js:1
+msgid "Grid connection permission"
+msgstr "Anschlussgenehmigung"
+
+#: build/planner/assets/planner.js:1
+msgid "Operator name"
+msgstr "Name des Netzbetreibers"
+
+#: build/planner/assets/planner.js:1
+msgid "Requirements edition or date"
+msgstr "Ausgabe oder Datum der Anschlussbedingungen"
+
+#: build/planner/assets/planner.js:1
+msgid "These are project-provided details. Operator territory, connection voltage and the applicable edition still need independent verification. Grid connection permission has not been established."
+msgstr "Dies sind Angaben aus dem Projekt. Netzgebiet, Anschlussspannung und geltende Ausgabe müssen noch unabhängig geprüft werden. Eine Anschlussgenehmigung ist nicht belegt."
+
+#: build/planner/assets/planner.js:1
+msgid "Country-specific connection rules have not been assessed. German TAB requirements are not assumed for this project."
+msgstr "Die landesspezifischen Anschlussregeln wurden nicht geprüft. Deutsche TAB werden für dieses Projekt nicht vorausgesetzt."
+
+#: build/planner/assets/planner.js:1
+msgid "Information provided; verification pending"
+msgstr "Angaben vorhanden; Prüfung ausstehend"
+
+#: build/planner/assets/planner.js:1
+msgid "Evidence still required"
+msgstr "Nachweis weiterhin erforderlich"
+
+#: build/planner/assets/planner.js:1
+msgid "Information still missing"
+msgstr "Noch fehlende Angaben"
+
+#: build/planner/assets/planner.js:1
+msgid "Background rule sources"
+msgstr "Hintergrundquellen zu Anschlussregeln"
+
+#: build/planner/assets/planner.js:1
+msgid "These references are background evidence, not a verification of this project's requirements or current technical thresholds."
+msgstr "Diese Quellen dienen als Hintergrund. Sie belegen weder die für dieses Projekt geltenden Anforderungen noch aktuelle technische Grenzwerte."
+
+#: build/planner/assets/planner.js:1
+msgid "Evidence snapshot date"
+msgstr "Stand der Quellenprüfung"
