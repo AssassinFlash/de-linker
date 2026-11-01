@@ -567,6 +567,26 @@ def german_is_clean(text: str) -> bool:
     return not any(fragment in padded for fragment in _ENGLISH_FRAGMENT)
 
 
+def _warranty_period_question(question: str) -> bool:
+    """Identify a request for a warranty's duration or starting point."""
+    return bool(
+        re.search(
+            r"\b(?:warrant\w*|guarantee\w*|\w*garantie\w*|\w*gewährleist\w*)\b",
+            question,
+            re.I,
+        )
+        and re.search(
+            r"\b(?:how long|how many (?:years?|months?)|when (?:does|will|did|is)|"
+            r"from what date|warranty (?:period|duration|start)|guarantee period|"
+            r"start of (?:the )?warranty|wie lange|wie\s*viele (?:jahre|monate)|"
+            r"wann (?:beginnt|startet|gilt|fängt)|ab wann|ab welchem (?:zeitpunkt|datum)|"
+            r"garantiebeginn|garantiedauer|garantiezeit(?:raum)?)\b",
+            question,
+            re.I,
+        )
+    )
+
+
 def _warranty_period_fallback(
     facts: TurnFacts,
     language: Locale,
@@ -578,20 +598,7 @@ def _warranty_period_fallback(
     if (
         route.name != "documents"
         or facts.technical_chunks
-        or not re.search(
-            r"\b(?:warrant\w*|guarantee\w*|\w*garantie\w*|\w*gewährleist\w*)\b",
-            question,
-            re.I,
-        )
-        or not re.search(
-            r"\b(?:how long|how many (?:years?|months?)|when (?:does|will|did|is)|"
-            r"warranty (?:period|duration|start)|guarantee period|start of (?:the )?warranty|"
-            r"wie lange|wie\s*viele (?:jahre|monate)|wann (?:beginnt|startet|gilt|fängt)|"
-            r"ab wann|ab welchem zeitpunkt|garantiebeginn|garantiedauer|"
-            r"garantiezeit(?:raum)?)\b",
-            question,
-            re.I,
-        )
+        or not _warranty_period_question(question)
     ):
         return None
     candidates = [
@@ -607,6 +614,21 @@ def _warranty_period_fallback(
         (facts.knowledge_products[cid][0], facts.warranty_models[cid][0])
         for cid in candidates
     }
+    from linker_genie.source_models import codes, model_pattern
+
+    named = {
+        (pid, model)
+        for pid, model in identities
+        if model_pattern(model).search(question)
+    }
+    if named:
+        identities = named
+        candidates = [
+            cid
+            for cid in candidates
+            if (facts.knowledge_products[cid][0], facts.warranty_models[cid][0])
+            in named
+        ]
     if len(identities) != 1:
         return None
     pid, model = next(iter(identities))
@@ -614,9 +636,27 @@ def _warranty_period_fallback(
         note.unknown or set(note.product_ids) != {pid} for note in route.named_models
     ):
         return None
-    from linker_genie.source_models import model_pattern
+    if not named and (
+        page_product_id != pid or any("-" in code for code in codes(question))
+    ):
+        return None
+    if len({facts.documents[cid].url for cid in candidates}) != 1:
+        return None
 
-    if page_product_id != pid and not model_pattern(model).search(question):
+    def resolved(cid: str, value: str) -> str | None:
+        figures = PLACEHOLDER.findall(value)
+        if any(figure not in facts.facts for figure in figures):
+            return None
+        return PLACEHOLDER.sub(lambda match: facts.facts[match.group(1)].value, value)
+
+    statements = {
+        (
+            resolved(cid, facts.warranty_answers[cid]["period"]),
+            resolved(cid, facts.warranty_answers[cid]["start"]),
+        )
+        for cid in candidates
+    }
+    if len(statements) != 1 or any(value is None for value in next(iter(statements))):
         return None
     cid = candidates[0]
     answers = facts.warranty_answers[cid]
@@ -832,6 +872,23 @@ def fallback(
         )
         if warranty is not None:
             return warranty
+        if (
+            _warranty_period_question(question)
+            and not facts.technical_chunks
+            and any(
+                cid in facts.warranty_chunks and facts.warranty_answers.get(cid)
+                for cid in facts.documents
+            )
+        ):
+            text = (
+                "Ich kann die passende Garantie noch nicht eindeutig zuordnen. "
+                "Bitte nennen Sie die vollständige Modellbezeichnung vom Typenschild, "
+                "einschließlich aller Zusätze."
+                if language == "de"
+                else "I cannot yet determine which warranty applies. Please provide "
+                "the complete model designation from the nameplate, including all suffixes."
+            )
+            return TurnOutput(language=language, blocks=[TextBlock(text=text)])
         refs = _document_refs(facts)
         # A separately requested product keeps only this turn's qualified
         # cards. A document owner / page product alone is not qualification.

@@ -10,6 +10,7 @@ import {
 import { NetworkViewport } from "../src/components/installation/NetworkViewport.tsx";
 import { PvStringLinks } from "../src/components/installation/PvStringLinks.tsx";
 import { InstallationEditor } from "../src/components/installation/InstallationEditor.tsx";
+import { InstallationMaterials } from "../src/components/installation/InstallationMaterials.tsx";
 import { emptyGeometry } from "../src/domain/geometryCommands.ts";
 import { manualSource } from "../src/domain/geometryEditing.ts";
 import {
@@ -23,6 +24,220 @@ import {
 	readInstallation,
 	readInstallationReview,
 } from "../src/domain/installation.ts";
+
+test("installation material entry rejects fractional pieces and recovers", async (t) => {
+	const dom = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const root = createRoot(dom.element);
+	t.after(() => dom.dispose(root));
+	let saved;
+	await act(async () =>
+		root.render(
+			React.createElement(InstallationMaterials, {
+				plan: emptyInstallation(),
+				products: [],
+				review: undefined,
+				locale: "en",
+				disabled: false,
+				change(value) {
+					saved = value;
+					return true;
+				},
+				onValidity() {},
+			}),
+		),
+	);
+	await act(async () =>
+		[...document.querySelectorAll("button")]
+			.find((b) => b.textContent === "Add installation material")
+			.click(),
+	);
+	const form = document.querySelector("form"),
+		field = (name) => form.elements.namedItem(name);
+	await enter(field("name"), "Fixture breaker");
+	await act(async () => {
+		field("kind").value = "protection";
+		field("kind").dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	await enter(field("quantity"), "1.5");
+	await enter(field("specification"), "Project device");
+	await enter(field("source"), "Project record");
+	const submit = () =>
+		form.dispatchEvent(
+			new window.Event("submit", { bubbles: true, cancelable: true }),
+		);
+	await act(async () => submit());
+	assert.equal(saved, undefined);
+	await enter(field("quantity"), "2");
+	await act(async () => submit());
+	assert.equal(saved.materials[0].quantity, 2);
+	assert.equal(saved.materials[0].kind, "protection");
+});
+
+test("manufacturer comparison binds the selected instance, circuit and source", async (t) => {
+	const dom = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const root = createRoot(dom.element);
+	t.after(() => dom.dispose(root));
+	const revision = "a".repeat(64),
+		doc = "b".repeat(64);
+	const instance = {
+		id: "device",
+		name: "Device A",
+		product_id: 1946,
+		product_revision: revision,
+		source_id: "survey",
+		ports: ["p", "q"].map((id) => ({
+			id,
+			name: id,
+			position: { east_m: 0, north_m: 0, height_m: 0 },
+		})),
+	};
+	const plan = {
+		...emptyInstallation(),
+		instances: [instance],
+		circuits: [
+			{
+				id: "ac",
+				name: "AC output",
+				kind: "ac",
+				start: { instance_id: "device", port_id: "p" },
+				end: { instance_id: "device", port_id: "q" },
+			},
+		],
+	};
+	const product = {
+		id: 1946,
+		product_revision: revision,
+		model: "Fixture",
+		installation_facts: {
+			status: "documented",
+			items: [
+				{
+					id: "breaker",
+					basis: "manufacturer_minimum_rating",
+					conditions: [],
+					specification: { terminal_domain: "ac" },
+					source: {
+						document_id: "doc",
+						document_revision: doc,
+						page: 152,
+						quote: "Fixture source",
+						url: "https://de-linker.com/wp-content/uploads/fixture.pdf",
+					},
+				},
+			],
+		},
+	};
+	let saved;
+	await act(async () =>
+		root.render(
+			React.createElement(InstallationMaterials, {
+				plan,
+				products: [product],
+				review: undefined,
+				locale: "en",
+				disabled: false,
+				change(value) {
+					saved = value;
+					return true;
+				},
+				onValidity() {},
+			}),
+		),
+	);
+	await act(async () =>
+		[...document.querySelectorAll("button")]
+			.find((b) => b.textContent === "Add installation material")
+			.click(),
+	);
+	const form = document.querySelector("form"),
+		field = (name) => form.elements.namedItem(name);
+	await enter(field("name"), "AC breaker");
+	for (const [name, value] of [
+		["kind", "protection"],
+		["circuit", "ac"],
+		["comparison", "0"],
+	])
+		await act(async () => {
+			field(name).value = value;
+			field(name).dispatchEvent(new window.Event("change", { bubbles: true }));
+		});
+	await enter(field("quantity"), "1");
+	await enter(field("specification"), "4P breaker");
+	await enter(field("source"), "Project declaration");
+	await enter(field("rated_current"), "160");
+	await enter(field("rated_voltage"), "400");
+	await act(async () => field("comparison_confirmed").click());
+	await act(async () =>
+		form.dispatchEvent(
+			new window.Event("submit", { bubbles: true, cancelable: true }),
+		),
+	);
+	assert.deepEqual(saved.materials[0].comparison, {
+		instance_id: "device",
+		product_id: 1946,
+		product_revision: revision,
+		fact_id: "breaker",
+		document_id: "doc",
+		document_revision: doc,
+		cross_section_mm2: null,
+		rated_current_a: 160,
+		rated_voltage_v: 400,
+		conditions_confirmed: true,
+		circuit_context: {
+			id: "ac",
+			kind: "ac",
+			start: { instance_id: "device", port_id: "p" },
+			end: { instance_id: "device", port_id: "q" },
+		},
+	});
+	const material = saved.materials[0];
+	const comparisonFact = {
+		id: "breaker",
+		basis: "manufacturer_minimum_rating",
+		conditions: [],
+		specification: {
+			terminal_domain: "ac",
+			minimum_current_a: 160,
+			minimum_voltage_v: 400,
+		},
+		source: { product_id: 1946, document_id: "doc", document_revision: doc },
+	};
+	const response = {
+		schema_version: 1,
+		method: "installation_route_takeoff_v1",
+		project_id: "project",
+		qualified: false,
+		geometry_sha256: revision,
+		prepared_inputs: { ...saved, geometry_sha256: revision },
+		cables: [],
+		material_review: {
+			method: "project_declared_installation_materials_v1",
+			qualified: false,
+			complete_bos: false,
+			rows: [
+				{
+					...material,
+					circuit_status: "linked",
+					verification: "not_assessed",
+					comparison_result: {
+						status: "meets_minimum_values",
+						qualified: false,
+						fact: comparisonFact,
+					},
+				},
+			],
+		},
+	};
+	assert.equal(
+		readInstallationReview(response, saved, "project").material_review.rows[0]
+			.comparison_result.status,
+		"meets_minimum_values",
+	);
+	response.material_review.rows[0].comparison_result.fact.specification.minimum_current_a = 161;
+	assert.throws(() => readInstallationReview(response, saved, "project"));
+});
 
 test("staged route coordinates survive insertion and removal of another vertex", async (t) => {
 	const dom = setupDom();

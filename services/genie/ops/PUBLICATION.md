@@ -94,7 +94,7 @@ Use a stable checked-out source path with the locked Genie index dependencies in
 2. Choose the polling interval for the build machine's availability and a lease longer than its measured complete-build budget. Render the plist first with `python ops/install_publication_worker.py --env-file <private-path> --interval-seconds <interval> --lease-seconds <measured-budget> --worker-id <stable-id> --loaded-url <service-loopback>/knowledge/loaded --host <configured-ssh-alias>`. Add `--install` only in the deployment session, then read back `launchctl print` and the actual process/path. Replacing an existing worker requires reading its active definition first; this implementation session does not install it.
 3. With `--host`, the worker uses the same SSH alias for a single remote loopback request to `/knowledge/loaded`; it owns no persistent tunnel and needs no manually maintained forward. The service token is supplied on SSH stdin and is absent from process arguments, scripts on disk and logs. Without `--host`, a local rehearsal calls the local loopback directly. The request keeps the existing service gate; no port is exposed or authentication disabled. The existing publish CLI uploads and atomically switches the index; the worker then reads the **serving process** and acknowledges only matching loaded source/index versions and prepared product revisions.
 4. Rehearse offline, build failure, expired leases, edit-during-build, partial readiness, old loaded process and restart. Woo retains pending work; `claim` automatically reconciles current source. Old jobs cannot authorize later states. A materialized generation preserves semantic warnings and the actual proven subset without rebuilding identical inputs forever. Failed parsing remains pending and is genuinely retried; the polling interval bounds retry frequency. Runtime withdrawal does not wait for this schedule.
-5. After actual loaded verification and accepted Woo acknowledgement, the worker prunes only its ledger-owned local successful build directories to current and previous; existing evaluation/bake-off evidence is preserved, while the established host release tool retains its bounded current/rollback set. The build reports its just-created directory before writing index data. An explicit pending journal and directory ownership marker identify that one generation; build/publish/loaded/ack failure removes only that pending generation, and the next locked invocation recovers an interrupted worker. Untracked shared builds are never inferred from timestamps or deleted. It reuses content-addressed PDF, parse and embedding caches. Do not make a fresh full site copy for each job. At acceptance/merge remove this task's rebuildable dependencies and retire its managed worktree following `docs/agents/local-storage.md`.
+5. After actual loaded verification and accepted Woo acknowledgement, the worker prunes only its ledger-owned local successful build directories to current and previous; existing evaluation/bake-off evidence is preserved, while the established host release tool retains its bounded current/rollback set. The build reports its just-created directory before writing index data. An explicit pending journal and directory ownership marker identify that one generation; failures normally remove that pending generation, and the next locked invocation recovers an interrupted worker. A verified pre-activation review refusal is the bounded exception described below. Untracked shared builds are never inferred from timestamps or deleted. It reuses content-addressed PDF, parse and embedding caches. Do not make a fresh full site copy for each job. At acceptance/merge remove this task's rebuildable dependencies and retire its managed worktree following `docs/agents/local-storage.md`.
 
 ## Acceptance boundaries
 
@@ -205,6 +205,24 @@ No-job and lock-busy exits are incomplete releases, not success. Semantic gaps r
 Before any possible index activation, runtime-switch or startup failure restores
 the old selector, starts both units even if the failed stop/start left them
 inactive, verifies actual PIDs/cwd and compares the entire old loaded receipt.
+If that readback succeeds after the explicitly supplied pre-activation guard refused while the original
+lease is still live, the worker retains the one pending local build and journal
+until that lease expires. It sends no failed ACK and ordinary polling does not
+replace the candidate during the lease. On the first ordinary poll after expiry,
+the owned pending build is removed before normal claiming resumes. The operator
+may instead explicitly continue within that exact lease by invoking
+`paired_release.main(arguments, guard=guard)` with `resume-candidate` and
+the original release arguments. The same guarded entry point must be used for
+the initial `publish`; other runtime failures retain their normal failure path.
+The guard must be a callable receiving the local
+build path, original loaded receipt and original epoch; it must rerun the actual
+release's pre-activation checks and raise if they fail. There is deliberately no
+unguarded CLI continuation. The command rechecks the original Woo lease, old
+loaded pair, journal index identity and local SQLite checksum/metadata, then
+uploads and reruns the guard before the native fenced activation. It cannot
+rebind a build to a replacement lease or changed compiler. A hard process kill
+before the deferred state is recorded still follows ordinary interrupted-build
+cleanup and may require a rebuild.
 After activation becomes possible, transport loss or later journal/loaded/ACK
 failure preserves the candidate and original lease. No automatic runtime-only
 rollback, activation replay, replacement claim or rebuild occurs.

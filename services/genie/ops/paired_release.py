@@ -16,7 +16,8 @@ import runpy
 import shlex
 import subprocess
 import sys
-from collections.abc import Sequence
+import time
+from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol
 
@@ -303,21 +304,33 @@ class RuntimeControl(Protocol):
     def call(self, action: str) -> dict[str, Any]: ...
 
 
+class GuardRejected(RuntimeError):
+    """The explicitly supplied pre-activation guard refused this candidate."""
+
+
 class PairedPublisher:
     def __init__(
-        self, runtime: RuntimeControl, journal: Path, state: dict[str, Any], loaded: Any
+        self,
+        runtime: RuntimeControl,
+        journal: Path,
+        state: dict[str, Any],
+        loaded: Any,
+        guard: Callable[[Path, dict[str, Any], int], None] | None = None,
     ) -> None:
         self.runtime, self.journal, self.state = runtime, journal, state
         self.loaded = loaded
+        self.guard = guard
 
     def __call__(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
         from publish_index import (
             ActivationOutcomeUnconfirmed,
             NativeVerificationRejected,
+            PreActivationDeferred,
             publish,
         )
 
         hook_returned = False
+        hook_started = False
         manifest = json.loads((Path(args[0]) / "manifest.json").read_text())
         self.state["index"] = {
             "version": manifest["version"],
@@ -326,9 +339,21 @@ class PairedPublisher:
         save(self.journal, self.state)
 
         def switch() -> None:
-            nonlocal hook_returned
+            nonlocal hook_returned, hook_started
+            hook_started = True
             self.state["phase"] = "runtime_switch"
             save(self.journal, self.state)
+            if self.guard is not None:
+                if self.loaded() != self.state["before_loaded"]:
+                    raise RuntimeError("the original loaded pair changed before review")
+                try:
+                    self.guard(
+                        Path(args[0]),
+                        self.state["before_loaded"],
+                        self.state["job"]["activation_epoch"],
+                    )
+                except (Exception, SystemExit) as error:
+                    raise GuardRejected("pre-activation guard refused") from error
             self.runtime.call("activate")
             # Persist before publish can send any activation request. An
             # interrupted/lost response is now conservative, never rolled back.
@@ -347,6 +372,15 @@ class PairedPublisher:
                     ) from error
                 self.state["phase"] = "restored_before_activation"
                 save(self.journal, self.state)
+                expiry = self.state.get("job", {}).get("lease_expires_at")
+                if (
+                    hook_started
+                    and not hook_returned
+                    and isinstance(error, GuardRejected)
+                    and type(expiry) is int
+                    and expiry > time.time() + 1
+                ):
+                    raise PreActivationDeferred(expiry) from error
             raise
         self.state["phase"] = "activated"
         try:
@@ -358,7 +392,11 @@ class PairedPublisher:
         return result
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(
+    argv: list[str] | None = None,
+    *,
+    guard: Callable[[Path, dict[str, Any], int], None] | None = None,
+) -> int:
     from install_publication_worker import load_private_environment
 
     env_parser = argparse.ArgumentParser(add_help=False)
@@ -377,7 +415,14 @@ def main(argv: list[str] | None = None) -> int:
         help="Existing mode-0600 worker environment; never printed",
     )
     parser.add_argument(
-        "command", choices=["preflight", "publish", "resume-ack", "confirm-ready"]
+        "command",
+        choices=[
+            "preflight",
+            "publish",
+            "resume-ack",
+            "resume-candidate",
+            "confirm-ready",
+        ],
     )
     parser.add_argument(
         "--wp-host", help="Existing privileged WordPress SSH alias; confirm-ready only"
@@ -397,6 +442,10 @@ def main(argv: list[str] | None = None) -> int:
         "--rest-config", type=Path, default=inventory.DEFAULT_REST_CONFIG
     )
     args = parser.parse_args(argv)
+    if args.command == "resume-candidate" and guard is None:
+        raise ValueError(
+            "candidate recovery requires the operator's pre-activation guard"
+        )
     source = Path(__file__).resolve().parents[1]
     measured = identity(source)
     if measured["serving"] != RUNTIME_SERVING_REVISION:
@@ -439,15 +488,28 @@ def main(argv: list[str] | None = None) -> int:
                 ("worker_id", args.worker_id),
             )
         ):
-            raise RuntimeError("ACK recovery belongs to a different release")
-        if selected["current"] != args.candidate or state.get("phase") not in {
-            "activation_possible",
-            "activated",
-            "ready",
-        }:
+            raise RuntimeError("recovery belongs to a different release")
+        expected_current = (
+            args.previous if args.command == "resume-candidate" else args.candidate
+        )
+        expected_phases = (
+            {"restored_before_activation"}
+            if args.command == "resume-candidate"
+            else {"activation_possible", "activated", "ready"}
+        )
+        if (
+            selected["current"] != expected_current
+            or state.get("phase") not in expected_phases
+        ):
             raise RuntimeError(
-                "ACK recovery requires the selected candidate and inspected activation"
+                "recovery requires the expected runtime selector and journal phase"
             )
+        if args.command == "resume-candidate" and (
+            not isinstance(state.get("index"), dict)
+            or not isinstance(state["index"].get("version"), str)
+            or not re.fullmatch(r"[a-f0-9]{64}", str(state["index"].get("sha256", "")))
+        ):
+            raise RuntimeError("deferred generation identity is missing")
 
     if args.command == "confirm-ready":
         from publish_index import _inspect_activation
@@ -495,7 +557,7 @@ def main(argv: list[str] | None = None) -> int:
             loaded_receipt: dict[str, Any] | None = None,
             loaded_unavailable: bool = False,
         ) -> dict[str, Any] | None:
-            if args.command == "resume-ack":
+            if args.command in {"resume-ack", "resume-candidate"}:
                 # Verify the recorded exact lease; never call ordinary claim,
                 # which could mint a replacement job after expiry/source change.
                 job: dict[str, Any] = state["job"]
@@ -507,6 +569,14 @@ def main(argv: list[str] | None = None) -> int:
                 response.raise_for_status()
                 if response.json().get("verified") is not True:
                     raise RuntimeError("same native lease is no longer available")
+                if args.command == "resume-candidate":
+                    if loaded_unavailable or loaded_receipt != state.get(
+                        "before_loaded"
+                    ):
+                        raise RuntimeError(
+                            "the original loaded pair changed during review"
+                        )
+                    return job
                 from publish_index import _inspect_activation
 
                 activation.update(
@@ -568,10 +638,12 @@ def main(argv: list[str] | None = None) -> int:
             lambda: worker_module.read_loaded(
                 args.loaded_url, os.environ["GENIE_SERVICE_TOKEN"], args.host
             ),
+            guard=guard,
         ),
         worker_factory=ReleaseWorker,
         embedding_factory=cached_embedder,
         busy_exit=1,
+        resume_index=state.get("index") if args.command == "resume-candidate" else None,
     )
     if (
         result == 0

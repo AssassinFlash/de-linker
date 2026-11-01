@@ -130,6 +130,29 @@ export interface PvStringLink {
 	string_id: string;
 	circuit_id: string;
 }
+export interface InstallationMaterial {
+	id: string;
+	name: string;
+	kind: "connector" | "protection" | "earthing" | "mounting" | "other";
+	circuit_id: string | null;
+	quantity: number | null;
+	unit: "piece" | "m";
+	specification: string;
+	source_note: string;
+	comparison?: {
+		instance_id: string;
+		product_id: number;
+		product_revision: string;
+		fact_id: string;
+		document_id: string;
+		document_revision: string;
+		cross_section_mm2: number | null;
+		rated_current_a: number | null;
+		rated_voltage_v: number | null;
+		conditions_confirmed: boolean;
+		circuit_context: Pick<InstallationCircuit, "id" | "kind" | "start" | "end">;
+	};
+}
 export interface InstallationInputs {
 	schema_version: 1;
 	geometry_sha256: string | null;
@@ -138,6 +161,7 @@ export interface InstallationInputs {
 	routes: InstallationRoute[];
 	cable_runs: CableRun[];
 	pv_string_links?: PvStringLink[];
+	materials?: InstallationMaterial[];
 }
 export const installationId = (prefix: string) =>
 	prefix + "_" + crypto.randomUUID().replaceAll("-", "");
@@ -202,6 +226,13 @@ export function readInstallation(value: unknown): InstallationInputs {
 	if (!validate(value)) throw new ApiError(422, "invalid_installation");
 	const distinct = (ids: readonly string[]) => new Set(ids).size === ids.length;
 	if (
+		!distinct((value.materials ?? []).map((row) => row.id)) ||
+		(value.materials ?? []).some(
+			(row) =>
+				row.unit === "piece" &&
+				row.quantity !== null &&
+				!Number.isSafeInteger(row.quantity),
+		) ||
 		[value.instances, value.circuits, value.routes, value.cable_runs].some(
 			(rows) => !distinct(rows.map((row) => row.id)),
 		)
@@ -257,6 +288,13 @@ export interface CableQuantity extends JsonObject {
 	reasons: string[];
 }
 export interface InstallationReview {
+	material_review?: {
+		rows: (InstallationMaterial & {
+			circuit_status: string;
+			verification: "not_assessed";
+			comparison_result?: { status: string; qualified: false; fact: unknown };
+		})[];
+	};
 	electrical?: ElectricalReview;
 	terminal_assessment?: TerminalAssessment;
 	prepared_inputs: InstallationInputs;
@@ -599,7 +637,155 @@ export function readInstallationReview(
 		throw new ApiError(502, "invalid_installation_review");
 	const electrical = readElectricalReview(row.electrical, requested, cables);
 	const terminals = readTerminalAssessment(row.terminal_assessment, requested);
+	let materialReview: InstallationReview["material_review"];
+	if (requested.materials !== undefined) {
+		const review = readObject(row.material_review);
+		if (
+			review.method !== "project_declared_installation_materials_v1" ||
+			review.qualified !== false ||
+			review.complete_bos !== false ||
+			!Array.isArray(review.rows) ||
+			review.rows.length !== requested.materials.length
+		)
+			throw new ApiError(502, "invalid_installation_review");
+		const rows = review.rows.map((raw, i) => {
+			const item = readObject(raw),
+				expected = requested.materials![i]!;
+			const status =
+				expected.circuit_id === null
+					? "not_linked"
+					: requested.circuits.some((c) => c.id === expected.circuit_id)
+						? "linked"
+						: "circuit_unavailable";
+			const {
+				circuit_status,
+				verification,
+				comparison_result,
+				...declaration
+			} = item;
+			if (
+				!sameJson(declaration, expected) ||
+				circuit_status !== status ||
+				verification !== "not_assessed"
+			)
+				throw new ApiError(502, "invalid_installation_review");
+			if (expected.comparison) {
+				const comparison = readObject(comparison_result);
+				const statuses = [
+					"within_recommendation",
+					"outside_recommendation",
+					"meets_minimum_values",
+					"below_minimum_values",
+					"unavailable",
+					"circuit_or_instance_unavailable",
+					"instance_mismatch",
+					"product_unavailable",
+					"fact_unavailable",
+					"document_unavailable",
+					"conditions_not_assessed",
+					"conditions_not_confirmed",
+					"conditions_changed",
+					"scope_mismatch",
+				];
+				if (
+					comparison.qualified !== false ||
+					typeof comparison.status !== "string" ||
+					!statuses.includes(comparison.status)
+				)
+					throw new ApiError(502, "invalid_installation_review");
+				if (
+					[
+						"within_recommendation",
+						"outside_recommendation",
+						"meets_minimum_values",
+						"below_minimum_values",
+					].includes(comparison.status)
+				) {
+					const fact = readObject(comparison.fact),
+						source = readObject(fact.source),
+						spec = readObject(fact.specification),
+						binding = expected.comparison;
+					const circuit = requested.circuits.find(
+						(c) => c.id === expected.circuit_id,
+					);
+					const instance = requested.instances.find(
+						(d) => d.id === binding.instance_id,
+					);
+					if (
+						!circuit ||
+						!instance ||
+						![circuit.start.instance_id, circuit.end.instance_id].includes(
+							instance.id,
+						) ||
+						instance.product_id !== binding.product_id ||
+						instance.product_revision !== binding.product_revision ||
+						!binding.conditions_confirmed ||
+						!sameJson(binding.circuit_context, {
+							id: circuit.id,
+							kind: circuit.kind,
+							start: circuit.start,
+							end: circuit.end,
+						}) ||
+						fact.id !== binding.fact_id ||
+						source.product_id !== binding.product_id ||
+						source.document_id !== binding.document_id ||
+						source.document_revision !== binding.document_revision ||
+						!Array.isArray(fact.conditions) ||
+						fact.conditions.length
+					)
+						throw new ApiError(502, "invalid_installation_review");
+					if (
+						expected.kind === "earthing" &&
+						circuit.kind === "protective_earth" &&
+						fact.basis === "manufacturer_recommended_pe_conductor" &&
+						spec.terminal_domain === "pe"
+					) {
+						const range = readObject(spec.recommended_conductor_mm2),
+							value = binding.cross_section_mm2;
+						if (
+							typeof range.low !== "number" ||
+							typeof range.high !== "number" ||
+							value === null ||
+							comparison.status !==
+								(value >= range.low && value <= range.high
+									? "within_recommendation"
+									: "outside_recommendation")
+						)
+							throw new ApiError(502, "invalid_installation_review");
+					} else if (
+						expected.kind === "protection" &&
+						circuit.kind === "ac" &&
+						fact.basis === "manufacturer_minimum_rating" &&
+						spec.terminal_domain === "ac"
+					) {
+						if (
+							typeof spec.minimum_current_a !== "number" ||
+							typeof spec.minimum_voltage_v !== "number" ||
+							binding.rated_current_a === null ||
+							binding.rated_voltage_v === null ||
+							comparison.status !==
+								(binding.rated_current_a >= spec.minimum_current_a &&
+								binding.rated_voltage_v >= spec.minimum_voltage_v
+									? "meets_minimum_values"
+									: "below_minimum_values")
+						)
+							throw new ApiError(502, "invalid_installation_review");
+					} else throw new ApiError(502, "invalid_installation_review");
+				} else if (comparison.fact !== null)
+					throw new ApiError(502, "invalid_installation_review");
+			} else if (comparison_result !== undefined)
+				throw new ApiError(502, "invalid_installation_review");
+			return item as unknown as InstallationMaterial & {
+				circuit_status: string;
+				verification: "not_assessed";
+				comparison_result?: { status: string; qualified: false; fact: unknown };
+			};
+		});
+		materialReview = { rows };
+	} else if (row.material_review !== undefined)
+		throw new ApiError(502, "invalid_installation_review");
 	return {
+		...(materialReview ? { material_review: materialReview } : {}),
 		...(electrical ? { electrical } : {}),
 		...(terminals ? { terminal_assessment: terminals } : {}),
 		prepared_inputs: prepared,

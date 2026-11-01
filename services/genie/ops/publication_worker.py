@@ -43,6 +43,7 @@ from linker_genie.publication import Snapshot, knowledge_progress  # noqa: E402
 from publish_index import (  # noqa: E402
     ActivationOutcomeUnconfirmed,
     NativeVerificationRejected,
+    PreActivationDeferred,
     publish,
 )
 
@@ -227,6 +228,49 @@ def discard_pending(index_dir: Path) -> None:
     if directory is not None and directory.is_dir():
         shutil.rmtree(directory)
     (index_dir / "publication-worker-pending.json").unlink(missing_ok=True)
+
+
+def validated_pending(
+    index_dir: Path, activation: dict[str, Any], expected_index: dict[str, Any]
+) -> Path:
+    """Recheck an explicitly resumed generation against its original live lease."""
+    directory = pending_build(index_dir)
+    if directory is None or not directory.is_dir():
+        raise RuntimeError("the deferred generation is missing")
+    manifest_path, index_path = directory / "manifest.json", directory / "index.sqlite"
+    if any(
+        path.is_symlink() or not path.is_file() for path in (manifest_path, index_path)
+    ):
+        raise RuntimeError("the deferred generation files are not regular")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    expected = {
+        "version": expected_index.get("version"),
+        "source_revision": activation.get("source_revision"),
+        "model_identity_revision": activation.get("model_identity_revision"),
+        "recipe_revision": activation.get("recipe_revision"),
+        "serving_revision": activation.get("serving_revision"),
+        "activation_epoch": activation.get("epoch"),
+    }
+    with index_path.open("rb") as handle:
+        digest = hashlib.file_digest(handle, "sha256").hexdigest()
+    if (
+        not isinstance(manifest, dict)
+        or not isinstance(manifest.get("file"), dict)
+        or directory.name != expected["version"]
+        or manifest["file"].get("name") != "index.sqlite"
+        or manifest["file"].get("sha256") != digest
+        or expected_index.get("sha256") != digest
+        or any(manifest.get(key) != value for key, value in expected.items())
+    ):
+        raise RuntimeError("the deferred generation identity or checksum differs")
+    db = sqlite3.connect(index_path.as_uri() + "?mode=ro", uri=True)
+    try:
+        meta = dict(db.execute("SELECT key,value FROM meta"))
+    finally:
+        db.close()
+    if any(meta.get(key) != str(value) for key, value in expected.items()):
+        raise RuntimeError("the deferred index metadata differs")
+    return directory
 
 
 def retain_builds(index_dir: Path, current: Path) -> None:
@@ -686,6 +730,7 @@ class Worker:
                 self._published
                 or recovering
                 or isinstance(error, ActivationOutcomeUnconfirmed)
+                or isinstance(error, PreActivationDeferred)
             ):
                 # The lost remote process might still pass its in-lock native
                 # verification, or an ACK response may be lost after activation.
@@ -711,9 +756,18 @@ def run_job(
     prepare: Callable[[dict[str, Any]], str],
     loaded: Callable[[], dict[str, Any]],
     index_dir: Path,
+    *,
+    resume_pending: bool = False,
 ) -> bool:
     """Own one build through loaded/ack and roll back its rebuildable output."""
-    discard_pending(index_dir)
+    ledger = index_dir / "publication-worker-pending.json"
+    if ledger.is_file() and not resume_pending:
+        pending = json.loads(ledger.read_text())
+        if pending.get("deferred_until", 0) > time.time():
+            raise RuntimeError("a deferred generation awaits same-lease review")
+    if not resume_pending:
+        discard_pending(index_dir)
+    deferred = False
     try:
         completed = worker.one(prepare, loaded)
         if completed:
@@ -722,6 +776,12 @@ def run_job(
                 retain_builds(index_dir, prepared)
                 (index_dir / "publication-worker-pending.json").unlink(missing_ok=True)
         return completed
+    except PreActivationDeferred as error:
+        pending = json.loads(ledger.read_text())
+        pending["deferred_until"] = error.lease_expires_at
+        ledger.write_text(json.dumps(pending))
+        deferred = True
+        raise
     except NativeVerificationRejected as error:
         if error.reason == "retry_exhausted":
             try:
@@ -732,7 +792,8 @@ def run_job(
     finally:
         # Includes build/publish failure, not just failures after a Path returns.
         # A killed process is recovered by the next locked invocation.
-        discard_pending(index_dir)
+        if not deferred and not resume_pending:
+            discard_pending(index_dir)
 
 
 def main(
@@ -742,6 +803,7 @@ def main(
     worker_factory: Any = Worker,
     embedding_factory: Callable[[str], Embedder] = build.document_embedder,
     busy_exit: int = 0,
+    resume_index: dict[str, Any] | None = None,
 ) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -799,6 +861,19 @@ def main(
                 phase, phase_started = next_phase, time.monotonic()
 
             try:
+                if resume_index is not None:
+                    directory = validated_pending(
+                        INDEX_DIR, worker.activation(), resume_index
+                    )
+                    stage("publish")
+                    activation = worker.activation()
+                    activation.update(loaded_url=args.loaded_url, service_token=token)
+                    report = publisher(
+                        directory, args.root, args.host, activation=activation
+                    )
+                    worker.publication_confirmed()
+                    stage("complete")
+                    return str(report["index_version"])
                 source = inventory.RestClient(args.rest_config)
                 # Prevent an operator accidentally building one site and acking another.
                 if urlsplit(source.base).netloc != urlsplit(jobs).netloc:
@@ -855,7 +930,13 @@ def main(
             return read_loaded(args.loaded_url, token, args.host)
 
         try:
-            run_job(worker, prepare, loaded, INDEX_DIR)
+            run_job(
+                worker,
+                prepare,
+                loaded,
+                INDEX_DIR,
+                resume_pending=resume_index is not None,
+            )
         except (Exception, SystemExit) as error:  # noqa: BLE001 - safe status, no private URLs or credentials
             report_failure("run_job", error)
             print(

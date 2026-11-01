@@ -178,9 +178,10 @@ export function hasTerminalFeature(plan: InstallationInputs): boolean {
 	);
 }
 
-/** Include a terminal-only circuit or a recorded cable run in a report. */
+/** Include recorded materials, a terminal-only circuit or a cable run. */
 export function hasReportableInstallation(plan: InstallationInputs): boolean {
 	return (
+		(plan.materials?.length ?? 0) > 0 ||
 		plan.cable_runs.length > 0 ||
 		plan.circuits.some(
 			(circuit) =>

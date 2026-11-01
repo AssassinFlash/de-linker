@@ -316,6 +316,13 @@ def _materials_projection(source: Object, private: str) -> Object:
                 for lang in ("en", "de")
             }
         origin = line.get("source")
+        if line.get("basis") == "project_declared_installation_materials_v1":
+            safe["id"] = f"installation-material:{index}"
+            safe["label"] = {
+                "en": f"Installation material {index}",
+                "de": f"Installationsmaterial {index}",
+            }
+            safe["source"] = {"qualified": False}
         if isinstance(origin, dict) and "reference_current_segments" in origin:
             # The report renders these from its redacted installation branch.
             # BOM source JSON can contain site notes and paired run identities.
@@ -395,6 +402,45 @@ def _report_source_projection(source: Object, locale: str) -> Object:
             )
         instances.append({**device, "id": name, "name": name, "ports": ports})
     plan["instances"] = instances
+    material_review = raw_plan.get("material_review")
+    if isinstance(material_review, dict):
+        plan["material_review"] = {
+            **material_review,
+            "rows": [
+                {
+                    **{
+                        key: value
+                        for key, value in item.items()
+                        if key not in {"comparison", "comparison_result"}
+                    },
+                    "id": f"material-{index}",
+                    "name": f"{'Installationsmaterial' if locale == 'de' else 'Installation material'} {index}",
+                    "circuit_id": private
+                    if item.get("circuit_id") is not None
+                    else None,
+                    "specification": private,
+                    "source_note": private,
+                    **(
+                        {
+                            "comparison": {
+                                key: cast(Object, item["comparison"]).get(key)
+                                for key in (
+                                    "cross_section_mm2",
+                                    "rated_current_a",
+                                    "rated_voltage_v",
+                                )
+                            },
+                            "comparison_result": item.get("comparison_result"),
+                        }
+                        if isinstance(item.get("comparison"), dict)
+                        else {}
+                    ),
+                }
+                for index, item in enumerate(
+                    cast(list[Object], material_review["rows"]), 1
+                )
+            ],
+        }
     terminals = raw_plan.get("terminal_assessment")
     if isinstance(terminals, dict):
         plan["terminal_assessment"] = {

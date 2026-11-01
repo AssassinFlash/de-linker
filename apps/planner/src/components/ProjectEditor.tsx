@@ -891,6 +891,9 @@ export function ProjectEditor({
 								change={(plan) =>
 									editEnergy((inputs) => ({
 										...inputs,
+										...(inputs.geometry === undefined
+											? { geometry: readObject(geometry) }
+											: {}),
 										installation: readObject(plan),
 									}))
 								}

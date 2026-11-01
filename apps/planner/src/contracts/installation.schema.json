@@ -115,7 +115,7 @@
           "$ref": "#/$defs/Nonnegative"
         },
         "reference_voltage_v": {
-          "$ref": "#/$defs/Positive"
+          "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
         },
         "direction": {
           "enum": [
@@ -131,7 +131,7 @@
         "frequency_hz": {
           "anyOf": [
             {
-              "$ref": "#/$defs/Positive"
+              "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
             },
             {
               "type": "null"
@@ -226,7 +226,7 @@
       "additionalProperties": false,
       "properties": {
         "cross_section_mm2": {
-          "$ref": "#/$defs/Positive"
+          "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
         },
         "source_note": {
           "$ref": "#/$defs/Text"
@@ -425,6 +425,86 @@
       "title": "InstallationCircuit",
       "type": "object"
     },
+    "InstallationMaterial": {
+      "additionalProperties": false,
+      "description": "A project declaration, not a manufacturer fact or a sales product.",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "name": {
+          "$ref": "#/$defs/Text"
+        },
+        "kind": {
+          "enum": [
+            "connector",
+            "protection",
+            "earthing",
+            "mounting",
+            "other"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "circuit_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "quantity": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__2"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unit": {
+          "enum": [
+            "piece",
+            "m"
+          ],
+          "title": "Unit",
+          "type": "string"
+        },
+        "specification": {
+          "$ref": "#/$defs/Text"
+        },
+        "source_note": {
+          "$ref": "#/$defs/Text"
+        },
+        "comparison": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MaterialFactComparison"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "kind",
+        "circuit_id",
+        "quantity",
+        "unit",
+        "specification",
+        "source_note"
+      ],
+      "title": "InstallationMaterial",
+      "type": "object"
+    },
     "InstallationRoute": {
       "additionalProperties": false,
       "properties": {
@@ -477,12 +557,117 @@
       "title": "InstallationRoute",
       "type": "object"
     },
+    "MaterialComparisonCircuit": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "kind": {
+          "enum": [
+            "pv_dc",
+            "battery_dc",
+            "ac",
+            "control",
+            "protective_earth",
+            "other"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "start": {
+          "$ref": "#/$defs/Endpoint"
+        },
+        "end": {
+          "$ref": "#/$defs/Endpoint"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "start",
+        "end"
+      ],
+      "title": "MaterialComparisonCircuit",
+      "type": "object"
+    },
+    "MaterialFactComparison": {
+      "additionalProperties": false,
+      "properties": {
+        "instance_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "product_id": {
+          "$ref": "#/$defs/Count"
+        },
+        "product_revision": {
+          "$ref": "#/$defs/Hash"
+        },
+        "fact_id": {
+          "$ref": "#/$defs/Text"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Text"
+        },
+        "document_revision": {
+          "$ref": "#/$defs/Hash"
+        },
+        "cross_section_mm2": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rated_current_a": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rated_voltage_v": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conditions_confirmed": {
+          "title": "Conditions Confirmed",
+          "type": "boolean"
+        },
+        "circuit_context": {
+          "$ref": "#/$defs/MaterialComparisonCircuit"
+        }
+      },
+      "required": [
+        "instance_id",
+        "product_id",
+        "product_revision",
+        "fact_id",
+        "document_id",
+        "document_revision",
+        "cross_section_mm2",
+        "rated_current_a",
+        "rated_voltage_v",
+        "conditions_confirmed",
+        "circuit_context"
+      ],
+      "title": "MaterialFactComparison",
+      "type": "object"
+    },
     "Nonnegative": {
       "minimum": 0,
-      "type": "number"
-    },
-    "Positive": {
-      "exclusiveMinimum": 0,
       "type": "number"
     },
     "PvStringLink": {
@@ -792,7 +977,7 @@
         "cross_section_mm2": {
           "anyOf": [
             {
-              "$ref": "#/$defs/Positive"
+              "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
             },
             {
               "type": "null"
@@ -933,6 +1118,15 @@
       "maximum": 1,
       "minimum": 0,
       "type": "number"
+    },
+    "linker_engine__planning__geometry_documents__Positive__1": {
+      "exclusiveMinimum": 0,
+      "type": "number"
+    },
+    "linker_engine__planning__geometry_documents__Positive__2": {
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991,
+      "type": "number"
     }
   },
   "additionalProperties": false,
@@ -983,6 +1177,13 @@
         "$ref": "#/$defs/PvStringLink"
       },
       "title": "Pv String Links",
+      "type": "array"
+    },
+    "materials": {
+      "items": {
+        "$ref": "#/$defs/InstallationMaterial"
+      },
+      "title": "Materials",
       "type": "array"
     }
   },

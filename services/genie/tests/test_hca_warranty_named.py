@@ -377,6 +377,7 @@ def test_simulated_woo_link_through_sqlite_knowledge_hydration_and_withdrawal(
                         "Wie viele Jahre Garantie hat der GW11K-HCA-20?",
                         "Wieviele Jahre gilt die Garantie für GW11K-HCA-20?",
                         "Wann beginnt die Garantie für den GW11K-HCA-20?",
+                        "Ab welchem Datum gilt die Garantie für GW11K-HCA-20?",
                     ):
                         assert (
                             _warranty_period_fallback(facts, "de", route, wording, None)
@@ -418,6 +419,7 @@ def test_simulated_woo_link_through_sqlite_knowledge_hydration_and_withdrawal(
                     for wording in (
                         "How many years is the GW11K-HCA-20 warranty?",
                         "When does the warranty for GW11K-HCA-20 start?",
+                        "From what date is the GW11K-HCA-20 warranty valid?",
                     ):
                         assert (
                             _warranty_period_fallback(
@@ -539,6 +541,118 @@ def test_simulated_woo_link_through_sqlite_knowledge_hydration_and_withdrawal(
                 else:
                     assert "Manufacturer's condition:" in block.text
                     assert "For Europe, excluding UK" in block.text
+        # A broad real retrieval can return policies for more than one HCA
+        # model. Select an explicitly requested model before deciding whether
+        # its verified policy is unambiguous.
+        own_hits = [
+            h
+            for h in search(
+                {"query": "warranty period", "lang": "de", "product_ids": [3557]}
+            )["hits"]
+            if h.get("warranty_terms")
+        ][:2]
+        other_hit = next(
+            h
+            for h in search(
+                {"query": "warranty period", "lang": "de", "product_ids": [3586]}
+            )["hits"]
+            if h.get("warranty_terms")
+        )
+        assert len(own_hits) == 2
+        mixed_hits = [*own_hits, other_hit]
+        mixed_facts = collect("linker/search-knowledge", {"hits": mixed_hits}, "de")
+        full_question = (
+            "Wie lange gilt die Herstellergarantie für die GoodWe HCA Wallbox "
+            "GW11K-HCA-20, und ab welchem Datum beginnt sie?"
+        )
+        incomplete_question = full_question.replace("GW11K-HCA-20", "GW11K-HCA")
+        for question, should_answer in (
+            (full_question, True),
+            (incomplete_question, False),
+            (full_question.replace("HCA-20", "HCA-20A"), False),
+            (full_question + " Und GW7K-HCA-20?", False),
+        ):
+            request = TurnRequest(
+                conversation_id="hca-mixed-policy-fallback",
+                messages=[TurnMessage(role="user", content=question)],
+                locale="de",
+            )
+            rejected = TurnOutput(
+                language="de",
+                blocks=[
+                    TextBlock(
+                        text="Unbelegte Garantie.", refs=[mixed_hits[0]["chunk_id"]]
+                    )
+                ],
+            )
+
+            def invalid_answer(
+                _request: TurnRequest,
+                _retry: str | None,
+                *,
+                output: TurnOutput = rejected,
+            ) -> tuple[TurnOutput, TurnFacts]:
+                return output, TurnFacts()
+
+            turn = run(request, invalid_answer, Route("documents"), mixed_facts)
+            assert turn.fallback
+            text = "\n".join(
+                block.text
+                for block in turn.output.blocks
+                if isinstance(block, TextBlock)
+            )
+            assert "Herstellerbedingung (englisches Original)" not in text
+            if should_answer:
+                assert "2 Jahre" in text and "ersten Installation" in text
+                assert "6 Monate" in text and "Herstellungsdatum" in text
+                assert any(
+                    isinstance(block, DocumentBlock)
+                    and block.url
+                    and block.url.endswith("#page=1")
+                    for block in turn.output.blocks
+                )
+            else:
+                assert "vollständige Modellbezeichnung" in text
+                assert "2 Jahre" not in text
+
+        conflicting = deepcopy(mixed_facts)
+        other_chunk = own_hits[1]["chunk_id"]
+        conflicting.warranty_answers[other_chunk]["period"] = "A different period."
+        assert (
+            _warranty_period_fallback(
+                conflicting, "de", Route("documents"), full_question, None
+            )
+            is None
+        )
+        conflicting = deepcopy(mixed_facts)
+        conflicting.documents[other_chunk] = replace(
+            conflicting.documents[other_chunk],
+            url="https://example.invalid/other-policy.pdf",
+        )
+        assert (
+            _warranty_period_fallback(
+                conflicting, "de", Route("documents"), full_question, None
+            )
+            is None
+        )
+        one_model = collect("linker/search-knowledge", {"hits": own_hits}, "de")
+        assert (
+            _warranty_period_fallback(
+                one_model,
+                "de",
+                Route("documents"),
+                "Wie lange gilt die Garantie?",
+                3557,
+            )
+            is not None
+        )
+        assert (
+            _warranty_period_fallback(
+                one_model, "de", Route("documents"), incomplete_question, 3557
+            )
+            is None
+        )
+
         de_hit = search(
             {"query": "warranty period", "lang": "de", "product_ids": [3557]}
         )["hits"][0]

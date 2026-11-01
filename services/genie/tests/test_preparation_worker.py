@@ -17,10 +17,165 @@ import pytest
 
 from linker_genie.preparation import RUNTIME_SERVING_REVISION
 from linker_genie.publication import PublicationClient, PublicationUnavailable
-from publication_worker import Worker, record_build, report_failure, run_job
-from publish_index import ActivationOutcomeUnconfirmed, NativeVerificationRejected
+from publication_worker import (
+    Worker,
+    record_build,
+    report_failure,
+    run_job,
+    validated_pending,
+)
+from publish_index import (
+    ActivationOutcomeUnconfirmed,
+    NativeVerificationRejected,
+    PreActivationDeferred,
+)
 
 RECIPE = "a" * 64
+
+
+def test_pre_activation_review_keeps_one_candidate_until_same_lease_or_expiry(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "index"
+    directory = root / "builds" / "generation"
+    calls: list[str] = []
+
+    class DeferredWorker:
+        def one(self, prepare: Any, loaded: Any) -> bool:
+            calls.append("attempt")
+            directory.mkdir(parents=True)
+            record_build(root, directory)
+            raise PreActivationDeferred(200)
+
+    monkeypatch.setattr("publication_worker.time.time", lambda: 100)
+    with pytest.raises(PreActivationDeferred):
+        run_job(DeferredWorker(), lambda _: "", lambda: {}, root)  # type: ignore[arg-type]
+    assert directory.exists()
+    with pytest.raises(RuntimeError, match="awaits same-lease review"):
+        run_job(DeferredWorker(), lambda _: "", lambda: {}, root)  # type: ignore[arg-type]
+    assert calls == ["attempt"] and directory.exists()
+    monkeypatch.setattr("publication_worker.time.time", lambda: 201)
+
+    class NoJob:
+        def one(self, prepare: Any, loaded: Any) -> bool:
+            return False
+
+    assert not run_job(NoJob(), lambda _: "", lambda: {}, root)  # type: ignore[arg-type]
+    assert not directory.exists()
+
+
+@pytest.mark.parametrize("change", ["none", "bytes", "epoch", "source", "recipe"])
+def test_resumed_candidate_checks_exact_index_and_lease_identity(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, change: str
+) -> None:
+    root = tmp_path / "index"
+    directory = root / "builds" / "generation"
+    directory.mkdir(parents=True)
+    record_build(root, directory)
+    expected = {
+        "version": "generation",
+        "source_revision": "source",
+        "model_identity_revision": "model",
+        "recipe_revision": "recipe",
+        "serving_revision": "serving",
+        "activation_epoch": 42,
+    }
+    with sqlite3.connect(directory / "index.sqlite") as db:
+        db.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)")
+        db.executemany(
+            "INSERT INTO meta VALUES (?, ?)", [(k, str(v)) for k, v in expected.items()]
+        )
+    digest = hashlib.sha256((directory / "index.sqlite").read_bytes()).hexdigest()
+    (directory / "manifest.json").write_text(
+        json.dumps({**expected, "file": {"name": "index.sqlite", "sha256": digest}})
+    )
+    activation = {
+        "source_revision": "source",
+        "model_identity_revision": "model",
+        "recipe_revision": "recipe",
+        "serving_revision": "serving",
+        "epoch": 42,
+    }
+    if change == "bytes":
+        with (directory / "index.sqlite").open("ab") as out:
+            out.write(b"changed")
+    elif change == "epoch":
+        activation["epoch"] = 43
+    elif change == "source":
+        activation["source_revision"] = "other"
+    elif change == "recipe":
+        activation["recipe_revision"] = "other"
+    if change == "none":
+        assert (
+            validated_pending(
+                root, activation, {"version": "generation", "sha256": digest}
+            )
+            == directory
+        )
+        calls: list[str] = []
+
+        class ResumeWorker:
+            def __init__(self, *args: Any, **kwargs: Any) -> None:
+                pass
+
+            def one(self, prepare: Any, loaded: Any) -> bool:
+                return str(prepare({})) == "generation"
+
+            def activation(self) -> dict[str, Any]:
+                return dict(activation)
+
+            def publication_confirmed(self) -> None:
+                calls.append("confirmed")
+
+            def close(self) -> None:
+                calls.append("closed")
+
+        def publisher(path: Path, *args: Any, **kwargs: Any) -> dict[str, str]:
+            assert path == directory
+            calls.append("publish-existing-index")
+            return {"index_version": path.name}
+
+        import publication_worker
+
+        monkeypatch.setattr(publication_worker, "INDEX_DIR", root)
+        monkeypatch.setattr("publication_worker.sys.platform", "darwin")
+        monkeypatch.setattr(
+            "publication_worker.build.build",
+            lambda *a, **k: pytest.fail("rebuild occurred"),
+        )
+        for key in (
+            "LINKER_PUBLICATION_JOBS_URL",
+            "LINKER_PUBLICATION_USER",
+            "LINKER_PUBLICATION_PASSWORD",
+            "GENIE_SERVICE_TOKEN",
+        ):
+            monkeypatch.setenv(key, "fixture")
+        assert (
+            publication_worker.main(
+                [
+                    "--worker-id",
+                    "fixture",
+                    "--lease-seconds",
+                    "300",
+                    "--loaded-url",
+                    "http://localhost",
+                ],
+                publisher=publisher,
+                worker_factory=ResumeWorker,
+                resume_index={"version": "generation", "sha256": digest},
+            )
+            == 0
+        )
+        assert calls == ["publish-existing-index", "confirmed", "closed"]
+        assert (
+            directory.exists()
+            and not (root / "publication-worker-pending.json").exists()
+        )
+    else:
+        with pytest.raises(RuntimeError, match="identity or checksum differs"):
+            validated_pending(
+                root, activation, {"version": "generation", "sha256": digest}
+            )
 
 
 @pytest.mark.parametrize("mode", ["enabled", "disabled", "wrong_host"])
@@ -219,6 +374,22 @@ def loaded(**changes: Any) -> dict[str, Any]:
         ],
         **changes,
     }
+
+
+def test_pre_activation_review_does_not_fail_the_original_lease() -> None:
+    queue = Queue()
+    worker = queue.worker()
+    try:
+        with pytest.raises(PreActivationDeferred):
+            worker.one(
+                lambda _: (_ for _ in ()).throw(
+                    PreActivationDeferred(int(time.time()) + 60)
+                ),
+                loaded,
+            )
+        assert len(queue.claims) == 1 and queue.receipts == []
+    finally:
+        worker.close()
 
 
 def test_materialized_semantic_warning_does_not_repeat_same_recipe_build() -> None:

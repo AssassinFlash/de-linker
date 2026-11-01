@@ -721,6 +721,7 @@ def report_sources(
             and "pv_string_links" not in plan.model_fields_set
             and project.inputs.get("pv_plant_string_plan") is None
             and not has_terminal_circuit
+            and not plan.materials
         ):
             raise InvalidInput(
                 "select at least one physical cable for the routing report"

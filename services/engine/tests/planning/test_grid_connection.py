@@ -19,6 +19,7 @@ from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.plant_assessment import assess_plant
 from linker_engine.planning.project_input_contracts import (
     GRID_CONNECTION_INPUT_CONTRACT,
+    MATERIALS_INPUT_CONTRACT,
     REFERENCE_CURRENT_INPUT_CONTRACT,
     SUPPORTED_INPUT_CONTRACTS,
     TERMINAL_INPUT_CONTRACT,
@@ -173,6 +174,7 @@ def test_old_writers_cannot_add_preserve_or_remove_grid_evidence() -> None:
             GRID_CONNECTION_INPUT_CONTRACT,
             TERMINAL_INPUT_CONTRACT,
             REFERENCE_CURRENT_INPUT_CONTRACT,
+            MATERIALS_INPUT_CONTRACT,
         ):
             continue
         for before, after in ((None, values), (values, values), (values, {})):
