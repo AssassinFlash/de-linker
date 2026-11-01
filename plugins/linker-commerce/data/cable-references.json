@@ -1,0 +1,102 @@
+{
+ "schema_version": 1,
+ "provenance": "One-time adoption input for two original manufacturer PDFs generated on 2026-11-01. No technical revision is printed. After adoption Woo alone maintains the reference records. This file is never a runtime fallback.",
+ "references": [
+  {
+   "id": "nexans-038021106",
+   "kind": "cable",
+   "brand": "Nexans",
+   "model": "NPE SUN PLUS H1Z2Z2-K 1 x 4",
+   "figures": {},
+   "documents": [
+    {
+     "url": "https://de-linker.com/wp-content/uploads/2026/11/nexans-038021106.pdf",
+     "title": "NPE SUN PLUS H1Z2Z2-K 1 x 4 (Nexans ref. 038021106)",
+     "type": "datasheet",
+     "lang": "en",
+     "expected_blob_sha256": "0fed83cc110b0689361193d2241cccd6a22b4a15fbba4756a1c1cc78aa805ce3"
+    }
+   ],
+   "cable_facts": {
+    "schema_version": 1,
+    "construction": "single_conductor",
+    "core_count": 1,
+    "cross_section_mm2": 4,
+    "conductor_material": "Tinned copper, flexible class 5",
+    "insulation": "Cross-linked halogen free rubber",
+    "source": {
+     "document_url": "https://de-linker.com/wp-content/uploads/2026/11/nexans-038021106.pdf",
+     "blob_sha256": "0fed83cc110b0689361193d2241cccd6a22b4a15fbba4756a1c1cc78aa805ce3",
+     "page": 2,
+     "quote": "Conductor material: Tinned copper. Conductor flexibility: Flexible class 5. Insulation: Cross-linked halogen free rubber. Number of cores: 1. Conductor cross-section: 4 mm²."
+    },
+    "parameter_sets": [
+     {
+      "id": "rdc-20c",
+      "current_kind": "dc",
+      "temperature_c": 20,
+      "frequency_hz": null,
+      "arrangement": null,
+      "resistance_ohm_per_km": 5.09,
+      "reactance_ohm_per_km": null,
+      "resistance_basis": "maximum",
+      "source": {
+       "document_url": "https://de-linker.com/wp-content/uploads/2026/11/nexans-038021106.pdf",
+       "blob_sha256": "0fed83cc110b0689361193d2241cccd6a22b4a15fbba4756a1c1cc78aa805ce3",
+       "page": 2,
+       "quote": "Max. DC resistance of the conductor at 20°C: 5.09 Ohm/km."
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "nexans-038023102",
+   "kind": "cable",
+   "brand": "Nexans",
+   "model": "NPE SUN PLUS H1Z2Z2-K 1 x 6",
+   "figures": {},
+   "documents": [
+    {
+     "url": "https://de-linker.com/wp-content/uploads/2026/11/nexans-038023102.pdf",
+     "title": "NPE SUN PLUS H1Z2Z2-K 1 x 6 (Nexans ref. 038023102)",
+     "type": "datasheet",
+     "lang": "en",
+     "expected_blob_sha256": "217bfaf2296673fc499a1886fc0a5967bd2d4d1de7071336c04806018abf3d69"
+    }
+   ],
+   "cable_facts": {
+    "schema_version": 1,
+    "construction": "single_conductor",
+    "core_count": 1,
+    "cross_section_mm2": 6,
+    "conductor_material": "Tinned copper, flexible class 5",
+    "insulation": "Cross-linked halogen free rubber",
+    "source": {
+     "document_url": "https://de-linker.com/wp-content/uploads/2026/11/nexans-038023102.pdf",
+     "blob_sha256": "217bfaf2296673fc499a1886fc0a5967bd2d4d1de7071336c04806018abf3d69",
+     "page": 2,
+     "quote": "Conductor material: Tinned copper. Conductor flexibility: Flexible class 5. Insulation: Cross-linked halogen free rubber. Number of cores: 1. Conductor cross-section: 6 mm²."
+    },
+    "parameter_sets": [
+     {
+      "id": "rdc-20c",
+      "current_kind": "dc",
+      "temperature_c": 20,
+      "frequency_hz": null,
+      "arrangement": null,
+      "resistance_ohm_per_km": 3.39,
+      "reactance_ohm_per_km": null,
+      "resistance_basis": "maximum",
+      "source": {
+       "document_url": "https://de-linker.com/wp-content/uploads/2026/11/nexans-038023102.pdf",
+       "blob_sha256": "217bfaf2296673fc499a1886fc0a5967bd2d4d1de7071336c04806018abf3d69",
+       "page": 2,
+       "quote": "Max. DC resistance of the conductor at 20°C: 3.39 Ohm/km."
+      }
+     }
+    ]
+   }
+  }
+ ]
+}
