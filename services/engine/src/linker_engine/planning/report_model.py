@@ -12,6 +12,7 @@ from .certificate_report import certificate_sections
 from .comparison_report import comparison_sections
 from .direct_beam_report import direct_beam_sections
 from .geometric_pv_report import geometric_pv_sections
+from .grid_connection_report import grid_connection_sections
 from .installation_report import installation_sections
 from .project_materials import (
     material_name,
@@ -203,12 +204,15 @@ def build_report(source: Object) -> Report:
                                 }
                             )
                         )
+        grid_sections = grid_connection_sections(
+            assessment.get("country_assessment"), locale
+        )
         sections.append(
             ReportSection(
                 id="equipment",
                 title=text("equipment", locale),
                 rows=[row("status", text(str(assessment["overall_status"]), locale))],
-                paragraphs=[text("country_open", locale)]
+                paragraphs=([] if grid_sections else [text("country_open", locale)])
                 + (
                     [text("plant_scope", locale)]
                     if assessment.get("model") == "woo_multi_converter_plant_v1"
@@ -216,6 +220,7 @@ def build_report(source: Object) -> Report:
                 ),
             )
         )
+        sections.extend(grid_sections)
         for index, check in enumerate(cast(list[dict[str, Any]], assessment["checks"])):
             semantic_id = str(check.get("semantic_id", check["id"]))
             if isinstance(source.get("energy_equipment"), dict) and check["id"] in {

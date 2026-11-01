@@ -16,6 +16,7 @@ from linker_engine.planning.assistant_context import (
 )
 from linker_engine.planning.canonical import Json, Object
 from linker_engine.planning.errors import InvalidInput, NotFound
+from linker_engine.planning.grid_connection import country_assessment
 from linker_engine.planning.installation_takeoff import route_takeoff
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.project_materials import project_materials
@@ -25,6 +26,7 @@ from linker_engine.planning.report_model import build_report
 from linker_engine.planning.report_pvlib import pvlib_sections
 from linker_engine.planning.workspace import Workspace
 
+from .test_grid_connection import declared
 from .test_installation_electrical import circuit_fixture
 from .test_pv_generation import parameter_document
 
@@ -107,7 +109,16 @@ def test_controller_report_keeps_owner_group_name_out_of_assistant(
             "project_note": "PRIVATE NOTE",
         },
     }
+    if not historical:
+        grid_inputs = declared(complete=True)
+        cast(Object, grid_inputs["grid_connection"])["dso_name"] = (
+            "PRIVATE GRID DECLARATION"
+        )
+        cast(Object, source["equipment"])["country_assessment"] = country_assessment(
+            grid_inputs
+        )
     report = cast(Object, build_report(source).model_dump(mode="json"))
+    assert ("PRIVATE GRID DECLARATION" in str(report)) is not historical
     assert "PRIVATE CUSTOMER GROUP" in str(report)
     cast(list[Json], report["sections"]).append(
         {
@@ -144,6 +155,10 @@ def test_controller_report_keeps_owner_group_name_out_of_assistant(
     shown = assistant_context(workspace, owner, project.id, 1, [run.id], locale)
     assert "PRIVATE" not in str(shown)
     rows = cast(list[Object], cast(list[Object], shown["runs"])[0]["rows"])
+    if not historical:
+        assert text("grid_no_permission", locale) in str(rows)
+        assert "VDE-AR-N 4110:2023-09" in str(rows)
+
     table_row = next(
         row
         for row in rows

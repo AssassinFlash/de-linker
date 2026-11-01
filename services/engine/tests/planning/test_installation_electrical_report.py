@@ -1,6 +1,7 @@
 """Frozen report exposes numerical basis and the source behind each conductor."""
 
 import io
+from typing import Literal, cast
 
 import pytest
 from pypdf import PdfReader
@@ -8,10 +9,14 @@ from pypdf import PdfReader
 from linker_engine.models import Report
 from linker_engine.pdf import render
 from linker_engine.planning.canonical import Object
+from linker_engine.planning.grid_connection import country_assessment
+from linker_engine.planning.grid_connection_report import grid_connection_sections
 from linker_engine.planning.installation_report import installation_sections
 from linker_engine.planning.installation_takeoff import route_takeoff
+from linker_engine.planning.report_copy import text
 
 from .conftest import json_object
+from .test_grid_connection import declared
 from .test_installation_electrical import circuit_fixture
 
 
@@ -72,3 +77,31 @@ def test_long_valid_condition_name_survives_pdf_page_boundary() -> None:
     )
     assert "Namensende" in contents
     assert "5.088" in contents
+
+
+@pytest.mark.parametrize("locale", ["en", "de"])
+def test_country_evidence_pdf_distinguishes_project_entries_from_permission(
+    locale: str,
+) -> None:
+    assessment = country_assessment(declared(complete=True))
+    sections = grid_connection_sections(assessment, locale)
+    report = Report(
+        title="Grid",
+        subtitle="",
+        generated_at="2026-11-01",
+        locale=cast(Literal["en", "de"], locale),
+        sections=sections,
+    )
+    contents = " ".join(
+        page.extract_text() for page in PdfReader(io.BytesIO(render(report))).pages
+    )
+    assert text("grid_all_entered", locale) in contents
+    assert text("grid_no_permission", locale) in contents
+    assert "2023-09" in contents
+    assert "2026-10-28" in contents
+    unknown = grid_connection_sections(
+        country_assessment(declared(country=None)), locale
+    )
+    assert text("grid_missing_country_code", locale) in unknown[1].rows[0].value
+    assert "VDE-AR-N 4110" not in str(unknown)
+    assert grid_connection_sections(country_assessment({}), locale) == []

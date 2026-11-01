@@ -1047,6 +1047,76 @@ TEXT = {
         "Components and manufacturer conditions",
         "Komponenten und Herstellervorgaben",
     ),
+    "grid_declarations": (
+        "Grid connection details entered for this project",
+        "Angaben zum Netzanschluss dieses Projekts",
+    ),
+    "grid_declaration_basis": (
+        "These details were entered for this project. Confirm them with the responsible grid operator.",
+        "Diese Angaben stammen aus dem Projekt. Bitte bestätigen Sie sie mit dem zuständigen Netzbetreiber.",
+    ),
+    "grid_dso": ("Grid operator", "Netzbetreiber"),
+    "grid_dso_source": ("Grid operator source", "Quelle zum Netzbetreiber"),
+    "grid_voltage": (
+        "Voltage at the grid connection point",
+        "Spannungsebene am Netzanschlusspunkt",
+    ),
+    "grid_low": ("Low voltage", "Niederspannung"),
+    "grid_medium": ("Medium voltage", "Mittelspannung"),
+    "grid_high": ("High voltage", "Hochspannung"),
+    "grid_tab_title": ("Connection conditions", "Anschlussbedingungen"),
+    "grid_tab_source": (
+        "Source of the connection conditions",
+        "Quelle der Anschlussbedingungen",
+    ),
+    "grid_edition": ("Document edition", "Dokumentausgabe"),
+    "grid_tab_date": ("Document date", "Dokumentdatum"),
+    "grid_evidence": ("Grid connection review", "Prüfung des Netzanschlusses"),
+    "grid_de_scope": (
+        "Check the local connection conditions for the voltage level at the grid connection point. Electrical evidence for a generating unit is a separate part of this review.",
+        "Prüfen Sie die örtlichen Anschlussbedingungen für die Spannungsebene am Netzanschlusspunkt. Die elektrischen Nachweise der Erzeugungseinheit sind gesondert zu prüfen.",
+    ),
+    "grid_no_rule": (
+        "This revision has no verified local rule for this site.",
+        "Für diesen Standort liegt in dieser Projektversion kein geprüftes örtliches Regelwerk vor.",
+    ),
+    "grid_to_supply": ("Project details still needed", "Noch benötigte Projektangaben"),
+    "grid_missing_country_code": ("site country", "Land des Standorts"),
+    "grid_missing_dso_name": ("grid operator", "Netzbetreiber"),
+    "grid_missing_dso_source_url": (
+        "source for the grid operator",
+        "Quelle zum zuständigen Netzbetreiber",
+    ),
+    "grid_missing_voltage_level": (
+        "connection voltage level",
+        "Spannungsebene am Netzanschlusspunkt",
+    ),
+    "grid_missing_tab.source_url": (
+        "source of the connection conditions",
+        "Quelle der Anschlussbedingungen",
+    ),
+    "grid_missing_tab.edition_or_date": (
+        "document edition or date",
+        "Ausgabe oder Datum des Dokuments",
+    ),
+    "grid_all_entered": (
+        "All requested details entered",
+        "Alle angeforderten Angaben vorhanden",
+    ),
+    "grid_territory_tab": (
+        "Operator territory and applicable conditions",
+        "Netzgebiet und geltende Anschlussbedingungen",
+    ),
+    "grid_unverified": (
+        "Independent verification pending",
+        "Unabhängige Prüfung ausstehend",
+    ),
+    "grid_permission": ("Permission to connect", "Zustimmung zum Netzanschluss"),
+    "grid_no_permission": (
+        "No approval evidenced in this assessment",
+        "In dieser Prüfung ist keine Zustimmung nachgewiesen",
+    ),
+    "grid_source_read": ("Source reviewed", "Quelle geprüft am"),
     "country_open": (
         "Country requirements are not assessed by the selected calculations.",
         "Landesspezifische Anforderungen werden in den ausgewählten Berechnungen nicht bewertet.",
