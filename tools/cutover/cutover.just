@@ -41,6 +41,11 @@ snapshot *options:
 snapshots *options:
     PHP={{ php }} {{ linker_cutover }} snapshots "$@"
 
+# Protect a verified recovery baseline for this target; add --write to save it.
+[positional-arguments]
+snapshot-baseline name *options:
+    PHP={{ php }} {{ linker_cutover }} snapshot-baseline "$@"
+
 # Put a database snapshot back (the current database is snapshotted first):
 # `just cutover restore-snapshot db-…sql.gz` previews, add `--write` to restore.
 [positional-arguments]

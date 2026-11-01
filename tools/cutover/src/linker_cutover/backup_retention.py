@@ -33,6 +33,25 @@ KEEP = 3
 DAYS = 7
 
 
+def select_retained(
+    entries: list[tuple[datetime, str]],
+    *,
+    now: datetime,
+    protect: frozenset[str] = frozenset(),
+) -> set[str]:
+    """Keep the newest three, each recent UTC day end, and explicit protections."""
+    ordered = sorted(entries, key=lambda item: (item[0], item[1]), reverse=True)
+    kept = {name for _, name in ordered[:KEEP]} | set(protect)
+    days: set[object] = set()
+    today = now.astimezone(UTC).date()
+    for at, name in ordered:
+        day = at.astimezone(UTC).date()
+        if today - timedelta(days=DAYS - 1) <= day <= today and day not in days:
+            kept.add(name)
+            days.add(day)
+    return kept
+
+
 def identity(target: Target) -> list[str | None]:
     """Match the deployment checkpoint's transport/root/origin identity."""
     return [target.label, target.root, target.base_url, target.rsync_remote]
@@ -319,27 +338,18 @@ def prune(
             candidates.sort(key=lambda item: (item[0], item[1].name), reverse=True)
             if not any(path == current for _, path, _, _ in candidates):
                 raise CutoverError("current backup has no verified source identity")
-            kept = (
-                {path.name for _, path, _, _ in candidates[:KEEP]}
-                | {current.name}
-                | set(protect)
-            )
-            kept |= _references(home)
             baseline = state["baselines"].get(source_key, "")
             if baseline and not any(
                 path.name == baseline for _, path, _, _ in candidates
             ):
                 raise CutoverError("registered backup baseline is missing or changed")
-            kept.add(baseline)
-            days: set[object] = set()
-            today = now.astimezone(UTC).date()
-            for at, path, _, _ in candidates:
-                if (
-                    today - timedelta(days=DAYS - 1) <= at.date() <= today
-                    and at.date() not in days
-                ):
-                    kept.add(path.name)
-                    days.add(at.date())
+            kept = select_retained(
+                [(at, path.name) for at, path, _, _ in candidates],
+                now=now,
+                protect=frozenset(
+                    {current.name, baseline} | set(protect) | _references(home)
+                ),
+            )
             # Verify ALL selected recovery points before the first deletion.
             proof_keys: set[str] = set()
             for _, path, data, digest in candidates:

@@ -361,11 +361,19 @@ def deploy(
                 f"deploy: reusing verified snapshot {checkpoint.snapshot['path']}",
                 flush=True,
             )
+            saved = Path(str(checkpoint.snapshot["path"]))
+            if saved.parent.name == snapshot_module.DIRECTORY:
+                snapshot_module.reconcile(target, saved.parent.parent, saved.name)
         else:
             print("deploy: database snapshot", flush=True)
             started = time.monotonic()
-            taken = snapshot_module.take(target, home)
-            deployment.record_snapshot(staging, checkpoint, taken)
+            snapshot_module.take(
+                target,
+                home,
+                on_verified=lambda taken: deployment.record_snapshot(
+                    staging, checkpoint, taken
+                ),
+            )
             print(
                 f"deploy: snapshot done in {time.monotonic() - started:.1f}s",
                 flush=True,

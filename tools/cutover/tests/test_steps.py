@@ -23,6 +23,8 @@ from native_planner import planner_wp
 from linker_cutover import atomic, backup, plan, snapshot, steps
 from linker_cutover.target import CutoverError, Target
 
+REAL_SNAPSHOT_TAKE = snapshot.take
+
 
 @pytest.fixture(autouse=True)
 def _no_database(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> list[str]:
@@ -33,14 +35,18 @@ def _no_database(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> list[str]:
     """
     taken: list[str] = []
 
-    def fake(target: Target, home: Path, **_: object) -> snapshot.Snapshot:
+    def fake(target: Target, home: Path, **options: object) -> snapshot.Snapshot:
         taken.append(target.label)
-        return snapshot.Snapshot(
+        result = snapshot.Snapshot(
             name="db-20261018T000000Z.sql.gz",
             path=home / "snapshots" / "db-20261018T000000Z.sql.gz",
             size=1,
             sha256="0" * 64,
         )
+        callback = options.get("on_verified")
+        assert callable(callback)
+        callback(result)
+        return result
 
     monkeypatch.setattr(snapshot, "take", fake)
     # The weekly reminder reads the data root; the real one on this machine
@@ -1173,9 +1179,15 @@ def test_the_deploy_snapshots_the_database_before_anything_is_uploaded(
     repository = _repository(tmp_path)
     uploads_when_snapshot_ran: list[int] = []
 
-    def recording(site: Target, home: Path, **_: object) -> snapshot.Snapshot:
+    def recording(site: Target, home: Path, **options: object) -> snapshot.Snapshot:
         uploads_when_snapshot_ran.append(len(target.rsyncs))
-        return snapshot.Snapshot("db-20261018T000000Z.sql.gz", home / "x", 1, "0" * 64)
+        result = snapshot.Snapshot(
+            "db-20261018T000000Z.sql.gz", home / "x", 1, "0" * 64
+        )
+        callback = options.get("on_verified")
+        assert callable(callback)
+        callback(result)
+        return result
 
     monkeypatch.setattr(snapshot, "take", recording)
     result = steps.deploy(
@@ -1339,15 +1351,19 @@ def interrupted_candidate(
     staging = tmp_path / "staging"
     snapshots: list[Path] = []
 
-    def take(site: Target, home: Path, **_: object) -> snapshot.Snapshot:
+    def take(site: Target, home: Path, **options: object) -> snapshot.Snapshot:
         del site
         path = home / "snapshots/db-20261018T000000Z.sql.gz"
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(gzip.compress(b"CREATE TABLE fixture (id int);"))
         snapshots.append(path)
-        return snapshot.Snapshot(
+        result = snapshot.Snapshot(
             path.name, path, path.stat().st_size, backup.sha256(path)
         )
+        callback = options.get("on_verified")
+        assert callable(callback)
+        callback(result)
+        return result
 
     monkeypatch.setattr(snapshot, "take", take)
     original_copy = FilesystemTarget.copy_file_in
@@ -1397,6 +1413,54 @@ def test_pre_switch_resume_reuses_snapshot_stage_and_completed_uploads(
     assert atomic.latest_manifest(target)[1].state == "archived"
     assert not (staging / ".deploy.json").exists()
     assert not list(staging.glob("linker-*"))
+
+
+def test_resume_reuses_snapshot_when_retention_is_interrupted(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The real snapshot is checkpointed before retirement can be interrupted."""
+    import gzip
+
+    target = FilesystemTarget(tmp_path / "site")
+    repository = _repository(tmp_path)
+    staging = tmp_path / "staging"
+    dumps: list[Path] = []
+
+    def dump(_target: Target, destination: Path, **_options: object) -> None:
+        dumps.append(destination)
+        destination.write_bytes(gzip.compress(b"CREATE TABLE fixture (id int);"))
+
+    def interrupted(*_args: object, **_options: object) -> None:
+        raise SystemExit("retention interrupted")
+
+    original_prune = snapshot._prune
+    monkeypatch.setattr(snapshot, "take", REAL_SNAPSHOT_TAKE)
+    monkeypatch.setattr(backup, "dump_to", dump)
+    monkeypatch.setattr(snapshot, "_prune", interrupted)
+    with pytest.raises(SystemExit, match="retention interrupted"):
+        steps.deploy(
+            target,
+            repository=repository,
+            staging=staging,
+            deploy_id="20261018T000000Z-retention-interrupted",
+        )
+
+    checkpoint = json.loads((staging / ".deploy.json").read_text())
+    assert Path(checkpoint["snapshot"]["path"]).is_file()
+    assert len(dumps) == 1
+    assert not target.rsyncs
+    monkeypatch.setattr(snapshot, "_prune", original_prune)
+
+    def unexpected_take(*_args: object, **_options: object) -> snapshot.Snapshot:
+        raise AssertionError("resume must reuse its snapshot")
+
+    monkeypatch.setattr(snapshot, "take", unexpected_take)
+    result = steps.resume_deploy(
+        target, repository=repository, staging=staging, cache_buster="fixture"
+    )
+    assert not result.notes
+    assert len(dumps) == 1
+    assert atomic.latest_manifest(target)[1].state == "archived"
 
 
 @pytest.mark.parametrize(
