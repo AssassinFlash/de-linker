@@ -24,8 +24,8 @@ def warranty_current_fixture() -> tuple[
     raw = data["manifest"]
     raw["model_identity_revision"] = "fixture-identity-1"
     scopes: dict[str, ScopeProof] = data["scopes"]
-    for scope in scopes.values():
-        scope["model_identity_revision"] = raw["model_identity_revision"]
+    for recorded in scopes.values():
+        recorded["model_identity_revision"] = raw["model_identity_revision"]
     original = [Chunk(**item) for item in data["original"]]
     compiled = [Chunk(**item) for item in data["compiled"]]
 

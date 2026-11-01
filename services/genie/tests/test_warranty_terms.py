@@ -909,7 +909,8 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
         stale = next(
             chunk
             for chunk in compiled
-            if fixture_scopes.get(chunk.id, {}).get("product_ids") == [pid]
+            if chunk.id in fixture_scopes
+            and fixture_scopes[chunk.id]["product_ids"] == [pid]
             and chunk.doc_sha256.startswith("b681fbb51b16")
             and re.search(r"\| Max\. MPPT Current \(A\) \| [^|]*/ \|", chunk.text)
         )

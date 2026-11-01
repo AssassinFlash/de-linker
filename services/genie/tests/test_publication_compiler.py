@@ -8,8 +8,9 @@ import json
 import sqlite3
 from copy import deepcopy
 from dataclasses import replace
+from functools import partial
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import pytest
 from docling_core.types.doc.base import BoundingBox
@@ -40,6 +41,7 @@ from linker_genie.table_projection import (
     COMPATIBILITY_STATEMENT,
     OVERVIEW_ARM_NOTES,
     OVERVIEW_POWER_NOTES,
+    SourceCell,
     cells_digest,
     projection_id,
     render_projection,
@@ -775,11 +777,11 @@ def test_native_technical_heading_can_span_two_label_columns() -> None:
     rated["text"] = "25000"
     # A parser-merged value may have dropped words. Even if its remaining text
     # and logical span touch a column, it cannot become a model-specific fact.
-    partial = [
+    partial = tuple(
         c
         for c in partial
         if c is rated or not (c["row_start"] == row and c["col_start"] == 5)
-    ]
+    )
     rated["col_end"] += 1
     assert render_projection(partial, 3, [row]) is None
 
@@ -826,7 +828,7 @@ def test_compatibility_pair_binds_both_exact_subjects_and_original_statement() -
         digest = hashlib.sha256(f"{kind}\0{text}".encode()).hexdigest()[:8]
         return f"{sha[:12]}-p1-{digest}"
 
-    def cell(row: int, col: int, value: str) -> dict[str, Any]:
+    def cell(row: int, col: int, value: str) -> SourceCell:
         return {
             "row_start": row,
             "row_end": row + 1,
@@ -880,7 +882,8 @@ def test_compatibility_pair_binds_both_exact_subjects_and_original_statement() -
     assert proof["product_ids"] == [1, 2]
     assert "MODEL-11" not in match.text and "MODEL-20" not in match.text
     snapshot = Snapshot.read(raw)
-    kwargs = dict(
+    check = partial(
+        authorize_chunk,
         products=snapshot.products,
         documents=snapshot.documents,
         chunk_id=match.id,
@@ -888,19 +891,19 @@ def test_compatibility_pair_binds_both_exact_subjects_and_original_statement() -
         external_axis_anchors=external_axis_anchors(original),
         require_table_anchor=True,
     )
-    assert authorize_chunk(sha, [1, 2], proof["associations"], proof, **kwargs)
-    assert not authorize_chunk(sha, [1, 2], proof["associations"][:1], proof, **kwargs)
-    assert not authorize_chunk(sha, [1], proof["associations"], proof, **kwargs)
-    assert not authorize_chunk(
+    assert check(sha, [1, 2], proof["associations"], proof)
+    assert not check(sha, [1, 2], proof["associations"][:1], proof)
+    assert not check(sha, [1], proof["associations"], proof)
+    assert not check(
         sha,
         [1, 2],
         proof["associations"],
         proof,
-        **{**kwargs, "external_axis_anchors": {}},
+        external_axis_anchors={},
     )
     forged = deepcopy(proof)
     forged["compatibility_pair"]["inverter"] = "MODEL-20"
-    assert not authorize_chunk(sha, [1, 2], proof["associations"], forged, **kwargs)
+    assert not check(sha, [1, 2], proof["associations"], forged)
     intervening = replace(
         source,
         id=native_id("text", "A different product is described here."),
@@ -925,7 +928,7 @@ def test_overview_series_proves_exact_battery_and_keeps_the_condition() -> None:
         "| GOODWE | BAT *3 | GW208.9-BAT-LC-G10 |  |  | ● |  |  |",
     ]
 
-    def chunk(kind: str, text: str, **kwargs: Any) -> Chunk:
+    def chunk(kind: Literal["text", "table"], text: str, **kwargs: Any) -> Chunk:
         digest = hashlib.sha256(f"{kind}\0{text}".encode()).hexdigest()[:8]
         return Chunk(
             f"{sha[:12]}-p1-{digest}",
@@ -938,9 +941,9 @@ def test_overview_series_proves_exact_battery_and_keeps_the_condition() -> None:
             "en",
             30,
             **kwargs,
-        )  # type: ignore[arg-type]
+        )
 
-    def cell(row: int, col: int, value: str) -> dict[str, Any]:
+    def cell(row: int, col: int, value: str) -> SourceCell:
         return {
             "row_start": row,
             "row_end": row + 1,
@@ -989,7 +992,8 @@ def test_overview_series_proves_exact_battery_and_keeps_the_condition() -> None:
     assert proof["product_ids"] == [1] and OVERVIEW_ARM_NOTES["en"] in result.text
     assert "GW208.9-BAT-LCD-G10" not in result.text
     snap = Snapshot.read(raw)
-    kw = dict(
+    check = partial(
+        authorize_chunk,
         products=snap.products,
         documents=snap.documents,
         chunk_id=result.id,
@@ -997,12 +1001,10 @@ def test_overview_series_proves_exact_battery_and_keeps_the_condition() -> None:
         external_axis_anchors=external_axis_anchors(original),
         require_table_anchor=True,
     )
-    assert authorize_chunk(sha, [1], proof["associations"], proof, **kw)
-    assert not authorize_chunk(sha, [2], proof["associations"], proof, **kw)
-    assert not authorize_chunk(sha, [1], [], proof, **kw)
-    assert not authorize_chunk(
-        sha, [1], proof["associations"], proof, **{**kw, "external_axis_anchors": {}}
-    )
+    assert check(sha, [1], proof["associations"], proof)
+    assert not check(sha, [2], proof["associations"], proof)
+    assert not check(sha, [1], [], proof)
+    assert not check(sha, [1], proof["associations"], proof, external_axis_anchors={})
     changed_note = replace(power, text=power.text.replace("cannot", "can"))
     _, changed_proofs = compile_publication(
         [table, arm, changed_note], raw, authority(raw), Words()
