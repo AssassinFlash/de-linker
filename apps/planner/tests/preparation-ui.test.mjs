@@ -64,7 +64,17 @@ for (const locale of ["en-GB", "de-DE"]) {
 					actual: 2,
 					required: 10,
 					control_network: "lan",
-					facts: [],
+					facts: [
+						{
+							value: 10,
+							unit: "count",
+							source: {
+								url: "https://example.invalid/controller.pdf",
+								page: 1,
+								figure_key: "max_lan_inverters",
+							},
+						},
+					],
 				},
 			],
 		};
@@ -87,6 +97,21 @@ for (const locale of ["en-GB", "de-DE"]) {
 		}
 		await mount(t, React.createElement(Harness));
 		const text = document.body.textContent;
+		assert.equal(
+			text.includes("10 count"),
+			false,
+			"dimensionless counts never expose the internal unit token",
+		);
+		assert.ok(
+			text.includes("LAN · 10"),
+			"the source retains its documented LAN scope",
+		);
+		assert.equal(
+			document
+				.querySelector('a[href="https://example.invalid/controller.pdf"]')
+				.getAttribute("href"),
+			"https://example.invalid/controller.pdf",
+		);
 		assert.ok(
 			text.includes(
 				german
@@ -175,6 +200,30 @@ for (const locale of ["en-GB", "de-DE"]) {
 			false,
 		);
 		assert.equal(entries().get(german ? "Ergebnis" : "Result"), "2");
+		await act(async () =>
+			replace({
+				...assessment,
+				checks: [
+					{
+						...assessment.checks[0],
+						facts: [
+							{
+								...assessment.checks[0].facts[0],
+								source: {
+									...assessment.checks[0].facts[0].source,
+									figure_key: "max_devices",
+								},
+							},
+						],
+					},
+				],
+			}),
+		);
+		assert.equal(
+			document.body.textContent.includes("LAN · 10"),
+			false,
+			"an unscoped device count never acquires a LAN claim",
+		);
 	});
 }
 

@@ -151,7 +151,10 @@ export function EquipmentResult({
 					continuous_battery_ac_charge: "kW",
 					converter_identity: "kW",
 				} as Record<string, string>
-			)[semantic] ?? (typeof check.unit === "string" ? check.unit : "");
+			)[semantic] ??
+			(typeof check.unit === "string" && check.unit !== "count"
+				? check.unit
+				: "");
 		return (
 			<details className="lp-comparison" key={String(check.id)}>
 				<summary>
@@ -233,8 +236,11 @@ export function EquipmentResult({
 								<div key={index}>
 									{source?.figure_key !== "sales_unit_kind" && (
 										<p>
+											{source?.figure_key === "max_lan_inverters" && "LAN · "}
 											{text(fact.value, locale)}{" "}
-											{typeof fact.unit === "string" ? fact.unit : ""}
+											{typeof fact.unit === "string" && fact.unit !== "count"
+												? fact.unit
+												: ""}
 										</p>
 									)}
 									{note && <p>{note}</p>}
