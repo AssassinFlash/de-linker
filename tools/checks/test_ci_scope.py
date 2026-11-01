@@ -1,5 +1,6 @@
 """Local contracts for CI selection and the final result gate."""
 
+import hashlib
 import json
 import os
 import shutil
@@ -281,10 +282,13 @@ class ScopeTest(unittest.TestCase):
             ("M", "plugins/linker-tools/build/planner/index.js"),
             ("M", "plugins/linker-tools/build/manifest.json"),
         ]
-        with patch.object(
-            ci_scope,
-            "git",
-            side_effect=[json.dumps(before).encode(), json.dumps(after).encode()],
+        with (
+            patch.object(
+                ci_scope,
+                "git",
+                side_effect=[json.dumps(before).encode(), json.dumps(after).encode()],
+            ),
+            patch.object(ci_scope, "tools_manifest_matches_changes", return_value=True),
         ):
             self.assertEqual(ci_scope.classify(changes, "base", "head"), ["planner"])
         for mutation in (
@@ -305,6 +309,8 @@ class ScopeTest(unittest.TestCase):
                     side_effect=[
                         json.dumps(before).encode(),
                         json.dumps(changed).encode(),
+                        json.dumps(before).encode(),
+                        json.dumps(changed).encode(),
                     ],
                 ),
             ):
@@ -317,6 +323,208 @@ class ScopeTest(unittest.TestCase):
                 self.classify(("M", "plugins/linker-tools/build/manifest.json")),
                 list(ci_scope.FULL_LANES),
             )
+
+    def test_tools_manifest_matches_real_changed_files_and_remains_conservative(self):
+        self.regular.stop()
+        self.non_runtime.stop()
+        with TemporaryDirectory() as folder:
+            previous = Path.cwd()
+            try:
+                os.chdir(folder)
+
+                def run(*args):
+                    return subprocess.check_output(args, text=True).strip()
+
+                def write(path, content):
+                    file = Path(path)
+                    file.parent.mkdir(parents=True, exist_ok=True)
+                    file.write_text(content)
+
+                def manifest():
+                    root = Path("plugins/linker-tools")
+                    sources = (
+                        "package.json",
+                        "package-lock.json",
+                        "webpack.config.js",
+                        "project-input-contracts.json",
+                        *(
+                            path.relative_to(root).as_posix()
+                            for path in sorted((root / "src").rglob("*"))
+                            if path.is_file()
+                        ),
+                    )
+                    build = ("build/genie.js", "build/planner/index.js")
+                    return {
+                        section: {
+                            name: hashlib.sha256((root / name).read_bytes()).hexdigest()
+                            for name in names
+                        }
+                        for section, names in (("sources", sources), ("build", build))
+                    }
+
+                def commit(message):
+                    run("git", "add", ".")
+                    run("git", "commit", "-qm", message)
+                    return run("git", "rev-parse", "HEAD")
+
+                run("git", "init", "-q")
+                run("git", "config", "user.email", "ci@example.invalid")
+                run("git", "config", "user.name", "CI fixture")
+                prefix = "plugins/linker-tools/"
+                for name in (
+                    "package.json",
+                    "package-lock.json",
+                    "webpack.config.js",
+                    "project-input-contracts.json",
+                    "src/genie/App.tsx",
+                    "src/genie/Legacy.tsx",
+                    "build/genie.js",
+                    "build/planner/index.js",
+                ):
+                    write(prefix + name, "base " + name)
+                write("justfile", "base")
+                write("apps/planner/src/App.tsx", "planner base")
+                write(prefix + "build/manifest.json", json.dumps(manifest()))
+                base = commit("base")
+
+                write(prefix + "src/genie/App.tsx", "changed source")
+                Path(prefix + "src/genie/Legacy.tsx").unlink()
+                write(prefix + "src/genie/Fresh.tsx", "brand new content")
+                write(prefix + "build/genie.js", "changed built output")
+                write(prefix + "build/manifest.json", json.dumps(manifest()))
+                head = commit("tools source and build")
+                changes = ci_scope.diff_changes(base, head)
+                self.assertTrue(
+                    ci_scope.tools_manifest_matches_changes(changes, base, head)
+                )
+                modules = ci_scope.selected_modules(changes, base, head)
+                self.assertEqual(
+                    set(modules),
+                    {"php:tools", "js:tools", "build:tools", "genie"}
+                    | {"native:" + name for name in ci_scope.NATIVE_GROUPS},
+                )
+                self.assertNotIn("engine", modules)
+                self.assertEqual(
+                    ci_scope.module_fingerprint(base, "engine"),
+                    ci_scope.module_fingerprint(head, "engine"),
+                )
+                self.assertEqual(
+                    ci_scope.classify(changes + [("M", "justfile")], base, head),
+                    list(ci_scope.FULL_LANES),
+                )
+
+                # Planner-only builds retain their existing narrow path.
+                write("apps/planner/src/App.tsx", "planner source changed")
+                write(prefix + "build/planner/index.js", "planner output changed")
+                write(prefix + "build/manifest.json", json.dumps(manifest()))
+                planner_only = ci_scope.diff_changes(head, "")
+                self.assertEqual(ci_scope.classify(planner_only, head, ""), ["planner"])
+                planner_head = commit("planner only")
+
+                # A Planner source change does not authorize a forged manifest
+                # digest for an unchanged Planner output.
+                write("apps/planner/src/App.tsx", "planner source only")
+                fabricated = manifest()
+                fabricated["build"]["build/planner/index.js"] = "0" * 64
+                write(prefix + "build/manifest.json", json.dumps(fabricated))
+                self.assertEqual(
+                    ci_scope.classify(
+                        ci_scope.diff_changes(planner_head, ""), planner_head, ""
+                    ),
+                    list(ci_scope.FULL_LANES),
+                )
+
+                # A Planner output and a separately changed Tools source are
+                # checked together, including in the local worktree preflight.
+                write("apps/planner/src/App.tsx", "another planner source change")
+                write(prefix + "build/planner/index.js", "another planner output")
+                write(prefix + "src/genie/App.tsx", "second source change")
+                write(prefix + "build/genie.js", "second built output")
+                write(prefix + "build/manifest.json", json.dumps(manifest()))
+                local = ci_scope.diff_changes(planner_head, "")
+                local_modules = ci_scope.selected_modules(local, planner_head, "")
+                self.assertIn("planner", local_modules)
+                self.assertIn("build:tools", local_modules)
+                self.assertNotIn("engine", local_modules)
+                planner_mixed = commit("planner and tools")
+                self.assertEqual(
+                    ci_scope.selected_modules(
+                        ci_scope.diff_changes(planner_head, planner_mixed),
+                        planner_head,
+                        planner_mixed,
+                    ),
+                    local_modules,
+                )
+
+                # An unrelated known consumer still enters the union.
+                write("services/engine/src/linker_engine/example.py", "engine input")
+                mixed = commit("mixed engine input")
+                mixed_changes = ci_scope.diff_changes(base, mixed)
+                self.assertIn(
+                    "engine", ci_scope.selected_modules(mixed_changes, base, mixed)
+                )
+
+                source_path = Path(prefix + "src/genie/App.tsx")
+                build_path = Path(prefix + "build/genie.js")
+                manifest_path = Path(prefix + "build/manifest.json")
+                original_source = source_path.read_text()
+                original_build = build_path.read_text()
+                original_manifest = manifest_path.read_text()
+                write(str(source_path), "changed without updating its manifest")
+                write(str(build_path), "changed with an updated manifest")
+                incorrect = manifest()
+                incorrect["sources"]["src/genie/App.tsx"] = json.loads(
+                    original_manifest
+                )["sources"]["src/genie/App.tsx"]
+                for bad_digest in (incorrect["sources"]["src/genie/App.tsx"], "0" * 64):
+                    incorrect["sources"]["src/genie/App.tsx"] = bad_digest
+                    write(str(manifest_path), json.dumps(incorrect))
+                    self.assertEqual(
+                        ci_scope.classify(ci_scope.diff_changes(mixed, ""), mixed, ""),
+                        list(ci_scope.FULL_LANES),
+                    )
+                write(str(source_path), original_source)
+                write(str(build_path), original_build)
+                write(str(manifest_path), original_manifest)
+
+                write("unclassified/new.py", "unknown input")
+                unknown_changes = ci_scope.diff_changes(base, "") + [
+                    ("A", "unclassified/new.py")
+                ]
+                self.assertEqual(
+                    ci_scope.classify(unknown_changes, base, ""),
+                    list(ci_scope.FULL_LANES),
+                )
+                Path("unclassified/new.py").unlink()
+
+                # A changed digest with no corresponding file change cannot be
+                # hidden by a separately legitimate source/build change.
+                forged = manifest()
+                forged["sources"]["package.json"] = "f" * 64
+                write(prefix + "build/manifest.json", json.dumps(forged))
+                bad = commit("forged manifest")
+                self.assertEqual(
+                    ci_scope.classify(ci_scope.diff_changes(mixed, bad), mixed, bad),
+                    list(ci_scope.FULL_LANES),
+                )
+                self.assertEqual(
+                    ci_scope.classify(ci_scope.diff_changes(base, bad), base, bad),
+                    list(ci_scope.FULL_LANES),
+                )
+
+                write(
+                    prefix + "build/manifest.json",
+                    '{"sources":{},"sources":{},"build":{}}',
+                )
+                invalid = commit("invalid duplicate manifest")
+                self.assertEqual(
+                    ci_scope.classify(
+                        ci_scope.diff_changes(bad, invalid), bad, invalid
+                    ),
+                    list(ci_scope.FULL_LANES),
+                )
+            finally:
+                os.chdir(previous)
 
     def test_file_type_and_non_runtime_blob_checks_fail_closed(self):
         self.regular.stop()

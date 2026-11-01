@@ -263,8 +263,16 @@ def selected_modules(changes, base="", head=""):
             if engine_planner_input(path):
                 selected.add("engine")
         elif path == "plugins/linker-tools/build/manifest.json":
-            if not planner_changed or not planner_manifest_isolated(base, head):
+            if planner_changed and planner_manifest_isolated(base, head):
+                if not tools_manifest_matches_changes(changes, base, head):
+                    return None
+                continue
+            if not tools_manifest_matches_changes(changes, base, head):
                 return None
+            # The Tools build lane independently checks and reproduces its
+            # committed manifest. Keep the same consumers as other Tools builds.
+            selected.update(("js:tools", "build:tools", "php:tools"))
+            selected.update(native)
         elif path.startswith("services/engine/"):
             selected.add("engine")
             if under(path, LOCAL_ENGINE_INPUTS):
@@ -697,8 +705,19 @@ def presentation(path):
 
 
 def manifest_entries(commit):
-    value = json.loads(file_content(commit, "plugins/linker-tools/build/manifest.json"))
-    if set(value) != {"sources", "build"}:
+    def unique_pairs(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("Duplicate Tools manifest entry")
+            result[key] = value
+        return result
+
+    value = json.loads(
+        file_content(commit, "plugins/linker-tools/build/manifest.json"),
+        object_pairs_hook=unique_pairs,
+    )
+    if not isinstance(value, dict) or set(value) != {"sources", "build"}:
         raise ValueError("Unexpected Tools manifest")
     for section in value.values():
         if not isinstance(section, dict) or not all(
@@ -714,8 +733,11 @@ def manifest_entries(commit):
 def planner_manifest_isolated(base, head):
     if not base:
         return False
-    before = manifest_entries(base)
-    after = manifest_entries(head)
+    try:
+        before = manifest_entries(base)
+        after = manifest_entries(head)
+    except (OSError, subprocess.SubprocessError, TypeError, ValueError):
+        return False
     if before["sources"] != after["sources"]:
         return False
     for entries in (before["build"], after["build"]):
@@ -732,6 +754,99 @@ def planner_manifest_isolated(base, head):
         if not path.startswith("build/planner/")
     }
     return before_other == after_other
+
+
+def tools_manifest_matches_changes(changes, base, head):
+    """Prove each manifest digest change belongs to an actual Tools file change."""
+    if not base:
+        return False
+    try:
+        before, after = manifest_entries(base), manifest_entries(head)
+        required = {
+            "package.json",
+            "package-lock.json",
+            "webpack.config.js",
+            "project-input-contracts.json",
+        }
+        for manifest in (before, after):
+            if not required <= manifest["sources"].keys() or not manifest["build"]:
+                return False
+            for section, entries in manifest.items():
+                for path in entries:
+                    if (
+                        "\\" in path
+                        or any(part in {"", ".", ".."} for part in path.split("/"))
+                        or (
+                            section == "sources"
+                            and path not in required
+                            and (
+                                not path.startswith("src/")
+                                or re.search(r"\.(?:test|stories)\.[jt]sx?$", path)
+                            )
+                        )
+                        or (
+                            section == "build"
+                            and (
+                                not path.startswith("build/")
+                                or path == "build/manifest.json"
+                            )
+                        )
+                    ):
+                        return False
+        statuses = {path: status for status, path in changes}
+        prefix = "plugins/linker-tools/"
+        for path, status in statuses.items():
+            if not path.startswith(prefix):
+                continue
+            name = path.removeprefix(prefix)
+            if name in required or (
+                name.startswith("src/")
+                and not re.search(r"\.(?:test|stories)\.[jt]sx?$", name)
+            ):
+                section = "sources"
+            elif name.startswith("build/") and name != "build/manifest.json":
+                section = "build"
+            else:
+                continue
+            left, right = before[section], after[section]
+            expected = (
+                "M"
+                if name in left and name in right
+                else "D"
+                if name in left
+                else "A"
+                if name in right
+                else ""
+            )
+            if status != expected or left.get(name) == right.get(name):
+                return False
+        modified = False
+        for section in ("sources", "build"):
+            left, right = before[section], after[section]
+            for name in left.keys() | right.keys():
+                if left.get(name) == right.get(name):
+                    continue
+                modified = True
+                path = prefix + name
+                expected = (
+                    "M"
+                    if name in left and name in right
+                    else "D"
+                    if name in left
+                    else "A"
+                )
+                if statuses.get(path) != expected:
+                    return False
+                for revision, entries in ((base, left), (head, right)):
+                    if (
+                        name in entries
+                        and hashlib.sha256(file_content(revision, path)).hexdigest()
+                        != entries[name]
+                    ):
+                        return False
+        return modified
+    except (OSError, subprocess.SubprocessError, TypeError, ValueError):
+        return False
 
 
 def classify(changes, base="", head=""):
