@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import gzip
+import hashlib
 import json
 from copy import deepcopy
 from dataclasses import replace
@@ -15,9 +16,12 @@ from index.chunking import Chunk
 from index.hs3_evidence import compile_hs3_evidence
 from linker_genie.figures import tag
 from linker_genie.hs3_evidence import (
+    CERT_END,
+    CERT_MODELS,
     CERTIFICATE,
     DATA_MODELS,
     MANUAL_MODEL,
+    SOURCE_GROUPS,
     SOURCES,
     conditional_answers,
     hs3_anchor_key,
@@ -46,6 +50,41 @@ def inputs() -> tuple[list[Chunk], dict[str, Any], dict[str, str]]:
     chunks = [Chunk(**row) for row in fixture["chunks"]]
     raw = fixture["manifest"]
     statuses = {p["model"].casefold(): "published" for p in raw["products"]}
+    return chunks, raw, statuses
+
+
+def corrected_title_inputs() -> tuple[list[Chunk], dict[str, Any], dict[str, str]]:
+    """Reproduce the two exact native chunks under the corrected Woo title."""
+    chunks, raw, statuses = inputs()
+    models = next(chunk for chunk in chunks if chunk.id == CERT_MODELS)
+    end = next(chunk for chunk in chunks if chunk.id == CERT_END)
+    original = models.text + " " + end.text
+    assert original[571] == " "
+    first, second = original[:571], original[572:]
+    assert hashlib.sha256(first.encode()).hexdigest() == SOURCES[SOURCE_GROUPS[1][1]][2]
+    assert (
+        hashlib.sha256(second.encode()).hexdigest() == SOURCES[SOURCE_GROUPS[1][2]][2]
+    )
+    chunks = [
+        replace(chunk, id=SOURCE_GROUPS[1][1], text=first)
+        if chunk.id == CERT_MODELS
+        else replace(chunk, id=SOURCE_GROUPS[1][2], text=second)
+        if chunk.id == CERT_END
+        else chunk
+        for chunk in chunks
+    ]
+    certificate = next(
+        doc for doc in raw["documents"] if doc["blob_sha256"] == CERTIFICATE
+    )
+    certificate["title"] = (
+        "SAJ HS3, BU3 and BC3-TV EU Declaration of Conformity (Multilingual)"
+    )
+    certificate["title_de"] = (
+        "SAJ HS3, BU3 und BC3-TV EU-Konformitätserklärung (mehrsprachig)"
+    )
+    certificate["document_revision"] = (
+        "8c37ccfc2515a346d628fdac911f3d56bafe46642384247940fff410ac5ea7cb"
+    )
     return chunks, raw, statuses
 
 
@@ -133,7 +172,7 @@ def test_each_original_and_current_product_association_is_required(
     )
 
 
-@pytest.mark.parametrize("missing", list(SOURCES))
+@pytest.mark.parametrize("missing", SOURCE_GROUPS[0])
 def test_scope_snippet_without_any_original_chunk_fails(missing: str) -> None:
     units, scopes, source, originals = compiled()
     unit = units[0]
@@ -150,6 +189,73 @@ def test_scope_snippet_without_any_original_chunk_fails(missing: str) -> None:
         text=unit.text,
         anchors=originals,
     )
+
+
+@pytest.mark.parametrize("change", ["missing", "text", "page", "source", "order"])
+def test_corrected_title_requires_both_exact_ordered_certificate_chunks(
+    change: str,
+) -> None:
+    chunks, raw, statuses = corrected_title_inputs()
+    source = Snapshot.read(raw)
+    units, scopes = compile_hs3_evidence(chunks, source, statuses, Words(), 512)
+    assert len(units) == len(scopes) == 5
+    unit = units[0]
+    scope = scopes[unit.id]
+    pid = scope["product_ids"][0]
+    first, second = SOURCE_GROUPS[1][1:3]
+    assert scope["source_chunk_ids"] == list(SOURCE_GROUPS[1])
+    assert valid_hs3_scope(
+        scope,
+        [pid],
+        source.products,
+        source.documents,
+        sha=CERTIFICATE,
+        chunk_id=unit.id,
+        text=unit.text,
+        anchors=anchors(chunks),
+    )
+    if change == "missing":
+        changed = [chunk for chunk in chunks if chunk.id != first]
+    elif change == "order":
+        changed = list(chunks)
+        i = next(i for i, chunk in enumerate(changed) if chunk.id == first)
+        j = next(i for i, chunk in enumerate(changed) if chunk.id == second)
+        changed[i], changed[j] = changed[j], changed[i]
+        forged = deepcopy(scope)
+        forged["source_chunk_ids"][1:3] = [second, first]
+        assert not valid_hs3_scope(
+            forged,
+            [pid],
+            source.products,
+            source.documents,
+            sha=CERTIFICATE,
+            chunk_id=unit.id,
+            text=unit.text,
+            anchors=anchors(chunks),
+        )
+    else:
+        changed = [
+            replace(chunk, text=chunk.text + ".")
+            if chunk.id == first and change == "text"
+            else replace(chunk, page=2)
+            if chunk.id == first and change == "page"
+            else replace(chunk, doc_sha256="0" * 64)
+            if chunk.id == first and change == "source"
+            else chunk
+            for chunk in chunks
+        ]
+    assert compile_hs3_evidence(changed, source, statuses, Words(), 512) == ([], {})
+    if change != "order":
+        assert not valid_hs3_scope(
+            scope,
+            [pid],
+            source.products,
+            source.documents,
+            sha=CERTIFICATE,
+            chunk_id=unit.id,
+            text=unit.text,
+            anchors=anchors(changed),
+        )
 
 
 def test_wrong_model_mutated_source_and_unavailable_identity_fail() -> None:

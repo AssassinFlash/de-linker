@@ -8,8 +8,9 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Any, Literal
 
+import pytest
 from test_chunking import Words
-from test_hs3_evidence import inputs
+from test_hs3_evidence import corrected_title_inputs, inputs
 from test_publication import authority
 
 from index import corpus, store
@@ -20,6 +21,7 @@ from linker_genie.hs3_evidence import (
     DATA_MODELS,
     DATASHEET,
     MANUAL_MODEL,
+    SOURCE_GROUPS,
     SOURCES,
     hs3_anchor_key,
 )
@@ -30,8 +32,11 @@ from linker_genie.retrieval import DocumentIndex
 from linker_genie.schema import DocumentBlock, TextBlock, TurnOutput
 
 
-def test_hs3_conditional_sources_reach_the_consumer_and_revoke(tmp_path: Path) -> None:
-    chunks, raw, _ = inputs()
+@pytest.mark.parametrize("corrected_title", [False, True])
+def test_hs3_conditional_sources_reach_the_consumer_and_revoke(
+    tmp_path: Path, corrected_title: bool
+) -> None:
+    chunks, raw, _ = corrected_title_inputs() if corrected_title else inputs()
     snap = Snapshot.read(raw)
     client = authority(raw)
     try:
@@ -333,7 +338,9 @@ def test_hs3_conditional_sources_reach_the_consumer_and_revoke(tmp_path: Path) -
 
     # Runtime must inspect the retained originals, not just the serialized proof.
     with sqlite3.connect(target) as db:
-        db.execute("DELETE FROM chunks WHERE id = ?", (next(iter(SOURCES)),))
+        source = SOURCE_GROUPS[1 if corrected_title else 0][1]
+        assert source in SOURCES
+        db.execute("DELETE FROM chunks WHERE id = ?", (source,))
     index = DocumentIndex(target, encoder=None)
     try:
         result, _ = search(snap, pid)
