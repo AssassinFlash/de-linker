@@ -18,6 +18,10 @@ const css = readFileSync(
 	join( dirname( fileURLToPath( import.meta.url ) ), '../genie.css' ),
 	'utf8'
 );
+const heroCss = readFileSync(
+	join( dirname( fileURLToPath( import.meta.url ) ), '../../hero/hero.css' ),
+	'utf8'
+);
 
 test( 'the slot class collapses to nothing while its native hidden state is set', async () => {
 	const { chromium } = await import( '@playwright/test' );
@@ -68,6 +72,80 @@ test( 'the slot class collapses to nothing while its native hidden state is set'
 		// The same class still lays out the widget while the slot is in use.
 		expect( measured.openHeight ).toBeGreaterThan( 0 );
 		expect( measured.shownHeight ).toBeGreaterThan( 0 );
+	} finally {
+		await browser.close();
+	}
+} );
+
+test( 'the narrow phone Hero preserves the official compact frame height and interaction', async () => {
+	const { chromium } = await import( '@playwright/test' );
+	const browser = await chromium.launch();
+	try {
+		const page = await browser.newPage( {
+			viewport: { width: 390, height: 844 },
+		} );
+		for ( const locale of [ 'en', 'de' ] ) {
+			// Prior native page readback measured a 286.8px Hero mount. The
+			// slot adds 16px padding on each side; preserve that same input.
+			await page.setContent(
+				`<!doctype html><html lang="${ locale }"><head><style>:root{--proto-control-height:44px}body{margin:0}${ css }${ heroCss }</style></head><body><main style="width:318.8px;margin:auto"><div class="linker-genie-hero__surface"><div class="linker-genie-app__transcript"><ol class="linker-genie-app__thread"><li class="linker-genie-app__verification"><p>${ locale === 'de' ? 'Die Überprüfung läuft …' : 'Checking verification…' }</p><button>${ locale === 'de' ? 'Prüfung abbrechen' : 'Cancel verification' }</button></li></ol></div><div data-linker-resource-verification-slot class="linker-genie-app__status"><p>${ locale === 'de' ? 'Bei diesem Versuch wurde noch keine Anfrage gesendet. Bitte schließen Sie die Prüfung ab.' : 'No request has been sent in this attempt. Please complete the verification.' }</p><div id="compact-mount" data-linker-resource-verification="genie"><div id="compact-provider"></div></div></div></div><textarea aria-label="Follow-up"></textarea></main></body></html>`
+			);
+			// Cloudflare's official compact dimensions, supplied as a layout
+			// fixture only. Actual provider acceptance is a separate gate.
+			await page.locator( '#compact-provider' ).evaluate( ( e ) => {
+				const frame = document.createElement( 'iframe' );
+				frame.title = 'Synthetic compact verification layout';
+				frame.style.width = '150px';
+				frame.style.height = '140px';
+				frame.style.border = '0';
+				frame.srcdoc = `<body style="margin:0"><button style="width:150px;height:140px" onclick="parent.document.documentElement.dataset.compactClicked='yes'">LOCAL COMPACT FIXTURE</button></body>`;
+				e.append( frame );
+			} );
+			const frame = page.locator( 'iframe' );
+			await frame.scrollIntoViewIfNeeded();
+			const measured = await frame.evaluate( ( e ) => {
+				const rect = e.getBoundingClientRect();
+				const mount = e
+					.closest( '#compact-mount' )!
+					.getBoundingClientRect();
+				const surface = e
+					.closest( '.linker-genie-hero__surface' )!
+					.getBoundingClientRect();
+				return {
+					width: rect.width,
+					height: rect.height,
+					mountWidth: mount.width,
+					mountHeight: mount.height,
+					insideSurface:
+						rect.bottom <= surface.bottom &&
+						rect.right <= surface.right,
+					followUpBelow:
+						document
+							.querySelector( 'textarea' )!
+							.getBoundingClientRect().top >= rect.bottom,
+					uncovered:
+						document.elementFromPoint(
+							rect.x + rect.width / 2,
+							rect.y + rect.height / 2
+						) === e,
+					overflow: document.documentElement.scrollWidth > innerWidth,
+				};
+			} );
+			expect( measured.mountWidth ).toBeCloseTo( 286.8, 1 );
+			expect( measured.width ).toBe( 150 );
+			expect( measured.height ).toBe( 140 );
+			expect( measured.mountHeight ).toBeGreaterThanOrEqual( 140 );
+			expect( measured.insideSurface ).toBe( true );
+			expect( measured.followUpBelow ).toBe( true );
+			expect( measured.uncovered ).toBe( true );
+			expect( measured.overflow ).toBe( false );
+			await page.frameLocator( 'iframe' ).getByRole( 'button' ).click();
+			expect(
+				await page
+					.locator( 'html' )
+					.getAttribute( 'data-compact-clicked' )
+			).toBe( 'yes' );
+		}
 	} finally {
 		await browser.close();
 	}
