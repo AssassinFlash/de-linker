@@ -23,7 +23,7 @@ from linker_engine.planning.project_input_contracts import (
 from linker_engine.planning.project_materials import materials_csv, project_materials
 from linker_engine.planning.report_model import build_report
 
-from .conftest import json_object
+from .conftest import FixtureObject, json_object
 from .test_installation_electrical import circuit_fixture
 from .test_installation_terminals import sample
 from .test_project_materials import _source_data
@@ -91,7 +91,7 @@ def test_materials_flow_to_reports_csv_and_private_projection() -> None:
     source["materials"] = materials
     lines = [
         row
-        for row in materials["lines"]
+        for row in cast(list[FixtureObject], materials["lines"])
         if row["id"].startswith("installation-material:")
     ]
     assert [row["quantity"] for row in lines] == [2, 1, 10.5, None]
@@ -175,7 +175,7 @@ def test_exact_instance_and_current_document_comparison(
     item = declared()[0]
     item["kind"] = kind
     item["circuit_id"] = plan["circuits"][0]["id"]
-    item["comparison"] = {
+    comparison: FixtureObject = {
         "instance_id": plan["instances"][0]["id"],
         "product_id": 1946,
         "product_revision": basis["products"][0]["product_revision"],
@@ -190,28 +190,29 @@ def test_exact_instance_and_current_document_comparison(
             key: plan["circuits"][0][key] for key in ("id", "kind", "start", "end")
         },
     }
+    item["comparison"] = comparison
     plan["materials"] = [item]
     compare = json_object(route_takeoff(inputs, basis))["material_review"]["rows"][0][
         "comparison_result"
     ]
     assert compare["status"] == expected and compare["qualified"] is False
     assert compare["fact"]["source"]["page"] == page
-    item["comparison"]["conditions_confirmed"] = False
+    comparison["conditions_confirmed"] = False
     assert (
         json_object(route_takeoff(inputs, basis))["material_review"]["rows"][0][
             "comparison_result"
         ]["status"]
         == "conditions_not_confirmed"
     )
-    item["comparison"]["conditions_confirmed"] = True
-    item["comparison"]["circuit_context"]["kind"] = "other"
+    comparison["conditions_confirmed"] = True
+    comparison["circuit_context"]["kind"] = "other"
     assert (
         json_object(route_takeoff(inputs, basis))["material_review"]["rows"][0][
             "comparison_result"
         ]["status"]
         == "conditions_changed"
     )
-    item["comparison"]["circuit_context"]["kind"] = circuit_kind
+    comparison["circuit_context"]["kind"] = circuit_kind
     if expected == "within_recommendation":
         installation = json_object(route_takeoff(inputs, basis))
         source = _source_data()
@@ -247,15 +248,15 @@ def test_exact_instance_and_current_document_comparison(
             assert "Private specification" not in str(projected)
             assert "Private source note" not in str(projected)
             assert "circuit_context" not in str(projected)
-    item["comparison"]["document_revision"] = "a" * 64
+    comparison["document_revision"] = "a" * 64
     assert (
         json_object(route_takeoff(inputs, basis))["material_review"]["rows"][0][
             "comparison_result"
         ]["status"]
         == "document_unavailable"
     )
-    item["comparison"]["document_revision"] = fact["source"]["document_revision"]
-    item["comparison"]["instance_id"] = "missing"
+    comparison["document_revision"] = fact["source"]["document_revision"]
+    comparison["instance_id"] = "missing"
     assert (
         json_object(route_takeoff(inputs, basis))["material_review"]["rows"][0][
             "comparison_result"
