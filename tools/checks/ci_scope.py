@@ -779,6 +779,7 @@ def tools_manifest_matches_changes(changes, base, head):
                         or (
                             section == "sources"
                             and path not in required
+                            and path != "bin/build.cjs"
                             and (
                                 not path.startswith("src/")
                                 or re.search(r"\.(?:test|stories)\.[jt]sx?$", path)

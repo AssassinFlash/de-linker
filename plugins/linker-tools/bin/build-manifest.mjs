@@ -27,7 +27,7 @@ const buildInputs = [
 	'package.json',
 	'package-lock.json',
 	'webpack.config.js',
-	...( isTools ? [ 'project-input-contracts.json' ] : [] ),
+	...( isTools ? [ 'project-input-contracts.json', 'bin/build.cjs' ] : [] ),
 ];
 const notBuilt = /\.(test|stories)\.[jt]sx?$/;
 

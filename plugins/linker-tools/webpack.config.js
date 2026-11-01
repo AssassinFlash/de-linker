@@ -10,6 +10,9 @@ const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
 
 module.exports = {
 	...defaultConfig,
+	// Keep dependency module IDs relative to this plugin when worktrees share node_modules.
+	resolve: { ...defaultConfig.resolve, symlinks: false },
+	resolveLoader: { ...defaultConfig.resolveLoader, symlinks: false },
 	output: {
 		...defaultConfig.output,
 		// Planner is built independently into this shared output directory.

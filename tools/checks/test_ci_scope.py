@@ -346,6 +346,7 @@ class ScopeTest(unittest.TestCase):
                         "package.json",
                         "package-lock.json",
                         "webpack.config.js",
+                        "bin/build.cjs",
                         "project-input-contracts.json",
                         *(
                             path.relative_to(root).as_posix()
@@ -375,6 +376,7 @@ class ScopeTest(unittest.TestCase):
                     "package.json",
                     "package-lock.json",
                     "webpack.config.js",
+                    "bin/build.cjs",
                     "project-input-contracts.json",
                     "src/genie/App.tsx",
                     "src/genie/Legacy.tsx",

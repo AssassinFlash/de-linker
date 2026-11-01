@@ -12,7 +12,7 @@
 		"node": "^22.22.2 || ^24.15.0 || >=26.0.0"
 	},
 	"scripts": {
-		"build": "wp-scripts build && node bin/build-manifest.mjs write",
+		"build": "node bin/build.cjs && node bin/build-manifest.mjs write",
 		"build:check": "node bin/build-manifest.mjs check",
 		"start": "wp-scripts start",
 		"format": "prettier --write .",
