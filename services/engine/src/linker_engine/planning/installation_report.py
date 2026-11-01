@@ -39,6 +39,18 @@ def _closure_label(closure: Object, locale: str) -> str:
     )
 
 
+def _device_product(device: Object, locale: str) -> str:
+    if device["product_id"] is None:
+        return text("installation_site_point", locale)
+    brand, model = device.get("brand"), device.get("model")
+    if isinstance(brand, str) and isinstance(model, str):
+        return f"{brand} {model}"
+    status = device.get("product_status")
+    if status in ("product_unavailable", "product_revision_changed"):
+        return text(f"installation_{status}", locale)
+    return text("installation_product_details_unavailable", locale)
+
+
 def installation_sections(source: Object, locale: str) -> list[ReportSection]:
     plan = source.get("installation")
     if not isinstance(plan, dict):
@@ -60,9 +72,7 @@ def installation_sections(source: Object, locale: str) -> list[ReportSection]:
                 rows=[
                     [
                         cast(str, device["name"]),
-                        f"{device['brand']} {device['model']}"
-                        if device["product_id"] is not None
-                        else text("installation_site_point", locale),
+                        _device_product(device, locale),
                         "; ".join(
                             cast(str, port["name"])
                             for port in cast(list[Object], device["ports"])

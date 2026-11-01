@@ -156,3 +156,55 @@ def test_saved_terminal_checks_reach_pdf_and_materials_csv(
         "matches",
         "mismatch",
     ]
+
+
+@pytest.mark.parametrize("locale", ["en", "de"])
+@pytest.mark.parametrize("status", ["product_unavailable", "product_revision_changed"])
+def test_terminal_report_explains_stale_instances_without_replacing_saved_product(
+    locale: str, status: str
+) -> None:
+    inputs, basis = sample()
+    # The instance has no terminal binding; its identity can still go stale.
+    if status == "product_unavailable":
+        basis["products"] = []
+    else:
+        basis["products"][0]["product_revision"] = "f" * 64
+        basis["products"][0]["brand"] = "NEW VERSION BRAND"
+        basis["products"][0]["model"] = "NEW VERSION MODEL"
+    takeoff = json_object(route_takeoff(inputs, basis))
+    device = takeoff["instances"][0]
+    assert device["product_status"] == status
+    assert device["brand"] is None and device["model"] is None
+    assert (
+        takeoff["terminal_assessment"]["circuits"][0]["endpoints"][0]["status"]
+        == "not_bound"
+    )
+    section = next(
+        item
+        for item in installation_sections({"installation": takeoff}, locale)
+        if item.id == "installation-instances"
+    )
+    assert section.table is not None
+    assert section.table.rows[0][1] == text(f"installation_{status}", locale)
+    assert "None" not in str(section.table.rows)
+    assert "NEW VERSION" not in str(section.table.rows)
+    # Retained sources predating the new state remain presentable without a
+    # guessed product identity or an invented reason for its absence.
+    for item in takeoff["instances"]:
+        item.pop("product_status", None)
+    historical = installation_sections({"installation": takeoff}, locale)[0]
+    assert historical.table is not None
+    assert historical.table.rows[0][1] == text(
+        "installation_product_details_unavailable", locale
+    )
+
+
+def test_current_legacy_installation_product_shape_and_label_are_unchanged() -> None:
+    inputs, basis = sample()
+    inputs["installation"]["circuits"][0].pop("communication_use")
+    takeoff = json_object(route_takeoff(inputs, basis))
+    device = takeoff["instances"][0]
+    assert "product_status" not in device
+    section = installation_sections({"installation": takeoff}, "en")[0]
+    assert section.table is not None
+    assert section.table.rows[0][1] == f"{device['brand']} {device['model']}"

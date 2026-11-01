@@ -241,6 +241,62 @@ def _string_link_projection(link: Object, private: str) -> Object:
     )
 
 
+def _terminal_circuit_projection(
+    circuit: Object,
+    index: int,
+    locale: str,
+    instance_ids: dict[str, str],
+    port_ids: dict[tuple[str, str], str],
+) -> Object:
+    """Retain public manufacturer evidence, never owner endpoint labels."""
+    endpoints: list[Json] = []
+    for endpoint in cast(list[Object], circuit["endpoints"]):
+        raw_instance, raw_port = str(endpoint["instance_id"]), str(endpoint["port_id"])
+        instance = instance_ids.setdefault(
+            raw_instance,
+            f"{text('installation_instance', locale)} {len(instance_ids) + 1}",
+        )
+        port = port_ids.setdefault(
+            (raw_instance, raw_port),
+            f"{text('installation_ports', locale)} {len(port_ids) + 1}",
+        )
+        fact = endpoint.get("fact") if endpoint.get("status") == "documented" else None
+        binding = endpoint.get("binding")
+        specification = fact.get("specification") if isinstance(fact, dict) else None
+        terminals = (
+            specification.get("terminals") if isinstance(specification, dict) else None
+        )
+        terminal = binding.get("terminal") if isinstance(binding, dict) else None
+        # A stale or unresolved selection can contain arbitrary owner-entered
+        # text. Show a terminal only when the retained manufacturer fact lists it.
+        safe_binding: Json = (
+            {"terminal": terminal}
+            if isinstance(terminal, str)
+            and isinstance(terminals, list)
+            and terminal in terminals
+            else None
+        )
+        endpoints.append(
+            {
+                "side": endpoint["side"],
+                "instance_id": instance,
+                "port_id": port,
+                "status": endpoint["status"],
+                "binding": safe_binding,
+                "fact": fact,
+                "domain_status": endpoint["domain_status"],
+                "use_status": endpoint["use_status"],
+            }
+        )
+    return {
+        "circuit_id": f"{'Stromkreis' if locale == 'de' else 'Circuit'} {index}",
+        "name": f"{'Stromkreis' if locale == 'de' else 'Circuit'} {index}",
+        "kind": circuit["kind"],
+        "communication_use": circuit["communication_use"],
+        "endpoints": endpoints,
+    }
+
+
 def _materials_projection(source: Object, private: str) -> Object:
     """Apply the same boundary after either pinned or historical BOM loading."""
     materials = source.get("materials")
@@ -260,6 +316,26 @@ def _materials_projection(source: Object, private: str) -> Object:
                 for lang in ("en", "de")
             }
         origin = line.get("source")
+        if line.get("basis") == "manufacturer_one_end_mapping":
+            safe["id"] = f"installation-terminals:{index}"
+            safe["label"] = {
+                "en": f"Terminal check {index}",
+                "de": f"Klemmenprüfung {index}",
+            }
+            circuit = origin.get("circuit") if isinstance(origin, dict) else None
+            safe["source"] = (
+                {
+                    "installation_input_sha256": origin.get(
+                        "installation_input_sha256"
+                    ),
+                    "qualified": False,
+                    "circuit": _terminal_circuit_projection(
+                        circuit, index, str(source.get("locale", "en")), {}, {}
+                    ),
+                }
+                if isinstance(origin, dict) and isinstance(circuit, dict)
+                else {}
+            )
         link = origin.get("link") if isinstance(origin, dict) else None
         if isinstance(origin, dict) and isinstance(link, dict):
             safe["source"] = {**origin, "link": _string_link_projection(link, private)}
@@ -284,20 +360,45 @@ def _report_source_projection(source: Object, locale: str) -> Object:
     # Copy only edited branches. Unrelated saved profiles and evidence are read
     # as-is, and no persistent blob or source object is changed.
     plan = {**raw_plan, "sources": []}
+    plan.pop("prepared_inputs", None)
     projected["installation"] = plan
-    plan["instances"] = [
-        {
-            **device,
-            "name": f"{text('installation_instance', locale)} {index}",
-            "ports": [
-                {**port, "name": f"{text('installation_ports', locale)} {port_index}"}
-                for port_index, port in enumerate(
-                    cast(list[Object], device["ports"]), 1
+    instance_ids: dict[str, str] = {}
+    port_ids: dict[tuple[str, str], str] = {}
+    instances: list[Json] = []
+    for index, device in enumerate(cast(list[Object], raw_plan["instances"]), 1):
+        original_id = str(device["id"])
+        name = f"{text('installation_instance', locale)} {index}"
+        instance_ids[original_id] = name
+        ports: list[Json] = []
+        for port_index, port in enumerate(cast(list[Object], device["ports"]), 1):
+            port_name = f"{text('installation_ports', locale)} {port_index}"
+            port_ids[(original_id, str(port["id"]))] = port_name
+            ports.append(
+                {
+                    **{
+                        key: value
+                        for key, value in port.items()
+                        if key != "terminal_binding"
+                    },
+                    "id": port_name,
+                    "name": port_name,
+                }
+            )
+        instances.append({**device, "id": name, "name": name, "ports": ports})
+    plan["instances"] = instances
+    terminals = raw_plan.get("terminal_assessment")
+    if isinstance(terminals, dict):
+        plan["terminal_assessment"] = {
+            **terminals,
+            "circuits": [
+                _terminal_circuit_projection(
+                    circuit, index, locale, instance_ids, port_ids
+                )
+                for index, circuit in enumerate(
+                    cast(list[Object], terminals["circuits"]), 1
                 )
             ],
         }
-        for index, device in enumerate(cast(list[Object], raw_plan["instances"]), 1)
-    ]
     plan["cables"] = [
         {
             **cable,

@@ -515,6 +515,15 @@ def route_takeoff(
                 if d.product_id in products
                 and products[d.product_id]["product_revision"] == d.product_revision
                 else None,
+                **(
+                    {
+                        "product_status": "product_unavailable"
+                        if d.product_id not in products
+                        else "product_revision_changed"
+                    }
+                    if has_terminal_feature(plan) and d.id in stale_instances
+                    else {}
+                ),
                 "ports": prepared_instances[d.id]["ports"],
             }
             for d in plan.instances

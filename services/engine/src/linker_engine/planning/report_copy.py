@@ -1172,6 +1172,18 @@ TEXT = {
     ),
     "installation_ports": ("Connection points", "Anschlusspunkte"),
     "installation_site_point": ("Site connection", "Anschluss am Standort"),
+    "installation_product_unavailable": (
+        "Selected product is unavailable",
+        "Ausgewähltes Produkt nicht verfügbar",
+    ),
+    "installation_product_revision_changed": (
+        "Selected product revision has changed",
+        "Stand des ausgewählten Produkts hat sich geändert",
+    ),
+    "installation_product_details_unavailable": (
+        "Saved product details are unavailable",
+        "Angaben zum gespeicherten Produkt nicht verfügbar",
+    ),
     "installation_circuit": ("Circuit / route", "Stromkreis / Leitungsweg"),
     "installation_pending": ("Quantity not confirmed", "Menge nicht bestätigt"),
     "installation_conductor": ("Conductor", "Leiter"),
