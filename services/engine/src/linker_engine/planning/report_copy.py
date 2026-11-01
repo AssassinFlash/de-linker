@@ -1122,6 +1122,10 @@ TEXT = {
         "Landesspezifische Anforderungen werden in den ausgewählten Berechnungen nicht bewertet.",
     ),
     "bom": ("Provisional bill of materials", "Vorläufige Stückliste"),
+    "terminal_material_scope": (
+        "These entries record the terminals checked on each circuit. They have no purchase quantity.",
+        "Diese Einträge zeigen die geprüften Klemmen je Stromkreis. Dafür ist keine Bestellmenge angegeben.",
+    ),
     "bom_scope": (
         "This table lists selected equipment, saved roof modules, manufacturer-included components, customer-supplied requirements and site-engineering obligations. Quantities are shown only where established. It is not a complete balance-of-system take-off; mounting, cabling, protection and other installation materials still require project-specific design.",
         "Diese Tabelle führt ausgewählte Geräte, Module der gespeicherten Dachbelegung, herstellerseitig mitgelieferte Komponenten, kundenseitig bereitzustellende Anforderungen und projektseitig zu prüfende Pflichten auf. Mengen werden nur angezeigt, wenn sie feststehen. Die Tabelle ist keine vollständige Materialaufnahme des restlichen Systems; Montagesystem, Leitungen, Schutzmaßnahmen und weitere Installationsmaterialien müssen weiterhin projektspezifisch ausgelegt werden.",

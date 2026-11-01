@@ -471,21 +471,21 @@ def build_report(source: Object) -> Report:
                     value=text(source_label, locale),
                     href=url,
                 )
+        if all(line.get("basis") == "manufacturer_one_end_mapping" for line in lines):
+            scope_key = "terminal_material_scope"
+        elif all(
+            line["handling"] == "installation_requirement"
+            and line.get("basis") != "manufacturer_one_end_mapping"
+            for line in lines
+        ):
+            scope_key = "installation_scope"
+        else:
+            scope_key = "bom_scope"
         sections.append(
             ReportSection(
                 id="bom",
                 title=text("bom", locale),
-                paragraphs=[
-                    text(
-                        "installation_scope"
-                        if all(
-                            line["handling"] == "installation_requirement"
-                            for line in lines
-                        )
-                        else "bom_scope",
-                        locale,
-                    )
-                ],
+                paragraphs=[text(scope_key, locale)],
                 rows=list(material_documents.values()),
                 table=ReportTable(
                     columns=[

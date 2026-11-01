@@ -222,6 +222,10 @@ def _section(
             )
         )
         parts.append(table)
+    # Short schedules should carry their title and scope onto the page with the row.
+    # KeepTogether still permits an oversized row to split on an empty page.
+    if section.table and len(section.table.rows) == 1 and not section.rows:
+        return [KeepTogether(parts)]
     # A heading stays with the first paragraph, including its leading spacer;
     # a spacer alone must not make a heading look safe at the page bottom.
     first_content = 3 if section.paragraphs else 2

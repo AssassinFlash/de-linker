@@ -343,6 +343,8 @@ def material_reference(line: Object) -> str:
 
 
 def material_scope(line: Object, locale: str) -> str:
+    if line.get("basis") == "manufacturer_one_end_mapping":
+        return "Klemmenprüfung" if locale == "de" else "Terminal check"
     if line.get("basis") in {
         "pv_string_circuit_identity_v1",
         "pv_plant_string_circuit_identity_v2",
