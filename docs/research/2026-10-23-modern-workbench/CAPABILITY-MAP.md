@@ -433,3 +433,11 @@ Aladdin 不只提供画布。固定源码中已经能追到：
 **资源收口：** 本run默认dataset `z3LxwllIv0airH0JF`、空错误dataset `fjbhyY2FFtRzSWZbb`、KV `hCPcB3zgDu2rpGqeB`、queue `2B8vQKKByF7Dk5KAe`均已核同run/owner、无共享name及`03:50:32`创建时刻，逐项DELETE204、GET404；最后queue读回`2026-11-01T03:53:59.947Z`。两个dataset均0条；删除前API账面storageBytes分别0、0、3128、889（合4017字节），仅是远端账面清理量，不当本地物理释放量。初次清理API读取发生`URLError: <urlopen error _ssl.c:1126: The handshake operation timed out>`，该次无HTTP响应；随后同Apify API的curl IPv4/HTTP1.1完成归属核验、删除与404读回，没有重跑抓取。run元数据保留，不重建临时存储。
 
 本次持久新增仅本节Markdown证据；PDF、页面图、临时文件/目录、依赖、备份、实例、浏览器均新增0，所有执行进程已退出，没有遗留运行资源。磁盘Data卷3.6TiB、已用2.8TiB、最后读回可用834GiB（78%；共享活动产生的变化不归因于本任务），本地删除/实际释放0字节；远端4份临时存储已全部回收。仅执行文档diff/空白检查，未启动业务测试；工作树其他会话的源码与验收文件改动均未触碰。
+
+### 10.8 Apify Proxy 原件读回
+
+本机系统代理到 Apify 的 CONNECT 应答 200，但未取得 Apify 自身应答。用现有 linker-services 作网络出口，无凭证的同一 Apify Proxy CONNECT 收到 407。root 只通过该官方代理认证并读取前述两个原厂 HTTPS URL。每次一个有界原生 SSH 标准输入输出转发，不在 VPS 保存密钥、文件或启动服务。每份最多 5 MiB，校验 TLS、HTTP 200、PDF 标记、真实页数及对应 ref 后，按 SHA256 只保留一份原件至既有 /Users/chesterjohn/de-linker-data/pdf；项目与冻结来源不再引用且可信版本取代时复核回收。最多一份临时页面渲染图，核后立即删除。
+
+独立 SSH 直通在未认证时已证实返回 Apify 407。前次认证尝试只收到 RemoteDisconnected，未区分 SSH 握手与代理拒绝。root 只用一个有界私有 master 复核这两阶段，最多两个具名源，socket 和临时根 /tmp/p548-oem-route-* 在 finally 删除；认证后失败则记录实际层级，不继续探测。
+
+同一 SSH master 下，未认证请求取得 Apify 407，正确认证请求取得 Apify 403；独立获取该拒绝响应的脱敏正文，x-apify-proxy-error=true，说明当前账户没有启用 Proxy external access。请求被 Apify 在建立原厂 CONNECT 前拒绝。这给出了此前传输断开的权限边界，但不能证明以前每一次断开都由同一原因造成。没有向原厂发送这次 GET，也没有取得 PDF、改变账号权限或升级套餐。两个原件仍缺。master、stdio 转发和临时 socket 目录均已回收，原始响应与凭据均未存盘。
