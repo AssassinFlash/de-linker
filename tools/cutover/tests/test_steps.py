@@ -13,14 +13,15 @@ from __future__ import annotations
 
 import fcntl
 import json
-from datetime import UTC, datetime
+import os
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 from native_planner import planner_wp
 
-from linker_cutover import atomic, backup, plan, snapshot, steps
+from linker_cutover import atomic, backup, deployment, plan, snapshot, steps
 from linker_cutover.target import CutoverError, Target
 
 REAL_SNAPSHOT_TAKE = snapshot.take
@@ -37,9 +38,11 @@ def _no_database(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> list[str]:
 
     def fake(target: Target, home: Path, **options: object) -> snapshot.Snapshot:
         taken.append(target.label)
+        reservation = options.get("reservation")
+        assert isinstance(reservation, snapshot.Reservation)
         result = snapshot.Snapshot(
-            name="db-20261018T000000Z.sql.gz",
-            path=home / "snapshots" / "db-20261018T000000Z.sql.gz",
+            name=reservation.name,
+            path=home / "snapshots" / reservation.name,
             size=1,
             sha256="0" * 64,
         )
@@ -1181,8 +1184,10 @@ def test_the_deploy_snapshots_the_database_before_anything_is_uploaded(
 
     def recording(site: Target, home: Path, **options: object) -> snapshot.Snapshot:
         uploads_when_snapshot_ran.append(len(target.rsyncs))
+        reservation = options.get("reservation")
+        assert isinstance(reservation, snapshot.Reservation)
         result = snapshot.Snapshot(
-            "db-20261018T000000Z.sql.gz", home / "x", 1, "0" * 64
+            reservation.name, home / "snapshots" / reservation.name, 1, "0" * 64
         )
         callback = options.get("on_verified")
         assert callable(callback)
@@ -1200,7 +1205,10 @@ def test_the_deploy_snapshots_the_database_before_anything_is_uploaded(
 
     assert uploads_when_snapshot_ran == [0]
     assert target.rsyncs
-    assert "restore-snapshot db-20261018T000000Z.sql.gz" in result.actions[0]
+    name = json.loads((tmp_path / "staging/.deploy.json").read_text())["snapshot"][
+        "name"
+    ]
+    assert f"restore-snapshot {name}" in result.actions[0]
 
 
 def test_a_failed_snapshot_stops_the_deploy_before_any_upload(
@@ -1353,7 +1361,9 @@ def interrupted_candidate(
 
     def take(site: Target, home: Path, **options: object) -> snapshot.Snapshot:
         del site
-        path = home / "snapshots/db-20261018T000000Z.sql.gz"
+        reservation = options.get("reservation")
+        assert isinstance(reservation, snapshot.Reservation)
+        path = home / "snapshots" / reservation.name
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(gzip.compress(b"CREATE TABLE fixture (id int);"))
         snapshots.append(path)
@@ -1461,6 +1471,252 @@ def test_resume_reuses_snapshot_when_retention_is_interrupted(
     assert not result.notes
     assert len(dumps) == 1
     assert atomic.latest_manifest(target)[1].state == "archived"
+
+
+@pytest.mark.parametrize(
+    "interruption", ["before-rename", "rename", "registry", "checkpoint"]
+)
+def test_resume_adopts_the_reserved_dump_without_dumping_again(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, interruption: str
+) -> None:
+    """The reserved final name survives each write boundary after the dump."""
+    import gzip
+
+    target = FilesystemTarget(tmp_path / "site")
+    repository = _repository(tmp_path)
+    staging = tmp_path / "custom-stage"
+    dumps: list[Path] = []
+
+    def dump(_target: Target, destination: Path, **_options: object) -> None:
+        dumps.append(destination)
+        destination.write_bytes(gzip.compress(b"CREATE TABLE fixture (id int);"))
+
+    original_rename = Path.rename
+    original_registry_save = snapshot._save
+    original_checkpoint_save = deployment.save
+
+    def rename(source: Path, destination: Path) -> Path:
+        if source.name.endswith(".partial") and interruption == "before-rename":
+            raise SystemExit("before rename")
+        result = original_rename(source, destination)
+        if source.name.endswith(".partial"):
+            raise SystemExit("after rename")
+        return result
+
+    def registry_save(folder: Path, state: dict[str, object]) -> None:
+        if state["snapshots"]:
+            raise OSError("registry write failed")
+        original_registry_save(folder, state)
+
+    def checkpoint_save(folder: Path, checkpoint: deployment.Checkpoint) -> None:
+        if checkpoint.snapshot:
+            raise OSError("checkpoint write failed")
+        original_checkpoint_save(folder, checkpoint)
+
+    monkeypatch.setattr(snapshot, "take", REAL_SNAPSHOT_TAKE)
+    monkeypatch.setattr(backup, "dump_to", dump)
+    if interruption in ("before-rename", "rename"):
+        monkeypatch.setattr(Path, "rename", rename)
+    elif interruption == "registry":
+        monkeypatch.setattr(snapshot, "_save", registry_save)
+    else:
+        monkeypatch.setattr(deployment, "save", checkpoint_save)
+
+    with pytest.raises((OSError, SystemExit)):
+        steps.deploy(
+            target,
+            repository=repository,
+            staging=staging,
+            deploy_id="20261018T000000Z-reserved",
+        )
+
+    checkpoint = json.loads(deployment.path(staging).read_text())
+    pending = checkpoint["snapshot_pending"]
+    final = Path(pending["home"]) / "snapshots" / pending["name"]
+    assert not checkpoint["snapshot"]
+    assert len(dumps) == 1
+    if interruption == "before-rename":
+        assert (
+            not final.exists() and (final.parent / f".{final.name}.partial").is_file()
+        )
+    else:
+        assert final.is_file()
+    state = json.loads((final.parent / snapshot.STATE).read_text())
+    assert (
+        state["active"][str(deployment.path(staging).resolve())]["name"] == final.name
+    )
+
+    monkeypatch.setattr(Path, "rename", original_rename)
+    monkeypatch.setattr(snapshot, "_save", original_registry_save)
+    monkeypatch.setattr(deployment, "save", original_checkpoint_save)
+    result = steps.resume_deploy(
+        target, repository=repository, staging=staging, cache_buster="fixture"
+    )
+    assert not result.notes and len(dumps) == 1
+    assert backup.readable_gzip(final)
+    state = json.loads((final.parent / snapshot.STATE).read_text())
+    assert state["snapshots"][final.name]["sha256"] == backup.sha256(final)
+    assert not state["active"]
+    assert not deployment.path(staging).exists()
+
+
+def test_resume_rejects_a_changed_reserved_dump_without_another_dump(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Even a readable gzip with the same inode, size and mtime needs its saved hash."""
+    import gzip
+
+    target = FilesystemTarget(tmp_path / "site")
+    repository = _repository(tmp_path)
+    staging = tmp_path / "custom-stage"
+    original_rename = Path.rename
+    dumps: list[Path] = []
+
+    def dump(_target: Target, destination: Path, **_options: object) -> None:
+        dumps.append(destination)
+        destination.write_bytes(
+            gzip.compress(b"SELECT fixture;", compresslevel=0, mtime=0)
+        )
+
+    def rename(source: Path, destination: Path) -> Path:
+        result = original_rename(source, destination)
+        if source.name.endswith(".partial"):
+            raise SystemExit("after rename")
+        return result
+
+    monkeypatch.setattr(snapshot, "take", REAL_SNAPSHOT_TAKE)
+    monkeypatch.setattr(backup, "dump_to", dump)
+    monkeypatch.setattr(Path, "rename", rename)
+    with pytest.raises(SystemExit, match="after rename"):
+        steps.deploy(
+            target,
+            repository=repository,
+            staging=staging,
+            deploy_id="20261018T000000Z-changed-dump",
+        )
+    monkeypatch.setattr(Path, "rename", original_rename)
+    pending = json.loads(deployment.path(staging).read_text())["snapshot_pending"]
+    final = Path(pending["home"]) / "snapshots" / pending["name"]
+    before = final.stat()
+    final.write_bytes(gzip.compress(b"SELECT changed;", compresslevel=0, mtime=0))
+    os.utime(final, ns=(before.st_atime_ns, before.st_mtime_ns))
+    after = final.stat()
+    assert (before.st_ino, before.st_size, before.st_mtime_ns) == (
+        after.st_ino,
+        after.st_size,
+        after.st_mtime_ns,
+    )
+    with pytest.raises(CutoverError, match="reserved snapshot proof differs"):
+        steps.resume_deploy(
+            target, repository=repository, staging=staging, cache_buster="fixture"
+        )
+    assert len(dumps) == 1 and final.is_file()
+
+
+def test_proof_write_failure_keeps_the_dump_without_guessing_or_redumping(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """If no durable proof exists, keep the partial for inspection on resume."""
+    import gzip
+
+    target = FilesystemTarget(tmp_path / "site")
+    repository = _repository(tmp_path)
+    staging = tmp_path / "custom-stage"
+    original_save = snapshot._save
+    dumps: list[Path] = []
+
+    def dump(_target: Target, destination: Path, **_options: object) -> None:
+        dumps.append(destination)
+        destination.write_bytes(gzip.compress(b"SELECT fixture;"))
+
+    def fail_proof(folder: Path, state: dict[str, object]) -> None:
+        active = state["active"]
+        assert isinstance(active, dict)
+        if any("proof" in entry for entry in active.values()):
+            raise OSError("proof write failed")
+        original_save(folder, state)
+
+    monkeypatch.setattr(snapshot, "take", REAL_SNAPSHOT_TAKE)
+    monkeypatch.setattr(backup, "dump_to", dump)
+    monkeypatch.setattr(snapshot, "_save", fail_proof)
+    with pytest.raises(OSError, match="proof write failed"):
+        steps.deploy(
+            target,
+            repository=repository,
+            staging=staging,
+            deploy_id="20261018T000000Z-proof-failed",
+        )
+    monkeypatch.setattr(snapshot, "_save", original_save)
+    assert len(dumps) == 1 and dumps[0].is_file()
+    with pytest.raises(CutoverError, match="unfinished snapshot"):
+        steps.resume_deploy(
+            target, repository=repository, staging=staging, cache_buster="fixture"
+        )
+    assert len(dumps) == 1 and dumps[0].is_file()
+
+
+@pytest.mark.parametrize("interruption", ["checkpoint", "retention"])
+def test_custom_stage_reference_survives_later_snapshot_rotation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, interruption: str
+) -> None:
+    """A custom drill checkpoint protects its registered snapshot until archive."""
+    import gzip
+
+    target = FilesystemTarget(tmp_path / "site")
+    repository = _repository(tmp_path)
+    staging = tmp_path / "outside-default-workspace" / "stage"
+    home = tmp_path / "data-home"
+    original_checkpoint_save = deployment.save
+    original_prune = snapshot._prune
+
+    def dump(_target: Target, destination: Path, **_options: object) -> None:
+        destination.write_bytes(gzip.compress(b"CREATE TABLE fixture (id int);"))
+
+    def checkpoint_save(folder: Path, checkpoint: deployment.Checkpoint) -> None:
+        if checkpoint.snapshot:
+            raise OSError("checkpoint write failed")
+        original_checkpoint_save(folder, checkpoint)
+
+    def interrupted(*_args: object, **_options: object) -> None:
+        raise SystemExit("retention interrupted")
+
+    monkeypatch.setattr(snapshot, "take", REAL_SNAPSHOT_TAKE)
+    monkeypatch.setattr(backup, "dump_to", dump)
+    monkeypatch.setattr(snapshot, "_unused", lambda _path: True)
+    if interruption == "checkpoint":
+        monkeypatch.setattr(deployment, "save", checkpoint_save)
+    else:
+        monkeypatch.setattr(snapshot, "_prune", interrupted)
+    with pytest.raises((OSError, SystemExit)):
+        steps.deploy(
+            target,
+            repository=repository,
+            staging=staging,
+            snapshot_home=home,
+            deploy_id="20261018T000000Z-custom-stage",
+        )
+    monkeypatch.setattr(deployment, "save", original_checkpoint_save)
+    monkeypatch.setattr(snapshot, "_prune", original_prune)
+
+    checkpoint = json.loads(deployment.path(staging).read_text())
+    old_name = checkpoint["snapshot_pending"]["name"]
+    if interruption == "checkpoint":
+        assert not checkpoint["snapshot"]
+    old = snapshot.directory(home) / old_name
+    assert old.is_file()
+    future = datetime.now(UTC) + timedelta(days=20)
+    for day in range(4):
+        snapshot.take(target, home, now=future + timedelta(days=day))
+    assert old.is_file()
+
+    result = steps.resume_deploy(
+        target, repository=repository, staging=staging, cache_buster="fixture"
+    )
+    assert not result.notes
+    state = json.loads((snapshot.directory(home) / snapshot.STATE).read_text())
+    assert not state["active"] and not deployment.path(staging).exists()
+    snapshot.take(target, home, now=future + timedelta(days=30))
+    assert not old.exists()
 
 
 @pytest.mark.parametrize(

@@ -66,6 +66,15 @@ class Snapshot:
     sha256: str
 
 
+@dataclass(frozen=True)
+class Reservation:
+    """One deployment's identity, persisted before its database dump starts."""
+
+    name: str
+    checkpoint: Path
+    deploy_id: str
+
+
 def directory(home: Path) -> Path:
     """`~/de-linker-data/snapshots/`, beside the full backups."""
     return home / DIRECTORY
@@ -112,7 +121,7 @@ def _state(folder: Path) -> dict[str, Any]:
     if path.is_symlink():
         raise CutoverError(f"linked snapshot retention state: {path}")
     if not path.exists():
-        return {"version": 1, "snapshots": {}, "baselines": {}}
+        return {"version": 1, "snapshots": {}, "baselines": {}, "active": {}}
     try:
         data = json.loads(path.read_text())
     except (OSError, ValueError) as error:
@@ -127,6 +136,19 @@ def _state(folder: Path) -> dict[str, Any]:
         or not all(isinstance(v, dict) for v in data["baselines"].values())
     ):
         raise CutoverError(f"invalid snapshot retention state: {path}")
+    active = data.setdefault("active", {})
+    if not isinstance(active, dict) or not all(
+        isinstance(path, str)
+        and Path(path).is_absolute()
+        and Path(path).name == ".deploy.json"
+        and isinstance(record, dict)
+        and isinstance(record.get("name"), str)
+        and NAME.fullmatch(record["name"]) is not None
+        and isinstance(record.get("deploy_id"), str)
+        and isinstance(record.get("source"), list)
+        for path, record in active.items()
+    ):
+        raise CutoverError(f"invalid active snapshot references: {path}")
     return data
 
 
@@ -142,6 +164,11 @@ def _save(folder: Path, state: dict[str, Any]) -> None:
             stream.flush()
             os.fsync(stream.fileno())
         pending.replace(path)
+        directory_fd = os.open(folder, os.O_RDONLY)
+        try:
+            os.fsync(directory_fd)
+        finally:
+            os.close(directory_fd)
     except BaseException:
         pending.unlink(missing_ok=True)
         raise
@@ -185,12 +212,17 @@ def _verified(path: Path, record: dict[str, Any]) -> bool:
         return False
 
 
-def _references(home: Path) -> set[str]:
+def _references(home: Path, state: dict[str, Any]) -> set[str]:
     """Protect snapshots referenced by the existing cutover workspace records."""
     workspace = home / "cutover-workspace"
     paths = set(workspace.glob("*.json")) | set(workspace.glob("staging/.*.json"))
     paths |= set(workspace.glob("*/drill.json"))
-    result: set[str] = set()
+    paths |= {
+        Path(path)
+        for path in state["active"]
+        if Path(path).exists() or Path(path).is_symlink()
+    }
+    result: set[str] = {record["name"] for record in state["active"].values()}
 
     def visit(value: Any) -> None:
         if isinstance(value, str):
@@ -278,11 +310,18 @@ def _prune(
             or not _verified(folder / baseline, baseline_record)
         ):
             raise CutoverError("snapshot baseline is missing or changed")
-    references = _references(home)
+    references = _references(home, state)
     for name in set(protect) | references:
         if NAME.fullmatch(name) is not None:
             path = folder / name
             record = state["snapshots"].get(name)
+            if (
+                record is None
+                and name in {entry["name"] for entry in state["active"].values()}
+                and not path.exists()
+                and not path.is_symlink()
+            ):
+                continue  # A reserved dump has not reached its final name yet.
             valid = (
                 _verified(path, record)
                 if isinstance(record, dict)
@@ -299,7 +338,7 @@ def _prune(
     )
     for _, name in candidates:
         record = state["snapshots"][name]
-        if name in kept or name in _references(home):
+        if name in kept or name in _references(home, state):
             if record.pop("retiring", None) is not None:
                 _save(folder, state)
             continue
@@ -309,7 +348,7 @@ def _prune(
         record["retiring"] = True
         _save(folder, state)
         if (
-            name in _references(home)
+            name in _references(home, state)
             or not _unused(path)
             or not _verified(path, record)
         ):
@@ -375,6 +414,112 @@ def reconcile(target: Target, home: Path, current: str) -> None:
         print(f"snapshot retention: preserved older snapshots ({error})")
 
 
+def release(home: Path, checkpoint: Path, deploy_id: str) -> None:
+    """After archive succeeds, release exactly this deployment's reference."""
+    folder = directory(home)
+    if not (folder / STATE).exists():
+        return
+    with _locked(folder):
+        state = _state(folder)
+        key = str(checkpoint.resolve())
+        active = state["active"].get(key)
+        if active is None:
+            return  # Already released before an interrupted checkpoint cleanup.
+        if active["deploy_id"] != deploy_id:
+            raise CutoverError("snapshot reference belongs to another deployment")
+        del state["active"][key]
+        _save(folder, state)
+
+
+def _reserve(
+    target: Target, home: Path, state: dict[str, Any], reservation: Reservation
+) -> None:
+    """Bind the on-disk checkpoint and its exact final name before a dump."""
+    checkpoint = reservation.checkpoint
+    if (
+        NAME.fullmatch(reservation.name) is None
+        or not checkpoint.is_absolute()
+        or checkpoint.name != ".deploy.json"
+        or checkpoint.is_symlink()
+    ):
+        raise CutoverError("invalid snapshot reservation")
+    try:
+        saved = json.loads(checkpoint.read_text())
+    except (OSError, ValueError) as error:
+        raise CutoverError("snapshot reservation checkpoint is unreadable") from error
+    source = backup_retention.identity(target)
+    if (
+        not isinstance(saved, dict)
+        or saved.get("deploy_id") != reservation.deploy_id
+        or saved.get("target") != source
+        or saved.get("snapshot_pending")
+        != {"name": reservation.name, "home": str(home.resolve())}
+    ):
+        raise CutoverError("snapshot reservation checkpoint differs")
+    key = str(checkpoint)
+    expected = {
+        "name": reservation.name,
+        "deploy_id": reservation.deploy_id,
+        "source": source,
+    }
+    active = state["active"]
+    if key in active:
+        if {field: active[key].get(field) for field in expected} != expected or set(
+            active[key]
+        ) - {*expected, "proof"}:
+            raise CutoverError("snapshot reservation belongs to another deployment")
+        return
+    final = directory(home) / reservation.name
+    partial = directory(home) / f".{reservation.name}.partial"
+    if (
+        final.exists()
+        or final.is_symlink()
+        or partial.exists()
+        or partial.is_symlink()
+        or reservation.name in state["snapshots"]
+        or any(entry["name"] == reservation.name for entry in active.values())
+    ):
+        raise CutoverError("reserved snapshot name is already in use")
+    active[key] = expected
+    _save(directory(home), state)
+
+
+def _dump_proof(path: Path) -> dict[str, Any]:
+    """Prove the completed dump before rename, retaining its inode and contents."""
+    if path.is_symlink() or not path.is_file():
+        raise CutoverError(f"reserved dump is not a regular file: {path}")
+    stamp = backup_retention.file_stamp(path)
+    digest = backup.sha256(path)
+    if not backup.readable_gzip(path) or backup_retention.file_stamp(path) != stamp:
+        raise CutoverError(f"reserved dump changed during verification: {path}")
+    # Rename changes ctime, but not the inode, size or mtime. The digest is
+    # rechecked on recovery so restored timestamps cannot disguise a change.
+    return {"stamp": stamp[:4], "sha256": digest}
+
+
+def _matches_dump_proof(path: Path, proof: Any) -> bool:
+    try:
+        if (
+            not isinstance(proof, dict)
+            or not isinstance(proof.get("stamp"), list)
+            or len(proof["stamp"]) != 4
+            or not isinstance(proof.get("sha256"), str)
+            or re.fullmatch(r"[a-f0-9]{64}", proof["sha256"]) is None
+            or path.is_symlink()
+            or not path.is_file()
+        ):
+            return False
+        stamp = backup_retention.file_stamp(path)
+        return bool(
+            stamp[:4] == proof["stamp"]
+            and backup.sha256(path) == proof["sha256"]
+            and backup.readable_gzip(path)
+            and backup_retention.file_stamp(path) == stamp
+        )
+    except OSError:
+        return False
+
+
 def take(
     target: Target,
     home: Path,
@@ -382,6 +527,7 @@ def take(
     now: datetime | None = None,
     protect: frozenset[str] = frozenset(),
     on_verified: Callable[[Snapshot], None] | None = None,
+    reservation: Reservation | None = None,
 ) -> Snapshot:
     """Stream and verify a snapshot, then apply same-source retention.
 
@@ -393,7 +539,12 @@ def take(
     folder = directory(home)
     with _locked(folder):
         return _take_locked(
-            target, home, now=now, protect=protect, on_verified=on_verified
+            target,
+            home,
+            now=now,
+            protect=protect,
+            on_verified=on_verified,
+            reservation=reservation,
         )
 
 
@@ -404,42 +555,95 @@ def _take_locked(
     now: datetime | None,
     protect: frozenset[str],
     on_verified: Callable[[Snapshot], None] | None,
+    reservation: Reservation | None,
 ) -> Snapshot:
     folder = directory(home)
     state = _state(folder)
     at = now or datetime.now(UTC)
-    name = name_at(at)
+    name = reservation.name if reservation is not None else name_at(at)
     final = folder / name
-    if final.exists() or final.is_symlink() or name in state["snapshots"]:
+    if reservation is not None:
+        _reserve(target, home, state, reservation)
+    elif (
+        final.exists()
+        or final.is_symlink()
+        or name in state["snapshots"]
+        or any(entry["name"] == name for entry in state["active"].values())
+    ):
         raise CutoverError(f"{final} already exists; take the snapshot again")
     partial = folder / f".{name}.partial"
     pending = folder / (STATE + ".next")
-    if (
-        partial.exists()
-        or partial.is_symlink()
-        or pending.exists()
-        or pending.is_symlink()
-    ):
+    if pending.exists() or pending.is_symlink():
         raise CutoverError("unfinished snapshot or retention state must be inspected")
-    try:
-        backup.dump_to(target, partial, skip=SKIPPED_TABLES)
-        partial.rename(final)
-    finally:
-        partial.unlink(missing_ok=True)
-    stamp = backup_retention.file_stamp(final)
-    taken = Snapshot(
-        name=name, path=final, size=final.stat().st_size, sha256=backup.sha256(final)
-    )
-    record = {
-        "source": backup_retention.identity(target),
-        "sha256": taken.sha256,
-        "size": taken.size,
-        "stamp": stamp,
-    }
-    if not backup.readable_gzip(final) or not _verified(final, record):
-        raise CutoverError(f"new snapshot changed during verification: {final}")
-    state["snapshots"][name] = record
-    _save(folder, state)
+    record = state["snapshots"].get(name)
+    proof: dict[str, Any] | None = None
+    if reservation is not None:
+        active = state["active"][str(reservation.checkpoint)]
+        proof = active.get("proof")
+        if partial.exists() or partial.is_symlink():
+            if (
+                final.exists()
+                or final.is_symlink()
+                or record is not None
+                or not _matches_dump_proof(partial, proof)
+            ):
+                raise CutoverError("unfinished snapshot must be inspected")
+            partial.rename(final)
+        if final.exists() or final.is_symlink():
+            if not _matches_dump_proof(final, proof):
+                raise CutoverError("reserved snapshot proof differs")
+        else:
+            if record is not None or proof is not None:
+                raise CutoverError("reserved snapshot is missing")
+            try:
+                backup.dump_to(target, partial, skip=SKIPPED_TABLES)
+            except BaseException:
+                partial.unlink(missing_ok=True)
+                raise
+            with partial.open("rb") as stream:
+                os.fsync(stream.fileno())
+            proof = _dump_proof(partial)
+            active["proof"] = proof
+            _save(folder, state)
+            partial.rename(final)
+            if not _matches_dump_proof(final, proof):
+                raise CutoverError("reserved snapshot proof differs")
+    elif partial.exists() or partial.is_symlink():
+        raise CutoverError("unfinished snapshot or retention state must be inspected")
+    elif not final.exists() and not final.is_symlink():
+        if record is not None:
+            raise CutoverError(f"recorded snapshot is missing: {final}")
+        try:
+            backup.dump_to(target, partial, skip=SKIPPED_TABLES)
+            partial.rename(final)
+        finally:
+            partial.unlink(missing_ok=True)
+    if record is not None:
+        if record.get("source") != backup_retention.identity(target) or not _verified(
+            final, record
+        ):
+            raise CutoverError(f"recorded snapshot is missing or changed: {final}")
+        taken = Snapshot(name, final, record["size"], record["sha256"])
+    else:
+        if final.is_symlink() or not final.is_file():
+            raise CutoverError(f"new snapshot is not a regular file: {final}")
+        stamp = backup_retention.file_stamp(final)
+        taken = Snapshot(
+            name=name,
+            path=final,
+            size=final.stat().st_size,
+            sha256=proof["sha256"] if proof is not None else backup.sha256(final),
+        )
+        record = {
+            "source": backup_retention.identity(target),
+            "sha256": taken.sha256,
+            "size": taken.size,
+            "stamp": stamp,
+        }
+        if not backup.readable_gzip(final) or not _verified(final, record):
+            raise CutoverError(f"new snapshot changed during verification: {final}")
+        state["snapshots"][name] = record
+        _save(folder, state)
     if on_verified is not None:
         on_verified(taken)
     try:
@@ -473,7 +677,12 @@ def restore(
         if not backup.readable_gzip(path):
             raise CutoverError(f"{path} is not a readable gzip")
         before = _take_locked(
-            target, home, now=now, protect=frozenset({path.name}), on_verified=None
+            target,
+            home,
+            now=now,
+            protect=frozenset({path.name}),
+            on_verified=None,
+            reservation=None,
         )
         backup.restore_database(target, path)
         target.wp("cache", "flush")

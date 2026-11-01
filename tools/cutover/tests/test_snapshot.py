@@ -82,6 +82,39 @@ def test_a_snapshot_is_written_here_and_verified(
     assert not list((tmp_path / "snapshots").glob("*.partial"))
 
 
+def test_reservation_refuses_a_preexisting_unowned_file(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    scripts = _dump(monkeypatch, gzip.compress(b"new dump"))
+    site = _site(tmp_path / "site")
+    checkpoint = tmp_path / "custom-stage" / ".deploy.json"
+    checkpoint.parent.mkdir()
+    name = snapshot.name_at(AT)
+    checkpoint.write_text(
+        json.dumps(
+            {
+                "deploy_id": "fixture",
+                "target": [site.label, site.root, site.base_url, site.rsync_remote],
+                "snapshot_pending": {"name": name, "home": str(tmp_path.resolve())},
+            }
+        )
+    )
+    folder = snapshot.directory(tmp_path)
+    folder.mkdir()
+    original = gzip.compress(b"someone else's file")
+    (folder / name).write_bytes(original)
+
+    with pytest.raises(CutoverError, match="already in use"):
+        snapshot.take(
+            site,
+            tmp_path,
+            reservation=snapshot.Reservation(name, checkpoint, "fixture"),
+        )
+
+    assert (folder / name).read_bytes() == original
+    assert not scripts
+
+
 def test_a_dump_that_does_not_read_to_the_end_is_not_a_snapshot(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
