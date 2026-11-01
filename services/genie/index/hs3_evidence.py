@@ -7,12 +7,11 @@ from typing import TYPE_CHECKING, Any, cast
 
 from index.chunking import Chunk, Tokenizer
 from linker_genie.hs3_evidence import (
-    CERT_END,
     CERTIFICATE,
     DATA_MODELS,
     DATASHEET,
     MANUAL,
-    SOURCES,
+    SOURCE_GROUPS,
     datasheet_axis,
     evidence_id,
     has_purpose,
@@ -36,17 +35,27 @@ def compile_hs3_evidence(
 ) -> tuple[list[Chunk], dict[str, ScopeProof]]:
     """One conditional passage per associated product and actual declaration."""
     originals = {chunk.id: chunk for chunk in chunks}
-    required = [originals.get(cid) for cid in SOURCES]
-    if any(chunk is None or chunk.source_picture for chunk in required):
+    groups = [
+        group
+        for group in SOURCE_GROUPS
+        if all(cid in originals and not originals[cid].source_picture for cid in group)
+    ]
+    if len(groups) != 1:
+        return [], {}
+    group = groups[0]
+    positions = {chunk.id: position for position, chunk in enumerate(chunks)}
+    if [positions[cid] for cid in group[:3]] != sorted(
+        positions[cid] for cid in group[:3]
+    ):
         return [], {}
     anchors = hs3_anchors(
         (chunk.id, chunk.doc_sha256, chunk.page, chunk.kind, chunk.text)
         for chunk in chunks
-        if chunk.id in SOURCES
+        if chunk.id in group
     )
-    if len(anchors) != len(SOURCES):
+    if len(anchors) != len(group):
         return [], {}
-    original = originals[CERT_END]
+    original = originals[group[2]]
     output: list[Chunk] = []
     proofs: dict[str, ScopeProof] = {}
     for pid, product in source.products.items():
@@ -105,7 +114,7 @@ def compile_hs3_evidence(
             proof: dict[str, Any] = {
                 "product_ids": [pid],
                 "basis": "hs3_conditional_certificate",
-                "source_chunk_ids": list(SOURCES),
+                "source_chunk_ids": list(group),
                 "document_ids": [did],
                 "associations": [
                     {

@@ -35,6 +35,18 @@ SOURCES: dict[str, tuple[str, int, str]] = {
         1,
         "2927127492d116215fd85992f60957b260fd578df693bd50153253a53ee1d1c1",
     ),
+    # The corrected document title changes the native tokenizer's split point.
+    # These two complete chunks join to the same original declaration text.
+    "43d6efd869b4-p1-456b62c3": (
+        CERTIFICATE,
+        1,
+        "471f6470fa95484655130e52994501f22ae8c72416878de499b8c051d6c47f94",
+    ),
+    "43d6efd869b4-p1-1bdb1fc3": (
+        CERTIFICATE,
+        1,
+        "0dbb137b8699ba124f227e5c4fb25389ea8a76289fec7c621a7b90606487501b",
+    ),
     "b4a653fd2c0b-p2-a2df8f70": (
         DATASHEET,
         2,
@@ -51,6 +63,16 @@ CERT_MODELS = "43d6efd869b4-p1-2679bdaa"
 CERT_END = "43d6efd869b4-p1-ce289ee7"
 DATA_MODELS = "b4a653fd2c0b-p2-a2df8f70"
 MANUAL_MODEL = "2c1dd5c1e2f7-p18-576d01a7"
+SOURCE_GROUPS = (
+    (CERT_HEADER, CERT_MODELS, CERT_END, DATA_MODELS, MANUAL_MODEL),
+    (
+        CERT_HEADER,
+        "43d6efd869b4-p1-456b62c3",
+        "43d6efd869b4-p1-1bdb1fc3",
+        DATA_MODELS,
+        MANUAL_MODEL,
+    ),
+)
 _MODEL = re.compile(r"HS3-(?:5|6|8|10|12)K-T2-W/G-PX\Z")
 # PDFium located each visible header on page 2 of this exact original PDF.
 # These are digests of the character offsets and page-relative bounding boxes,
@@ -267,6 +289,8 @@ def valid_hs3_scope(
     model = str(product.get("model", "")) if product else ""
     pair = variants(model)
     source_docs = proof.get("source_documents")
+    source_ids = scope.get("source_chunk_ids")
+    group = next((item for item in SOURCE_GROUPS if source_ids == list(item)), None)
     if (
         product is None
         or pair is None
@@ -278,8 +302,8 @@ def valid_hs3_scope(
         or not isinstance(source_docs, dict)
         or set(source_docs) != {"certificate", "datasheet", "manual"}
         or not isinstance(anchors, Mapping)
-        or not {hs3_anchor_key(cid) for cid in SOURCES}.issubset(anchors)
-        or not set(SOURCES).issubset(scope.get("source_chunk_ids", []))
+        or group is None
+        or not {hs3_anchor_key(cid) for cid in group}.issubset(anchors)
     ):
         return False
     for role, expected_sha in (
@@ -307,7 +331,7 @@ def valid_hs3_scope(
     ):
         return False
     expected_rows = []
-    for cid in SOURCES:
+    for cid in group:
         value = anchors.get(hs3_anchor_key(cid))
         if not isinstance(value, dict):
             return False
@@ -324,13 +348,13 @@ def valid_hs3_scope(
             return False
         expected_rows.append((cid, source_sha, source_page, source_kind, source_body))
     # Do not trust metadata merely because it was copied into the proof.
-    if len(hs3_anchors(expected_rows)) != len(SOURCES):
+    if len(hs3_anchors(expected_rows)) != len(group):
         return False
     header = anchors[hs3_anchor_key(CERT_HEADER)]["text"]
     declaration = (
-        anchors[hs3_anchor_key(CERT_MODELS)]["text"]
+        anchors[hs3_anchor_key(group[1])]["text"]
         + "\n"
-        + anchors[hs3_anchor_key(CERT_END)]["text"]
+        + anchors[hs3_anchor_key(group[2])]["text"]
     )
     data = anchors[hs3_anchor_key(DATA_MODELS)]["text"]
     manual = anchors[hs3_anchor_key(MANUAL_MODEL)]["text"]
