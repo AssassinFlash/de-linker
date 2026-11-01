@@ -24,7 +24,9 @@ namespace Linker\Tools\Cache;
  * site HMAC mail stamp. That is not a public-cache exclusion: logged-out
  * wp_rest is user 0, and the stamp remains valid for its one-day life.
  * The host, not this class, excludes LOGGED_IN_COOKIE from the public cache.
- * Both cache-login_cookie and cache-exc_cookies roll back to empty.
+ * cache-exc_cookies carries that exclusion. cache-login_cookie must remain
+ * empty: LiteSpeed owns its separate _lscache_vary cookie; reusing the
+ * WordPress authentication-cookie name overwrites it with a cache hash.
  */
 final class DynamicHtml {
 
