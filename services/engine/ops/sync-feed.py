@@ -121,6 +121,32 @@ def public_generation(directory: Path) -> None:
     os.chmod(directory, 0o755)
 
 
+def prune_generations(directory: Path, generation: Path, previous: Path | None) -> None:
+    """Remove only verified worker outputs; a matching directory name is no proof."""
+    for old in directory.glob("publication-generation-*"):
+        if old in {generation, previous} or old.is_symlink() or not old.is_dir():
+            continue
+        names = {entry.name for entry in old.iterdir()}
+        metadata = "manifest.json" if "manifest.json" in names else "initial-pair.json"
+        if names != {"feed.json", "compatibility.json", metadata} or any(
+            (old / name).is_symlink() or not (old / name).is_file() for name in names
+        ):
+            continue
+        try:
+            record = json.loads((old / metadata).read_bytes())
+            verified = all(
+                hashlib.sha256((old / (key + ".json")).read_bytes()).hexdigest()
+                == record[key + "_sha256"]
+                for key in ("feed", "compatibility")
+            )
+        except (ValueError, TypeError, KeyError):
+            continue
+        if verified:
+            for name in names:
+                (old / name).unlink()
+            old.rmdir()
+
+
 def read_loaded() -> dict[str, Any]:
     request = urllib.request.Request(
         os.environ.get(
@@ -174,12 +200,13 @@ def reusable_generation(
         return None
     try:
         raw = feed.read_bytes()
+        contract_raw = contract.read_bytes()
         old = json.loads(raw)
         manifest = json.loads((selected / "manifest.json").read_bytes())
         if (
             manifest["feed_sha256"] != hashlib.sha256(raw).hexdigest()
             or manifest["compatibility_sha256"]
-            != hashlib.sha256(contract.read_bytes()).hexdigest()
+            != hashlib.sha256(contract_raw).hexdigest()
         ):
             return None
         # Woo emits a fresh RFC3339 UTC timestamp on every GET. Only that
@@ -195,9 +222,9 @@ def reusable_generation(
         old["generated_at"] = document["generated_at"]
         if json.dumps(old, sort_keys=True) != json.dumps(
             document, sort_keys=True
-        ) or json.dumps(
-            json.loads(contract.read_bytes()), sort_keys=True
-        ) != json.dumps(document["compatibility"], sort_keys=True):
+        ) or json.dumps(json.loads(contract_raw), sort_keys=True) != json.dumps(
+            document["compatibility"], sort_keys=True
+        ):
             return None
         actual = loaded()
         if (
@@ -335,10 +362,15 @@ def sync(
                 previous = Path(
                     tempfile.mkdtemp(dir=directory, prefix="publication-generation-")
                 )
-                (previous / "feed.json").write_bytes(feed_target.read_bytes())
-                (previous / "compatibility.json").write_bytes(
-                    compatibility_target.read_bytes()
-                )
+                legacy = {}
+                for name, target in (
+                    ("feed", feed_target),
+                    ("compatibility", compatibility_target),
+                ):
+                    contents = target.read_bytes()
+                    (previous / (name + ".json")).write_bytes(contents)
+                    legacy[name + "_sha256"] = hashlib.sha256(contents).hexdigest()
+                (previous / "initial-pair.json").write_text(json.dumps(legacy))
                 public_generation(previous)
             atomic_link(generation, current)
             # Only the initial migration changes these links. The process pins
@@ -378,14 +410,7 @@ def sync(
             if jobs is not None and job is not None:
                 ack_started = True
                 complete = acknowledge(jobs, job, actual, log)
-            keep = {generation, previous}
-            for obsolete in directory.glob("publication-generation-*"):
-                if (
-                    obsolete not in keep
-                    and obsolete.is_dir()
-                    and not obsolete.is_symlink()
-                ):
-                    shutil.rmtree(obsolete)
+            prune_generations(directory, generation, previous)
             if not complete:
                 return 1
             log(
@@ -407,13 +432,7 @@ def sync(
                 and (directory / "current").is_symlink()
                 and (directory / "current").resolve() == generation
             ):
-                for obsolete in directory.glob("publication-generation-*"):
-                    if (
-                        obsolete not in {generation, previous}
-                        and obsolete.is_dir()
-                        and not obsolete.is_symlink()
-                    ):
-                        shutil.rmtree(obsolete)
+                prune_generations(directory, generation, previous)
             if jobs is not None and job is not None and not ack_started:
                 try:
                     jobs(

@@ -528,6 +528,7 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
         s for s in report.sections if s.id.startswith("check-controller-network-")
     )
     assert any(r.value == "LAN" for r in network_section.rows)
+    assert any(r.value == "LAN · 10" and r.href for r in network_section.rows)
     converter = next(s for s in report.sections if s.title == "A · Converter output")
     assert any(row.value.endswith(" kW") for row in converter.rows)
     accessory = next(s for s in report.sections if s.title == "A · Required accessory")

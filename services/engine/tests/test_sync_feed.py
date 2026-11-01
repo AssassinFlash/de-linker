@@ -215,13 +215,18 @@ def test_process_readback_failure_rolls_back_the_whole_generation(
 def test_retains_only_current_and_previous_generation(
     tmp_path: Path, feed_url: str
 ) -> None:
+    unknown = tmp_path / "state/publication-generation-unrelated"
+    unknown.mkdir(parents=True)
+    witness = unknown / "project-note.txt"
+    witness.write_bytes(b"unrelated")
     for revision in ("a", "b", "c"):
         document = feed_document()
         document["source_revision"] = revision * 64
         (tmp_path / "feed.json").write_text(json.dumps(document))
         code, _, logs, feed, _ = run(load_sync(), tmp_path, feed_url)
         assert code == 0, logs
-    assert len(list(feed.parent.glob("publication-generation-*"))) == 2
+    assert witness.read_bytes() == b"unrelated"
+    assert len(set(feed.parent.glob("publication-generation-*")) - {unknown}) == 2
 
 
 @pytest.mark.parametrize("complete", [True, False, None])

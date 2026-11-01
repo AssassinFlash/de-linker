@@ -342,11 +342,14 @@ def build_report(source: Object) -> Report:
                         source_display_value = text(
                             "sales_" + source_display_value, locale
                         )
+                    if cited.get("figure_key") == "max_lan_inverters":
+                        source_display_value = "LAN · " + source_display_value
+                    if fact.get("raw_unit") and fact.get("unit") != "count":
+                        source_display_value += f" {fact['raw_unit']}"
                     rows.append(
                         ReportRow(
                             label=label,
-                            value=source_display_value
-                            + (f" {fact['raw_unit']}" if fact.get("raw_unit") else ""),
+                            value=source_display_value,
                             href=url,
                         )
                     )
