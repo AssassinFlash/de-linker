@@ -679,7 +679,13 @@ def test_new_manifest_freezes_the_requested_generation_model(
 
 
 @pytest.mark.parametrize(
-    "mode", ["ordinary", "clear-flat-roof", "budget-tamper", "pitched"]
+    "mode",
+    [
+        "ordinary",
+        pytest.param("clear-flat-roof", marks=pytest.mark.ci_expensive),
+        "budget-tamper",
+        pytest.param("pitched", marks=pytest.mark.ci_expensive),
+    ],
 )
 def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_and_report(
     workspace: Workspace,

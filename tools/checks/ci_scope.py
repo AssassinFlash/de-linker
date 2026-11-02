@@ -89,6 +89,7 @@ CONTROL_INPUTS = (
     "tools/checks/ci_scope.py",
     "tools/checks/ci_preflight.py",
     "tools/checks/ci_phase.sh",
+    "tools/checks/ci_engine_tests.py",
     "tools/checks/test_ci_scope.py",
     "tools/checks/test_ci_preflight.py",
     ".gitattributes",

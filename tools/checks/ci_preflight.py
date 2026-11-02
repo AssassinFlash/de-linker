@@ -39,6 +39,8 @@ class Lane:
     command: tuple[str, ...]
     timeout_seconds: int
     environment: dict[str, str] = field(default_factory=dict)
+    cwd: Path | None = None
+    stop_grace_seconds: float = 5
 
 
 def _git(*arguments: str, check: bool = True) -> bytes:
@@ -138,11 +140,11 @@ def _signal_group(process: subprocess.Popen[str], sig: int) -> None:
         pass
 
 
-def _terminate(process: subprocess.Popen[str]) -> None:
+def _terminate(process: subprocess.Popen[str], grace_seconds: float = 5) -> None:
     """Every command gets its own session; include its shell/uv/browser children."""
     _signal_group(process, signal.SIGTERM)
     try:
-        process.wait(timeout=5)
+        process.wait(timeout=grace_seconds)
     except subprocess.TimeoutExpired:
         pass
     # The leader may have exited while a descendant ignored SIGTERM.
@@ -161,7 +163,7 @@ def run_lane(lane: Lane, stop: threading.Event) -> tuple[str, int | None, str | 
     try:
         process = subprocess.Popen(
             lane.command,
-            cwd=ROOT,
+            cwd=lane.cwd or ROOT,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
@@ -193,7 +195,7 @@ def run_lane(lane: Lane, stop: threading.Event) -> tuple[str, int | None, str | 
             time.sleep(0.1)
         return lane.name, process.returncode, None
     finally:
-        _terminate(process)
+        _terminate(process, lane.stop_grace_seconds)
         reader.join(timeout=2)
         if process.stdout is not None and not reader.is_alive():
             process.stdout.close()
@@ -203,20 +205,25 @@ def run_lane(lane: Lane, stop: threading.Event) -> tuple[str, int | None, str | 
         )
 
 
-def run_parallel(lanes: Iterable[Lane]) -> bool:
+def run_parallel(lanes: Iterable[Lane], *, fail_fast: bool = False) -> bool:
     lanes = list(lanes)
     if not lanes:
         return True
     stop = threading.Event()
     failures: list[str] = []
     print("Queued checks: " + ", ".join(lane.name for lane in lanes), flush=True)
-    pool = ThreadPoolExecutor(max_workers=min(4, len(lanes)))
+    # Engine itself owns two pytest processes. Keep the existing four-process
+    # budget across that lane and the other independent checks.
+    engine = any(lane.command == ("just", "ci-engine") for lane in lanes)
+    pool = ThreadPoolExecutor(max_workers=min(4 - int(engine), len(lanes)))
     try:
         futures = [pool.submit(run_lane, lane, stop) for lane in lanes]
         for future in as_completed(futures):
             name, code, error = future.result()
             if code not in (0, None) or error:
                 failures.append(f"{name}: {error or f'exit {code}'}")
+                if fail_fast:
+                    stop.set()
     except BaseException:
         stop.set()
         raise
