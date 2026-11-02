@@ -135,6 +135,9 @@ def test_three_checks_and_physical_context_are_independent() -> None:
     plan = InstallationInputs.read(inputs["installation"])
     stale = json_object(protection_review(plan, {"source"}))["assessments"][0]
     assert stale["confirmation_status"] == "context_unavailable"
+    ambiguous = copy.deepcopy(inputs)
+    ambiguous["installation"]["materials"][0]["quantity"] = 2
+    assert result(ambiguous, basis)["confirmation_status"] == "context_unavailable"
 
 
 def test_failed_values_and_mismatched_device_rating_remain_separate() -> None:
