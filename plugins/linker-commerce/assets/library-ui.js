@@ -598,6 +598,7 @@
 		syncSelection(true);
 		if (state.q.trim()) {
 			state.searchPage = 1;
+			state.suggestIndex = -1;
 			renderSearch();
 			renderSuggestions();
 		}

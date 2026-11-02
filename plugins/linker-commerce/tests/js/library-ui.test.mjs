@@ -595,6 +595,40 @@ test('a selected document type stays visible and filters search, counts and sugg
  dom.window.close();
 });
 
+test('keyboard type changes reset suggestion selection before Enter can activate a current result', () => {
+ const dom = fixture();
+ const doc = boot(dom);
+ const opened = [];
+ dom.window.open = (url) => { opened.push(url); return null; };
+ doc.querySelector('#linker-library-tab-documents').click();
+ const input = doc.querySelector('.linker-library-q');
+ input.value = 'document 1';
+ input.dispatchEvent(new dom.window.Event('input', {bubbles: true}));
+ const options = () => doc.querySelectorAll('#linker-library-suggest [data-library-suggest]');
+ const key = (value) => {
+  const event = new dom.window.KeyboardEvent('keydown', {key: value, bubbles: true, cancelable: true});
+  input.dispatchEvent(event);
+  return event;
+ };
+ assert.equal(options().length, 6);
+ for (let i = 0; i < 6; i++) key('ArrowDown');
+ assert.equal(input.getAttribute('aria-activedescendant'), 'linker-library-sug-5');
+ const manual = doc.querySelector('[data-library-filters] button[data-library-type="manual"]');
+ manual.focus();
+ manual.click();
+ assert.equal(options().length, 5, 'keyboard activation narrows the live suggestions');
+ assert.equal(doc.querySelectorAll('#linker-library-suggest [aria-selected="true"]').length, 0);
+ assert.equal(input.hasAttribute('aria-activedescendant'), false);
+ input.focus();
+ assert.equal(key('Enter').defaultPrevented, false, 'no stale selection swallows Enter');
+ assert.deepEqual(opened, []);
+ key('ArrowDown');
+ assert.equal(input.getAttribute('aria-activedescendant'), 'linker-library-sug-0');
+ assert.equal(key('Enter').defaultPrevented, true);
+ assert.deepEqual(opened, ['https://de-linker.test/a.pdf']);
+ dom.window.close();
+});
+
 test('a type-filtered empty search can recover by changing the type', () => {
  const dom = fixture();
  const doc = boot(dom);
