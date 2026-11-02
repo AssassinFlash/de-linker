@@ -1041,6 +1041,33 @@ class ScopeTest(unittest.TestCase):
             self.assertTrue(ci_scope.checked_base("a" * 40))
         original.assert_called_once_with("a" * 40)
 
+    def test_pending_main_push_can_use_checked_pr_but_completed_failure_cannot(self):
+        for event, status, conclusion, expected in (
+            ("push", "queued", None, True),
+            ("push", "in_progress", None, True),
+            ("push", "completed", "failure", False),
+            ("pull_request", "in_progress", None, False),
+        ):
+            with (
+                self.subTest(event=event, status=status, conclusion=conclusion),
+                patch.object(
+                    ci_scope,
+                    "latest_run",
+                    return_value={
+                        "event": event,
+                        "status": status,
+                        "conclusion": conclusion,
+                    },
+                ),
+                patch.object(ci_scope, "checked_run", return_value=False),
+                patch.object(ci_scope, "validated_scope", return_value="scoped"),
+                patch.object(
+                    ci_scope, "checked_pr_tree", return_value={"id": 858}
+                ) as original,
+            ):
+                self.assertEqual(ci_scope.checked_base("a" * 40), expected)
+                self.assertEqual(original.called, expected)
+
     def test_whitespace_failure_stops_before_selecting_lanes(self):
         with TemporaryDirectory() as folder:
             output = Path(folder) / "output"
