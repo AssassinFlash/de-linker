@@ -15,6 +15,7 @@ import math
 import os
 import pwd
 import re
+import runpy
 import shlex
 import shutil
 import signal
@@ -49,6 +50,14 @@ def write(path: Path, value: str, mode: int = 0o600) -> None:
     finally:
         if owned:
             temporary.unlink(missing_ok=True)
+
+
+def check_source(path: Path) -> None:
+    """Use the release's reviewed source-closure verifier before activation."""
+    helper = path / "ops/planner_source.py"
+    if helper.is_symlink() or not helper.is_file():
+        raise ValueError("reviewed Planner source verifier required")
+    runpy.run_path(str(helper))["check_manifest"](path)
 
 
 def environment(path: Path) -> dict[str, str]:
@@ -260,6 +269,9 @@ class Release:
         self, *, prepared: bool = True, check_inputs: bool = True
     ) -> dict[str, Any]:
         self.check_paths()
+        source_manifest = self.path / ".git-source-manifest.json"
+        if source_manifest.exists() or source_manifest.is_symlink():
+            check_source(self.path)
         origin = json.loads(
             command(
                 [
@@ -347,6 +359,10 @@ class Release:
                     self.worker_unit,
                 )
             }
+            if source_manifest.exists() or source_manifest.is_symlink():
+                files[source_manifest.name] = hashlib.sha256(
+                    source_manifest.read_bytes()
+                ).hexdigest()
             if frozen != {"release": release, "files": files}:
                 raise RuntimeError("prepared executable or configuration changed")
         return release
@@ -396,6 +412,8 @@ class Release:
 
     def prepare(self, source_env: Path, publication_url: str) -> None:
         self.check_paths()
+        if not (self.deploy / "prepared.json").exists():
+            check_source(self.path)
         selected = self.root / "selection.json"
         if selected.exists():
             old = Release(Path(json.loads(selected.read_text())["current"]))
@@ -507,18 +525,18 @@ class Release:
             self.http_unit,
             self.worker_unit,
         ]
+        files = {
+            name: hashlib.sha256((self.deploy / name).read_bytes()).hexdigest()
+            for name in names
+        }
+        source_manifest = self.path / ".git-source-manifest.json"
+        files[source_manifest.name] = hashlib.sha256(
+            source_manifest.read_bytes()
+        ).hexdigest()
         write(
             self.deploy / "prepared.json",
             json.dumps(
-                {
-                    "release": self.preflight(prepared=False),
-                    "files": {
-                        name: hashlib.sha256(
-                            (self.deploy / name).read_bytes()
-                        ).hexdigest()
-                        for name in names
-                    },
-                },
+                {"release": self.preflight(prepared=False), "files": files},
                 sort_keys=True,
             )
             + "\n",

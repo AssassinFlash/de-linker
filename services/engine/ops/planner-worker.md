@@ -189,6 +189,37 @@ the prior disk plist. An unknown/foreign loaded definition is left untouched and
 reported as unconfirmed. Real scheduler installation, backup, GC and deployed
 log/readiness readback are separate rollout acceptance, not local-test claims.
 
+## Planner source closure
+
+For every new candidate, use the reviewed Git source entrypoint to pack the
+complete runtime, including `src`, `schemas`, `data`, `ops`, `.python-version`,
+`pyproject.toml`, and `uv.lock`. Do not assemble this list manually. The entrypoint
+uses the legacy Engine Git blob inventory and its byte verifier; it accepts an
+exact merged commit and checks both source operators against that commit. Its
+archive includes a manifest, and the native Planner `prepare` requires and
+verifies it before preparing a new release. Later preflight rechecks the source
+and the frozen manifest. Previously prepared releases without the new manifest
+remain readable for normal rollback; do not add one to an old release.
+
+After the recovery point and release-window checks, stream the archive directly
+into the one newly created, unselected final release directory. For example,
+with `repo`, `revision`, and `candidate` set to the reviewed absolute checkout,
+full merged commit, and unique remote `/opt/linker-planner/releases/<64-hex>`:
+
+```sh
+set -o pipefail
+python3 "$repo/services/engine/ops/planner_source.py" --repository "$repo" \
+  --revision "$revision" | ssh -T linker-services \
+  "mkdir '$candidate' && tar -xf - -C '$candidate'"
+```
+
+Create the final-path locked environment and copy the approved runtime/worker
+policies before invoking the candidate's `planner_release.py prepare`, `activate`
+and `status`. Keep the current/previous pair and the native input floor; the
+source archive does not substitute for backup, service readiness or consumer
+readback. On an interrupted stage, preserve or remove only the identified,
+unselected candidate after checking ownership and active readers.
+
 ## Preparation fixture exports
 
 Run the existing exporter from `services/engine` with that host's existing
