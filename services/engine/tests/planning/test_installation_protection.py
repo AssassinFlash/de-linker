@@ -26,6 +26,7 @@ from linker_engine.planning.project_input_contracts import (
 from linker_engine.planning.records import Actor
 from linker_engine.planning.report_inputs import ReportOptions
 from linker_engine.planning.report_kernel import ReportKernel, ReportService
+from linker_engine.planning.report_numbers import comparison_values
 from linker_engine.planning.worker import Worker
 from linker_engine.planning.workspace import Workspace
 
@@ -370,4 +371,11 @@ def test_worker_freezes_protection_in_report_pdf_csv_and_private_projection(
     assert (
         "Ausschaltvermögen" in de_projection
         and "Project fault study" not in de_projection
+    )
+
+
+def test_report_comparison_preserves_a_small_exceedance() -> None:
+    assert comparison_values(6000.0004, 6000.0003, "de", "A") == (
+        "6.000,0004 A",
+        "6.000,0003 A",
     )

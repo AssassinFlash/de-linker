@@ -100,6 +100,19 @@ def number(value: Json, locale: str, unit: str = "") -> str:
     return f"{shown} {unit}" if unit and shown != "—" else shown
 
 
+def comparison_values(
+    measured: float, maximum: float, locale: str, unit: str
+) -> tuple[str, str]:
+    """Keep a visible distinction when ordinary report rounding hides a limit crossing."""
+    left, right = number(measured, locale, unit), number(maximum, locale, unit)
+    if measured != maximum and left == right:
+        # Python's shortest round-trip representation distinguishes the frozen values.
+        left, right = (
+            f"{_decimal(str(value), locale)} {unit}" for value in (measured, maximum)
+        )
+    return left, right
+
+
 def span(start: Json, end: Json, locale: str) -> str:
     """A two-ended range whose ends share one locale convention.
 

@@ -7,7 +7,7 @@ from typing import cast
 from linker_engine.models import ReportRow, ReportSection
 
 from .canonical import Object
-from .report_numbers import number
+from .report_numbers import comparison_values, number
 
 
 def _state(row: Object, locale: str) -> str:
@@ -101,14 +101,11 @@ def protection_section(review: Object, locale: str) -> ReportSection:
         ):
             value = cast(Object, item[key])
             detail = _state(value, locale)
-            if isinstance(value.get("measured"), (int, float)) and isinstance(
-                value.get("maximum"), (int, float)
-            ):
+            measured, maximum = value.get("measured"), value.get("maximum")
+            if isinstance(measured, (int, float)) and isinstance(maximum, (int, float)):
+                left, right = comparison_values(measured, maximum, locale, unit)
                 relation = ">" if value["status"] == "outside_declared_values" else "≤"
-                detail += (
-                    f" · {measured_label} {number(value['measured'], locale, unit)} "
-                    f"{relation} {limit_label} {number(value['maximum'], locale, unit)}"
-                )
+                detail += f" · {measured_label} {left} {relation} {limit_label} {right}"
             if key == "breaking" and isinstance(value.get("voltage_v"), (int, float)):
                 detail += f" · {number(value['voltage_v'], locale, 'V')} {str(value.get('current_kind', '')).upper()}"
             if key == "disconnection" and isinstance(
@@ -127,9 +124,9 @@ def protection_section(review: Object, locale: str) -> ReportSection:
             rows.append(ReportRow(label=f"{scenario} · {title}", value=detail))
         for thermal in cast(list[Object], item.get("thermal", [])):
             detail = _state(thermal, locale)
-            if isinstance(thermal.get("measured"), (int, float)) and isinstance(
-                thermal.get("maximum"), (int, float)
-            ):
+            measured, maximum = thermal.get("measured"), thermal.get("maximum")
+            if isinstance(measured, (int, float)) and isinstance(maximum, (int, float)):
+                left, right = comparison_values(measured, maximum, locale, "A²s")
                 relation = (
                     ">" if thermal["status"] == "outside_declared_values" else "≤"
                 )
@@ -141,10 +138,7 @@ def protection_section(review: Object, locale: str) -> ReportSection:
                 limit = (
                     "thermische Leitergrenze k²S²" if de else "conductor withstand k²S²"
                 )
-                detail += (
-                    f" · {energy} {number(thermal['measured'], locale, 'A²s')} "
-                    f"{relation} {limit} {number(thermal['maximum'], locale, 'A²s')}"
-                )
+                detail += f" · {energy} {left} {relation} {limit} {right}"
                 detail += f" · S {number(thermal['cross_section_mm2'], locale, 'mm²')} · k {number(thermal['k_a_sqrt_s_per_mm2'], locale, 'A√s/mm²')}"
                 detail += f" · {number(thermal['coverage_min_fault_a'], locale, 'A')}–{number(thermal['coverage_max_fault_a'], locale, 'A')} · {number(thermal['maximum_clear_s'], locale, 's')}"
             for field in (
