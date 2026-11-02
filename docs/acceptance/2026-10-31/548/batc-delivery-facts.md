@@ -35,12 +35,8 @@ match, deduction, net-purchase quantity, alternate specification or complete
 BOS approval is inferred.
 
 The existing 79 facts cover four ET products and five BAT-C products; this
-candidate adds 60 facts across these three products only. The BAT-C 61.4 and
-112.6 kWh products are a different family. Their linked two-page quick guide
-does not establish a complete, model-specific delivery list; the ET manual's
-112.6 kWh table cannot be extended to the 61.4 kWh model. A manufacturer
-packing list or equivalent product-linked original is still needed for that
-family. ET delivery facts and project-dependent items remain in the existing
+candidate adds 60 facts across these three products only. The BAT-C 61.4 and 112.6 kWh products are a different family. Their separate
+delivery tables and source availability are recorded below. ET delivery facts and project-dependent items remain in the existing
 sources and are not re-entered by this candidate.
 
 Use `tools/migrate/548-installation-facts.py` with `--plan
