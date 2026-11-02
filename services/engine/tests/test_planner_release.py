@@ -137,6 +137,21 @@ def test_prepared_policy_is_frozen_and_numerical_operator_has_no_credentials(
     )
     assert os.stat(private / "http.env").st_mode & 0o777 == 0o600
     target.preflight()
+    manifest = release / ".git-source-manifest.json"
+    receipt = private / "prepared.json"
+    frozen = receipt.read_bytes()
+    manifest.write_text("changed")
+    with pytest.raises(
+        RuntimeError, match="prepared executable or configuration changed"
+    ):
+        target.preflight()
+    manifest.unlink()
+    legacy_receipt = json.loads(frozen)
+    legacy_receipt["files"].pop(manifest.name)
+    receipt.write_text(json.dumps(legacy_receipt))
+    target.preflight()  # Previously frozen releases did not have a manifest.
+    receipt.write_bytes(frozen)
+    manifest.write_text("fixture")
     # Latest inputs may omit a feature while an immutable older revision still
     # needs it. Duplicate CAS references are read once; no schema/open upgrade.
     store = root / "state/workspace"
