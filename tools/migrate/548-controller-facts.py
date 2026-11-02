@@ -40,6 +40,8 @@ HERE = Path(__file__).resolve().parent
 def plan_for_target(plan: dict[str, Any], origin: str) -> dict[str, Any]:
     """Select only an explicitly reviewed site version of the same original."""
     selected = copy.deepcopy(plan)
+    if selected.get("kind") == "batc_112_manual_v1":
+        return selected
     if selected.get("kind") == "batc_cabinet_sales_unit_v1":
         figure = selected.get("figure")
         citation = figure.get("citation") if isinstance(figure, dict) else None

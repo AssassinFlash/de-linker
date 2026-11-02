@@ -27,10 +27,12 @@ try {
 		}
 		$manifest = Publication::manifest();
 		$mode     = 'preview' === $action ? ( $request['plan']['kind'] ?? 'controller' ) : ( $request['receipt']['mode'] ?? 'controller' );
-		if ( ! in_array( $mode, array( 'controller', 'batc_cabinet_sales_unit_v1' ), true ) ) {
+		if ( ! in_array( $mode, array( 'controller', 'batc_cabinet_sales_unit_v1', 'batc_112_manual_v1' ), true ) ) {
 			throw new RuntimeException( 'Unsupported reviewed equipment-facts mode.' );
 		}
-		$keys      = 'batc_cabinet_sales_unit_v1' === $mode ? array(
+		$keys      = 'batc_112_manual_v1' === $mode ? array(
+			1955 => array( EngineeringData::DOCUMENTS_META_KEY ),
+		) : ( 'batc_cabinet_sales_unit_v1' === $mode ? array(
 			1956 => array( SelectionFacts::FIGURES_META_KEY, EvidenceBindings::META_KEY ),
 			1957 => array( SelectionFacts::FIGURES_META_KEY, EvidenceBindings::META_KEY ),
 			1958 => array( SelectionFacts::FIGURES_META_KEY, EvidenceBindings::META_KEY ),
@@ -39,17 +41,18 @@ try {
 			1946 => array( CompatibilityClaims::META_KEY ),
 			1947 => array( CompatibilityClaims::META_KEY ),
 			1948 => array( CompatibilityClaims::META_KEY ),
-		);
+		) );
 		$state     = static fn( int $id, string $key ): array => array(
 			'exists' => metadata_exists( 'post', $id, $key ),
 			'value'  => get_post_meta( $id, $key, true ),
 		);
 		$same      = static fn( array $current, bool $exists, mixed $value ): bool => $current['exists'] === $exists && ( ! $exists || $current['value'] === $value );
 		$json      = static fn( mixed $value ): mixed => json_decode( (string) wp_json_encode( $value ), true );
-		$documents = static function ( int $id, array $publication ): array {
+		$manual_id = 'doc-cbd6d3d2db163cf7bce09abf348fd8531756f4e1f3e1ae9a2d82418b322a2568';
+		$documents = static function ( int $id, array $publication ) use ( $mode, $manual_id ): array {
 			$rows = array();
 			foreach ( $publication['documents'] as $doc ) {
-				if ( in_array( $id, $doc['product_ids'], true ) ) {
+				if ( in_array( $id, $doc['product_ids'], true ) && ! ( 'batc_112_manual_v1' === $mode && 1955 === $id && $manual_id === $doc['document_id'] ) ) {
 					$rows[ $doc['document_id'] ] = array_intersect_key( $doc, array_flip( array( 'document_id', 'document_revision', 'blob_sha256', 'url' ) ) );
 				}
 			}
@@ -89,7 +92,49 @@ try {
 		}
 		if ( 'preview' === $action ) {
 			$plan = $request['plan'] ?? null;
-			if ( 'batc_cabinet_sales_unit_v1' === $mode ) {
+			if ( 'batc_112_manual_v1' === $mode ) {
+				$docs     = array_column( $manifest['documents'], null, 'document_id' );
+				$doc      = $docs[ $manual_id ] ?? null;
+				$product  = wc_get_product( 1955 );
+				$products = array_column( $manifest['products'], null, 'product_id' );
+				if ( array(
+					'schema_version' => 1,
+					'kind'           => 'batc_112_manual_v1',
+				) !== $plan || ! is_array( $doc ) || '0ef4b1ccdcc418e3ca8de31194b3d9e2969be39aa739ffa0ca1f038fcfac6615' !== $doc['blob_sha256'] || in_array( 1955, $doc['product_ids'], true ) || ! in_array( 1946, $doc['product_ids'], true ) || ! $product instanceof WC_Product || 'DLK-GOODWE-GW1126BATACG10' !== $product->get_sku() || 'GW112.6-BAT-AC-G10' !== ( $products[1955]['model'] ?? null ) || Publication::canonical_id( 1955 ) !== 1955 || ! Publication::is_published( 1955 ) || '1' !== get_post_meta( 1955, '_linker_documents_managed', true ) ) {
+					throw new RuntimeException( 'The reviewed BAT-C 112.6 or ET manual identity changed.' );
+				}
+				$rows        = get_post_meta( 1955, EngineeringData::DOCUMENTS_META_KEY, true );
+				$source_rows = Publication::document_rows( 1946 );
+				$matching    = array_values( array_filter( $source_rows, static fn( array $row ): bool => wp_parse_url( (string) ( $row['url'] ?? '' ), PHP_URL_PATH ) === wp_parse_url( $doc['url'], PHP_URL_PATH ) ) );
+				if ( ! is_array( $rows ) || 1 !== count( $matching ) ) {
+					throw new RuntimeException( 'The existing ET manual association is not unique.' );
+				}
+				foreach ( $rows as $row ) {
+					if ( wp_parse_url( (string) ( $row['url'] ?? '' ), PHP_URL_PATH ) === wp_parse_url( $doc['url'], PHP_URL_PATH ) ) {
+						throw new RuntimeException( 'The BAT-C manual association is already present.' );
+					}
+				}
+				$receipt                   = array(
+					'schema_version'             => 1,
+					'mode'                       => $mode,
+					'site'                       => home_url(),
+					'plan_sha256'                => Publication::revision( $plan ),
+					'compatibility_input_sha256' => Publication::revision( $input ),
+					'source_revision'            => $manifest['source_revision'],
+					'manual_identity'            => $doc,
+					'products'                   => array(),
+					'changes'                    => array(),
+				);
+				$receipt['products'][1955] = array(
+					'model'            => $products[1955]['model'],
+					'product_revision' => $products[1955]['product_revision'],
+					'protected_sha256' => $protected( 1955 ),
+					'documents'        => $documents( 1955, $manifest ),
+					'meta'             => array(),
+				);
+				$rows[]                    = $matching[0];
+				$record( 1955, EngineeringData::DOCUMENTS_META_KEY, $rows, $receipt );
+			} elseif ( 'batc_cabinet_sales_unit_v1' === $mode ) {
 				$models      = array(
 					1956 => array( 'GW208.9-BAT-LC-G10', 'DLK-GOODWE-GW2089BATLCG10' ),
 					1957 => array( 'GW208.9-BAT-LCD-G10', 'DLK-GOODWE-GW2089BATLCDG10' ),
@@ -298,7 +343,7 @@ try {
 				throw new RuntimeException( 'The reviewed receipt or compatibility input changed.' );
 			}
 		}
-		$inspect  = static function ( array $publication ) use ( &$receipt, $keys, $documents, $protected, $state, $same ): string {
+		$inspect  = static function ( array $publication ) use ( &$receipt, $keys, $documents, $protected, $state, $same, $mode, $manual_id ): string {
 			if ( array_diff_key( $receipt['products'], $keys ) || array_diff_key( $keys, $receipt['products'] ) ) {
 				throw new RuntimeException( 'Receipt product scope changed.' );
 			}
@@ -316,6 +361,26 @@ try {
 					$before  = $before && $same( $current, $meta['before_exists'], $meta['before'] );
 					$after   = $after && $same( $current, true, $meta['after'] );
 				}
+			}
+			if ( 'batc_112_manual_v1' === $mode ) {
+				$identity = $receipt['manual_identity'] ?? null;
+				$all      = array_column( $publication['documents'], null, 'document_id' );
+				$current  = $all[ $manual_id ] ?? null;
+				if ( ! is_array( $identity ) || ! is_array( $current ) ) {
+					throw new RuntimeException( 'The reviewed shared manual was withdrawn.' );
+				}
+				$associated = $current['product_ids'];
+				unset( $current['product_ids'] );
+				$original = $identity['product_ids'];
+				unset( $identity['product_ids'] );
+				$added   = $original;
+				$added[] = 1955;
+				sort( $added );
+				if ( $current !== $identity || ! in_array( $associated, array( $original, $added ), true ) ) {
+					throw new RuntimeException( 'The shared manual or another association changed.' );
+				}
+				$before = $before && $associated === $original;
+				$after  = $after && $associated === $added;
 			}
 			return $after ? 'applied' : ( $before ? 'restored' : 'conflict' );
 		};
@@ -406,7 +471,12 @@ try {
 					throw new RuntimeException( 'Final protected-state verification failed.' );
 				}
 				if ( 'apply' === $action ) {
-					if ( 'batc_cabinet_sales_unit_v1' === $mode ) {
+					if ( 'batc_112_manual_v1' === $mode ) {
+						$item = EngineeringFeed::item( 1955, $fresh );
+						if ( ! is_array( $item ) || ! in_array( $manual_id, array_column( $item['documents'] ?? array(), 'document_id' ), true ) ) {
+							throw new RuntimeException( 'The engineering feed did not publish the reviewed manual association.' );
+						}
+					} elseif ( 'batc_cabinet_sales_unit_v1' === $mode ) {
 						foreach ( array_keys( $keys ) as $id ) {
 							$item    = EngineeringFeed::item( $id, $fresh );
 							$figures = is_array( $item ) ? (array) $item['figures'] : array();
