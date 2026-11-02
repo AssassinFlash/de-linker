@@ -236,7 +236,7 @@ class Release:
     def namespace(self) -> tuple[Path, str, int, str]:
         return self.root, self.spec["prefix"], self.spec["port"], self.spec["user"]
 
-    def operator(self, *args: str) -> dict[str, Any]:
+    def operator(self, *args: str, timeout: float | None = None) -> dict[str, Any]:
         env = {
             "PATH": "/usr/sbin:/usr/bin:/sbin:/bin",
             "LANG": "C.UTF-8",
@@ -260,7 +260,7 @@ class Release:
                     *args,
                 ],
                 env=env,
-                timeout=self.spec["start_seconds"],
+                timeout=self.spec["start_seconds"] if timeout is None else timeout,
             )
         )
         return result
@@ -866,6 +866,7 @@ def maintain(
     recovery: Path | None = None,
     snapshots: tuple[Path, ...] = (),
     when_idle: bool = False,
+    work_deadline: float | None = None,
 ) -> dict[str, Any]:
     """Read-only default; apply owns a stopped pair and always restores it."""
     arguments = ["retention"]
@@ -897,6 +898,10 @@ def maintain(
         control = release.operator("control", "status")
         if when_idle and (control["draining"] or control.get("pending", 0)):
             return {"schema_version": 1, "mode": "skipped", "reason": "busy"}
+        if work_deadline is not None and (
+            not math.isfinite(work_deadline) or work_deadline <= time.monotonic()
+        ):
+            raise TimeoutError("maintenance_work_budget_expired")
         draining = control["draining"]
         failure: BaseException | None = None
         try:
@@ -923,7 +928,15 @@ def maintain(
                     and not path.is_symlink()
                 ):
                     path.unlink()
-            result = release.operator(*arguments, "--apply", "--offline")
+            if work_deadline is None:
+                result = release.operator(*arguments, "--apply", "--offline")
+            else:
+                remaining = work_deadline - time.monotonic()
+                if remaining <= 0:
+                    raise TimeoutError("maintenance_work_budget_expired")
+                result = release.operator(
+                    *arguments, "--apply", "--offline", timeout=remaining
+                )
             return result
         except BaseException as error:
             failure = error
@@ -965,6 +978,14 @@ def main() -> None:
         help="apply offline retention; default is read-only plan",
     )
     parser.add_argument(
+        "--work-seconds",
+        type=float,
+        # Match the native scheduler's existing default work budget; service
+        # recovery is separately bounded by the existing start/stop policy.
+        default=600,
+        help="maximum maintenance work time; paired recovery has its own reserve",
+    )
+    parser.add_argument(
         "--recovery",
         type=Path,
         help="existing independently verified archive covering deleted bytes",
@@ -991,12 +1012,15 @@ def main() -> None:
             raise RuntimeError("no retained rollback release")
         result = activate(Release(Path(state["previous"])))
     elif args.operation == "retention":
+        if not math.isfinite(args.work_seconds) or args.work_seconds <= 0:
+            parser.error("maintenance work budget must be positive and finite")
         result = maintain(
             release,
             apply=args.apply,
             recovery=args.recovery,
             snapshots=tuple(args.snapshot),
             when_idle=args.when_idle,
+            work_deadline=time.monotonic() + args.work_seconds if args.apply else None,
         )
     elif args.operation == "stop":
         with locked(release.root):

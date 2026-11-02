@@ -498,6 +498,83 @@ def test_retention_operator_restores_pair_after_each_failure(
         assert "confirmed-stopped" in events and "start" in events
 
 
+@pytest.mark.parametrize("phase", ["enough", "after_stop", "before_stop"])
+def test_retention_uses_remaining_work_budget_and_always_restores(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, phase: str
+) -> None:
+    root = tmp_path / "operator"
+    root.mkdir()
+    spec = root / "spec.json"
+    (root / "selection.json").write_text(json.dumps({"current": str(spec)}))
+    events: list[Any] = []
+    running = True
+    target = SimpleNamespace(
+        root=root,
+        spec_file=spec,
+        deploy=root,
+        policy={"ready_file": str(root / "ready.json")},
+    )
+
+    def operator(*args: str, timeout: float | None = None) -> dict[str, Any]:
+        events.append((args, timeout))
+        if args == ("control", "status"):
+            return {"draining": False, "pending": 0}
+        return {"candidate_count": 1, "temporary_count": 0, "candidate_sha256": []}
+
+    def stop() -> None:
+        nonlocal running
+        running = False
+        events.append("stop")
+
+    def start() -> None:
+        nonlocal running
+        running = True
+        events.append("start")
+
+    def probe() -> dict[str, Any]:
+        if not running:
+            raise RuntimeError("stopped")
+        return {}
+
+    target.operator = operator
+    target.recovery_covers = lambda *_: None
+    target.preflight = lambda: {}
+    target.probe = probe
+    target.ready = lambda _: running
+    target.stop = stop
+    target.check_stopped = lambda: None
+    target.start = start
+    moments = iter(
+        [
+            141.0 if phase == "before_stop" else 100.0,
+            141.0 if phase == "after_stop" else 130.0,
+        ]
+    )
+    monkeypatch.setattr(ops.time, "monotonic", lambda: next(moments))
+    if phase != "enough":
+        with pytest.raises(TimeoutError, match="maintenance_work_budget_expired"):
+            ops.maintain(
+                target, apply=True, recovery=root / "recovery", work_deadline=140.0
+            )
+        assert not any(
+            isinstance(event, tuple) and event[1] is not None for event in events
+        )
+    else:
+        ops.maintain(
+            target, apply=True, recovery=root / "recovery", work_deadline=140.0
+        )
+        assert (
+            ("retention", "--recovery", str(root / "recovery"), "--apply", "--offline"),
+            10.0,
+        ) in events
+    assert running
+    if phase == "before_stop":
+        assert "stop" not in events and "start" not in events
+    else:
+        assert "start" in events
+        assert events[-1] == (("control", "resume"), None)
+
+
 @pytest.mark.parametrize(
     "failure",
     [TimeoutError("deadline"), KeyboardInterrupt(), RuntimeError("launcher failed")],
