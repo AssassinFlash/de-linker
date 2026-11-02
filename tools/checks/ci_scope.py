@@ -526,7 +526,15 @@ def module_inputs(module):
             "fixtures/planning/",
             tools + "bin/",
             tools + "build/",
+            # Conditional ci-planner-php executes the actual mount/asset PHP
+            # when a Planner build changes; its transitive namespace, cache
+            # helper and PHPUnit bootstrap belong to the reusable proof too.
+            tools + "includes/Planner/",
+            tools + "includes/Cache/",
+            tools + "tests/php/bootstrap.php",
+            tools + "tests/php/Doubles/",
             tools + "tests/php/Unit/PlannerApplicationTest.php",
+            tools + "phpunit.xml.dist",
             tools + "composer.json",
             tools + "composer.lock",
             php_shared,

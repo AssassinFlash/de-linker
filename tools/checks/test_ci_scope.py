@@ -128,11 +128,30 @@ class ScopeTest(unittest.TestCase):
                     self.assertIn("native:inquiry", modules)
                     for module in ("engine", "planner"):
                         self.assertNotIn(module, modules)
-                        self.assertFalse(
-                            ci_scope.module_input_path(
-                                module, path, ci_scope.module_inputs(module)
-                            )
+                    self.assertFalse(
+                        ci_scope.module_input_path(
+                            "engine", path, ci_scope.module_inputs("engine")
                         )
+                    )
+                    # Conditional ci-planner-php can read this namespace when
+                    # build outputs change. A reused Planner proof must reflect it.
+                    self.assertTrue(
+                        ci_scope.module_input_path(
+                            "planner", path, ci_scope.module_inputs("planner")
+                        )
+                    )
+        for path in (
+            "plugins/linker-tools/includes/Cache/DynamicHtml.php",
+            "plugins/linker-tools/tests/php/bootstrap.php",
+            "plugins/linker-tools/tests/php/Doubles/wordpress.php",
+            "plugins/linker-tools/phpunit.xml.dist",
+        ):
+            self.assertTrue(
+                ci_scope.module_input_path(
+                    "planner", path, ci_scope.module_inputs("planner")
+                ),
+                path,
+            )
         mixed = ci_scope.selected_modules(
             [
                 ("M", "plugins/linker-tools/includes/Planner/Gateway.php"),
