@@ -149,6 +149,19 @@ ExecStart must use `/opt/linker-genie/current/.venv/bin/`; actual post-start PID
 must have the selected release as cwd. Resolve a different unit layout before
 publishing, rather than weakening this check.
 
+For a guarded source-only publication, pass the same verified current runtime
+as `--candidate` and `--previous` to `paired_release.main(arguments, guard=guard)`.
+This checks the selected runtime's serving identity and running processes without
+stopping or switching them. The native worker still verifies the exact source,
+model, recipe, epoch and loaded receipt; the runtime's own compiler recipe need
+not equal the Mac worker recipe. An explicit guard is mandatory for both initial
+`publish` and `resume-candidate`. Use the established guard for the change; it
+should report a non-sensitive reason before raising. The operator also reports
+the exception type and source location without printing its message or secrets.
+The ordinary scheduled worker remains unchanged. For source-only publication an
+accepted native ready ACK retains its normal incomplete-coverage semantics;
+inspect `unprepared_documents` rather than treating them as prepared.
+
 Use the existing shared interpreter, with `PYTHONPATH` pointing to the immutable
 candidate `src`, service root and `ops`. Never copy or create another environment.
 The existing private worker environment is read through the same loader used by

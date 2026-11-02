@@ -53,6 +53,24 @@ def test_real_python_c_remote_dispatch_has_no_file_dependency(tmp_path: Path) ->
     assert sorted(p.name for p in tmp_path.iterdir()) == [OLD, NEW, "current"]
 
 
+def test_same_runtime_checks_processes_without_switching_units(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    request = prepared(tmp_path)
+    request["candidate"] = OLD
+    request["identity"]["recipe"] = "c" * 64  # The Mac worker recipe may change.
+    monkeypatch.setattr(paired, "running", lambda root, version: {"fixture": 7})
+    monkeypatch.setattr(
+        subprocess, "run", lambda *args, **kwargs: pytest.fail("no service switch")
+    )
+    for action in ("status", "activate", "restore"):
+        assert paired.remote({**request, "action": action})["current"] == OLD
+    assert (tmp_path / "current").resolve().name == OLD
+    request["identity"]["serving"] = "d" * 64
+    with pytest.raises(ValueError, match="runtime differs"):
+        paired.remote({**request, "action": "status"})
+
+
 @pytest.mark.parametrize("failure", ["stop", "start"])
 def test_restore_recovers_stopped_units_and_old_selector(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, failure: str
@@ -188,7 +206,7 @@ def test_runtime_failure_restores_old_pair_without_deferring_lease(
 
 
 def test_reused_candidate_runs_the_guard_again_before_activation(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     calls = []
 
@@ -214,14 +232,20 @@ def test_reused_candidate_runs_the_guard_again_before_activation(
         assert path == tmp_path and loaded == {} and epoch == 51
         calls.append("guard")
         if calls.count("guard") == 1:
-            raise RuntimeError("guard refused")
+            raise RuntimeError("private diagnostic details")
 
     monkeypatch.setattr(publish_index, "publish", publish)
     publisher = paired.PairedPublisher(
         Runtime(), tmp_path / "journal", state, lambda: {}, guard=guard
     )
-    with pytest.raises(publish_index.PreActivationDeferred):
+    assert (
+        publication_worker.PreActivationDeferred is publish_index.PreActivationDeferred
+    )
+    with pytest.raises(publication_worker.PreActivationDeferred):
         publisher(tmp_path, "/index", "host")
+    diagnostic = capsys.readouterr().err
+    assert "RuntimeError at test_paired_release.py:" in diagnostic
+    assert "private diagnostic details" not in diagnostic
     assert publisher(tmp_path, "/index", "host")["index_version"] == "same-index"
     assert calls == ["guard", "restore", "guard", "activate", "index activation"]
 
@@ -453,7 +477,8 @@ def test_resume_uses_exact_verify_and_never_claims_replacement(
     assert journal.exists()
 
 
-def test_resume_candidate_rejects_missing_guard() -> None:
+@pytest.mark.parametrize("candidate", [OLD, NEW])
+def test_resume_candidate_rejects_missing_guard(candidate: str) -> None:
     with pytest.raises(
         ValueError, match="requires the operator's pre-activation guard"
     ):
@@ -463,7 +488,7 @@ def test_resume_candidate_rejects_missing_guard() -> None:
                 "--host",
                 "synthetic",
                 "--candidate",
-                NEW,
+                candidate,
                 "--previous",
                 OLD,
                 "--journal",
@@ -476,16 +501,82 @@ def test_resume_candidate_rejects_missing_guard() -> None:
         )
 
 
+def test_same_runtime_publish_requires_guard() -> None:
+    with pytest.raises(ValueError, match="index-only publication requires"):
+        paired.main(
+            [
+                "publish",
+                "--host",
+                "synthetic",
+                "--candidate",
+                OLD,
+                "--previous",
+                OLD,
+                "--journal",
+                "/tmp/unused",
+                "--loaded-url",
+                "http://localhost",
+                "--worker-id",
+                "fixture",
+            ]
+        )
+
+
+def test_same_runtime_uses_native_partial_ack_contract(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    tmp_path.chmod(0o700)
+    calls: list[bool] = []
+
+    def ack(self: Any, job: Any, loaded: str, *args: Any, **kwargs: Any) -> None:
+        calls.append(kwargs["require_complete"])
+
+    def worker_main(*args: Any, **kwargs: Any) -> int:
+        worker = kwargs["worker_factory"](
+            "https://example.test/jobs", "u", "p", "fixture", 7200
+        )
+        try:
+            worker.ack({}, "loaded")
+        finally:
+            worker.close()
+        return 0
+
+    monkeypatch.setattr(publication_worker.Worker, "ack", ack)
+    monkeypatch.setattr(publication_worker, "main", worker_main)
+    monkeypatch.setattr(paired.Runtime, "call", lambda self, action: {"current": OLD})
+    result = paired.main(
+        [
+            "publish",
+            "--host",
+            "synthetic",
+            "--candidate",
+            OLD,
+            "--previous",
+            OLD,
+            "--journal",
+            str(tmp_path / "journal"),
+            "--loaded-url",
+            "http://localhost",
+            "--worker-id",
+            "fixture",
+        ],
+        guard=lambda *_: None,
+    )
+    assert result == 0 and calls == [False]
+    assert not (tmp_path / "journal").exists()
+
+
 @pytest.mark.parametrize("same_pair", [True, False])
+@pytest.mark.parametrize("index_only", [True, False])
 def test_resume_candidate_requires_same_live_lease_and_original_pair(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, same_pair: bool
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, same_pair: bool, index_only: bool
 ) -> None:
     import httpx
 
     tmp_path.chmod(0o700)
     request = {
         "runtime_root": "/opt/linker-genie",
-        "candidate": NEW,
+        "candidate": OLD if index_only else NEW,
         "previous": OLD,
         "identity": paired.identity(Path(paired.__file__).resolve().parents[1]),
     }
@@ -544,7 +635,7 @@ def test_resume_candidate_requires_same_live_lease_and_original_pair(
                 "--host",
                 "synthetic",
                 "--candidate",
-                NEW,
+                OLD if index_only else NEW,
                 "--previous",
                 OLD,
                 "--journal",

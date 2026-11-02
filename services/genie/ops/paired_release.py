@@ -93,8 +93,9 @@ def remote(request: dict[str, Any]) -> dict[str, Any]:
             r"[0-9]{8}T[0-9]{12}Z(?:-[0-9a-f]{8,40})?", name
         ):
             raise ValueError("invalid prepared runtime version")
-    if not root.is_absolute() or root.is_symlink() or candidate == previous:
+    if not root.is_absolute() or root.is_symlink():
         raise ValueError("invalid runtime root or pair")
+    index_only = candidate == previous
     for name in (candidate, previous):
         source = root / name
         if source.is_symlink() or not source.is_dir():
@@ -102,7 +103,9 @@ def remote(request: dict[str, Any]) -> dict[str, Any]:
         if not (source / ".venv/bin/python").is_file():
             raise ValueError("prepared runtime has no installed interpreter")
     measured = identity(root / candidate)
-    if measured != request["identity"]:
+    if (index_only and measured["serving"] != request["identity"]["serving"]) or (
+        not index_only and measured != request["identity"]
+    ):
         raise ValueError("prepared VPS runtime differs from the final Mac source")
     selector = root / "current"
     if not selector.is_symlink():
@@ -115,9 +118,14 @@ def remote(request: dict[str, Any]) -> dict[str, Any]:
         return target.name
 
     if request["action"] == "status":
-        return {"current": selected(), **measured}
+        receipt: dict[str, Any] = {"current": selected(), **measured}
+        if index_only:
+            receipt["pids"] = running(root, selected())
+        return receipt
     if request["action"] not in {"activate", "restore"}:
         raise ValueError("unknown runtime action")
+    if index_only:
+        return {"current": selected(), "pids": running(root, selected()), **measured}
     with (root / ".paired-release.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         live = selected()
@@ -353,6 +361,19 @@ class PairedPublisher:
                         self.state["job"]["activation_epoch"],
                     )
                 except (Exception, SystemExit) as error:
+                    trace = error.__traceback__
+                    while trace is not None and trace.tb_next is not None:
+                        trace = trace.tb_next
+                    location = "unknown"
+                    if trace is not None:
+                        filename = Path(trace.tb_frame.f_code.co_filename).name
+                        if re.fullmatch(r"[A-Za-z0-9_.-]{1,97}\.py", filename):
+                            location = f"{filename}:{trace.tb_lineno}"
+                    print(
+                        f"pre-activation guard refused: {type(error).__name__} at {location}",
+                        file=sys.stderr,
+                        flush=True,
+                    )
                     raise GuardRejected("pre-activation guard refused") from error
             self.runtime.call("activate")
             # Persist before publish can send any activation request. An
@@ -442,6 +463,9 @@ def main(
         "--rest-config", type=Path, default=inventory.DEFAULT_REST_CONFIG
     )
     args = parser.parse_args(argv)
+    index_only = args.candidate == args.previous
+    if index_only and args.command == "publish" and guard is None:
+        raise ValueError("index-only publication requires a pre-activation guard")
     if args.command == "resume-candidate" and guard is None:
         raise ValueError(
             "candidate recovery requires the operator's pre-activation guard"
@@ -605,7 +629,13 @@ def main(
         def ack(
             self, job: dict[str, Any], loaded: str, *values: Any, **fields: Any
         ) -> None:
-            super().ack(job, loaded, *values, require_complete=bool(loaded), **fields)
+            super().ack(
+                job,
+                loaded,
+                *values,
+                require_complete=bool(loaded) and not index_only,
+                **fields,
+            )
             if loaded:
                 state["phase"] = "ready"
                 save(args.journal, state)
