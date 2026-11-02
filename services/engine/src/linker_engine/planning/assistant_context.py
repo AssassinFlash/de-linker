@@ -423,7 +423,12 @@ def _report_source_projection(source: Object, locale: str) -> Object:
                     **{
                         key: value
                         for key, value in item.items()
-                        if key not in {"comparison", "comparison_result"}
+                        if key
+                        not in {
+                            "comparison",
+                            "comparison_result",
+                            "mounting_quantity_basis",
+                        }
                     },
                     "id": f"material-{index}",
                     "name": f"{'Installationsmaterial' if locale == 'de' else 'Installation material'} {index}",

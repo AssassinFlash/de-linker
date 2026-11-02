@@ -1,5 +1,6 @@
 import Ajv2020 from "ajv/dist/2020.js";
 import schema from "../contracts/installation.schema.json" with { type: "json" };
+import geometryPolicy from "../contracts/geometry-policy.json" with { type: "json" };
 import { readElectricalReview } from "./installationElectrical.ts";
 import type {
 	CircuitOperatingCondition,
@@ -7,6 +8,7 @@ import type {
 	ElectricalReview,
 } from "./installationElectrical.ts";
 import type { Json, JsonObject } from "../data/protocol.ts";
+import type { ModuleSpec, PanelArray, RoofFace } from "./geometry.ts";
 import { ApiError } from "../data/protocol.ts";
 import { readObject } from "../data/readProtocol.ts";
 import { documentReference } from "../data/documentReference.ts";
@@ -158,6 +160,14 @@ export interface InstallationMaterial {
 	unit: "piece" | "m";
 	specification: string;
 	source_note: string;
+	mounting_quantity_basis?: {
+		array: PanelArray;
+		module: ModuleSpec;
+		roof: RoofFace;
+		per_module: number;
+		per_segment: number;
+		per_adjacency: number;
+	};
 	comparison?: {
 		instance_id: string;
 		product_id: number;
@@ -316,6 +326,16 @@ export interface InstallationReview {
 			circuit_status: string;
 			verification: "not_assessed";
 			comparison_result?: { status: string; qualified: false; fact: unknown };
+			mounting_quantity_result?: {
+				status: "calculated" | "layout_changed" | "no_modules";
+				quantity: number | null;
+				modules?: number;
+				segments?: number;
+				adjacencies?: number;
+				per_module?: number;
+				per_segment?: number;
+				per_adjacency?: number;
+			};
 		})[];
 	};
 	electrical?: ElectricalReview;
@@ -779,6 +799,7 @@ export function readInstallationReview(
 				circuit_status,
 				verification,
 				comparison_result,
+				mounting_quantity_result,
 				...declaration
 			} = item;
 			if (
@@ -786,6 +807,51 @@ export function readInstallationReview(
 				circuit_status !== status ||
 				verification !== "not_assessed"
 			)
+				throw new ApiError(502, "invalid_installation_review");
+			if (expected.mounting_quantity_basis) {
+				const result = readObject(mounting_quantity_result);
+				if (
+					!["calculated", "layout_changed", "no_modules"].includes(
+						String(result.status),
+					)
+				)
+					throw new ApiError(502, "invalid_installation_review");
+				if (result.status === "calculated") {
+					const { array, per_module, per_segment, per_adjacency } =
+						expected.mounting_quantity_basis;
+					if (array.rows * array.columns > geometryPolicy.max_panels)
+						throw new ApiError(502, "invalid_installation_review");
+					const excluded = new Set(array.excluded_slots);
+					let modules = 0,
+						segments = 0;
+					for (let row = 0; row < array.rows; row++) {
+						let previous = false;
+						for (let column = 0; column < array.columns; column++) {
+							const present = !excluded.has(`${row}:${column}`);
+							if (present) {
+								modules++;
+								if (!previous) segments++;
+							}
+							previous = present;
+						}
+					}
+					if (
+						!modules ||
+						result.modules !== modules ||
+						result.segments !== segments ||
+						result.adjacencies !== modules - segments ||
+						result.per_module !== per_module ||
+						result.per_segment !== per_segment ||
+						result.per_adjacency !== per_adjacency ||
+						result.quantity !==
+							modules * per_module +
+								segments * per_segment +
+								(modules - segments) * per_adjacency
+					)
+						throw new ApiError(502, "invalid_installation_review");
+				} else if (result.quantity !== null)
+					throw new ApiError(502, "invalid_installation_review");
+			} else if (mounting_quantity_result !== undefined)
 				throw new ApiError(502, "invalid_installation_review");
 			if (expected.comparison) {
 				const comparison = readObject(comparison_result);
@@ -897,6 +963,16 @@ export function readInstallationReview(
 				circuit_status: string;
 				verification: "not_assessed";
 				comparison_result?: { status: string; qualified: false; fact: unknown };
+				mounting_quantity_result?: {
+					status: "calculated" | "layout_changed" | "no_modules";
+					quantity: number | null;
+					modules?: number;
+					segments?: number;
+					adjacencies?: number;
+					per_module?: number;
+					per_segment?: number;
+					per_adjacency?: number;
+				};
 			};
 		});
 		materialReview = { rows };

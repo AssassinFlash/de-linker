@@ -628,7 +628,17 @@ equipment assessment, selected project inputs, saved included roof objects and
 manufacturer inclusion statements. It is not another maintained product source.
 PV reference rows remain project quotation inputs; only Woo equipment rows
 enter Solution draft. Included components without documented counts retain an
-unknown quantity. No cable, mounting or protection quantities are inferred.
+unknown quantity. Cable and protection quantities are not inferred from device
+counts. Mounting pieces may additionally use an explicitly declared quantity
+rule for one saved roof array: coefficients per included module, continuous
+row segment, and adjoining module pair. The result is a project declaration,
+not a manufacturer rule, SKU, structural assessment or complete mounting BOM.
+The designer records the item, specification and source, confirms that the
+rule applies, and can alternatively enter a fixed quantity from a project BOM.
+Array, module and roof snapshots bind the rule; a changed or removed snapshot
+makes the quantity open until the designer reconfirms it. Screen, PDF, CSV and
+the private saved-report context retain the same subtotal and its arithmetic.
+Hooks, rails, connectors and fasteners are not sized or automatically selected.
 Installation design and outstanding country/manufacturer requirements remain
 open in the report; this increment does not claim a full installation BOM.
 

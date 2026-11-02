@@ -578,6 +578,17 @@
             }
           ],
           "default": null
+        },
+        "mounting_quantity_basis": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MountingQuantityBasis"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -754,9 +765,237 @@
       "title": "MaterialFactComparison",
       "type": "object"
     },
+    "ModuleSource": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "datasheet",
+            "user_declared"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "note": {
+          "$ref": "#/$defs/Text"
+        },
+        "document_sha256": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Hash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "url": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Text"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "page": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PositiveInteger"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "woo": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/WooReference"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "kind",
+        "note",
+        "document_sha256",
+        "url",
+        "page"
+      ],
+      "title": "ModuleSource",
+      "type": "object"
+    },
+    "ModuleSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "model": {
+          "$ref": "#/$defs/Text"
+        },
+        "width_m": {
+          "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
+        },
+        "length_m": {
+          "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
+        },
+        "thickness_m": {
+          "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
+        },
+        "stc_power_w": {
+          "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
+        },
+        "source": {
+          "$ref": "#/$defs/ModuleSource"
+        }
+      },
+      "required": [
+        "id",
+        "model",
+        "width_m",
+        "length_m",
+        "thickness_m",
+        "stc_power_w",
+        "source"
+      ],
+      "title": "ModuleSpec",
+      "type": "object"
+    },
+    "MountingQuantityBasis": {
+      "additionalProperties": false,
+      "description": "A designer's quantity rule for one exact, saved roof layout.",
+      "properties": {
+        "array": {
+          "$ref": "#/$defs/PanelArray"
+        },
+        "module": {
+          "$ref": "#/$defs/ModuleSpec"
+        },
+        "roof": {
+          "$ref": "#/$defs/RoofFace"
+        },
+        "per_module": {
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Per Module",
+          "type": "integer"
+        },
+        "per_segment": {
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Per Segment",
+          "type": "integer"
+        },
+        "per_adjacency": {
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Per Adjacency",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "array",
+        "module",
+        "roof",
+        "per_module",
+        "per_segment",
+        "per_adjacency"
+      ],
+      "title": "MountingQuantityBasis",
+      "type": "object"
+    },
     "Nonnegative": {
       "minimum": 0,
       "type": "number"
+    },
+    "PanelArray": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "name": {
+          "$ref": "#/$defs/Text"
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "roof_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "module_spec_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "origin_uv": {
+          "$ref": "#/$defs/Vec2"
+        },
+        "rotation_deg": {
+          "$ref": "#/$defs/linker_engine__planning__geometry_documents__Number__2"
+        },
+        "mount_tilt_deg": {
+          "maximum": 90,
+          "minimum": 0,
+          "title": "Mount Tilt Deg",
+          "type": "number"
+        },
+        "lower_edge_clearance_m": {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        "rows": {
+          "$ref": "#/$defs/PositiveInteger"
+        },
+        "columns": {
+          "$ref": "#/$defs/PositiveInteger"
+        },
+        "column_gap_m": {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        "row_gap_m": {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        "excluded_slots": {
+          "items": {
+            "pattern": "^[0-9]+:[0-9]+$",
+            "type": "string"
+          },
+          "title": "Excluded Slots",
+          "type": "array"
+        },
+        "mounting_note": {
+          "$ref": "#/$defs/Text"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "source_id",
+        "roof_id",
+        "module_spec_id",
+        "origin_uv",
+        "rotation_deg",
+        "mount_tilt_deg",
+        "lower_edge_clearance_m",
+        "rows",
+        "columns",
+        "column_gap_m",
+        "row_gap_m",
+        "excluded_slots",
+        "mounting_note"
+      ],
+      "title": "PanelArray",
+      "type": "object"
+    },
+    "PositiveInteger": {
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991,
+      "type": "integer"
     },
     "PvStringLink": {
       "additionalProperties": false,
@@ -1101,6 +1340,58 @@
       "title": "ReferenceCurrentRun",
       "type": "object"
     },
+    "Ring": {
+      "items": {
+        "$ref": "#/$defs/Vec2"
+      },
+      "minItems": 3,
+      "type": "array"
+    },
+    "RoofFace": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "name": {
+          "$ref": "#/$defs/Text"
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "origin_enu": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "u_axis_enu": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "v_axis_enu": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "boundary_uv": {
+          "$ref": "#/$defs/Ring"
+        },
+        "holes_uv": {
+          "items": {
+            "$ref": "#/$defs/Ring"
+          },
+          "title": "Holes Uv",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "source_id",
+        "origin_enu",
+        "u_axis_enu",
+        "v_axis_enu",
+        "boundary_uv",
+        "holes_uv"
+      ],
+      "title": "RoofFace",
+      "type": "object"
+    },
     "RoutePoint": {
       "additionalProperties": false,
       "properties": {
@@ -1177,6 +1468,22 @@
       "minLength": 1,
       "type": "string"
     },
+    "Vec2": {
+      "items": {
+        "$ref": "#/$defs/linker_engine__planning__geometry_documents__Number__2"
+      },
+      "maxItems": 2,
+      "minItems": 2,
+      "type": "array"
+    },
+    "Vec3": {
+      "items": {
+        "$ref": "#/$defs/linker_engine__planning__geometry_documents__Number__2"
+      },
+      "maxItems": 3,
+      "minItems": 3,
+      "type": "array"
+    },
     "VoltageLimit": {
       "additionalProperties": false,
       "properties": {
@@ -1192,6 +1499,35 @@
         "source_note"
       ],
       "title": "VoltageLimit",
+      "type": "object"
+    },
+    "WooReference": {
+      "additionalProperties": false,
+      "properties": {
+        "product_id": {
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991,
+          "title": "Product Id",
+          "type": "integer"
+        },
+        "product_revision": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Product Revision",
+          "type": "string"
+        },
+        "reference_input_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Reference Input Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "product_id",
+        "product_revision",
+        "reference_input_id"
+      ],
+      "title": "WooReference",
       "type": "object"
     },
     "linker_engine__planning__geometry_documents__Number__1": {

@@ -653,6 +653,7 @@ export function InstallationEditor({
 					))}
 					<InstallationMaterials
 						plan={plan}
+						geometry={geometry}
 						products={products.data?.products ?? []}
 						review={shown?.material_review}
 						locale={locale}

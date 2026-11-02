@@ -503,7 +503,7 @@ def route_takeoff(
         "input_sha256": input_sha,
         "prepared_inputs": prepared,
         **(
-            {"material_review": material_review(plan, selected)}
+            {"material_review": material_review(plan, selected, geometry)}
             if "materials" in plan.model_fields_set
             else {}
         ),
