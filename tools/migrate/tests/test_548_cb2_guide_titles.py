@@ -83,7 +83,8 @@ namespace {
  $GLOBALS['fx']=json_decode(base64_decode('FIXTURE'),true,512,JSON_THROW_ON_ERROR);
  $GLOBALS['sha']='a70cb4c39824185fb9f570a59f4966c54ec94a33c870d00c7ccd756393321dac';
  $GLOBALS['doc']='doc-74c741e3ff765006ebff2c089f627bf1ff20b13c12b991ec9047f100e3ec87fd';
- $GLOBALS['option_raw']=serialize(['keep'=>'other']); $GLOBALS['bad_pdf']=false; $GLOBALS['bound']=false; $GLOBALS['query_failed']=false; $GLOBALS['fail_id']=0; $GLOBALS['external']='before';
+ $map=['keep'=>'other'];foreach($GLOBALS['fx'] as $p){$en=json_decode($p['meta']['_tv_legacy_acf_json'],true)['downloads'][3]['download_title'];$de=json_decode($p['meta']['_linker_de_acf_json'],true)['downloads'][3]['download_title'];$map[$en]=$de;}
+ $GLOBALS['option_raw']=serialize($map); $GLOBALS['bad_pdf']=false; $GLOBALS['bound']=false; $GLOBALS['query_failed']=false; $GLOBALS['fail_id']=0; $GLOBALS['external']='before';
  $source=base64_decode('SOURCE');
  class DB {
   public string $options='wp_options'; public string $postmeta='wp_postmeta'; public string $last_error='';

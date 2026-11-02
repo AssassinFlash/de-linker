@@ -40,10 +40,18 @@ defined( 'ABSPATH' ) || exit;
 				}
 				return array( 'id' => (int) $row['option_id'], 'raw' => $row['option_value'] );
 			};
-			$option_after = static function ( string $raw ) use ( $new_en, $new_de ): string {
+			$option_after = static function ( string $raw ) use ( $new_en, $new_de, $pairs ): string {
 				$map = maybe_unserialize( $raw );
 				if ( ! is_array( $map ) || array_key_exists( $new_en, $map ) ) {
 					throw new RuntimeException( 'German target mapping already exists.' );
+				}
+				foreach ( $pairs as $pair ) {
+					$model = $pair[1];
+					$old_en = "SAJ CB2 57.3-100.3-HV5 quick installation guide, English (covers the CB2-{$model}-HV5)";
+					$old_de = "SAJ CB2 57.3-100.3-HV5 Kurzanleitung zur Installation, Englisch (gilt für den CB2-{$model}-HV5)";
+					if ( ( $map[ $old_en ] ?? null ) !== $old_de ) {
+						throw new RuntimeException( 'A reviewed German title mapping differs.' );
+					}
 				}
 				$map[ $new_en ] = $new_de;
 				return maybe_serialize( $map );
@@ -65,7 +73,7 @@ defined( 'ABSPATH' ) || exit;
 				}
 				return $out;
 			};
-			$authority = static function () use ( $pairs, $doc, $sha, $url, $site ): array {
+			$authority = static function () use ( $pairs, $doc, $sha, $url, $site, $new_en ): array {
 				$file = \Linker\Commerce\Products\Publication\DocumentFiles::resolve( $url );
 				if ( ! is_array( $file ) || $file['blob_sha256'] !== $sha || $file['url'] !== $site . substr( $url, strlen( 'https://de-linker.com' ) ) || \Linker\Commerce\Products\Publication\DocumentFiles::id( $file['url'] ) !== $doc ) {
 					throw new RuntimeException( 'Reviewed PDF identity or bytes changed.' );
@@ -73,6 +81,11 @@ defined( 'ABSPATH' ) || exit;
 				$manifest = \Linker\Commerce\Products\Publication::manifest();
 				$products = array_column( $manifest['products'], null, 'product_id' );
 				$docs     = array_column( $manifest['documents'], null, 'document_id' );
+				foreach ( $docs as $id => $other ) {
+					if ( $id !== $doc && ( $other['title'] ?? null ) === $new_en ) {
+						throw new RuntimeException( 'Another document already uses the proposed title.' );
+					}
+				}
 				$d        = $docs[ $doc ] ?? null;
 				if ( ! is_array( $d ) || $d['blob_sha256'] !== $sha || $d['product_ids'] !== array_keys( $pairs ) || 'manual' !== $d['type'] || 'manual' !== $d['role'] ) {
 					throw new RuntimeException( 'Manifest document or full association set changed.' );
