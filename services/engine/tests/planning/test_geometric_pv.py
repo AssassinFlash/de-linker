@@ -319,6 +319,42 @@ def test_pitched_clearance_matches_exact_rays_including_blocked_counterexample(
     assert actual == expected
 
 
+def test_pitched_night_keeps_original_bounds_budget(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from linker_engine.planning.direct_beam_index import PlaneClearance
+
+    from .test_pvgis_tmy import parse
+
+    full = parse()
+    meteo = replace(full, points=full.points[:5])
+    geo = geometry()
+    geo["roofs"][0]["boundary_uv"] = [[0, 0], [40, 0], [40, 40], [0, 40]]
+    geo["roofs"][0]["v_axis_enu"] = [0, math.cos(math.pi / 6), math.sin(math.pi / 6)]
+    geo["arrays"][0].update(rows=4, columns=7, excluded_slots=[])
+    request = perez_request(perez_parameters())
+    limits = GeometricPvLimits(
+        max_module_steps=1000,
+        max_samples=100000,
+        max_ray_face_checks=1000000,
+        max_bounds_checks=100000,
+        index_leaf_size=8,
+    )
+    with monkeypatch.context() as old:
+        old.setattr(PlaneClearance, "from_scene", lambda *_args: None)
+        baseline = generate_geometric_pv(
+            geo, meteo, request, limits, max_weather_rows=9000
+        )
+    work = cast(Object, cast(Object, baseline.witness()["inputs"])["work"])
+    bounded = limits.model_copy(update={"max_bounds_checks": work["bounds_checks"]})
+    result = generate_geometric_pv(geo, meteo, request, bounded, max_weather_rows=9000)
+    assert result.profile.values_kw == baseline.profile.values_kw
+    assert (
+        cast(Object, cast(Object, result.witness()["inputs"])["work"])["bounds_checks"]
+        == work["bounds_checks"]
+    )
+
+
 def test_opaque_canopy_removes_only_beam_and_preserves_declared_diffuse_and_uniform_response() -> (
     None
 ):

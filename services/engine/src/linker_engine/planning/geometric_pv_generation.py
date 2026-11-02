@@ -128,6 +128,7 @@ def generate_geometric_pv(
         raise InvalidInput("geometric PV requested sampling exceeds work policy")
     budget = VisibilityBudget(limits.visibility_ray_limits())
     index = DirectBeamIndex.from_scene(scene, leaf_size=limits.index_leaf_size)
+    solar = sun(weather)
     checkpoint()
     upward_clearances: dict[str, float] = {}
     plane_clearances: dict[str, tuple[PlaneClearance, float]] = {}
@@ -161,6 +162,8 @@ def generate_geometric_pv(
             and sum(item.kind == "roof_surface" for item in scene.opaque) == 1
             and sum(item.kind == "module_volume" for item in scene.opaque)
             == len(scene.receivers)
+            and len({r.array_id for r in scene.receivers}) == 1
+            and bool(np.any(solar["apparent_zenith_deg"] < 90))
             and all((r.u, r.v, r.normal) == frame for r in scene.receivers)
             and budget.bounds_checks + proof_bound < limits.max_bounds_checks
         ):
@@ -191,7 +194,6 @@ def generate_geometric_pv(
             static_diffuse[receiver.id] = module_diffuse_visibility(
                 scene, receiver, request.sampling, budget, index
             )
-    solar = sun(weather)
     fractions = {identifier: np.zeros(size) for identifier in receiver_ids}
     visible: dict[str, list[Json]] = {identifier: [] for identifier in receiver_ids}
     statuses: dict[str, list[Json]] = {identifier: [] for identifier in receiver_ids}
