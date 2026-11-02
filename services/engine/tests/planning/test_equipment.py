@@ -2740,6 +2740,107 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
     assert checks["pv_input:s_a"]["status"] == "unresolved"
     assert checks["pv_operating_temperatures"]["status"] == "unresolved"
     assert checks["pv_design_current"]["status"] == "unresolved"
+    # The cited standby interval is distinct from both the absolute cold-Voc
+    # rating and the MPPT window; a single STC MPP never proves annual exposure.
+    standby_basis = copy.deepcopy(basis)
+    inverter = next(
+        p for p in standby_basis["products"] if p["canonical_product_id"] == 4107
+    )
+    source = inverter["figures"]["max_pv_input_v"]["citation"]
+    inverter["figures"]["pv_standby_input_voltage_v"] = {
+        "value": "950 ~ 1000",
+        "unit": "V",
+        "citation": source,
+    }
+    standby_value = copy.deepcopy(value)
+    standby_value["geometry"]["arrays"][0].update(rows=4, columns=6)
+    standby_ids = [
+        p.id
+        for p in panel_poses(read_geometry(standby_value["geometry"]))
+        if p.included
+    ]
+    standby_value["pv_string_plan"]["strings"] = [
+        {"id": "s_a", "mppt": 1, "input": 1, "module_ids": standby_ids[:21]},
+    ]
+    standby_result = json_object(assess_pv_strings(standby_value, standby_basis))
+    standby = standby_result["standby"]
+    point = standby["points"][0]
+    assert point["voltage_v"] == pytest.approx(21 * 45.4)
+    assert standby["interval_v"] == [950, 1000]
+    assert point["observation"] == "in_interval"
+    cold = next(c for c in standby_result["checks"] if c["id"] == "pv_cold_voc:s_a")
+    assert cold["actual"] != point["voltage_v"]
+    assert standby["fact"]["source"]["page"] == source["page"]
+    # Merely maintaining this source must not change qualification status.
+    without_standby = json_object(assess_equipment(standby_value, basis))
+    with_standby = json_object(assess_equipment(standby_value, standby_basis))
+    assert without_standby["checks"] == with_standby["checks"]
+    assert without_standby["equipment_status"] == with_standby["equipment_status"]
+    for voltage, expected in (
+        (949.9999, "949.9999 V"),
+        (950.0001, "950.0001 V"),
+        (950.0000000000001, "> 950 V"),
+        (1000.0001, "1,000.0001 V"),
+    ):
+        comparison = copy.deepcopy(with_standby)
+        comparison["pv_electrical"]["standby"]["points"][0]["voltage_v"] = voltage
+        formatted = build_report(
+            {
+                "locale": "en",
+                "title": "Display precision",
+                "project_id": "a" * 32,
+                "revision": 1,
+                "input_sha256": "b" * 64,
+                "generated_at": "2026-10-26T00:00:00+00:00",
+                "source_runs": [],
+                "equipment": comparison,
+            }
+        )
+        section = next(s for s in formatted.sections if s.id == "pv-standby-0")
+        assert section.table is not None and section.table.rows[0][2] == expected
+    for locale in ("en", "de"):
+        report = build_report(
+            {
+                "locale": locale,
+                "title": "Standby fixture",
+                "project_id": "a" * 32,
+                "revision": 1,
+                "input_sha256": "b" * 64,
+                "generated_at": "2026-10-26T00:00:00+00:00",
+                "source_runs": [],
+                "equipment": json_object(
+                    assess_equipment(standby_value, standby_basis)
+                ),
+            }
+        )
+        section = next(s for s in report.sections if "standby" in s.title.lower())
+        assert "950" in " ".join(row.value for row in section.rows)
+        assert len(section.paragraphs) == 1 and "MPP" in section.paragraphs[0]
+        assert any(row.href for row in section.rows)
+    standby_value["pv_string_plan"]["strings"][0]["module_ids"] = standby_ids[:20]
+    below = json_object(assess_pv_strings(standby_value, standby_basis))
+    assert below["standby"]["points"][0]["observation"] == "outside_interval"
+    boundary_basis = copy.deepcopy(standby_basis)
+    boundary_basis["pv_module_inputs"]["electrical_product"]["figures"]["vmpp_v"][
+        "value"
+    ] = 47.5
+    boundary = json_object(assess_pv_strings(standby_value, boundary_basis))
+    assert boundary["standby"]["points"][0]["voltage_v"] == 950
+    assert boundary["standby"]["points"][0]["observation"] == "boundary"
+    assert "standby" not in result
+    modeled_value = copy.deepcopy(standby_value)
+    modeled_value["pv_string_plan"]["strings"].append(
+        {"id": "s_b", "mppt": 2, "input": 1, "module_ids": standby_ids[20:]}
+    )
+    modeled_value["pv_string_plan"]["operating_conditions"] = {
+        "irradiance_w_m2": 1000,
+        "hot_cell_c": 60,
+        "cold_cell_c": 20,
+        "source_note": "Synthetic uniform operating points",
+    }
+    modeled = json_object(assess_pv_strings(modeled_value, standby_basis))
+    assert len(modeled["standby"]["points"]) == 6
+    assert {p["case"] for p in modeled["standby"]["points"]} == {"stc", "hot", "cold"}
     assessment = json_object(assess_equipment(value, basis))
     assert assessment["pv_electrical"] == result
     assert assessment["overall_status"] != "satisfied"

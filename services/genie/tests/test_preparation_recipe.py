@@ -33,6 +33,13 @@ def test_recipe_ignores_host_path_and_rebuildable_outputs(tmp_path: Path) -> Non
     (first / "index/__pycache__/build.pyc").write_bytes(b"compiled cache")
     (first / "index/parsed.json").write_text("temporary output")
     assert revision == recipe_revision(first)
+    # The paired operator selects/releases builds; its edits do not change one.
+    (first / "ops/paired_release.py").write_text("operator = 1\n")
+    assert revision == recipe_revision(first)
+    (first / "ops/paired_release.py").write_text("operator = 2\n")
+    assert revision == recipe_revision(first)
+    (first / "ops/publication_worker.py").write_text("prepare = 2\n")
+    assert revision != recipe_revision(first)
 
 
 def test_recipe_automatically_tracks_new_compiler_modules_and_locked_dependencies(

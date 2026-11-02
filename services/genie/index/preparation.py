@@ -28,7 +28,13 @@ def recipe_revision(root: Path | None = None) -> str:
             for path in root.joinpath("src/linker_genie").rglob("*.py")
             if not path.is_relative_to(root / "src/linker_genie/quality")
         ),
-        *root.joinpath("ops").rglob("*.py"),
+        # The paired operator selects/releases a completed build and may refuse
+        # a cache miss; it does not define compiler, embedding or scope rules.
+        *(
+            path
+            for path in root.joinpath("ops").rglob("*.py")
+            if path != root / "ops/paired_release.py"
+        ),
         root / "pyproject.toml",
         root / "uv.lock",
     }

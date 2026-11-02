@@ -120,6 +120,10 @@ def assess_pv_strings(
     beta, beta_refs = scalar(mf, "beta_voc_pct_per_c", "temperature_coefficient")
     max_v, max_refs = scalar(inv, "max_pv_input_v", "voltage")
     mpp_window = fact(inv, "mppt_voltage_range_v", "voltage")
+    standby = fact(inv, "pv_standby_input_voltage_v", "voltage")
+    standby_window = (
+        standby["value"] if standby and standby["shape"] == "interval" else None
+    )
     for item in plan.strings:
         module_poses = [poses[mid] for mid in item.module_ids]
         used_specs = {arrays[p.array_id].module_spec_id for p in module_poses}
@@ -274,6 +278,37 @@ def assess_pv_strings(
         "pv_wiring_protection",
         reason="cables_connectors_fuses_and_isolation_require_design",
     )
+    standby_result: Object | None = None
+    if standby_window is not None:
+        points: list[Json] = []
+
+        def observe(string_id: str, case: str, voltage: float | None) -> None:
+            points.append(
+                {
+                    "string_id": string_id,
+                    "case": case,
+                    "voltage_v": voltage,
+                    "observation": "unavailable"
+                    if voltage is None
+                    else "boundary"
+                    if voltage == standby_window[0]
+                    else "in_interval"
+                    if standby_window[0] < voltage <= standby_window[1]
+                    else "outside_interval",
+                }
+            )
+
+        for row in cast(list[dict[str, Any]], rows):
+            observe(row["id"], "stc", row["stc_vmpp_v"])
+        if operating is not None:
+            for point in cast(list[dict[str, Any]], operating["points"]):
+                observe(point["string_id"], point["case"], point["v_mp_v"])
+        # Observations are informative, not equipment qualification checks.
+        standby_result = {
+            "interval_v": standby_window,
+            "fact": standby,
+            "points": points,
+        }
     return {
         "schema_version": 1,
         "method": "woo_layout_electrical_v2"
@@ -287,4 +322,5 @@ def assess_pv_strings(
         "included_modules": len(poses),
         "nameplate_kwp": float(total_wp / 1000),
         **({"operating": operating} if operating is not None else {}),
+        **({"standby": standby_result} if standby_result is not None else {}),
     }

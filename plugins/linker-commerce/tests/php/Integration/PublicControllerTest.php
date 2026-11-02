@@ -139,7 +139,20 @@ final class PublicControllerTest extends IntegrationTestCase {
 		);
 		$first = $this->request( 'verify', $input );
 		$this->assertSame( 200, $first->get_status() );
-		$this->assertSame( $first->get_data(), $this->request( 'verify', $input )->get_data() );
+		$original = $first->get_data();
+		// The absolute expiry is fixed but the remaining TTL must age across a second.
+		sleep( 1 );
+		$before = time();
+		$second = $this->request( 'verify', $input );
+		$after  = time();
+		$this->assertSame( 200, $second->get_status() );
+		$replay = $second->get_data();
+		$this->assertSame( array_keys( $original ), array_keys( $replay ) );
+		$this->assertTrue( hash_equals( $original['proof'], $replay['proof'] ), 'Replay must retain the original proof.' );
+		$this->assertSame( $original['expires'], $replay['expires'], 'Replay must not renew the absolute expiry.' );
+		$this->assertLessThan( $original['ttl'], $replay['ttl'], 'Remaining TTL must decrease.' );
+		$this->assertGreaterThanOrEqual( max( 0, $replay['expires'] - $after ), $replay['ttl'] );
+		$this->assertLessThanOrEqual( max( 0, $replay['expires'] - $before ), $replay['ttl'] );
 		$this->assertSame( 1, $this->calls );
 		$this->assertSame( 409, $this->request( 'verify', array_merge( $input, array( 'token' => 'changed' ) ) )->get_status() );
 		$this->assertSame( 1, $this->calls, 'A changed replay never reaches Siteverify.' );

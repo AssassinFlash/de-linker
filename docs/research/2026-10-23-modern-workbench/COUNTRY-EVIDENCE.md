@@ -363,7 +363,7 @@ Pour l'application du règlement UE n° 2016/631, les catégories significatives
 
 在 GoodWe 的[公开下载入口](https://jp.goodwe.com/Skippower/downloadFileF?id=4485&mid=60)实际取得 7 页 G100/2 Form B（344,460 B，SHA-256 6f42a7c48be702de5f7b5812b720dc69127db768518c2d21b113de3c83e8d1eb）。它识别 GM330 与四款 ET 的进出口功率限制方案。其第 4 页指向 G99 报告的电能质量资料，没有给出所需的保护故障电流/持续时间数据。留存一份原件于本机按 SHA 命名的原件库，下游仅引用官方链接。英国登记记录不决定具体现场、德国适用性或 SGS 附录内容。
 
-由[公开经销商文件](https://shop.krannich-solar.com/en-de/product-downloads/0163065/GW100K-ET-G10/Datasheet-DE.pdf#page=2)取得的 2 页 GoodWe 德文原件，与已托管的 4adebe72… 字节相同。第 2 页注 1 将 950–1,000 V 待机限定于 GW80K、GW99.99K 和 GW100K 三款 G10。德文写低于 950 V 恢复，已托管英文 4f717804… 第 2 页写回到 950 V。不能由此单独推导边界点的控制迟滞、定量热降额或电网短路电流，也不能把该脚注外推至 75 kW 型号。
+由[公开经销商文件](https://shop.krannich-solar.com/en-de/product-downloads/0163065/GW100K-ET-G10/Datasheet-DE.pdf#page=2)取得的 2 页 GoodWe 德文原件，与已托管的 4adebe72… 字节相同。第 2 页注 1 将 950–1,000 V 待机写给 GW80K、GW99.99K 和 GW100K 三款 G10；已托管英文原件 4f717804… 第 2 页注 1 明确列出上述三款及 GW75K-ET-G10，75 kW 的该事实以英文原件为依据。德文写低于 950 V 恢复，英文写回到 950 V。不能由此单独推导边界点的控制迟滞、定量热降额或电网短路电流。
 
 Apify 检索记录 GimfClfA2AJhH0U9J、2aOchEnlB1M465Jpf、dDUwRF2Cm5Xka3166；原件/登记读取记录 NZcaEvmcnKBNwIu97、H39pEtcuiAm2AaW31、Qo7N7ytGjL9E5Ul8a、dWea2lQz2kHbQmXHY、ea9t3QsfBd8Z8c0Ns。H39… 的另一份手册请求超时，G100 二进制已独立读到；仅计实际取得的文件。检索与证书登记均未发生对外通信。
 

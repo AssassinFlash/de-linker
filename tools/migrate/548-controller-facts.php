@@ -27,11 +27,16 @@ try {
 		}
 		$manifest = Publication::manifest();
 		$mode     = 'preview' === $action ? ( $request['plan']['kind'] ?? 'controller' ) : ( $request['receipt']['mode'] ?? 'controller' );
-		if ( ! in_array( $mode, array( 'controller', 'batc_cabinet_sales_unit_v1', 'batc_112_manual_v1' ), true ) ) {
+		if ( ! in_array( $mode, array( 'controller', 'batc_cabinet_sales_unit_v1', 'batc_112_manual_v1', 'et_pv_standby_v1' ), true ) ) {
 			throw new RuntimeException( 'Unsupported reviewed equipment-facts mode.' );
 		}
 		$keys      = 'batc_112_manual_v1' === $mode ? array(
 			1955 => array( EngineeringData::DOCUMENTS_META_KEY ),
+		) : ( 'et_pv_standby_v1' === $mode ? array(
+			1946 => array( SelectionFacts::FIGURES_META_KEY, EvidenceBindings::META_KEY ),
+			1947 => array( SelectionFacts::FIGURES_META_KEY, EvidenceBindings::META_KEY ),
+			1948 => array( SelectionFacts::FIGURES_META_KEY, EvidenceBindings::META_KEY ),
+			6506 => array( SelectionFacts::FIGURES_META_KEY, EvidenceBindings::META_KEY ),
 		) : ( 'batc_cabinet_sales_unit_v1' === $mode ? array(
 			1956 => array( SelectionFacts::FIGURES_META_KEY, EvidenceBindings::META_KEY ),
 			1957 => array( SelectionFacts::FIGURES_META_KEY, EvidenceBindings::META_KEY ),
@@ -41,7 +46,7 @@ try {
 			1946 => array( CompatibilityClaims::META_KEY ),
 			1947 => array( CompatibilityClaims::META_KEY ),
 			1948 => array( CompatibilityClaims::META_KEY ),
-		) );
+		) ) );
 		$state     = static fn( int $id, string $key ): array => array(
 			'exists' => metadata_exists( 'post', $id, $key ),
 			'value'  => get_post_meta( $id, $key, true ),
@@ -134,18 +139,24 @@ try {
 				);
 				$rows[]                    = $matching[0];
 				$record( 1955, EngineeringData::DOCUMENTS_META_KEY, $rows, $receipt );
-			} elseif ( 'batc_cabinet_sales_unit_v1' === $mode ) {
-				$models      = array(
+			} elseif ( in_array( $mode, array( 'batc_cabinet_sales_unit_v1', 'et_pv_standby_v1' ), true ) ) {
+				$standby     = 'et_pv_standby_v1' === $mode;
+				$models      = $standby ? array(
+					1946 => array( 'GW80K-ET-G10', 'DLK-GOODWE-GW80KETG10' ),
+					1947 => array( 'GW99.99K-ET-G10', 'DLK-GOODWE-GW9999KETG10' ),
+					1948 => array( 'GW100K-ET-G10', 'DLK-GOODWE-GW100KETG10' ),
+					6506 => array( 'GW75K-ET-G10', 'DLK-GOODWE-GW75KETG10' ),
+				) : array(
 					1956 => array( 'GW208.9-BAT-LC-G10', 'DLK-GOODWE-GW2089BATLCG10' ),
 					1957 => array( 'GW208.9-BAT-LCD-G10', 'DLK-GOODWE-GW2089BATLCDG10' ),
 					1958 => array( 'GW261.2-BAT-LCD-G10', 'DLK-GOODWE-GW2612BATLCDG10' ),
 				);
-				$document_id = 'doc-3e98151c21d284ce5e01603742e3ef027ca73cff3f42b9cf9b3fe164aa91882b';
-				$sha         = 'ef85dd1a58fc06e52f2dff79dda228884b412d17db7035aa45d41c57840f3f10';
+				$document_id = $standby ? 'doc-ca590a87211c7e3cf968ba4843d475702dfceb12a5c19449878c56a296878c40' : 'doc-3e98151c21d284ce5e01603742e3ef027ca73cff3f42b9cf9b3fe164aa91882b';
+				$sha         = $standby ? '4f7178042e8faf03bd926dc33a5ff0b85ffcd4f46e12f1dcf86d6db10befee4d' : 'ef85dd1a58fc06e52f2dff79dda228884b412d17db7035aa45d41c57840f3f10';
 				$docs        = array_column( $manifest['documents'], null, 'document_id' );
 				$doc         = $docs[ $document_id ] ?? null;
 				$figure      = $plan['figure'] ?? null;
-				if ( ! is_array( $plan ) || 1 !== ( $plan['schema_version'] ?? null ) || ! is_array( $doc ) || $doc['blob_sha256'] !== $sha || ! is_array( $figure ) || 'battery_system' !== ( $figure['value'] ?? null ) || null !== ( $figure['unit'] ?? null ) || 3 !== ( $figure['citation']['page'] ?? null ) || (string) wp_parse_url( $figure['citation']['url'] ?? '', PHP_URL_PATH ) !== (string) wp_parse_url( $doc['url'], PHP_URL_PATH ) ) {
+				if ( ! is_array( $plan ) || 1 !== ( $plan['schema_version'] ?? null ) || ! is_array( $doc ) || $doc['blob_sha256'] !== $sha || ! is_array( $figure ) || ( $standby ? '950 ~ 1000' !== ( $figure['value'] ?? null ) || 'V' !== ( $figure['unit'] ?? null ) || 2 !== ( $figure['citation']['page'] ?? null ) : 'battery_system' !== ( $figure['value'] ?? null ) || null !== ( $figure['unit'] ?? null ) || 3 !== ( $figure['citation']['page'] ?? null ) ) || (string) wp_parse_url( $figure['citation']['url'] ?? '', PHP_URL_PATH ) !== (string) wp_parse_url( $doc['url'], PHP_URL_PATH ) ) {
 					throw new RuntimeException( 'The BAT-C sales unit requires the reviewed manufacturer manual.' );
 				}
 				$receipt  = array(
@@ -161,7 +172,7 @@ try {
 				$products = array_column( $manifest['products'], null, 'product_id' );
 				foreach ( $models as $id => $identity ) {
 					$product = wc_get_product( $id );
-					if ( ! $product instanceof WC_Product || 'simple' !== $product->get_type() || $product->get_sku() !== $identity[1] || false === stripos( $product->get_short_description(), 'cabinet' ) || ( $products[ $id ]['model'] ?? null ) !== $identity[0] || Publication::canonical_id( $id ) !== $id || ! Publication::is_published( $id ) || ! in_array( $id, $doc['product_ids'], true ) ) {
+					if ( ! $product instanceof WC_Product || 'simple' !== $product->get_type() || $product->get_sku() !== $identity[1] || ( ! $standby && false === stripos( $product->get_short_description(), 'cabinet' ) ) || ( $products[ $id ]['model'] ?? null ) !== $identity[0] || Publication::canonical_id( $id ) !== $id || ! Publication::is_published( $id ) || ! in_array( $id, $doc['product_ids'], true ) ) {
 						throw new RuntimeException( 'A reviewed BAT-C Woo cabinet identity changed.' );
 					}
 					$receipt['products'][ $id ] = array(
@@ -187,11 +198,12 @@ try {
 						'blob_sha256'     => $doc['blob_sha256'],
 						'figure_revision' => Publication::revision( $figure ),
 					);
-					if ( array_key_exists( 'sales_unit_kind', $figures ) && ( $figures['sales_unit_kind'] !== $figure || ( $bindings['sales_unit_kind'] ?? null ) !== $expected_binding ) ) {
+					$figure_key       = $standby ? 'pv_standby_input_voltage_v' : 'sales_unit_kind';
+					if ( array_key_exists( $figure_key, $figures ) && ( $figures[ $figure_key ] !== $figure || ( $bindings[ $figure_key ] ?? null ) !== $expected_binding ) ) {
 						throw new RuntimeException( 'An existing sales-unit fact differs; explicit review is required.' );
 					}
-					$figures['sales_unit_kind']  = $figure;
-					$bindings['sales_unit_kind'] = $expected_binding;
+					$figures[ $figure_key ]  = $figure;
+					$bindings[ $figure_key ] = $expected_binding;
 					$record( $id, SelectionFacts::FIGURES_META_KEY, is_string( $raw ) ? wp_json_encode( $figures, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) : $figures, $receipt );
 					$record( $id, EvidenceBindings::META_KEY, $bindings, $receipt );
 				}
@@ -475,6 +487,15 @@ try {
 						$item = EngineeringFeed::item( 1955, $fresh );
 						if ( ! is_array( $item ) || ! in_array( $manual_id, array_column( $item['documents'] ?? array(), 'document_id' ), true ) ) {
 							throw new RuntimeException( 'The engineering feed did not publish the reviewed manual association.' );
+						}
+					} elseif ( 'et_pv_standby_v1' === $mode ) {
+						foreach ( array_keys( $keys ) as $id ) {
+							$item    = EngineeringFeed::item( $id, $fresh );
+							$figures = is_array( $item ) ? (array) $item['figures'] : array();
+							$figure  = $figures['pv_standby_input_voltage_v'] ?? null;
+							if ( ! is_array( $figure ) || '950 ~ 1000' !== ( $figure['value'] ?? null ) || 'V' !== ( $figure['unit'] ?? null ) || 2 !== ( $figure['citation']['page'] ?? null ) ) {
+								throw new RuntimeException( 'The engineering feed did not publish the reviewed standby interval.' );
+							}
 						}
 					} elseif ( 'batc_cabinet_sales_unit_v1' === $mode ) {
 						foreach ( array_keys( $keys ) as $id ) {

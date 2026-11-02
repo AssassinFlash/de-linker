@@ -24,8 +24,8 @@ from .project_materials import (
 from .pv_operating_report import operating_sections
 from .report_capacity import capacity_section
 from .report_copy import TEXT, check_label, text
+from .report_numbers import comparison_values, percent
 from .report_numbers import number as number
-from .report_numbers import percent
 from .report_pvlib import pvlib_sections
 
 
@@ -39,6 +39,20 @@ def build_report(source: Object) -> Report:
             value=str(value) if value is not None else "—",
             href=href,
         )
+
+    def standby_voltage(value: float | None, interval: list[float]) -> str:
+        if value is None:
+            return number(None, locale, "V")
+        shown = number(value, locale, "V")
+        for bound in interval:
+            distinct, _ = comparison_values(value, bound, locale, "V")
+            if distinct != shown:
+                if len(str(value).partition(".")[2]) > 8:
+                    return ("< " if value < bound else "> ") + number(
+                        bound, locale, "V"
+                    )
+                return distinct
+        return shown
 
     sections.append(
         ReportSection(
@@ -180,6 +194,58 @@ def build_report(source: Object) -> Report:
                     ),
                 )
             )
+        if isinstance(pv_wiring, dict):
+            standby_units = (
+                [(u["unit_name"], u["assessment"]) for u in wiring_units]
+                if plant_wiring
+                else [(None, pv_wiring)]
+            )
+            for unit_index, (unit_name, unit_wiring) in enumerate(standby_units):
+                standby_data = unit_wiring.get("standby")
+                if not isinstance(standby_data, dict):
+                    continue
+                source_fact = cast(dict[str, Any], standby_data["fact"])
+                standby_cited = cast(dict[str, Any], source_fact["source"])
+                unit_rows = cast(list[dict[str, Any]], unit_wiring["strings"])
+                numbers = {s["id"]: i + 1 for i, s in enumerate(unit_rows)}
+                interval = cast(list[float], standby_data["interval_v"])
+
+                sections.append(
+                    ReportSection(
+                        id=f"pv-standby-{unit_index}",
+                        title=(f"{unit_name} · " if unit_name else "")
+                        + text("pv_standby_title", locale),
+                        paragraphs=[text("pv_standby_scope", locale)],
+                        rows=[
+                            row(
+                                "pv_standby_title",
+                                " – ".join(number(v, locale) for v in interval) + " V",
+                            ),
+                            ReportRow(
+                                label=text("source", locale),
+                                value=f"{text('page', locale)} {standby_cited['page']}",
+                                href=standby_cited["url"],
+                            ),
+                        ],
+                        table=ReportTable(
+                            columns=[
+                                text("pv_string", locale),
+                                text("pv_standby_case", locale),
+                                text("pv_standby_value", locale),
+                                text("pv_standby_observation", locale),
+                            ],
+                            rows=[
+                                [
+                                    str(numbers[p["string_id"]]),
+                                    text("pv_standby_case_" + p["case"], locale),
+                                    standby_voltage(p["voltage_v"], interval),
+                                    text("pv_standby_" + p["observation"], locale),
+                                ]
+                                for p in standby_data["points"]
+                            ],
+                        ),
+                    )
+                )
         if isinstance(pv_wiring, dict) and isinstance(pv_wiring.get("operating"), dict):
             sections.extend(
                 operating_sections(

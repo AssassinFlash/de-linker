@@ -157,6 +157,26 @@ def test_batc_sales_unit_source_keeps_reviewed_document_path() -> None:
         controller.plan_for_target(original, "file:///tmp/invalid")
 
 
+def test_et_standby_source_rebinds_only_reviewed_origin() -> None:
+    spec = importlib.util.spec_from_file_location(
+        "et_standby_migration", HERE.parent / "548-controller-facts.py"
+    )
+    assert spec is not None and spec.loader is not None
+    controller = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(controller)
+    original = json.loads((HERE.parent / "548-et-pv-standby.json").read_bytes())
+    selected = controller.plan_for_target(original, "http://127.0.0.1:9347")
+    assert selected["figure"]["value"] == "950 ~ 1000"
+    assert selected["figure"]["unit"] == "V"
+    assert selected["figure"]["citation"]["page"] == 2
+    assert (
+        selected["figure"]["citation"]["url"].replace(
+            "http://127.0.0.1:9347", "https://de-linker.com"
+        )
+        == original["figure"]["citation"]["url"]
+    )
+
+
 def load_script() -> ModuleType:
     """Load the ticket-named migration as the CLI itself does."""
     spec = importlib.util.spec_from_file_location(

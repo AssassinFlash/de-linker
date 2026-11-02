@@ -1618,6 +1618,33 @@ TEXT = {
         "Sources and methods are identified in this report.",
         "Quellen und Methoden sind in diesem Bericht angegeben.",
     ),
+    "pv_standby_title": (
+        "Manufacturer standby interval",
+        "Standby-Bereich des Herstellers",
+    ),
+    "pv_standby_scope": (
+        "The manufacturer describes standby in this input-voltage interval. These MPP estimates do not establish actual operation or annual exposure; a single point cannot determine the state or recovery at the lower boundary. The absolute voltage rating and MPPT window are checked separately.",
+        "Der Hersteller beschreibt für diesen Eingangsspannungsbereich den Standby-Modus. Die geschätzten MPP-Werte belegen weder den tatsächlichen Betrieb noch die Häufigkeit über das Jahr. Ein einzelner Punkt bestimmt weder den Zustand an der unteren Grenze noch die Rückkehr zum Betrieb. Die absolute Spannungsgrenze und das MPPT-Fenster werden gesondert geprüft.",
+    ),
+    "pv_standby_case": ("Operating point", "Arbeitspunkt"),
+    "pv_standby_case_stc": ("STC", "STC"),
+    "pv_standby_case_hot": ("Modeled hot case", "Modellierter warmer Fall"),
+    "pv_standby_case_cold": ("Modeled cold case", "Modellierter kalter Fall"),
+    "pv_standby_value": ("MPP estimate", "Geschätzter MPP"),
+    "pv_standby_observation": ("Observation", "Einordnung"),
+    "pv_standby_in_interval": (
+        "In standby interval · review",
+        "Im Standby-Bereich · prüfen",
+    ),
+    "pv_standby_boundary": (
+        "At the lower boundary · review",
+        "An der unteren Grenze · prüfen",
+    ),
+    "pv_standby_outside_interval": (
+        "Outside interval for this point",
+        "Für diesen Punkt außerhalb des Bereichs",
+    ),
+    "pv_standby_unavailable": ("Estimate unavailable", "Kein Schätzwert verfügbar"),
 }
 
 CHECKS = {

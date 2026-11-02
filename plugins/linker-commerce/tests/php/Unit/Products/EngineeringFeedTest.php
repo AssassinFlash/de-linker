@@ -59,6 +59,7 @@ final class EngineeringFeedTest extends TestCase {
 		)->byDefault();
 		WP_Mock::userFunction( 'attachment_url_to_postid' )->andReturn( 0 )->byDefault();
 		WP_Mock::userFunction( 'get_option' )->andReturn( array() )->byDefault();
+		WP_Mock::userFunction( 'update_option' )->andReturn( true )->byDefault();
 		WP_Mock::userFunction( 'wp_json_encode' )->andReturnUsing( static fn ( $value, int $flags = 0 ): string => (string) json_encode( $value, $flags ) )->byDefault();
 		WP_Mock::userFunction(
 			'get_post_type',
