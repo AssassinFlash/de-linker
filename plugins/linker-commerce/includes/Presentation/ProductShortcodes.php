@@ -1036,7 +1036,7 @@ final class ProductShortcodes {
 				. '<p class="tv-empty-state">' . esc_html__( 'Product photography for this model is in preparation.', 'linker-commerce' ) . '</p>'
 				. '</div></div>';
 		}
-		$html .= '<button type="button" class="pdp-gallery-main-wrap" data-pdp-image data-pdp-main data-src="' . esc_url( self::image_url( $ids[0] ) ) . '" data-caption="">'
+		$html .= '<button type="button" class="pdp-gallery-main-wrap" data-pdp-image data-pdp-main data-src="' . esc_url( self::image_url( $ids[0] ) ) . '" data-caption="' . esc_attr( self::image_note( (string) $view['intro'] ) ) . '">'
 			. self::image_tag(
 				$ids[0],
 				'full',
@@ -1050,7 +1050,7 @@ final class ProductShortcodes {
 			// This secondary image is hidden in the current gallery layout.
 			// Defer its full file; the thumbnail remains available and selects
 			// the full image when a visitor asks to see it.
-			$html .= '<button type="button" class="pdp-gallery-secondary" data-pdp-image data-src="' . esc_url( self::image_url( $ids[1] ) ) . '" data-caption="" aria-label="' . esc_attr__( 'Product image 2', 'linker-commerce' ) . '">'
+			$html .= '<button type="button" class="pdp-gallery-secondary" data-pdp-image data-src="' . esc_url( self::image_url( $ids[1] ) ) . '" data-caption="' . esc_attr( self::image_note( (string) $view['intro'] ) ) . '" aria-label="' . esc_attr__( 'Product image 2', 'linker-commerce' ) . '">'
 				. self::image_tag(
 					$ids[1],
 					'full',
@@ -1061,6 +1061,16 @@ final class ProductShortcodes {
 				) . '</button>';
 		}
 		return $html . '</div>';
+	}
+
+	/**
+	 * Read the product's optional image note from its native short description.
+	 *
+	 * @param string $intro Localized product short description.
+	 */
+	private static function image_note( string $intro ): string {
+		return 1 === preg_match( '/<p class="product-image-note">([^<]*)<\/p>/', $intro, $match )
+			? html_entity_decode( $match[1], ENT_QUOTES, 'UTF-8' ) : '';
 	}
 
 	/**
@@ -1103,7 +1113,7 @@ final class ProductShortcodes {
 			if ( \is_array( $medium ) ) {
 				$attributes['srcset'] = $medium[0] . ' ' . (int) $medium[1] . 'w';
 			}
-			$html .= '<button type="button" data-pdp-thumb data-src="' . esc_url( self::image_url( $id ) ) . '" data-caption=""'
+			$html .= '<button type="button" data-pdp-thumb data-src="' . esc_url( self::image_url( $id ) ) . '" data-caption="' . esc_attr( self::image_note( (string) $view['intro'] ) ) . '"'
 				. ' aria-label="' . esc_attr( sprintf( /* translators: %d: image number. */ __( 'Product image %d', 'linker-commerce' ), $index + 1 ) ) . '"'
 				. ' aria-pressed="' . ( 0 === $index ? 'true' : 'false' ) . '" class="pdp-thumb">'
 				. self::image_tag( $id, 'medium', $attributes ) . '</button>';
