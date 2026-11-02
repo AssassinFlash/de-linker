@@ -171,6 +171,31 @@ def protection_answer(raw: Any, page: PageContext, language: str) -> str:
         if de
         else f"Saved report, revision {run['revision']}:"
     )
+    project = raw["project"]
+    viewed = project.get("revision")
+    latest = project.get("current_revision")
+    report = run.get("revision")
+    revisions = [v for v in (report, viewed, latest) if type(v) is int]
+    if len(set(revisions)) > 1:
+        details = []
+        if type(viewed) is int:
+            details.append(
+                f"angezeigter Projektstand: Revision {viewed}"
+                if de
+                else f"viewed project: revision {viewed}"
+            )
+        if type(latest) is int:
+            details.append(
+                f"neuester gespeicherter Projektstand: Revision {latest}"
+                if de
+                else f"latest saved project: revision {latest}"
+            )
+        heading += " " + "; ".join(details) + ". "
+        heading += (
+            "Diese Vergleiche beziehen sich auf den gespeicherten Bericht und gelten nicht automatisch für Geräte eines anderen Projektstands."
+            if de
+            else "These comparisons describe the saved report and do not automatically apply to equipment in another revision."
+        )
     return "\n".join(
         [heading, *(f"{row['label']}: {row['value']}" for row in rows), scope]
     )

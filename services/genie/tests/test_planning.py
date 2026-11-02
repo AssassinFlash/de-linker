@@ -172,9 +172,23 @@ def test_saved_protection_comparisons_explain_all_three_statuses() -> None:
     assert "clearing time 0.2 s ≤ required maximum clearing time 0.4 s" in answer
     assert "Not assessed · Let-through evidence" in answer
     assert "revision 2" in answer and "does not approve" in answer
+    assert "viewed project: revision 3" in answer
+    assert "latest saved project: revision 4" in answer
+    assert "do not automatically apply to equipment in another revision" in answer
     de = planning.protection_answer(raw, page, "de")
     assert (
         "6.000 A > Ausschaltvermögen des Schutzgeräts 5.000 A" in de and "0,2 s ≤" in de
+    )
+    assert "angezeigter Projektstand: Revision 3" in de
+    assert "neuester gespeicherter Projektstand: Revision 4" in de
+    raw["runs"][0]["revision"] = 3
+    raw["project"]["current_revision"] = 3
+    current = planning.protection_answer(raw, page, "en")
+    assert "Saved report, revision 3:" in current
+    assert "viewed project:" not in current and "latest saved project:" not in current
+    raw["project"]["current_revision"] = 4
+    assert "latest saved project: revision 4" in planning.protection_answer(
+        raw, page, "en"
     )
     raw["runs"][0]["protection_comparisons"]["en"]["rows"][0]["private_name"] = (
         "Private name"
@@ -234,8 +248,8 @@ def test_real_protection_question_uses_service_route() -> None:
             self, message: str, page: dict[str, Any], history: Any = ()
         ) -> Reading:
             return Reading(
-                intent="sizing",
-                confidence=0.8,
+                intent="find_products",
+                confidence=0.39,
                 about_this_page=0.7,
                 wants_person=0,
                 needs_followup=0,
@@ -250,7 +264,7 @@ def test_real_protection_question_uses_service_route() -> None:
             "messages": [
                 {
                     "role": "user",
-                    "content": "Why did a breaker trip and what device should I choose?",
+                    "content": "Why did the actual fault occur and which breaker should replace this one?",
                 }
             ],
             "locale": "en",
