@@ -2136,3 +2136,76 @@ def test_unrepresentable_numbers_are_rejected_without_changing_project_data(
     assert created.status == 200 and created.object()["inputs"] == command["inputs"]
     assert browser.read(created.object()).object() == created.object()
     assert browser.rpc("rpc/projects/create", command).object() == created.object()
+
+
+def test_series_csv_download_uses_frontend_wordpress_file_api(
+    local: tuple[Instance, WpCli],
+) -> None:
+    """A frontend REST request does not inherit WP-CLI's loaded admin helpers."""
+    instance, wp = local
+    owner = Browser(instance.url)
+    probe_created = False
+    try:
+        owner.bootstrap()
+        marker = uuid.uuid4().hex
+        probe = instance.wp_content / "mu-plugins/linker-series-file-api-acceptance.php"
+        assert not probe.exists()
+        payload = b"timestamp,power\n2023-01-01,1\n"
+        sha = hashlib.sha256(payload).hexdigest()
+        source = r"""<?php
+    if (PHP_SAPI !== 'cli-server' || !hash_equals('MARKER', $_SERVER['HTTP_X_LINKER_SERIES_FIXTURE'] ?? '')) { return; }
+    add_filter('pre_http_request', static function ($pre, $args, $url) {
+        $body = json_decode($args['body'] ?? '', true);
+        if (($body['project_id'] ?? null) !== 'fixture-project' || ($body['asset_id'] ?? null) !== 'fixture-asset') { return $pre; }
+        if (str_ends_with($url, '/assets/read')) {
+            $asset = array('id' => 'fixture-asset', 'project_id' => 'fixture-project', 'purpose' => 'planning_pv_series_csv_v1', 'media_type' => 'text/csv', 'content_sha256' => 'SHA');
+            return array('response' => array('code' => 200), 'headers' => array('content-type' => 'application/json'), 'body' => wp_json_encode($asset));
+        }
+        if (str_ends_with($url, '/assets/content') && true === ($args['stream'] ?? false) && is_string($args['filename'] ?? null)) {
+            file_put_contents($args['filename'], base64_decode('PAYLOAD', true));
+            return array('response' => array('code' => 200), 'headers' => array('content-type' => 'application/octet-stream'), 'body' => '');
+        }
+        return $pre;
+    }, 10, 3);
+    """
+        with probe.open("x") as stream:
+            probe_created = True
+            stream.write(
+                source.replace("MARKER", marker)
+                .replace("SHA", sha)
+                .replace("PAYLOAD", base64.b64encode(payload).decode())
+            )
+        probe.chmod(0o600)
+        reply = owner.rpc(
+            "rpc/assets/content",
+            {
+                "schema_version": 1,
+                "project_id": "fixture-project",
+                "asset_id": "fixture-asset",
+                "series_csv": True,
+            },
+            **{"X-Linker-Series-Fixture": marker},
+        )
+        assert reply.status == 200
+        assert reply.body == payload
+    finally:
+        try:
+            if probe_created:
+                probe.unlink()
+        finally:
+            for cookie in owner.cookies:
+                if not cookie.name.startswith("wp_woocommerce_session_"):
+                    continue
+                assert isinstance(cookie.value, str)
+                guest = urllib.parse.unquote(cookie.value).split("|")[0]
+                assert re.fullmatch(r"t_[a-f0-9]{30}", guest)
+                wp.run(
+                    "eval",
+                    '$id = getenv("LINKER_PLANNER_FIXTURE_GUEST"); '
+                    "(new WC_Session_Handler())->delete_session($id); "
+                    'global $wpdb; $table=$wpdb->prefix . "woocommerce_sessions"; '
+                    "if (null !== $wpdb->get_var($wpdb->prepare("
+                    '"SELECT session_key FROM %i WHERE session_key=%s", $table, $id))) '
+                    '{throw new Exception("fixture guest cleanup failed");}',
+                    env={"LINKER_PLANNER_FIXTURE_GUEST": guest},
+                )

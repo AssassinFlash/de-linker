@@ -50,6 +50,11 @@ final class SeriesDownload {
 		if ( ( $asset['id'] ?? null ) !== $command['asset_id'] || ( $asset['project_id'] ?? null ) !== $command['project_id'] || 'planning_pv_series_csv_v1' !== ( $asset['purpose'] ?? null ) || 'text/csv' !== ( $asset['media_type'] ?? null ) || ! is_string( $sha ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $sha ) ) {
 			return Failure::make( 'invalid_reply', 502 );
 		}
+		// WordPress exposes this helper from its admin file API; front-end REST
+		// requests do not necessarily load that file.
+		if ( ! function_exists( 'wp_tempnam' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
 		$file = wp_tempnam( 'linker-pv-series' );
 		if ( '' === $file || ! is_file( $file ) ) {
 			return Failure::make( 'unavailable', 503 );

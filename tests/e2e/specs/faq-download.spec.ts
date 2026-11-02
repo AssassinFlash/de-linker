@@ -363,6 +363,86 @@ test.describe('the FAQ + document library', () => {
 			expect(projected).toEqual(visible);
 		});
 
+		test(`${locale}: a document search keeps its chosen type usable`, async ({
+			page,
+		}) => {
+			for (const width of [1440, 390]) {
+				await page.setViewportSize({ width, height: 900 });
+				await open(page, locale, 'documents');
+				const filters = page.locator('[data-library-filters]');
+				const manual = filters.locator('[data-library-type="manual"]');
+				await manual.click();
+				const title = await page
+					.locator(
+						'[data-library-panel="documents"] [data-library-item][data-library-type="manual"] .linker-library-doc-title'
+					)
+					.first()
+					.innerText();
+				const query = title.trim().split(/\s+/)[0];
+				expect(query).toBeTruthy();
+				const input = page.locator('.linker-library-q');
+				await input.fill(query!);
+				await input.press('Escape');
+				await expect(filters).toBeVisible();
+				const results = page.locator(
+					'[data-library-results] [data-library-item]'
+				);
+				expect(await results.count()).toBeGreaterThan(0);
+				expect(
+					new Set(
+						await results.evaluateAll((rows) =>
+							rows.map((row) =>
+								row.getAttribute('data-library-type')
+							)
+						)
+					)
+				).toEqual(new Set(['manual']));
+				const faqCount = await page
+					.locator('[data-library-tab="faq"] .linker-library-n')
+					.innerText();
+				await expect(manual.locator('.linker-library-n')).toHaveText(
+					await page
+						.locator(
+							'[data-library-tab="documents"] .linker-library-n'
+						)
+						.innerText()
+				);
+				await filters.locator('[data-library-type="all"]').click();
+				await expect(
+					page.locator('[data-library-tab="faq"] .linker-library-n')
+				).toHaveText(faqCount);
+				expect(await results.count()).toBeGreaterThan(0);
+				await input.fill('a');
+				await input.press('Escape');
+				const next = page.locator(
+					'[data-library-results] [data-library-page="next"]'
+				);
+				await expect(next).toBeEnabled();
+				const firstTitle = await results
+					.first()
+					.locator('.linker-library-doc-title')
+					.innerText();
+				await next.click();
+				await expect(
+					page.locator('[data-library-results] [aria-current="page"]')
+				).toHaveText('2');
+				expect(
+					await results
+						.first()
+						.locator('.linker-library-doc-title')
+						.innerText()
+				).not.toBe(firstTitle);
+				await expect(
+					results.first().locator('.linker-library-dl')
+				).toBeFocused();
+				await page.locator('[data-library-clear]').click();
+				await expect(input).toHaveValue('');
+				await expect(
+					filters.locator('[data-library-type="all"]')
+				).toHaveAttribute('aria-pressed', 'true');
+			}
+		});
+
 		test(`${locale}: a type chip filters the rows and the counts`, async ({
 			page,
 		}) => {
