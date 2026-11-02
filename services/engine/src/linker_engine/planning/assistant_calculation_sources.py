@@ -203,4 +203,13 @@ def calculation_sources(workspace: Workspace, run: Run) -> Object | None:
                 else [],
             }
         )
-    return {"schema_version": 1, "groups": groups} if groups else None
+    # A retained source which explicitly records neither calculation is a
+    # verified empty set. Older bundles missing these fields remain unknown.
+    if groups or (
+        "pv" in source
+        and source["pv"] is None
+        and "energy" in source
+        and source["energy"] is None
+    ):
+        return {"schema_version": 1, "groups": groups}
+    return None

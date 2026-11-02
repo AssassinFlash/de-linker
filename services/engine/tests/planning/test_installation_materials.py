@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 import io
+from dataclasses import replace
 from typing import cast
 
 import pytest
@@ -12,7 +13,11 @@ from pypdf import PdfReader
 from linker_engine import pdf
 from linker_engine.planning import installation_materials
 from linker_engine.planning.assets import Assets
-from linker_engine.planning.assistant_context import _report_source_projection
+from linker_engine.planning.assistant_calculation_sources import calculation_sources
+from linker_engine.planning.assistant_context import (
+    _report_source_projection,
+    assistant_context,
+)
 from linker_engine.planning.canonical import Object
 from linker_engine.planning.errors import (
     InvalidInput,
@@ -280,6 +285,20 @@ def test_owned_mounting_rule_report_worker_and_export_permission(
     assert "Synthetic project end clamp" in csv_bytes.decode(
         "utf-8-sig"
     ) and "row segments" in csv_bytes.decode("utf-8-sig")
+    projection = assistant_context(
+        workspace, owner, project.id, project.revision, [run.id], "en"
+    )
+    selected = json_object(projection)["runs"][0]
+    assert selected["calculation_sources"] == {"schema_version": 1, "groups": []}
+    assert "Synthetic project end clamp" not in str(selected["rows"])
+    assert "Installation material 1" in str(selected["rows"])
+    legacy_source = workspace.blobs.object(result["dependencies"]["report_source"])
+    del legacy_source["energy"]
+    legacy_sha = workspace.blobs.put_object(legacy_source)
+    legacy_result = {**result, "dependencies": {"report_source": legacy_sha}}
+    assert (
+        calculation_sources(workspace, replace(complete, result=legacy_result)) is None
+    )
     for permission in ("unknown", "prohibited"):
         denied = copy.deepcopy(inputs)
         denied["geometry"]["sources"][0]["permissions"]["export"] = permission
