@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "kind": "batc_cabinet_sales_unit_v1",
+  "figure": {
+    "value": "battery_system",
+    "unit": null,
+    "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_BAT-C-208-261kWh_User-Manual-EN.pdf",
+      "page": 3
+    }
+  }
+}

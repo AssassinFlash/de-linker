@@ -105,6 +105,45 @@ _DUMP_FLAGS = """dump_extra() {
 """
 
 
+# Five minutes without any compressed bytes moving releases the database
+# transaction. Progress resets the deadline; there is no overall time limit.
+DUMP_IDLE_SECONDS = 300
+_DUMP_RELAY = r"""
+$parent = (int) $argv[1];
+$idle = (int) $argv[2];
+$failed = static function (string $message) use ($parent): never {
+    fwrite(STDERR, $message . "\n");
+    posix_kill($parent, SIGUSR1);
+    exit(1);
+};
+stream_set_blocking(STDIN, false);
+stream_set_blocking(STDOUT, false);
+$pending = '';
+$last = microtime(true);
+while (true) {
+    if ($pending === '' && feof(STDIN)) { exit(0); }
+    $read = $pending === '' ? [STDIN] : [];
+    $write = $pending !== '' ? [STDOUT] : [];
+    $except = null;
+    $ready = @stream_select($read, $write, $except, 1);
+    if ($ready === false) { $failed('database backup stream selection failed'); }
+    if ($read) {
+        $data = @fread(STDIN, 65536);
+        if ($data === false) { $failed('database backup stream read failed'); }
+        if ($data !== '') { $pending = $data; $last = microtime(true); }
+    }
+    if ($write) {
+        $sent = @fwrite(STDOUT, $pending);
+        if ($sent === false) { $failed('database backup stream write failed'); }
+        if ($sent > 0) { $pending = substr($pending, $sent); $last = microtime(true); }
+    }
+    if (microtime(true) - $last >= $idle) {
+        $failed('database backup stream made no progress');
+    }
+}
+"""
+
+
 def _expansion(name: str) -> str:
     """A bash array expansion that is empty-array safe under `set -u`.
 
@@ -138,6 +177,8 @@ def dump_script(target: Target, *, skip: tuple[str, ...] = ()) -> str:
         f'SKIP+=(--ignore-table="$name.$prefix"{shlex.quote(table)})\n'
         for table in skip
     )
+    # Job control gives this one dump pipeline its own process group. The relay
+    # signals only its parent on disconnect/idle; the trap reaps that group.
     return f"""set -euo pipefail
 cd {shlex.quote(target.root)}
 wp={wp}
@@ -148,13 +189,30 @@ dump_extra
 name="$("${{wp[@]}}" config get DB_NAME)"
 prefix="$("${{wp[@]}}" config get table_prefix)"
 SKIP=()
-{skipping}MYSQL_PWD="$("${{wp[@]}}" config get DB_PASSWORD)" mysqldump \\
+{skipping}php -r 'exit(function_exists("posix_kill") && function_exists("stream_select") && defined("SIGUSR1") ? 0 : 1);' || {{ echo 'database backup requires PHP POSIX, SIGUSR1 and stream_select' >&2; exit 1; }}
+set -m
+dump_group=
+cleanup_dump() {{
+  if [ -z "$dump_group" ]; then dump_group="$(jobs -p)"; fi
+  if [ -n "$dump_group" ]; then kill -TERM -- "-$dump_group" 2>/dev/null || true; fi
+  if [ -n "${{dump_last:-}}" ]; then wait "$dump_last" 2>/dev/null || true; fi
+}}
+trap cleanup_dump EXIT
+trap 'exit 124' USR1
+trap 'exit 143' TERM
+trap 'exit 129' HUP
+trap 'exit 130' INT
+( MYSQL_PWD="$("${{wp[@]}}" config get DB_PASSWORD)" mysqldump \\
   --single-transaction --quick --skip-dump-date --order-by-primary \\
   --default-character-set=utf8mb4 --no-tablespaces \\
   {_expansion("DUMP_EXTRA")} \\
   {_expansion("SKIP")} \\
   {_expansion("DB_ARGS")} \\
-  "$name" | gzip
+  "$name" | gzip ) | php -r {shlex.quote(_DUMP_RELAY)} "$$" {DUMP_IDLE_SECONDS} &
+dump_last=$!
+dump_group="$(jobs -p)"
+wait "$dump_last"
+dump_group=
 """
 
 

@@ -19,6 +19,7 @@ import sys
 import tempfile
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit, urlunsplit
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT / "tools/cutover/src"), str(ROOT / "tools/local/src")]
@@ -39,6 +40,18 @@ HERE = Path(__file__).resolve().parent
 def plan_for_target(plan: dict[str, Any], origin: str) -> dict[str, Any]:
     """Select only an explicitly reviewed site version of the same original."""
     selected = copy.deepcopy(plan)
+    if selected.get("kind") == "batc_cabinet_sales_unit_v1":
+        figure = selected.get("figure")
+        citation = figure.get("citation") if isinstance(figure, dict) else None
+        if not isinstance(citation, dict) or not isinstance(citation.get("url"), str):
+            raise ValueError("The reviewed BAT-C figure source is missing.")
+        target, source_url = urlsplit(origin), urlsplit(citation["url"])
+        if target.scheme not in {"http", "https"} or not target.netloc:
+            raise ValueError("The selected target origin is invalid.")
+        citation["url"] = urlunsplit(
+            (target.scheme, target.netloc, source_url.path, "", "")
+        )
+        return selected
     controller = selected.get("controller")
     versions = (
         controller.get("installation_document_revisions")
@@ -65,13 +78,16 @@ def main() -> int:
     target.add_argument("--production", action="store_true")
     parser.add_argument("action", choices=("preview", "apply", "rollback", "verify"))
     parser.add_argument("--receipt", type=Path, required=True)
+    parser.add_argument("--plan", type=Path, help="Reviewed plan for preview only.")
     args = parser.parse_args()
     preview = args.action == "preview"
+    if args.plan is not None and not preview:
+        parser.error("--plan is only valid for preview; later actions use the receipt.")
     receipt: Path = args.receipt
     if preview:
         if receipt.exists() or receipt.is_symlink():
             parser.error("Preview needs a fresh receipt path.")
-        path = HERE / f"{STEM}.json"
+        path = args.plan if args.plan is not None else HERE / f"{STEM}.json"
     else:
         if (
             receipt.is_symlink()
