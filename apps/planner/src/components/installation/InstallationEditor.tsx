@@ -47,6 +47,7 @@ import type { PvStringPlan } from "../../domain/pvStrings.ts";
 import { PvStringLinks } from "./PvStringLinks.tsx";
 import { conductorLabel } from "./installationLabels.ts";
 import { TerminalResults } from "./TerminalResults.tsx";
+import { InstallationProtection } from "./InstallationProtection.tsx";
 import { InstallationMaterials } from "./InstallationMaterials.tsx";
 import { hasTerminalFeature } from "../../domain/installationTerminals.ts";
 
@@ -146,6 +147,7 @@ export function InstallationEditor({
 		[conflicted, setConflicted] = useState(false),
 		[linksValid, setLinksValid] = useState(true),
 		[materialsValid, setMaterialsValid] = useState(true),
+		[protectionValid, setProtectionValid] = useState(true),
 		[reviewStrings, setReviewStrings] = useState<unknown>(null),
 		[reviewContext, setReviewContext] = useState<{
 			projectId: string;
@@ -178,9 +180,22 @@ export function InstallationEditor({
 		};
 	}, []);
 	useEffect(() => {
-		onValidity(form === null && !newSource && linksValid && materialsValid);
+		onValidity(
+			form === null &&
+				!newSource &&
+				linksValid &&
+				materialsValid &&
+				protectionValid,
+		);
 		return () => onValidity(true);
-	}, [form, newSource, linksValid, materialsValid, onValidity]);
+	}, [
+		form,
+		newSource,
+		linksValid,
+		materialsValid,
+		protectionValid,
+		onValidity,
+	]);
 	// Saving the prepared inputs advances the revision without changing the
 	// accepted review basis. Pending replies still require the exact revision.
 	const shown =
@@ -372,9 +387,10 @@ export function InstallationEditor({
 				</div>
 			</header>
 			<Notice>
-				{__(
-					"This step calculates lengths from the positions and routes you record. Cable sizing, protection, earthing, mounting, connector matching and country requirements remain separate engineering checks.",
-					"linker-tools",
+				{electricalText(
+					locale,
+					"To check a protective device, select its circuit and operating condition and enter the fault-current and device data for that installation point.",
+					"Um eine Schutzeinrichtung zu prüfen, wählen Sie den Stromkreis und den Betriebszustand. Tragen Sie die Fehlerstrom- und Gerätedaten für diesen Einbauort ein.",
 				)}
 			</Notice>
 			{!geometry.sources.length && (
@@ -551,7 +567,7 @@ export function InstallationEditor({
 					<button
 						type="button"
 						className="lp-text-button"
-						disabled={!linksValid || !materialsValid}
+						disabled={!linksValid || !materialsValid || !protectionValid}
 						onClick={() => setNewSource(true)}
 					>
 						{__("Add measurement or drawing source", "linker-tools")}
@@ -608,14 +624,21 @@ export function InstallationEditor({
 										<div className="lp-inline-actions">
 											<button
 												className="lp-text-button"
-												disabled={!linksValid || !materialsValid}
+												disabled={
+													!linksValid || !materialsValid || !protectionValid
+												}
 												onClick={() => setForm({ kind, id: row.id })}
 											>
 												{__("Edit", "linker-tools")}
 											</button>
 											<button
 												className="lp-text-button"
-												disabled={dependent || !linksValid || !materialsValid}
+												disabled={
+													dependent ||
+													!linksValid ||
+													!materialsValid ||
+													!protectionValid
+												}
 												title={
 													dependent
 														? __(
@@ -638,7 +661,9 @@ export function InstallationEditor({
 												) && (
 													<button
 														className="lp-text-button"
-														disabled={!linksValid || !materialsValid}
+														disabled={
+															!linksValid || !materialsValid || !protectionValid
+														}
 														onClick={() => {
 															const p = products.data!.products.find(
 																(p) => p.id === row.product_id,
@@ -661,6 +686,7 @@ export function InstallationEditor({
 								disabled={
 									!linksValid ||
 									!materialsValid ||
+									!protectionValid ||
 									!geometry.sources.length ||
 									(kind === "instances"
 										? products.isFetching || !products.data?.prepared
@@ -686,9 +712,17 @@ export function InstallationEditor({
 						}
 						showReviewSummary={Boolean(shown)}
 						locale={locale}
-						disabled={busy || !linksValid}
+						disabled={busy || !linksValid || !protectionValid}
 						change={change}
 						onValidity={setMaterialsValid}
+					/>
+					<InstallationProtection
+						plan={plan}
+						review={shown?.protection_review}
+						locale={locale}
+						disabled={busy || !materialsValid || !linksValid}
+						change={change}
+						onValidity={setProtectionValid}
 					/>
 					<PvStringLinks
 						plan={plan}
@@ -697,7 +731,7 @@ export function InstallationEditor({
 						stringPlanChanged={stringPlanChanged}
 						review={shown?.pv_string_reconciliation ?? null}
 						locale={locale}
-						disabled={busy || !materialsValid}
+						disabled={busy || !materialsValid || !protectionValid}
 						change={change}
 						onValidity={setLinksValid}
 					/>
@@ -707,10 +741,12 @@ export function InstallationEditor({
 							busy ||
 							!linksValid ||
 							!materialsValid ||
+							!protectionValid ||
 							(!plan.cable_runs.length &&
 								!plan.circuits.some((c) => c.operating_conditions?.length) &&
 								!hasTerminalFeature(plan) &&
 								!plan.materials?.length &&
+								!plan.protection_assessments?.length &&
 								plan.pv_string_links === undefined &&
 								savedInputs.pv_plant_string_plan === undefined) ||
 							((plan.pv_string_links !== undefined ||

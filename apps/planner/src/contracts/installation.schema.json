@@ -1,5 +1,35 @@
 {
   "$defs": {
+    "BreakingEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "capacity_a": {
+          "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
+        },
+        "rated_voltage_v": {
+          "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
+        },
+        "current_kind": {
+          "enum": [
+            "ac",
+            "dc"
+          ],
+          "title": "Current Kind",
+          "type": "string"
+        },
+        "source_note": {
+          "$ref": "#/$defs/Text"
+        }
+      },
+      "required": [
+        "capacity_a",
+        "rated_voltage_v",
+        "current_kind",
+        "source_note"
+      ],
+      "title": "BreakingEvidence",
+      "type": "object"
+    },
     "CableReference": {
       "additionalProperties": false,
       "properties": {
@@ -427,6 +457,31 @@
       "title": "DeviceInstance",
       "type": "object"
     },
+    "DisconnectionEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "device_worst_case_clear_s": {
+          "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
+        },
+        "required_clear_s": {
+          "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
+        },
+        "device_source_note": {
+          "$ref": "#/$defs/Text"
+        },
+        "limit_source_note": {
+          "$ref": "#/$defs/Text"
+        }
+      },
+      "required": [
+        "device_worst_case_clear_s",
+        "required_clear_s",
+        "device_source_note",
+        "limit_source_note"
+      ],
+      "title": "DisconnectionEvidence",
+      "type": "object"
+    },
     "Endpoint": {
       "additionalProperties": false,
       "properties": {
@@ -442,6 +497,27 @@
         "port_id"
       ],
       "title": "Endpoint",
+      "type": "object"
+    },
+    "FaultRange": {
+      "additionalProperties": false,
+      "properties": {
+        "minimum_fault_a": {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        "maximum_fault_a": {
+          "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
+        },
+        "source_note": {
+          "$ref": "#/$defs/Text"
+        }
+      },
+      "required": [
+        "minimum_fault_a",
+        "maximum_fault_a",
+        "source_note"
+      ],
+      "title": "FaultRange",
       "type": "object"
     },
     "Hash": {
@@ -1003,6 +1079,101 @@
       "maximum": 9007199254740991,
       "type": "integer"
     },
+    "ProtectionAssessment": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "circuit_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "protection_material_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "operating_condition_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scenario": {
+          "$ref": "#/$defs/Text"
+        },
+        "fault_range": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FaultRange"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "breaking": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BreakingEvidence"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "disconnection": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DisconnectionEvidence"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "thermal": {
+          "items": {
+            "$ref": "#/$defs/ThermalEvidence"
+          },
+          "title": "Thermal",
+          "type": "array"
+        },
+        "confirmed_context_sha256": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Hash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "circuit_id",
+        "protection_material_id",
+        "operating_condition_id",
+        "scenario",
+        "fault_range",
+        "breaking",
+        "disconnection",
+        "thermal",
+        "confirmed_context_sha256"
+      ],
+      "title": "ProtectionAssessment",
+      "type": "object"
+    },
     "PvStringLink": {
       "additionalProperties": false,
       "properties": {
@@ -1474,6 +1645,62 @@
       "minLength": 1,
       "type": "string"
     },
+    "ThermalEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "run_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "core_role": {
+          "enum": [
+            "dc_positive",
+            "dc_negative",
+            "line",
+            "neutral",
+            "l1",
+            "l2",
+            "l3",
+            "pe"
+          ],
+          "title": "Core Role",
+          "type": "string"
+        },
+        "maximum_let_through_a2s": {
+          "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
+        },
+        "coverage_min_fault_a": {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        "coverage_max_fault_a": {
+          "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
+        },
+        "maximum_clear_s": {
+          "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
+        },
+        "k_a_sqrt_s_per_mm2": {
+          "$ref": "#/$defs/linker_engine__planning__geometry_documents__Positive__1"
+        },
+        "k_source_note": {
+          "$ref": "#/$defs/Text"
+        },
+        "let_through_source_note": {
+          "$ref": "#/$defs/Text"
+        }
+      },
+      "required": [
+        "run_id",
+        "core_role",
+        "maximum_let_through_a2s",
+        "coverage_min_fault_a",
+        "coverage_max_fault_a",
+        "maximum_clear_s",
+        "k_a_sqrt_s_per_mm2",
+        "k_source_note",
+        "let_through_source_note"
+      ],
+      "title": "ThermalEvidence",
+      "type": "object"
+    },
     "Vec2": {
       "items": {
         "$ref": "#/$defs/linker_engine__planning__geometry_documents__Number__2"
@@ -1614,6 +1841,13 @@
         "$ref": "#/$defs/InstallationMaterial"
       },
       "title": "Materials",
+      "type": "array"
+    },
+    "protection_assessments": {
+      "items": {
+        "$ref": "#/$defs/ProtectionAssessment"
+      },
+      "title": "Protection Assessments",
       "type": "array"
     }
   },

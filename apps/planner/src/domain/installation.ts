@@ -1,3 +1,8 @@
+import {
+	readProtectionReview,
+	type ProtectionAssessment,
+	type ProtectionReview,
+} from "./installationProtection.ts";
 import Ajv2020 from "ajv/dist/2020.js";
 import schema from "../contracts/installation.schema.json" with { type: "json" };
 import geometryPolicy from "../contracts/geometry-policy.json" with { type: "json" };
@@ -189,6 +194,7 @@ export interface InstallationMaterial {
 	};
 }
 export interface InstallationInputs {
+	protection_assessments?: ProtectionAssessment[];
 	schema_version: 1;
 	geometry_sha256: string | null;
 	instances: DeviceInstance[];
@@ -295,6 +301,21 @@ export function readInstallation(value: unknown): InstallationInputs {
 	if (!validate(value)) throw new ApiError(422, "invalid_installation");
 	const distinct = (ids: readonly string[]) => new Set(ids).size === ids.length;
 	if (
+		!distinct((value.protection_assessments ?? []).map((item) => item.id)) ||
+		(value.protection_assessments ?? []).some(
+			(item) =>
+				(item.fault_range &&
+					item.fault_range.minimum_fault_a >
+						item.fault_range.maximum_fault_a) ||
+				!distinct(
+					item.thermal.map((core) =>
+						JSON.stringify([core.run_id, core.core_role]),
+					),
+				) ||
+				item.thermal.some(
+					(core) => core.coverage_min_fault_a > core.coverage_max_fault_a,
+				),
+		) ||
 		!distinct((value.materials ?? []).map((row) => row.id)) ||
 		(value.materials ?? []).some(
 			(row) =>
@@ -358,6 +379,7 @@ export interface CableQuantity extends JsonObject {
 	reasons: string[];
 }
 export interface InstallationReview {
+	protection_review?: ProtectionReview;
 	material_review?: {
 		rows: (InstallationMaterial & {
 			circuit_status: string;
@@ -811,6 +833,10 @@ export function readInstallationReview(
 	)
 		throw new ApiError(502, "invalid_installation_review");
 	const electrical = readElectricalReview(row.electrical, requested, cables);
+	const protection = readProtectionReview(
+		row.protection_review,
+		requested.protection_assessments,
+	);
 	const terminals = readTerminalAssessment(row.terminal_assessment, requested);
 	let materialReview: InstallationReview["material_review"];
 	if (requested.materials !== undefined) {
@@ -1016,6 +1042,7 @@ export function readInstallationReview(
 	} else if (row.material_review !== undefined)
 		throw new ApiError(502, "invalid_installation_review");
 	return {
+		...(protection ? { protection_review: protection } : {}),
 		...(materialReview ? { material_review: materialReview } : {}),
 		...(electrical ? { electrical } : {}),
 		...(terminals ? { terminal_assessment: terminals } : {}),

@@ -103,6 +103,7 @@ lp-profile-facts
 lp-profile-help
 lp-profile-intake
 lp-profile-mapping
+lp-profile-panel
 lp-profile-range
 lp-profile-review
 lp-project
