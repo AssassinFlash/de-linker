@@ -3053,6 +3053,16 @@ msgstr ""
 msgid "Compatibility information unavailable"
 msgstr ""
 
+#: includes/Presentation/ProductShortcodes.php:1552
+msgid "Compatibility documented"
+msgstr ""
+
+#. translators: %s: manufacturer
+#: includes/Presentation/ProductShortcodes.php:1554
+#, php-format
+msgid "Documented by %s"
+msgstr ""
+
 #: includes/Presentation/ProductShortcodes.php:1463
 msgid "On the compatibility list on file"
 msgstr ""
