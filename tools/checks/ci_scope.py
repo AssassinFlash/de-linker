@@ -96,6 +96,18 @@ CONTROL_INPUTS = (
     ".editorconfig",
 )
 
+# ci-content runs these checks. The migration suite also exercises the three
+# source scanners and their shared extraction code against isolated sites.
+CONTENT_CHECKS = {
+    "tools/checks/test_i18n_sources.py": ("content",),
+    "tools/checks/i18n-validity.py": ("content",),
+    "tools/checks/i18n-coverage.py": ("content", "python:migrate"),
+    "tools/checks/i18n-exempt.json": ("content", "python:migrate"),
+    "tools/checks/i18n_sources.py": ("content", "python:migrate"),
+    "tools/checks/german-copy.py": ("content", "python:migrate"),
+    "tools/checks/internal-home-urls.py": ("content", "python:migrate"),
+}
+
 # Docs are inputs only where a current check actually opens them. Reports and
 # guidance must not invalidate an otherwise identical successful package run.
 ENGINE_DOC_INPUTS = (
@@ -277,6 +289,9 @@ def selected_modules(changes, base="", head=""):
             continue
         if path in CONTROL_INPUTS or path.startswith(".github/"):
             return None
+        if path in CONTENT_CHECKS:
+            selected.update(CONTENT_CHECKS[path])
+            continue
         test_owner = plugin_js_test_owner(path)
         if test_owner is not None:
             selected.add("js:" + test_owner)
