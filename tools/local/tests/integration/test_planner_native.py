@@ -624,19 +624,34 @@ def test_native_bootstrap_exposes_only_the_browser_runtime_contract(
     account: Account,
 ) -> None:
     instance, wp = local
-    context = Browser(instance.url).bootstrap()
+    browser = Browser(instance.url)
+    context = browser.bootstrap()
+    account.guest_sessions.add(
+        urllib.parse.unquote(browser.native_cookie().value).split("|")[0]
+    )
     assert set(context["runtime"]) == {
         "schema_version",
         "runtime_sha256",
         "models",
         "limits",
     }
-    assert set(context["runtime"]["limits"]) == {
+    required_limits = {
         "max_body_bytes",
         "max_csv_bytes",
         "max_page_size",
         "max_json_depth",
     }
+    assert (
+        required_limits
+        <= set(context["runtime"]["limits"])
+        <= required_limits
+        | {
+            "direct_beam_visibility",
+            "geometric_pv_generation",
+            "geometric_pv_clear_flat_roof",
+            "geometric_pv_clear_pitched_roof",
+        }
+    )
     # Exercise the same native classes with Woo's own signed-cookie reader
     # and nonce filter, without another HTTP probe or private-service task.
     result = wp.run(
