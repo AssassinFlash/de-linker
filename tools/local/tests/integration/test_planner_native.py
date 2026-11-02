@@ -2136,3 +2136,54 @@ def test_unrepresentable_numbers_are_rejected_without_changing_project_data(
     assert created.status == 200 and created.object()["inputs"] == command["inputs"]
     assert browser.read(created.object()).object() == created.object()
     assert browser.rpc("rpc/projects/create", command).object() == created.object()
+
+
+def test_series_csv_download_uses_frontend_wordpress_file_api(
+    local: tuple[Instance, WpCli],
+) -> None:
+    """A frontend REST request does not inherit WP-CLI's loaded admin helpers."""
+    instance, _ = local
+    owner = Browser(instance.url)
+    owner.bootstrap()
+    marker = uuid.uuid4().hex
+    probe = instance.wp_content / "mu-plugins/linker-series-file-api-acceptance.php"
+    assert not probe.exists()
+    payload = b"timestamp,power\n2023-01-01,1\n"
+    sha = hashlib.sha256(payload).hexdigest()
+    source = r"""<?php
+if (PHP_SAPI !== 'cli-server' || !hash_equals('MARKER', $_SERVER['HTTP_X_LINKER_SERIES_FIXTURE'] ?? '')) { return; }
+add_filter('pre_http_request', static function ($pre, $args, $url) {
+    $body = json_decode($args['body'] ?? '', true);
+    if (($body['project_id'] ?? null) !== 'fixture-project' || ($body['asset_id'] ?? null) !== 'fixture-asset') { return $pre; }
+    if (str_ends_with($url, '/assets/read')) {
+        $asset = array('id' => 'fixture-asset', 'project_id' => 'fixture-project', 'purpose' => 'planning_pv_series_csv_v1', 'media_type' => 'text/csv', 'content_sha256' => 'SHA');
+        return array('response' => array('code' => 200), 'headers' => array('content-type' => 'application/json'), 'body' => wp_json_encode($asset));
+    }
+    if (str_ends_with($url, '/assets/content') && true === ($args['stream'] ?? false) && is_string($args['filename'] ?? null)) {
+        file_put_contents($args['filename'], base64_decode('PAYLOAD', true));
+        return array('response' => array('code' => 200), 'headers' => array('content-type' => 'application/octet-stream'), 'body' => '');
+    }
+    return $pre;
+}, 10, 3);
+"""
+    probe.write_text(
+        source.replace("MARKER", marker)
+        .replace("SHA", sha)
+        .replace("PAYLOAD", base64.b64encode(payload).decode())
+    )
+    probe.chmod(0o600)
+    try:
+        reply = owner.rpc(
+            "rpc/assets/content",
+            {
+                "schema_version": 1,
+                "project_id": "fixture-project",
+                "asset_id": "fixture-asset",
+                "series_csv": True,
+            },
+            **{"X-Linker-Series-Fixture": marker},
+        )
+        assert reply.status == 200
+        assert reply.body == payload
+    finally:
+        probe.unlink()
