@@ -210,7 +210,10 @@ def run_parallel(lanes: Iterable[Lane]) -> bool:
     stop = threading.Event()
     failures: list[str] = []
     print("Queued checks: " + ", ".join(lane.name for lane in lanes), flush=True)
-    pool = ThreadPoolExecutor(max_workers=min(4, len(lanes)))
+    # Engine itself owns two pytest processes. Keep the existing four-process
+    # budget across that lane and the other independent checks.
+    engine = any(lane.command == ("just", "ci-engine") for lane in lanes)
+    pool = ThreadPoolExecutor(max_workers=min(4 - int(engine), len(lanes)))
     try:
         futures = [pool.submit(run_lane, lane, stop) for lane in lanes]
         for future in as_completed(futures):

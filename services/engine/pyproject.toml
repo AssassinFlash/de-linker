@@ -55,5 +55,6 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = ["ci_expensive: measured long-running full-year native calculation"]
 # A deprecation is fixed when it appears, not when the API is removed.
 filterwarnings = ["error"]

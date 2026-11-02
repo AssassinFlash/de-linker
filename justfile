@@ -168,7 +168,11 @@ ci-service-test service:
     #!/usr/bin/env bash
     source "{{ justfile_directory() }}/tools/checks/ci_phase.sh" "{{ service }} Test"
     cd "{{ justfile_directory() }}/services/{{ service }}"
-    uv run --locked pytest --durations=10
+    if [ "{{ service }}" = engine ]; then
+        uv run --locked python "{{ justfile_directory() }}/tools/checks/ci_engine_tests.py"
+    else
+        uv run --locked pytest --durations=10
+    fi
 
 # One module's complete static/unit contract, shared by hosted and local CI.
 [positional-arguments]

@@ -74,6 +74,24 @@ class PreflightScopeTest(unittest.TestCase):
         self.assertEqual(sum(lane.name == "engine" for lane in lanes), 1)
         self.assertEqual(sum(lane.name == "genie" for lane in lanes), 1)
 
+    def test_engine_shards_share_the_existing_worker_budget(self):
+        lanes = [
+            Lane("engine", ("just", "ci-engine"), 10),
+            *[Lane(str(index), ("just", "other"), 10) for index in range(3)],
+        ]
+        with (
+            patch.object(
+                preflight,
+                "run_lane",
+                side_effect=lambda lane, stop: (lane.name, 0, None),
+            ),
+            patch.object(
+                preflight, "ThreadPoolExecutor", wraps=ThreadPoolExecutor
+            ) as executor,
+        ):
+            self.assertTrue(preflight.run_parallel(lanes))
+            executor.assert_called_once_with(max_workers=3)
+
     def test_shared_dependencies_and_planner_writes_are_ordered(self):
         with (
             patch.object(preflight, "_git", return_value=b"sha"),

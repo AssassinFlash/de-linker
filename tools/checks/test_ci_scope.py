@@ -1200,6 +1200,17 @@ class ScopeTest(unittest.TestCase):
                         elif module == "planner":
                             self.assertEqual(commands.count(["tsc", "--noEmit"]), 1)
                             self.assertIn(["npm", "run", "build:assets"], commands)
+                        elif module == "engine":
+                            self.assertTrue(
+                                any(
+                                    command[:3] == ["uv", "run", "--locked"]
+                                    and command[3] == "python"
+                                    and command[4].endswith(
+                                        "/tools/checks/ci_engine_tests.py"
+                                    )
+                                    for command in commands
+                                )
+                            )
                         else:
                             self.assertIn(
                                 ["uv", "run", "--locked", "pytest", "--durations=10"],
