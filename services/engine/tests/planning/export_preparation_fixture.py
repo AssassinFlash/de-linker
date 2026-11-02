@@ -4,8 +4,8 @@ Uses the retained real TMY and explicit synthetic model/roof with a simulated
 provider adapter. Never connects to a live service, account, or project store.
 
 The export is reproducible on each named runtime: identifiers and clock values
-come from a fixed sequence, and the runtime snapshot uses a synthetic Python,
-platform and dependency identity. Exact physical AC/DC series can retain each
+come from a fixed sequence, and the browser contract uses a fixed synthetic
+runtime identity. Native exports separately record the actual source and host. Exact physical AC/DC series can retain each
 host's low bits, so macOS and Linux have independently generated, host-specific
 fixtures. On one host, a fixture diff means the saved objects changed.
 
@@ -118,10 +118,11 @@ def fixed_identity() -> Iterator[None]:
             setattr(module, name, value)
 
 
-# Host fields in RuntimeSnapshot. Their values are this export's identity, not
-# the machine that happens to run it. The recorded source files stay real, so a
-# source change still changes the snapshot hash.
+# Changes to real engine output still change the browser fixture. Unrelated
+# source edits do not rewrite every downstream content hash just by existing.
 FIXTURE_RUNTIME_IDENTITY: Object = {
+    "schema": 1,
+    "files": [],
     "python": "3.12.0",
     "python_implementation": "CPython",
     "platform": "fixture",
@@ -146,22 +147,8 @@ FIXTURE_RUNTIME_IDENTITY: Object = {
 
 
 def fixture_runtime_snapshot() -> RuntimeSnapshot:
-    """One snapshot: real source bytes, synthetic host identity.
-
-    Reads whichever ``RuntimeSnapshot.capture`` is installed. The export calls
-    this before the stand-in, so the recorded source files are the files on disk.
-    """
-    document = decode_object(RuntimeSnapshot.capture().content)
-    recorded = document.get("dependencies")
-    expected = FIXTURE_RUNTIME_IDENTITY["dependencies"]
-    if not isinstance(recorded, dict) or not isinstance(expected, dict):
-        raise RuntimeError("runtime snapshot dependencies are not an object")
-    if set(recorded) != set(expected):
-        raise RuntimeError(
-            "fixture runtime identity does not name the same dependencies as RuntimeSnapshot"
-        )
-    pinned = {**document, **FIXTURE_RUNTIME_IDENTITY}
-    content = encode(pinned)
+    """The synthetic execution identity for this browser contract only."""
+    content = encode(FIXTURE_RUNTIME_IDENTITY)
     return RuntimeSnapshot(content, digest(content))
 
 
@@ -696,22 +683,34 @@ def rendered() -> str:
 def native_export() -> dict[str, Any]:
     """Produce the host fixture and its matching manifest entry in one run."""
     host = f"{sys.platform}-{platform.machine()}"
-    source = fixture_runtime_snapshot().sha256
+    actual = RuntimeSnapshot.capture()
     fixture = capture()
-    if fixture_runtime_snapshot().sha256 != source:
+    if RuntimeSnapshot.capture().sha256 != actual.sha256:
         raise RuntimeError("source changed during the native fixture export")
-    runtime = decode_object(RuntimeSnapshot.capture().content)
+    runtime = decode_object(actual.content)
+    source = digest(encode(runtime["files"]))
     canonical = json.dumps(fixture, sort_keys=True, ensure_ascii=False).encode()
     return {
         "host": host,
         "source_sha256": source,
+        "fixture_runtime_sha256": fixture_runtime_snapshot().sha256,
         "fixture": fixture,
         "baseline": {
             "fixture": f"preparation-flow-{host}.json",
+            "source_sha256": source,
+            "runtime_sha256": actual.sha256,
             "canonical_sorted_json_sha256": hashlib.sha256(canonical).hexdigest(),
             "runtime": {
                 key: runtime[key]
-                for key in ("dependencies", "libc", "machine", "platform", "python")
+                for key in (
+                    "dependencies",
+                    "libc",
+                    "machine",
+                    "platform",
+                    "python",
+                    "python_implementation",
+                    "sqlite",
+                )
             },
             "export_run": "native:"
             + host

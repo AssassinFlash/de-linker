@@ -24,6 +24,18 @@ test("only a known input-refusal code and status release an import", () => {
 		isPreMutationInputRefusal(new ApiError(413, "linker_planner_body")),
 		true,
 	);
+	assert.equal(
+		isPreMutationInputRefusal(
+			new ApiError(422, "report_wiring_check_required"),
+		),
+		true,
+	);
+	assert.equal(
+		isPreMutationInputRefusal(
+			new ApiError(502, "report_wiring_check_required"),
+		),
+		false,
+	);
 	for (const status of [400, 413, 415, 422, 500]) {
 		for (const code of [
 			"request_failed",

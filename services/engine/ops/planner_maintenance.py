@@ -388,6 +388,20 @@ class Remote:
                 reason = (
                     safe[-1].decode() if safe else "exit_" + str(process.returncode)
                 )
+                timeout = re.search(
+                    rb"subprocess\.TimeoutExpired: Command ([^\n]+) timed out after ",
+                    error,
+                )
+                if not safe and timeout:
+                    command = timeout.group(1)
+                    reason = (
+                        "offline_retention_timeout"
+                        if all(
+                            x in command
+                            for x in (b"retention", b"--apply", b"--offline")
+                        )
+                        else "subprocess_timeout"
+                    )
                 if not safe and process.returncode == 255:
                     # Store only fixed categories; SSH stderr can name private hosts.
                     diagnostics = error.lower()
@@ -731,11 +745,13 @@ def run(policy: Policy, remote: Remote, now: dt.datetime) -> dict[str, Any]:
     metadata = _metadata(recovery)
     result: dict[str, Any] = {}
     failure: BaseException | None = None
+    failed_action: str | None = None
     try:
         remote.call("stage", payload=_metadata_tar(recovery), **metadata)
         result = remote.call("apply", **metadata)
     except BaseException as error:
         failure = error
+        failed_action = remote.last_action
         raise
     finally:
         try:
@@ -745,6 +761,9 @@ def run(policy: Policy, remote: Remote, now: dt.datetime) -> dict[str, Any]:
             if failure is None:
                 raise
             failure.add_note("owned recovery cleanup pending: " + type(error).__name__)
+        finally:
+            if failed_action is not None:
+                remote.last_action = failed_action
     outcome = (
         "skipped"
         if result.get("mode") == "skipped"

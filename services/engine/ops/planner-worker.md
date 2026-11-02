@@ -240,6 +240,14 @@ environment and `PYTHONPATH=src:tests`:
 python -c 'from tests.planning.export_preparation_fixture import rendered; print(rendered(), end="")'
 ```
 
+The browser fixture runs the real kernels with a stable synthetic runtime
+identity. Each platform baseline records the SHA-256 of the engine file list
+and bytes used for its native export. The test compares every generated field,
+including artifact hashes, on the recorded runtime. Other runtimes retain the
+explicit exceptions for measured differences in native floating-point results.
+Regenerate when this comparison changes. Production releases continue to bind
+each run to the full source, platform and dependency snapshot.
+
 An isolated Linux export needs `src/`, `tests/` (including its fixtures),
 `schemas/`, `pyproject.toml` and `uv.lock` at their original engine paths.
 Its helpers also read exactly these four repository-relative originals:

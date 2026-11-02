@@ -95,8 +95,6 @@ def _check_database(path: Path, blobs: Blobs) -> set[str]:
         if connection.execute("PRAGMA foreign_key_check").fetchall():
             raise VersionUnavailable("archive references are inconsistent")
         roots = database_blob_roots(connection)
-        for sha256 in roots:
-            blobs.read(sha256)
         documents = connection.execute(
             "SELECT metadata_sha256 FROM project_assets "
             "UNION SELECT result_sha256 FROM runs WHERE result_sha256 IS NOT NULL "
@@ -179,13 +177,15 @@ def verify(directory: Path) -> Object:
         if not (directory / "blobs").is_dir():
             raise VersionUnavailable("archive blobs are absent")
         blobs = Blobs(directory / "blobs")
-        for item in hashes:
-            if not isinstance(item, str):
-                raise VersionUnavailable("archive blob hash is invalid")
-            blobs.read(item)
+        # The database walk verifies every reachable blob. Read only the
+        # additional, unreferenced bytes the recovery point promises to own.
         retained = _check_database(database, blobs)
         if not retained.issubset(hashes):
             raise VersionUnavailable("archive blob manifest omits retained references")
+        for item in hashes:
+            assert isinstance(item, str)
+            if item not in retained:
+                blobs.read(item)
         return manifest
     except (OSError, InvalidInput) as error:
         raise VersionUnavailable("archive files are unavailable") from error

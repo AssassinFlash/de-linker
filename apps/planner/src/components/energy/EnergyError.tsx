@@ -164,6 +164,11 @@ export function energyErrorText(error: unknown): string {
 				"A selected result does not match the saved project inputs. Choose a matching result.",
 				"linker-tools",
 			);
+		case "report_wiring_check_required":
+			return __(
+				"The report needs an equipment check of the saved PV strings. Check the saved equipment selection in Equipment, then return to Planning report and select that completed result under Equipment checks.",
+				"linker-tools",
+			);
 		case "incomplete_module_reference":
 		case "invalid_source_url":
 			return __(
@@ -347,11 +352,26 @@ export function energyErrorText(error: unknown): string {
 			);
 	}
 }
-export function EnergyError({ error }: { error: unknown }) {
+export function EnergyError({
+	error,
+	openEquipment,
+}: {
+	error: unknown;
+	openEquipment?: () => void;
+}) {
 	const issue = error instanceof ApiError ? error.evidenceIssue : null;
 	return error ? (
 		<Notice error>
 			<p>{energyErrorText(error)}</p>
+			{openEquipment &&
+				error instanceof ApiError &&
+				error.code === "report_wiring_check_required" && (
+					<p>
+						<button type="button" onClick={openEquipment}>
+							{__("Equipment", "linker-tools")}
+						</button>
+					</p>
+				)}
 			{issue && (
 				<details>
 					<summary>{__("Source details", "linker-tools")}</summary>

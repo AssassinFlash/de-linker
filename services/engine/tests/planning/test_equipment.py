@@ -780,7 +780,7 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
             }
         ],
     }
-    with pytest.raises(ReportInputsChanged, match="has not assessed"):
+    with pytest.raises(ReportInputsChanged, match="has not assessed") as missing_wiring:
         report_sources(
             workspace,
             sources,
@@ -788,6 +788,7 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
             replace(workspace.get(actor, project["id"]), inputs=bypass),
             options.model_copy(update={"equipment_run_id": None}),
         )
+    assert missing_wiring.value.code == "report_wiring_check_required"
     assert selected_source["equipment"] == assessment
     assert selected_source["equipment_plant"] == chosen
     assert selected_source["source_runs"][0]["candidate_id"] == candidate["id"]
@@ -2278,7 +2279,9 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
             "temperature_source": None,
             "strings": [],
         }
-        with pytest.raises(ReportInputsChanged, match="has not assessed"):
+        with pytest.raises(
+            ReportInputsChanged, match="has not assessed"
+        ) as missing_wiring:
             report_sources(
                 workspace,
                 source,
@@ -2291,6 +2294,34 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
                     equipment_run_id=None,
                     logo=None,
                 ),
+            )
+        assert missing_wiring.value.code == "report_wiring_check_required"
+        # A named check must be evaluated against the saved selection and wiring,
+        # even when the search choice is still part of the saved project.
+        direct = ReportOptions(
+            locale="en",
+            energy_run_id=None,
+            pv_run_id=None,
+            equipment_run_id=completed.id,
+            logo=None,
+        )
+        with pytest.raises(
+            InvalidInput, match="saved project selection|has not assessed"
+        ):
+            report_sources(
+                workspace,
+                source,
+                owner,
+                replace(workspace.get(owner, pid), inputs=single_bypass),
+                direct,
+            )
+        with pytest.raises(InvalidInput, match="differs from the adopted"):
+            report_sources(
+                workspace,
+                source,
+                owner,
+                replace(workspace.get(owner, pid), inputs=selected_inputs),
+                direct,
             )
         selected_inputs["equipment_candidate"]["assessment_sha256"] = "0" * 64
         with pytest.raises(InvalidInput):
@@ -2353,6 +2384,78 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
         assert refused.state == "failed" and refused.result is None
         assert json_object(refused.error)["code"] == "product_evidence_changed"
         assert workspace.run(owner, first).result == completed.result
+
+        # A customer may keep a previously adopted search result while adding
+        # wiring. The matching, completed check must be usable in the report.
+        from linker_engine.planning.geometry import panel_poses, read_geometry
+        from linker_engine.planning.woo_module import module_template
+
+        from .test_pv_generation import geometry
+
+        withdrawn = False
+        monkeypatch.setattr(
+            "linker_engine.planning.equipment_kernel.assess_equipment", original
+        )
+        layout = geometry()
+        module = json_object(module_template(feed["overlay"][0]))
+        layout["module_specs"] = [{**module["specification"], "id": "module"}]
+        layout["arrays"][0].update(rows=2, columns=6, excluded_slots=[])
+        module_ids = [p.id for p in panel_poses(read_geometry(layout)) if p.included]
+        assert len(module_ids) == 12
+        wired_inputs = {
+            **copy.deepcopy(selected_inputs),
+            "geometry": layout,
+            "pv_string_plan": {
+                "schema_version": 1,
+                "inverter_product_id": candidate["selection"]["inverter_product_id"],
+                "minimum_ambient_c": -10,
+                "temperature_source": "Synthetic design temperature",
+                "strings": [
+                    {"id": "s_a", "mppt": 1, "input": 1, "module_ids": module_ids[:6]},
+                    {"id": "s_b", "mppt": 1, "input": 2, "module_ids": module_ids[6:]},
+                ],
+            },
+        }
+        revised = client.post(
+            "/projects/revise",
+            json={
+                "schema_version": 1,
+                "project_id": pid,
+                "expected_revision": 2,
+                "inputs": wired_inputs,
+                "key": "adopt-candidate-with-wiring",
+            },
+            headers=headers(),
+        )
+        assert revised.status_code == 200, revised.text
+        wired = workspace.get(owner, pid)
+        assert wired.revision == 3
+        original_choice = copy.deepcopy(wired.inputs["equipment_candidate"])
+        check = client.post(
+            "/runs/equipment",
+            json={**command, "expected_revision": 3, "key": "wired-equipment-check"},
+            headers=headers(),
+        )
+        assert check.status_code == 200, check.text
+        assert worker.run_once()
+        wired_run = workspace.run(owner, check.json()["id"])
+        assert wired_run.state == "succeeded", wired_run.error
+        wiring = json_object(wired_run.result)["assessment"]["pv_electrical"]
+        assert [row["id"] for row in wiring["strings"]] == ["s_a", "s_b"]
+        report = json_object(
+            report_sources(
+                workspace,
+                source,
+                owner,
+                wired,
+                direct.model_copy(update={"equipment_run_id": wired_run.id}),
+            )
+        )
+        assert report["equipment"]["pv_electrical"] == wiring
+        assert any(row["run_id"] == wired_run.id for row in report["source_runs"])
+        assert (
+            workspace.get(owner, pid).inputs["equipment_candidate"] == original_choice
+        )
 
 
 def test_search_enumerates_documented_counts_and_keeps_budget_exhaustion_visible(

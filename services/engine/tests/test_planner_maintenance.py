@@ -87,12 +87,14 @@ class RemoteFixture:
         self.busy = busy
         self.selected: str | None = None
         self.recovery_seconds = 0.0
+        self.last_action = "local_recovery"
         self.events: list[str] = []
         self.recovery: Path | None = None
         self.fail: str | None = None
         self.fail_snapshot_ack = False
 
     def call(self, action: str, **values: Any) -> dict[str, Any]:
+        self.last_action = action
         self.events.append(action)
         if action == self.fail:
             raise ConnectionError("private transport detail must not be logged")
@@ -235,11 +237,15 @@ def test_apply_failure_cleans_owned_recovery_and_keeps_verified_point(
     workspace.blobs.put(b"orphan")
     remote = RemoteFixture(workspace)
     remote.fail = "apply"
-    with pytest.raises(ConnectionError):
+    with pytest.raises(ConnectionError) as failure:
         maintenance.run(policy, remote, dt.datetime(2026, 10, 31, 2, tzinfo=dt.UTC))
     registry = json.loads((policy.archives / "RECOVERY-POINTS.json").read_text())
     assert archive.verify(Path(registry["latest_verified_recovery"]))
     assert remote.events[-1] == "cleanup"
+    assert (
+        maintenance.failure_result(failure.value, remote.last_action)["phase"]
+        == "apply"
+    )
 
 
 def test_lost_snapshot_reply_reuses_published_recovery_instead_of_another_copy(
@@ -336,6 +342,44 @@ def test_remote_plan_failure_records_only_the_diagnostic_category(
         "reason": f"remote_plan_{reason}",
     }
     assert child.returncode == 255
+
+
+@pytest.mark.parametrize(
+    ("command", "reason"),
+    [
+        (
+            "runuser retention --apply --offline private-path",
+            "offline_retention_timeout",
+        ),
+        ("systemctl stop private-unit", "subprocess_timeout"),
+    ],
+)
+def test_remote_apply_timeout_records_only_the_operation_category(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, command: str, reason: str
+) -> None:
+    policy = maintenance.Policy(
+        "example", Path("/opt/linker-planner"), tmp_path, "a" * 32
+    )
+    remote = maintenance.Remote(policy)
+    message = (
+        f"subprocess.TimeoutExpired: Command {command!r} timed out after 30 seconds\n"
+    )
+    child = subprocess.Popen(
+        [
+            sys.executable,
+            "-c",
+            "import sys;sys.stderr.write(sys.argv[1]);sys.exit(1)",
+            message,
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        start_new_session=True,
+    )
+    monkeypatch.setattr(remote, "start", lambda *_args: child)
+    with pytest.raises(RuntimeError) as failure:
+        remote.call("apply")
+    assert str(failure.value) == f"remote_apply_{reason}"
+    assert "private" not in str(failure.value)
 
 
 def test_native_automatic_guards_never_stop_on_busy_zero_or_missing_recovery(

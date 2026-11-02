@@ -20,6 +20,7 @@ import { PlantPvStringSetup } from "../src/components/equipment/PlantPvStringSet
 import { panelPoses } from "../src/domain/panelPoses.ts";
 import { equipmentDraft } from "../src/domain/equipment.ts";
 import { DeviceConditionInputs } from "../src/components/equipment/DeviceConditionInputs.tsx";
+import { PlanningReportForm } from "../src/components/energy/PlanningReportForm.tsx";
 import { PlanningReportResult } from "../src/components/energy/PlanningReportResult.tsx";
 import { EquipmentResult } from "../src/components/equipment/EquipmentResult.tsx";
 import { ApiError } from "../src/data/protocol.ts";
@@ -471,6 +472,8 @@ test("the geometric PV workspace uses all retained intervals, adopts frozen AC e
 			sent.push(path);
 			assert.equal(command.expected_revision, current.baseline.revision);
 			if (path === "runs/report") {
+				if (sent.filter((name) => name === path).length === 1)
+					throw new ApiError(422, "report_wiring_check_required");
 				submitted = command.options;
 				return native.report_run;
 			}
@@ -689,10 +692,22 @@ test("the geometric PV workspace uses all retained intervals, adopts frozen AC e
 		choice.dispatchEvent(new window.Event("change", { bubbles: true }));
 	});
 	await act(async () => button("Generate planning report").click());
+	const wiringWarning = () =>
+		[...document.querySelectorAll(".lp-notice")].find((node) =>
+			node.textContent.includes("saved PV strings"),
+		);
+	await until(() => Boolean(wiringWarning()));
+	const recovery = wiringWarning().querySelector("button");
+	assert.equal(recovery.textContent, "Equipment");
+	await act(async () => recovery.click());
+	assert.equal(document.getElementById("lp-equipment").hidden, false);
+	await act(async () => button("Planning report").click());
+	assert.equal(choice.value, native.run.id);
+	await act(async () => button("Generate planning report").click());
 	await until(() => submitted !== undefined);
 	assert.equal(submitted.pv_run_id, native.run.id);
 	assert.equal(submitted.direct_beam_run_id, undefined);
-	assert.deepEqual(sent, ["runs/geometric-pv", "runs/report"]);
+	assert.deepEqual(sent, ["runs/geometric-pv", "runs/report", "runs/report"]);
 });
 
 test("owned geometric setup saves with the cumulative contract and shows frozen night/daylight separately from PV", async (t) => {
@@ -986,6 +1001,46 @@ async function mount(t, component, initialUrl) {
 	);
 	return { dom, root, queryClient };
 }
+
+test("a wired project can select a completed equipment check after adopting a search result", async (t) => {
+	const id = "7".repeat(32);
+	let submitted;
+	await mount(
+		t,
+		React.createElement(PlanningReportForm, {
+			runs: [
+				{
+					id,
+					state: "succeeded",
+					task_kind: "qualify_woo_equipment_v1",
+					revision: 17,
+					created_at: 1,
+				},
+			],
+			locale: "en-GB",
+			hasCandidate: true,
+			hasWiring: true,
+			disabled: false,
+			generate: async (options) => {
+				submitted = options;
+			},
+		}),
+	);
+	const selection = [...document.querySelectorAll("select")].find((node) =>
+		[...node.options].some((o) => o.value === id),
+	);
+	assert.ok(selection);
+	await act(async () => {
+		selection.value = id;
+		selection.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	await act(async () =>
+		[...document.querySelectorAll("button")]
+			.find((node) => node.textContent === "Generate planning report")
+			.click(),
+	);
+	assert.equal(submitted.equipment_run_id, id);
+});
 
 test("a saved terminal-only circuit reaches the report entry without a cable run", async (t) => {
 	const native = fixture.geometric_pv;
