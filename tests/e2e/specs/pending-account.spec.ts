@@ -175,6 +175,33 @@ for (const language of ['en', 'de'] as const) {
 					page.locator('.linker-account-main')
 				).not.toContainText(/€|EUR/);
 				await shot(page, `${prefix}-pending-account`);
+				if (width === 390) {
+					const menu = page.locator('.linker-account-mobile-menu');
+					await expect(menu).toBeVisible();
+					await menu.locator('summary').click();
+					await expect(
+						menu.locator('a[href*="action=logout"]')
+					).toBeVisible();
+					const saved = menu.getByRole('link', {
+						name:
+							language === 'de'
+								? 'Gespeicherte Lösungen'
+								: 'Saved solutions',
+					});
+					const savedUrl = await saved.getAttribute('href');
+					if (!savedUrl)
+						throw new Error('Missing saved solutions URL');
+					await saved.click();
+					await expect(page).toHaveURL(savedUrl);
+					await menu.locator('summary').click();
+					const company = menu.getByRole('link', {
+						name: language === 'de' ? 'Unternehmen' : 'Company',
+					});
+					const companyUrl = await company.getAttribute('href');
+					if (!companyUrl) throw new Error('Missing company URL');
+					await company.click();
+					await expect(page).toHaveURL(companyUrl);
+				}
 				for (const endpoint of [
 					'inquiries/',
 					'documents/',
