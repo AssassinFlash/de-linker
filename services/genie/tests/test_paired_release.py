@@ -239,9 +239,10 @@ def test_reused_candidate_runs_the_guard_again_before_activation(
         Runtime(), tmp_path / "journal", state, lambda: {}, guard=guard
     )
     assert (
-        publication_worker.PreActivationDeferred is publish_index.PreActivationDeferred
+        vars(publication_worker)["PreActivationDeferred"]
+        is publish_index.PreActivationDeferred
     )
-    with pytest.raises(publication_worker.PreActivationDeferred):
+    with pytest.raises(publish_index.PreActivationDeferred):
         publisher(tmp_path, "/index", "host")
     diagnostic = capsys.readouterr().err
     assert "RuntimeError at test_paired_release.py:" in diagnostic
