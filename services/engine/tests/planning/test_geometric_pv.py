@@ -296,15 +296,24 @@ def test_pitched_clearance_matches_exact_rays_including_blocked_counterexample(
     expected_work = cast(Object, cast(Object, expected["inputs"])["work"])
     actual_faces = cast(int, actual_work.pop("ray_face_checks"))
     reference_faces = cast(int, expected_work.pop("ray_face_checks"))
-    actual_work.pop("bounds_checks")
-    expected_work.pop("bounds_checks")
+    actual_bounds = cast(int, actual_work.pop("bounds_checks"))
+    reference_bounds = cast(int, expected_work.pop("bounds_checks"))
     if canopy:
         assert actual_faces == reference_faces
+        assert actual_bounds == reference_bounds
         assert any(
             value == 0
             for module in cast(list[Object], actual["modules"])
             for value in cast(list[object], module["geometric_visible_fraction"])
         )
+        if tilt == 30 and azimuth == 0:
+            constrained = limits.model_copy(
+                update={"max_bounds_checks": reference_bounds}
+            )
+            same_limit = generate_geometric_pv(
+                geo, meteo, request, constrained, max_weather_rows=9000
+            )
+            assert same_limit.profile.values_kw == reference.profile.values_kw
     else:
         assert actual_faces < reference_faces
     assert actual == expected

@@ -157,6 +157,10 @@ def generate_geometric_pv(
         frame = (first.u, first.v, first.normal)
         if (
             len(upward_clearances) < len(scene.receivers)
+            and len(scene.opaque) == len(scene.receivers) + 1
+            and sum(item.kind == "roof_surface" for item in scene.opaque) == 1
+            and sum(item.kind == "module_volume" for item in scene.opaque)
+            == len(scene.receivers)
             and all((r.u, r.v, r.normal) == frame for r in scene.receivers)
             and budget.bounds_checks + proof_bound < limits.max_bounds_checks
         ):
