@@ -5,6 +5,8 @@ from __future__ import annotations
 import gzip
 import json
 import os
+import shlex
+import shutil
 import subprocess
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -275,9 +277,12 @@ def test_the_dump_script_names_the_left_out_table_with_the_sites_prefix(
     """Run the real script: the database name and prefix are read on the site's machine."""
     binaries = tmp_path / "bin"
     binaries.mkdir()
+    php_cli = shutil.which("php")
+    assert php_cli is not None
     php = binaries / "php"
     php.write_text(
         "#!/bin/sh\n"
+        f'if [ "$1" = "-r" ]; then exec {shlex.quote(php_cli)} "$@"; fi\n'
         'case "$*" in\n'
         "  *DB_HOST*) echo localhost ;;\n"
         "  *DB_USER*) echo site ;;\n"
