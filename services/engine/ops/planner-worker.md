@@ -61,7 +61,15 @@ frozen request or result bytes to make a version appear compatible.
 
 The optional `geometric_pv_clear_flat_roof` runtime policy may only be enabled
 with an explicit `expanded_job` worker policy. Absence keeps the ordinary
-worker and its existing work limits unchanged. The measured host envelope uses:
+worker and its existing work limits unchanged.
+
+The separate `geometric_pv_clear_pitched_roof` policy is disabled when absent
+and also requires the same isolated worker mechanism. Do not enable it on a
+host until a representative pitched-roof job has completed under that host's
+configured isolation and resource guard; flat-roof measurements do not prove
+the pitched-roof envelope.
+
+The measured flat-roof host envelope uses:
 
 ```json
 {

@@ -19,7 +19,7 @@ import pvlib
 
 from .canonical import Json, Object, decode_object, digest, encode
 from .direct_beam_geometry import build_scene
-from .direct_beam_index import DirectBeamIndex
+from .direct_beam_index import DirectBeamIndex, PlaneClearance
 from .direct_beam_visibility import VisibilityBudget, visibility_row
 from .errors import InvalidInput, NumericalFailure, VersionUnavailable
 from .geometric_pv_diffuse import diffuse_sample_upper_bound, module_diffuse_visibility
@@ -130,6 +130,7 @@ def generate_geometric_pv(
     index = DirectBeamIndex.from_scene(scene, leaf_size=limits.index_leaf_size)
     checkpoint()
     upward_clearances: dict[str, float] = {}
+    plane_clearances: dict[str, tuple[PlaneClearance, float]] = {}
     # Proof construction has its own charged BVH-bound work. Never consume
     # the whole declared budget trying an optional optimization.
     proof_bound = len(scene.receivers) * len(scene.opaque)
@@ -150,6 +151,35 @@ def generate_geometric_pv(
             )
             if threshold is not None:
                 upward_clearances[receiver.id] = threshold
+        # Only construct the projected proof once when receivers share an
+        # identical frame. Mixed orientations retain the exact path.
+        first = scene.receivers[0]
+        frame = (first.u, first.v, first.normal)
+        if (
+            len(upward_clearances) < len(scene.receivers)
+            and all((r.u, r.v, r.normal) == frame for r in scene.receivers)
+            and budget.bounds_checks + proof_bound < limits.max_bounds_checks
+        ):
+            plane = PlaneClearance.from_scene(scene, frame)
+            if plane is not None:
+                for receiver in scene.receivers:
+                    if receiver.id in upward_clearances:
+                        continue
+                    checkpoint()
+                    points = tuple(
+                        receiver.midpoint(x, y, count)
+                        for count in (
+                            request.sampling.coarse_cells_per_edge,
+                            request.sampling.fine_cells_per_edge,
+                        )
+                        for y in range(count)
+                        for x in range(count)
+                    )
+                    threshold = plane.threshold(
+                        receiver.id, points, on_bounds_check=budget.bounds
+                    )
+                    if threshold is not None:
+                        plane_clearances[receiver.id] = (plane, threshold)
     static_diffuse = {}
     if diffuse:
         for receiver in scene.receivers:
@@ -173,6 +203,7 @@ def generate_geometric_pv(
             budget,
             index=index,
             upward_clearances=upward_clearances,
+            plane_clearances=plane_clearances,
         )
         modules = row["modules"]
         assert isinstance(modules, list)

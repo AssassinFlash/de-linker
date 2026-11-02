@@ -193,6 +193,7 @@ def test_flat_roof_clearance_preserves_complete_hourly_witness(
     elevated: bool,
 ) -> None:
     from linker_engine.planning import geometric_pv_generation
+    from linker_engine.planning.direct_beam_index import PlaneClearance
     from linker_engine.planning.model_numbers import canonical_witness_document
 
     from .test_pvgis_tmy import parse
@@ -218,6 +219,7 @@ def test_flat_roof_clearance_preserves_complete_hourly_witness(
     )
     with monkeypatch.context() as old:
         old.setattr(DirectBeamIndex, "upward_clearance", lambda *args, **kwargs: None)
+        old.setattr(PlaneClearance, "from_scene", lambda *_args: None)
         old.setattr(
             geometric_pv_generation,
             "canonical_witness_in_place",
@@ -241,6 +243,70 @@ def test_flat_roof_clearance_preserves_complete_hourly_witness(
         )
     else:
         assert actual_checks < expected_checks
+    assert actual == expected
+
+
+@pytest.mark.parametrize("canopy", [False, True])
+@pytest.mark.parametrize("tilt,azimuth", [(10, 0), (30, 0), (60, 0), (30, 90)])
+def test_pitched_clearance_matches_exact_rays_including_blocked_counterexample(
+    monkeypatch: pytest.MonkeyPatch, canopy: bool, tilt: int, azimuth: int
+) -> None:
+    from linker_engine.planning.direct_beam_index import PlaneClearance
+
+    from .test_pvgis_tmy import parse
+
+    full = parse()
+    meteo = replace(full, points=full.points[4344:4368])
+    geo, par = geometry(), perez_parameters()
+    roof = geo["roofs"][0]
+    roof["boundary_uv"] = [[-20, -20], [40, -20], [40, 40], [-20, 40]]
+    az, slope = math.radians(azimuth), math.radians(tilt)
+    roof["u_axis_enu"] = [math.cos(az), math.sin(az), 0]
+    roof["v_axis_enu"] = [
+        -math.sin(az) * math.cos(slope),
+        math.cos(az) * math.cos(slope),
+        math.sin(slope),
+    ]
+    geo["arrays"][0].update(rows=4, columns=7, excluded_slots=[])
+    if canopy:
+        covering = deepcopy(roof)
+        covering.update(
+            id="canopy",
+            origin_enu=[*roof["origin_enu"][:2], roof["origin_enu"][2] + 10],
+            boundary_uv=[[-100, -100], [100, -100], [100, 100], [-100, 100]],
+        )
+        geo["roofs"].append(covering)
+    request = perez_request(par)
+    limits = GeometricPvLimits(
+        max_module_steps=1000,
+        max_samples=100000,
+        max_ray_face_checks=1000000,
+        max_bounds_checks=1000000,
+        index_leaf_size=8,
+    )
+    with monkeypatch.context() as original:
+        original.setattr(PlaneClearance, "from_scene", lambda *_args: None)
+        reference = generate_geometric_pv(
+            geo, meteo, request, limits, max_weather_rows=9000
+        )
+    result = generate_geometric_pv(geo, meteo, request, limits, max_weather_rows=9000)
+    assert result.profile.values_kw == reference.profile.values_kw
+    actual, expected = result.witness(), reference.witness()
+    actual_work = cast(Object, cast(Object, actual["inputs"])["work"])
+    expected_work = cast(Object, cast(Object, expected["inputs"])["work"])
+    actual_faces = cast(int, actual_work.pop("ray_face_checks"))
+    reference_faces = cast(int, expected_work.pop("ray_face_checks"))
+    actual_work.pop("bounds_checks")
+    expected_work.pop("bounds_checks")
+    if canopy:
+        assert actual_faces == reference_faces
+        assert any(
+            value == 0
+            for module in cast(list[Object], actual["modules"])
+            for value in cast(list[object], module["geometric_visible_fraction"])
+        )
+    else:
+        assert actual_faces < reference_faces
     assert actual == expected
 
 

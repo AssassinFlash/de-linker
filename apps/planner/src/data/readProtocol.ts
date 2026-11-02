@@ -91,6 +91,13 @@ const checkSession = ajv.compile<Session>(
 						max_strings: integer,
 						max_weather_rows: integer,
 					}),
+					geometric_pv_clear_pitched_roof: object({
+						max_module_steps: integer,
+						max_samples: integer,
+						max_modules: integer,
+						max_strings: integer,
+						max_weather_rows: integer,
+					}),
 				}),
 				required: [
 					"max_body_bytes",
@@ -126,7 +133,8 @@ export function readSession(value: unknown): Session {
 	)
 		throw new ApiError(502, "invalid_session_reply");
 	if (
-		value.runtime.limits.geometric_pv_clear_flat_roof !== undefined &&
+		(value.runtime.limits.geometric_pv_clear_flat_roof !== undefined ||
+			value.runtime.limits.geometric_pv_clear_pitched_roof !== undefined) &&
 		value.runtime.limits.geometric_pv_generation === undefined
 	)
 		throw new ApiError(502, "invalid_session_reply");

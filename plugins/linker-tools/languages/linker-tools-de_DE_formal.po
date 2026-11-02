@@ -13624,3 +13624,9 @@ msgstr "System %s bereits zugeordnet"
 #: ../../apps/planner/src/components/energy/RunResult.tsx build/planner/assets/planner.js
 msgid "The server could not finish the calculation for this roof. Your project is saved. Try again later, or reduce the number of modules in the design."
 msgstr "Für die Berechnung dieses Dachs reichten die Serverressourcen nicht aus. Ihr Projekt ist gespeichert. Versuchen Sie es später erneut oder verringern Sie die Anzahl der Module im Entwurf."
+
+msgid "Larger pitched-roof calculations: up to %s modules, %s strings and %s hourly weather intervals."
+msgstr "Größere Berechnungen für geneigte Dächer: bis zu %s Module, %s Strings und %s stündliche Wetterintervalle."
+
+msgid "One four-corner roof plane up to 60°, without holes, obstacles or keep-out areas and no more than 40 m along either roof axis. One array parallel to the roof, with up to 8 rows and 12 columns and one module specification."
+msgstr "Eine vierseitige Dachfläche mit höchstens 60° Neigung, ohne Aussparungen, Hindernisse oder Sperrflächen und mit höchstens 40 m entlang jeder Dachachse. Ein parallel zum Dach angeordnetes Modulfeld mit höchstens 8 Reihen und 12 Spalten und einer Modulspezifikation."

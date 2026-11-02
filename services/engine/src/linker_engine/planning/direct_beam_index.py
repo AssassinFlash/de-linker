@@ -91,7 +91,9 @@ def _bounds(values: tuple[_Interval, _Interval, _Interval]) -> _Bounds | None:
     )
 
 
-def _face_bounds(face: Face, epsilon: float) -> _Bounds | None:
+def _face_bounds(
+    face: Face, epsilon: float, frame: tuple[Vector, Vector, Vector] | None = None
+) -> _Bounds | None:
     if not all(
         math.isfinite(value)
         for vector in (face.origin, face.u, face.v)
@@ -122,18 +124,37 @@ def _face_bounds(face: Face, epsilon: float) -> _Bounds | None:
     x0, y0, x1, y1 = face.shape.bounds
     x, y = _add((x0, x1), (-epsilon, epsilon)), _add((y0, y1), (-epsilon, epsilon))
     coordinates = []
+    dual_u: list[_Interval] = []
+    dual_v: list[_Interval] = []
     for axis in range(3):
         u, v = (face.u[axis], face.u[axis]), (face.v[axis], face.v[axis])
         # Face.coordinates uses dot products. Its dual basis, rather than an
         # assumed exactly orthonormal frame, encloses the corresponding surface.
         a = _divide(_subtract(_multiply(vv, u), _multiply(uv, v)), determinant)
         b = _divide(_subtract(_multiply(uu, v), _multiply(uv, u)), determinant)
+        dual_u.append(a)
+        dual_v.append(b)
         coordinate = _add(
             (face.origin[axis], face.origin[axis]),
             _add(_multiply(a, x), _multiply(b, y)),
         )
         coordinates.append(_add(coordinate, (-epsilon, epsilon)))
-    return _bounds((coordinates[0], coordinates[1], coordinates[2]))
+    if frame is None:
+        return _bounds((coordinates[0], coordinates[1], coordinates[2]))
+    projected = []
+    for direction in frame:
+        origin = _dot(face.origin, direction)
+        u_projection: _Interval = (0.0, 0.0)
+        v_projection: _Interval = (0.0, 0.0)
+        for axis in range(3):
+            factor = (direction[axis], direction[axis])
+            u_projection = _add(u_projection, _multiply(dual_u[axis], factor))
+            v_projection = _add(v_projection, _multiply(dual_v[axis], factor))
+        coordinate = _add(
+            origin, _add(_multiply(u_projection, x), _multiply(v_projection, y))
+        )
+        projected.append(_add(coordinate, (-epsilon, epsilon)))
+    return _bounds((projected[0], projected[1], projected[2]))
 
 
 def _union(items: tuple[_Bounds, ...]) -> _Bounds:
@@ -145,10 +166,12 @@ def _union(items: tuple[_Bounds, ...]) -> _Bounds:
     )
 
 
-def _opaque_bounds(item: Opaque, epsilon: float) -> _Bounds | None:
+def _opaque_bounds(
+    item: Opaque, epsilon: float, frame: tuple[Vector, Vector, Vector] | None = None
+) -> _Bounds | None:
     if not item.faces:
         raise InvalidInput("empty direct-beam index object")
-    faces = [_face_bounds(face, epsilon) for face in item.faces]
+    faces = [_face_bounds(face, epsilon, frame) for face in item.faces]
     if (item.axis is None) != (item.height is None):
         raise InvalidInput("incomplete direct-beam index volume")
     if item.axis is not None and item.height is not None:
@@ -158,7 +181,7 @@ def _opaque_bounds(item: Opaque, epsilon: float) -> _Bounds | None:
             or item.height <= 0
         ):
             raise InvalidInput("degenerate direct-beam index volume")
-        base = _face_bounds(item.base, epsilon)
+        base = _face_bounds(item.base, epsilon, frame)
         divisor = _dot(item.axis, item.base.normal)
         if -ANGULAR_GUARD <= divisor[0] <= divisor[1] <= ANGULAR_GUARD:
             raise InvalidInput("degenerate direct-beam index extrusion")
@@ -169,7 +192,12 @@ def _opaque_bounds(item: Opaque, epsilon: float) -> _Bounds | None:
         volume = tuple(
             _add(
                 (base.low[axis], base.high[axis]),
-                _multiply((item.axis[axis], item.axis[axis]), height),
+                _multiply(
+                    (item.axis[axis], item.axis[axis])
+                    if frame is None
+                    else _dot(item.axis, frame[axis]),
+                    height,
+                ),
             )
             for axis in range(3)
         )
@@ -177,6 +205,94 @@ def _opaque_bounds(item: Opaque, epsilon: float) -> _Bounds | None:
     if any(face is None for face in faces):
         return None
     return _union(tuple(face for face in faces if face is not None))
+
+
+@dataclass(frozen=True)
+class PlaneClearance:
+    """Conservative bounds in one receiver frame, used only for clear rays.
+
+    Unknown geometry or near-contact never proves clearance. All other rays
+    still use the original world-coordinate BVH and exact intersections.
+    """
+
+    frame: tuple[Vector, Vector, Vector]
+    epsilon: float
+    entries: tuple[tuple[Opaque, _Bounds], ...]
+
+    @classmethod
+    def from_scene(
+        cls, scene: Scene, frame: tuple[Vector, Vector, Vector]
+    ) -> PlaneClearance | None:
+        if any(
+            abs(sum(a * b for a, b in zip(frame[i], frame[j], strict=True)) - (i == j))
+            > ANGULAR_GUARD
+            for i in range(3)
+            for j in range(3)
+        ):
+            return None
+        # Covers frame composition and the exact solver's contact/travel
+        # tolerances. Outward interval operations below cover rounding too.
+        epsilon = max(scene.epsilon_m * 1024, 1e-9)
+        entries = []
+        for item in scene.opaque:
+            bounds = _opaque_bounds(item, epsilon, frame)
+            if bounds is None:
+                return None
+            entries.append((item, bounds))
+        return cls(frame, epsilon, tuple(entries))
+
+    def threshold(
+        self,
+        receiver_id: str,
+        points: tuple[Vector, ...],
+        *,
+        on_bounds_check: Callable[[], None],
+    ) -> float | None:
+        if not points:
+            return None
+        projected = [
+            tuple(_dot(point, axis) for axis in self.frame) for point in points
+        ]
+        if any(
+            not math.isfinite(value)
+            for point in projected
+            for pair in point
+            for value in pair
+        ):
+            return None
+        low = tuple(min(point[i][0] for point in projected) for i in range(3))
+        high = tuple(max(point[i][1] for point in projected) for i in range(3))
+        threshold = 0.0
+        for item, bounds in self.entries:
+            if item.kind == "module_volume" and item.id == receiver_id:
+                continue
+            on_bounds_check()
+            if math.nextafter(bounds.high[2] + self.epsilon, math.inf) < low[2]:
+                continue
+            gap = max(
+                bounds.low[0] - high[0],
+                low[0] - bounds.high[0],
+                bounds.low[1] - high[1],
+                low[1] - bounds.high[1],
+            )
+            gap = math.nextafter(gap, -math.inf)
+            if not math.isfinite(gap) or gap <= self.epsilon:
+                return None
+            margin = math.nextafter(
+                max(0.0, bounds.high[2] - low[2]) + 2 * self.epsilon,
+                math.inf,
+            )
+            threshold = max(
+                threshold, math.nextafter(margin / (gap - self.epsilon), math.inf)
+            )
+            if threshold >= 1:
+                return None
+        return threshold
+
+    def clear(self, direction: Vector, threshold: float) -> bool:
+        # Frame axes are within ANGULAR_GUARD of orthonormal. Inflate the
+        # lateral unit-speed bound rather than relying on exact orthogonality.
+        return _dot(direction, self.frame[2])[0] > threshold * (1 + 4 * ANGULAR_GUARD)
 
 
 @dataclass(frozen=True)

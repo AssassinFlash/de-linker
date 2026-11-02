@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 from typing import Any, cast
 
@@ -58,15 +59,17 @@ def test_fitted_module_series_conditions_follow_the_common_current() -> None:
     assert outside.dc_w[0] == 0
 
 
+@pytest.mark.parametrize("pitched", [False, True])
 def test_real_roof_irradiance_flows_through_the_selected_woo_string(
     monkeypatch: pytest.MonkeyPatch,
+    pitched: bool,
 ) -> None:
     from dataclasses import replace
     from datetime import timedelta
 
     from linker_engine.planning import geometric_pv_generation
     from linker_engine.planning.canonical import encode
-    from linker_engine.planning.direct_beam_index import DirectBeamIndex
+    from linker_engine.planning.direct_beam_index import DirectBeamIndex, PlaneClearance
     from linker_engine.planning.geometric_pv_generation import generate_geometric_pv
     from linker_engine.planning.geometric_pv_inputs import (
         ELECTRICAL_V3,
@@ -87,6 +90,12 @@ def test_real_roof_irradiance_flows_through_the_selected_woo_string(
     reference = feed["overlay"][0]
     template = module_template(reference)
     geo = geometry()
+    if pitched:
+        geo["roofs"][0]["v_axis_enu"] = [
+            0,
+            math.cos(math.pi / 6),
+            math.sin(math.pi / 6),
+        ]
     geo["module_specs"] = [{**cast(Object, template["specification"]), "id": "module"}]
     geo["arrays"][0].update(rows=1, columns=6, excluded_slots=[])
     ids: list[Json] = [p.id for p in panel_poses(read_geometry(geo)) if p.included]
@@ -157,6 +166,7 @@ def test_real_roof_irradiance_flows_through_the_selected_woo_string(
     meteo = replace(first, points=(point, second))
     with monkeypatch.context() as old:
         old.setattr(DirectBeamIndex, "upward_clearance", lambda *_a, **_k: None)
+        old.setattr(PlaneClearance, "from_scene", lambda *_a, **_k: None)
         old.setattr(
             geometric_pv_generation,
             "canonical_witness_in_place",
@@ -190,6 +200,12 @@ def test_real_roof_irradiance_flows_through_the_selected_woo_string(
     )
     cast(dict[str, Any], cast(dict[str, Any], baseline_witness["inputs"])["work"]).pop(
         "bounds_checks"
+    )
+    cast(dict[str, Any], cast(dict[str, Any], witness["inputs"])["work"]).pop(
+        "ray_face_checks"
+    )
+    cast(dict[str, Any], cast(dict[str, Any], baseline_witness["inputs"])["work"]).pop(
+        "ray_face_checks"
     )
     assert witness == baseline_witness
     assert encode(witness) == encode(baseline_witness)

@@ -208,25 +208,25 @@ def test_expanded_geometric_budget_is_explicit_and_visible_to_clients(
         "max_strings": 6,
         "max_weather_rows": 8760,
     }
-    with pytest.raises(ValidationError):
-        RuntimeConfig.model_validate(
-            {**values, "geometric_pv_clear_flat_roof": expanded}
-        )
-    with pytest.raises(ValidationError):
-        RuntimeConfig.model_validate(
-            {
-                **values,
-                "pv_preparation": LIMITS.model_dump(mode="json"),
-                "geometric_pv_generation": ordinary,
-                "geometric_pv_clear_flat_roof": {**expanded, "max_modules": 97},
-            }
-        )
+    for key in ("geometric_pv_clear_flat_roof", "geometric_pv_clear_pitched_roof"):
+        with pytest.raises(ValidationError):
+            RuntimeConfig.model_validate({**values, key: expanded})
+        with pytest.raises(ValidationError):
+            RuntimeConfig.model_validate(
+                {
+                    **values,
+                    "pv_preparation": LIMITS.model_dump(mode="json"),
+                    "geometric_pv_generation": ordinary,
+                    key: {**expanded, "max_modules": 97},
+                }
+            )
     config = RuntimeConfig.model_validate(
         {
             **values,
             "pv_preparation": LIMITS.model_dump(mode="json"),
             "geometric_pv_generation": ordinary,
             "geometric_pv_clear_flat_roof": expanded,
+            "geometric_pv_clear_pitched_roof": expanded,
         }
     )
     app = EngineApplications(legacy_app(), configured_private_app(config))
@@ -237,6 +237,7 @@ def test_expanded_geometric_budget_is_explicit_and_visible_to_clients(
         assert response.status_code == 200
         assert response.json()["limits"]["geometric_pv_generation"] == ordinary
         assert response.json()["limits"]["geometric_pv_clear_flat_roof"] == expanded
+        assert response.json()["limits"]["geometric_pv_clear_pitched_roof"] == expanded
 
 
 def test_status_and_limits_describe_only_the_authenticated_principal(

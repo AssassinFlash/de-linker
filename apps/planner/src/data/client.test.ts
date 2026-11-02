@@ -365,6 +365,31 @@ test("the optional larger-roof budget is strictly read alongside the ordinary bu
 		},
 	};
 	assert.equal(readSession(session), session);
+	const pitchedSession = {
+		...session,
+		runtime: {
+			...session.runtime,
+			limits: {
+				...session.runtime.limits,
+				geometric_pv_clear_pitched_roof: expanded,
+			},
+		},
+	};
+	assert.equal(readSession(pitchedSession), pitchedSession);
+	assert.throws(
+		() =>
+			readSession({
+				...pitchedSession,
+				runtime: {
+					...pitchedSession.runtime,
+					limits: {
+						...pitchedSession.runtime.limits,
+						geometric_pv_clear_pitched_roof: { ...expanded, max_modules: 0 },
+					},
+				},
+			}),
+		{ code: "invalid_session_reply" },
+	);
 	for (const value of [
 		null,
 		{ ...expanded, max_modules: "96" },
