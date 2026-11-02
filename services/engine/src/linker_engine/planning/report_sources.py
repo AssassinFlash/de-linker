@@ -769,6 +769,22 @@ def report_sources(
         )
         installation = route_takeoff(project.inputs, basis)
         geometry = GeometryDocument.read(project.inputs.get("geometry"))
+        mounting_sources = {
+            source_id
+            for item in plan.materials
+            if item.mounting_quantity_basis is not None
+            for source_id in (
+                item.mounting_quantity_basis.array.source_id,
+                item.mounting_quantity_basis.roof.source_id,
+            )
+        }
+        exportable_sources = {
+            s.id for s in geometry.sources if s.permissions.export == "permitted"
+        }
+        if not mounting_sources.issubset(exportable_sources):
+            raise ReportSourceExportRequired(
+                "mounting layout source export permission is unconfirmed"
+            )
         instance_sources = {instance.source_id for instance in plan.instances}
         if any(
             s.id in instance_sources and s.permissions.export != "permitted"

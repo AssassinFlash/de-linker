@@ -10,20 +10,37 @@ import pytest
 from pypdf import PdfReader
 
 from linker_engine import pdf
+from linker_engine.planning import installation_materials
+from linker_engine.planning.assets import Assets
 from linker_engine.planning.assistant_context import _report_source_projection
 from linker_engine.planning.canonical import Object
-from linker_engine.planning.errors import InvalidInput, ProjectInputContractRequired
+from linker_engine.planning.errors import (
+    InvalidInput,
+    ProjectInputContractRequired,
+    ReportSourceExportRequired,
+)
+from linker_engine.planning.execution_registry import ExecutionRegistry
+from linker_engine.planning.geometry_documents import PanelArray
 from linker_engine.planning.installation_inputs import InstallationInputs
 from linker_engine.planning.installation_takeoff import route_takeoff
+from linker_engine.planning.jobs import Jobs
+from linker_engine.planning.product_sources import ProductSources
 from linker_engine.planning.project_input_contracts import (
     MATERIALS_INPUT_CONTRACT,
+    MOUNTING_QUANTITIES_INPUT_CONTRACT,
     SUPPORTED_INPUT_CONTRACTS,
     require_input_contract,
 )
 from linker_engine.planning.project_materials import materials_csv, project_materials
+from linker_engine.planning.records import Actor
+from linker_engine.planning.report_inputs import ReportOptions
+from linker_engine.planning.report_kernel import ReportKernel, ReportService
 from linker_engine.planning.report_model import build_report
+from linker_engine.planning.worker import Worker
+from linker_engine.planning.workspace import Workspace
 
 from .conftest import FixtureObject, json_object
+from .test_geometry import fixture as roof_fixture
 from .test_installation_electrical import circuit_fixture
 from .test_installation_terminals import sample
 from .test_project_materials import _source_data
@@ -51,6 +68,236 @@ def declared() -> list[dict[str, object]]:
             1,
         )
     ]
+
+
+def test_declared_mounting_rule_uses_the_saved_array_and_reopens_after_change(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    inputs, basis = circuit_fixture()
+    geometry = roof_fixture()
+    # Six slots, one excluded: two separate row segments and three neighbours.
+    inputs["geometry"] = geometry
+    item = declared()[-1]
+    item["mounting_quantity_basis"] = {
+        "array": copy.deepcopy(geometry["arrays"][0]),
+        "module": copy.deepcopy(geometry["module_specs"][0]),
+        "roof": copy.deepcopy(geometry["roofs"][0]),
+        "per_module": 0,
+        "per_segment": 4,
+        "per_adjacency": 2,
+        "conditions_confirmed": True,
+    }
+    inputs["installation"]["materials"] = [item]
+    for confirmation in (False, 1, None):
+        invalid = copy.deepcopy(inputs["installation"])
+        rule = invalid["materials"][0]["mounting_quantity_basis"]
+        if confirmation is None:
+            rule.pop("conditions_confirmed")
+        else:
+            rule["conditions_confirmed"] = confirmation
+        with pytest.raises(InvalidInput):
+            InstallationInputs.read(invalid)
+    assert (
+        InstallationInputs.read(inputs["installation"]).project_document()
+        == inputs["installation"]
+    )
+    floor = SUPPORTED_INPUT_CONTRACTS.index(MOUNTING_QUANTITIES_INPUT_CONTRACT)
+    for writer in (None, *SUPPORTED_INPUT_CONTRACTS[:floor]):
+        with pytest.raises(ProjectInputContractRequired):
+            require_input_contract(inputs, inputs, writer)
+    for writer in SUPPORTED_INPUT_CONTRACTS[floor:]:
+        require_input_contract(inputs, inputs, writer)
+    installation = json_object(route_takeoff(inputs, basis))
+    result = installation["material_review"]["rows"][0]["mounting_quantity_result"]
+    assert result == {
+        "status": "calculated",
+        "quantity": 14,
+        "modules": 5,
+        "segments": 2,
+        "adjacencies": 3,
+        "per_module": 0,
+        "per_segment": 4,
+        "per_adjacency": 2,
+    }
+    renamed = copy.deepcopy(inputs)
+    renamed["geometry"]["roofs"][0]["name"] = "Changed roof label"
+    renamed["geometry"]["arrays"][0]["name"] = "Changed array label"
+    renamed["geometry"]["arrays"][0]["mounting_note"] = "Changed note"
+    renamed["geometry"]["module_specs"][0]["stc_power_w"] += 1
+    renamed["geometry"]["module_specs"][0]["source"]["note"] = "Changed note"
+    assert (
+        json_object(route_takeoff(renamed, basis))["material_review"]["rows"][0][
+            "mounting_quantity_result"
+        ]
+        == result
+    )
+    second = copy.deepcopy(item)
+    second["id"] = "another-mounting-item"
+    renamed["installation"]["materials"].append(second)
+    count_calls = 0
+    original_counts = installation_materials._array_counts
+
+    def count_once(array: PanelArray) -> tuple[int, int]:
+        nonlocal count_calls
+        count_calls += 1
+        return original_counts(array)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(installation_materials, "_array_counts", count_once)
+        reviewed = json_object(route_takeoff(renamed, basis))
+    assert len(reviewed["material_review"]["rows"]) == 2 and count_calls == 1
+    changed_module = copy.deepcopy(inputs)
+    changed_module["geometry"]["module_specs"][0]["model"] = "Different module"
+    assert (
+        json_object(route_takeoff(changed_module, basis))["material_review"]["rows"][0][
+            "mounting_quantity_result"
+        ]["status"]
+        == "layout_changed"
+    )
+    source = _source_data()
+    source.update(installation=installation, title="Mounting fixture", locale="en")
+    materials = project_materials(cast(Object, source))
+    source["materials"] = materials
+    line = next(
+        row
+        for row in cast(list[FixtureObject], materials["lines"])
+        if row["id"].startswith("installation-material:")
+    )
+    assert line["quantity"] == 14 and line["source"]["qualified"] is False
+    for locale in ("en", "de"):
+        source["locale"] = locale
+        csv_text = materials_csv(materials, "0" * 64, locale).decode("utf-8-sig")
+        assert (
+            "14" in csv_text
+            and ("row segments" if locale == "en" else "Reihenabschnitte") in csv_text
+        )
+        rendered = " ".join(
+            " ".join(p.extract_text().split())
+            for p in PdfReader(
+                io.BytesIO(pdf.render(build_report(cast(Object, source))))
+            ).pages
+        )
+        assert (
+            "14" in rendered
+            and ("row segments" if locale == "en" else "Reihenabschnitte") in rendered
+        )
+        projection = _report_source_projection(cast(Object, source), locale)
+        rows = json_object(projection)["installation"]["material_review"]["rows"]
+        assert "mounting_quantity_basis" not in rows[0]
+        assert rows[0]["mounting_quantity_result"]["quantity"] == 14
+    inputs["geometry"]["arrays"][0]["excluded_slots"].append("0:1")
+    stale = json_object(route_takeoff(inputs, basis))["material_review"]["rows"][0][
+        "mounting_quantity_result"
+    ]
+    assert stale == {"status": "layout_changed", "quantity": None}
+    source["installation"] = json_object(route_takeoff(inputs, basis))
+    stale_lines = cast(
+        list[FixtureObject], project_materials(cast(Object, source))["lines"]
+    )
+    stale_material = next(
+        row for row in stale_lines if row["id"].startswith("installation-material:")
+    )
+    assert stale_material["quantity"] is None
+    oversized = copy.deepcopy(inputs)
+    oversized["geometry"]["arrays"][0]["rows"] = 10_000_000
+    oversized["installation"]["materials"][0]["mounting_quantity_basis"]["array"] = (
+        copy.deepcopy(oversized["geometry"]["arrays"][0])
+    )
+    with pytest.raises(InvalidInput):
+        route_takeoff(oversized, basis)
+
+
+def test_owned_mounting_rule_report_worker_and_export_permission(
+    workspace: Workspace, owner: Actor, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    inputs, basis = circuit_fixture()
+    geometry = roof_fixture()
+    inputs["geometry"] = geometry
+    item = declared()[-1]
+    item["name"] = "Synthetic project end clamp"
+    item["mounting_quantity_basis"] = {
+        "array": copy.deepcopy(geometry["arrays"][0]),
+        "module": copy.deepcopy(geometry["module_specs"][0]),
+        "roof": copy.deepcopy(geometry["roofs"][0]),
+        "per_module": 0,
+        "per_segment": 4,
+        "per_adjacency": 0,
+        "conditions_confirmed": True,
+    }
+    inputs["installation"]["materials"] = [item]
+    products = ProductSources(lambda: pytest.fail("unexpected live source"))
+    monkeypatch.setattr(products, "equipment_basis", lambda **kwargs: basis)
+    monkeypatch.setattr(products, "confirm_basis", lambda *args, **kwargs: None)
+    kernel = ReportKernel(workspace, products)
+    service = ReportService(workspace, kernel, max_attempts=1)
+    registry = ExecutionRegistry(kernel)
+    worker = Worker(
+        Jobs(workspace),
+        "mounting-report",
+        {"evaluate": registry},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+        routing=registry.routing(8),
+    )
+    options = ReportOptions(
+        locale="en",
+        energy_run_id=None,
+        pv_run_id=None,
+        equipment_run_id=None,
+        logo=None,
+        include_installation=True,
+    )
+    project = workspace.create(
+        owner,
+        "Synthetic mounting project",
+        inputs,
+        key="mounting-project",
+        input_contract=MOUNTING_QUANTITIES_INPUT_CONTRACT,
+    )
+    run = service.evaluate(
+        owner, project.id, project.revision, options, key="mounting-report"
+    )
+    assert worker.run_once()
+    complete = workspace.run(owner, run.id)
+    assert complete.state == "succeeded", complete.error
+    result = json_object(complete.result)
+    pdf_bytes = Assets(workspace).content(
+        owner, project.id, result["prepared_asset"]["id"]
+    )
+    csv_bytes = Assets(workspace).content(
+        owner, project.id, result["prepared_attachments"]["bill_of_materials_csv"]["id"]
+    )
+    pdf_text = " ".join(
+        " ".join(page.extract_text().split())
+        for page in PdfReader(io.BytesIO(pdf_bytes)).pages
+    )
+    assert (
+        "Synthetic project end clamp" in pdf_text
+        and "8 pieces" in pdf_text
+        and "row segments" in pdf_text
+    )
+    assert "Synthetic project end clamp" in csv_bytes.decode(
+        "utf-8-sig"
+    ) and "row segments" in csv_bytes.decode("utf-8-sig")
+    for permission in ("unknown", "prohibited"):
+        denied = copy.deepcopy(inputs)
+        denied["geometry"]["sources"][0]["permissions"]["export"] = permission
+        unexportable = workspace.create(
+            owner,
+            "Synthetic restricted roof",
+            denied,
+            key=f"restricted-roof-{permission}",
+            input_contract=MOUNTING_QUANTITIES_INPUT_CONTRACT,
+        )
+        with pytest.raises(ReportSourceExportRequired, match="mounting layout"):
+            service.evaluate(
+                owner,
+                unexportable.id,
+                unexportable.revision,
+                options,
+                key=f"restricted-report-{permission}",
+            )
 
 
 def test_complete_writer_protects_declarations_and_legacy_bytes() -> None:

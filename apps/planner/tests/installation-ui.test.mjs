@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import React, { act } from "react";
+import { readFileSync } from "node:fs";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { setupDom, enter } from "./dom-fixture.mjs";
 import {
@@ -23,6 +24,7 @@ import {
 	emptyInstallation,
 	readInstallation,
 	readInstallationReview,
+	mountingBasisIsCurrent,
 } from "../src/domain/installation.ts";
 
 test("installation material entry rejects fractional pieces and recovers", async (t) => {
@@ -35,6 +37,7 @@ test("installation material entry rejects fractional pieces and recovers", async
 		root.render(
 			React.createElement(InstallationMaterials, {
 				plan: emptyInstallation(),
+				geometry: emptyGeometry(),
 				products: [],
 				review: undefined,
 				locale: "en",
@@ -72,6 +75,229 @@ test("installation material entry rejects fractional pieces and recovers", async
 	await act(async () => submit());
 	assert.equal(saved.materials[0].quantity, 2);
 	assert.equal(saved.materials[0].kind, "protection");
+});
+
+test("mounting quantity records the confirmed array and explicit rule", async (t) => {
+	const dom = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const root = createRoot(dom.element);
+	t.after(() => dom.dispose(root));
+	const geometry = JSON.parse(
+		readFileSync(
+			new URL("../../../fixtures/planning/geometry-flat.json", import.meta.url),
+			"utf8",
+		),
+	);
+	let saved;
+	await act(async () =>
+		root.render(
+			React.createElement(InstallationMaterials, {
+				plan: emptyInstallation(),
+				geometry,
+				products: [],
+				review: undefined,
+				locale: "en",
+				disabled: false,
+				change(value) {
+					saved = value;
+					return true;
+				},
+				onValidity() {},
+			}),
+		),
+	);
+	await act(async () =>
+		[...document.querySelectorAll("button")]
+			.find((b) => b.textContent === "Add installation material")
+			.click(),
+	);
+	const form = document.querySelector("form"),
+		field = (name) => form.elements.namedItem(name);
+	await enter(field("name"), "End clamp");
+	for (const [name, value] of [
+		["kind", "mounting"],
+		["mounting_array", geometry.arrays[0].id],
+	])
+		await act(async () => {
+			field(name).value = value;
+			field(name).dispatchEvent(new window.Event("change", { bubbles: true }));
+		});
+	await enter(field("specification"), "Project mounting design");
+	await enter(field("source"), "Installer design");
+	await enter(field("per_segment"), "4");
+	const submit = () =>
+		form.dispatchEvent(
+			new window.Event("submit", { bubbles: true, cancelable: true }),
+		);
+	await act(async () => submit());
+	assert.equal(saved, undefined);
+	await act(async () => field("mounting_confirmed").click());
+	await act(async () => submit());
+	assert.equal(
+		saved.materials[0].mounting_quantity_basis.array.id,
+		geometry.arrays[0].id,
+	);
+	assert.equal(saved.materials[0].mounting_quantity_basis.per_segment, 4);
+	assert.equal(
+		saved.materials[0].mounting_quantity_basis.conditions_confirmed,
+		true,
+	);
+	assert.equal(saved.materials[0].quantity, null);
+	const renamed = structuredClone(geometry);
+	renamed.roofs[0].name = "Changed roof label";
+	renamed.arrays[0].name = "Changed array label";
+	renamed.arrays[0].mounting_note = "Changed note";
+	renamed.module_specs[0].stc_power_w += 1;
+	renamed.module_specs[0].source.note = "Changed note";
+	assert.equal(
+		mountingBasisIsCurrent(saved.materials[0].mounting_quantity_basis, renamed),
+		true,
+	);
+	renamed.arrays[0].excluded_slots.push("0:1");
+	assert.equal(
+		mountingBasisIsCurrent(saved.materials[0].mounting_quantity_basis, renamed),
+		false,
+	);
+	const hash = "a".repeat(64);
+	const response = {
+		schema_version: 1,
+		method: "installation_route_takeoff_v1",
+		project_id: "project",
+		qualified: false,
+		geometry_sha256: hash,
+		prepared_inputs: { ...saved, geometry_sha256: hash },
+		cables: [],
+		material_review: {
+			method: "project_declared_installation_materials_v1",
+			qualified: false,
+			complete_bos: false,
+			rows: [
+				{
+					...saved.materials[0],
+					circuit_status: "not_linked",
+					verification: "not_assessed",
+					mounting_quantity_result: {
+						status: "calculated",
+						quantity: 8,
+						modules: 5,
+						segments: 2,
+						adjacencies: 3,
+						per_module: 0,
+						per_segment: 4,
+						per_adjacency: 0,
+					},
+				},
+			],
+		},
+	};
+	const review = readInstallationReview(
+		response,
+		saved,
+		"project",
+	).material_review;
+	let revised;
+	await act(async () =>
+		root.render(
+			React.createElement(InstallationMaterials, {
+				plan: saved,
+				geometry,
+				products: [],
+				review,
+				locale: "en",
+				disabled: false,
+				change(value) {
+					revised = value;
+					return true;
+				},
+				onValidity() {},
+			}),
+		),
+	);
+	assert.match(dom.element.textContent, /2 occupied row segments × 4/);
+	assert.match(dom.element.textContent, /= 8 pieces/);
+	await act(async () =>
+		[...document.querySelectorAll("button")]
+			.find((b) => b.textContent === "Edit")
+			.click(),
+	);
+	let editForm = document.querySelector("form");
+	assert.equal(editForm.elements.namedItem("mounting_confirmed").checked, true);
+	await enter(editForm.elements.namedItem("name"), "Renamed clamp");
+	await act(async () =>
+		editForm.dispatchEvent(
+			new window.Event("submit", { bubbles: true, cancelable: true }),
+		),
+	);
+	assert.equal(revised.materials[0].name, "Renamed clamp");
+	assert.equal(
+		revised.materials[0].mounting_quantity_basis.conditions_confirmed,
+		true,
+	);
+	await act(async () =>
+		root.render(
+			React.createElement(InstallationMaterials, {
+				plan: revised,
+				geometry,
+				products: [],
+				review,
+				locale: "en",
+				disabled: false,
+				change(value) {
+					revised = value;
+					return true;
+				},
+				onValidity() {},
+			}),
+		),
+	);
+	await act(async () =>
+		[...document.querySelectorAll("button")]
+			.find((b) => b.textContent === "Edit")
+			.click(),
+	);
+	editForm = document.querySelector("form");
+	await enter(editForm.elements.namedItem("per_segment"), "5");
+	assert.equal(
+		editForm.elements.namedItem("mounting_confirmed").checked,
+		false,
+	);
+	await act(async () =>
+		editForm.elements.namedItem("mounting_confirmed").click(),
+	);
+	const redraw = async (nextGeometry) =>
+		act(async () =>
+			root.render(
+				React.createElement(InstallationMaterials, {
+					plan: revised,
+					geometry: nextGeometry,
+					products: [],
+					review,
+					locale: "en",
+					disabled: false,
+					change(value) {
+						revised = value;
+						return true;
+					},
+					onValidity() {},
+				}),
+			),
+		);
+	await redraw(structuredClone(geometry));
+	assert.equal(editForm.elements.namedItem("mounting_confirmed").checked, true);
+	const changedLayout = structuredClone(geometry);
+	changedLayout.arrays[0].column_gap_m += 0.01;
+	await redraw(changedLayout);
+	assert.equal(
+		editForm.elements.namedItem("mounting_confirmed").checked,
+		false,
+	);
+	await act(async () =>
+		editForm.elements.namedItem("mounting_confirmed").click(),
+	);
+	await redraw(structuredClone(changedLayout));
+	assert.equal(editForm.elements.namedItem("mounting_confirmed").checked, true);
+	response.material_review.rows[0].mounting_quantity_result.quantity = 9;
+	assert.throws(() => readInstallationReview(response, saved, "project"));
 });
 
 test("manufacturer comparison binds the selected instance, circuit and source", async (t) => {
@@ -129,11 +355,19 @@ test("manufacturer comparison binds the selected instance, circuit and source", 
 			],
 		},
 	};
+	const originalFact = product.installation_facts.items[0];
+	const otherFact = {
+		...originalFact,
+		id: "other-breaker",
+		source: { ...originalFact.source, document_id: "other-doc" },
+	};
+	product.installation_facts.items.push(otherFact);
 	let saved;
 	await act(async () =>
 		root.render(
 			React.createElement(InstallationMaterials, {
 				plan,
+				geometry: emptyGeometry(),
 				products: [product],
 				review: undefined,
 				locale: "en",
@@ -157,7 +391,12 @@ test("manufacturer comparison binds the selected instance, circuit and source", 
 	for (const [name, value] of [
 		["kind", "protection"],
 		["circuit", "ac"],
-		["comparison", "0"],
+		[
+			"comparison",
+			[...field("comparison").options].find((option) =>
+				option.textContent.includes(" · breaker · "),
+			).value,
+		],
 	])
 		await act(async () => {
 			field(name).value = value;
@@ -168,6 +407,38 @@ test("manufacturer comparison binds the selected instance, circuit and source", 
 	await enter(field("source"), "Project declaration");
 	await enter(field("rated_current"), "160");
 	await enter(field("rated_voltage"), "400");
+	await act(async () => field("comparison_confirmed").click());
+	const chosen = field("comparison").value;
+	const redraw = async () =>
+		act(async () =>
+			root.render(
+				React.createElement(InstallationMaterials, {
+					plan,
+					geometry: emptyGeometry(),
+					products: [product],
+					review: undefined,
+					locale: "en",
+					disabled: false,
+					change(value) {
+						saved = value;
+						return true;
+					},
+					onValidity() {},
+				}),
+			),
+		);
+	product.installation_facts.items.reverse();
+	await redraw();
+	assert.equal(field("comparison").value, chosen);
+	assert.equal(field("comparison_confirmed").checked, true);
+	product.installation_facts.items = [otherFact];
+	await redraw();
+	assert.equal(field("comparison_confirmed").checked, false);
+	assert.equal(field("comparison_confirmed").disabled, true);
+	product.installation_facts.items = [otherFact, originalFact];
+	await redraw();
+	assert.equal(field("comparison").value, chosen);
+	assert.equal(field("comparison_confirmed").checked, false);
 	await act(async () => field("comparison_confirmed").click());
 	await act(async () =>
 		form.dispatchEvent(

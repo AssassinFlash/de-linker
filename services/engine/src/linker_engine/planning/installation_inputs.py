@@ -4,12 +4,22 @@ from __future__ import annotations
 
 from typing import Annotated, Literal, Self
 
-from pydantic import Field, model_validator
+from pydantic import Field, field_validator, model_validator
 
 from .canonical import Object
 from .energy_inputs import Document, SchemaVersion
 from .equipment_inputs import Count
-from .geometry_documents import Hash, Identifier, Nonnegative, Number, Positive, Text
+from .geometry_documents import (
+    Hash,
+    Identifier,
+    ModuleSpec,
+    Nonnegative,
+    Number,
+    PanelArray,
+    Positive,
+    RoofFace,
+    Text,
+)
 
 
 class RoutePoint(Document):
@@ -289,6 +299,38 @@ class MaterialFactComparison(Document):
     circuit_context: MaterialComparisonCircuit
 
 
+class MountingQuantityBasis(Document):
+    """A designer's quantity rule for one exact, saved roof layout."""
+
+    array: PanelArray
+    module: ModuleSpec
+    roof: RoofFace
+    per_module: Annotated[int, Field(strict=True, ge=0, le=10000)]
+    per_segment: Annotated[int, Field(strict=True, ge=0, le=10000)]
+    per_adjacency: Annotated[int, Field(strict=True, ge=0, le=10000)]
+    conditions_confirmed: Literal[True]
+
+    @field_validator("conditions_confirmed", mode="before")
+    @classmethod
+    def explicit_confirmation(cls, value: object) -> object:
+        if value is not True:
+            raise ValueError("mounting conditions require explicit confirmation")
+        return value
+
+    @model_validator(mode="after")
+    def nonempty_rule(self) -> Self:
+        if not (self.per_module or self.per_segment or self.per_adjacency):
+            raise ValueError("at least one mounting quantity must be specified")
+        if (
+            self.array.module_spec_id != self.module.id
+            or self.array.roof_id != self.roof.id
+        ):
+            raise ValueError(
+                "mounting quantity basis needs matching array, module and roof"
+            )
+        return self
+
+
 class InstallationMaterial(Document):
     """A project declaration, not a manufacturer fact or a sales product."""
 
@@ -301,9 +343,19 @@ class InstallationMaterial(Document):
     specification: Text
     source_note: Text
     comparison: MaterialFactComparison | None = None
+    mounting_quantity_basis: MountingQuantityBasis | None = None
 
     @model_validator(mode="after")
     def physical_quantity(self) -> Self:
+        if self.mounting_quantity_basis is not None and (
+            self.kind != "mounting"
+            or self.unit != "piece"
+            or self.quantity is not None
+            or self.comparison is not None
+        ):
+            raise ValueError(
+                "a mounting quantity rule requires mounting pieces and no fixed quantity"
+            )
         if self.unit == "piece" and self.quantity is not None:
             if not float(self.quantity).is_integer():
                 raise ValueError("piece quantity must be a whole number")
@@ -333,6 +385,13 @@ class InstallationInputs(Document):
             for item, dumped in zip(self.materials, value["materials"], strict=True):
                 if item.comparison is None:
                     dumped.pop("comparison")
+                if item.mounting_quantity_basis is None:
+                    dumped.pop("mounting_quantity_basis")
+                elif (
+                    "woo"
+                    not in item.mounting_quantity_basis.module.source.model_fields_set
+                ):
+                    dumped["mounting_quantity_basis"]["module"]["source"].pop("woo")
         # A run without a declared conductor keeps its historical bytes, so the
         # frozen input hash of an unchanged project revision does not move.
         # Omitted and explicit null describe the same physical run, so both

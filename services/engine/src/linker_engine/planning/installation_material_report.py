@@ -7,7 +7,7 @@ from typing import cast
 from linker_engine.models import ReportRow, ReportSection
 
 from .canonical import Object
-from .project_materials import material_quantity
+from .project_materials import material_quantity, mounting_quantity_explanation
 from .report_numbers import number
 
 
@@ -15,10 +15,14 @@ def material_section(review: Object, locale: str) -> ReportSection:
     de = locale == "de"
     rows: list[ReportRow] = []
     for item in cast(list[Object], review["rows"]):
+        result = item.get("mounting_quantity_result")
+        quantity = (
+            result.get("quantity") if isinstance(result, dict) else item["quantity"]
+        )
         count = (
             ("Offen" if de else "Open")
-            if item["quantity"] is None
-            else material_quantity(item, locale)
+            if quantity is None
+            else material_quantity({**item, "quantity": quantity}, locale)
         )
         status = item["circuit_status"]
         link = (
@@ -30,6 +34,16 @@ def material_section(review: Object, locale: str) -> ReportSection:
         )
         comparison = item.get("comparison_result")
         detail = ""
+        if isinstance(result, dict):
+            detail = (
+                " · "
+                + mounting_quantity_explanation(result, locale)
+                + (
+                    " · Projektangabe; Eignung und Befestigung nicht geprüft"
+                    if de
+                    else " · Project declaration; suitability and fastening not assessed"
+                )
+            )
         href = None
         if isinstance(comparison, dict):
             statuses = {

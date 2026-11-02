@@ -41,11 +41,23 @@ function measuredAngles(
 		return null;
 	const [ux, uy] = roof.u_axis_enu;
 	const [vx, vy, vz] = roof.v_axis_enu;
-	const bearing = (Math.atan2(-uy, ux) * 180) / Math.PI;
-	return {
-		pitch: (Math.atan2(Math.abs(vz), Math.hypot(vx, vy)) * 180) / Math.PI,
-		bearing: (bearing + 360) % 360,
+	const pitch = (Math.atan2(Math.abs(vz), Math.hypot(vx, vy)) * 180) / Math.PI;
+	const azimuth = (Math.atan2(-uy, ux) * 180) / Math.PI;
+	const bearing = azimuth < 0 ? (azimuth + 360) % 360 : azimuth;
+	// Binary64 has 15 reliable decimal digits. Prefer the short angles only
+	// when they recreate both saved axes exactly, including near-vertical roofs.
+	const short = {
+		pitch: Number(pitch.toPrecision(15)),
+		bearing: Number(bearing.toPrecision(15)) % 360,
 	};
+	const plane = roofPlane(short.pitch, short.bearing, roof.origin_enu);
+	if (
+		short.pitch < 90 &&
+		plane.u_axis_enu.every((n, i) => n === roof.u_axis_enu[i]) &&
+		plane.v_axis_enu.every((n, i) => n === roof.v_axis_enu[i])
+	)
+		return short;
+	return { pitch, bearing };
 }
 
 export function RoofForm({

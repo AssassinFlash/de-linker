@@ -194,12 +194,15 @@ def project_materials(source: Object) -> Object:
         declared = installation.get("material_review")
         if isinstance(declared, dict):
             for item in cast(list[Object], declared["rows"]):
+                mounting_result = item.get("mounting_quantity_result")
                 lines.append(
                     {
                         "id": f"installation-material:{item['id']}",
                         "handling": "installation_requirement",
                         "label": {"en": item["name"], "de": item["name"]},
-                        "quantity": item["quantity"],
+                        "quantity": mounting_result.get("quantity")
+                        if isinstance(mounting_result, dict)
+                        else item["quantity"],
                         "unit": item["unit"],
                         "basis": "project_declared_installation_materials_v1",
                         "source": {
@@ -375,8 +378,41 @@ def material_reference(line: Object) -> str:
     return str(line.get("sku") or "")
 
 
+def mounting_quantity_explanation(result: Object, locale: str) -> str:
+    if result.get("status") != "calculated":
+        return (
+            "Mengenregel erneut bestätigen"
+            if locale == "de"
+            else "Reconfirm the quantity rule"
+        )
+    if locale == "de":
+        return (
+            f"{result['modules']} Module × {result['per_module']} + "
+            f"{result['segments']} belegte Reihenabschnitte × {result['per_segment']} + "
+            f"{result['adjacencies']} Paare benachbarter Modulplätze × {result['per_adjacency']} = {result['quantity']} Stück"
+        )
+    return (
+        f"{result['modules']} modules × {result['per_module']} + "
+        f"{result['segments']} occupied row segments × {result['per_segment']} + "
+        f"{result['adjacencies']} neighboring slot pairs × {result['per_adjacency']} = {result['quantity']} pieces"
+    )
+
+
 def material_scope(line: Object, locale: str) -> str:
     if line.get("basis") == "project_declared_installation_materials_v1":
+        source = line.get("source")
+        declaration = source.get("declaration") if isinstance(source, dict) else None
+        result = (
+            declaration.get("mounting_quantity_result")
+            if isinstance(declaration, dict)
+            else None
+        )
+        if isinstance(result, dict):
+            return mounting_quantity_explanation(result, locale) + (
+                " · Projektangabe; technische Eignung nicht geprüft"
+                if locale == "de"
+                else " · Project declaration; technical suitability not assessed"
+            )
         return (
             "Projektangabe · technische Eignung nicht geprüft"
             if locale == "de"

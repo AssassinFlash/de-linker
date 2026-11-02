@@ -12,6 +12,7 @@ import type {
 import {
 	readInstallation,
 	readInstallationReview,
+	mountingBasisIsCurrent,
 } from "../../domain/installation.ts";
 import { sameJson } from "../../domain/draft.ts";
 import { formatDecimal } from "../../domain/decimal.ts";
@@ -196,6 +197,30 @@ export function InstallationEditor({
 			(!stringPlanChanged && sameJson(reviewStrings, savedStringInput)))
 			? review
 			: null;
+	const mountingRows =
+		!shown &&
+		review &&
+		reviewContext &&
+		reviewContext.projectId === projectId &&
+		reviewContext.queryScope === session.query_scope &&
+		client.isCurrentScope(reviewContext.queryScope) &&
+		reviewContext.revision <= savedRevision
+			? review.material_review?.rows.filter((row) => {
+					const saved = row.mounting_quantity_basis;
+					const current = plan.materials?.find(
+						(item) => item.id === row.id,
+					)?.mounting_quantity_basis;
+					return (
+						saved &&
+						current &&
+						mountingBasisIsCurrent(saved, geometry) &&
+						mountingBasisIsCurrent(current, geometry) &&
+						saved.per_module === current.per_module &&
+						saved.per_segment === current.per_segment &&
+						saved.per_adjacency === current.per_adjacency
+					);
+				})
+			: undefined;
 	function edit(kind: Kind, row: unknown): boolean {
 		try {
 			const id = readObject(row).id;
@@ -653,8 +678,13 @@ export function InstallationEditor({
 					))}
 					<InstallationMaterials
 						plan={plan}
+						geometry={geometry}
 						products={products.data?.products ?? []}
-						review={shown?.material_review}
+						review={
+							shown?.material_review ??
+							(mountingRows?.length ? { rows: mountingRows } : undefined)
+						}
+						showReviewSummary={Boolean(shown)}
 						locale={locale}
 						disabled={busy || !linksValid}
 						change={change}
