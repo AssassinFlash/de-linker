@@ -43,8 +43,8 @@ use Linker\I18n\Translation\State;
 	foreach ( $pairs as $pair ) {
 		foreach ( $pair as $row ) {
 			$post = get_post( $row['id'] );
-			if ( ! $post instanceof WP_Post || 'product' !== $post->post_type || get_post_meta( $post->ID, '_sku', true ) !== $row['sku'] || $post->post_excerpt !== $row[ $from ] ) {
-				throw new RuntimeException( 'Reviewed product excerpt changed: ' . (int) $row['id'] );
+			if ( ! $post instanceof WP_Post || 'product' !== $post->post_type || get_post_meta( $pair[0]['id'], '_sku', true ) !== $row['sku'] || $post->post_excerpt !== $row[ $from ] ) {
+				throw new RuntimeException( 'Reviewed product identity or excerpt changed: ' . (int) $row['id'] );
 			}
 			$before[ $post->ID ] = $post->post_excerpt;
 		}
