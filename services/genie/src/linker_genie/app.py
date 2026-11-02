@@ -524,32 +524,25 @@ def _answer(
     # A person request and a parts list are written by the service. Their
     # sentences follow the question, the same rule as a model answer.
     language = turn_language(body)
-    if (
-        prepared.route.name
-        in ("model", "planning_project", "sizing", "documents", "products")
-        and prepared.reading
-        and prepared.reading.saved_material_question is not None
-        and prepared.reading.saved_material_question >= 0.5
-    ):
+    if "verified saved material explanation" in prepared.route.reasons:
         material_answer = planning.material_answer(
             body.planning_context, body.page_context, language
         )
-        if material_answer is not None:
-            _, facts = planning.record(body.planning_context, body.page_context)
-            prepared.log["saved_material_answer"] = True
-            return (
-                TurnResult(
-                    output=TurnOutput(
-                        language=language, blocks=[TextBlock(text=material_answer)]
-                    ),
-                    facts=facts,
-                    grounded=True,
-                    failures=(),
-                    fallback=False,
-                    attempts=0,
+        _, facts = planning.record(body.planning_context, body.page_context)
+        prepared.log["saved_material_answer"] = True
+        return (
+            TurnResult(
+                output=TurnOutput(
+                    language=language, blocks=[TextBlock(text=material_answer)]
                 ),
-                None,
-            )
+                facts=facts,
+                grounded=True,
+                failures=(),
+                fallback=False,
+                attempts=0,
+            ),
+            None,
+        )
     if prepared.route.name == "person":
         return (
             TurnResult(

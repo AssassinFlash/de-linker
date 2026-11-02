@@ -308,10 +308,9 @@ class Understander:
                 and reading.saved_material_question >= 0.5
                 and route.name
                 in ("model", "planning_project", "sizing", "documents", "products")
-                and planning.material_answer(
-                    request.planning_context, request.page_context, language
+                and planning.is_material_report(
+                    request.planning_context, request.page_context
                 )
-                is not None
             ):
                 route = Route(
                     "planning_project",
@@ -372,7 +371,9 @@ class Understander:
                 current_page = page_state(
                     request.page_context.type, name, request.page_context.title
                 )
-                if request.page_context.planning_run_ids and request.planning_context:
+                if planning.is_material_report(
+                    request.planning_context, request.page_context
+                ):
                     current_page["saved_report"] = True
                 reading = self._jev.read(
                     message,

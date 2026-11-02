@@ -123,7 +123,9 @@ def test_saved_material_answers_use_frozen_anonymous_items_in_both_languages() -
     )
 
 
-def test_actual_saved_report_question_takes_the_service_answer_path() -> None:
+def test_actual_saved_report_question_takes_the_service_answer_path(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     from types import SimpleNamespace
 
     from linker_genie.app import _answer
@@ -172,14 +174,59 @@ def test_actual_saved_report_question_takes_the_service_answer_path() -> None:
             assert message == question and page["saved_report"] is True
             return reading
 
+    calls: list[int] = []
+    original_answer = planning.material_answer
+
+    def counted(raw: Any, page: PageContext, language: str) -> str:
+        calls.append(1)
+        return original_answer(raw, page, language)
+
+    monkeypatch.setattr(planning, "material_answer", counted)
     prepared = Understander(None, RecordedJev()).prepare(request, None)  # type: ignore[arg-type]
     assert prepared.route.name == "planning_project" and prepared.route.calls == ()
+    assert calls == []
     result, _ = _answer(request, prepared, SimpleNamespace(), None, abilities=None)  # type: ignore[arg-type]
+    assert calls == [1]
     assert result.attempts == 0 and prepared.log["saved_material_answer"] is True
     block = result.output.blocks[0]
     assert isinstance(block, TextBlock)
     assert "5 × 0 + 2 × 4 + 3 × 0 = 8 pieces" in block.text
     assert "cannot verify" in block.text
+
+
+def test_only_succeeded_report_with_declared_materials_gets_material_intent() -> None:
+    from linker_genie.understand import Understander
+
+    raw, page = source()
+    raw["runs"][0]["declared_installation_materials"] = [
+        {"quantity": {"en": "8 pc", "de": "8 St."}, "explanation": None}
+    ]
+    request = TurnRequest.model_validate(
+        {
+            "conversation_id": "test",
+            "messages": [{"role": "user", "content": "How many hours?"}],
+            "page_context": page.model_dump(),
+        }
+    ).model_copy(update={"planning_context": raw})
+
+    class NonReportJev:
+        def read(
+            self, message: str, page: dict[str, Any], history: Any = ()
+        ) -> Reading:
+            assert "saved_report" not in page
+            return Reading(
+                intent="small_talk",
+                confidence=0.9,
+                about_this_page=0,
+                wants_person=0,
+                needs_followup=0,
+                seconds=0,
+                cost=0,
+            )
+
+    assert not planning.is_material_report(raw, page)
+    prepared = Understander(None, NonReportJev()).prepare(request, None)  # type: ignore[arg-type]
+    assert "verified saved material explanation" not in prepared.route.reasons
 
 
 @pytest.mark.parametrize(

@@ -93,7 +93,30 @@ def saved_result_question(raw: Any, page: PageContext, question: str) -> bool:
     )
 
 
-def material_answer(raw: Any, page: PageContext, language: str) -> str | None:
+def is_material_report(raw: Any, page: PageContext) -> bool:
+    if not isinstance(raw, dict):
+        return False
+    payload = view(raw, page)
+    runs = raw.get("runs")
+    if (
+        payload.get("status") != "available"
+        or payload.get("truncated")
+        or not isinstance(runs, list)
+        or len(runs) != 1
+    ):
+        return False
+    run = runs[0]
+    return bool(
+        isinstance(run, dict)
+        and run.get("kind") == "planning_report_v1"
+        and run.get("state") == "succeeded"
+        and not run.get("truncated")
+        and isinstance(run.get("declared_installation_materials"), list)
+        and run["declared_installation_materials"]
+    )
+
+
+def material_answer(raw: Any, page: PageContext, language: str) -> str:
     """Explain all anonymous declared material rows, never match private names."""
     unavailable = (
         "Die gespeicherten Materialdetails konnten nicht überprüft werden. Bitte öffnen Sie den Bericht."
