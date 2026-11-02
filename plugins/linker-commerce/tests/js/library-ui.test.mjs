@@ -96,7 +96,7 @@ function page(rows) {
       </article></div></section>
     </div>
     <div class="linker-library-panel" id="linker-library-panel-documents" data-library-panel="documents" hidden>
-     <div class="linker-library-filters" data-library-filters hidden><button type="button" data-library-type="all" aria-pressed="true">All</button><button type="button" data-library-type="datasheet" aria-pressed="false">Datasheet</button><button type="button" data-library-type="manual" aria-pressed="false">Manual</button></div>
+     <div class="linker-library-filters" data-library-filters hidden><button type="button" data-library-type="all" aria-pressed="true">All <span class="linker-library-n">25</span></button><button type="button" data-library-type="datasheet" aria-pressed="false">Datasheet <span class="linker-library-n">13</span></button><button type="button" data-library-type="manual" aria-pressed="false">Manual <span class="linker-library-n">12</span></button></div>
      <section class="linker-library-zone" id="linker-library-zone-documents" data-library-spy data-library-zone="linker-library-zone-documents">
       <h2 class="linker-library-zone-title">Brands</h2><div class="linker-library-stack">
       <article class="linker-library-card" id="linker-library-docs-chint" data-library-card data-library-kind="document" data-library-spy data-library-zone="linker-library-zone-documents">
@@ -548,6 +548,104 @@ test('the search lists the active tab\'s hits, marked and paginated, and splits 
  assert.ok(host.querySelector('.linker-library-pager'), 'the results paginate');
  host.querySelector('[data-library-page="next"]').dispatchEvent(new dom.window.MouseEvent('click', {bubbles: true, cancelable: true}));
  assert.equal(doc.querySelectorAll('[data-library-results] .linker-library-hit').length, 5);
+});
+
+test('a selected document type stays visible and filters search, counts and suggestions', () => {
+ const dom = fixture();
+ const doc = boot(dom);
+ const filters = doc.querySelector('[data-library-filters]');
+ const originalParent = filters.parentElement;
+ const input = doc.querySelector('.linker-library-q');
+ doc.querySelector('#linker-library-tab-documents').click();
+ filters.querySelector('[data-library-type="manual"]').click();
+ input.value = 'chint';
+ input.dispatchEvent(new dom.window.Event('input', {bubbles: true}));
+
+ assert.equal(filters.closest('[hidden]'), null, 'type remains available while searching');
+ assert.equal(doc.querySelectorAll('[data-library-results] [data-library-type="manual"]').length, 12);
+ assert.equal(doc.querySelectorAll('[data-library-results] [data-library-type="datasheet"]').length, 0);
+ assert.equal(doc.querySelector('#linker-library-tab-faq .linker-library-n').textContent, '1');
+ assert.equal(doc.querySelector('#linker-library-tab-documents .linker-library-n').textContent, '12');
+ assert.equal(doc.querySelector('#linker-library-result-count').textContent, '13 results');
+ assert.equal(filters.querySelector('[data-library-type="manual"] .linker-library-n').textContent, '12');
+ assert.equal(filters.querySelector('[data-library-type="all"] .linker-library-n').textContent, '25');
+ const suggestedDocuments = () => [...doc.querySelectorAll('#linker-library-suggest [data-library-suggest]')]
+  .filter((option) => option.querySelector('.linker-library-sug-meta').textContent.includes('Document'))
+  .map((option) => Number(option.querySelector('.linker-library-sug-text').textContent.match(/\d+$/)[0]));
+ assert.equal(suggestedDocuments().length, 6);
+ assert.ok(suggestedDocuments().every((number) => number % 2 === 0), 'manual suggestions only');
+
+ filters.querySelector('[data-library-type="datasheet"]').click();
+ assert.equal(doc.querySelectorAll('[data-library-results] [data-library-type="datasheet"]').length, 13);
+ assert.equal(doc.querySelectorAll('[data-library-results] [data-library-type="manual"]').length, 0);
+ assert.equal(doc.querySelector('#linker-library-result-count').textContent, '14 results');
+ assert.equal(new URL(dom.window.location.href).searchParams.get('type'), 'datasheet');
+ assert.equal(suggestedDocuments().length, 6);
+ assert.ok(suggestedDocuments().every((number) => number % 2 === 1), 'suggestions follow the new type');
+
+ doc.querySelector('#linker-library-tab-faq').click();
+ assert.ok(filters.closest('[hidden]'), 'document filters do not appear in FAQ results');
+ assert.equal(doc.querySelectorAll('[data-library-results] .linker-library-qa').length, 1);
+ doc.querySelector('#linker-library-tab-documents').click();
+ assert.equal(filters.closest('[hidden]'), null);
+ doc.querySelector('[data-library-clear]').click();
+ assert.equal(filters.parentElement, originalParent, 'clear restores the original panel');
+ assert.equal(filters.querySelector('[data-library-type="datasheet"]').getAttribute('aria-pressed'), 'true');
+ assert.equal(filters.querySelector('[data-library-type="all"] .linker-library-n').textContent, '25');
+ dom.window.close();
+});
+
+test('keyboard type changes reset suggestion selection before Enter can activate a current result', () => {
+ const dom = fixture();
+ const doc = boot(dom);
+ const opened = [];
+ dom.window.open = (url) => { opened.push(url); return null; };
+ doc.querySelector('#linker-library-tab-documents').click();
+ const input = doc.querySelector('.linker-library-q');
+ input.value = 'document 1';
+ input.dispatchEvent(new dom.window.Event('input', {bubbles: true}));
+ const options = () => doc.querySelectorAll('#linker-library-suggest [data-library-suggest]');
+ const key = (value) => {
+  const event = new dom.window.KeyboardEvent('keydown', {key: value, bubbles: true, cancelable: true});
+  input.dispatchEvent(event);
+  return event;
+ };
+ assert.equal(options().length, 6);
+ for (let i = 0; i < 6; i++) key('ArrowDown');
+ assert.equal(input.getAttribute('aria-activedescendant'), 'linker-library-sug-5');
+ const manual = doc.querySelector('[data-library-filters] button[data-library-type="manual"]');
+ manual.focus();
+ manual.click();
+ assert.equal(options().length, 5, 'keyboard activation narrows the live suggestions');
+ assert.equal(doc.querySelectorAll('#linker-library-suggest [aria-selected="true"]').length, 0);
+ assert.equal(input.hasAttribute('aria-activedescendant'), false);
+ input.focus();
+ assert.equal(key('Enter').defaultPrevented, false, 'no stale selection swallows Enter');
+ assert.deepEqual(opened, []);
+ key('ArrowDown');
+ assert.equal(input.getAttribute('aria-activedescendant'), 'linker-library-sug-0');
+ assert.equal(key('Enter').defaultPrevented, true);
+ assert.deepEqual(opened, ['https://de-linker.test/a.pdf']);
+ dom.window.close();
+});
+
+test('a type-filtered empty search can recover by changing the type', () => {
+ const dom = fixture();
+ const doc = boot(dom);
+ doc.querySelector('#linker-library-tab-documents').click();
+ const filters = doc.querySelector('[data-library-filters]');
+ filters.querySelector('[data-library-type="manual"]').click();
+ const input = doc.querySelector('.linker-library-q');
+ input.value = 'datasheet';
+ input.dispatchEvent(new dom.window.Event('input', {bubbles: true}));
+ assert.ok(doc.querySelector('[data-library-results] .linker-library-empty'));
+ assert.equal(doc.querySelector('#linker-library-tab-documents .linker-library-n').textContent, '0');
+ assert.equal(filters.querySelector('[data-library-type="manual"] .linker-library-n').textContent, '0');
+ assert.equal(filters.querySelector('[data-library-type="all"] .linker-library-n').textContent, '13');
+ filters.querySelector('[data-library-type="all"]').click();
+ assert.equal(doc.querySelectorAll('[data-library-results] [data-library-type="datasheet"]').length, 13);
+ assert.equal(doc.querySelector('#linker-library-tab-documents .linker-library-n').textContent, '13');
+ dom.window.close();
 });
 
 test('a question searched in the answer shows where it matched', () => {

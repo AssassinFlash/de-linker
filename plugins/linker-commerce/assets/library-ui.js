@@ -193,6 +193,8 @@
 	var suggestBox = root.querySelector("#linker-library-suggest");
 	var filters = root.querySelector("[data-library-filters]");
 	var main = root.querySelector(".linker-library-main");
+	var filterHome = filters && filters.parentNode;
+	var filterFollowing = filters && filters.nextSibling;
 	var preparedThumbnails = new WeakSet();
 
 	/** A native anchor may already have been followed while this script loaded. */
@@ -594,6 +596,12 @@
 		});
 		renderCards();
 		syncSelection(true);
+		if (state.q.trim()) {
+			state.searchPage = 1;
+			state.suggestIndex = -1;
+			renderSearch();
+			renderSuggestions();
+		}
 	}
 
 	/* ---------- the search ---------- */
@@ -610,10 +618,44 @@
 		return host;
 	}
 
+	/** Keep the original controls reachable while the document panel is hidden. */
+	function placeFilters(withResults, host) {
+		if (!filters || !filterHome) {
+			return;
+		}
+		if (withResults && main && host) {
+			if (filters.parentNode !== main || filters.nextSibling !== host) {
+				main.insertBefore(filters, host);
+			}
+		} else if (filters.parentNode !== filterHome) {
+			filterHome.insertBefore(filters, filterFollowing);
+		}
+	}
+
+	function matchesType(hit) {
+		return hit.kind !== "document" || state.type === "all" || hit.type === state.type;
+	}
+
+	/** Type counts describe the current query before choosing a document type. */
+	function updateFilterCounts(query) {
+		if (!filters) {
+			return;
+		}
+		var hits = documents.filter(function (hit) {
+			return matches(hit.text, query);
+		});
+		slice.call(filters.querySelectorAll("button[data-library-type]")).forEach(function (chip) {
+			var type = chip.getAttribute("data-library-type");
+			countOf(chip.querySelector(".linker-library-n"), hits.filter(function (hit) {
+				return type === "all" || hit.type === type;
+			}).length);
+		});
+	}
+
 	/** The hits of a query: every matching row, best match first. */
 	function searchHits(query) {
 		var hits = index.filter(function (hit) {
-			return matches(hit.text, query);
+			return matchesType(hit) && matches(hit.text, query);
 		});
 		hits.sort(function (a, b) {
 			return score(b.title, b.text, query) - score(a.title, a.text, query) || a.order - b.order;
@@ -635,7 +677,7 @@
 
 	function topHits(pool, query) {
 		var hits = pool.filter(function (hit) {
-			return matches(hit.text, query);
+			return matchesType(hit) && matches(hit.text, query);
 		});
 		hits.sort(function (a, b) {
 			return score(b.title, b.text, query) - score(a.title, a.text, query) || a.order - b.order;
@@ -670,6 +712,8 @@
 		// that half's size), and the field's counter is the whole match set.
 		var hits = hitsOfTab(query, state.tab);
 		var host = resultsHost();
+		updateFilterCounts(query);
+		placeFilters(state.tab === "documents", host);
 		var window_ = paginate(hits, state.searchPage, pageSize);
 		state.searchPage = window_.page;
 		clear(host);
@@ -726,6 +770,8 @@
 			renderSearch();
 		} else {
 			root.classList.remove("is-searching");
+			updateFilterCounts("");
+			placeFilters(false);
 			var host = root.querySelector("[data-library-results]");
 			if (host) {
 				host.hidden = true;
