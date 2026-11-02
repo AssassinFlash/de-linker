@@ -597,6 +597,23 @@ def test_reviewed_git_archive_is_complete_and_rejects_changed_inputs(
     with pytest.raises(ValueError):
         helper["check_manifest"](candidate)
     extra.unlink()
+    # The service runs with this directory on sys.path. Untracked top-level
+    # modules or packages must not shadow reviewed installed dependencies.
+    (candidate / ".venv").mkdir()
+    (candidate / ".deploy").mkdir()
+    helper["check_manifest"](candidate)
+    untracked_module = candidate / "uvicorn.py"
+    untracked_module.write_text("unreviewed module")
+    with pytest.raises(ValueError, match="untracked"):
+        helper["check_manifest"](candidate)
+    untracked_module.unlink()
+    untracked_package = candidate / "linker_engine"
+    untracked_package.mkdir()
+    (untracked_package / "__init__.py").write_text("unreviewed package")
+    with pytest.raises(ValueError, match="untracked"):
+        helper["check_manifest"](candidate)
+    (untracked_package / "__init__.py").unlink()
+    untracked_package.rmdir()
     (candidate / ".git-source-manifest.json").unlink()
     with pytest.raises(ValueError):
         helper["check_manifest"](candidate)

@@ -59,6 +59,9 @@ def check_manifest(path: Path) -> None:
         or baseline != {"revision": revision, "blobs": blobs}
     ):
         raise ValueError("incomplete Planner Git closure")
+    allowed = {Path(name).parts[0] for name in blobs} | {MANIFEST, ".venv", ".deploy"}
+    if any(entry.name not in allowed for entry in path.iterdir()):
+        raise ValueError("untracked Planner root input")
     legacy()["verify_source"](path, blobs)
 
 
