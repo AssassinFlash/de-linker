@@ -626,9 +626,9 @@ def test_native_bootstrap_exposes_only_the_browser_runtime_contract(
     instance, wp = local
     browser = Browser(instance.url)
     context = browser.bootstrap()
-    account.guest_sessions.add(
-        urllib.parse.unquote(browser.native_cookie().value).split("|")[0]
-    )
+    cookie = browser.native_cookie()
+    assert isinstance(cookie.value, str)
+    account.guest_sessions.add(urllib.parse.unquote(cookie.value).split("|")[0])
     assert set(context["runtime"]) == {
         "schema_version",
         "runtime_sha256",
