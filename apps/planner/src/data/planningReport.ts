@@ -56,6 +56,10 @@ const validateReport = ajv.compile<PlanningReport>(reportSchema);
 const validateOptions = ajv.compile<ReportOptions>(optionsSchema);
 const hash = (value: unknown): value is string =>
 	typeof value === "string" && /^[a-f0-9]{64}$/.test(value);
+const protectionMethods = new Set([
+	"https://www.electrical-installation.org/enwiki/Verification_of_the_withstand_capabilities_of_cables_under_short-circuit_conditions#Thermal_constraints",
+	"https://www.electrical-installation.org/enwiki/Sizing_of_protective_earthing_conductor#Values_of_factor_k_to_be_used_in_the_formulae",
+]);
 const pvModelMethods = new Set([
 	"https://pvlib-python.readthedocs.io/en/v0.16.1/reference/generated/pvlib.ivtools.sdm.fit_desoto_batzelis.html",
 	"https://pvlib-python.readthedocs.io/en/v0.16.1/reference/generated/pvlib.ivtools.sdm.fit_desoto.html",
@@ -143,6 +147,8 @@ export function readPlanningReport(value: unknown): PlanningReport {
 				}
 				const methodReference =
 					(section.id === "pv-iv-model" && pvModelMethods.has(url.href)) ||
+					(section.id === "installation-protection" &&
+						protectionMethods.has(url.href)) ||
 					pvgisSourceReference(section.id, url);
 				if (
 					(url.origin !== "https://de-linker.com" && !methodReference) ||

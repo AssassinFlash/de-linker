@@ -121,6 +121,32 @@ test("report output keeps serialized fields mandatory and old column layout opti
 		},
 	])
 		assert.throws(() => readPlanningReport({ ...report, sections: [section] }));
+	// Both fixed method rows occur together in a saved protection report.
+	const protection = {
+		...methodSection,
+		id: "installation-protection",
+		rows: [
+			{
+				label: "Method",
+				value: "Schneider Electric",
+				href: "https://www.electrical-installation.org/enwiki/Verification_of_the_withstand_capabilities_of_cables_under_short-circuit_conditions#Thermal_constraints",
+			},
+			{
+				label: "Method",
+				value: "Schneider Electric",
+				href: "https://www.electrical-installation.org/enwiki/Sizing_of_protective_earthing_conductor#Values_of_factor_k_to_be_used_in_the_formulae",
+			},
+		],
+	};
+	assert.doesNotThrow(() =>
+		readPlanningReport({ ...report, sections: [protection] }),
+	);
+	assert.throws(() =>
+		readPlanningReport({
+			...report,
+			sections: [{ ...protection, id: "checks" }],
+		}),
+	);
 	// Exact native Berlin source URL from the managed reference/report seam.
 	const pvgisHref =
 		"https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-SARAH3&startyear=2023&endyear=2023&pvcalculation=1&peakpower=11.04&loss=14.0&pvtechchoice=crystSi&mountingplace=free&angle=30.0&aspect=0.0&trackingtype=0&usehorizon=0&components=1&optimalinclination=0&optimalangles=0&outputformat=json";
