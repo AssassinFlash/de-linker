@@ -11,6 +11,8 @@ from __future__ import annotations
 import gzip
 import json
 import os
+import shutil
+import signal
 import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
@@ -44,6 +46,118 @@ def test_stream_preserves_exit_status_without_stderr(tmp_path: Path) -> None:
     """A real failed dump transport remains diagnosable even with no stderr."""
     with pytest.raises(CutoverError, match="exit 17.*no stderr"):
         backup.stream(_target(tmp_path), "set -euo pipefail\nexit 17")
+
+
+@pytest.mark.parametrize("disconnect", [False, True])
+def test_dump_stops_its_producer_when_output_is_blocked(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, disconnect: bool
+) -> None:
+    """An abandoned receiver must not leave the actual dump pipe running."""
+    monkeypatch.setattr(backup, "DUMP_IDLE_SECONDS", 1, raising=False)
+    binaries = tmp_path / "bin"
+    binaries.mkdir()
+    wp = binaries / "wp"
+    wp.write_text(
+        '#!/bin/sh\ncase "$3" in DB_HOST) echo localhost;; DB_USER) echo fixture;; DB_NAME) echo fixture;; table_prefix) echo wp_;; DB_PASSWORD) echo fixture;; esac\n'
+    )
+    wp.chmod(0o755)
+    dump = binaries / "mysqldump"
+    pidfile = tmp_path / "dump.pid"
+    dump.write_text(
+        '#!/bin/sh\nif [ "$1" = --help ]; then exit 0; fi\n'
+        f"echo $$ > '{pidfile}'\nexec dd if=/dev/urandom bs=65536 2>/dev/null\n"
+    )
+    dump.chmod(0o755)
+    gzip_pidfile = tmp_path / "gzip.pid"
+    gzip_program = shutil.which("gzip")
+    assert gzip_program is not None
+    gzip_wrapper = binaries / "gzip"
+    gzip_wrapper.write_text(
+        f"#!/bin/sh\necho $$ > '{gzip_pidfile}'\nexec '{gzip_program}'\n"
+    )
+    gzip_wrapper.chmod(0o755)
+    site = Target(
+        "local:fixture", str(tmp_path), "http://127.0.0.1", (str(wp),), None, None
+    )
+    process = subprocess.Popen(
+        ["bash", "-c", backup.dump_script(site)],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        env={**os.environ, "PATH": f"{binaries}:{os.environ['PATH']}"},
+        start_new_session=True,
+    )
+    try:
+        if disconnect:
+            assert process.stdout is not None
+            process.stdout.close()
+        else:
+            with pytest.raises(subprocess.TimeoutExpired):
+                process.wait(timeout=0.25)
+        try:
+            code = process.wait(timeout=4)
+        except subprocess.TimeoutExpired:
+            pytest.fail("dump did not stop after its receiver stopped reading")
+        assert code != 0
+        assert pidfile.exists()
+        with pytest.raises(ProcessLookupError):
+            os.kill(int(pidfile.read_text()), 0)
+        assert gzip_pidfile.exists()
+        with pytest.raises(ProcessLookupError):
+            os.kill(int(gzip_pidfile.read_text()), 0)
+    finally:
+        if process.poll() is None:
+            os.killpg(process.pid, signal.SIGKILL)
+            process.wait()
+        if pidfile.exists():
+            try:
+                os.kill(int(pidfile.read_text()), signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+        if process.stdout:
+            process.stdout.close()
+        if process.stderr:
+            process.stderr.close()
+
+
+def test_dump_streams_a_complete_gzip_with_a_slow_producer(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Active transfers can exceed the idle threshold without being killed."""
+    monkeypatch.setattr(backup, "DUMP_IDLE_SECONDS", 1)
+    binaries = tmp_path / "bin"
+    binaries.mkdir()
+    wp = binaries / "wp"
+    wp.write_text(
+        '#!/bin/sh\ncase "$3" in DB_HOST) echo localhost;; DB_USER|DB_NAME|DB_PASSWORD) echo fixture;; table_prefix) echo wp_;; esac\n'
+    )
+    wp.chmod(0o755)
+    dump = binaries / "mysqldump"
+    dump.write_text(
+        '#!/bin/sh\nif [ "$1" = --help ]; then exit 0; fi\n'
+        "for n in 1 2 3 4 5 6; do dd if=/dev/urandom bs=65536 count=4 2>/dev/null; sleep 0.3; done\n"
+    )
+    dump.chmod(0o755)
+    site = Target(
+        "local:fixture", str(tmp_path), "http://127.0.0.1", (str(wp),), None, None
+    )
+    result = subprocess.run(
+        ["bash", "-c", backup.dump_script(site)],
+        capture_output=True,
+        env={**os.environ, "PATH": f"{binaries}:{os.environ['PATH']}"},
+        timeout=8,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert len(gzip.decompress(result.stdout)) == 6 * 4 * 65536
+    dump.write_text('#!/bin/sh\nif [ "$1" = --help ]; then exit 0; fi\nexit 17\n')
+    failed = subprocess.run(
+        ["bash", "-c", backup.dump_script(site)],
+        capture_output=True,
+        env={**os.environ, "PATH": f"{binaries}:{os.environ['PATH']}"},
+        timeout=8,
+        check=False,
+    )
+    assert failed.returncode == 17, failed.stderr
 
 
 class _Site(Target):

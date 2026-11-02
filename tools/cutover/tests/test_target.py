@@ -705,6 +705,8 @@ def test_task_session_shares_transport_and_closes_master_on_every_exit(
     class Master:
         def __init__(self, command: list[str], **kwargs: object) -> None:
             del kwargs
+            assert "ServerAliveInterval=15" in command
+            assert "ServerAliveCountMax=3" in command
             self.stderr = io.StringIO()
             self.code: int | None = None
             self.terminated = False
