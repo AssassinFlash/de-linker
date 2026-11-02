@@ -396,14 +396,10 @@ def selected_modules(changes, base="", head=""):
                     selected.update(("engine", "genie"))
                 if name == "commerce" and under(path, GENIE_COMMERCE_INPUTS):
                     selected.add("genie")
-                # Outbox scheduling is a native PHP/AS contract; neither the
-                # engine nor the frontend recipe reads this implementation.
-                if (
-                    name == "tools"
-                    and relative.startswith("includes/Planner/")
-                    and relative != "includes/Planner/ClaimOutbox.php"
-                ):
-                    selected.update(("engine", "planner"))
+                # Planner PHP is exercised by Tools and native consumers.
+                # Engine/Planner recipes do not load these PHP sources; their
+                # cross-language protocols are represented by the schemas and
+                # fixtures selected independently above.
                 if name == "tools" and relative.startswith(
                     ("includes/Genie/", "includes/Protection/")
                 ):
@@ -530,7 +526,15 @@ def module_inputs(module):
             "fixtures/planning/",
             tools + "bin/",
             tools + "build/",
+            # Conditional ci-planner-php executes the actual mount/asset PHP
+            # when a Planner build changes; its transitive namespace, cache
+            # helper and PHPUnit bootstrap belong to the reusable proof too.
+            tools + "includes/Planner/",
+            tools + "includes/Cache/",
+            tools + "tests/php/bootstrap.php",
+            tools + "tests/php/Doubles/",
             tools + "tests/php/Unit/PlannerApplicationTest.php",
+            tools + "phpunit.xml.dist",
             tools + "composer.json",
             tools + "composer.lock",
             php_shared,

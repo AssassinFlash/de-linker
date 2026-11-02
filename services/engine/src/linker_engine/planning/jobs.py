@@ -189,6 +189,23 @@ class Jobs:
             raise LeaseLost("worker lease is no longer current")
         return cast(sqlite3.Row, row)
 
+    def completed(self, lease: Lease, output_sha256: str | None = None) -> bool:
+        """Confirm a child published exactly this attempt under the normal fence."""
+        with self.workspace.database.read() as connection:
+            row = connection.execute(
+                "SELECT jobs.*, runs.result_sha256 FROM jobs "
+                "JOIN runs ON runs.id=jobs.run_id WHERE jobs.id=?",
+                (lease.id,),
+            ).fetchone()
+        return bool(
+            self._identity(row, lease)
+            and row is not None
+            and row["state"] == "succeeded"
+            and row["output_sha256"] is not None
+            and row["output_sha256"] == row["result_sha256"]
+            and (output_sha256 is None or row["output_sha256"] == output_sha256)
+        )
+
     def heartbeat(self, lease: Lease, *, lease_seconds: float) -> float:
         _duration(lease_seconds, "lease duration")
         with self.workspace.database.transaction() as connection:

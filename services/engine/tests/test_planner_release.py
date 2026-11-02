@@ -27,8 +27,9 @@ ops = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(ops)
 
 
+@pytest.mark.parametrize("expanded", [False, True])
 def test_prepared_policy_is_frozen_and_numerical_operator_has_no_credentials(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, expanded: bool
 ) -> None:
     monkeypatch.setattr(
         ops.pwd,
@@ -52,12 +53,13 @@ def test_prepared_policy_is_frozen_and_numerical_operator_has_no_credentials(
         "stop_seconds": 3,
     }
     (private / "spec.json").write_text(json.dumps(spec))
-    (private / "runtime.json").write_text(
-        json.dumps({"directory": str(root / "state/workspace")})
-    )
-    (private / "worker.json").write_text(
-        json.dumps({"ready_file": str(root / "run/worker.ready.json")})
-    )
+    runtime: dict[str, Any] = {"directory": str(root / "state/workspace")}
+    policy: dict[str, Any] = {"ready_file": str(root / "run/worker.ready.json")}
+    if expanded:
+        runtime["geometric_pv_clear_flat_roof"] = {"fixture": True}
+        policy["expanded_job"] = {"fixture": True}
+    (private / "runtime.json").write_text(json.dumps(runtime))
+    (private / "worker.json").write_text(json.dumps(policy))
     feed, compat = tmp_path / "feed.json", tmp_path / "compat.json"
     feed.write_text("{}")
     compat.write_text("{}")
@@ -97,10 +99,24 @@ def test_prepared_policy_is_frozen_and_numerical_operator_has_no_credentials(
 
     monkeypatch.setattr(ops, "command", run)
     monkeypatch.setattr(ops.os, "chown", lambda *_: None)
+    if expanded:
+        (private / "worker.json").write_text(
+            json.dumps({"ready_file": policy["ready_file"]})
+        )
+        with pytest.raises(ValueError, match="isolated worker policy"):
+            ops.Release(private / "spec.json")
+        (private / "worker.json").write_text(json.dumps(policy))
+    # This fixture exercises policy freezing; source closure has its own Git
+    # archive and altered-file regressions below.
+    (release / ".git-source-manifest.json").write_text("fixture")
+    monkeypatch.setattr(ops, "check_source", lambda _: None)
     target = ops.Release(private / "spec.json")
     target.prepare(
         env, "https://fixture.invalid/wp-json/linker/v1/publication/manifest"
     )
+    worker_unit = (private / target.worker_unit).read_text()
+    assert ("Delegate=cpu memory pids" in worker_unit) is expanded
+    assert ("DelegateSubgroup=supervisor" in worker_unit) is expanded
     assert set(ops.environment(private / "http.env")) == {
         "GENIE_SERVICE_TOKEN",
         "LINKER_ENGINE_FEED",
@@ -121,6 +137,21 @@ def test_prepared_policy_is_frozen_and_numerical_operator_has_no_credentials(
     )
     assert os.stat(private / "http.env").st_mode & 0o777 == 0o600
     target.preflight()
+    manifest = release / ".git-source-manifest.json"
+    receipt = private / "prepared.json"
+    frozen = receipt.read_bytes()
+    manifest.write_text("changed")
+    with pytest.raises(
+        RuntimeError, match="prepared executable or configuration changed"
+    ):
+        target.preflight()
+    manifest.unlink()
+    legacy_receipt = json.loads(frozen)
+    legacy_receipt["files"].pop(manifest.name)
+    receipt.write_text(json.dumps(legacy_receipt))
+    target.preflight()  # Previously frozen releases did not have a manifest.
+    receipt.write_bytes(frozen)
+    manifest.write_text("fixture")
     # Latest inputs may omit a feature while an immutable older revision still
     # needs it. Duplicate CAS references are read once; no schema/open upgrade.
     store = root / "state/workspace"
@@ -490,3 +521,110 @@ def test_operator_command_terminates_and_reaps_whole_group_before_unwinding(
     assert launcher.call_args.kwargs["start_new_session"] is True
     kill.assert_called_once_with(123, signal.SIGKILL)
     assert process.communicate.call_count == 2
+
+
+def test_reviewed_git_archive_is_complete_and_rejects_changed_inputs(
+    tmp_path: Path,
+) -> None:
+    import io
+    import runpy
+    import subprocess
+    import tarfile
+
+    engine = Path(__file__).resolve().parents[1]
+    helper = runpy.run_path(str(engine / "ops/planner_source.py"))
+    repository = tmp_path / "repository"
+    source = repository / "services/engine"
+    for directory in ("src", "schemas", "data", "ops"):
+        (source / directory).mkdir(parents=True, exist_ok=True)
+    (source / "src/code.py").write_text("runtime\n")
+    (source / "schemas/contract.json").write_text("{}")
+    (source / "data/plz_de.csv.gz").write_bytes(b"postcode")
+    (source / "data/htw").mkdir()
+    (source / "data/htw/table.json").write_text("[1]")
+    for name in (".python-version", "pyproject.toml", "uv.lock"):
+        (source / name).write_text(name)
+    for name in ("planner_source.py", "planner_release.py", "legacy_release.py"):
+        (source / "ops" / name).write_bytes((engine / "ops" / name).read_bytes())
+    subprocess.run(["git", "init", "-q", str(repository)], check=True)
+    subprocess.run(["git", "-C", str(repository), "add", "."], check=True)
+    subprocess.run(
+        [
+            "git",
+            "-C",
+            str(repository),
+            "-c",
+            "user.name=Fixture",
+            "-c",
+            "user.email=fixture@example.invalid",
+            "commit",
+            "-qm",
+            "fixture",
+        ],
+        check=True,
+    )
+    revision = subprocess.check_output(
+        ["git", "-C", str(repository), "rev-parse", "HEAD"], text=True
+    ).strip()
+    payload = helper["archive"](repository, revision)
+    candidate = tmp_path / "candidate"
+    candidate.mkdir()
+    with tarfile.open(fileobj=io.BytesIO(payload)) as tar:
+        for item in tar:
+            assert (
+                item.isfile()
+                and not Path(item.name).is_absolute()
+                and ".." not in Path(item.name).parts
+            )
+            output = candidate / item.name
+            output.parent.mkdir(parents=True, exist_ok=True)
+            member = tar.extractfile(item)
+            assert member is not None
+            output.write_bytes(member.read())
+    helper["check_manifest"](candidate)
+    for name in ("data/htw/table.json", ".python-version"):
+        path = candidate / name
+        original = path.read_bytes()
+        path.unlink()
+        with pytest.raises(ValueError):
+            helper["check_manifest"](candidate)
+        path.write_bytes(original + b"changed")
+        with pytest.raises(ValueError):
+            helper["check_manifest"](candidate)
+        path.write_bytes(original)
+    extra = candidate / "data/untracked"
+    extra.write_text("unexpected")
+    with pytest.raises(ValueError):
+        helper["check_manifest"](candidate)
+    extra.unlink()
+    # The service runs with this directory on sys.path. Untracked top-level
+    # modules or packages must not shadow reviewed installed dependencies.
+    (candidate / ".venv").mkdir()
+    (candidate / ".deploy").mkdir()
+    helper["check_manifest"](candidate)
+    untracked_module = candidate / "uvicorn.py"
+    untracked_module.write_text("unreviewed module")
+    with pytest.raises(ValueError, match="untracked"):
+        helper["check_manifest"](candidate)
+    untracked_module.unlink()
+    untracked_package = candidate / "linker_engine"
+    untracked_package.mkdir()
+    (untracked_package / "__init__.py").write_text("unreviewed package")
+    with pytest.raises(ValueError, match="untracked"):
+        helper["check_manifest"](candidate)
+    (untracked_package / "__init__.py").unlink()
+    untracked_package.rmdir()
+    (candidate / ".git-source-manifest.json").unlink()
+    with pytest.raises(ValueError):
+        helper["check_manifest"](candidate)
+
+
+def test_first_prepare_rejects_candidate_without_reviewed_git_closure(
+    tmp_path: Path,
+) -> None:
+    release = object.__new__(ops.Release)
+    release.path = tmp_path
+    release.deploy = tmp_path / ".deploy"
+    release.check_paths = lambda: None
+    with pytest.raises(ValueError, match="source verifier required"):
+        release.prepare(tmp_path / "environment", "https://fixture.invalid")

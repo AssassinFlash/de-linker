@@ -51,9 +51,10 @@ class Workspace:
         *,
         clock: Callable[[], float] = time.time,
         runtime: RuntimeSnapshot | None = None,
+        temporary_id: str | None = None,
     ) -> None:
         self.database = Database(directory / "workspace.sqlite")
-        self.blobs = Blobs(directory / "blobs")
+        self.blobs = Blobs(directory / "blobs", temporary_id=temporary_id)
         self.clock = clock
         self._runtime = runtime
         if runtime is not None:

@@ -13621,3 +13621,6 @@ msgstr "%s aus der Auswahl entfernen"
 #: ../../apps/planner/src/components/equipment/PlantPvStringSetup.tsx:76 build/planner/assets/planner.js
 msgid "Assigned to system %s"
 msgstr "System %s bereits zugeordnet"
+#: ../../apps/planner/src/components/energy/RunResult.tsx build/planner/assets/planner.js
+msgid "The server could not finish the calculation for this roof. Your project is saved. Try again later, or reduce the number of modules in the design."
+msgstr "Für die Berechnung dieses Dachs reichten die Serverressourcen nicht aus. Ihr Projekt ist gespeichert. Versuchen Sie es später erneut oder verringern Sie die Anzahl der Module im Entwurf."
