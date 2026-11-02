@@ -124,19 +124,30 @@ class GeometricPvKernel:
             raise VersionUnavailable("geometric PV generation model is not executable")
         return {**self._base_models, "generation": generation}
 
-    def execution_key_for(self, generation: str) -> str:
+    def execution_key_for(self, generation: str, *, expanded: bool = False) -> str:
+        parameters = self.parameters()
+        if expanded:
+            if self.expanded_limits is None or generation != MODEL_V3:
+                raise VersionUnavailable("expanded geometric PV is not configured")
+            parameters["execution_class"] = "clear_flat_roof_v1"
         return execution_key(
             {
                 "code_sha256": self.runtime.sha256,
                 "models": cast(Object, self.models_for(generation)),
-                "parameters": self.parameters(),
+                "parameters": parameters,
             }
         )
 
     def execution_keys(self) -> tuple[str, ...]:
-        return tuple(
+        ordinary = tuple(
             self.execution_key_for(model) for model in (MODEL_V1, MODEL_V2, MODEL_V3)
         )
+        return ordinary + self.expanded_execution_keys()
+
+    def expanded_execution_keys(self) -> tuple[str, ...]:
+        if self.expanded_limits is None:
+            return ()
+        return (self.execution_key_for(MODEL_V3, expanded=True),)
 
     def execution_key(self) -> str:
         return self.execution_keys()[0]
@@ -172,6 +183,9 @@ class GeometricPvKernel:
                     "limits": selected.model_dump(mode="json"),
                 }
             )
+        parameters = self.parameters()
+        if selected != self.limits:
+            parameters["execution_class"] = "clear_flat_roof_v1"
         return Context(
             self.runtime.sha256,
             self.models_for(request.model),
@@ -182,7 +196,7 @@ class GeometricPvKernel:
                 "woo.module_inputs": self.workspace.blobs.put_object(basis),
                 **extra,
             },
-            self.parameters(),
+            parameters,
         )
 
     def _owned_source(self, project_id: str, asset_id: str, pinned: Object) -> Object:
@@ -244,7 +258,7 @@ class GeometricPvKernel:
             not isinstance(recorded, dict)
             or recorded.get("generation") != request.model
             or request_execution_key(lease.request, manifest, manifest_sha)
-            != self.execution_key_for(request.model)
+            != self.execution_key_for(request.model, expanded="work_budget" in pinned)
         ):
             raise VersionUnavailable(
                 "pinned geometric PV generation differs from the request"

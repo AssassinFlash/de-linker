@@ -13,11 +13,11 @@ import tempfile
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
-from threading import Event
+from threading import Event, Thread
 
 from .canonical import Object, encode
 from .execution_control import ExecutionControl
-from .execution_identity import storage_binding
+from .execution_identity import EvaluationRouting, storage_binding
 from .execution_registry import service_registry
 from .jobs import Jobs
 from .project_input_contracts import SUPPORTED_INPUT_CONTRACTS
@@ -82,6 +82,7 @@ def serve(
         workspace, energy = settings.open()
         pv = settings.pv_service(workspace)
         weather = settings.weather_service(workspace)
+        geometric_pv = settings.geometric_pv_service(workspace)
         registry = service_registry(
             energy,
             pv,
@@ -91,7 +92,7 @@ def serve(
             settings.report_service(workspace),
             settings.pvgis_reference_service(workspace),
             settings.direct_beam_service(workspace),
-            settings.geometric_pv_service(workspace),
+            geometric_pv,
         )
         if (registry.runtime.sha256, registry.execution_key()) != (
             expected_runtime,
@@ -100,6 +101,19 @@ def serve(
             raise RuntimeError("worker execution differs from the ready HTTP service")
         if storage_binding(workspace.database.path) != expected_storage:
             raise RuntimeError("worker workspace differs from the ready HTTP service")
+        expanded_keys = (
+            geometric_pv.kernel.expanded_execution_keys()
+            if geometric_pv is not None
+            else ()
+        )
+        if expanded_keys and policy.expanded_job is None:
+            raise ValueError("expanded geometric PV requires isolated worker policy")
+        normal_keys = tuple(
+            key for key in registry.execution_keys() if key not in expanded_keys
+        )
+        normal_active = Event()
+        stop = Event()
+        expanded_failure = Event()
         worker = Worker(
             Jobs(workspace),
             policy.name,
@@ -107,9 +121,48 @@ def serve(
             lease_seconds=policy.lease_seconds,
             heartbeat_seconds=policy.heartbeat_seconds,
             retry_seconds=policy.retry_seconds,
-            routing=registry.routing(policy.routing_batch_size),
+            routing=EvaluationRouting(
+                registry.execution_key(), policy.routing_batch_size, normal_keys
+            ),
+            active=normal_active,
         )
-        stop = Event()
+        expanded_thread: Thread | None = None
+        if expanded_keys:
+            from .expanded_job import DelegatedGroup, ExpandedExecutor
+
+            assert policy.expanded_job is not None
+            executor = ExpandedExecutor(
+                DelegatedGroup(),
+                policy.expanded_job,
+                normal_active,
+                stop,
+                workspace.blobs.directory,
+            )
+            expanded_worker = Worker(
+                Jobs(workspace),
+                policy.name,
+                {"evaluate": executor},
+                lease_seconds=policy.lease_seconds,
+                heartbeat_seconds=policy.heartbeat_seconds,
+                retry_seconds=policy.retry_seconds,
+                routing=EvaluationRouting(
+                    registry.execution_key(), policy.routing_batch_size, expanded_keys
+                ),
+            )
+
+            def expanded_loop() -> None:
+                try:
+                    while not stop.is_set():
+                        if not expanded_worker.run_once():
+                            stop.wait(policy.poll_seconds)
+                except Exception:
+                    LOG.error("expanded planning dispatcher failed")
+                    expanded_failure.set()
+                    stop.set()
+
+            expanded_thread = Thread(
+                target=expanded_loop, name="expanded-planning-worker", daemon=True
+            )
 
         def stopping(_signum: int, _frame: object) -> None:
             stop.set()
@@ -130,11 +183,21 @@ def serve(
         try:
             publish_ready(ready, identity)
             LOG.info("planning worker ready: %s", policy.name)
+            if expanded_thread is not None:
+                expanded_thread.start()
             while not stop.is_set():
                 if not worker.run_once():
                     stop.wait(policy.poll_seconds)
+            if expanded_failure.is_set():
+                raise RuntimeError("expanded worker failed")
             return 0
         finally:
+            stop.set()
+            expanded_stuck = False
+            if expanded_thread is not None and expanded_thread.ident is not None:
+                expanded_thread.join(timeout=policy.drain_timeout_seconds)
+                if expanded_thread.is_alive():
+                    expanded_stuck = True
             # A claim already in progress is in-flight and can finish under its
             # lease; a signal stops subsequent loop iterations, not the worker's
             # independently persisted job or its final publication protocol.
@@ -145,6 +208,8 @@ def serve(
                 pass
             for number, handler in previous.items():
                 signal.signal(number, handler)
+            if expanded_stuck:
+                raise RuntimeError("expanded worker did not stop within drain budget")
 
 
 def main(argv: list[str] | None = None) -> int:

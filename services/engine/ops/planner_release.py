@@ -180,6 +180,11 @@ class Release:
         self.runtime = json.loads(self.runtime_file.read_text())
         self.policy = json.loads(self.worker_file.read_text())
         if (
+            self.runtime.get("geometric_pv_clear_flat_roof") is not None
+            and self.policy.get("expanded_job") is None
+        ):
+            raise ValueError("expanded geometric PV requires isolated worker policy")
+        if (
             Path(self.runtime["directory"]) != self.root / "state/workspace"
             or Path(self.policy["ready_file"]) != self.root / "run/worker.ready.json"
         ):
@@ -478,6 +483,11 @@ class Release:
         write(
             self.deploy / self.worker_unit,
             base
+            + (
+                "Delegate=cpu memory pids\nDelegateSubgroup=supervisor\n"
+                if self.runtime.get("geometric_pv_clear_flat_roof") is not None
+                else ""
+            )
             + f"EnvironmentFile={self.deploy}/worker.env\nExecStart={self.path}/.venv/bin/python -m linker_engine.planning.worker_host serve --expected-runtime ${{LINKER_PLANNER_RUNTIME_SHA256}} --expected-execution ${{LINKER_PLANNER_EXECUTION_KEY}} --expected-storage ${{LINKER_PLANNER_STORAGE_BINDING}} --generation ${{INVOCATION_ID}}\n",
             0o644,
         )

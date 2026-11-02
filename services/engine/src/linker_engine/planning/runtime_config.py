@@ -94,9 +94,13 @@ class RuntimeConfig(Document):
         return cls.model_validate_json(Path(name).read_bytes())
 
     def open(
-        self, *, products: ProductSources | None = None
+        self, *, products: ProductSources | None = None, temporary_id: str | None = None
     ) -> tuple[Workspace, EnergyService]:
-        workspace = Workspace(Path(self.directory), runtime=RuntimeSnapshot.capture())
+        workspace = Workspace(
+            Path(self.directory),
+            runtime=RuntimeSnapshot.capture(),
+            temporary_id=temporary_id,
+        )
         source = products or ProductSources(worker_product_provider)
         kernel = EnergyKernel(
             workspace,

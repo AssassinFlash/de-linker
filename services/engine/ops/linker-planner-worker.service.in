@@ -13,6 +13,9 @@ Restart=on-failure
 RestartSec=2
 TimeoutStopSec=@STOP_BUDGET_SECONDS@
 KillMode=control-group
+# Required only when the clear-flat-roof expanded profile is enabled.
+Delegate=cpu memory pids
+DelegateSubgroup=supervisor
 UMask=0077
 
 [Install]

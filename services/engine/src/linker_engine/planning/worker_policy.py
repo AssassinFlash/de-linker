@@ -14,6 +14,25 @@ type Duration = Annotated[float, Field(gt=0, allow_inf_nan=False)]
 type Count = Annotated[int, Field(strict=True, gt=0)]
 
 
+class ExpandedJobPolicy(Document):
+    """Per-job bounds limited to the measured single-core host envelope."""
+
+    cpu_quota_percent: Annotated[int, Field(strict=True, gt=0, le=20)]
+    memory_max_bytes: Annotated[int, Field(strict=True, gt=0, le=1258291200)]
+    minimum_available_bytes: Annotated[int, Field(strict=True, ge=1610612736)]
+    timeout_seconds: Annotated[float, Field(gt=0, le=600, allow_inf_nan=False)]
+    health_ports: tuple[
+        Annotated[int, Field(strict=True, ge=1, le=65535)],
+        Annotated[int, Field(strict=True, ge=1, le=65535)],
+    ]
+
+    @model_validator(mode="after")
+    def distinct_health_ports(self) -> Self:
+        if self.health_ports[0] == self.health_ports[1]:
+            raise ValueError("two distinct health endpoints required")
+        return self
+
+
 class WorkerPolicy(Document):
     schema_version: SchemaVersion
     # Operator labels share the private command-key transport bound, not a
@@ -26,6 +45,7 @@ class WorkerPolicy(Document):
     routing_batch_size: Count
     drain_timeout_seconds: Duration
     ready_file: str
+    expanded_job: ExpandedJobPolicy | None = None
 
     @model_validator(mode="after")
     def coherent(self) -> Self:

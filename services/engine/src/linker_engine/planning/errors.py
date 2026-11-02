@@ -81,6 +81,12 @@ class GeometricPvExpandedScopeRequired(InvalidInput):
     code = "geometric_pv_expanded_scope_required"
 
 
+class ExpandedResourceUnavailable(PlanningError):
+    """The isolated expanded task could not run within its host envelope."""
+
+    code = "expanded_resource_unavailable"
+
+
 class ReportSourceExportRequired(InvalidInput):
     """A source retained by the report does not permit export."""
 

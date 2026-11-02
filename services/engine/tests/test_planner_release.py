@@ -27,8 +27,9 @@ ops = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(ops)
 
 
+@pytest.mark.parametrize("expanded", [False, True])
 def test_prepared_policy_is_frozen_and_numerical_operator_has_no_credentials(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, expanded: bool
 ) -> None:
     monkeypatch.setattr(
         ops.pwd,
@@ -52,12 +53,13 @@ def test_prepared_policy_is_frozen_and_numerical_operator_has_no_credentials(
         "stop_seconds": 3,
     }
     (private / "spec.json").write_text(json.dumps(spec))
-    (private / "runtime.json").write_text(
-        json.dumps({"directory": str(root / "state/workspace")})
-    )
-    (private / "worker.json").write_text(
-        json.dumps({"ready_file": str(root / "run/worker.ready.json")})
-    )
+    runtime: dict[str, Any] = {"directory": str(root / "state/workspace")}
+    policy: dict[str, Any] = {"ready_file": str(root / "run/worker.ready.json")}
+    if expanded:
+        runtime["geometric_pv_clear_flat_roof"] = {"fixture": True}
+        policy["expanded_job"] = {"fixture": True}
+    (private / "runtime.json").write_text(json.dumps(runtime))
+    (private / "worker.json").write_text(json.dumps(policy))
     feed, compat = tmp_path / "feed.json", tmp_path / "compat.json"
     feed.write_text("{}")
     compat.write_text("{}")
@@ -97,10 +99,20 @@ def test_prepared_policy_is_frozen_and_numerical_operator_has_no_credentials(
 
     monkeypatch.setattr(ops, "command", run)
     monkeypatch.setattr(ops.os, "chown", lambda *_: None)
+    if expanded:
+        (private / "worker.json").write_text(
+            json.dumps({"ready_file": policy["ready_file"]})
+        )
+        with pytest.raises(ValueError, match="isolated worker policy"):
+            ops.Release(private / "spec.json")
+        (private / "worker.json").write_text(json.dumps(policy))
     target = ops.Release(private / "spec.json")
     target.prepare(
         env, "https://fixture.invalid/wp-json/linker/v1/publication/manifest"
     )
+    worker_unit = (private / target.worker_unit).read_text()
+    assert ("Delegate=cpu memory pids" in worker_unit) is expanded
+    assert ("DelegateSubgroup=supervisor" in worker_unit) is expanded
     assert set(ops.environment(private / "http.env")) == {
         "GENIE_SERVICE_TOKEN",
         "LINKER_ENGINE_FEED",

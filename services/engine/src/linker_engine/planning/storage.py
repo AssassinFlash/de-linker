@@ -33,8 +33,11 @@ def _sync_directory(directory: Path) -> None:
 class Blobs:
     """Content-addressed private storage; callers must check project ownership."""
 
-    def __init__(self, directory: Path) -> None:
+    def __init__(self, directory: Path, *, temporary_id: str | None = None) -> None:
         self.directory = directory
+        if temporary_id is not None and not re.fullmatch(r"[a-f0-9]{32}", temporary_id):
+            raise InvalidInput("private temporary owner must be a lease token")
+        self.temporary_id = temporary_id
         self.directory.mkdir(parents=True, exist_ok=True, mode=0o700)
 
     def _path(self, sha256: str) -> Path:
@@ -57,7 +60,9 @@ class Blobs:
                 raise VersionUnavailable("pinned bytes conflict")
             _sync_directory(destination.parent)
             return sha256
-        temporary = destination.parent / (".incoming-" + uuid4().hex)
+        temporary = destination.parent / (
+            ".incoming-" + (self.temporary_id or uuid4().hex)
+        )
         try:
             descriptor = os.open(temporary, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
             with os.fdopen(descriptor, "wb") as stream:

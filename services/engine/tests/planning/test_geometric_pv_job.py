@@ -855,6 +855,14 @@ def test_series_iv_complete_weather_worker_freezes_wiring_and_supports_energy_an
         )
         source_revision = project.revision
     queued = service.evaluate(owner, project.id, source_revision, key="series-full")
+    from linker_engine.planning.execution_identity import execution_key
+
+    frozen_context = cast(Object, queued.manifest["context"])
+    assert execution_key(frozen_context) == kernel.execution_key_for(
+        MODEL_V3, expanded=expanded
+    )
+    if not expanded:
+        assert "execution_class" not in cast(Object, frozen_context["parameters"])
     if expanded:
         frozen_assets = cast(Object, cast(Object, queued.manifest["context"])["assets"])
         budget_sha = str(frozen_assets["work_budget"])
