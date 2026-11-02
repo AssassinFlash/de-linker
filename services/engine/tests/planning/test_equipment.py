@@ -2296,6 +2296,33 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
                 ),
             )
         assert missing_wiring.value.code == "report_wiring_check_required"
+        # A named check must be evaluated against the saved selection and wiring,
+        # even when the search choice is still part of the saved project.
+        direct = ReportOptions(
+            locale="en",
+            energy_run_id=None,
+            pv_run_id=None,
+            equipment_run_id=completed.id,
+            logo=None,
+        )
+        with pytest.raises(
+            InvalidInput, match="saved project selection|has not assessed"
+        ):
+            report_sources(
+                workspace,
+                source,
+                owner,
+                replace(workspace.get(owner, pid), inputs=single_bypass),
+                direct,
+            )
+        with pytest.raises(InvalidInput, match="differs from the adopted"):
+            report_sources(
+                workspace,
+                source,
+                owner,
+                replace(workspace.get(owner, pid), inputs=selected_inputs),
+                direct,
+            )
         selected_inputs["equipment_candidate"]["assessment_sha256"] = "0" * 64
         with pytest.raises(InvalidInput):
             check_equipment_candidate(

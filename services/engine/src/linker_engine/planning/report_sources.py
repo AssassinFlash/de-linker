@@ -254,16 +254,25 @@ def report_sources(
     )
     assert_plant_exclusivity(project.inputs)
     candidate = None if comparison_only else project.inputs.get("equipment_candidate")
+    has_wiring = any(
+        project.inputs.get(key) is not None
+        for key in ("pv_string_plan", "pv_plant_string_plan")
+    )
     if isinstance(candidate, dict):
-        if options.equipment_run_id not in (None, candidate.get("run_id")):
-            raise InvalidInput(
-                "report equipment differs from the adopted project candidate"
-            )
         # Validate the historical choice here; the common report boundary
         # confirms current permission for every distinct proof once below.
         check_equipment_candidate(
             workspace, actor, project.id, project.inputs, previous=project.inputs
         )
+        if options.equipment_run_id not in (None, candidate.get("run_id")):
+            if not has_wiring:
+                raise InvalidInput(
+                    "report equipment differs from the adopted project candidate"
+                )
+            # The dedicated check below must match the saved equipment and
+            # wiring. Cite that run for the report; the project keeps its choice.
+            candidate = None
+    if isinstance(candidate, dict):
         run = workspace.run(actor, cast(str, candidate["run_id"]))
         assert run.result is not None
         equipment_source_run = run
@@ -671,10 +680,6 @@ def report_sources(
     # Both adopted-candidate and direct-run paths must have evaluated the saved
     # wiring. An equipment-only candidate cannot silently omit new PV work.
     if assessment is not None and equipment_source_inputs is not None:
-        has_wiring = any(
-            project.inputs.get(key) is not None
-            for key in ("pv_string_plan", "pv_plant_string_plan")
-        )
         has_result = isinstance(assessment.get("pv_electrical"), dict)
         if has_wiring and not has_result:
             raise ReportWiringCheckRequired(

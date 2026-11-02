@@ -13,6 +13,7 @@ export function PlanningReportForm({
 	runs,
 	locale,
 	hasCandidate,
+	hasWiring = false,
 	hasInstallation = false,
 	disabled,
 	generate,
@@ -20,6 +21,7 @@ export function PlanningReportForm({
 	runs: readonly RunSummary[];
 	locale: string;
 	hasCandidate: boolean;
+	hasWiring?: boolean;
 	hasInstallation?: boolean;
 	disabled: boolean;
 	generate: (options: ReportOptions) => Promise<void>;
@@ -96,12 +98,13 @@ export function PlanningReportForm({
 			</select>
 		</label>
 	);
+	const canSelectEquipmentCheck = !hasCandidate || hasWiring;
 	const options: ReportOptions = {
 		locale: locale.startsWith("de") ? "de" : "en",
 		energy_run_id: energy || null,
 		pv_run_id: pv || null,
 		...(beam ? { direct_beam_run_id: beam } : {}),
-		equipment_run_id: equipment || null,
+		equipment_run_id: canSelectEquipmentCheck && equipment ? equipment : null,
 		logo,
 		...(installation && hasInstallation ? { include_installation: true } : {}),
 		...(certificates && (hasCandidate || equipment)
@@ -159,21 +162,21 @@ export function PlanningReportForm({
 						)}
 					</p>
 				)}
-				{hasCandidate ? (
+				{hasCandidate && (
 					<p>
 						{__(
 							"The report includes the equipment combination selected for this project.",
 							"linker-tools",
 						)}
 					</p>
-				) : (
+				)}
+				{canSelectEquipmentCheck &&
 					choose(
 						"qualify_woo_equipment_v1",
 						equipment,
 						setEquipment,
 						__("Equipment checks", "linker-tools"),
-					)
-				)}
+					)}
 				{(hasCandidate || equipment) && (
 					<label className="lp-field">
 						<span>

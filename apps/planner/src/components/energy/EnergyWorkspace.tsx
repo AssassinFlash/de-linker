@@ -1799,6 +1799,10 @@ export function EnergyWorkspace({
 					runs={runs.page.data?.items ?? []}
 					locale={locale}
 					hasCandidate={Boolean(draft.baseline.inputs.equipment_candidate)}
+					hasWiring={Boolean(
+						draft.baseline.inputs.pv_string_plan ||
+						draft.baseline.inputs.pv_plant_string_plan,
+					)}
 					hasInstallation={hasReportableInstallation(
 						readInstallation(draft.baseline.inputs.installation),
 					)}
