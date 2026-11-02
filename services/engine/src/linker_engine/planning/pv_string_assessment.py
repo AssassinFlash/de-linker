@@ -120,6 +120,10 @@ def assess_pv_strings(
     beta, beta_refs = scalar(mf, "beta_voc_pct_per_c", "temperature_coefficient")
     max_v, max_refs = scalar(inv, "max_pv_input_v", "voltage")
     mpp_window = fact(inv, "mppt_voltage_range_v", "voltage")
+    standby = fact(inv, "pv_standby_input_voltage_v", "voltage")
+    standby_window = (
+        standby["value"] if standby and standby["shape"] == "interval" else None
+    )
     for item in plan.strings:
         module_poses = [poses[mid] for mid in item.module_ids]
         used_specs = {arrays[p.array_id].module_spec_id for p in module_poses}
@@ -200,6 +204,24 @@ def assess_pv_strings(
             unit="V",
             reason="stc_operating_point_only",
         )
+        if standby_window is not None:
+            # A single STC MPP is neither an actual operating voltage nor an
+            # annual maximum.  950 V is deliberately not classified: the
+            # cited English and German recovery wording differs at that edge.
+            add(
+                f"pv_standby_stc:{item.id}",
+                stc_vmpp,
+                cast(Json, standby_window),
+                cast(list[Json], [*vmpp_refs, standby]),
+                status="unresolved",
+                unit="V",
+                reason=(
+                    "pv_standby_stc_intersection"
+                    if stc_vmpp is not None
+                    and standby_window[0] < stc_vmpp <= standby_window[1]
+                    else "pv_standby_stc_scope"
+                ),
+            )
         tracker_strings.setdefault(item.mppt, []).append(
             (count, tuple(sorted({tuple(p.normal_enu) for p in module_poses})))
         )
@@ -266,6 +288,22 @@ def assess_pv_strings(
                 for tracker, strings in tracker_strings.items()
             },
         )
+        if standby_window is not None:
+            for point in cast(list[dict[str, Any]], operating["points"]):
+                voltage = point["v_mp_v"]
+                add(
+                    f"pv_standby_{point['case']}:{point['string_id']}",
+                    voltage,
+                    cast(Json, standby_window),
+                    cast(list[Json], [standby]),
+                    status="unresolved",
+                    unit="V",
+                    reason=(
+                        "pv_standby_modeled_intersection"
+                        if standby_window[0] < voltage <= standby_window[1]
+                        else "pv_standby_modeled_scope"
+                    ),
+                )
         checks.extend(cast(list[Json], operating["checks"]))
     else:
         add("pv_operating_temperatures", reason="hot_and_cold_mpp_model_required")

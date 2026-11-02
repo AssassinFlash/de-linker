@@ -257,6 +257,8 @@ def build_report(source: Object) -> Report:
                         row(
                             "controller_group_size"
                             if semantic_id == "plant_controller_network_count"
+                            else "pv_standby_actual"
+                            if semantic_id.split(":")[0].startswith("pv_standby_")
                             else "actual",
                             number(check["actual"], locale, unit),
                         )
@@ -282,7 +284,9 @@ def build_report(source: Object) -> Report:
             ):
                 rows.append(
                     row(
-                        "required",
+                        "pv_standby_interval"
+                        if semantic_id.split(":")[0].startswith("pv_standby_")
+                        else "required",
                         " – ".join(number(n, locale) for n in check["required"])
                         + (f" {unit}" if unit else ""),
                     )

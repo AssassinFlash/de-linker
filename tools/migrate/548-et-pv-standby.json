@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "kind": "et_pv_standby_v1",
+  "figure": {
+    "value": "950 ~ 1000",
+    "unit": "V",
+    "citation": {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+      "page": 2
+    },
+    "evidence_refs": ["GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf:p2"]
+  }
+}

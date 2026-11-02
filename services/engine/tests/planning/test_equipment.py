@@ -2740,6 +2740,80 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
     assert checks["pv_input:s_a"]["status"] == "unresolved"
     assert checks["pv_operating_temperatures"]["status"] == "unresolved"
     assert checks["pv_design_current"]["status"] == "unresolved"
+    # The cited standby interval is distinct from both the absolute cold-Voc
+    # rating and the MPPT window; a single STC MPP never proves annual exposure.
+    standby_basis = copy.deepcopy(basis)
+    inverter = next(
+        p for p in standby_basis["products"] if p["canonical_product_id"] == 4107
+    )
+    source = inverter["figures"]["max_pv_input_v"]["citation"]
+    inverter["figures"]["pv_standby_input_voltage_v"] = {
+        "value": "950 ~ 1000",
+        "unit": "V",
+        "citation": source,
+    }
+    standby_value = copy.deepcopy(value)
+    standby_value["geometry"]["arrays"][0].update(rows=4, columns=6)
+    standby_ids = [
+        p.id
+        for p in panel_poses(read_geometry(standby_value["geometry"]))
+        if p.included
+    ]
+    standby_value["pv_string_plan"]["strings"] = [
+        {"id": "s_a", "mppt": 1, "input": 1, "module_ids": standby_ids[:21]},
+    ]
+    standby_checks = {
+        c["id"]: c
+        for c in json_object(assess_pv_strings(standby_value, standby_basis))["checks"]
+    }
+    standby = standby_checks["pv_standby_stc:s_a"]
+    assert standby["actual"] == pytest.approx(21 * 45.4)
+    assert standby["required"] == [950, 1000]
+    assert standby["status"] == "unresolved"
+    assert standby["reason"] == "pv_standby_stc_intersection"
+    assert standby_checks["pv_cold_voc:s_a"]["actual"] != standby["actual"]
+    assert standby["facts"][-1]["source"]["page"] == source["page"]
+    for locale in ("en", "de"):
+        report = build_report(
+            {
+                "locale": locale,
+                "title": "Standby fixture",
+                "project_id": "a" * 32,
+                "revision": 1,
+                "input_sha256": "b" * 64,
+                "generated_at": "2026-10-26T00:00:00+00:00",
+                "source_runs": [],
+                "equipment": json_object(
+                    assess_equipment(standby_value, standby_basis)
+                ),
+            }
+        )
+        section = next(s for s in report.sections if "standby" in s.title.lower())
+        assert "950" in " ".join(row.value for row in section.rows)
+        assert any(
+            "MPP" in paragraph and "950" in paragraph
+            for paragraph in section.paragraphs
+        )
+        assert any(row.href for row in section.rows)
+    standby_value["pv_string_plan"]["strings"][0]["module_ids"] = standby_ids[:20]
+    below = {
+        c["id"]: c
+        for c in json_object(assess_pv_strings(standby_value, standby_basis))["checks"]
+    }
+    assert below["pv_standby_stc:s_a"]["reason"] == "pv_standby_stc_scope"
+    assert below["pv_standby_stc:s_a"]["status"] == "unresolved"
+    boundary_basis = copy.deepcopy(standby_basis)
+    boundary_basis["pv_module_inputs"]["electrical_product"]["figures"]["vmpp_v"][
+        "value"
+    ] = 47.5
+    boundary = {
+        c["id"]: c
+        for c in json_object(assess_pv_strings(standby_value, boundary_basis))["checks"]
+    }
+    assert boundary["pv_standby_stc:s_a"]["actual"] == 950
+    assert boundary["pv_standby_stc:s_a"]["reason"] == "pv_standby_stc_scope"
+    assert boundary["pv_standby_stc:s_a"]["status"] == "unresolved"
+    assert not any(c["id"].startswith("pv_standby_") for c in result["checks"])
     assessment = json_object(assess_equipment(value, basis))
     assert assessment["pv_electrical"] == result
     assert assessment["overall_status"] != "satisfied"

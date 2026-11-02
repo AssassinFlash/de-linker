@@ -42,7 +42,7 @@ def plan_for_target(plan: dict[str, Any], origin: str) -> dict[str, Any]:
     selected = copy.deepcopy(plan)
     if selected.get("kind") == "batc_112_manual_v1":
         return selected
-    if selected.get("kind") == "batc_cabinet_sales_unit_v1":
+    if selected.get("kind") in {"batc_cabinet_sales_unit_v1", "et_pv_standby_v1"}:
         figure = selected.get("figure")
         citation = figure.get("citation") if isinstance(figure, dict) else None
         if not isinstance(citation, dict) or not isinstance(citation.get("url"), str):
