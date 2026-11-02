@@ -1030,10 +1030,7 @@ test("a wired project can select a completed equipment check after adopting a se
 		[...node.options].some((o) => o.value === id),
 	);
 	assert.ok(selection);
-	await act(async () => {
-		selection.value = id;
-		selection.dispatchEvent(new window.Event("change", { bubbles: true }));
-	});
+	assert.equal(selection.value, id);
 	await act(async () =>
 		[...document.querySelectorAll("button")]
 			.find((node) => node.textContent === "Generate planning report")

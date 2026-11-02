@@ -16,9 +16,13 @@ from linker_genie.certificate_scope import (
     valid_certificate_fragment,
     valid_certificate_scope,
 )
-from linker_genie.compatibility_physical import valid_inverter_scope, valid_iot_scope
+from linker_genie.compatibility_physical import (
+    valid_inverter_scope,
+    valid_iot_scope,
+    valid_overview_statement_scope,
+)
 from linker_genie.family_scope import valid_family_scope
-from linker_genie.hs3_evidence import valid_hs3_scope
+from linker_genie.hs3_evidence import valid_hs3_datasheet_scope, valid_hs3_scope
 from linker_genie.manual_evidence import valid_reviewed_manual
 from linker_genie.source_models import model_pattern
 from linker_genie.source_roles import (
@@ -135,6 +139,24 @@ def _authorize_core(
         ):
             return []
     if scope is not None and (
+        scope.get("basis") == "hs3_datasheet_de" or "hs3_datasheet_de" in scope
+    ):
+        if (
+            products is None
+            or documents is None
+            or not valid_hs3_datasheet_scope(
+                scope,
+                product_ids,
+                products,
+                documents,
+                sha=sha,
+                chunk_id=chunk_id,
+                text=text,
+                anchors=external_axis_anchors,
+            )
+        ):
+            return []
+    if scope is not None and (
         scope.get("basis") == "certificate_subject" or "certificate_scope" in scope
     ):
         if (
@@ -231,6 +253,29 @@ def _authorize_core(
                 chunk_id=chunk_id,
                 text=text,
                 anchors=external_axis_anchors,
+            )
+        ):
+            return []
+    if scope is not None and (
+        scope.get("basis") == "compatibility_overview_statement"
+        or "compatibility_overview_statement" in scope
+    ):
+        if (
+            products is None
+            or documents is None
+            or any(
+                did not in documents
+                or not _compatibility_evidence_document(documents[did])
+                for did in scope.get("document_ids", [])
+            )
+            or not valid_overview_statement_scope(
+                scope,
+                product_ids,
+                products,
+                documents,
+                sha=sha,
+                chunk_id=chunk_id,
+                text=text,
             )
         ):
             return []

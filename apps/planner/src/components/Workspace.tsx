@@ -108,7 +108,7 @@ export function Workspace({
 	);
 	const pageSize = Math.min(30, session.runtime.limits.max_page_size); // UI page policy, not total project capacity.
 	const index = useInfiniteQuery({
-		queryKey: [session.query_scope, "projects"],
+		queryKey: [session.query_scope, "projects", session.claim_pending],
 		initialPageParam: null as JsonObject | null,
 		queryFn: async ({ pageParam, signal }) =>
 			readProjectPage(
@@ -124,7 +124,7 @@ export function Workspace({
 		enabled: selected === null,
 	});
 	const project = useQuery({
-		queryKey: [session.query_scope, "project", selected],
+		queryKey: [session.query_scope, "project", selected, session.claim_pending],
 		queryFn: async ({ signal }) =>
 			readProject(
 				await client.query(
@@ -134,7 +134,7 @@ export function Workspace({
 					signal,
 				),
 			),
-		enabled: selected !== null,
+		enabled: selected !== null && !session.claim_pending,
 		staleTime: Infinity,
 	});
 	useSiteIntegration(selected);
@@ -150,7 +150,10 @@ export function Workspace({
 	}, [index.data]);
 	function created(project: Project, destination?: "design" | "equipment") {
 		if (!client.isCurrentScope(session.query_scope)) return false;
-		cache.setQueryData([session.query_scope, "project", project.id], project);
+		cache.setQueryData(
+			[session.query_scope, "project", project.id, session.claim_pending],
+			project,
+		);
 		void cache.invalidateQueries({
 			queryKey: [session.query_scope, "projects"],
 		});
@@ -165,7 +168,7 @@ export function Workspace({
 		return true;
 	}
 	if (selected)
-		return project.data ? (
+		return !session.claim_pending && project.data ? (
 			<ProjectEditor
 				key={session.query_scope + ":" + selected}
 				project={project.data}
@@ -194,7 +197,19 @@ export function Workspace({
 				<button className="lp-text-button" onClick={() => select(null)}>
 					{__("Back to projects", "linker-tools")}
 				</button>
-				{project.isError ? (
+				{session.claim_pending ? (
+					<Notice>
+						<p role="status">
+							{__(
+								"Projects from the guest session are still being linked to your account.",
+								"linker-tools",
+							)}
+						</p>
+						<button className="lp-button" onClick={recheck}>
+							{__("Check session", "linker-tools")}
+						</button>
+					</Notice>
+				) : project.isError ? (
 					<Notice error>
 						<p>
 							{__(

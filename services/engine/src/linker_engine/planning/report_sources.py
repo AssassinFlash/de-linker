@@ -205,6 +205,19 @@ def report_sources(
         if isinstance(source, dict) and isinstance(source.get("label"), str):
             labels.append(cast(str, source["label"]))
 
+    def _runtime_sha(run: Run) -> Json:
+        if run.result is not None and "runtime_sha256" in run.result:
+            return run.result["runtime_sha256"]
+        context = run.manifest.get("context")
+        return context.get("code_sha256") if isinstance(context, dict) else None
+
+    def _pinned_assets(run: Run) -> Object:
+        if run.result is not None and isinstance(run.result.get("pinned_assets"), dict):
+            return cast(Object, run.result["pinned_assets"])
+        context = run.manifest.get("context")
+        assets = context.get("assets") if isinstance(context, dict) else None
+        return assets if isinstance(assets, dict) else {}
+
     def owned(run_id: str, kind: str, fields: tuple[str, ...]) -> Run:
         run = workspace.run(actor, run_id)
         if (
@@ -215,7 +228,14 @@ def report_sources(
             raise InvalidInput(
                 "report analysis must be completed and belong to this project"
             )
-        if run.result.get("kind") != kind:
+        actual_kind = run.result.get("kind")
+        if (
+            actual_kind is None
+            and kind == EquipmentKernel.kind
+            and isinstance(run.result.get("assessment"), dict)
+        ):
+            actual_kind = EquipmentKernel.kind
+        if actual_kind != kind:
             raise InvalidInput("report analysis has a different task kind")
         previous = workspace.pinned_inputs(run.manifest)
         if any(previous.get(field) != project.inputs.get(field) for field in fields):
@@ -230,7 +250,7 @@ def report_sources(
                 "manifest_sha256": run.manifest_sha256,
                 "result_sha256": run.result_sha256,
                 "input_sha256": run.manifest["input_sha256"],
-                "runtime_sha256": run.result["runtime_sha256"],
+                "runtime_sha256": _runtime_sha(run),
             }
         )
         return run
@@ -291,10 +311,10 @@ def report_sources(
                 "manifest_sha256": run.manifest_sha256,
                 "result_sha256": run.result_sha256,
                 "input_sha256": run.manifest["input_sha256"],
-                "runtime_sha256": run.result["runtime_sha256"],
+                "runtime_sha256": _runtime_sha(run),
             }
         )
-        pinned = cast(Object, run.result["pinned_assets"])
+        pinned = _pinned_assets(run)
         bases["equipment"] = pinned["woo.equipment_inputs"]
     elif options.equipment_run_id is not None:
         run = owned(options.equipment_run_id, EquipmentKernel.kind, ())
@@ -318,7 +338,7 @@ def report_sources(
         recorded_certificates = run.result.get("certificates")
         if isinstance(recorded_certificates, dict):
             frozen_certificates = recorded_certificates
-        pinned = cast(Object, run.result["pinned_assets"])
+        pinned = _pinned_assets(run)
         bases["equipment"] = pinned["woo.equipment_inputs"]
 
     component_list: Object | None = None
@@ -906,13 +926,30 @@ def report_sources(
         ):
 
             def grid_context(values: Object) -> tuple[bool, Json, bool, Json, Json]:
+                from .country_rules import CountryRuleInputs
+                from .grid_connection import GridConnection
+
                 brief = values.get("brief")
                 site = brief.get("site") if isinstance(brief, dict) else None
+                raw_grid = values.get("grid_connection")
+                raw_rules = values.get("country_rule_inputs")
+                if isinstance(raw_grid, dict):
+                    try:
+                        raw_grid = GridConnection.read(raw_grid).model_dump(mode="json")
+                    except InvalidInput:
+                        pass
+                if isinstance(raw_rules, dict):
+                    try:
+                        raw_rules = CountryRuleInputs.read(raw_rules).model_dump(
+                            mode="json"
+                        )
+                    except InvalidInput:
+                        pass
                 return (
                     "grid_connection" in values,
-                    values.get("grid_connection"),
+                    raw_grid,
                     "country_rule_inputs" in values,
-                    values.get("country_rule_inputs"),
+                    raw_rules,
                     site.get("country_code") if isinstance(site, dict) else None,
                 )
 

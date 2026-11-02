@@ -29,6 +29,11 @@ SPECS = "be0569b4602a-p2-a8cccabf"
 INTERNET = "be0569b4602a-p3-192f0b56"
 MINIMUM = "be0569b4602a-p3-d8a80e4b"
 EXCLUSIONS = "be0569b4602a-p5-f335d95d"
+BU3_MODEL = "BU3-5.0-TV2-PRO"
+BU3_PERFORMANCE = "be0569b4602a-p2-c0962bb3"
+BU3_MODELS = "be0569b4602a-p2-71273933"
+BU3_NOTES = "be0569b4602a-p2-780fbfa9"
+BU3_TEST = "be0569b4602a-p3-fb8456d8"
 SOURCES = {
     GEO: (
         1,
@@ -66,6 +71,35 @@ SOURCES = {
         "9b0d08e9f23331833e68944779f25fc8b6eb18a1fe536ebb380e1fcac4e80754",
     ),
 }
+BU3_SOURCES = {
+    GEO: SOURCES[GEO],
+    SUPPLY: SOURCES[SUPPLY],
+    SPECS: SOURCES[SPECS],
+    BU3_PERFORMANCE: (
+        2,
+        "text",
+        "41c445bb7f38c5906e13e9c48396691786a342020a4935576409efbb954f507b",
+    ),
+    BU3_MODELS: (
+        2,
+        "table",
+        "b6750855448f763edb2565eb5e202bad33a9f6047e590dff0e722bab89775497",
+    ),
+    BU3_NOTES: (
+        2,
+        "text",
+        "a72e6be51ab1353650333108f39eb5ba3781c8bfb24aacf49e0c90b81acb8392",
+    ),
+    BU3_TEST: (
+        3,
+        "table",
+        "e0f233ad66d32be44e6ee0a6a8ea06d0a6b5c661343132616b903bd09de67b39",
+    ),
+    INTERNET: SOURCES[INTERNET],
+    MINIMUM: SOURCES[MINIMUM],
+    EXCLUSIONS: SOURCES[EXCLUSIONS],
+}
+ALL_SOURCES = {**SOURCES, **BU3_SOURCES}
 NOTES = (
     (
         GEO,
@@ -99,6 +133,19 @@ NOTES = (
         "Product problems caused by the following conditions are not covered by the warranty.",
     ),
 )
+BU3_NOTE_ITEMS = (
+    NOTES[0],
+    NOTES[1],
+    (
+        BU3_PERFORMANCE,
+        2,
+        "SAJ guarantees that the battery part retains sixty percent (60%) of Nominal Energy for ten (10) years from the commissioning date, or no more than ten years and six months (126 months) from the date of product shipment from SAJ, or for 6000 charge-discharge cycles as maximum which is calculated from the commissioning date, whichever comes first, under the standard capacity test conditions.",
+    ),
+    NOTES[3],
+    NOTES[4],
+    (MINIMUM, 3, "| BU3 | 5.5 |"),
+    NOTES[6],
+)
 
 
 def anchor_key(cid: str) -> str:
@@ -112,7 +159,7 @@ def anchors(
     seen: set[str] = set()
     duplicates: set[str] = set()
     for cid, sha, page, kind, text in rows:
-        expected = SOURCES.get(cid)
+        expected = ALL_SOURCES.get(cid)
         if expected is None:
             continue
         if cid in seen:
@@ -135,6 +182,18 @@ def anchors(
 
 
 def rendered(model: str) -> tuple[str, list[dict[str, Any]]] | None:
+    if model == BU3_MODEL:
+        notes = [
+            {"chunk_id": cid, "page": page, "lang": "en", "quote": f"*{i}: {quote}"}
+            for i, (cid, page, quote) in enumerate(BU3_NOTE_ITEMS, 1)
+        ]
+        text = (
+            f"| Model / Modell | {model} |\n"
+            "| Warranty / Garantie | Ten years |\n"
+            "| Production / Herstellung | Six months |\n"
+            + "\n".join(f"{note['quote']} (p. {note['page']})" for note in notes)
+        )
+        return text, notes
     if variants(model) is None:
         return None
     notes = [
@@ -166,14 +225,16 @@ def render_terms(
     ):
         return None
     sources = policy.get("sources")
+    expected_sources = BU3_SOURCES if model == BU3_MODEL else SOURCES
+    expected_notes = BU3_NOTE_ITEMS if model == BU3_MODEL else NOTES
     if (
         not isinstance(sources, dict)
-        or set(sources) != set(SOURCES)
-        or not set(SOURCES).issubset(source_ids)
+        or set(sources) != set(expected_sources)
+        or not set(expected_sources).issubset(source_ids)
     ):
         return None
     rows = []
-    for cid in SOURCES:
+    for cid in expected_sources:
         item = sources.get(cid)
         if not isinstance(item, dict):
             return None
@@ -192,11 +253,19 @@ def render_terms(
             return None
         rows.append((cid, sha, page, kind, text))
     checked = anchors(rows)
-    if len(checked) != len(SOURCES):
+    if len(checked) != len(expected_sources):
         return None
-    for cid, _, quote in NOTES:
+    for cid, _, quote in expected_notes:
         if quote not in checked[anchor_key(cid)]["text"]:
             return None
+    if model == BU3_MODEL and (
+        "BU3-5.0-TV2(-PRO)" not in checked[anchor_key(BU3_MODELS)]["text"]
+        or "The Maximum charge-discharge cycles of BU3 battery is 6000 times."
+        not in checked[anchor_key(BU3_NOTES)]["text"]
+        or "| BU3-5.0-TV2(-PRO) | 44.8 | 57.6 | 20 |"
+        not in checked[anchor_key(BU3_TEST)]["text"]
+    ):
+        return None
     return rendered(model)
 
 
@@ -228,11 +297,45 @@ def valid_scope(
     ):
         return False
     model = str(product.get("model", ""))
-    if (
-        variants(model) is None
-        or value.get("model") != model
-        or value.get("product_revision") != product.get("product_revision")
+    if value.get("model") != model or value.get("product_revision") != product.get(
+        "product_revision"
     ):
+        return False
+    if model == BU3_MODEL:
+        refs = value.get("source_documents")
+        if not isinstance(refs, dict) or set(refs) != {"policy"}:
+            return False
+        ref = refs["policy"]
+        if not isinstance(ref, dict) or not isinstance(ref.get("document_id"), str):
+            return False
+        doc = documents.get(ref["document_id"])
+        if (
+            doc is None
+            or not has_purpose(doc, "warranty")
+            or doc.get("blob_sha256") != POLICY
+            or ref.get("blob_sha256") != POLICY
+            or ref.get("document_revision") != doc.get("document_revision")
+            or pid not in doc.get("product_ids", [])
+            or ref["document_id"] not in product.get("documents", [])
+            or scope.get("document_ids") != [ref["document_id"]]
+        ):
+            return False
+        source_ids = scope.get("source_chunk_ids")
+        if not isinstance(source_ids, list) or set(source_ids) != set(BU3_SOURCES):
+            return False
+        policy = value.get("policy")
+        if not isinstance(policy, dict) or not isinstance(policy.get("sources"), dict):
+            return False
+        for cid in BU3_SOURCES:
+            if external_axis_anchors.get(anchor_key(cid)) != policy["sources"].get(cid):
+                return False
+        result = render_terms(value, source_ids)
+        return bool(
+            result
+            and result[0] == text
+            and chunk_id == evidence_id(model, ref["document_id"], text)
+        )
+    if variants(model) is None:
         return False
     refs = value.get("source_documents")
     if not isinstance(refs, dict) or set(refs) != {"policy", "datasheet", "manual"}:

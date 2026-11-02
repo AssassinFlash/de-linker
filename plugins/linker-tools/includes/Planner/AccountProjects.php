@@ -22,9 +22,10 @@ final class AccountProjects {
 	/**
 	 * Reuse the existing bounded private transport.
 	 *
-	 * @param Transport $transport Native engine transport.
+	 * @param Transport   $transport Native engine transport.
+	 * @param ClaimOutbox $claims Durable native login transition.
 	 */
-	public function __construct( private readonly Transport $transport = new Transport() ) {}
+	public function __construct( private readonly Transport $transport = new Transport(), private readonly ClaimOutbox $claims = new ClaimOutbox() ) {}
 
 	/** Register the server-only account data seam. */
 	public function register(): void {
@@ -44,6 +45,8 @@ final class AccountProjects {
 		if ( $user <= 0 ) {
 			return Failure::make( 'identity', 403 );
 		}
+		$this->claims->recover();
+		$this->claims->settle( $user );
 		$page = $this->transport->object(
 			new Principal( 'user', NativeIdentity::user_subject( $user ) ),
 			'projects/list',

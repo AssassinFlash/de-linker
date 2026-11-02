@@ -295,10 +295,7 @@ def export(directory: Path, path: Path) -> None:
                     )
                     # A first-contact procedure makes a passage available, but
                     # alone does not prepare the policy's duration or terms.
-                    if not scope or scope.get("basis") not in {
-                        "warranty_procedure",
-                        "hs3_conditional_certificate",
-                    }:
+                    if not scope or scope.get("basis") != "warranty_procedure":
                         prepared.setdefault(item["product_id"], set()).add(
                             item["document_id"]
                         )

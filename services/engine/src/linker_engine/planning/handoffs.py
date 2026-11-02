@@ -25,6 +25,55 @@ class HandoffIncomplete(InvalidInput):
     code = "handoff_incomplete"
 
 
+def _synthesized_publication(basis: Object) -> Object:
+    """Rebuild the publication proof for a basis frozen before it existed.
+
+    Every emitted row carries the required string/int fields the Woo side
+    revalidates; a basis row without a complete, well-typed identity is not a
+    Woo-provable fact and is not synthesized into the proof.
+    """
+    products: list[Json] = []
+    documents: list[Json] = []
+    for row in cast(list[Object], basis["products"]):
+        if not isinstance(row, dict):
+            continue
+        product_id = row.get("canonical_product_id", row.get("id"))
+        revision = row.get("product_revision")
+        if type(product_id) is not int or not isinstance(revision, str):
+            continue
+        products.append({"product_id": product_id, "product_revision": revision})
+        raw_documents = row.get("documents")
+        if not isinstance(raw_documents, list):
+            continue
+        for document in cast(list[Object], raw_documents):
+            if not isinstance(document, dict):
+                continue
+            document_id = document.get("document_id")
+            document_revision = document.get("document_revision")
+            blob_sha256 = document.get("blob_sha256")
+            if (
+                not isinstance(document_id, str)
+                or not isinstance(document_revision, str)
+                or not isinstance(blob_sha256, str)
+            ):
+                continue
+            documents.append(
+                {
+                    "document_id": document_id,
+                    "document_revision": document_revision,
+                    "blob_sha256": blob_sha256,
+                    "product_id": product_id,
+                }
+            )
+    return {
+        "engineering_contract": 2,
+        "compatibility_revision": cast(str, basis["compatibility_revision"]),
+        "products": products,
+        "documents": documents,
+        "reference_inputs": [],
+    }
+
+
 def publication_scope(workspace: Workspace, source: Object) -> Object:
     """Retain every consumed product/document reference without a second source."""
     bases = source.get("woo_bases")
@@ -32,9 +81,25 @@ def publication_scope(workspace: Workspace, source: Object) -> Object:
         raise HandoffIncomplete("the report has no selected equipment")
     scopes: list[Object] = []
     for sha in dict.fromkeys(cast(dict[str, str], bases).values()):
-        scope = workspace.blobs.object(sha).get("publication")
-        if not isinstance(scope, dict) or scope.get("engineering_contract") != 2:
+        basis = workspace.blobs.object(sha)
+        raw_scope = basis.get("publication")
+        if not isinstance(raw_scope, dict):
+            if isinstance(basis.get("compatibility_revision"), str) and isinstance(
+                basis.get("products"), list
+            ):
+                raw_scope = _synthesized_publication(basis)
+            else:
+                raise VersionUnavailable("report Woo permission proof is missing")
+        if raw_scope.get("engineering_contract", 2) != 2:
             raise VersionUnavailable("report Woo permission proof is missing")
+        scope: Object = {
+            **raw_scope,
+            "engineering_contract": 2,
+            "compatibility_revision": raw_scope.get(
+                "compatibility_revision", basis.get("compatibility_revision")
+            ),
+            "reference_inputs": raw_scope.get("reference_inputs", []),
+        }
         scopes.append(scope)
     revisions = {scope.get("compatibility_revision") for scope in scopes}
     if len(revisions) != 1 or not isinstance(next(iter(revisions)), str):
@@ -150,9 +215,13 @@ class Handoffs:
             ):
                 raise HandoffIncomplete("selected product quantities remain unresolved")
             product = products.get(product_id, {})
-            label = " ".join(
-                str(product.get(key, "")) for key in ("brand", "model")
-            ).strip()
+            label = (
+                " ".join(
+                    str(product.get(key) or line.get(key) or "")
+                    for key in ("brand", "model")
+                ).strip()
+                or str(product.get("sku") or line.get("sku") or "").strip()
+            )
             if not label:
                 raise HandoffIncomplete("selected product identity is unresolved")
             items.append(

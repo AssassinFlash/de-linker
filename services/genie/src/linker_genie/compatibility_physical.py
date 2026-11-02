@@ -147,7 +147,12 @@ def translate_compatibility_condition(
     translated = _GERMAN_CONDITIONS.get((source_chunk_id, page, quote))
     if translated is not None:
         return translated
-    from linker_genie.hs3_warranty_terms import NOTES as HS3_WARRANTY_NOTES
+    from linker_genie.hs3_warranty_terms import (
+        BU3_NOTE_ITEMS,
+    )
+    from linker_genie.hs3_warranty_terms import (
+        NOTES as HS3_WARRANTY_NOTES,
+    )
 
     hs3_translations = (
         "Die eingeschränkte Garantie gilt für die genannten SAJ-Produkte, die in Europa gekauft und installiert wurden.",
@@ -163,6 +168,20 @@ def translate_compatibility_condition(
     ):
         if (source_chunk_id, page, quote) == (cid, source_page, f"*{i}: {original}"):
             return translated_hs3
+    bu3_translations = (
+        hs3_translations[0],
+        hs3_translations[1],
+        "SAJ garantiert für das Batterieteil den Erhalt von 60 % der Nennenergie für zehn Jahre ab Inbetriebnahme, höchstens zehn Jahre und sechs Monate (126 Monate) ab Versand durch SAJ oder maximal 6000 Lade-/Entladezyklen ab Inbetriebnahme, je nachdem, was zuerst eintritt, unter den Standard-Kapazitätstestbedingungen.",
+        hs3_translations[3],
+        hs3_translations[4],
+        "Für BU3 nennt die Tabelle N = 5,5 Jahre.",
+        hs3_translations[6],
+    )
+    for i, ((cid, source_page, original), translated_bu3) in enumerate(
+        zip(BU3_NOTE_ITEMS, bu3_translations, strict=True), 1
+    ):
+        if (source_chunk_id, page, quote) == (cid, source_page, f"*{i}: {original}"):
+            return translated_bu3
     from linker_genie.compatibility_esa import (
         IOT_9,
         IOT_13,
@@ -411,3 +430,58 @@ def valid_iot_scope(
         and expected == text
         and chunk_id == source_id(sha, 7, "iot", text)
     )
+
+
+OVERVIEW_STATEMENT_SOURCES = {
+    "8951dd1d8a64-p1-9ca34d4b": (
+        "8951dd1d8a640ea133d38bcc7f457000560d9ce9e10263aecfbb1037f24cb661",
+        "a2c8d141188bae0948f9f0e427a371d3203774fcd4d2ea9c0235162dcc8b3f7f",
+    ),
+    "ea081f6f6fb2-p1-56d02ba2": (
+        "ea081f6f6fb21914a6ff94a30715c8d887152ae16bc80a86fbd3f0b4488cf570",
+        "1d2155d00880b7c94c6bed08d5dd7a1750f37a11433308ad8ba00163d5f5da10",
+    ),
+}
+BATC_208_DATASHEET = "710d6f3d82664613f56bb72fd5898b5a1f9e5f7315cfc870a48822b1f3729e08"
+BATC_LCD_MODEL = "GW208.9-BAT-LCD-G10"
+
+
+def valid_overview_statement_scope(
+    scope: Mapping[str, Any],
+    ids: Sequence[int],
+    products: Mapping[int, Mapping[str, Any]],
+    documents: Mapping[str, Mapping[str, Any]],
+    *,
+    sha: str,
+    chunk_id: str,
+    text: str,
+) -> bool:
+    proof = scope.get("compatibility_overview_statement")
+    expected = OVERVIEW_STATEMENT_SOURCES.get(chunk_id)
+    if (
+        scope.get("basis") != "compatibility_overview_statement"
+        or not isinstance(proof, dict)
+        or expected is None
+    ):
+        return False
+    expected_sha, expected_digest = expected
+    pid = proof.get("product_id")
+    support = proof.get("support_document")
+    if (
+        type(pid) is not int
+        or list(ids) != [pid]
+        or scope.get("product_ids") != [pid]
+        or pid not in products
+        or products[pid].get("model") != BATC_LCD_MODEL
+        or proof.get("model") != BATC_LCD_MODEL
+        or sha != expected_sha
+        or proof.get("source_sha256") != expected_sha
+        or proof.get("source_chunk_id") != chunk_id
+        or scope.get("source_chunk_ids") != [chunk_id]
+        or hashlib.sha256(text.encode()).hexdigest() != expected_digest
+        or not isinstance(support, dict)
+        or support.get("source_sha256") != BATC_208_DATASHEET
+        or not _document_current(support, pid, products, documents)
+    ):
+        return False
+    return True

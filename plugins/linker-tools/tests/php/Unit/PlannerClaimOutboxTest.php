@@ -43,6 +43,35 @@ final class PlannerClaimOutboxTest extends TestCase {
 	private bool $acknowledge = false;
 
 	/**
+	 * Whether Action Scheduler has completed its init priority-1 bootstrap.
+	 *
+	 * @var int
+	 */
+	private int $scheduler_ready = 1;
+
+	/**
+	 * Unresolved native event IDs returned for the current account.
+	 *
+	 * @var list<int>
+	 */
+	private array $user_events = array( 42 );
+
+	/**
+	 * `numberposts` windows each account discovery asked for.
+	 *
+	 * @var list<int>
+	 */
+	private array $event_windows = array();
+
+	/**
+	 * The discovery database fixture of the running case, its recorded
+	 * statement bounds included.
+	 *
+	 * @var object{bounds: list<mixed>}
+	 */
+	private object $database_fixture;
+
+	/**
 	 * Previous native database fixture, restored after each case.
 	 *
 	 * @var mixed
@@ -62,12 +91,20 @@ final class PlannerClaimOutboxTest extends TestCase {
 			public string $posts = 'wp_posts';
 
 			/**
+			 * The discovery bound each prepared statement was limited by.
+			 *
+			 * @var list<mixed>
+			 */
+			public array $bounds = array();
+
+			/**
 			 * Keep the discovery fixture inside this process.
 			 *
 			 * @param string $query Native query template.
 			 * @param mixed  ...$args Native query arguments.
 			 */
 			public function prepare( string $query, mixed ...$args ): string {
+				$this->bounds[] = $args[ array_key_last( $args ) ] ?? null;
 				return $query;
 			}
 
@@ -82,6 +119,7 @@ final class PlannerClaimOutboxTest extends TestCase {
 			}
 		};
 		$GLOBALS['wpdb']         = $database; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- bounded native database fixture, restored in tearDown.
+		$this->database_fixture  = $database;
 		WP_Mock::userFunction( 'get_post' )->with( 42 )->andReturn(
 			new \WP_Post(
 				(object) array(
@@ -113,10 +151,18 @@ final class PlannerClaimOutboxTest extends TestCase {
 		WP_Mock::userFunction( 'wp_remote_retrieve_response_code' )->andReturn( 200 );
 		WP_Mock::userFunction( 'wp_remote_retrieve_header' )->andReturn( 'application/json' );
 		WP_Mock::userFunction( 'wp_remote_retrieve_body' )->andReturn( '{"schema_version":1,"status":"claimed","guest_retired":true,"transferred_count":2}' );
-		WP_Mock::userFunction( 'get_posts' )->andReturn( array( 42 ) );
+		WP_Mock::userFunction( 'get_posts' )->andReturnUsing(
+			function ( array $query ): array {
+				if ( isset( $query['name'] ) ) {
+					return array();
+				}
+				$this->event_windows[] = (int) $query['numberposts'];
+				return $this->user_events;
+			}
+		);
 		WP_Mock::userFunction( 'get_option' )->with( 'linker_planner_claim_cursor', 0 )->andReturn( 0 );
 		WP_Mock::userFunction( 'update_option' )->with( 'linker_planner_claim_cursor', 0, false )->andReturn( true );
-		WP_Mock::userFunction( 'did_action' )->with( 'action_scheduler_init' )->andReturn( 1 );
+		WP_Mock::userFunction( 'did_action' )->with( 'action_scheduler_init' )->andReturnUsing( fn (): int => $this->scheduler_ready );
 		WP_Mock::userFunction( 'as_get_scheduled_actions' )->andReturnUsing(
 			function ( array $query, string $format ): array {
 				$this->assertSame( ClaimOutbox::HOOK, $query['hook'] );
@@ -183,25 +229,64 @@ final class PlannerClaimOutboxTest extends TestCase {
 		$this->assertCount( 2, $this->actions );
 	}
 
-	/** A different native event, including an ID prefix, must not block recovery. */
+	/** A different native event, including an older backoff or ID prefix, must not block recovery. */
 	public function test_another_events_retry_does_not_block_this_event(): void {
-		$this->actions[] = array(
+		$this->user_events = array( 41, 42 );
+		$this->actions[]   = array(
+			'args'   => array( 41, 2 ),
+			'status' => 'pending',
+			'date'   => time() + 15 * MINUTE_IN_SECONDS,
+		);
+		$this->actions[]   = array(
 			'args'   => array( 420, 5 ),
 			'status' => 'pending',
 			'date'   => time() + 15 * MINUTE_IN_SECONDS,
 		);
-		$outbox          = $this->outbox();
-		$before          = time();
+		$outbox            = $this->outbox();
+		$before            = time();
 		$outbox->settle( 7 );
 		$this->assertSame( 1, $this->transport_calls, 'Another event must not block immediate foreground delivery.' );
-		$this->assertCount( 2, $this->actions );
-		$this->assertSame( array( 42, 1 ), $this->actions[1]['args'] );
-		$this->assertGreaterThanOrEqual( $before + MINUTE_IN_SECONDS, $this->actions[1]['date'] );
-		$this->actions[1]['date'] = time() - 1;
+		$this->assertCount( 3, $this->actions );
+		$this->assertSame( array( 42, 1 ), $this->actions[2]['args'] );
+		$this->assertGreaterThanOrEqual( $before + MINUTE_IN_SECONDS, $this->actions[2]['date'] );
+		$this->actions[2]['date'] = time() - 1;
 		$this->acknowledge        = true;
 		WP_Mock::userFunction( 'wp_delete_post' )->once()->with( 42, true )->andReturn( new \WP_Post( (object) array( 'ID' => 42 ) ) );
 		$outbox->settle( 7 );
 		$this->assertSame( 2, $this->transport_calls, 'A due retry can complete with its original engine receipt.' );
+	}
+
+	/** A served request settles a bounded window, never the background batch. */
+	public function test_foreground_recovery_reads_a_smaller_window_than_the_sweep(): void {
+		$outbox = $this->outbox();
+		$outbox->settle( 7 );
+		$this->assertSame( array( 8 ), $this->event_windows, 'One request settles at most 8 recent events.' );
+		$this->event_windows = array();
+		$outbox->sweep();
+		$this->assertSame( array(), $this->event_windows, 'The sweep discovers through its own SQL window, not account queries.' );
+		$this->assertSame(
+			32,
+			$this->database_fixture->bounds[0] ?? null,
+			'Background discovery keeps its 32-event batch.'
+		);
+	}
+
+	/** Early init priority-0 captures defer scheduling until action_scheduler_init runs. */
+	public function test_early_enqueue_flushes_when_action_scheduler_initializes(): void {
+		$this->scheduler_ready = 0;
+		$guest                 = 'wp:1:guest:' . str_repeat( 'a', 64 );
+		$key                   = str_repeat( 'b', 64 );
+		WP_Mock::userFunction( 'wp_hash' )->with( 'linker-planner-claim:v1|' . $guest . '|7', 'auth', 'sha256' )->andReturn( $key );
+		WP_Mock::userFunction( 'wp_slash' )->andReturnUsing( static fn ( mixed $value ): mixed => $value );
+		WP_Mock::userFunction( 'wp_insert_post' )->once()->andReturn( 42 );
+		WP_Mock::userFunction( 'wp_next_scheduled' )->with( ClaimOutbox::SWEEP )->andReturn( time() + 60 );
+		$outbox = $this->outbox();
+		$this->assertSame( 42, $outbox->enqueue( $guest, 7 ) );
+		$this->assertCount( 0, $this->actions );
+		$this->scheduler_ready = 1;
+		$outbox->schedule();
+		$this->assertCount( 1, $this->actions );
+		$this->assertSame( array( 42, 0 ), $this->actions[0]['args'] );
 	}
 
 	/** Exercise the real event validation and transport, without any network. */

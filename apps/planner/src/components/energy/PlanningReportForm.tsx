@@ -1,5 +1,5 @@
 import { isEnergyTask } from "../../data/readEnergyResult.ts";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { RunSummary } from "../../data/planningProtocol.ts";
 import type { ReportOptions } from "../../data/planningReport.ts";
 import { __, sprintf } from "../../i18n.ts";
@@ -29,7 +29,33 @@ export function PlanningReportForm({
 	const [energy, setEnergy] = useState(""),
 		[pv, setPv] = useState(""),
 		[beam, setBeam] = useState(""),
-		[equipment, setEquipment] = useState(""),
+		[chosenRows, setChosenRows] = useState<Record<string, RunSummary>>({}),
+		// Keep explicit selections across history pages while preserving newest-first order.
+		completed = useMemo(
+			() =>
+				[
+					...new Map(
+						[...runs, ...Object.values(chosenRows)]
+							.filter((run) => run.state === "succeeded")
+							.map((run) => [run.id, run]),
+					).values(),
+				].sort(
+					(a, b) =>
+						b.created_at - a.created_at ||
+						b.revision - a.revision ||
+						a.id.localeCompare(b.id),
+				),
+			[runs, chosenRows],
+		),
+		equipmentOptions = useMemo(
+			() =>
+				completed.filter((run) => run.task_kind === "qualify_woo_equipment_v1"),
+			[completed],
+		),
+		[equipment, setEquipment] = useState(() =>
+			hasWiring && equipmentOptions[0] ? equipmentOptions[0].id : "",
+		),
+		[equipmentTouched, setEquipmentTouched] = useState(false),
 		[logo, setLogo] = useState<string | null>(null),
 		[error, setError] = useState(false),
 		[reading, setReading] = useState(false);
@@ -37,15 +63,10 @@ export function PlanningReportForm({
 	const [installation, setInstallation] = useState(false);
 	const [certificates, setCertificates] = useState(false);
 	useEffect(() => () => reader.current?.abort(), []);
-	const [chosenRows, setChosenRows] = useState<Record<string, RunSummary>>({});
-	// Keep the explicit selections across history pages.
-	const completed = [
-		...new Map(
-			[...runs, ...Object.values(chosenRows)]
-				.filter((run) => run.state === "succeeded")
-				.map((run) => [run.id, run]),
-		).values(),
-	];
+	useEffect(() => {
+		if (hasWiring && !equipment && !equipmentTouched && equipmentOptions[0])
+			setEquipment(equipmentOptions[0].id);
+	}, [equipment, equipmentOptions, equipmentTouched, hasWiring]);
 	const choose = (
 		kind: string,
 		value: string,
@@ -59,6 +80,7 @@ export function PlanningReportForm({
 				disabled={disabled}
 				onChange={(event) => {
 					const id = event.currentTarget.value;
+					if (kind === "qualify_woo_equipment_v1") setEquipmentTouched(true);
 					set(id);
 					setChosenRows((previous) => {
 						const next = { ...previous };

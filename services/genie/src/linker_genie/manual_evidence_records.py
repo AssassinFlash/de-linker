@@ -746,6 +746,105 @@ RECORDS: list[dict[str, Any]] = [
         "source_picture": "",
     },
     {
+        "sha256": "0ef4b1ccdcc418e3ca8de31194b3d9e2969be39aa739ffa0ca1f038fcfac6615",
+        "kind": "models",
+        "series": [],
+        "anchor_id": "0ef4b1ccdcc4-p55-94f821cd",
+        "anchor_sha256": "54a4e464a559178ec2b03d26a3a950a1501d0d11c38b0a464622613ce3bf67e1",
+        "anchor_quote": "| No. | Model | PACK Quantity | Rated Capacity (kWh) |\n"
+        "| 1 | GW92.1-BAT-AC-G10 | 9 | 92.1 |\n"
+        "| 2 | GW102.4-BAT-AC-G10 | 10 | 102.4 |\n"
+        "| 3 | GW112.6-BAT-AC-G10 | 11 | 112.6 |",
+        "source_id": "0ef4b1ccdcc4-p29-157fe376",
+        "source_sha256": "6dfb47a0e9d5cf0ddafc8617e6af9b55bb7a8c2466097cc18b008c5f7dfffe1b",
+        "source_page": 29,
+        "source_section": "Note",
+        "excerpt": "BAT-C 92.1-112.6kWh, BAT-C 208.9kWh ·\n"
+        "The battery has a built-in Ezlink module. Each inverter is connected to the battery "
+        "system through an intelligent communication stick, and the battery system transmits "
+        "the parallel information to the smart energy control box. ○",
+        "source_picture": "",
+    },
+    {
+        "sha256": "a70cb4c39824185fb9f570a59f4966c54ec94a33c870d00c7ccd756393321dac",
+        "kind": "models",
+        "series": [],
+        "anchor_id": "a70cb4c39824-p1-954eb9fe",
+        "anchor_sha256": "77a450f69441a9baf0cec959bbf62baf102ce6c01a220ff4fba437d47fee4f34",
+        "anchor_quote": "This quick installation guide is applicable for the installation of "
+        "CB2-(57.3K-100.3K)-HV5. For detailed instructions, refer to the User Manual.",
+        "source_id": "a70cb4c39824-p1-632eb7c1",
+        "source_sha256": "cc97a0175f5c7a3d5ea72d9d2e762c959b0340f9636f66456974f332ab32c7fe",
+        "source_page": 1,
+        "source_section": "1. Installation space requirement",
+        "excerpt": "The cabinet can be installed either indoors or outdoors. Reserve at least "
+        "the following space around the whole battery system to ensure good air circulation at "
+        "the installation area:",
+        "source_picture": "",
+        "reviewed_reset": {
+            "id": "a70cb4c39824-p1-baa186e3",
+            "heading": "1. Installation space requirement",
+            "section": "1. Installation space requirement",
+            "text_sha256": "c09d36f93b277e4d719c76fdce54ee1ed07369c0e5c9ee411391cc30c86fabea",
+            "reason": "The cover heading states the CB2 HV5 range; section 1 "
+            "gives the cabinet installation space requirement.",
+            "cleared": [
+                {
+                    "boundary": {
+                        "kind": "heading",
+                        "quote": "CB2-(57.3K-100.3K)-HV5 Quick Installation Guide",
+                        "source_chunk_id": "a70cb4c39824-p1-954eb9fe",
+                        "heading_path": [],
+                    },
+                    "source_text_sha256": "77a450f69441a9baf0cec959bbf62baf102ce6c01a220ff4fba437d47fee4f34",
+                }
+            ],
+        },
+    },
+    {
+        "sha256": "a70cb4c39824185fb9f570a59f4966c54ec94a33c870d00c7ccd756393321dac",
+        "kind": "models",
+        "series": [],
+        "anchor_id": "a70cb4c39824-p1-954eb9fe",
+        "anchor_sha256": "77a450f69441a9baf0cec959bbf62baf102ce6c01a220ff4fba437d47fee4f34",
+        "anchor_quote": "This quick installation guide is applicable for the installation of "
+        "CB2-(57.3K-100.3K)-HV5. For detailed instructions, refer to the User Manual.",
+        "source_id": "a70cb4c39824-p20-c67a91ad",
+        "source_sha256": "bbbbdabbd678ee452d7352d34cd72fdb772927819394c9a3f0542ae6e88cb424",
+        "source_page": 20,
+        "source_section": "4. Start up the CB2 system",
+        "excerpt": "Step 1. Turn ON the DC switches on the inverter.\n"
+        "Step 2. Turn on the AC circuit breaker.\n"
+        "Step 3. Rotate the main switch to the ON position.\n"
+        "Step 4. Press and hold the START button for 3 seconds until the LED light flashes in green.\n"
+        "Note: If the main switch suddenly trips while the machine is running, rotate the switch "
+        "to OFF and then back to ON.\n"
+        "5. Check the battery status on Elekeeper App\n"
+        "Step 1. Log in to the Elekeeper App, and check the Battery Info at the Elekeeper App. "
+        "Make sure that the numbers of battery clusters and battery modules are as expected for "
+        "each battery group.",
+        "source_picture": "",
+        "reviewed_reset": {
+            "id": "a70cb4c39824-p20-c67a91ad",
+            "heading": "4. Start up the CB2 system",
+            "section": "4. Start up the CB2 system",
+            "text_sha256": "bbbbdabbd678ee452d7352d34cd72fdb772927819394c9a3f0542ae6e88cb424",
+            "reason": "The cover heading states the CB2 HV5 range; section 4 "
+            "gives the system start-up procedure.",
+            "cleared": [
+                {
+                    "boundary": {
+                        "kind": "heading",
+                        "quote": "CB2-(57.3K-100.3K)-HV5 Quick Installation Guide",
+                        "source_chunk_id": "a70cb4c39824-p1-954eb9fe",
+                        "heading_path": [],
+                    },
+                    "source_text_sha256": "77a450f69441a9baf0cec959bbf62baf102ce6c01a220ff4fba437d47fee4f34",
+                }
+            ],
+        },
+    },
+    {
         "sha256": "363be3f64d741a02f435aeba2ba680b98e3edc73c3a92d61b6b4637def38326b",
         "kind": "models",
         "series": [],

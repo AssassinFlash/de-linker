@@ -19,6 +19,7 @@ use Linker\Tools\Genie\Hero;
 use Linker\Tools\Genie\InquiryRequest;
 use Linker\Tools\Genie\InquirySummary;
 use Linker\Tools\Genie\PageCache;
+use Linker\Tools\Genie\PageIndexing;
 use Linker\Tools\Genie\Preview;
 use Linker\Tools\Genie\Proxy;
 use Linker\Tools\Genie\QualityPage;
@@ -57,6 +58,7 @@ final class Plugin {
 	 * @param InquiryRequest            $inquiry_card  The inquiry confirmation card's route (#250).
 	 * @param Hero                      $hero          The home hero's Genie entry (#232).
 	 * @param PageCache                 $page_cache    Drops Genie's cached copy of a page when it is saved (#405).
+	 * @param PageIndexing              $page_indexing Keeps the workspace page out of the index and its sitemap.
 	 * @param Protection\Resources      $resources Public resource admission.
 	 * @param Protection\ProviderBudget $provider_budget Private provider transport seam.
 	 */
@@ -82,6 +84,7 @@ final class Plugin {
 		private readonly InquiryRequest $inquiry_card,
 		private readonly Hero $hero,
 		private readonly PageCache $page_cache,
+		private readonly PageIndexing $page_indexing,
 		private readonly Protection\Resources $resources = new Protection\Resources(),
 		private readonly Protection\ProviderBudget $provider_budget = new Protection\ProviderBudget()
 	) {}
@@ -118,6 +121,8 @@ final class Plugin {
 		$this->hero->register();
 		// A saved page drops Genie's cached copy of it and of its language twin (#405).
 		$this->page_cache->register();
+		// The workspace page is a login wall; it stays out of the index and the sitemap.
+		$this->page_indexing->register();
 		$this->provider_budget->register();
 		$this->resources->register();
 	}

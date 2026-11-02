@@ -545,8 +545,9 @@ def purge_page_cache(target: Target, installed: set[str]) -> list[str]:
     theme, a plugin or the WindPress volume keeps serving the previous markup
     until something purges it. Only the owner of that cache may be asked: a host
     without the plugin (every local instance) is told nothing and does nothing.
-    A host that owns it must already exclude query strings. The live option is
-    read and never written, so a deploy cannot clear the exclusion the host set.
+    A host that owns it must already exclude query strings and keep the
+    login-cookie vary name off the WordPress cookie. The live options are
+    read and never written, so a deploy cannot clear what the host set.
     """
     if plan.PAGE_CACHE_PLUGIN not in installed:
         return []
@@ -559,11 +560,17 @@ def purge_page_cache(target: Target, installed: set[str]) -> list[str]:
 
 
 def require_query_exclusion(target: Target) -> None:
-    """Fail when the production-owned cache would store arbitrary query variants.
+    """Fail when the production-owned cache would break its isolation.
 
-    `wp option get litespeed.conf.cache-exc` prints a JSON list. The verified
-    entry is "?" (read back 2026-10-29 as ["?"]). Absence, another entry, or a
-    non-list does not change the option; the deploy stops instead.
+    Two read-only checks on the host's own options, never a write. First the
+    query exclusion: `wp option get litespeed.conf.cache-exc` prints a JSON
+    list, the verified entry is "?" (read back 2026-10-29 as ["?"]), and
+    absence, another entry, or a non-list does not change the option — the
+    deploy stops instead. Second the login cookie: LiteSpeed uses
+    `cache-login_cookie` as the name of its own vary cookie, so the literal
+    "LOGGED_IN_COOKIE" (corrected 2026-11-01) would overwrite WordPress's
+    authentication cookie and collapse guest/login cache isolation; the same
+    stop-without-write applies.
     """
     raw = target.wp("option", "get", plan.PAGE_CACHE_EXCLUSION_OPTION, check=False)
     try:
@@ -575,6 +582,14 @@ def require_query_exclusion(target: Target) -> None:
             f"{plan.PAGE_CACHE_EXCLUSION_OPTION} must contain "
             f"{plan.PAGE_CACHE_QUERY_EXCLUSION!r} so query variants stay uncached; "
             "the live option is not changed"
+        )
+    login_cookie = target.wp(
+        "option", "get", plan.PAGE_CACHE_LOGIN_COOKIE_OPTION, check=False
+    ).strip()
+    if login_cookie == "LOGGED_IN_COOKIE":
+        raise CutoverError(
+            f"{plan.PAGE_CACHE_LOGIN_COOKIE_OPTION} must not be set to the literal "
+            "'LOGGED_IN_COOKIE'; the live option is not changed"
         )
 
 

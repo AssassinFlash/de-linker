@@ -157,7 +157,7 @@ body #linker-products.sf-products .card-compare-checkbox[data-compare-selected="
 [data-compare-product][data-compare-selected="true"] .compare-selected-mark { display: inline-block; }
 .card-identity { min-width: 0; }
 body #linker-products.sf-products .sf-card-brand { color: var(--shop-teal); text-transform: uppercase; font-size: 10px; font-weight: 700; letter-spacing: .09em; margin-bottom: 7px; }
-body #linker-products.sf-products .sf-card-title { font-size: 19px; font-weight: 600; line-height: 1.35; letter-spacing: -.025em; overflow-wrap: anywhere; }
+body #linker-products.sf-products .sf-card-title { font-size: 19px; font-weight: 600; line-height: 1.35; letter-spacing: -.025em; overflow-wrap: anywhere; text-wrap: balance; }
 body #linker-products.sf-products .sf-card-sku { font-size: 10px; color: var(--shop-muted); margin: 8px 0 0; overflow-wrap: anywhere; }
 body #linker-products.sf-products .card-product-picker { border-radius: 5px; background: #f6f8f9; }
 body #linker-products.sf-products .card-product-picker summary { padding: 12px; align-items: center; min-height: 64px; gap: 10px; }

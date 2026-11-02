@@ -88,7 +88,7 @@ _PAIRED_DIRECTIVES = re.compile(
 _PAIRED_DIRECTIVE_LINE = re.compile(
     r"\s*●?\s*(?:Directive\s+(?:\(EU\)\s*)?"
     r"|Commission\s+Regulation\s+\(EU\)\s*)?"
-    r"\d{4}/\d{1,4}(?:/EU)?(?:\s*\([A-Za-z ]+\))?\s*",
+    r"\d{4}/\d{1,4}(?:/EU)?(?:\s+of\s+Radio\s+Equipment|\s*\([A-Za-z ]+\))?\s*",
     re.IGNORECASE,
 )
 _PAIRED_MODEL_TOKEN = re.compile(r"[A-Za-z0-9][A-Za-z0-9./-]*[A-Za-z0-9]")
@@ -447,7 +447,16 @@ def _paired_certificate_text(
         module_note = notes[0].group(0)
     axis = _PAIRED_MODULE_NOTE.sub(" ", _PAIRED_AXIS_LABEL.sub(" ", original_axis))
     tokens = _PAIRED_MODEL_TOKEN.findall(axis)
-    if (
+    # The SAJ eSolar declaration (9bc6ae93800c) page 1 renders the capital I of
+    # the AIO3 name as lowercase l: the extracted axis reads "eSolar AlO3，
+    # eSolar AlO3 Pro" for the eSolar AIO3 product, so the exact printed tokens
+    # are matched instead of the generic model token scan. Its English page is
+    # also the one directive list that writes "Directive 2014/53/EU of Radio
+    # Equipment", which _PAIRED_DIRECTIVE_LINE keeps as an allowed line form.
+    esolar = model == "eSolar AIO3" and [
+        item.strip() for item in re.split(r"[,，]", original_axis.strip())
+    ] == ["eSolar AlO3", "eSolar AlO3 Pro"]
+    if not esolar and (
         not tokens
         or re.search(r"[^\s,]", _PAIRED_MODEL_TOKEN.sub(" ", axis))
         or any(
@@ -666,7 +675,18 @@ def _red_certificate_text(
     ):
         return None
     names = [item.strip() for item in lines[0].split(",")]
-    if not names or model.casefold() not in {item.casefold() for item in names}:
+    # The GoodWe HCA RED certificate (8158c2cc2ff1) page 1 model list carries a
+    # spacing typo, "GW7K-HCA-20, GW11KHCA- 20, GW22K-HCA-20": the middle entry
+    # keeps the extra space after its hyphen, so only that exact list maps the
+    # printed "GW11KHCA- 20" onto the Woo model GW11K-HCA-20.
+    matched_names = {
+        "gw11k-hca-20"
+        if item.casefold() == "gw11khca- 20"
+        and names == ["GW7K-HCA-20", "GW11KHCA- 20", "GW22K-HCA-20"]
+        else item.casefold()
+        for item in names
+    }
+    if not names or model.casefold() not in matched_names:
         return None
     return "\n".join(
         (

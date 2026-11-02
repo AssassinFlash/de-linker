@@ -16,6 +16,7 @@ from typing import Any
 
 CERTIFICATE = "43d6efd869b4c66f485eb40f602e369d95a47665f33fb6330607a99884012479"
 DATASHEET = "b4a653fd2c0bdbff01337165df0567eb71488634eaa1c1420070fc170526c1c3"
+DE_DATASHEET = "e00f9645d187c241570a4037afa6a1dd54c23cd3d41b189bc44a0e0b24e4f7b3"
 MANUAL = "2c1dd5c1e2f7efd96eba4f24aa3804ee135936ac90bcccfd1a681f2188868f46"
 # These are the complete original native chunks, not snippets or generated text.
 # The final declaration chunk preserves the X range and the stated directives.
@@ -57,12 +58,31 @@ SOURCES: dict[str, tuple[str, int, str]] = {
         18,
         "9a9619df42d1b958a29f573a6677207fad49e220961d42cf5b1316e3a8a669a2",
     ),
+    "e00f9645d187-p1-59c4601a": (
+        DE_DATASHEET,
+        1,
+        "ec1ca080ebd3aa9da5689258e09deb3e47f8e707345d71e00102b7aed15dface",
+    ),
+    "e00f9645d187-p2-fce1bab4": (
+        DE_DATASHEET,
+        2,
+        "35f657a0861792225e6d74335ab050574e0d2fb9cc3bd83cbc0cfe027d11af4a",
+    ),
+    "e00f9645d187-p2-b28e1a1b": (
+        DE_DATASHEET,
+        2,
+        "6ac33403021daa7f604acd9f26621ca60146e95906ac9851a3f2641459cdc0ca",
+    ),
 }
 CERT_HEADER = "43d6efd869b4-p1-4adb8123"
 CERT_MODELS = "43d6efd869b4-p1-2679bdaa"
 CERT_END = "43d6efd869b4-p1-ce289ee7"
 DATA_MODELS = "b4a653fd2c0b-p2-a2df8f70"
 MANUAL_MODEL = "2c1dd5c1e2f7-p18-576d01a7"
+DE_OVERVIEW = "e00f9645d187-p1-59c4601a"
+DE_TABLE_A = "e00f9645d187-p2-fce1bab4"
+DE_TABLE_B = "e00f9645d187-p2-b28e1a1b"
+DE_DATASHEET_GROUP = (DE_OVERVIEW, DE_TABLE_A, DE_TABLE_B, DATA_MODELS, MANUAL_MODEL)
 SOURCE_GROUPS = (
     (CERT_HEADER, CERT_MODELS, CERT_END, DATA_MODELS, MANUAL_MODEL),
     (
@@ -213,7 +233,8 @@ def hs3_anchors(
             continue
         seen.add(cid)
         if (
-            kind == ("table" if cid == DATA_MODELS else "text")
+            kind
+            == ("table" if cid in {DATA_MODELS, DE_TABLE_A, DE_TABLE_B} else "text")
             and (sha, page) == expected[:2]
             and hashlib.sha256(text.encode()).hexdigest() == expected[2]
         ):
@@ -377,3 +398,126 @@ def valid_hs3_scope(
         return False
     rendered = source_text(model)
     return rendered == text and chunk_id == evidence_id(model, cert_id, text)
+
+
+def de_datasheet_text(model: str) -> str | None:
+    if variants(model) is None:
+        return None
+    return (
+        "SAJs neueste All-in-one-Lösung für Energiespeichersysteme für Wohngebäude, "
+        "integriertes PCS, BMS, EMS, Ladegerät für Elektrofahrzeuge und Akku, mit "
+        "Plug-and-Play-Design, IP65-Design und nur 12 Schrauben, was die Installation "
+        "erheblich erleichtert. HS3 deckt einen Bereich von 5 bis 12 kW, 2 MPPTs und "
+        "ein dreiphasiges Netz ab."
+    )
+
+
+def de_datasheet_id(model: str, did: str, text: str) -> str:
+    digest = hashlib.sha256(f"{model}\0{did}\0{text}".encode()).hexdigest()[:16]
+    return f"{DE_DATASHEET[:12]}-p1-hs3-datasheet-{digest}"
+
+
+def valid_hs3_datasheet_scope(
+    scope: Mapping[str, Any],
+    product_ids: Sequence[int],
+    products: Mapping[int, Mapping[str, Any]],
+    documents: Mapping[str, Mapping[str, Any]],
+    *,
+    sha: str,
+    chunk_id: str,
+    text: str,
+    anchors: Mapping[str, Any] | None,
+) -> bool:
+    proof = scope.get("hs3_datasheet_de")
+    if scope.get("basis") != "hs3_datasheet_de" or not isinstance(proof, dict):
+        return False
+    pid = proof.get("product_id")
+    product = products.get(pid) if type(pid) is int else None
+    model = str(product.get("model", "")) if product else ""
+    source_docs = proof.get("source_documents")
+    if (
+        product is None
+        or variants(model) is None
+        or list(product_ids) != [pid]
+        or scope.get("product_ids") != [pid]
+        or proof.get("model") != model
+        or proof.get("product_revision") != product.get("product_revision")
+        or sha != DE_DATASHEET
+        or not isinstance(source_docs, dict)
+        or set(source_docs) != {"datasheet_de", "datasheet", "manual"}
+        or not isinstance(anchors, Mapping)
+        or scope.get("source_chunk_ids") != list(DE_DATASHEET_GROUP)
+        or not {hs3_anchor_key(cid) for cid in DE_DATASHEET_GROUP}.issubset(anchors)
+    ):
+        return False
+    for role, expected_sha, purpose in (
+        ("datasheet_de", DE_DATASHEET, "datasheet"),
+        ("datasheet", DATASHEET, "datasheet"),
+        ("manual", MANUAL, "manual"),
+    ):
+        ref = source_docs[role]
+        if not isinstance(ref, dict) or not isinstance(ref.get("document_id"), str):
+            return False
+        doc = documents.get(ref["document_id"])
+        if (
+            doc is None
+            or ref.get("blob_sha256") != expected_sha
+            or doc.get("blob_sha256") != expected_sha
+            or ref.get("document_revision") != doc.get("document_revision")
+            or not has_purpose(doc, purpose)
+            or pid not in doc.get("product_ids", [])
+            or ref["document_id"] not in product.get("documents", [])
+        ):
+            return False
+    doc_id = source_docs["datasheet_de"]["document_id"]
+    if scope.get("document_ids") != [doc_id] or not axis_span_valid(
+        model, proof.get("datasheet_axis")
+    ):
+        return False
+    expected_rows = []
+    for cid in DE_DATASHEET_GROUP:
+        value = anchors.get(hs3_anchor_key(cid))
+        if not isinstance(value, dict):
+            return False
+        source_sha = value.get("source_sha256")
+        source_page = value.get("page")
+        source_kind = value.get("kind")
+        source_body = value.get("text")
+        if (
+            not isinstance(source_sha, str)
+            or type(source_page) is not int
+            or not isinstance(source_kind, str)
+            or not isinstance(source_body, str)
+        ):
+            return False
+        expected_rows.append((cid, source_sha, source_page, source_kind, source_body))
+    if len(hs3_anchors(expected_rows)) != len(DE_DATASHEET_GROUP):
+        return False
+    overview = anchors[hs3_anchor_key(DE_OVERVIEW)]["text"]
+    de_tables = (
+        anchors[hs3_anchor_key(DE_TABLE_A)]["text"]
+        + "\n"
+        + anchors[hs3_anchor_key(DE_TABLE_B)]["text"]
+    )
+    data = anchors[hs3_anchor_key(DATA_MODELS)]["text"]
+    manual = anchors[hs3_anchor_key(MANUAL_MODEL)]["text"]
+    # The German datasheet (e00f9645d187) table names only the -P inverter
+    # prefix (HS3-5K-T2-W/G-P .. HS3-12K-T2-W/G-P); the trailing X of the Woo
+    # composite model is not written there. The English datasheet (b4a653fd2c0b)
+    # and the manual (2c1dd5c1e2f7) chunks checked above are what establish the
+    # -PX designation with X = 1..8, so stripping the final X yields the exact
+    # label the German table prints.
+    inverter_prefix = model[:-1]
+    if (
+        overview != de_datasheet_text(model)
+        or re.search(
+            r"(?<![\w/-])" + re.escape(inverter_prefix) + r"(?![\w/-])", de_tables
+        )
+        is None
+        or model not in data
+        or "HS3 - xK - T2 - a - b X - c" not in manual
+        or "X: Quantity of the battery modules, ranging from 1 to 8." not in manual
+    ):
+        return False
+    rendered = de_datasheet_text(model)
+    return rendered == text and chunk_id == de_datasheet_id(model, doc_id, text)

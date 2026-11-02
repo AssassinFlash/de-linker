@@ -9,12 +9,13 @@ from __future__ import annotations
 from typing import cast
 
 from .assistant_calculation_sources import calculation_sources
-from .brief import PlanningBrief
+from .brief import AnnualLoadBrief, PlanningBrief
 from .canonical import Json, Object, digest, encode
 from .certificate_information import report_source_with_information
 from .direct_beam_read import KIND as DIRECT_BEAM_KIND
 from .direct_beam_read import direct_beam_bundle, direct_beam_facts
 from .equipment_candidate_store import EquipmentCandidateStore
+from .equipment_kernel import EquipmentKernel
 from .errors import InvalidInput
 from .geometric_pv_inputs import KIND as GEOMETRIC_PV_KIND
 from .geometric_pv_inputs import PROFILE_PURPOSE as GEOMETRIC_PV_PURPOSE
@@ -793,7 +794,13 @@ def _result_rows(
         return []
     kind = result.get("kind")
     if not isinstance(kind, str):
-        raise InvalidInput("saved result kind is missing")
+        # Same legacy inference as report_sources.owned(): a result frozen
+        # before kind stamps that carries an assessment is an equipment
+        # qualification of the current Woo candidate pool.
+        if isinstance(result.get("assessment"), dict):
+            kind = EquipmentKernel.kind
+        else:
+            raise InvalidInput("saved result kind is missing")
     if kind == DIRECT_BEAM_KIND:
         return _rows(
             direct_beam_facts(
@@ -1175,18 +1182,56 @@ def _result_rows(
     return []
 
 
+def _brief_rows(brief: Object) -> Object:
+    """Reduce the saved brief to assistant-relevant facts, schema-bounded."""
+    try:
+        data = PlanningBrief.model_validate(brief).model_dump(mode="json")
+    except ValueError:
+        # A brief that fails the current schema is presented only through
+        # the field names the declared models themselves define; arbitrary
+        # saved keys are never forwarded to the assistant.
+        data = {
+            name: brief[name] for name in PlanningBrief.model_fields if name in brief
+        }
+        annual = data.get("annual_load")
+        if isinstance(annual, dict):
+            data["annual_load"] = {
+                name: annual[name]
+                for name in AnnualLoadBrief.model_fields
+                if name in annual
+            }
+    # Exact coordinates and free-form project notes are unnecessary for this read.
+    site = data.get("site")
+    if isinstance(site, dict):
+        data["site"] = {key: site.get(key) for key in ("country_code", "timezone")}
+    data.pop("project_note", None)
+    annual = data.get("annual_load")
+    if isinstance(annual, dict):
+        data["annual_load"] = {
+            key: value for key, value in annual.items() if key != "source_note"
+        }
+    return cast(Object, data)
+
+
 def assistant_context(
     workspace: Workspace,
     actor: Actor,
     project_id: str,
-    revision: int,
-    run_ids: list[str],
-    locale: str,
+    revision: int | None = None,
+    run_ids: list[str] | tuple[str, ...] = (),
+    locale: str = "en",
     *,
     unsaved_changes: bool = False,
 ) -> Object:
-    project = workspace.get(actor, project_id, revision=revision)
+    if locale not in ("en", "de"):
+        locale = "de" if locale.lower().startswith("de") else "en"
+    run_ids = list(run_ids)
     current = workspace.get(actor, project_id)
+    project = (
+        current
+        if revision is None
+        else workspace.get(actor, project_id, revision=revision)
+    )
     result: Object = {
         "schema_version": 1,
         "status": "unsaved_changes" if unsaved_changes else "available",
@@ -1211,15 +1256,7 @@ def assistant_context(
         raise InvalidInput("choose one result or the workbench's two-result comparison")
     brief = project.inputs.get("brief")
     if isinstance(brief, dict):
-        typed = PlanningBrief.model_validate(brief)
-        # Exact coordinates and free-form project notes are unnecessary for this read.
-        data = typed.model_dump(mode="json")
-        site = cast(Object, data["site"])
-        data["site"] = {key: site.get(key) for key in ("country_code", "timezone")}
-        data.pop("project_note", None)
-        annual = cast(Object, data["annual_load"])
-        annual.pop("source_note", None)
-        result["rows"] = _rows(cast(Object, data), locale)
+        result["rows"] = _rows(_brief_rows(brief), locale)
     for key in ("equipment_setup", "equipment_plant"):
         if isinstance(project.inputs.get(key), dict):
             cast(list[Json], result["rows"]).extend(

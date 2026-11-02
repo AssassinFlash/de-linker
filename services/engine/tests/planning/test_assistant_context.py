@@ -12,6 +12,7 @@ from pypdf import PdfReader
 
 from linker_engine.planning.assets import Assets
 from linker_engine.planning.assistant_context import (
+    _brief_rows,
     _installation_report_projection,
     _report_materials,
     _report_source_projection,
@@ -1492,3 +1493,59 @@ def test_materials_source_must_match_the_selected_runs_frozen_source(
     }
     with pytest.raises(InvalidInput, match="frozen report source"):
         _report_materials(workspace, run, forged)
+
+
+def test_brief_rows_reduce_current_schema_and_bound_any_fallback() -> None:
+    current = _brief_rows(cast(Object, declared()["brief"]))
+    assert current == {
+        "schema_version": 1,
+        "project_use": "commercial",
+        "system_scope": "new_pv_storage",
+        "site": {"country_code": "DE", "timezone": None},
+        "annual_load": {"kwh": None, "basis": None},
+    }
+    legacy: Object = {
+        "schema_version": 1,
+        "basis": "a legacy intake field the current schema dropped",
+        "internal_note": "PRIVATE INTERNAL NOTE",
+        "site": {
+            "country_code": "DE",
+            "timezone": "Europe/Berlin",
+            "location_label": "PRIVATE LOCATION",
+        },
+        "annual_load": {
+            "kwh": 1000.0,
+            "basis": "bill_total",
+            "source_note": "PRIVATE SOURCE NOTE",
+            "audit_ref": "PRIVATE AUDIT REF",
+        },
+        "project_note": "PRIVATE NOTE",
+        "emergency_contact": "PRIVATE PHONE",
+    }
+    shown = _brief_rows(legacy)
+    assert shown == {
+        "schema_version": 1,
+        "site": {"country_code": "DE", "timezone": "Europe/Berlin"},
+        "annual_load": {"kwh": 1000.0, "basis": "bill_total"},
+    }
+    assert "PRIVATE" not in str(shown)
+
+
+def test_kindless_legacy_equipment_result_still_presents_its_assessment(
+    workspace: Workspace, owner: Actor, context: Context
+) -> None:
+    project = workspace.create(owner, "Legacy scenario", {}, key="new")
+    run = workspace.evaluate(owner, project.id, 1, context, key="run", max_attempts=1)
+    jobs = Jobs(workspace)
+    lease = jobs.claim("fixture", kinds=("evaluate",), lease_seconds=30)
+    assert lease is not None
+    # A result frozen before kind stamps: its assessment is the equipment
+    # qualification of that era (report_sources infers the same kind), so
+    # the saved observation is presented instead of rejected.
+    jobs.complete(lease, {"assessment": {"status": "not_assessed"}})
+    selected = cast(
+        list[Object],
+        assistant_context(workspace, owner, project.id, 1, [run.id], "en")["runs"],
+    )[0]
+    rows = {row["label"]: row["value"] for row in cast(list[Object], selected["rows"])}
+    assert rows == {"status": "not_assessed"}

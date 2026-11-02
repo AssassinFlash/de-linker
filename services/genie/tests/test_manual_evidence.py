@@ -9,13 +9,19 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
+import pytest
 from test_chunking import Words
 
 from index import corpus, store
 from index.chunking import Chunk
 from index.corpus import DocumentRow
 from index.manual_evidence import compile_manual_evidence
-from linker_genie.manual_evidence import valid_reviewed_manual
+from linker_genie.manual_evidence import (
+    evidence_id,
+    subject_matches,
+    valid_reviewed_manual,
+)
+from linker_genie.manual_evidence_records import RECORDS
 from linker_genie.publication import Snapshot
 from linker_genie.publication_scope import authorize_chunk
 from linker_genie.retrieval import DocumentIndex
@@ -240,3 +246,190 @@ def test_sqlite_search_returns_the_manual_passage_then_honours_withdrawal(
         )
     finally:
         loaded.close()
+
+
+# The complete original chunks behind the GW112.6-BAT-AC-G10 (0ef4b1ccdcc4)
+# and CB2-(57.3K-100.3K)-HV5 (a70cb4c39824) records; each text must hash to the
+# digest pinned in RECORDS.
+GW112_ANCHOR = "0ef4b1ccdcc4-p55-94f821cd"
+GW112_SOURCE = "0ef4b1ccdcc4-p29-157fe376"
+CB2_COVER = "a70cb4c39824-p1-954eb9fe"
+CB2_SPACE = "a70cb4c39824-p1-632eb7c1"
+CB2_SPACE_RESET = "a70cb4c39824-p1-baa186e3"
+CB2_STARTUP = "a70cb4c39824-p20-c67a91ad"
+ORIGINAL_TEXTS = {
+    GW112_ANCHOR: (
+        "| No. | Model | PACK Quantity | Rated Capacity (kWh) |\n"
+        "| 1 | GW92.1-BAT-AC-G10 | 9 | 92.1 |\n"
+        "| 2 | GW102.4-BAT-AC-G10 | 10 | 102.4 |\n"
+        "| 3 | GW112.6-BAT-AC-G10 | 11 | 112.6 |"
+    ),
+    GW112_SOURCE: (
+        "BAT-C 92.1-112.6kWh, BAT-C 208.9kWh ·\n"
+        "The battery has a built-in Ezlink module. Each inverter is connected to the "
+        "battery system through an intelligent communication stick, and the battery "
+        "system transmits the parallel information to the smart energy control box. ○\n"
+        "BAT-S 51.2-56.3kWh ·\n"
+        "The battery does not have a built-in Ezlink module. Each inverter transmits "
+        "the information of a single inverter to the smart energy control box through "
+        "an intelligent communication stick. ○"
+    ),
+    CB2_COVER: (
+        "This quick installation guide is applicable for the installation of "
+        "CB2-(57.3K-100.3K)-HV5. For detailed instructions, refer to the User Manual."
+    ),
+    CB2_SPACE_RESET: "Dimensions of the CB2 battery cabinet:",
+    CB2_SPACE: (
+        "The cabinet can be installed either indoors or outdoors. Reserve at least "
+        "the following space around the whole battery system to ensure good air "
+        "circulation at the installation area:"
+    ),
+    CB2_STARTUP: (
+        "Step 1. Turn ON the DC switches on the inverter.\n"
+        "Step 2. Turn on the AC circuit breaker.\n"
+        "Step 3. Rotate the main switch to the ON position.\n"
+        "Step 4. Press and hold the START button for 3 seconds until the LED light "
+        "flashes in green.\n"
+        "Note: If the main switch suddenly trips while the machine is running, "
+        "rotate the switch to OFF and then back to ON.\n"
+        "5. Check the battery status on Elekeeper App\n"
+        "Step 1. Log in to the Elekeeper App, and check the Battery Info at the "
+        "Elekeeper App. Make sure that the numbers of battery clusters and battery "
+        "modules are as expected for each battery group."
+    ),
+}
+GW112_MODEL = "GW112.6-BAT-AC-G10"
+CB2_MODELS = ("CB2-57.3-HV5", "CB2-71.6-HV5", "CB2-85.9-HV5", "CB2-100.3-HV5")
+REVIEWED_PRODUCTS: dict[int, dict[str, Any]] = {
+    1955: {"model": GW112_MODEL},
+    **{
+        pid: {"model": model}
+        for pid, model in zip((4103, 4104, 4105, 4106), CB2_MODELS, strict=True)
+    },
+}
+
+
+def reviewed_records() -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    bat_ac = next(r for r in RECORDS if r["source_id"] == GW112_SOURCE)
+    cb2 = [r for r in RECORDS if r["sha256"].startswith("a70cb4c3")]
+    assert len(cb2) == 2
+    return bat_ac, cb2
+
+
+def reviewed_scope(record: dict[str, Any], pid: int, model: str) -> dict[str, Any]:
+    """Rebuild the runtime proof exactly as the compiler would serialize it."""
+    proof: dict[str, Any] = {
+        "product_id": pid,
+        "model": model,
+        "source_sha256": record["sha256"],
+        "source_page": record["source_page"],
+        "source_section": record["source_section"],
+        "source_id": record["source_id"],
+        "source_text": ORIGINAL_TEXTS[record["source_id"]],
+        "anchor_id": record["anchor_id"],
+        "anchor_text": ORIGINAL_TEXTS[record["anchor_id"]],
+    }
+    required = {record["anchor_id"], record["source_id"]}
+    reset = record.get("reviewed_reset")
+    if reset:
+        proof["clearance"] = {
+            "reset_id": reset["id"],
+            "reset_text": ORIGINAL_TEXTS[reset["id"]],
+            "cleared_texts": [
+                ORIGINAL_TEXTS[item["boundary"]["source_chunk_id"]]
+                for item in reset["cleared"]
+            ],
+        }
+        required.add(reset["id"])
+        required.update(
+            item["boundary"]["source_chunk_id"] for item in reset["cleared"]
+        )
+    return {
+        "product_ids": [pid],
+        "basis": "reviewed_manual",
+        "source_chunk_ids": sorted(required),
+        "document_ids": [f"doc-{record['sha256'][:12]}"],
+        "reviewed_manual": proof,
+    }
+
+
+def reviewed_valid(
+    record: dict[str, Any], pid: int, model: str, candidate: dict[str, Any]
+) -> bool:
+    """Validate one candidate proof against its record's pinned identity."""
+    text = str(record["excerpt"])
+    cid = evidence_id(
+        str(record["sha256"]),
+        int(record["source_page"]),
+        model,
+        str(record["source_id"]),
+        text,
+    )
+    return valid_reviewed_manual(
+        candidate,
+        [pid],
+        REVIEWED_PRODUCTS,
+        sha=str(record["sha256"]),
+        chunk_id=cid,
+        text=text,
+    )
+
+
+def test_gw112_and_cb2_records_match_their_published_subjects() -> None:
+    bat_ac, cb2 = reviewed_records()
+    assert subject_matches(bat_ac, GW112_MODEL)
+    assert subject_matches(bat_ac, "GW92.1-BAT-AC-G10")
+    assert not subject_matches(bat_ac, "GW208.9-BAT-LC-G10")
+    for record in cb2:
+        for model in CB2_MODELS:
+            assert subject_matches(record, model)
+        assert not subject_matches(record, "CB2-100.4-HV5")
+        assert not subject_matches(record, "BU3-5.0-TV2-PRO")
+
+
+@pytest.mark.parametrize(
+    "pid,model",
+    [
+        (1955, GW112_MODEL),
+        *zip((4103, 4104, 4105, 4106), CB2_MODELS, strict=True),
+    ],
+)
+def test_reviewed_manual_validates_and_rejects_tampering(pid: int, model: str) -> None:
+    bat_ac, cb2 = reviewed_records()
+    for record in [bat_ac] if model == GW112_MODEL else cb2:
+        scope = reviewed_scope(record, pid, model)
+
+        def validates(
+            candidate: dict[str, Any], *, proof: dict[str, Any] = record
+        ) -> bool:
+            return reviewed_valid(proof, pid, model, candidate)
+
+        assert validates(scope)
+        anchor = deepcopy(scope)
+        anchor["reviewed_manual"]["anchor_text"] += " GW80K-ETR-G10"
+        assert not validates(anchor)
+        source = deepcopy(scope)
+        source["reviewed_manual"]["source_text"] += " Extra unreviewed sentence."
+        assert not validates(source)
+        if "clearance" in scope["reviewed_manual"]:
+            reset = deepcopy(scope)
+            reset["reviewed_manual"]["clearance"]["reset_text"] += " changed"
+            assert not validates(reset)
+            cleared = deepcopy(scope)
+            cleared["reviewed_manual"]["clearance"]["cleared_texts"][0] += " changed"
+            assert not validates(cleared)
+            without = deepcopy(scope)
+            del without["reviewed_manual"]["clearance"]
+            assert not validates(without)
+        else:
+            forged = deepcopy(scope)
+            forged["reviewed_manual"]["clearance"] = {
+                "reset_id": CB2_SPACE_RESET,
+                "reset_text": ORIGINAL_TEXTS[CB2_SPACE_RESET],
+                "cleared_texts": [ORIGINAL_TEXTS[CB2_COVER]],
+            }
+            assert not validates(forged)
+        foreign = deepcopy(scope)
+        foreign["reviewed_manual"]["model"] = "BU3-5.0-TV2-PRO"
+        foreign["product_ids"] = [999999]
+        assert not reviewed_valid(record, 999999, "BU3-5.0-TV2-PRO", foreign)

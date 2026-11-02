@@ -934,3 +934,101 @@ test("native confirmation fences pending creation, revision and navigation befor
 			});
 		});
 });
+
+test("a selected project waits for a pending guest claim before reading and opens after settlement", async (t) => {
+	const fixture = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const { SessionBoundary } =
+		await import("../src/components/SessionBoundary.tsx");
+	const { Workspace } = await import("../src/components/Workspace.tsx");
+	const { PlannerClient } = await import("../src/data/PlannerClient.ts");
+	const { emptyBrief } = await import("../src/domain/brief.ts");
+	const project = {
+		id: "1".repeat(32),
+		title: "Claimed guest project",
+		revision: 1,
+		input_sha256: "2".repeat(64),
+		inputs: { brief: emptyBrief() },
+	};
+	history.replaceState(null, "", "/workspace/?project=" + project.id);
+	let currentSession = { ...session, kind: "user", claim_pending: true },
+		readCalls = 0;
+	const response = (value, status = 200) =>
+		new Response(JSON.stringify(value), {
+			status,
+			headers: { "Content-Type": "application/json" },
+		});
+	const client = new PlannerClient({
+		origin: location.origin,
+		baseUrl: location.origin + "/rpc/",
+		nonceUrl: location.origin + "/nonce",
+		fetch: async (url) => {
+			if (String(url).endsWith("/nonce")) return new Response("abcdefghij");
+			if (String(url).endsWith("/bootstrap")) return response(currentSession);
+			if (String(url).endsWith("/recovery/scopes"))
+				return response({ schema_version: 1, scopes: [], next: null });
+			if (String(url).endsWith("/projects/read")) {
+				readCalls++;
+				return currentSession.claim_pending
+					? response({ code: "not_found" }, 404)
+					: response(project);
+			}
+			return response({ items: [], next: null });
+		},
+	});
+	const store = {
+		async read() {
+			return null;
+		},
+		async readProfileImports() {
+			return [];
+		},
+		async candidates() {
+			return [];
+		},
+		async readCreations() {
+			return [];
+		},
+		async write() {},
+	};
+	const config = {
+		locale: "en-GB",
+		countries: { NO: "Norway" },
+		baseUrl: location.origin + "/rpc/",
+		nonceUrl: location.origin + "/nonce",
+	};
+	const root = createRoot(fixture.element);
+	t.after(() => fixture.dispose(root));
+	await act(async () =>
+		root.render(
+			React.createElement(
+				React.StrictMode,
+				null,
+				React.createElement(SessionBoundary, { client }, (value, recheck) =>
+					React.createElement(Workspace, {
+						key: value.query_scope,
+						session: value,
+						client,
+						store,
+						config,
+						recheck,
+					}),
+				),
+			),
+		),
+	);
+	await until(() =>
+		document.body.textContent.includes(
+			"Projects from the guest session are still being linked to your account.",
+		),
+	);
+	assert.equal(readCalls, 0);
+	currentSession = { ...currentSession, claim_pending: false };
+	await act(async () =>
+		[...document.querySelectorAll("button")]
+			.find((button) => button.textContent === "Check session")
+			.click(),
+	);
+	await until(() => document.querySelector("textarea"));
+	assert.equal(readCalls, 1);
+});

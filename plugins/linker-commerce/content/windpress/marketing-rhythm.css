@@ -14,6 +14,27 @@
 #installer-journal #installer-mobile-query {
 	height: auto;
 	min-height: 0;
+	resize: none;
+}
+
+/* Keep the German 22-character compound Installationsprojekte. on one line in
+   the 639px desktop hero column instead of breaking a trailing orphan e. */
+html[lang^="de"] #installer-journal .lk-hero-title {
+	font-size: clamp(2.35rem, 4.1vw, 3.625rem);
+}
+
+#installer-journal .lk-hero-console .lk-console-input-row {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+}
+
+#installer-journal .lk-hero-console .lk-console-input-row .lk-btn-query {
+	justify-self: start;
+}
+
+#installer-journal #lki-hero-query {
+	font-size: 0.78125rem;
+	text-overflow: ellipsis;
 }
 
 /* These headings can move complete words to the next line. Keep authored
@@ -34,8 +55,9 @@ html[lang^="de"]
 			#installer-journal,
 			#tv-solutions-developers-v1,
 			#tv-cp-page-v1,
-			#service-redesign
-		) :is(.lk-h2, .lk-h3),
+			#service-redesign,
+			#tv-utility-page-v1
+		) :is(.lk-h2, .lk-h3, h2, h3:not(.epc-faq-answer h3), .lk-app-title),
 		:is(#tv-rs-page-v1, #tv-cs-page-v1) .lk-tooldeck-content h3
 	) {
 	-webkit-hyphens: manual;
@@ -258,6 +280,25 @@ body #service-redesign a:is(.lk-btn-primary, .lk-btn-secondary, .linker-contact-
 		line-height: 1.5;
 		-webkit-hyphens: manual;
 		hyphens: manual;
+	}
+
+	/* Fit 22–24-character German compound headings inside their 390px columns
+	   without mid-word breaks. */
+	html[lang^="de"] #installer-journal #services .lk-h2,
+	html[lang^="de"] #tv-cs-page-v1 #services .lk-h2 {
+		font-size: clamp(1.5rem, 7vw, 1.75rem);
+	}
+
+	html[lang^="de"] #tv-cs-page-v1 #included .lk-comp-callout-panel h4 {
+		-webkit-hyphens: manual;
+		hyphens: manual;
+		font-size: clamp(1.25rem, 5.5vw, 1.375rem);
+	}
+
+	html[lang^="de"] #tv-cs-page-v1 #included .lk-comp-body h4 {
+		-webkit-hyphens: manual;
+		hyphens: manual;
+		font-size: 0.9375rem;
 	}
 }
 

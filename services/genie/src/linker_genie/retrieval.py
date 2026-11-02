@@ -1010,10 +1010,12 @@ class DocumentIndex:
                         for pid in sorted(ids)
                     ]
                     value = proof["warranty_scope"]
-                    if (
-                        value.get("policy", {}).get("format")
-                        == "hs3_series_standard_warranty"
-                    ):
+                    if value.get("policy", {}).get(
+                        "format"
+                    ) == "hs3_series_standard_warranty" and {
+                        "datasheet",
+                        "manual",
+                    }.issubset(value.get("source_documents", {})):
                         refs = value["source_documents"]
                         output[row]["supporting_documents"] = []
                         for role, source_id, page_number in (
@@ -1057,7 +1059,7 @@ class DocumentIndex:
             (json.dumps(list(SOURCES)),),
         ).fetchall()
         source_anchors = hs3_anchors(source_rows)
-        from linker_genie.hs3_warranty_terms import SOURCES as HS3_WARRANTY_SOURCES
+        from linker_genie.hs3_warranty_terms import ALL_SOURCES as HS3_WARRANTY_SOURCES
         from linker_genie.hs3_warranty_terms import anchors as hs3_warranty_anchors
 
         warranty_rows = self._db.execute(
