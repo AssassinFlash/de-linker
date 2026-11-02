@@ -421,6 +421,7 @@ def _compute_turn(
         "scripted",
         "roof",
     ) or (simple_stock(prepared.route) and result.attempts == 0)
+    code_made = code_made or prepared.log.get("saved_material_answer") is True
     with timing.phase(clock, timing.LOG):
         turn_id = turn_log().record(
             conversation_id=body.conversation_id,
@@ -523,6 +524,25 @@ def _answer(
     # A person request and a parts list are written by the service. Their
     # sentences follow the question, the same rule as a model answer.
     language = turn_language(body)
+    if "verified saved material explanation" in prepared.route.reasons:
+        material_answer = planning.material_answer(
+            body.planning_context, body.page_context, language
+        )
+        _, facts = planning.record(body.planning_context, body.page_context)
+        prepared.log["saved_material_answer"] = True
+        return (
+            TurnResult(
+                output=TurnOutput(
+                    language=language, blocks=[TextBlock(text=material_answer)]
+                ),
+                facts=facts,
+                grounded=True,
+                failures=(),
+                fallback=False,
+                attempts=0,
+            ),
+            None,
+        )
     if prepared.route.name == "person":
         return (
             TurnResult(

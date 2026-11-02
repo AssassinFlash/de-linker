@@ -292,6 +292,22 @@ def test_owned_mounting_rule_report_worker_and_export_permission(
     assert selected["calculation_sources"] == {"schema_version": 1, "groups": []}
     assert "Synthetic project end clamp" not in str(selected["rows"])
     assert "Installation material 1" in str(selected["rows"])
+    material_items = selected["declared_installation_materials"]
+    assert material_items == [
+        {
+            "quantity": {"en": "8 pc", "de": "8 St."},
+            "explanation": {
+                "en": "5 modules × 0 + 2 occupied row segments × 4 + 3 neighboring slot pairs × 0 = 8 pieces",
+                "de": "5 Module × 0 + 2 belegte Reihenabschnitte × 4 + 3 Paare benachbarter Modulplätze × 0 = 8 Stück",
+            },
+        }
+    ]
+    german = assistant_context(
+        workspace, owner, project.id, project.revision, [run.id], "de"
+    )
+    german_items = json_object(german)["runs"][0]["declared_installation_materials"]
+    assert "2 belegte Reihenabschnitte × 4" in german_items[0]["explanation"]["de"]
+    assert "Synthetic project end clamp" not in str(german_items)
     legacy_source = workspace.blobs.object(result["dependencies"]["report_source"])
     del legacy_source["energy"]
     legacy_sha = workspace.blobs.put_object(legacy_source)

@@ -93,6 +93,108 @@ def saved_result_question(raw: Any, page: PageContext, question: str) -> bool:
     )
 
 
+def is_material_report(raw: Any, page: PageContext) -> bool:
+    if not isinstance(raw, dict):
+        return False
+    payload = view(raw, page)
+    runs = raw.get("runs")
+    if (
+        payload.get("status") != "available"
+        or payload.get("truncated")
+        or not isinstance(runs, list)
+        or len(runs) != 1
+    ):
+        return False
+    run = runs[0]
+    return bool(
+        isinstance(run, dict)
+        and run.get("kind") == "planning_report_v1"
+        and run.get("state") == "succeeded"
+        and not run.get("truncated")
+        and isinstance(run.get("declared_installation_materials"), list)
+        and run["declared_installation_materials"]
+    )
+
+
+def material_answer(raw: Any, page: PageContext, language: str) -> str:
+    """Explain all anonymous declared material rows, never match private names."""
+    unavailable = (
+        "Die gespeicherten Materialdetails konnten nicht überprüft werden. Bitte öffnen Sie den Bericht."
+        if language == "de"
+        else "The saved material details could not be verified. Please open the report."
+    )
+    payload = view(raw, page)
+    if (
+        payload.get("status") != "available"
+        or payload.get("truncated")
+        or not isinstance(raw, dict)
+    ):
+        return unavailable
+    runs = raw.get("runs")
+    if not isinstance(runs, list) or len(runs) != 1:
+        return unavailable
+    run = runs[0]
+    if (
+        not isinstance(run, dict)
+        or run.get("kind") != "planning_report_v1"
+        or run.get("state") != "succeeded"
+        or run.get("truncated")
+    ):
+        return unavailable
+    items = run.get("declared_installation_materials")
+    if not isinstance(items, list) or not items:
+        return unavailable
+    prefix = "Installationsmaterial" if language == "de" else "Installation material"
+
+    def translated(value: Any) -> bool:
+        return (
+            isinstance(value, dict)
+            and set(value) == {"en", "de"}
+            and all(isinstance(v, str) for v in value.values())
+        )
+
+    for item in items:
+        if (
+            not isinstance(item, dict)
+            or set(item) != {"quantity", "explanation"}
+            or not translated(item["quantity"])
+            or (item["explanation"] is not None and not translated(item["explanation"]))
+        ):
+            return unavailable
+    lang = "de" if language == "de" else "en"
+    if language == "de":
+        lines = [
+            "Ihr gespeicherter Bericht enthält diese angegebenen Installationsmaterialien:"
+        ]
+        lines += [
+            f"• {prefix} {index}: {item['quantity'][lang]}"
+            + (
+                f". Berechnung: {item['explanation'][lang]}"
+                if item["explanation"]
+                else ""
+            )
+            for index, item in enumerate(items, 1)
+        ]
+        lines.append(
+            "Die eingegebenen Materialnamen sind in dieser Assistentenansicht nicht verfügbar; einen bestimmten Namen kann ich nicht bestätigen. Dies sind Projektangaben. Eignung, Befestigung und Vollständigkeit sind nicht geprüft."
+        )
+    else:
+        lines = ["Your saved report lists these declared installation materials:"]
+        lines += [
+            f"• {prefix} {index}: {item['quantity'][lang]}"
+            + (
+                f". Calculation: {item['explanation'][lang]}"
+                if item["explanation"]
+                else ""
+            )
+            for index, item in enumerate(items, 1)
+        ]
+        lines.append(
+            "The entered material names are not available in this assistant view, so I cannot verify a specific name. These are project declarations; suitability, fastening and completeness are not assessed."
+        )
+    return "\n".join(lines)
+
+
 def view(raw: Any, page: PageContext) -> dict[str, Any]:
     if not isinstance(raw, dict) or raw.get("schema_version") != 1:
         return {"error": "unavailable"}
