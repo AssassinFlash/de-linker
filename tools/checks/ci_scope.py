@@ -277,6 +277,11 @@ def selected_modules(changes, base="", head=""):
             continue
         if path in CONTROL_INPUTS or path.startswith(".github/"):
             return None
+        # ci-content runs this test through the i18n-coverage recipe. Changes
+        # to the extractor itself can change which source files a proof reads.
+        if path == "tools/checks/test_i18n_sources.py":
+            selected.add("content")
+            continue
         test_owner = plugin_js_test_owner(path)
         if test_owner is not None:
             selected.add("js:" + test_owner)

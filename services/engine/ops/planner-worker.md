@@ -130,6 +130,11 @@ The hour/window and 600-second work budget are explicit installer options.
 The caller reserves additional bounded time from the selected release's existing
 start/stop/drain budgets for paired recovery and cleanup. A second work alarm
 must not interrupt the native operator's `finally` recovery.
+The offline collector receives only the remaining work budget, instead of the
+service startup timeout. If it expires before shutdown, the pair stays up; if
+it expires after shutdown, the operator restores and resumes the pair. Direct
+`retention --apply` uses `--work-seconds` (default 600, matching the scheduler's
+existing work budget); it does not change the service start or stop deadlines.
 
 Before any backup or service action the caller reads the selected namespace,
 actual paired readiness, queue state and complete native CAS plan. Busy,

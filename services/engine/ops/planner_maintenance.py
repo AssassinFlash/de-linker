@@ -38,10 +38,13 @@ from linker_engine.planning.storage import Blobs
 # The existing native lock, verifier and maintenance entry run from the selected
 # executable. Request data is stdin-only; service credentials never leave it.
 REMOTE = r"""
-import fcntl, hashlib, inspect, json, os, pathlib, pwd, re, runpy, shutil, signal, sqlite3, struct, sys
+import fcntl, hashlib, inspect, json, math, os, pathlib, pwd, re, runpy, shutil, signal, sqlite3, struct, sys, time
 def interrupted(*args): raise KeyboardInterrupt()
 signal.signal(signal.SIGHUP, interrupted); signal.signal(signal.SIGTERM, interrupted)
 p=json.loads(sys.stdin.buffer.readline()); root=pathlib.Path(p['root'])
+work_budget=float(p['budget'])
+if not math.isfinite(work_budget) or work_budget<=0: raise ValueError('invalid_maintenance_budget')
+work_deadline=time.monotonic()+work_budget
 def expired(*args): raise TimeoutError('maintenance_budget_expired')
 signal.signal(signal.SIGALRM,expired)
 # The native mutator already bounds its command groups and owns finally.
@@ -140,7 +143,11 @@ elif action=='stage':
         raise
 elif action=='apply':
     assert marker()['database_sha256']==p['database_sha256']
-    result=m['maintain'](r,apply=True,recovery=recovery,when_idle=True)
+    kwargs={'apply':True,'recovery':recovery,'when_idle':True}
+    # Previous prepared releases remain usable after a rollback; they retain
+    # their earlier operator budget until a release with this option is active.
+    if 'work_deadline' in inspect.signature(m['maintain']).parameters: kwargs['work_deadline']=work_deadline
+    result=m['maintain'](r,**kwargs)
     ready(); control=r.operator('control','status')
     result['restored']=not control['draining']
 elif action=='cleanup':

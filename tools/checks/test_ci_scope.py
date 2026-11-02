@@ -62,6 +62,21 @@ class ScopeTest(unittest.TestCase):
                     expected,
                 )
 
+    def test_translation_check_changes_keep_their_actual_consumers(self):
+        self.assertEqual(
+            self.classify(("M", "tools/checks/test_i18n_sources.py")),
+            ["content"],
+        )
+        selected = ci_scope.selected_modules(
+            [
+                ("M", "tools/checks/test_i18n_sources.py"),
+                ("M", "services/engine/src/linker_engine/planning/archive.py"),
+            ],
+            "base",
+            "head",
+        )
+        self.assertEqual(set(selected), {"engine", "content"})
+
     def test_plugin_js_test_entrypoints_keep_only_their_actual_recipe(self):
         for path, owner in (
             (
