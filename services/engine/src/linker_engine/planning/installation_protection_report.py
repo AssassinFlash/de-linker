@@ -79,16 +79,36 @@ def protection_section(review: Object, locale: str) -> ReportSection:
     rows: list[ReportRow] = []
     for item in cast(list[Object], review.get("assessments", [])):
         scenario = str(item["scenario"])
-        for key, title, unit in (
-            ("breaking", "Ausschaltvermögen" if de else "Breaking capacity", "A"),
-            ("disconnection", "Abschaltzeit" if de else "Clearing time", "s"),
+        for key, title, unit, measured_label, limit_label in (
+            (
+                "breaking",
+                "Ausschaltvermögen" if de else "Breaking capacity",
+                "A",
+                "Maximaler Fehlerstrom" if de else "Maximum prospective fault current",
+                "Ausschaltvermögen des Schutzgeräts"
+                if de
+                else "device breaking capacity",
+            ),
+            (
+                "disconnection",
+                "Abschaltzeit" if de else "Clearing time",
+                "s",
+                "Längste Abschaltzeit des Schutzgeräts"
+                if de
+                else "Worst-case device clearing time",
+                "zulässige Abschaltzeit" if de else "required maximum clearing time",
+            ),
         ):
             value = cast(Object, item[key])
             detail = _state(value, locale)
             if isinstance(value.get("measured"), (int, float)) and isinstance(
                 value.get("maximum"), (int, float)
             ):
-                detail += f" · {number(value['measured'], locale, unit)} / {number(value['maximum'], locale, unit)}"
+                relation = ">" if value["status"] == "outside_declared_values" else "≤"
+                detail += (
+                    f" · {measured_label} {number(value['measured'], locale, unit)} "
+                    f"{relation} {limit_label} {number(value['maximum'], locale, unit)}"
+                )
             if key == "breaking" and isinstance(value.get("voltage_v"), (int, float)):
                 detail += f" · {number(value['voltage_v'], locale, 'V')} {str(value.get('current_kind', '')).upper()}"
             if key == "disconnection" and isinstance(
@@ -110,7 +130,21 @@ def protection_section(review: Object, locale: str) -> ReportSection:
             if isinstance(thermal.get("measured"), (int, float)) and isinstance(
                 thermal.get("maximum"), (int, float)
             ):
-                detail += f" · I²t {number(thermal['measured'], locale, 'A²s')} / k²S² {number(thermal['maximum'], locale, 'A²s')}"
+                relation = (
+                    ">" if thermal["status"] == "outside_declared_values" else "≤"
+                )
+                energy = (
+                    "Maximales Durchlassintegral I²t"
+                    if de
+                    else "Maximum let-through I²t"
+                )
+                limit = (
+                    "thermische Leitergrenze k²S²" if de else "conductor withstand k²S²"
+                )
+                detail += (
+                    f" · {energy} {number(thermal['measured'], locale, 'A²s')} "
+                    f"{relation} {limit} {number(thermal['maximum'], locale, 'A²s')}"
+                )
                 detail += f" · S {number(thermal['cross_section_mm2'], locale, 'mm²')} · k {number(thermal['k_a_sqrt_s_per_mm2'], locale, 'A√s/mm²')}"
                 detail += f" · {number(thermal['coverage_min_fault_a'], locale, 'A')}–{number(thermal['coverage_max_fault_a'], locale, 'A')} · {number(thermal['maximum_clear_s'], locale, 's')}"
             for field in (
