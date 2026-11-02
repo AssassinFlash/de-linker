@@ -56,6 +56,10 @@ class ReportInputsChanged(InvalidInput):
     code = "report_inputs_changed"
 
 
+class ReportWiringCheckRequired(ReportInputsChanged):
+    code = "report_wiring_check_required"
+
+
 def renew_module_permission(previous: Object, current: Object) -> Object:
     """Renew permission only when every frozen module fact and citation matches."""
     if previous.get("schema_version") != 1 or not isinstance(
@@ -673,7 +677,7 @@ def report_sources(
         )
         has_result = isinstance(assessment.get("pv_electrical"), dict)
         if has_wiring and not has_result:
-            raise ReportInputsChanged(
+            raise ReportWiringCheckRequired(
                 "report equipment has not assessed the saved PV wiring plan"
             )
         if has_result:

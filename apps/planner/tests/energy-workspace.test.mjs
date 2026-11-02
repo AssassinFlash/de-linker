@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { IDBFactory } from "fake-indexeddb";
 import { setupDom, until, enter, deferred } from "./dom-fixture.mjs";
 import { EnergyWorkspace } from "../src/components/energy/EnergyWorkspace.tsx";
+import { EnergyError } from "../src/components/energy/EnergyError.tsx";
 import {
 	beginDraft,
 	editDraft,
@@ -33,6 +34,42 @@ const click = async (text) => {
 	assert.equal(node.disabled, false, "disabled " + text);
 	await act(async () => node.click());
 };
+
+test("a missing saved-wiring assessment has a specific explanation and the native equipment entry", async (t) => {
+	const dom = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const root = createRoot(dom.element);
+	t.after(() => dom.dispose(root));
+	await act(async () =>
+		root.render(
+			React.createElement(EnergyError, {
+				error: new ApiError(422, "report_wiring_check_required"),
+			}),
+		),
+	);
+	assert.match(dom.element.textContent, /saved PV strings/);
+	assert.match(
+		dom.element.textContent,
+		/select that completed result under Equipment checks/,
+	);
+	assert.equal(
+		dom.element.querySelector("a").getAttribute("href"),
+		"#lp-equipment",
+	);
+	assert.equal(dom.element.querySelector("a").textContent, "Equipment");
+	await act(async () =>
+		root.render(
+			React.createElement(EnergyError, {
+				error: new ApiError(422, "report_inputs_changed"),
+			}),
+		),
+	);
+	assert.match(
+		dom.element.textContent,
+		/does not match the saved project inputs/,
+	);
+	assert.equal(dom.element.querySelector("a"), null);
+});
 
 test("actual scenario controls retain raw input, require confirmed save, use one frozen revision, and preserve edits from a late preparation response", async (t) => {
 	const dom = setupDom(),

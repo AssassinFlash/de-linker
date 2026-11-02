@@ -13633,3 +13633,7 @@ msgstr "Größere Berechnungen für geneigte Dächer: bis zu %s Module, %s Strin
 #: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx build/planner/assets/planner.js
 msgid "One four-corner roof plane up to 60°, without holes, obstacles or keep-out areas and no more than 40 m along either roof axis. One array parallel to the roof, with up to 8 rows and 12 columns and one module specification."
 msgstr "Eine vierseitige Dachfläche mit höchstens 60° Neigung, ohne Aussparungen, Hindernisse oder Sperrflächen und mit höchstens 40 m entlang jeder Dachachse. Ein parallel zum Dach angeordnetes Modulfeld mit höchstens 8 Reihen und 12 Spalten und einer Modulspezifikation."
+
+#: ../../apps/planner/src/components/energy/EnergyError.tsx build/planner/assets/planner.js
+msgid "The report needs an equipment check of the saved PV strings. Check the saved equipment selection in Equipment, then return to Planning report and select that completed result under Equipment checks."
+msgstr "Für den Bericht müssen die gespeicherten PV-Strings geprüft werden. Klicken Sie unter „Geräte“ auf „Gespeicherte Geräteauswahl prüfen“. Kehren Sie anschließend zum Planungsbericht zurück und wählen Sie unter „Prüfung der Geräteauswahl“ das abgeschlossene Ergebnis aus."

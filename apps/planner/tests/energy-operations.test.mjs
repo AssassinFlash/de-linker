@@ -376,32 +376,51 @@ test("only a specific proven pre-mutation stale-revision refusal releases a calc
 	assert.deepEqual(await r.durable.list([scope], projectId), []);
 });
 
-test("a native expanded-roof refusal releases the unqueued request for corrected input", async (t) => {
-	let refused = true;
-	const r = await rig(
-		t,
-		async () =>
-			refused
-				? json({ error: { code: "geometric_pv_expanded_scope_required" } }, 422)
-				: json(preparation.geometric_pv.run),
-		{ projectId: preparation.geometric_pv.run.project_id },
-	);
-	await act(async () =>
-		r.api.start("runs/geometric-pv", { expected_revision: 2 }),
-	);
-	await until(() => r.api.error && r.api.records.length === 0);
-	assert.equal(r.api.error.code, "geometric_pv_expanded_scope_required");
-	assert.deepEqual(
-		await r.durable.list([scope], preparation.geometric_pv.run.project_id),
-		[],
-	);
-	refused = false;
-	let reply;
-	await act(async () => {
-		reply = await r.api.start("runs/geometric-pv", { expected_revision: 2 });
+for (const [code, path, run, options] of [
+	[
+		"geometric_pv_expanded_scope_required",
+		"runs/geometric-pv",
+		preparation.geometric_pv.run,
+		{},
+	],
+	[
+		"report_wiring_check_required",
+		"runs/report",
+		preparation.geometric_pv.report_run,
+		{
+			options: {
+				locale: "en",
+				energy_run_id: null,
+				pv_run_id: preparation.geometric_pv.run.id,
+				equipment_run_id: null,
+				logo: null,
+			},
+		},
+	],
+])
+	test(`a native ${code} refusal releases the unqueued request for corrected input`, async (t) => {
+		let refused = true;
+		const r = await rig(
+			t,
+			async () => (refused ? json({ error: { code } }, 422) : json(run)),
+			{ projectId: run.project_id },
+		);
+		await act(async () =>
+			r.api.start(path, { expected_revision: run.revision, ...options }),
+		);
+		await until(() => r.api.error && r.api.records.length === 0);
+		assert.equal(r.api.error.code, code);
+		assert.deepEqual(await r.durable.list([scope], run.project_id), []);
+		refused = false;
+		let reply;
+		await act(async () => {
+			reply = await r.api.start(path, {
+				expected_revision: run.revision,
+				...options,
+			});
+		});
+		assert.equal(reply.run.id, run.id);
 	});
-	assert.equal(reply.run.id, preparation.geometric_pv.run.id);
-});
 
 test("acknowledged battery settings remain recoverable until that asset is saved, or explicitly dismissed", async (t) => {
 	const asset = {

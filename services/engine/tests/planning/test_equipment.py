@@ -780,7 +780,7 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
             }
         ],
     }
-    with pytest.raises(ReportInputsChanged, match="has not assessed"):
+    with pytest.raises(ReportInputsChanged, match="has not assessed") as missing_wiring:
         report_sources(
             workspace,
             sources,
@@ -788,6 +788,7 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
             replace(workspace.get(actor, project["id"]), inputs=bypass),
             options.model_copy(update={"equipment_run_id": None}),
         )
+    assert missing_wiring.value.code == "report_wiring_check_required"
     assert selected_source["equipment"] == assessment
     assert selected_source["equipment_plant"] == chosen
     assert selected_source["source_runs"][0]["candidate_id"] == candidate["id"]
@@ -2278,7 +2279,9 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
             "temperature_source": None,
             "strings": [],
         }
-        with pytest.raises(ReportInputsChanged, match="has not assessed"):
+        with pytest.raises(
+            ReportInputsChanged, match="has not assessed"
+        ) as missing_wiring:
             report_sources(
                 workspace,
                 source,
@@ -2292,6 +2295,7 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
                     logo=None,
                 ),
             )
+        assert missing_wiring.value.code == "report_wiring_check_required"
         selected_inputs["equipment_candidate"]["assessment_sha256"] = "0" * 64
         with pytest.raises(InvalidInput):
             check_equipment_candidate(
