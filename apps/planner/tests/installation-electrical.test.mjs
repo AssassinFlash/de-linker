@@ -632,28 +632,38 @@ test("a physical conductor binds its own cross-section to the selected equipment
 			],
 		},
 	};
+	const otherProduct = structuredClone(product);
+	otherProduct.id = 1947;
+	otherProduct.model = "Other fixture";
+	otherProduct.installation_facts.items[0].source.product_id = 1947;
+	otherProduct.installation_facts.items[0].source.page = 152;
+	otherProduct.installation_facts.items[0].source.document_id = "other-fixture";
+	plan.instances[1].product_id = otherProduct.id;
+	plan.instances[1].product_revision = sha;
 	let saved;
-	await act(async () =>
-		root.render(
-			React.createElement(CableForm, {
-				locale: "en-GB",
-				plan,
-				geometry: { sources: [] },
-				cable: plan.cable_runs[0],
-				products: [product],
-				cancel() {},
-				onValidity() {},
-				submit(value) {
-					saved = value;
-					return true;
-				},
-			}),
-		),
-	);
+	const render = async (products) =>
+		act(async () =>
+			root.render(
+				React.createElement(CableForm, {
+					locale: "en-GB",
+					plan,
+					geometry: { sources: [] },
+					cable: plan.cable_runs[0],
+					products,
+					cancel() {},
+					onValidity() {},
+					submit(value) {
+						saved = value;
+						return true;
+					},
+				}),
+			),
+		);
+	await render([product, otherProduct]);
 	const select = document.querySelector('[name="manufacturer_conductor"]');
 	assert.match(select.textContent, /AC conductor.*155/);
 	await act(async () => {
-		select.value = "candidate:0";
+		select.value = select.options[1].value;
 		select.dispatchEvent(new window.Event("change", { bubbles: true }));
 	});
 	assert.ok(dom.element.querySelector('a[href$="#page=155"]'));
@@ -663,6 +673,13 @@ test("a physical conductor binds its own cross-section to the selected equipment
 	);
 	await act(async () =>
 		document.querySelector('[name="manufacturer_confirmed"]').click(),
+	);
+	plan.instances.reverse();
+	await render([otherProduct, product]);
+	assert.ok(dom.element.querySelector('a[href$="#page=155"]'));
+	assert.equal(
+		document.querySelector('[name="manufacturer_confirmed"]').checked,
+		true,
 	);
 	await act(async () =>
 		document
@@ -678,6 +695,31 @@ test("a physical conductor binds its own cross-section to the selected equipment
 		50,
 	);
 	assert.equal(saved.manufacturer_comparison.fact_id, "ac-conductor");
+	assert.equal(saved.manufacturer_comparison.product_id, 1946);
+	saved = undefined;
+	await render([otherProduct]);
+	assert.match(select.textContent, /Selected source unavailable/);
+	assert.equal(
+		document.querySelector('[name="manufacturer_confirmed"]').disabled,
+		true,
+	);
+	assert.equal(
+		document.querySelector('[name="manufacturer_confirmed"]').checked,
+		false,
+	);
+	await act(async () =>
+		document
+			.querySelector("form")
+			.dispatchEvent(
+				new window.Event("submit", { bubbles: true, cancelable: true }),
+			),
+	);
+	assert.equal(saved, undefined);
+	await render([otherProduct, product]);
+	assert.equal(
+		document.querySelector('[name="manufacturer_confirmed"]').checked,
+		false,
+	);
 	await enter(document.querySelector('[name="cross_section"]'), "70");
 	assert.equal(
 		document.querySelector('[name="manufacturer_confirmed"]').checked,

@@ -19,7 +19,8 @@ import type { ReferenceCurrentChoice } from "./ReferenceCurrentFields.tsx";
 import type { CoreRole } from "../../domain/installationElectrical.ts";
 import { referenceCurrentContext } from "../../domain/installationReferenceCurrent.ts";
 import { conductorCandidates } from "../../domain/installationConductorComparison.ts";
-import { useRef, useState } from "react";
+import type { ConductorCandidate } from "../../domain/installationConductorComparison.ts";
+import { useEffect, useRef, useState } from "react";
 import type { GeometryDocument } from "../../domain/geometry.ts";
 import type {
 	DeviceInstance,
@@ -56,6 +57,16 @@ interface Common {
 	plan: InstallationInputs;
 	cancel: () => void;
 	onValidity: (valid: boolean) => void;
+}
+function conductorCandidateKey(candidate: ConductorCandidate): string {
+	return `candidate:${JSON.stringify([
+		candidate.instanceId,
+		candidate.product.id,
+		candidate.product.product_revision,
+		candidate.factId,
+		candidate.documentId,
+		candidate.documentRevision,
+	])}`;
 }
 function SourceChoice({
 	geometry,
@@ -822,7 +833,7 @@ export function CableForm({
 	});
 	const activeManufacturer =
 		manufacturerChoice === "saved"
-			? candidates.find(
+			? eligible.find(
 					(candidate) =>
 						candidate.instanceId ===
 							cable?.manufacturer_comparison?.instance_id &&
@@ -836,8 +847,18 @@ export function CableForm({
 							cable.manufacturer_comparison.document_revision,
 				)
 			: manufacturerChoice.startsWith("candidate:")
-				? candidates[Number(manufacturerChoice.slice(10))]
+				? eligible.find(
+						(candidate) =>
+							conductorCandidateKey(candidate) === manufacturerChoice,
+					)
 				: undefined;
+	const manufacturerAvailable = activeManufacturer !== undefined;
+	useEffect(() => {
+		if (manufacturerChoice !== "none" && !manufacturerAvailable) {
+			setManufacturerConfirmed(false);
+			setManufacturerConfirmedHere(false);
+		}
+	}, [manufacturerChoice, manufacturerAvailable]);
 	const savedReference = declared?.cable_reference;
 	const savedReferenceKey = savedReference
 		? String(savedReference.product_id) + ":" + savedReference.product_revision
@@ -941,7 +962,7 @@ export function CableForm({
 							? cable?.manufacturer_comparison
 							: undefined;
 					const selected = manufacturerChoice.startsWith("candidate:")
-						? candidates[Number(manufacturerChoice.slice(10))]
+						? activeManufacturer
 						: undefined;
 					const circuit = plan.circuits.find(
 						(item) => item.id === next.circuit_id,
@@ -986,7 +1007,7 @@ export function CableForm({
 					}
 					next.manufacturer_comparison = {
 						...identity,
-						conditions_confirmed: manufacturerConfirmed,
+						conditions_confirmed: manufacturerConfirmed && manufacturerAvailable,
 						confirmation_context: context,
 					};
 				}
@@ -1202,10 +1223,19 @@ export function CableForm({
 							{cable.manufacturer_comparison.fact_id}
 						</option>
 					)}
+					{manufacturerChoice.startsWith("candidate:") &&
+						!activeManufacturer && (
+							<option value={manufacturerChoice}>
+								{t(
+									"Selected source unavailable",
+									"Ausgewählte Quelle nicht verfügbar",
+								)}
+							</option>
+						)}
 					{eligible.map((candidate) => (
 						<option
-							key={candidate.instanceId + candidate.factId}
-							value={`candidate:${candidates.indexOf(candidate)}`}
+							key={conductorCandidateKey(candidate)}
+							value={conductorCandidateKey(candidate)}
 						>
 							{candidate.product.brand} {candidate.product.model} ·{" "}
 							{candidate.label} · p. {candidate.page}
@@ -1251,7 +1281,7 @@ export function CableForm({
 							type="checkbox"
 							name="manufacturer_confirmed"
 							disabled={!activeManufacturer}
-							checked={manufacturerConfirmed}
+							checked={manufacturerConfirmed && manufacturerAvailable}
 							onChange={(event) => {
 								setManufacturerConfirmed(event.currentTarget.checked);
 								setManufacturerConfirmedHere(event.currentTarget.checked);
