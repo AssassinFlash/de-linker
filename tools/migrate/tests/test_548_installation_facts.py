@@ -702,10 +702,9 @@ def test_refresh_writes_only_revisions_in_place(
             }
         },
     }
-    monkeypatch.setattr(migration, "PLAN", path)
     monkeypatch.setattr(migration, "invoke", lambda *_args, **_kw: (0, "", reply))
 
-    assert migration._refresh(_site(), write=True) == 0
+    assert migration._refresh(_site(), write=True, plan_path=path) == 0
     written = path.read_text()
     loaded = json.loads(written)
     assert loaded["products"]["6506"]["product_revision"] == "e" * 64

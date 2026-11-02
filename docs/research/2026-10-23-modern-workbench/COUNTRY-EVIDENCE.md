@@ -366,3 +366,9 @@ Pour l'application du règlement UE n° 2016/631, les catégories significatives
 由[公开经销商文件](https://shop.krannich-solar.com/en-de/product-downloads/0163065/GW100K-ET-G10/Datasheet-DE.pdf#page=2)取得的 2 页 GoodWe 德文原件，与已托管的 4adebe72… 字节相同。第 2 页注 1 将 950–1,000 V 待机限定于 GW80K、GW99.99K 和 GW100K 三款 G10。德文写低于 950 V 恢复，已托管英文 4f717804… 第 2 页写回到 950 V。不能由此单独推导边界点的控制迟滞、定量热降额或电网短路电流，也不能把该脚注外推至 75 kW 型号。
 
 Apify 检索记录 GimfClfA2AJhH0U9J、2aOchEnlB1M465Jpf、dDUwRF2Cm5Xka3166；原件/登记读取记录 NZcaEvmcnKBNwIu97、H39pEtcuiAm2AaW31、Qo7N7ytGjL9E5Ul8a、dWea2lQz2kHbQmXHY、ea9t3QsfBd8Z8c0Ns。H39… 的另一份手册请求超时，G100 二进制已独立读到；仅计实际取得的文件。检索与证书登记均未发生对外通信。
+
+### ET 输出故障峰值与浪涌的检索记录，2026-11-02
+
+已实际打开[GoodWe 手册的第 279 页镜像](https://www.manualslib.com/manual/4398258/Goodwe-Gw50k-Et-L-G10.html?page=279)。页中同表列出 GW75K、GW80K、GW99.99K、GW100K 的 ET-G10 型号，最大输出故障电流峰值及时长一行标为 406 A / 2.3 µs。63.5 A / 20 ms 出现在独立的浪涌电流行。该页未给出试验故障类型、位置及并网或备用工况。本站托管的 307 页 V1.2 手册同页是故障排查，不引用其页码支持这些数值。
+
+在 [GoodWe 中国的资料入口](https://www.goodwe.com/Cn/Skippower/downloadFile?id=426&mid=60) 和[另一份公开英文 PDF 入口](https://www.alternergy.co.uk/web/content/75438/GoodWe%20Commercial%20Smart%20Inverter%20Manual%20ET75-ET100kW%20-%2003%2002%202026.pdf?download=false)定位到型号与数字。此次抓取没有取得可核版次的 PDF 原件。镜像页支持继续按表头追查；现有数据不足以计算持续短路电流、保护选择性或现场分断能力。没有据此修改产品额定值或保护算法。

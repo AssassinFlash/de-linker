@@ -1089,7 +1089,16 @@ def checked_base(commit):
         ):
             original = checked_pr_tree(commit)
             return validated_scope(original) in {"full", "scoped"}
-        if run and (run["status"] != "completed" or run["conclusion"] != "cancelled"):
+        # A main push can still be running after its identical PR tree passed.
+        # Keep completed failures authoritative; pending work is not a failure.
+        if (
+            run
+            and (run["status"] != "completed" or run["conclusion"] != "cancelled")
+            and not (
+                run.get("event") == "push"
+                and run["status"] in {"queued", "in_progress"}
+            )
+        ):
             return False
         original = checked_pr_tree(commit)
         return validated_scope(original) in {"full", "scoped"}

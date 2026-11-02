@@ -534,7 +534,7 @@ def _refresh(site: Target, write: bool, plan_path: Path | None = None) -> int:
         return 0
     # Substitute in place: a full re-serialization would reformat every line and
     # bury the nine values this actually changed.
-    text = PLAN.read_text()
+    text = plan_path.read_text()
     for old, new in substitutions.items():
         text = text.replace(old, new)
     if json.loads(text) != plan:
