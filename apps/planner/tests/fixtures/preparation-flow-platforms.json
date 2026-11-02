@@ -4,7 +4,9 @@
 	"baselines": {
 		"darwin-arm64": {
 			"fixture": "preparation-flow-darwin-arm64.json",
-			"canonical_sorted_json_sha256": "7cf86d8bc23dfb9cb25bff1e3c510d5b1f9695b4d6781ba5252a3e1062cd647c",
+			"source_sha256": "406c42fa08d658359c81a2a31fa9d1814f1c093d96efec900e0d66b633929bb8",
+			"runtime_sha256": "8288daae9877e72b9b516e2d387c692a4841e43f001abff280d51daaa509dd2e",
+			"canonical_sorted_json_sha256": "664ac09beaa0fd61b3fb48b4bf749a18235af0e97162d906ab5fbd88d0e15ab0",
 			"runtime": {
 				"dependencies": {
 					"jsonschema": "4.26.0",
@@ -23,13 +25,17 @@
 				"libc": ["", ""],
 				"machine": "arm64",
 				"platform": "macOS-26.6.2-arm64-arm-64bit",
-				"python": "3.12.15"
+				"python": "3.12.15",
+				"python_implementation": "CPython",
+				"sqlite": "3.54.1"
 			},
-			"export_run": "native:darwin-arm64:2026-11-02T03:02:01Z"
+			"export_run": "native:darwin-arm64:2026-11-02T04:43:52Z"
 		},
 		"linux-x86_64": {
 			"fixture": "preparation-flow-linux-x86_64.json",
-			"canonical_sorted_json_sha256": "1e2db555378cfccf00cc81af52c456edad858b09ab2494a44587aae39e533e3c",
+			"source_sha256": "406c42fa08d658359c81a2a31fa9d1814f1c093d96efec900e0d66b633929bb8",
+			"runtime_sha256": "bbe8fc09a1ad56e84f5295197c181d1c03dc14ecf14793bb34c0333f5c44d86c",
+			"canonical_sorted_json_sha256": "bf22f910a41d77386e7ccc2123989b3e20f9c3a38ba3ff38a367f2619a076ed3",
 			"runtime": {
 				"dependencies": {
 					"jsonschema": "4.26.0",
@@ -48,9 +54,11 @@
 				"libc": ["glibc", "2.39"],
 				"machine": "x86_64",
 				"platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
-				"python": "3.12.3"
+				"python": "3.12.3",
+				"python_implementation": "CPython",
+				"sqlite": "3.45.1"
 			},
-			"export_run": "native:linux-x86_64:2026-11-02T03:05:02Z"
+			"export_run": "native:linux-x86_64:2026-11-02T04:44:56Z"
 		}
 	}
 }
