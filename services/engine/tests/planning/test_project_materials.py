@@ -5,7 +5,9 @@ from __future__ import annotations
 import copy
 import csv
 import io
+import json
 import math
+from pathlib import Path
 from typing import cast
 
 import pytest
@@ -150,6 +152,67 @@ def _source_data() -> dict[str, object]:
             "installation_requirements": [],
         },
     }
+
+
+def test_batc_delivery_plan_multiplies_only_unconditional_contents() -> None:
+    path = Path(__file__).resolve().parents[4] / "tools/migrate/548-batc-delivery.json"
+    products = json.loads(path.read_text())["products"]
+    source = _source_data()
+    equipment = cast(dict[str, object], source["equipment"])
+    selected = []
+    bom = []
+    for pid, quantity in ((1956, 2), (1957, 1), (1958, 3)):
+        product = products[str(pid)]
+        selected.append(
+            {
+                "product_id": pid,
+                "product_revision": product["product_revision"],
+                "brand": "GoodWe",
+                "model": product["model"],
+                "installation_facts": {
+                    "status": "documented",
+                    "items": product["items"],
+                },
+            }
+        )
+        bom.append(
+            {"product_id": pid, "quantity": quantity, "basis": "selected_battery"}
+        )
+    equipment["selected_products"] = selected
+    equipment["provisional_bill_of_materials"] = bom
+    materials = project_materials(cast(Object, source))
+    lines = cast(list[Object], materials["lines"])
+    for pid, quantity in ((1956, 2), (1957, 1), (1958, 3)):
+        own = [row for row in lines if row.get("parent_product_id") == pid]
+
+        facts = {str(row["id"]).rsplit(":", 1)[-1]: row for row in own}
+
+        assert len(own) == 27
+        assert facts["expansion-bolt"]["quantity"] == 4 * quantity
+        assert facts["m8-screw"]["quantity"] == 12 * quantity
+        assert facts["cable-tie"]["quantity"] == 20 * quantity
+        assert facts["liquid-cooling-drain-pipe"]["quantity"] == quantity
+        assert facts["power-cable-et"]["handling"] == "site_engineering_required"
+        assert facts["power-cable-et"]["quantity"] is None
+        assert facts["power-cable-et"]["declared_quantity"] == 2
+        assert (
+            len([row for row in own if str(row["id"]).endswith(":expansion-bolt")]) == 1
+        )
+    for locale, name in (("en", "Expansion bolt"), ("de", "Spreizdübel")):
+        output = materials_csv(materials, "a" * 64, locale).decode("utf-8-sig")
+        assert name in output and "GW208.9-BAT-LC-G10" in output
+        assert "GW_BAT-C-208-261kWh_User-Manual-EN.pdf" in output
+        source["materials"] = materials
+        source["locale"] = locale
+        source["title"] = "BAT-C delivery"
+        report = build_report(cast(Object, source))
+        document = pdf.render(report)
+        content = " ".join(
+            " ".join(page.extract_text().split())
+            for page in PdfReader(io.BytesIO(document)).pages
+        )
+        assert name in content and "GW208.9-BAT-LC-G10" in content
+        assert "p. 35" in content and "8" in content
 
 
 def test_installation_facts_become_distinct_sourced_material_rows() -> None:

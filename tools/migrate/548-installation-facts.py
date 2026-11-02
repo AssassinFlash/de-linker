@@ -400,6 +400,12 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--receipt", type=Path)
     parser.add_argument(
+        "--plan",
+        type=Path,
+        default=PLAN,
+        help="Reviewed installation-facts plan for preview or refresh.",
+    )
+    parser.add_argument(
         "--terminal-use-patch",
         action="store_true",
         help="Preview only the reviewed communication-terminal use additions.",
@@ -424,6 +430,11 @@ def _fail(parser: argparse.ArgumentParser, message: str) -> NoReturn:
 
 def _validate_args(parser: argparse.ArgumentParser, args: argparse.Namespace) -> None:
     """Reject options that do not apply to the selected action."""
+    if args.plan != PLAN and args.action not in {"preview", "refresh"}:
+        _fail(
+            parser,
+            "--plan is only used for preview or refresh; apply, verify and rollback use the receipt.",
+        )
     if args.terminal_use_patch and args.action != "preview":
         _fail(parser, "--terminal-use-patch is only valid for preview.")
     if args.product and (not args.terminal_use_patch or not args.instance):
@@ -438,7 +449,7 @@ def _validate_args(parser: argparse.ArgumentParser, args: argparse.Namespace) ->
         _fail(parser, "This action needs --receipt.")
 
 
-def _refresh(site: Target, write: bool) -> int:
+def _refresh(site: Target, write: bool, plan_path: Path | None = None) -> int:
     """Re-pin the reviewed plan to the current publication, changing only revisions.
 
     The preview already refuses a stale plan, so a plan cannot silently rot into
@@ -448,7 +459,8 @@ def _refresh(site: Target, write: bool) -> int:
     stale in the first place. Evidence never moves here: a source whose bytes
     differ is refused, not rewritten.
     """
-    plan = load_plan(PLAN)
+    plan_path = PLAN if plan_path is None else plan_path
+    plan = load_plan(plan_path)
     code, error, result = invoke(site, build_request("refresh", plan=plan))
     if result is None:
         print(error, file=sys.stderr)
@@ -527,7 +539,7 @@ def _refresh(site: Target, write: bool) -> int:
         text = text.replace(old, new)
     if json.loads(text) != plan:
         raise MigrationError("Refresh text no longer matches its validated plan.")
-    PLAN.write_text(text)
+    plan_path.write_text(text)
     print(json.dumps({"action": "refresh", "changes": len(changes), "written": True}))
     return 0
 
@@ -539,14 +551,14 @@ def main() -> int:
     try:
         site = remote_target() if args.production else local_target(args.instance)
         if args.action == "refresh":
-            return _refresh(site, args.write)
+            return _refresh(site, args.write, args.plan)
         if args.action == "preview":
             if args.receipt.exists() or args.receipt.is_symlink():
                 _fail(
                     parser,
                     "Use a fresh receipt path; existing recovery data is preserved.",
                 )
-            plan = load_plan()
+            plan = load_plan(args.plan)
             if args.terminal_use_patch:
                 plan = terminal_use_plan(plan, args.product)
                 if args.instance:

@@ -202,6 +202,72 @@ def test_cabinet_sales_unit_and_factory_count_share_cited_woo_basis(
     )
 
 
+def test_batc_reviewed_delivery_follows_real_equipment_selection(
+    feed: FixtureObject,
+) -> None:
+    from linker_engine.planning.battery_assembly import battery_assembly
+    from linker_engine.planning.project_materials import project_materials
+
+    path = Path(__file__).resolve().parents[4] / "tools/migrate/548-batc-delivery.json"
+    plan = json.loads(path.read_text())["products"]
+    basis = copy.deepcopy(feed)
+    manual = "https://de-linker.com/wp-content/uploads/2026/09/GW_BAT-C-208-261kWh_User-Manual-EN.pdf"
+    for pid, packs in ((1956, 4), (1957, 4), (1958, 5)):
+        cabinet = next(product for product in basis["products"] if product["id"] == pid)
+        # The model, linked manual and PACK evidence are the existing Woo fixture.
+        # The additional sales-unit and delivery facts are this reviewed candidate.
+        cabinet["figures"]["sales_unit_kind"] = {
+            "value": "battery_system",
+            "unit": None,
+            "citation": {"url": manual, "page": 3},
+        }
+        cabinet["installation_facts"] = {
+            "status": "documented",
+            "items": plan[str(pid)]["items"],
+        }
+        assembly = battery_assembly(json_object(compile_product(cabinet)))
+        assert assembly is not None and assembly["fixed_modules_per_stack"] == packs
+        selected = {
+            **inputs(basis, packs)["equipment_selection"],
+            "inverter_product_id": 1946,
+            "battery_product_id": pid,
+            "modules_per_stack": packs,
+            "parallel_stacks": 2,
+            "accessory_product_ids": [],
+            "product_revisions": {
+                str(p["id"]): p["product_revision"]
+                for p in basis["products"]
+                if p["id"] in (1946, pid)
+            },
+        }
+        assessed = json_object(
+            assess_equipment({"equipment_selection": selected}, basis)
+        )
+        battery = next(
+            row
+            for row in assessed["provisional_bill_of_materials"]
+            if row["product_id"] == pid
+        )
+        assert battery["quantity"] == 2 and battery["basis"] == "battery_system"
+        materials = json_object(
+            project_materials(
+                {
+                    "project_id": "synthetic",
+                    "revision": 1,
+                    "input_sha256": "0" * 64,
+                    "woo_bases": {},
+                    "equipment": assessed,
+                }
+            )
+        )
+        anchor = next(
+            row
+            for row in materials["lines"]
+            if str(row["id"]).endswith(":expansion-bolt")
+        )
+        assert anchor["handling"] == "manufacturer_included" and anchor["quantity"] == 8
+
+
 def test_multi_converter_plant_keeps_unit_ownership_and_source_revisions(
     feed: FixtureObject,
 ) -> None:

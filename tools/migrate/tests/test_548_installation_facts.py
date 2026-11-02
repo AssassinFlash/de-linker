@@ -10,6 +10,7 @@ import os
 import re
 import stat
 import subprocess
+import sys
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -133,6 +134,29 @@ def test_controller_binding_refuses_unreviewed_target_without_mutating_plan() ->
     } == {key: value for key, value in new_source.items() if key != "document_revision"}
 
 
+def test_batc_sales_unit_source_keeps_reviewed_document_path() -> None:
+    spec = importlib.util.spec_from_file_location(
+        "batc_sales_unit_migration", HERE.parent / "548-controller-facts.py"
+    )
+    assert spec is not None and spec.loader is not None
+    controller = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(controller)
+    original = json.loads((HERE.parent / "548-batc-sales-unit.json").read_bytes())
+    before = json.dumps(original, sort_keys=True)
+    selected = controller.plan_for_target(original, "http://127.0.0.1:9347")
+    source = original["figure"]["citation"]
+    rebound = selected["figure"]["citation"]
+    assert rebound["url"].startswith("http://127.0.0.1:9347/")
+    assert (
+        rebound["url"].split("/wp-content/", 1)[1]
+        == source["url"].split("/wp-content/", 1)[1]
+    )
+    assert rebound["page"] == source["page"] == 3
+    assert json.dumps(original, sort_keys=True) == before
+    with pytest.raises(ValueError, match="target origin"):
+        controller.plan_for_target(original, "file:///tmp/invalid")
+
+
 def load_script() -> ModuleType:
     """Load the ticket-named migration as the CLI itself does."""
     spec = importlib.util.spec_from_file_location(
@@ -207,6 +231,141 @@ def test_temporary_minimal_plan_contract(tmp_path: Path) -> None:
         "action": "preview",
         "plan": plan(),
     }
+
+
+def test_batc_delivery_plan_keeps_existing_facts_and_source_conditions() -> None:
+    path = HERE.parent / "548-batc-delivery.json"
+    parser = migration._parser()
+    args = parser.parse_args(
+        [
+            "--production",
+            "preview",
+            "--plan",
+            str(path),
+            "--receipt",
+            "/tmp/unused-receipt",
+        ]
+    )
+    migration._validate_args(parser, args)
+    reviewed = migration.load_plan(args.plan)["products"]
+    assert set(reviewed) == {"1956", "1957", "1958"}
+    original = migration.load_plan()["products"]
+    for pid, product in reviewed.items():
+        items = product["items"]
+        ids = [item["id"] for item in items]
+        assert len(ids) == len(set(ids)) == 27
+        assert {item["id"] for item in original[pid]["items"]} <= set(ids)
+        added = items[7:]
+        assert len(added) == 20 and sum(bool(item["conditions"]) for item in added) == 6
+        assert all(item["handling"] == "manufacturer_included" for item in added)
+        assert all(
+            item["source"]["blob_sha256"]
+            == "ef85dd1a58fc06e52f2dff79dda228884b412d17db7035aa45d41c57840f3f10"
+            for item in added
+        )
+        assert all(item["source"]["product_id"] == int(pid) for item in added)
+        bolts = next(item for item in added if item["id"] == "expansion-bolt")
+        assert bolts["quantity"] == 4 and bolts["source"]["page"] == 35
+        assert (
+            next(item for item in added if item["id"] == "m8-screw")["quantity"] == 12
+        )
+    with pytest.raises(SystemExit):
+        migration._validate_args(
+            parser,
+            parser.parse_args(
+                [
+                    "--production",
+                    "apply",
+                    "--plan",
+                    str(path),
+                    "--receipt",
+                    "/tmp/unused-receipt",
+                ]
+            ),
+        )
+
+
+def test_batc_plan_passes_native_installation_facts_binding() -> None:
+    reviewed = migration.load_plan(HERE.parent / "548-batc-delivery.json")["products"]
+    source = reviewed["1956"]["items"][0]["source"]
+    manifest = {
+        "products": [{"product_id": int(pid)} for pid in reviewed],
+        "documents": [
+            {
+                "document_id": source["document_id"],
+                "document_revision": source["document_revision"],
+                "blob_sha256": source["blob_sha256"],
+                "url": source["url"],
+                "product_ids": [1956, 1957, 1958],
+            }
+        ],
+    }
+    php = r"""
+function __($text, $domain = null) { return $text; }
+function wp_parse_url($url, $part = -1) { return parse_url($url, $part); }
+require $argv[1];
+$input = json_decode(stream_get_contents(STDIN), true, 512, JSON_THROW_ON_ERROR);
+$out = [];
+foreach ($input['products'] as $id => $product) {
+    foreach ($product['items'] as $item) {
+        $out[$id][] = \Linker\Commerce\Products\Publication\InstallationFacts::bind((int) $id, $item, $input['manifest']);
+    }
+}
+echo json_encode($out, JSON_THROW_ON_ERROR);
+"""
+    native_class = (
+        HERE.parents[2]
+        / "plugins/linker-commerce/includes/Products/Publication/InstallationFacts.php"
+    )
+    result = subprocess.run(
+        ["php", "-r", php, str(native_class)],
+        input=json.dumps({"products": reviewed, "manifest": manifest}),
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    bound = json.loads(result.stdout)
+    assert {pid: len(items) for pid, items in bound.items()} == {
+        "1956": 27,
+        "1957": 27,
+        "1958": 27,
+    }
+    for pid, rows in bound.items():
+        assert all(row["source"]["product_id"] == int(pid) for row in rows)
+
+
+def test_preview_uses_the_explicit_plan_and_writes_private_receipt(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    custom = tmp_path / "reviewed.json"
+    custom.write_text(json.dumps(plan()))
+    receipt_path = tmp_path / "receipt.json"
+    seen: list[dict[str, object]] = []
+
+    def invoke(
+        _site: object, request: dict[str, object]
+    ) -> tuple[int, str, dict[str, object]]:
+        seen.append(request)
+        return 0, "", receipt()
+
+    monkeypatch.setattr(migration, "remote_target", _site)
+    monkeypatch.setattr(migration, "invoke", invoke)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "migration",
+            "--production",
+            "preview",
+            "--plan",
+            str(custom),
+            "--receipt",
+            str(receipt_path),
+        ],
+    )
+    assert migration.main() == 0
+    assert seen == [{"action": "preview", "plan": plan()}]
+    assert receipt_path.stat().st_mode & 0o777 == 0o600
 
 
 def test_reviewed_production_plan_is_frozen() -> None:

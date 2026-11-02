@@ -1,6 +1,6 @@
 <?php
 /**
- * Preview and atomically maintain the selected ET / SEC LAN scheme in Woo.
+ * Preview and atomically maintain reviewed equipment facts in Woo.
  *
  * @package Linker\Commerce
  */
@@ -26,7 +26,15 @@ try {
 			throw new RuntimeException( 'Unknown controller-facts action.' );
 		}
 		$manifest  = Publication::manifest();
-		$keys      = array(
+		$mode      = 'preview' === $action ? ( $request['plan']['kind'] ?? 'controller' ) : ( $request['receipt']['mode'] ?? 'controller' );
+		if ( ! in_array( $mode, array( 'controller', 'batc_cabinet_sales_unit_v1' ), true ) ) {
+			throw new RuntimeException( 'Unsupported reviewed equipment-facts mode.' );
+		}
+		$keys      = 'batc_cabinet_sales_unit_v1' === $mode ? array(
+			1956 => array( SelectionFacts::FIGURES_META_KEY, EvidenceBindings::META_KEY ),
+			1957 => array( SelectionFacts::FIGURES_META_KEY, EvidenceBindings::META_KEY ),
+			1958 => array( SelectionFacts::FIGURES_META_KEY, EvidenceBindings::META_KEY ),
+		) : array(
 			2409 => array( SelectionFacts::FIGURES_META_KEY, EvidenceBindings::META_KEY, PackageContents::META_KEY, InstallationFacts::META_KEY ),
 			1946 => array( CompatibilityClaims::META_KEY ),
 			1947 => array( CompatibilityClaims::META_KEY ),
@@ -81,6 +89,54 @@ try {
 		}
 		if ( 'preview' === $action ) {
 			$plan = $request['plan'] ?? null;
+			if ( 'batc_cabinet_sales_unit_v1' === $mode ) {
+				$models = array(
+					1956 => array( 'GW208.9-BAT-LC-G10', 'DLK-GOODWE-GW2089BATLCG10' ),
+					1957 => array( 'GW208.9-BAT-LCD-G10', 'DLK-GOODWE-GW2089BATLCDG10' ),
+					1958 => array( 'GW261.2-BAT-LCD-G10', 'DLK-GOODWE-GW2612BATLCDG10' ),
+				);
+				$document_id = 'doc-3e98151c21d284ce5e01603742e3ef027ca73cff3f42b9cf9b3fe164aa91882b';
+				$sha = 'ef85dd1a58fc06e52f2dff79dda228884b412d17db7035aa45d41c57840f3f10';
+				$docs = array_column( $manifest['documents'], null, 'document_id' );
+				$doc = $docs[ $document_id ] ?? null;
+				$figure = $plan['figure'] ?? null;
+				if ( ! is_array( $plan ) || 1 !== ( $plan['schema_version'] ?? null ) || ! is_array( $doc ) || $doc['blob_sha256'] !== $sha || ! is_array( $figure ) || 'battery_system' !== ( $figure['value'] ?? null ) || null !== ( $figure['unit'] ?? null ) || 3 !== ( $figure['citation']['page'] ?? null ) || (string) wp_parse_url( $figure['citation']['url'] ?? '', PHP_URL_PATH ) !== (string) wp_parse_url( $doc['url'], PHP_URL_PATH ) ) {
+					throw new RuntimeException( 'The BAT-C sales unit requires the reviewed manufacturer manual.' );
+				}
+				$receipt = array(
+					'schema_version' => 1, 'mode' => $mode, 'site' => home_url(),
+					'plan_sha256' => Publication::revision( $plan ),
+					'compatibility_input_sha256' => Publication::revision( $input ),
+					'source_revision' => $manifest['source_revision'], 'products' => array(), 'changes' => array(),
+				);
+				$products = array_column( $manifest['products'], null, 'product_id' );
+				foreach ( $models as $id => $identity ) {
+					$product = wc_get_product( $id );
+					if ( ! $product instanceof WC_Product || 'simple' !== $product->get_type() || $product->get_sku() !== $identity[1] || false === stripos( $product->get_short_description(), 'cabinet' ) || ( $products[ $id ]['model'] ?? null ) !== $identity[0] || Publication::canonical_id( $id ) !== $id || ! Publication::is_published( $id ) || ! in_array( $id, $doc['product_ids'], true ) ) {
+						throw new RuntimeException( 'A reviewed BAT-C Woo cabinet identity changed.' );
+					}
+					$receipt['products'][ $id ] = array( 'model' => $identity[0], 'product_revision' => $products[ $id ]['product_revision'], 'protected_sha256' => $protected( $id ), 'documents' => $documents( $id, $manifest ), 'meta' => array() );
+					$raw = get_post_meta( $id, SelectionFacts::FIGURES_META_KEY, true );
+					$figures = is_string( $raw ) ? json_decode( $raw, true, 512, JSON_THROW_ON_ERROR ) : $raw;
+					$bindings = get_post_meta( $id, EvidenceBindings::META_KEY, true );
+					if ( ! is_array( $figures ) || ! is_array( $bindings ) || array_diff_key( $bindings, $figures ) ) {
+						throw new RuntimeException( 'Existing BAT-C figures or bindings are malformed.' );
+					}
+					foreach ( $bindings as $key => $binding ) {
+						if ( ! is_array( $binding ) || ( $binding['figure_revision'] ?? null ) !== Publication::revision( $figures[ $key ] ) ) {
+							throw new RuntimeException( 'An existing BAT-C evidence binding changed.' );
+						}
+					}
+					$expected_binding = array( 'document_id' => $doc['document_id'], 'blob_sha256' => $doc['blob_sha256'], 'figure_revision' => Publication::revision( $figure ) );
+					if ( array_key_exists( 'sales_unit_kind', $figures ) && ( $figures['sales_unit_kind'] !== $figure || ( $bindings['sales_unit_kind'] ?? null ) !== $expected_binding ) ) {
+						throw new RuntimeException( 'An existing sales-unit fact differs; explicit review is required.' );
+					}
+					$figures['sales_unit_kind'] = $figure;
+					$bindings['sales_unit_kind'] = $expected_binding;
+					$record( $id, SelectionFacts::FIGURES_META_KEY, is_string( $raw ) ? wp_json_encode( $figures, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) : $figures, $receipt );
+					$record( $id, EvidenceBindings::META_KEY, $bindings, $receipt );
+				}
+			} else {
 			if ( ! is_array( $plan ) || 1 !== ( $plan['schema_version'] ?? null ) || ! is_array( $plan['controller'] ?? null ) || ! is_array( $plan['requirement'] ?? null ) ) {
 				throw new RuntimeException( 'A reviewed controller plan is required.' );
 			}
@@ -221,6 +277,7 @@ try {
 				$claims['requirements'] = $rows['items'];
 				$record( $id, CompatibilityClaims::META_KEY, $claims, $receipt );
 			}
+			}
 		} else {
 			$receipt = $request['receipt'] ?? null;
 			if ( ! is_array( $receipt ) || 1 !== ( $receipt['schema_version'] ?? null ) || home_url() !== ( $receipt['site'] ?? null ) || ! is_array( $receipt['products'] ?? null ) || Publication::revision( $input ) !== ( $receipt['compatibility_input_sha256'] ?? null ) ) {
@@ -335,6 +392,16 @@ try {
 					throw new RuntimeException( 'Final protected-state verification failed.' );
 				}
 				if ( 'apply' === $action ) {
+					if ( 'batc_cabinet_sales_unit_v1' === $mode ) {
+						foreach ( array_keys( $keys ) as $id ) {
+							$item = EngineeringFeed::item( $id, $fresh );
+							$figures = is_array( $item ) ? (array) $item['figures'] : array();
+							$sales = $figures['sales_unit_kind'] ?? null;
+							if ( ! is_array( $sales ) || 'battery_system' !== ( $sales['value'] ?? null ) || 3 !== ( $sales['citation']['page'] ?? null ) ) {
+								throw new RuntimeException( 'The engineering feed did not publish the reviewed BAT-C sales unit.' );
+							}
+						}
+					} else {
 					$item              = EngineeringFeed::item( 2409, $fresh );
 					$published_figures = is_array( $item ) ? (array) $item['figures'] : array();
 					if ( ! is_array( $item ) || ! isset( $published_figures['max_lan_inverters'] ) || 'documented' !== ( $item['package_contents']['status'] ?? null ) || 'documented' !== ( $item['installation_facts']['status'] ?? null ) ) {
@@ -357,6 +424,7 @@ try {
 						if ( 1 !== count( $selected_scheme ) || isset( $selected_scheme[0]['max_units'] ) ) {
 							throw new RuntimeException( 'The native compatibility consumer did not expose exactly the optional control scheme.' );
 						}
+					}
 					}
 					$receipt['applied_source_revision'] = $fresh['source_revision'];
 				} elseif ( $fresh['source_revision'] !== $receipt['source_revision'] ) {
