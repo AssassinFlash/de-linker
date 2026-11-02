@@ -119,6 +119,10 @@ class ExecutionRegistry:
     def routing(self, batch_size: int) -> EvaluationRouting:
         return EvaluationRouting(self.execution_key(), batch_size, self._keys)
 
+    def execution_keys(self) -> tuple[str, ...]:
+        """Registered keys used by workers with separate resource classes."""
+        return self._keys
+
     def __call__(self, lease: Lease, control: Control) -> Object | AssetResult:
         control.checkpoint()
         manifest_hash = lease.request.get("manifest_sha256")

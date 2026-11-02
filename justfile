@@ -336,7 +336,7 @@ ci-native groups name:
         fi
         just --justfile "$root/justfile" wp "$name" option update linker_engine_url http://127.0.0.1:9
         just --justfile "$root/justfile" wp "$name" option update linker_genie_url http://127.0.0.1:9
-        (cd "$root/plugins/linker-tools" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter ResourceAdmissionTest)
+        (cd "$root/plugins/linker-tools" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter 'ResourceAdmissionTest|PlannerSeriesFrontendTest')
         (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter PublicationPreparationRecipeTest)
     }
     run_admin() {

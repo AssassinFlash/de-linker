@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import math
 from collections.abc import Callable, Mapping
+from dataclasses import dataclass
 from threading import Event, Thread
 
 from .asset_publication import AssetResult
@@ -47,7 +48,14 @@ class Control:
         self.checkpoint()
 
 
-type Executor = Callable[[Lease, Control], Object | AssetResult]
+@dataclass(frozen=True)
+class Published:
+    """A child already committed the exact lease through Jobs.complete."""
+
+    output_sha256: str
+
+
+type Executor = Callable[[Lease, Control], Object | AssetResult | Published]
 
 
 class RetryableExecution(PlanningError):
@@ -69,6 +77,7 @@ class Worker:
         heartbeat_seconds: float,
         retry_seconds: float,
         routing: EvaluationRouting | None = None,
+        active: Event | None = None,
     ) -> None:
         if not name.strip() or not handlers:
             raise InvalidInput("worker identity and registered handlers required")
@@ -87,11 +96,23 @@ class Worker:
         self.heartbeat_seconds = heartbeat_seconds
         self.retry_seconds = retry_seconds
         self.routing = routing
+        self.active = active
 
     def _renew(self, lease: Lease, stop: Event, control: Control) -> None:
         while not stop.wait(self.heartbeat_seconds):
             try:
                 self.jobs.heartbeat(lease, lease_seconds=self.lease_seconds)
+            except LeaseLost:
+                # An isolated child may have committed before its response
+                # reaches the parent; that is success, not a lost publication.
+                try:
+                    if self.jobs.completed(lease):
+                        return
+                except Exception:
+                    pass
+                control.revoke()
+                LOG.info("planning heartbeat fenced for job %s", lease.id)
+                return
             except Exception:
                 # A database outage also makes ownership uncertain. Do not
                 # continue publishing on a guessed or stale execution lease.
@@ -108,6 +129,15 @@ class Worker:
         )
         if lease is None:
             return False
+        if self.active is not None:
+            self.active.set()
+        try:
+            return self._execute(lease)
+        finally:
+            if self.active is not None:
+                self.active.clear()
+
+    def _execute(self, lease: Lease) -> bool:
         stop = Event()
         control = Control()
         heartbeat = Thread(
@@ -121,18 +151,24 @@ class Worker:
         prepared: AssetResult | None = None
         failure: Object | None = None
         retry_after: float | None = None
+        published = False
         try:
             reply = self.handlers[lease.kind](lease, control)
-            if isinstance(reply, AssetResult):
+            if isinstance(reply, Published):
+                if not self.jobs.completed(lease, reply.output_sha256):
+                    raise LeaseLost("isolated publication does not match this lease")
+                published = True
+            elif isinstance(reply, AssetResult):
                 prepared = reply
                 output = reply.result
             else:
                 output = reply
-            if not isinstance(output, dict):
-                raise InvalidInput("executor result must be a JSON object")
-            encode(output)
-            verify_dependencies(self.jobs.workspace.blobs, output)
-            control.checkpoint()
+            if not published:
+                if not isinstance(output, dict):
+                    raise InvalidInput("executor result must be a JSON object")
+                encode(output)
+                verify_dependencies(self.jobs.workspace.blobs, output)
+                control.checkpoint()
         except LeaseLost:
             control.revoke()
         except RetryableExecution as error:
@@ -162,6 +198,8 @@ class Worker:
         finally:
             stop.set()
             heartbeat.join()
+        if published:
+            return True
         try:
             control.checkpoint()
             if failure is not None:

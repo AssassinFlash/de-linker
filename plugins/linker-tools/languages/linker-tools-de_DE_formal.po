@@ -13465,3 +13465,7 @@ msgstr "Module höchstens 1,134 m breit, 1,762 m lang und 0,03 m dick. Mindesten
 #: ../../apps/planner/src/components/energy/EnergyError.tsx:159 build/planner/assets/planner.js
 msgid "This saved design is outside the supported larger-roof calculation scope. Review the larger-roof conditions in the PV reference setup, or reduce the setup to the standard calculation budget before trying again."
 msgstr "Der gespeicherte Entwurf liegt außerhalb des unterstützten Bereichs für größere Dachberechnungen. Prüfen Sie die Voraussetzungen in den PV-Referenzeinstellungen oder reduzieren Sie den Umfang auf das reguläre Berechnungsbudget, bevor Sie es erneut versuchen."
+
+#: ../../apps/planner/src/components/energy/RunResult.tsx build/planner/assets/planner.js
+msgid "The server could not finish the calculation for this roof. Your project is saved. Try again later, or reduce the number of modules in the design."
+msgstr "Für die Berechnung dieses Dachs reichten die Serverressourcen nicht aus. Ihr Projekt ist gespeichert. Versuchen Sie es später erneut oder verringern Sie die Anzahl der Module im Entwurf."

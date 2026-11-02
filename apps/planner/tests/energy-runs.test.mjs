@@ -154,3 +154,30 @@ test("a saved public evidence reason reaches the failed-calculation panel withou
 	assert.match(dom.element.textContent, /must match the STC rating/);
 	assert.doesNotMatch(dom.element.textContent, /private raw fixture/);
 });
+
+test("a resource-limited roof calculation explains how to continue", async (t) => {
+	const dom = setupDom(),
+		root = createRoot(dom.element),
+		failed = {
+			...actualRun,
+			state: "failed",
+			result: null,
+			result_sha256: null,
+			error: { code: "expanded_resource_unavailable", retryable: false },
+		};
+	t.after(() => dom.dispose(root));
+	await act(async () =>
+		root.render(
+			React.createElement(RunResult, {
+				run: failed,
+				locale: "en",
+				dirty: false,
+				confirmedRevision: failed.revision,
+			}),
+		),
+	);
+	assert.match(
+		dom.element.textContent,
+		/Try again later, or reduce the number of modules in the design/,
+	);
+});

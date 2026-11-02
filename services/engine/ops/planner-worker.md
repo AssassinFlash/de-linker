@@ -57,6 +57,52 @@ for retained releases sharing a store. Rollback likewise uses the previous
 executable and matching configuration after a successful drain; never rewrite
 frozen request or result bytes to make a version appear compatible.
 
+## Expanded clear-roof jobs
+
+The optional `geometric_pv_clear_flat_roof` runtime policy may only be enabled
+with an explicit `expanded_job` worker policy. Absence keeps the ordinary
+worker and its existing work limits unchanged. The measured host envelope uses:
+
+```json
+{
+  "cpu_quota_percent": 20,
+  "memory_max_bytes": 1258291200,
+  "minimum_available_bytes": 1610612736,
+  "timeout_seconds": 600,
+  "health_ports": [8901, 8911]
+}
+```
+
+Ports must be the deployment's two actual loopback `/health` endpoints. The
+resource maxima and memory floor cannot be relaxed beyond this measured
+envelope. The release operator adds `Delegate=cpu memory pids` and
+`DelegateSubgroup=supervisor` only when the expanded policy is configured;
+the host must support systemd's delegated cgroup-v2 subgroups. A missing
+delegate or worker policy prevents worker readiness, rather than running an
+expanded task without limits.
+
+An expanded run has a distinct frozen execution class. The ordinary worker
+continues to claim ordinary jobs while one expanded lease is renewed in the
+same service; its child alone enters the bounded cgroup and starts with one
+numerical thread and nice 19. Ordinary execution freezes the child and then
+resumes it. Two failed/slow health checks also freeze it; persistent pressure,
+the configured deadline, low host memory, loss of the lease, or service stop
+terminates the child and empties its cgroup. The child performs the existing
+lease-fenced publication transaction inside its cgroup; the parent confirms the
+same completed lease and output without re-reading the large witness. A resource failure is recorded
+as `expanded_resource_unavailable`; cancellation or loss of lease cannot
+publish a result. `KillMode=control-group` remains required for service loss.
+The child labels temporary CAS writes with its unique lease token. Once the
+child cgroup is empty the worker removes only that attempt's exact temporary
+names, leaving other writers and published blobs untouched. Sudden service or
+host loss still uses the existing stopped-window CAS retention procedure.
+
+The cgroup proof is a host capability, not a capacity claim for all roofs.
+Production activation additionally needs the actual native queue, pause,
+cancellation, timeout, normal-job latency, health, result and cleanup evidence
+for the selected release. The 96-module synthetic measurement and its scope
+are recorded in the existing 548 acceptance index.
+
 ## Bounded routine maintenance
 
 `planner_maintenance.py` is a Mac one-shot caller of these same contracts.
@@ -142,6 +188,37 @@ can be unloaded, and its label/process exit must be confirmed before restoring
 the prior disk plist. An unknown/foreign loaded definition is left untouched and
 reported as unconfirmed. Real scheduler installation, backup, GC and deployed
 log/readiness readback are separate rollout acceptance, not local-test claims.
+
+## Planner source closure
+
+For every new candidate, use the reviewed Git source entrypoint to pack the
+complete runtime, including `src`, `schemas`, `data`, `ops`, `.python-version`,
+`pyproject.toml`, and `uv.lock`. Do not assemble this list manually. The entrypoint
+uses the legacy Engine Git blob inventory and its byte verifier; it accepts an
+exact merged commit and checks both source operators against that commit. Its
+archive includes a manifest, and the native Planner `prepare` requires and
+verifies it before preparing a new release. Later preflight rechecks the source
+and the frozen manifest. Previously prepared releases without the new manifest
+remain readable for normal rollback; do not add one to an old release.
+
+After the recovery point and release-window checks, stream the archive directly
+into the one newly created, unselected final release directory. For example,
+with `repo`, `revision`, and `candidate` set to the reviewed absolute checkout,
+full merged commit, and unique remote `/opt/linker-planner/releases/<64-hex>`:
+
+```sh
+set -o pipefail
+python3 "$repo/services/engine/ops/planner_source.py" --repository "$repo" \
+  --revision "$revision" | ssh -T linker-services \
+  "mkdir '$candidate' && tar -xf - -C '$candidate'"
+```
+
+Create the final-path locked environment and copy the approved runtime/worker
+policies before invoking the candidate's `planner_release.py prepare`, `activate`
+and `status`. Keep the current/previous pair and the native input floor; the
+source archive does not substitute for backup, service readiness or consumer
+readback. On an interrupted stage, preserve or remove only the identified,
+unselected candidate after checking ownership and active readers.
 
 ## Preparation fixture exports
 
