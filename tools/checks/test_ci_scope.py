@@ -69,13 +69,13 @@ class ScopeTest(unittest.TestCase):
         )
         selected = ci_scope.selected_modules(
             [
-                ("M", "tools/checks/i18n_sources.py"),
+                ("M", "tools/checks/test_i18n_sources.py"),
                 ("M", "services/engine/src/linker_engine/planning/archive.py"),
             ],
             "base",
             "head",
         )
-        self.assertEqual(set(selected), {"engine", "content", "python:migrate"})
+        self.assertEqual(set(selected), {"engine", "content"})
 
     def test_plugin_js_test_entrypoints_keep_only_their_actual_recipe(self):
         for path, owner in (
