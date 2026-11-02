@@ -1,0 +1,238 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://admin.goodwe.com/En/Api/downloadFile?id=4626&mid=60&type=2",
+    "blob_sha256": "c29cbf257d51559ef53f5da36a46ca10b4e5738fbd4a0d06fd74fbaff4a7fcb7",
+    "version": "V1.0 2026-10-10"
+  },
+  "products": {
+    "1954": {
+      "model": "GW61.4-BAT-AC-G10",
+      "packs_per_cabinet": 6
+    },
+    "1955": {
+      "model": "GW112.6-BAT-AC-G10",
+      "packs_per_cabinet": 11
+    }
+  },
+  "items": [
+    {
+      "id": "expansion-anchor",
+      "label": {
+        "en": "Expansion anchor",
+        "de": "Spreizdübel"
+      },
+      "quantity_per_cabinet": 4,
+      "unit": "piece",
+      "pdf_page": 33,
+      "quote": "Expansion Anchors ×4"
+    },
+    {
+      "id": "grounding-m5-screw",
+      "label": {
+        "en": "M5 grounding screw",
+        "de": "M5-Erdungsschraube"
+      },
+      "quantity_per_cabinet": 3,
+      "unit": "piece",
+      "pdf_page": 33,
+      "quote": "Grounding M5 Screws ×3"
+    },
+    {
+      "id": "grounding-terminal",
+      "label": {
+        "en": "Grounding terminal",
+        "de": "Erdungsanschluss"
+      },
+      "quantity_per_cabinet": 3,
+      "unit": "piece",
+      "pdf_page": 33,
+      "quote": "Grounding Terminals ×3"
+    },
+    {
+      "id": "inverter-battery-terminal-25",
+      "label": {
+        "en": "25 mm² inverter-to-battery connection terminal",
+        "de": "25-mm²-Anschluss für Wechselrichter und Batterie"
+      },
+      "quantity_per_cabinet": 2,
+      "unit": "piece",
+      "pdf_page": 33,
+      "quote": "Inverter-to-Battery Connection Terminals 25mm² ×2"
+    },
+    {
+      "id": "inter-battery-terminal-50",
+      "label": {
+        "en": "50 mm² inter-battery connection terminal",
+        "de": "50-mm²-Anschluss zwischen Batterieschränken"
+      },
+      "quantity_per_cabinet": 2,
+      "unit": "piece",
+      "pdf_page": 33,
+      "quote": "Inter-battery Connection Terminals 50mm² ×2"
+    },
+    {
+      "id": "pack-interconnection-harness",
+      "label": {
+        "en": "Pack interconnection harness",
+        "de": "Verbindungskabel zwischen Batterie-Packs"
+      },
+      "quantity_per_cabinet": {
+        "1954": 5,
+        "1955": 10
+      },
+      "unit": "piece",
+      "pdf_page": 34,
+      "quote": "Pack interconnection harness: GW61.4-BAT-AC-G10 ×5; GW112.6-BAT-AC-G10 ×10"
+    },
+    {
+      "id": "pack-negative-hv-harness",
+      "label": {
+        "en": "Pack-to-high-voltage-box negative harness",
+        "de": "Negatives Verbindungskabel vom Batterie-Pack zum Hochvoltkasten"
+      },
+      "quantity_per_cabinet": 1,
+      "unit": "piece",
+      "pdf_page": 34,
+      "quote": "Pack negative-to-high-voltage-box negative harness ×1"
+    },
+    {
+      "id": "inverter-battery-positive-cable",
+      "label": {
+        "en": "Positive inverter-to-battery cable",
+        "de": "Positives Verbindungskabel zwischen Wechselrichter und Batterie"
+      },
+      "quantity_per_cabinet": 1,
+      "unit": "piece",
+      "pdf_page": 34,
+      "quote": "Positive inverter-to-battery cable ×1"
+    },
+    {
+      "id": "inverter-battery-negative-cable",
+      "label": {
+        "en": "Negative inverter-to-battery cable",
+        "de": "Negatives Verbindungskabel zwischen Wechselrichter und Batterie"
+      },
+      "quantity_per_cabinet": 1,
+      "unit": "piece",
+      "pdf_page": 34,
+      "quote": "Negative inverter-to-battery cable ×1"
+    },
+    {
+      "id": "et100-adapter-bracket",
+      "label": {
+        "en": "ET100 adapter mounting bracket",
+        "de": "ET100-Adaptermontagehalterung"
+      },
+      "quantity_per_cabinet": 2,
+      "unit": "piece",
+      "pdf_page": 34,
+      "quote": "Adapter mounting bracket ×2 (Required only for ET100)",
+      "conditions": [
+        {
+          "en": "Two per cabinet only when required for ET100; verify the ordered configuration.",
+          "de": "Zwei je Schrank nur bei Bedarf für ET100; bestellte Konfiguration prüfen."
+        }
+      ]
+    },
+    {
+      "id": "inverter-communication-cable",
+      "label": {
+        "en": "Battery-to-inverter communication Ethernet cable",
+        "de": "Ethernet-Kommunikationskabel zwischen Batterie und Wechselrichter"
+      },
+      "quantity_per_cabinet": 1,
+      "unit": "piece",
+      "pdf_page": 34,
+      "quote": "Battery-to-inverter communication Ethernet cable ×1"
+    },
+    {
+      "id": "ac-power-harness-package",
+      "label": {
+        "en": "Air-conditioner power-supply harness package",
+        "de": "Kabelsatz für die Stromversorgung der Klimaanlage"
+      },
+      "quantity_per_cabinet": 1,
+      "unit": "piece",
+      "pdf_page": 34,
+      "quote": "Air conditioner power supply harness package ×1"
+    },
+    {
+      "id": "firestop-putty",
+      "label": {
+        "en": "Firestop putty",
+        "de": "Brandschutzkitt-Stück"
+      },
+      "quantity_per_cabinet": 8,
+      "unit": "piece",
+      "pdf_page": 34,
+      "quote": "Firestop putty ×8"
+    },
+    {
+      "id": "cable-tie",
+      "label": {
+        "en": "Cable tie",
+        "de": "Kabelbinder"
+      },
+      "quantity_per_cabinet": 20,
+      "unit": "piece",
+      "pdf_page": 34,
+      "quote": "Cable ties ×20"
+    },
+    {
+      "id": "ac-water-pipe-package",
+      "label": {
+        "en": "Air-conditioner water-pipe package",
+        "de": "Wasserleitungssatz der Klimaanlage"
+      },
+      "quantity_per_cabinet": 1,
+      "unit": "piece",
+      "pdf_page": 34,
+      "quote": "Air conditioner water pipe package ×1"
+    },
+    {
+      "id": "lifting-eye",
+      "label": {
+        "en": "Lifting eye",
+        "de": "Hebeöse"
+      },
+      "quantity_per_cabinet": 4,
+      "unit": "piece",
+      "pdf_page": 34,
+      "quote": "Lifting eye ×4"
+    },
+    {
+      "id": "corrugated-conduit-fitting",
+      "label": {
+        "en": "Corrugated conduit fitting",
+        "de": "Wellrohrverschraubung"
+      },
+      "quantity_per_cabinet": 6,
+      "unit": "piece",
+      "pdf_page": 35,
+      "quote": "Corrugated conduit fittings ×6"
+    },
+    {
+      "id": "tube-terminal-25-to-10",
+      "label": {
+        "en": "25 mm² to 10 mm² round tube terminal",
+        "de": "Rundrohranschluss 25 mm² auf 10 mm²"
+      },
+      "quantity_per_cabinet": 4,
+      "unit": "piece",
+      "pdf_page": 35,
+      "quote": "25mm² to 10mm² Round tube terminal ×4"
+    },
+    {
+      "id": "product-documentation",
+      "label": {
+        "en": "Product documentation",
+        "de": "Produktdokumentation"
+      },
+      "quantity_per_cabinet": 1,
+      "unit": "piece",
+      "pdf_page": 35,
+      "quote": "Product documentation ×1"
+    }
+  ]
+}

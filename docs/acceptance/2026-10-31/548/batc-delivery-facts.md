@@ -79,3 +79,42 @@ the DE PDF/CSV values were
 The focused CSV quantity readback used a separate temporary local project and
 its CSV SHA-256 was
 `e5edca3086701b6724b73124f29b3e4921857100b543ca5e4a2ae35e38f51afd`.
+
+## BAT-C 61.4 and 112.6: locally verified source candidate
+
+The reviewed, source-neutral delivery rows for products 1954 and 1955 are in
+`tools/migrate/548-batc-small-delivery-source.json`. They cite the 87-page
+[GoodWe manual, V1.0, 2026-10-10](https://admin.goodwe.com/En/Api/downloadFile?id=4626&mid=60&type=2),
+SHA-256 `c29cbf257d51559ef53f5da36a46ca10b4e5738fbd4a0d06fd74fbaff4a7fcb7`.
+PDF pages 33–35 were checked visually and against the text. The five and ten
+pack-interconnection harnesses per respective cabinet are separate from the
+six and eleven packs in the respective cabinet. The two ET100 adapter mounting
+brackets remain conditional. Cable lengths, package internals, quantities to
+purchase and installation suitability are not inferred.
+
+Both products already expose `sales_unit_kind=battery_system` and the six/eleven
+fixed pack counts from their existing source in the current Woo engineering
+feed, so the candidate does not rewrite those facts. In an isolated p548 claim,
+the manual bytes were temporarily associated with each Woo product, the five
+pre-existing reviewed facts were preserved and nineteen supplied-item facts
+added per product. The actual loaded engineering source acknowledged both
+products. Two cabinets of each model passed the native equipment worker, and
+same-revision English and German reports, PDF assets and material CSV assets
+were generated. An actual English CSV readback for product 1954 showed the
+quantity **8**, unit **pc**, `Expansion anchor (4 per cabinet)`, the original
+PDF page 33 and `Included with the equipment`. The second CSV readback was not
+completed: the temporary verifier incorrectly expected quantity and unit in
+one CSV cell, while the native CSV has separate columns. Therefore the 1955
+material quantities and the complete rendered PDF content are not claimed as
+read back. The original metadata and publication options were restored, the
+two temporary product associations and manual copy removed, and native claim
+cleanup verified 1,710 original workspace files unchanged and both ports free.
+
+The manufacturer's official URL is the public link. Its text prohibits
+unauthorized public copying or upload; this candidate does not authorize a
+public mirror. Current `DocumentFiles::locate` requires a same-site uploads PDF
+and rejects an external host or query string, so the official URL cannot yet
+be the directly bound document for these facts. The source-neutral data above
+is an evidence candidate only: production Woo publication and consumer use
+require a supported, byte-verified original-link binding with the existing
+source revision and withdrawal guarantees. No production product was changed.
