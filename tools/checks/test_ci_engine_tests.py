@@ -16,6 +16,8 @@ class EngineRunnerTest(unittest.TestCase):
         children = []
 
         def launch(_command, **kwargs):
+            for key, value in ci_engine_tests.THREAD_LIMITS.items():
+                self.assertEqual(kwargs["env"][key], value)
             code = (
                 "import time; time.sleep(0.2); raise SystemExit(7)"
                 if not children

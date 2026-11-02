@@ -8,6 +8,15 @@ import threading
 import time
 
 GROUPS = (("standard", "not ci_expensive"), ("calculation", "ci_expensive"))
+# Match the existing expanded calculation worker's BLAS/OpenMP limits. The
+# local NumPy build uses macOS Accelerate, so bound that backend too.
+THREAD_LIMITS = {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "VECLIB_MAXIMUM_THREADS": "1",
+}
 
 
 def run() -> int:
@@ -62,6 +71,7 @@ def run() -> int:
                 text=True,
                 bufsize=1,
                 start_new_session=True,
+                env={**os.environ, **THREAD_LIMITS},
             )
             processes.append((name, process))
 
