@@ -5,7 +5,6 @@ from __future__ import annotations
 import hashlib
 import json
 import platform
-import re
 import subprocess
 import sys
 from pathlib import Path
@@ -244,26 +243,6 @@ HOST_DERIVED_FIXTURE_PATHS = frozenset(
         ("pv_run", "result_sha256"),
     }
 )
-
-
-def host_invariant_view(node: Any, path: tuple[str | int, ...] = ()) -> Any:
-    """Replace only the fixture paths proven to depend on exact host arithmetic."""
-    if path in HOST_DERIVED_FIXTURE_PATHS:
-        return (
-            "<host-derived>"
-            if isinstance(node, str) and re.fullmatch(r"[0-9a-f]{64}", node)
-            else node
-        )
-    if isinstance(node, dict):
-        return {
-            key: host_invariant_view(value, (*path, key)) for key, value in node.items()
-        }
-    if isinstance(node, list):
-        return [
-            host_invariant_view(value, (*path, index))
-            for index, value in enumerate(node)
-        ]
-    return node
 
 
 def different_paths(
@@ -527,29 +506,20 @@ process.stdout.write(JSON.stringify(prepared));
 
 
 def test_preparation_fixture_export_reproduces_the_committed_fixture() -> None:
-    """The committed browser fixture matches this host on every stable field.
-
-    Same-host repeated exports are byte-identical. Across hosts, only the paths
-    proven to depend on exact AC/DC arithmetic are masked; source/input identity
-    and every other field remain exact. That identity is not this machine's live
-    snapshot.
-    """
-    committed = preparation_fixture()
-    produced = export_preparation_fixture.capture()
-    assert set(produced) == set(committed) == set(EXPECTED_FIXTURE_KEYS)
-    assert host_invariant_view(produced) == host_invariant_view(committed)
+    """Compare one full native export with that host's exact committed fixture."""
+    produced = json.loads(export_preparation_fixture.rendered())
+    assert set(produced) == EXPECTED_FIXTURE_KEYS
+    assert produced == preparation_fixture()
     pinned = export_preparation_fixture.fixture_runtime_snapshot()
     live = RuntimeSnapshot.capture()
     assert pinned.sha256 != live.sha256
+    assert set(json.loads(pinned.content)["dependencies"]) == set(
+        json.loads(live.content)["dependencies"]
+    )
     weather_run = cast(Object, produced["weather_run"])
     manifest = cast(Object, weather_run["manifest"])
     context = cast(Object, manifest["context"])
     assert context["code_sha256"] == pinned.sha256
-    # The browser package owns this file's whitespace: it formats its own JSON
-    # with Prettier, which may expand a short array or break a long string.
-    # Whatever that formatting did, it changed no saved value, so re-reading
-    # the committed bytes must yield exactly the document the exporter produced.
-    assert json.loads(export_preparation_fixture.rendered()) == produced
 
 
 def test_preparation_platform_manifest_names_each_export() -> None:
