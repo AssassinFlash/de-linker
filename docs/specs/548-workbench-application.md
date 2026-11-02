@@ -1155,3 +1155,9 @@ is silently substituted for the project power definitions, and the French
 operator does not acquire another jurisdiction's rule. Screen, PDF, separate
 rule CSV and Genie use the same frozen rule review and source identities;
 historical reports retain the result and evidence version they originally used.
+
+### Explicit module selection and string order (2026-11-02)
+
+The shared single/plant string editor identifies modules by their saved array name and project array ordinal, row and column slot. Bulk selection works on an array or row and excludes modules held by other strings/systems. It follows the existing capability map's explicit object selection/batch-edit and project-history patterns; this is an editor design decision, not a claim that another product has supplied a physical cable route. Individual selection remains available without requiring all 96 module controls to be expanded.
+
+The customer reviews and can change the selected sequence by row/column order, reversal or individual earlier/later controls. An explicitly entered group size consumes that prefix for one string and retains the remainder for the next; the editor never chooses the next MPPT/input or partitions wiring automatically. Every apply preserves actual module IDs and the ordered array of IDs. Existing string edits preserve string identity and other systems' plans; their original MPPT/input and module sequence remain until explicit apply. Conflicting/removed modules and occupied inputs are visible; rejected applies keep selection, cancel restores the staged new-string work, and the normal project undo remains authoritative. Geometry, electrical operating conditions, manufacturer evidence, physical links and server engineering checks keep their existing contracts.

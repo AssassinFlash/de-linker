@@ -13465,3 +13465,159 @@ msgstr "Module höchstens 1,134 m breit, 1,762 m lang und 0,03 m dick. Mindesten
 #: ../../apps/planner/src/components/energy/EnergyError.tsx:159 build/planner/assets/planner.js
 msgid "This saved design is outside the supported larger-roof calculation scope. Review the larger-roof conditions in the PV reference setup, or reduce the setup to the standard calculation budget before trying again."
 msgstr "Der gespeicherte Entwurf liegt außerhalb des unterstützten Bereichs für größere Dachberechnungen. Prüfen Sie die Voraussetzungen in den PV-Referenzeinstellungen oder reduzieren Sie den Umfang auf das reguläre Berechnungsbudget, bevor Sie es erneut versuchen."
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx:82 build/planner/assets/planner.js
+msgid "Array %1$d · %2$s · row %3$d · module %4$d"
+msgstr "Modulfeld %1$d · %2$s · Reihe %3$d · Modul %4$d"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx:122 build/planner/assets/planner.js
+msgid "Assigned to string %1$d · MPPT %2$d · input %3$d"
+msgstr "String %1$d zugeordnet · MPPT %2$d · Eingang %3$d"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx:135 build/planner/assets/planner.js
+msgid "Assigned to another system"
+msgstr "Bereits einem anderen System zugeordnet"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx:349 build/planner/assets/planner.js
+msgid "Edit string"
+msgstr "String bearbeiten"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx:379 build/planner/assets/planner.js
+msgid "Edit string %d"
+msgstr "String %d bearbeiten"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx:387 build/planner/assets/planner.js
+msgid "System: %s"
+msgstr "System: %s"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx:393 build/planner/assets/planner.js
+msgid "This string changed while you were editing. Cancel this edit and reopen the current string."
+msgstr "Dieser String wurde während der Bearbeitung geändert. Brechen Sie die Bearbeitung ab und öffnen Sie den aktuellen String erneut."
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx:401 build/planner/assets/planner.js
+msgid "The change was not applied. Your module selection is still available."
+msgstr "Die Änderung wurde nicht übernommen. Ihre Modulauswahl bleibt erhalten."
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx:431 build/planner/assets/planner.js
+msgid "This MPPT and inverter input already has a string. Choose another input or edit its existing string."
+msgstr "Diesem MPPT und Wechselrichtereingang ist bereits ein String zugeordnet. Wählen Sie einen anderen Eingang oder bearbeiten Sie den vorhandenen String."
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx:451 build/planner/assets/planner.js
+msgid "Modules to add to this string"
+msgstr "Anzahl der Module für den neuen String"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx:462 build/planner/assets/planner.js
+msgid "Leave this blank to use the complete selection. A smaller group uses the first modules in the displayed order; the remainder stays selected for the next string."
+msgstr "Lassen Sie das Feld leer, um die gesamte Auswahl zu verwenden. Bei einer kleineren Anzahl werden die ersten Module in der angezeigten Reihenfolge übernommen. Die übrigen bleiben für den nächsten String ausgewählt."
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx:472 build/planner/assets/planner.js
+msgid "The first %d selected modules will be saved in this order."
+msgstr "Die ersten %d Module der Auswahl werden in dieser Reihenfolge gespeichert."
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx:482 build/planner/assets/planner.js
+msgid "Select more modules or reduce the number for this string."
+msgstr "Wählen Sie weitere Module oder verringern Sie die Anzahl für diesen String."
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx:491 build/planner/assets/planner.js
+msgid "Some selected modules are missing or already assigned. Review the selection before applying it."
+msgstr "Einige ausgewählte Module fehlen oder sind bereits zugeordnet. Prüfen Sie die Auswahl, bevor Sie sie übernehmen."
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx:507 build/planner/assets/planner.js
+msgid "Remove unavailable modules from selection"
+msgstr "Nicht zuweisbare Module aus der Auswahl entfernen"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx:543 build/planner/assets/planner.js
+msgid "Save string changes"
+msgstr "String-Änderungen speichern"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx:552 build/planner/assets/planner.js
+msgid "Cancel editing"
+msgstr "Bearbeitung abbrechen"
+
+#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:57 build/planner/assets/planner.js
+msgid "Choose modules and review their order to match your planned wiring. Enter the MPPT and inverter input for each string."
+msgstr "Wählen Sie Module und prüfen Sie deren Reihenfolge entsprechend der geplanten Verkabelung. Tragen Sie für jeden String den MPPT und den Wechselrichtereingang ein."
+
+#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:66 build/planner/assets/planner.js
+msgid "Array %1$d · %2$s"
+msgstr "Modulfeld %1$d · %2$s"
+
+#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:75 build/planner/assets/planner.js
+msgid "Roof: %s"
+msgstr "Dachfläche: %s"
+
+#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:82 build/planner/assets/planner.js
+msgid "%1$d available · %2$d selected"
+msgstr "%1$d zuweisbar · %2$d ausgewählt"
+
+#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:95 build/planner/assets/planner.js
+msgid "Select available modules in %s"
+msgstr "Zuweisbare Module in %s auswählen"
+
+#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:100 build/planner/assets/planner.js
+msgid "Select all available modules"
+msgstr "Alle zuweisbaren Module auswählen"
+
+#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:116 build/planner/assets/planner.js
+msgid "Clear this array selection"
+msgstr "Auswahl in diesem Modulfeld aufheben"
+
+#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:130 build/planner/assets/planner.js
+msgid "Select row %1$d in %2$s"
+msgstr "Reihe %1$d in %2$s auswählen"
+
+#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:136 build/planner/assets/planner.js
+msgid "Select row %d"
+msgstr "Reihe %d auswählen"
+
+#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:142 build/planner/assets/planner.js
+msgid "Choose individual modules"
+msgstr "Einzelne Module auswählen"
+
+#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:178 build/planner/assets/planner.js
+msgid "Review selected order (%d modules)"
+msgstr "Reihenfolge der Auswahl prüfen (%d Module)"
+
+#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:184 build/planner/assets/planner.js
+msgid "The selected sequence is used when you add modules. The roof layout stays unchanged."
+msgstr "Die ausgewählte Reihenfolge wird beim Hinzufügen der Module verwendet. Die Dachbelegung bleibt unverändert."
+
+#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:195 build/planner/assets/planner.js
+msgid "Order by rows"
+msgstr "Nach Reihen anordnen"
+
+#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:203 build/planner/assets/planner.js
+msgid "Order by columns"
+msgstr "Nach Spalten anordnen"
+
+#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:211 build/planner/assets/planner.js
+msgid "Reverse order"
+msgstr "Reihenfolge umkehren"
+
+#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:219 build/planner/assets/planner.js
+msgid "Clear selection"
+msgstr "Auswahl aufheben"
+
+#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:234 build/planner/assets/planner.js
+msgid "Move %s earlier"
+msgstr "%s eine Position nach vorn verschieben"
+
+#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:240 build/planner/assets/planner.js
+msgid "Earlier"
+msgstr "Nach vorn"
+
+#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:246 build/planner/assets/planner.js
+msgid "Move %s later"
+msgstr "%s eine Position nach hinten verschieben"
+
+#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:252 build/planner/assets/planner.js
+msgid "Later"
+msgstr "Nach hinten"
+
+#: ../../apps/planner/src/components/equipment/PvModuleSelection.tsx:258 build/planner/assets/planner.js
+msgid "Remove %s from selection"
+msgstr "%s aus der Auswahl entfernen"
+
+#: ../../apps/planner/src/components/equipment/PlantPvStringSetup.tsx:76 build/planner/assets/planner.js
+msgid "Assigned to system %s"
+msgstr "System %s bereits zugeordnet"

@@ -447,6 +447,7 @@ export function PlantSetup(props: Props) {
 						<PlantPvStringSetup
 							draft={draft}
 							unit={unit}
+							units={setup.units}
 							edit={edit}
 							locale={locale}
 							disabled={disabled}
