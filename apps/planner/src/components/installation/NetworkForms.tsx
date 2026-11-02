@@ -1007,7 +1007,8 @@ export function CableForm({
 					}
 					next.manufacturer_comparison = {
 						...identity,
-						conditions_confirmed: manufacturerConfirmed && manufacturerAvailable,
+						conditions_confirmed:
+							manufacturerConfirmed && manufacturerAvailable,
 						confirmation_context: context,
 					};
 				}
