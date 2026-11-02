@@ -74,6 +74,7 @@ trait CurrentFaqProduct {
 		WP_Mock::userFunction( 'pll_get_post_language' )->andReturn( 'en' )->byDefault();
 		WP_Mock::userFunction( 'attachment_url_to_postid' )->andReturn( 0 )->byDefault();
 		WP_Mock::userFunction( 'get_option' )->andReturn( array() )->byDefault();
+		WP_Mock::userFunction( 'update_option' )->with( 'linker_publication_document_hashes_v1', \Mockery::type( 'array' ), false )->andReturn( true )->byDefault();
 		WP_Mock::userFunction( 'wp_json_encode' )->andReturnUsing( static fn ( mixed $value, int $flags = 0 ): string => (string) json_encode( $value, $flags ) )->byDefault();
 		WP_Mock::userFunction( 'get_post_meta' )->andReturnUsing(
 			function ( int $product_id, string $key = '' ) use ( $id ): mixed {
