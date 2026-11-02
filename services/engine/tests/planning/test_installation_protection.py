@@ -324,6 +324,17 @@ def test_worker_freezes_protection_in_report_pdf_csv_and_private_projection(
         workspace, owner, project.id, project.revision, [run.id], "en"
     )
     text = str(projection)
+    comparisons = json_object(cast(list[object], projection["runs"])[0])[
+        "protection_comparisons"
+    ]
+    case = json_object(cast(list[object], comparisons)[0])
+    assert json_object(case["breaking"])["measured"] == 6000
+    assert json_object(case["breaking"])["maximum"] == 10000
+    assert json_object(case["disconnection"])["status"] == "within_declared_values"
+    assert (
+        json_object(cast(list[object], case["thermal"])[0])["status"]
+        == "within_declared_values"
+    )
     assert "Breaking capacity" in text and "Thermal withstand" in text
     assert (
         "Synthetic breaker" not in text

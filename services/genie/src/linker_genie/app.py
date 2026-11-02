@@ -524,6 +524,23 @@ def _answer(
     # A person request and a parts list are written by the service. Their
     # sentences follow the question, the same rule as a model answer.
     language = turn_language(body)
+    if "verified saved protection explanation" in prepared.route.reasons:
+        answer = planning.protection_answer(
+            body.planning_context, body.page_context, language
+        )
+        _, saved_facts = planning.record(body.planning_context, body.page_context)
+        prepared.log["saved_protection_answer"] = True
+        return (
+            TurnResult(
+                output=TurnOutput(language=language, blocks=[TextBlock(text=answer)]),
+                facts=saved_facts,
+                grounded=True,
+                failures=(),
+                fallback=False,
+                attempts=0,
+            ),
+            None,
+        )
     if "verified saved material explanation" in prepared.route.reasons:
         material_answer = planning.material_answer(
             body.planning_context, body.page_context, language

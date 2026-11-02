@@ -8,6 +8,7 @@ No chat model, new calculator, product feed or browser snapshot is an authority.
 from __future__ import annotations
 
 import json
+import math
 import re
 from datetime import datetime
 from typing import Any
@@ -114,6 +115,208 @@ def is_material_report(raw: Any, page: PageContext) -> bool:
         and isinstance(run.get("declared_installation_materials"), list)
         and run["declared_installation_materials"]
     )
+
+
+def is_protection_report(raw: Any, page: PageContext) -> bool:
+    if not isinstance(raw, dict):
+        return False
+    payload = view(raw, page)
+    runs = raw.get("runs")
+    if (
+        payload.get("status") != "available"
+        or payload.get("truncated")
+        or not isinstance(runs, list)
+        or len(runs) != 1
+    ):
+        return False
+    run = runs[0]
+    return bool(
+        isinstance(run, dict)
+        and run.get("kind") == "planning_report_v1"
+        and run.get("state") == "succeeded"
+        and not run.get("truncated")
+        and isinstance(run.get("protection_comparisons"), list)
+        and run["protection_comparisons"]
+    )
+
+
+def protection_answer(raw: Any, page: PageContext, language: str) -> str:
+    """Explain frozen project comparisons, without inferring a fault's cause."""
+    de = language == "de"
+    unavailable = (
+        "Die gespeicherten Schutzvergleiche konnten nicht überprüft werden. Bitte öffnen Sie den Bericht."
+        if de
+        else "The saved protection comparisons could not be verified. Please open the report."
+    )
+    if not is_protection_report(raw, page):
+        return unavailable
+    run = raw["runs"][0]
+    cases = run["protection_comparisons"]
+    reasons = {
+        "context_unavailable": (
+            "the circuit or evidence is unavailable",
+            "Stromkreis oder Nachweise sind nicht verfügbar",
+        ),
+        "confirmation_required": (
+            "the current circuit and evidence need confirmation",
+            "Stromkreis und Nachweise müssen bestätigt werden",
+        ),
+        "context_changed": (
+            "the circuit or evidence changed and needs confirmation again",
+            "Stromkreis oder Nachweise wurden geändert und müssen erneut bestätigt werden",
+        ),
+        "fault_range_missing": (
+            "the fault-current range is missing",
+            "der Fehlerstrombereich fehlt",
+        ),
+        "device_rating_missing": (
+            "the breaking-capacity evidence is missing",
+            "der Nachweis des Ausschaltvermögens fehlt",
+        ),
+        "clearing_evidence_missing": (
+            "the clearing-time evidence is missing",
+            "der Nachweis der Abschaltzeit fehlt",
+        ),
+        "zero_minimum_fault_current": (
+            "zero minimum fault current needs a separate assessment",
+            "ein Mindestfehlerstrom von null erfordert eine gesonderte Prüfung",
+        ),
+        "rating_conditions_differ": (
+            "device voltage or current type differs from the operating condition",
+            "Gerätespannung oder Stromart stimmt nicht mit dem Betriebsfall überein",
+        ),
+        "fault_range_not_covered": (
+            "the let-through evidence does not cover the fault range",
+            "der Durchlassenergienachweis deckt den Fehlerstrombereich nicht ab",
+        ),
+        "adiabatic_duration_exceeds_five_seconds": (
+            "the clearing duration exceeds the five-second method",
+            "die Abschaltdauer überschreitet den Fünf-Sekunden-Bereich der Methode",
+        ),
+        "clearing_time_evidence_inconsistent": (
+            "the clearing-time evidence is inconsistent",
+            "die Nachweise zur Abschaltzeit widersprechen sich",
+        ),
+        "numerical_range_not_supported": (
+            "the numerical range is not supported",
+            "der Zahlenbereich wird nicht unterstützt",
+        ),
+    }
+
+    def num(value: Any) -> str:
+        if (
+            isinstance(value, bool)
+            or not isinstance(value, (int, float))
+            or not math.isfinite(value)
+        ):
+            raise ValueError("invalid comparison")
+        text = str(value)
+        if text.endswith(".0"):
+            text = text[:-2]
+        return text.replace(".", ",") if de else text
+
+    def one(row: Any, kind: str) -> str:
+        if not isinstance(row, dict):
+            raise ValueError("invalid comparison")
+        titles = {
+            "breaking": ("Breaking capacity", "Ausschaltvermögen"),
+            "disconnection": ("Clearing time", "Abschaltzeit"),
+            "thermal": ("Thermal withstand", "Thermische Beanspruchung"),
+        }
+        title = titles[kind][de]
+        status = row.get("status")
+        if status == "not_assessed":
+            reason = reasons.get(str(row.get("reason")))
+            return (
+                title
+                + (": Nicht geprüft" if de else ": Not assessed")
+                + ((" — " + reason[de]) if reason else "")
+                + "."
+            )
+        if status not in {"within_declared_values", "outside_declared_values"}:
+            raise ValueError("invalid status")
+        a, b = row.get("measured"), row.get("maximum")
+        if (
+            isinstance(a, bool)
+            or isinstance(b, bool)
+            or not isinstance(a, (int, float))
+            or not isinstance(b, (int, float))
+        ):
+            raise ValueError("invalid comparison")
+        left, right = num(a), num(b)
+        if (a <= b) != (status == "within_declared_values"):
+            raise ValueError("inconsistent comparison")
+        relation = "≤" if a <= b else ">"
+        outcome = (
+            (
+                "innerhalb der angegebenen Werte"
+                if a <= b
+                else "außerhalb der angegebenen Werte"
+            )
+            if de
+            else (
+                "within the declared values"
+                if a <= b
+                else "outside the declared values"
+            )
+        )
+        if kind == "breaking":
+            text = (
+                f"erwarteter maximaler Fehlerstrom {left} A {relation} Ausschaltvermögen {right} A"
+                if de
+                else f"maximum prospective fault current {left} A {relation} device breaking capacity {right} A"
+            )
+            text += f" ({num(row['voltage_v'])} V {str(row['current_kind']).upper()})"
+        elif kind == "disconnection":
+            text = (
+                f"angegebene maximale Abschaltzeit {left} s {relation} geforderte Abschaltzeit {right} s"
+                if de
+                else f"declared worst-case clearing time {left} s {relation} required clearing time {right} s"
+            )
+            text += (
+                f" bei {num(row['minimum_fault_a'])} A Mindestfehlerstrom"
+                if de
+                else f" at {num(row['minimum_fault_a'])} A minimum fault current"
+            )
+        else:
+            text = (
+                f"Durchlassenergie I²t {left} A²s {relation} thermische Belastbarkeit k²S² {right} A²s"
+                if de
+                else f"let-through energy I²t {left} A²s {relation} thermal withstand k²S² {right} A²s"
+            )
+            text += f" (S {num(row['cross_section_mm2'])} mm², k {num(row['k_a_sqrt_s_per_mm2'])} A√s/mm², {num(row['coverage_min_fault_a'])}–{num(row['coverage_max_fault_a'])} A, {num(row['maximum_clear_s'])} s)"
+        return f"{title}: {text} — {outcome}."
+
+    try:
+        lines = [
+            (
+                f"Gespeicherter Bericht, Revision {run['revision']}:"
+                if de
+                else f"Saved report, revision {run['revision']}:"
+            )
+        ]
+        for index, case in enumerate(cases, 1):
+            if not isinstance(case, dict) or not isinstance(case.get("thermal"), list):
+                raise ValueError("invalid case")
+            lines.append(f"Schutzfall {index}:" if de else f"Protection case {index}:")
+            lines.extend(one(case[key], key) for key in ("breaking", "disconnection"))
+            for conductor, row in enumerate(case["thermal"], 1):
+                label = f"Leiter {conductor}" if de else f"Conductor {conductor}"
+                lines.append(f"{label} — {one(row, 'thermal')}")
+            if not case["thermal"]:
+                lines.append(
+                    "Thermische Beanspruchung: Nicht geprüft."
+                    if de
+                    else "Thermal withstand: Not assessed."
+                )
+        lines.append(
+            "Die Vergleiche beruhen auf den angegebenen Projektwerten und, soweit geprüft, den bestätigten Bedingungen. Selektivität, Schutzleiterführung, Erdungssystem, automatische Abschaltung und nationale Anforderungen sind damit nicht freigegeben."
+            if de
+            else "These compare project-declared values where the conditions were confirmed. They do not approve selectivity, protective conductor routing, the earthing system, automatic disconnection or national requirements."
+        )
+        return "\n".join(lines)
+    except (KeyError, TypeError, ValueError):
+        return unavailable
 
 
 def material_answer(raw: Any, page: PageContext, language: str) -> str:

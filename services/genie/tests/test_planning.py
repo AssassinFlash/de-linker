@@ -123,6 +123,161 @@ def test_saved_material_answers_use_frozen_anonymous_items_in_both_languages() -
     )
 
 
+def test_saved_protection_comparisons_explain_all_three_statuses() -> None:
+    raw, page = source()
+    raw["runs"][0].update(
+        kind="planning_report_v1",
+        protection_comparisons=[
+            {
+                "breaking": {
+                    "status": "outside_declared_values",
+                    "measured": 6000,
+                    "maximum": 5000,
+                    "voltage_v": 230,
+                    "current_kind": "ac",
+                },
+                "disconnection": {
+                    "status": "within_declared_values",
+                    "measured": 0.2,
+                    "maximum": 0.4,
+                    "minimum_fault_a": 500,
+                },
+                "thermal": [
+                    {
+                        "status": "within_declared_values",
+                        "measured": 100000,
+                        "maximum": 211600,
+                        "cross_section_mm2": 4,
+                        "k_a_sqrt_s_per_mm2": 115,
+                        "coverage_min_fault_a": 500,
+                        "coverage_max_fault_a": 6000,
+                        "maximum_clear_s": 0.3,
+                    }
+                ],
+            }
+        ],
+    )
+    answer = planning.protection_answer(raw, page, "en")
+    assert (
+        "maximum prospective fault current 6000 A > device breaking capacity 5000 A"
+        in answer
+    )
+    assert "clearing time 0.2 s ≤ required clearing time 0.4 s" in answer
+    assert (
+        "let-through energy I²t 100000 A²s ≤ thermal withstand k²S² 211600 A²s"
+        in answer
+    )
+    assert "revision 2" in answer and "do not approve" in answer
+    de = planning.protection_answer(raw, page, "de")
+    assert "6000 A > Ausschaltvermögen 5000 A" in de and "0,2 s ≤" in de
+    case = raw["runs"][0]["protection_comparisons"][0]
+    case["breaking"] = {"status": "not_assessed", "reason": "rating_conditions_differ"}
+    assert (
+        "Not assessed — device voltage or current type differs"
+        in planning.protection_answer(raw, page, "en")
+    )
+    case["disconnection"]["status"] = "outside_declared_values"
+    assert "could not be verified" in planning.protection_answer(raw, page, "en")
+
+
+def test_real_protection_question_uses_service_route() -> None:
+    from types import SimpleNamespace
+
+    from linker_genie.app import _answer
+    from linker_genie.understand import Understander
+
+    raw, page = source()
+    raw["runs"][0].update(
+        kind="planning_report_v1",
+        protection_comparisons=[
+            {
+                "breaking": {
+                    "status": "outside_declared_values",
+                    "measured": 6000,
+                    "maximum": 5000,
+                    "voltage_v": 230,
+                    "current_kind": "ac",
+                },
+                "disconnection": {
+                    "status": "not_assessed",
+                    "reason": "clearing_evidence_missing",
+                },
+                "thermal": [],
+            }
+        ],
+    )
+    question = "In this report, which protection check is outside the declared values and why? What do the other two comparisons show?"
+    request = TurnRequest.model_validate(
+        {
+            "conversation_id": "test",
+            "messages": [{"role": "user", "content": question}],
+            "locale": "en",
+            "page_context": page.model_dump(),
+        }
+    ).model_copy(update={"planning_context": raw})
+
+    class RecordedJev:
+        def read(
+            self, message: str, page: dict[str, Any], history: Any = ()
+        ) -> Reading:
+            assert message == question and page["saved_protection_report"] is True
+            return Reading(
+                intent="documents_specs",
+                confidence=0.73,
+                about_this_page=0.66,
+                wants_person=0.03,
+                needs_followup=0.82,
+                seconds=0,
+                cost=0,
+                saved_protection_question=0.94,
+            )
+
+    prepared = Understander(None, RecordedJev()).prepare(request, None)  # type: ignore[arg-type]
+    assert prepared.route.reasons == ("verified saved protection explanation",)
+    result, _ = _answer(request, prepared, SimpleNamespace(), None, abilities=None)  # type: ignore[arg-type]
+    assert result.attempts == 0 and prepared.log["saved_protection_answer"] is True
+    block = result.output.blocks[0]
+    assert (
+        isinstance(block, TextBlock)
+        and "6000 A > device breaking capacity 5000 A" in block.text
+    )
+    assert "Not assessed" in block.text
+
+    class OtherJev:
+        def read(
+            self, message: str, page: dict[str, Any], history: Any = ()
+        ) -> Reading:
+            return Reading(
+                intent="sizing",
+                confidence=0.8,
+                about_this_page=0.7,
+                wants_person=0,
+                needs_followup=0,
+                seconds=0,
+                cost=0,
+                saved_protection_question=0.1,
+            )
+
+    other = TurnRequest.model_validate(
+        {
+            "conversation_id": "test",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "Why did a breaker trip and what device should I choose?",
+                }
+            ],
+            "locale": "en",
+            "page_context": page.model_dump(),
+        }
+    ).model_copy(update={"planning_context": raw})
+    other_prepared = Understander(None, OtherJev()).prepare(other, None)  # type: ignore[arg-type]
+    assert "verified saved protection explanation" not in other_prepared.route.reasons
+
+    raw["runs"][0]["kind"] = "single_ac_energy_replay_v1"
+    assert not planning.is_protection_report(raw, page)
+
+
 def test_actual_saved_report_question_takes_the_service_answer_path(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

@@ -1297,6 +1297,65 @@ def assistant_context(
             selected_run_view["calculation_sources"] = calculation_sources(
                 workspace, run
             )
+            installation = source_out[0].get("installation") if source_out else None
+            protection = (
+                installation.get("protection_review")
+                if isinstance(installation, dict)
+                else None
+            )
+            if isinstance(protection, dict) and isinstance(
+                protection.get("assessments"), list
+            ):
+                manifest_context = run.manifest.get("context")
+                assets = (
+                    manifest_context.get("assets")
+                    if isinstance(manifest_context, dict)
+                    else None
+                )
+                dependencies = run.result.get("dependencies")
+                if (
+                    not isinstance(assets, dict)
+                    or not isinstance(dependencies, dict)
+                    or assets.get("report.source") != dependencies.get("report_source")
+                ):
+                    raise InvalidInput(
+                        "saved protection differs from the frozen report source"
+                    )
+
+                def comparison(row: Object) -> Object:
+                    return {
+                        key: row[key]
+                        for key in (
+                            "status",
+                            "reason",
+                            "measured",
+                            "maximum",
+                            "voltage_v",
+                            "current_kind",
+                            "minimum_fault_a",
+                            "core_role",
+                            "cross_section_mm2",
+                            "k_a_sqrt_s_per_mm2",
+                            "maximum_clear_s",
+                            "coverage_min_fault_a",
+                            "coverage_max_fault_a",
+                        )
+                        if key in row
+                    }
+
+                selected_run_view["protection_comparisons"] = [
+                    {
+                        "breaking": comparison(cast(Object, case["breaking"])),
+                        "disconnection": comparison(
+                            cast(Object, case["disconnection"])
+                        ),
+                        "thermal": [
+                            comparison(row)
+                            for row in cast(list[Object], case.get("thermal", []))
+                        ],
+                    }
+                    for case in cast(list[Object], protection["assessments"])
+                ]
             materials = _report_materials(
                 workspace, run, run.result, source_out[0] if source_out else None
             )
