@@ -345,3 +345,24 @@ def test_transitive_explicit_cas_dependency_is_required_even_when_absent(
     workspace.create(owner, "Project", {"nested": [{"child": child}]}, key="new")
     with pytest.raises(VersionUnavailable, match="unavailable"):
         collect(workspace.database.path.parent)
+
+
+def test_series_graph_keeps_only_decoded_hash_keys_and_values(
+    workspace: Workspace,
+) -> None:
+    from linker_engine.planning.dependencies import reachable_blobs
+
+    blobs = workspace.blobs
+    child = blobs.put(b"series child")
+    replaced = blobs.put(b"overwritten JSON field")
+    by_key = blobs.put_object({child: [0.1, 0.2]})
+    by_value = blobs.put_object({"series": [[12, child], [13, child]]})
+    escaped = blobs.put(
+        ('["\\u00' + f"{ord(child[0]):02x}" + child[1:] + '"]').encode()
+    )
+    duplicate = blobs.put(
+        ('{"series":"' + replaced + '","series":"' + child + '"}').encode()
+    )
+    wide = blobs.put(('["' + child + '"]').encode("utf-16"))
+    roots = {by_key, by_value, escaped, duplicate, wide}
+    assert reachable_blobs(blobs, roots, blobs.directory) == roots | {child}

@@ -48,6 +48,28 @@ def cas_lock(directory: Path, *, exclusive: bool) -> Iterator[None]:
         os.close(descriptor)
 
 
+QUOTED_HASH = re.compile(rb'"([a-f0-9]{64})"')
+
+
+def _series_references(raw: bytes) -> set[str] | None:
+    """Scan validated, unescaped JSON without visiting every numeric sample."""
+    if b"\\" in raw or b"\x00" in raw or b'"dependencies"' in raw:
+        return None
+    unique = True
+
+    def check_keys(pairs: list[tuple[str, object]]) -> None:
+        nonlocal unique
+        if len(dict(pairs)) != len(pairs):
+            unique = False
+
+    # Consume the whole document. Duplicate keys require normal JSON decoding
+    # because an earlier value may have been replaced by a later one.
+    json.loads(raw, object_pairs_hook=check_keys)
+    if not unique:
+        return None
+    return {match[1].decode("ascii") for match in QUOTED_HASH.finditer(raw)}
+
+
 def reachable_blobs(blobs: FrozenReader, roots: set[str], directory: Path) -> set[str]:
     """Verify the full conservative JSON closure, including nested arrays.
 
@@ -64,7 +86,8 @@ def reachable_blobs(blobs: FrozenReader, roots: set[str], directory: Path) -> se
         raw = blobs.read(sha256)
         visited.add(sha256)
         try:
-            value = json.loads(raw)
+            references = _series_references(raw)
+            value = json.loads(raw) if references is None else list(references)
         except (ValueError, UnicodeError) as error:
             # Binary/raw data is a leaf. Broken JSON-shaped documents cannot
             # establish a complete closure, so deletion must fail closed.
