@@ -22,7 +22,13 @@ export function ProjectOverview({
 	geometry: GeometryDocument;
 	config: Configuration;
 	choose: (
-		workspace: "site" | "energy" | "design" | "calculations" | "installation",
+		workspace:
+			| "site"
+			| "energy"
+			| "design"
+			| "calculations"
+			| "equipment"
+			| "installation",
 	) => void;
 	installation: InstallationInputs;
 }) {
@@ -217,6 +223,24 @@ export function ProjectOverview({
 							<strong>{__("Energy calculation", "linker-tools")}</strong>
 							<small>
 								{__("Scenario settings and saved calculations", "linker-tools")}
+							</small>
+						</span>
+						<Icon name="arrow" />
+					</button>
+					<button type="button" onClick={() => choose("equipment")}>
+						<Icon name="layers" />
+						<span>
+							<strong>{__("Equipment", "linker-tools")}</strong>
+							<small>{__("Equipment checks", "linker-tools")}</small>
+						</span>
+						<Icon name="arrow" />
+					</button>
+					<button type="button" onClick={() => choose("installation")}>
+						<Icon name="layers" />
+						<span>
+							<strong>{__("Installation routing", "linker-tools")}</strong>
+							<small>
+								{__("Physical devices and site connections", "linker-tools")}
 							</small>
 						</span>
 						<Icon name="arrow" />

@@ -10,13 +10,19 @@ from linker_genie.hs3_evidence import (
     CERTIFICATE,
     DATA_MODELS,
     DATASHEET,
+    DE_DATASHEET,
+    DE_DATASHEET_GROUP,
+    DE_OVERVIEW,
     MANUAL,
     SOURCE_GROUPS,
     datasheet_axis,
+    de_datasheet_id,
+    de_datasheet_text,
     evidence_id,
     has_purpose,
     hs3_anchors,
     source_text,
+    valid_hs3_datasheet_scope,
     valid_hs3_scope,
     variants,
 )
@@ -167,4 +173,122 @@ def compile_hs3_evidence(
                 )
             )
             proofs[cid] = cast("ScopeProof", proof)
+    if all(
+        cid in originals and not originals[cid].source_picture
+        for cid in DE_DATASHEET_GROUP
+    ):
+        de_anchors = hs3_anchors(
+            (chunk.id, chunk.doc_sha256, chunk.page, chunk.kind, chunk.text)
+            for chunk in chunks
+            if chunk.id in DE_DATASHEET_GROUP
+        )
+        if len(de_anchors) == len(DE_DATASHEET_GROUP):
+            de_original = originals[DE_OVERVIEW]
+            data_table = originals[DATA_MODELS]
+            if data_table.source_table == "docling:p2:#/tables/0":
+                for pid, product in source.products.items():
+                    model = str(product.get("model", ""))
+                    de_text = de_datasheet_text(model)
+                    axis = datasheet_axis(model, data_table.source_cells)
+                    if (
+                        variants(model) is None
+                        or de_text is None
+                        or axis is None
+                        or statuses.get(model.casefold()) != "published"
+                    ):
+                        continue
+                    de_choices: dict[str, list[dict[str, Any]]] = {}
+                    for role, sha, purpose in (
+                        ("datasheet_de", DE_DATASHEET, "datasheet"),
+                        ("datasheet", DATASHEET, "datasheet"),
+                        ("manual", MANUAL, "manual"),
+                    ):
+                        de_choices[role] = sorted(
+                            (
+                                doc
+                                for doc in source.documents.values()
+                                if doc.get("blob_sha256") == sha
+                                and has_purpose(doc, purpose)
+                                and pid in doc.get("product_ids", [])
+                                and doc["document_id"] in product.get("documents", [])
+                            ),
+                            key=lambda doc: str(doc["document_id"]),
+                        )
+                    if any(not de_choices[role] for role in de_choices):
+                        continue
+                    de_supports = {
+                        role: de_choices[role][0] for role in ("datasheet", "manual")
+                    }
+                    for de_doc in de_choices["datasheet_de"]:
+                        selected = {"datasheet_de": de_doc, **de_supports}
+                        refs = {
+                            role: {
+                                "document_id": doc["document_id"],
+                                "document_revision": doc["document_revision"],
+                                "blob_sha256": doc["blob_sha256"],
+                            }
+                            for role, doc in selected.items()
+                        }
+                        did = str(de_doc["document_id"])
+                        cid = de_datasheet_id(model, did, de_text)
+                        header = f"{model} | HS3 Dreiphasige Komplettlösung | p. 1"
+                        tokens = tokenizer.count(header + "\n" + de_text)
+                        if tokens > max_tokens:
+                            continue
+                        de_proof: dict[str, Any] = {
+                            "product_ids": [pid],
+                            "basis": "hs3_datasheet_de",
+                            "source_chunk_ids": list(DE_DATASHEET_GROUP),
+                            "document_ids": [did],
+                            "associations": [
+                                {
+                                    "document_id": did,
+                                    "document_revision": de_doc["document_revision"],
+                                    "blob_sha256": DE_DATASHEET,
+                                    "product_id": pid,
+                                    "product_revision": product["product_revision"],
+                                }
+                            ],
+                            "hs3_datasheet_de": {
+                                "product_id": pid,
+                                "product_revision": product["product_revision"],
+                                "model": model,
+                                "source_documents": refs,
+                                "datasheet_axis": axis,
+                            },
+                        }
+                        if not valid_hs3_datasheet_scope(
+                            de_proof,
+                            [pid],
+                            source.products,
+                            source.documents,
+                            sha=DE_DATASHEET,
+                            chunk_id=cid,
+                            text=de_text,
+                            anchors=de_anchors,
+                        ):
+                            continue
+                        output.append(
+                            replace(
+                                de_original,
+                                id=cid,
+                                page=1,
+                                section="HS3 Dreiphasige Komplettlösung",
+                                kind="text",
+                                header=header,
+                                text=de_text,
+                                lang="de",
+                                tokens=tokens,
+                                source_table="",
+                                preceding_text=(),
+                                source_rows=(),
+                                source_cells=(),
+                                source_headings=(),
+                                source_picture="",
+                                source_pdf_cover=None,
+                                source_certificate_evidence=(),
+                                source_physical_evidence=(),
+                            )
+                        )
+                        proofs[cid] = cast("ScopeProof", de_proof)
     return output, proofs

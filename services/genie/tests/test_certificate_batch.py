@@ -103,7 +103,7 @@ def test_actual_certificate_batch_has_substantive_exact_model_evidence(
         for c in chunks
     }
     assert len(missing) == 78
-    assert len(chunks) == len(pairs) == len(missing & pairs) == 71
+    assert len(chunks) == len(pairs) == len(missing & pairs) == 73
     assert all(
         is_passage(c.text) and _authorized(c, scopes[c.id], source) for c in chunks
     )
@@ -146,11 +146,12 @@ def test_actual_certificate_batch_has_substantive_exact_model_evidence(
     assert (
         red_proof["certificate_scope"]["red_anchors"]["page_marker"]["source_page"] == 2
     )
-    assert not any(
-        chunk.doc_sha256.startswith("8158c2cc2ff1")
-        and source.products[scopes[chunk.id]["product_ids"][0]]["model"]
-        == "GW11K-HCA-20"
-        for chunk in chunks
+    red_11k, _ = _target(prepared, "8158c2cc2ff1", "GW11K-HCA-20")
+    assert "Model: GW11K-HCA-20" in red_11k.text and "EN 18031-1:2024" in red_11k.text
+    esolar, _ = _target(prepared, "9bc6ae93800c", "eSolar AIO3")
+    assert (
+        "Model: eSolar AIO3" in esolar.text
+        and "Directive 2014/53/EU of Radio Equipment" in esolar.text
     )
 
 
@@ -345,7 +346,7 @@ def test_real_fts_preparation_and_product_permissions(
                 "SELECT value FROM meta WHERE key='unprepared_documents'"
             ).fetchone()[0]
         )
-    assert len(unprepared) == 7
+    assert len(unprepared) == 5
     assert all(row["reason"] == "no_proven_passage" for row in unprepared)
     report, proof = _target(prepared, "000592098663", "GW112.6-BAT-AC-G10")
     pid = proof["product_ids"][0]

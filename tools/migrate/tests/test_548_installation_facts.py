@@ -336,6 +336,44 @@ def test_batc_112_plan_keeps_only_evidenced_delivery_rows() -> None:
     )
 
 
+def test_batc_61_plan_keeps_only_evidenced_delivery_rows() -> None:
+    products = migration.load_plan(HERE.parent / "548-batc-61-delivery.json")[
+        "products"
+    ]
+    assert set(products) == {"1954"}
+    items = products["1954"]["items"]
+    original = migration.load_plan()["products"]["1954"]["items"]
+    assert items[: len(original)] == original
+    delivery = items[len(original) :]
+    assert len(delivery) == 19
+    assert len({item["id"] for item in delivery}) == 19
+    # The GW61.4 quick guide lists the ET100 bracket as a conditional delivery
+    # row; unlike the 112 cabinet it stays in the plan with its own condition.
+    bracket = next(item for item in delivery if item["id"] == "et100-adapter-bracket")
+    assert (
+        bracket["quantity"] is None
+        and bracket["handling"] == "site_engineering_required"
+    )
+    assert any("ET100" in condition["en"] for condition in bracket["conditions"])
+    assert (
+        next(item for item in delivery if item["id"] == "expansion-anchor")["quantity"]
+        == 4
+    )
+    harness = next(
+        item for item in delivery if item["id"] == "pack-interconnection-harness"
+    )
+    assert harness["quantity"] == 5
+    assert harness["label"]["en"] == "Pack interconnection harness (5 per cabinet)"
+    assert "GW61.4-BAT-AC-G10：×5" in harness["source"]["quote"]
+    assert all(
+        item["source"]["blob_sha256"]
+        == "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2"
+        and item["source"]["product_id"] == 1954
+        and item["source"]["page"] in (1, 2)
+        for item in delivery
+    )
+
+
 def test_batc_plan_passes_native_installation_facts_binding() -> None:
     reviewed = migration.load_plan(HERE.parent / "548-batc-delivery.json")["products"]
     source = reviewed["1956"]["items"][0]["source"]

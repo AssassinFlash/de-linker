@@ -92,6 +92,7 @@ class FakeTarget(Target):
         self.eval_reply: str = "[]"
         self.existing: set[str] = set()
         self.cache_exc = '["?"]'
+        self.cache_login_cookie = ""
 
     def wp(self, *args: str, check: bool = True) -> str:  # noqa: D102
         del check
@@ -128,6 +129,8 @@ class FakeTarget(Target):
             return "option_name,size\nsiteurl,10\n"
         if args[:3] == ("option", "get", plan.PAGE_CACHE_EXCLUSION_OPTION):
             return self.cache_exc
+        if args[:3] == ("option", "get", plan.PAGE_CACHE_LOGIN_COOKIE_OPTION):
+            return self.cache_login_cookie
         if args[0] == "eval":
             return self.eval_reply
         if args[:2] == ("post", "list"):
@@ -1345,6 +1348,12 @@ def test_purge_page_cache_stops_when_query_strings_would_be_cached(
         steps.purge_page_cache(target, {plan.PAGE_CACHE_PLUGIN})
     assert ("wp", plan.PAGE_CACHE_PURGE) not in target.calls
     assert not any(call[1][:2] == ("option", "update") for call in target.calls)
+
+    target = _fake(tmp_path)
+    target.cache_login_cookie = "LOGGED_IN_COOKIE"
+    with pytest.raises(CutoverError, match=plan.PAGE_CACHE_LOGIN_COOKIE_OPTION):
+        steps.purge_page_cache(target, {plan.PAGE_CACHE_PLUGIN})
+    assert ("wp", plan.PAGE_CACHE_PURGE) not in target.calls
 
 
 @pytest.fixture

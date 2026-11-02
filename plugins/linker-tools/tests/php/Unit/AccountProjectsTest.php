@@ -51,6 +51,7 @@ final class AccountProjectsTest extends TestCase {
 		WP_Mock::userFunction( 'get_current_blog_id', array( 'return' => 1 ) );
 		WP_Mock::userFunction( '__', array( 'return' => static fn ( string $message ): string => $message ) );
 		WP_Mock::userFunction( 'get_option', array( 'return' => 'https://engine.test/planning' ) );
+		WP_Mock::userFunction( 'get_posts', array( 'return' => array() ) );
 		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn ( mixed $value ): string|false => json_encode( $value ) ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- This is the native encoder's unit double.
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => static fn ( mixed $value ): bool => $value instanceof WP_Error ) );
 		WP_Mock::userFunction( 'wp_remote_retrieve_response_code', array( 'return' => 200 ) );

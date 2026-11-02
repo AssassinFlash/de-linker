@@ -30,6 +30,18 @@ def subject_matches(record: Mapping[str, Any], model: str) -> bool:
     """Match only the manufacturer's role-specific declaration, not metadata."""
     quote = normalized(str(record["anchor_quote"]))
     if record["kind"] == "models":
+        # The SAJ quick installation guide (a70cb4c39824) cover heading writes
+        # the kWh class as K in "CB2-(57.3K-100.3K)-HV5" and never prints a
+        # literal model name, so the four published CB2-57.3/71.6/85.9/100.3-
+        # HV5 models need this explicit range-to-model mapping.
+        if (
+            "CB2-(57.3K-100.3K)-HV5" in quote
+            and re.fullmatch(
+                r"CB2-(?:57\.3|71\.6|85\.9|100\.3)-HV5", model, re.IGNORECASE
+            )
+            is not None
+        ):
+            return True
         return bool(model and model_pattern(model).search(quote))
     if record["kind"] == "series":
         family = model.casefold().split("-", 1)[0]

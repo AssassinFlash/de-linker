@@ -50,6 +50,13 @@ html[lang^="de"] #tv-contact-v1 p {
  * headings. Use the existing title token; leave the authored hero untouched. */
 #tv-contact-v1 :is(.cp-intro, .cp-story, .cp-afterword) h2 {
 	letter-spacing: var(--proto-track-title);
+	text-wrap: balance;
+}
+
+/* The server-rendered contact card carries its own overline and h2 heading;
+ * hide the outer duplicate intro heading above the card. */
+#tv-contact-v1:has(#contact-form .linker-contact-head) .cp-intro {
+	display: none;
 }
 
 @media (min-width: 801px) {

@@ -156,7 +156,7 @@ def test_missing_inputs_versions_and_unrelated_countries_do_not_infer() -> None:
                 "FR",
                 rule_input(
                     "fr_generation_pmax",
-                    rule_date="2026-11-02",
+                    rule_date="2020-06-25",
                     power_kw=10,
                     connection_voltage_kv=0.4,
                 ),
@@ -164,11 +164,106 @@ def test_missing_inputs_versions_and_unrelated_countries_do_not_infer() -> None:
         )["fr_generation_type"]
         == "outside_version"
     )
+    assert (
+        outcomes(
+            review_country_rules(
+                "FR",
+                rule_input(
+                    "fr_generation_pmax",
+                    rule_date="2026-11-02",
+                    power_kw=10,
+                    connection_voltage_kv=0.4,
+                ),
+            )
+        )["fr_generation_type"]
+        == "type_a"
+    )
+    assert outcomes(
+        review_country_rules(
+            "DE",
+            rule_input(
+                "de_pv_installed",
+                rule_date="2026-11-02",
+                power_kw=25,
+                de_before_control_test=True,
+                de_remuneration="feed_in_or_tenant",
+            ),
+        )
+    ) == {
+        "de_eeg_control": "reduce",
+        "de_eeg_export": "sixty_percent_conditionally",
+    }
     assert review_country_rules("FR", rule_input("nl_storage_max_active")) is None
     assert review_country_rules("AT", rule_input("fr_generation_pmax")) is None
     original = declared(country="AT", complete=True)
     newer = {**original, "country_rule_inputs": rule_input("fr_generation_pmax")}
     assert country_assessment(newer) == country_assessment(original)
+
+
+def test_dates_before_effective_from_are_outside_the_version_and_not_evaluated() -> (
+    None
+):
+    # DE floor: EEG 2023 § 9 in force from 2023-01-01 (BGBl. 2022 I S. 1237).
+    de = review_country_rules(
+        "DE",
+        rule_input(
+            "de_pv_installed",
+            rule_date="2022-12-31",
+            power_kw=25,
+            de_before_control_test=True,
+            de_remuneration="feed_in_or_tenant",
+        ),
+    )
+    # FR floor: Arrêté du 9 juin 2020 in force from 2020-06-26
+    # (JORF n°0156 du 25 juin 2020).
+    fr = review_country_rules(
+        "FR",
+        rule_input(
+            "fr_generation_pmax",
+            rule_date="2020-06-25",
+            power_kw=10,
+            connection_voltage_kv=0.4,
+        ),
+    )
+    for review in (de, fr):
+        assert review is not None
+        checks = cast(list[Object], review["checks"])
+        assert {str(check["outcome"]) for check in checks} == {"outside_version"}
+        assert {str(check["status"]) for check in checks} == {"unresolved"}
+
+
+@pytest.mark.parametrize("rule_date", ["2023-01-01", "2026-11-02", "2026-11-03"])
+def test_dates_from_effective_from_are_inside_the_de_version(rule_date: str) -> None:
+    assert outcomes(
+        review_country_rules(
+            "DE",
+            rule_input(
+                "de_pv_installed",
+                rule_date=rule_date,
+                power_kw=25,
+                de_before_control_test=True,
+                de_remuneration="feed_in_or_tenant",
+            ),
+        )
+    ) == {
+        "de_eeg_control": "reduce",
+        "de_eeg_export": "sixty_percent_conditionally",
+    }
+
+
+@pytest.mark.parametrize("rule_date", ["2020-06-26", "2026-11-03"])
+def test_dates_from_effective_from_are_inside_the_fr_version(rule_date: str) -> None:
+    assert outcomes(
+        review_country_rules(
+            "FR",
+            rule_input(
+                "fr_generation_pmax",
+                rule_date=rule_date,
+                power_kw=10,
+                connection_voltage_kv=0.4,
+            ),
+        )
+    ) == {"fr_generation_type": "type_a"}
 
 
 def test_enedis_scope_requires_explicit_operator_and_complete_self_use() -> None:

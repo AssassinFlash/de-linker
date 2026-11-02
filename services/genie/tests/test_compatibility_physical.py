@@ -6,10 +6,12 @@ import gzip
 import json
 import sqlite3
 from copy import deepcopy
+from dataclasses import replace
 from functools import partial
 from pathlib import Path
 from typing import Any
 
+import pytest
 from test_chunking import Words
 from test_publication import authority
 from test_table_compiler_axis import ETR_SHA, etr_source
@@ -18,15 +20,19 @@ from test_table_compiler_axis import FIXTURES as AXIS_FIXTURES
 from index import corpus, store
 from index.chunking import Chunk
 from index.compatibility_physical import extract_compatibility_evidence
+from index.compatibility_units import compile_physical_compatibility
 from index.corpus import DocumentRow
 from index.physical_evidence import attach_physical_evidence
 from index.publication import compile_publication
 from index.table_compiler import external_axis_anchors
 from linker_genie.compatibility_physical import (
+    BATC_208_DATASHEET,
+    OVERVIEW_STATEMENT_SOURCES,
     inverter_condition,
     iot_condition,
     physical_key,
     translate_compatibility_condition,
+    valid_overview_statement_scope,
     valid_physical_evidence,
 )
 from linker_genie.facts import knowledge_qualifications
@@ -41,6 +47,58 @@ FIXTURE = (
     Path(__file__).parent
     / "fixtures/publication-compiler/compatibility-physical.json.gz"
 )
+
+# The reviewed BAT-C 208.9 kWh (LCD) datasheet (710d6f3d8266) supporting the
+# GW208.9-BAT-LCD-G10 overview statement, and the two page-1 overview passages
+# pinned in OVERVIEW_STATEMENT_SOURCES (EN 8951dd1d8a64, DE ea081f6f6fb2).
+LCD_DATASHEET = {
+    "document_id": "doc-710d6f3d82664613f56bb72fd5898b5a1f9e5f73",
+    "blob_sha256": BATC_208_DATASHEET,
+    "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-208.9kWh-LCD_Datasheet_EN.pdf",
+    "aliases": [
+        "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-208.9kWh-LCD_Datasheet_EN.pdf"
+    ],
+    "product_ids": [1957],
+    "title": "GoodWe BAT-C 208.9 kWh (LCD) Datasheet (EN)",
+    "type": "datasheet",
+    "lang": "en",
+    "role": "",
+    "citation_aliases": [],
+    "document_revision": BATC_208_DATASHEET,
+}
+OVERVIEW_TEXTS = {
+    "8951dd1d8a64-p1-9ca34d4b": (
+        "Battery Compatibility Overview",
+        "en",
+        "This document lists the compatible batteries with GoodWe storage inverters, "
+        "consisting in 3 system types:\n"
+        "Low-voltage energy storage systems\n"
+        "High-voltage energy storage systems\n"
+        "Commercial and industrial energy storage systems\n"
+        "Only batteries listed in this document are approved for connection to "
+        "GoodWe storage inverters according to GoodWe Limited Warranty.\n"
+        "In addition to the batteries listed in this document, there are some "
+        "batteries that follow the GOODWE CAN communication protocol that are not "
+        "listed in this document, if you need to get the matching information for "
+        "these batteries, please consult GOODWE's technical service personnel.",
+    ),
+    "ea081f6f6fb2-p1-56d02ba2": (
+        "Batteriekompatibilitätsübersicht",
+        "de",
+        "Dieses Dokument enthält eine Liste der kompatiblen Batterien mit GoodWe "
+        "Speicher-Wechselrichtern, die in 3 Systemtypen unterteilt sind:\n"
+        "Niederspannungs-Energiespeichersysteme\n"
+        "Hochspannungs-Energiespeichersysteme\n"
+        "Gewerbliche und industrielle Energiespeichersysteme\n"
+        "Nur die in diesem Dokument aufgeführten Batterien sind für den Anschluss "
+        "an GoodWe-Speicherwechselrichter im Rahmen der GoodWe-Garantie zugelassen.\n"
+        "Zusätzlich zu den in diesem Dokument aufgeführten Batterien gibt es einige "
+        "Batterien, die dem GOODWE-CAN-Kommunikationsprotokoll folgen, jedoch nicht "
+        "in diesem Dokument aufgeführt sind. Wenn Sie Informationen zur "
+        "Kompatibilität dieser Batterien benötigen, wenden Sie sich bitte an das "
+        "technische Servicepersonal von GOODWE.",
+    ),
+}
 
 
 def fixture() -> tuple[dict[str, Any], list[Chunk], list[dict[str, object]]]:
@@ -674,3 +732,153 @@ def test_sqlite_consumer_cites_both_sources_and_fences_withdrawals(
             assert all("-iot-" not in h["chunk_id"] for h in result["hits"])
     finally:
         loaded.close()
+
+
+def overview_inputs() -> tuple[list[Chunk], dict[str, Any]]:
+    """Give 1957 (GW208.9-BAT-LCD-G10) the BAT-C LCD datasheet and both overviews."""
+    raw, original, _ = fixture()
+    raw = deepcopy(raw)
+    raw["documents"].append(deepcopy(LCD_DATASHEET))
+    lcd = next(p for p in raw["products"] if p["product_id"] == 1957)
+    lcd["documents"].append(LCD_DATASHEET["document_id"])
+    chunks = [
+        *original,
+        *(
+            Chunk(
+                id=cid,
+                doc_sha256=sha,
+                page=1,
+                section=section,
+                kind="text",
+                header="GoodWe | GW208.9-BAT-LCD-G10 | compatibility | p. 1",
+                text=text,
+                lang=lang,
+                tokens=len(text.split()),
+            )
+            for cid, (sha, _digest), (section, lang, text) in (
+                (cid, value, OVERVIEW_TEXTS[cid])
+                for cid, value in OVERVIEW_STATEMENT_SOURCES.items()
+            )
+        ),
+    ]
+    return chunks, raw
+
+
+def overview_statements(
+    chunks: list[Chunk], raw: dict[str, Any]
+) -> tuple[dict[str, Any], Snapshot, dict[str, str]]:
+    statuses = {p["model"].casefold(): "published" for p in raw["products"]}
+    source = Snapshot.read(raw)
+    _, scopes = compile_physical_compatibility(
+        chunks, [], {}, source, statuses, Words(), 512, {}
+    )
+    statements = {
+        cid: scope
+        for cid, scope in scopes.items()
+        if scope.get("basis") == "compatibility_overview_statement"
+    }
+    return statements, source, statuses
+
+
+def test_overview_statement_authorizes_both_pages_and_the_supporting_datasheet() -> (
+    None
+):
+    chunks, raw = overview_inputs()
+    statements, source, _ = overview_statements(chunks, raw)
+    assert set(statements) == set(OVERVIEW_STATEMENT_SOURCES)
+    for cid, scope in statements.items():
+        sha = OVERVIEW_STATEMENT_SOURCES[cid][0]
+        text = OVERVIEW_TEXTS[cid][2]
+        assert scope["product_ids"] == [1957]
+        assert scope["document_ids"] and scope["source_chunk_ids"] == [cid]
+        assert (
+            scope["compatibility_overview_statement"]["support_document"][
+                "source_sha256"
+            ]
+            == BATC_208_DATASHEET
+        )
+        assert valid_overview_statement_scope(
+            scope,
+            [1957],
+            source.products,
+            source.documents,
+            sha=sha,
+            chunk_id=cid,
+            text=text,
+        )
+
+
+@pytest.mark.parametrize("cid", list(OVERVIEW_STATEMENT_SOURCES))
+def test_overview_statement_rejects_tampered_original_text(cid: str) -> None:
+    chunks, raw = overview_inputs()
+    statements, source, statuses = overview_statements(chunks, raw)
+    sha = OVERVIEW_STATEMENT_SOURCES[cid][0]
+    text = OVERVIEW_TEXTS[cid][2]
+    assert not valid_overview_statement_scope(
+        statements[cid],
+        [1957],
+        source.products,
+        source.documents,
+        sha=sha,
+        chunk_id=cid,
+        text=text + " tampered",
+    )
+    changed = [
+        replace(c, text=c.text + " tampered") if c.id == cid else c for c in chunks
+    ]
+    scopes, _, _ = overview_statements(changed, raw)
+    assert cid not in scopes
+
+
+@pytest.mark.parametrize("prefix", ["8951dd1d", "ea081f6f", "710d6f3d"])
+@pytest.mark.parametrize("change", ["association", "product_link", "role"])
+def test_overview_statement_needs_current_overview_and_datasheet_links(
+    prefix: str, change: str
+) -> None:
+    chunks, raw = overview_inputs()
+    statements, _, _ = overview_statements(chunks, raw)
+    changed = deepcopy(raw)
+    document = next(
+        d for d in changed["documents"] if d["blob_sha256"].startswith(prefix)
+    )
+    product = next(p for p in changed["products"] if p["product_id"] == 1957)
+    if change == "association":
+        document["product_ids"].remove(1957)
+    elif change == "product_link":
+        product["documents"].remove(document["document_id"])
+    else:
+        document["role"] = "manual"
+    scopes, _, _ = overview_statements(chunks, changed)
+    expected = [
+        cid
+        for cid, (sha, _digest) in OVERVIEW_STATEMENT_SOURCES.items()
+        if sha.startswith(prefix)
+    ] or list(OVERVIEW_STATEMENT_SOURCES)
+    for cid in expected:
+        assert cid not in scopes, (prefix, change, cid)
+
+
+def test_overview_statement_support_datasheet_must_stay_current() -> None:
+    chunks, raw = overview_inputs()
+    statements, source, _ = overview_statements(chunks, raw)
+    did = str(LCD_DATASHEET["document_id"])
+    for change in ("revision", "association", "product_link", "role"):
+        docs, products = deepcopy(source.documents), deepcopy(source.products)
+        if change == "revision":
+            docs[did]["document_revision"] += "-changed"
+        elif change == "association":
+            docs[did]["product_ids"].remove(1957)
+        elif change == "product_link":
+            products[1957]["documents"].remove(did)
+        else:
+            docs[did]["role"] = "manual"
+        for cid, scope in statements.items():
+            assert not valid_overview_statement_scope(
+                scope,
+                [1957],
+                products,
+                docs,
+                sha=OVERVIEW_STATEMENT_SOURCES[cid][0],
+                chunk_id=cid,
+                text=OVERVIEW_TEXTS[cid][2],
+            ), (cid, change)

@@ -21,6 +21,21 @@ final class ClaimOutbox {
 	public const GROUP     = 'linker-planner';
 	/** Bounded background discovery; event retries remain durable, spec 548 gateway. */
 	private const BATCH = 32;
+	/**
+	 * Foreground settlement runs inside a served request (the account projects
+	 * read and the gateway bootstrap), so it reads the 8 most recent events:
+	 * one HTTP request never executes the 32 sequential claim RPCs a
+	 * background batch may. What it leaves behind stays pending for the
+	 * scheduler's next sweep; `sweep()` keeps `self::BATCH`.
+	 */
+	private const FOREGROUND_BATCH = 8;
+
+	/**
+	 * Events queued before Action Scheduler finishes its init priority-1 hook.
+	 *
+	 * @var array<int,int>
+	 */
+	private array $deferred = array();
 
 	/**
 	 * Compose the native capture, persistence and private delivery boundary.
@@ -167,6 +182,10 @@ final class ClaimOutbox {
 
 	/** Repair missed scheduling without losing the immutable event. */
 	public function schedule(): void {
+		foreach ( $this->deferred as $id => $attempt ) {
+			unset( $this->deferred[ $id ] );
+			$this->queue( $id, $attempt );
+		}
 		if ( ! wp_next_scheduled( self::SWEEP ) ) {
 			wp_schedule_event( time() + HOUR_IN_SECONDS, 'hourly', self::SWEEP );
 			$this->sweep();
@@ -210,14 +229,16 @@ final class ClaimOutbox {
 	}
 
 	/**
-	 * One bounded foreground recovery on account bootstrap. Remaining work is
-	 * still visible as pending and continues through the native scheduler.
+	 * One bounded foreground recovery on account bootstrap: the
+	 * FOREGROUND_BATCH most recent events, never the full background batch,
+	 * so the request the customer is waiting on performs at most 8 claim
+	 * RPCs. Remaining work is still visible as pending and continues through
+	 * the native scheduler.
 	 *
 	 * @param int $user Current native account.
 	 */
 	public function settle( int $user ): void {
-		$id = $this->next_event( $user );
-		if ( $id > 0 ) {
+		foreach ( $this->events( $user, self::FOREGROUND_BATCH ) as $id ) {
 			if ( did_action( 'action_scheduler_init' ) ) {
 				// Session checks respect an observed active delivery and preserve
 				// its backoff. A due event still permits immediate foreground
@@ -243,7 +264,7 @@ final class ClaimOutbox {
 						'ids'
 					);
 					if ( array() !== $scheduled ) {
-						return;
+						continue 2;
 					}
 				}
 			}
@@ -257,20 +278,39 @@ final class ClaimOutbox {
 	 * @param int $user Current native account.
 	 */
 	private function next_event( int $user ): int {
+		$ids = $this->events( $user, 1 );
+		return $ids[0] ?? 0;
+	}
+
+	/**
+	 * Find unresolved native events for an account.
+	 *
+	 * @param int $user Current native account.
+	 * @param int $limit Maximum events to inspect.
+	 * @return list<int>
+	 */
+	private function events( int $user, int $limit ): array {
 		if ( $user < 1 ) {
-			return 0;
+			return array();
 		}
-		$ids = get_posts(
+		$found = get_posts(
 			array(
 				'post_type'        => self::POST_TYPE,
 				'post_status'      => 'private',
 				'author'           => $user,
-				'numberposts'      => 1,
+				'numberposts'      => $limit,
 				'fields'           => 'ids',
 				'suppress_filters' => true,
 			)
 		);
-		return isset( $ids[0] ) ? (int) $ids[0] : 0;
+		$ids   = array();
+		foreach ( $found as $post ) {
+			$id = (int) $post;
+			if ( $id > 0 ) {
+				$ids[] = $id;
+			}
+		}
+		return $ids;
 	}
 
 	/**
@@ -314,6 +354,7 @@ final class ClaimOutbox {
 	 */
 	private function queue( int $id, int $attempt ): void {
 		if ( ! did_action( 'action_scheduler_init' ) ) {
+			$this->deferred[ $id ] = $attempt;
 			return;
 		}
 		$args = array( $id, $attempt );

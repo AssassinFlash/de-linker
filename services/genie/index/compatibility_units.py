@@ -10,10 +10,14 @@ from index.chunking import Chunk, Tokenizer
 from index.inventory import document_kind_of
 from index.publication import ScopeProof
 from linker_genie.compatibility_physical import (
+    BATC_208_DATASHEET,
+    BATC_LCD_MODEL,
+    OVERVIEW_STATEMENT_SOURCES,
     _axis_contains,
     inverter_text,
     iot_text,
     source_id,
+    valid_overview_statement_scope,
 )
 from linker_genie.publication import Snapshot
 from linker_genie.table_projection import overview_row, read_cells
@@ -167,6 +171,65 @@ def compile_physical_compatibility(
                 output.append(
                     replace(base, id=cid, header=header, text=rendered, tokens=tokens)
                 )
+
+    lcd_pid = product_by_model.get(BATC_LCD_MODEL)
+    if lcd_pid is not None and statuses.get(BATC_LCD_MODEL.casefold()) == "published":
+        lcd_sheets = [
+            doc
+            for doc in source.documents.values()
+            if doc["blob_sha256"] == BATC_208_DATASHEET
+            and lcd_pid in doc["product_ids"]
+            and doc["document_id"] in source.products[lcd_pid].get("documents", [])
+            and document_kind_of(str(doc["type"]), str(doc.get("role", "")))
+            == "datasheet"
+        ]
+        if len(lcd_sheets) == 1:
+            lcd_sheet = lcd_sheets[0]
+            by_chunk_id = {chunk.id: chunk for chunk in original}
+            for stmt_cid, (stmt_sha, _) in OVERVIEW_STATEMENT_SOURCES.items():
+                stmt_chunk = by_chunk_id.get(stmt_cid)
+                if (
+                    stmt_chunk is None
+                    or stmt_chunk.doc_sha256 != stmt_sha
+                    or stmt_chunk.page != 1
+                    or stmt_chunk.kind != "text"
+                    or stmt_chunk.source_picture
+                ):
+                    continue
+                doc_ids, stmt_assocs = _links(source, stmt_sha, [lcd_pid])
+                if not stmt_assocs:
+                    continue
+                stmt_proof: dict[str, Any] = {
+                    "product_ids": [lcd_pid],
+                    "basis": "compatibility_overview_statement",
+                    "source_chunk_ids": [stmt_cid],
+                    "document_ids": doc_ids,
+                    "associations": stmt_assocs,
+                    "compatibility_overview_statement": {
+                        "product_id": lcd_pid,
+                        "model": BATC_LCD_MODEL,
+                        "source_sha256": stmt_sha,
+                        "source_chunk_id": stmt_cid,
+                        "support_document": {
+                            "document_id": lcd_sheet["document_id"],
+                            "document_revision": lcd_sheet["document_revision"],
+                            "source_sha256": BATC_208_DATASHEET,
+                            "product_revision": source.products[lcd_pid][
+                                "product_revision"
+                            ],
+                        },
+                    },
+                }
+                if valid_overview_statement_scope(
+                    stmt_proof,
+                    [lcd_pid],
+                    source.products,
+                    source.documents,
+                    sha=stmt_sha,
+                    chunk_id=stmt_cid,
+                    text=stmt_chunk.text,
+                ):
+                    scopes[stmt_cid] = cast(ScopeProof, stmt_proof)
 
     iot = [
         a

@@ -1,5 +1,22 @@
 # Genie knowledge preparation for the 217 affected Woo associations
 
+## November 3: all 20 remaining associations are source-anchored and prepared
+
+The November 2 review below left 19 associations without proven passages, and the later Woo state added one more (1955 GW112.6-BAT-AC-G10 × ET user manual `0ef4b1ccdcc4`). Each of these 20 product/document associations now has its own source anchor in the service, pinned to the complete original chunks and rechecked against the current Woo relations at build and retrieval. With these anchors the preparation pass records `unprepared_documents = []` and `preparation_complete = true`; the 19-entry unresolved digest `f5465776d50bfa1ab21f410a4d2b5706de41a8601217397625ca01551b97faa6` and the later 1955 row are both resolved. The anchors are covered by unit, tamper and revocation tests in `services/genie/tests/`.
+
+| Associations | Source anchor that prepares them |
+|---|---|
+| HS3 1185, 1186, 1187, 2198, 2199 × declaration `43d6efd869b4` (5) | Conditional three-source statement (declaration p1, English data sheet p2 axis, manual p18 naming rules); the customer is asked for the nameplate W/G designation and module count, never an unconditional certificate. |
+| The same five HS3 IDs × German datasheet `e00f9645d187` (5) | Reviewed German overview (p1) and both table chunks (p2), digest-pinned; the sheet's `-P` inverter labels are bound to the composite `-PX` product through the English data sheet and manual, which alone establish X = 1..8. |
+| HCA 3557 × certificate `8158c2cc2ff1` (1) | The RED certificate's page-1 list is matched exactly as printed, including the `GW11KHCA- 20` spacing typo; the rendered passage keeps the certificate's own spelling for GW11K-HCA-20. |
+| eSolar 3573 × declaration `9bc6ae93800c` (1) | The page-1 extraction renders the axis as `eSolar AlO3，eSolar AlO3 Pro` (capital I read as lowercase l); those exact tokens are matched for the eSolar AIO3 product, together with the `Directive 2014/53/EU of Radio Equipment` line form. |
+| LCD 1957 × compatibility `8951dd1d8a64`, `ea081f6f6fb2` (2) | The page-1 overview statements (EN and DE, digest-pinned) bind GW208.9-BAT-LCD-G10 with the supporting BAT-C 208.9 kWh LCD datasheet `710d6f3d8266`. |
+| CB2 4103, 4104, 4105, 4106 × quick guide `a70cb4c39824` (4) | Reviewed manual records map the cover designation `CB2-(57.3K-100.3K)-HV5` (K = kWh class) onto each published CB2 model; the guide's own range wording is kept, with the reviewed section resets clearing the cover heading. |
+| BU3 2093 × warranty `be0569b4602a` (1) | BU3 warranty terms built from the policy's p2 battery performance row, the `BU3-5.0-TV2(-PRO)` model table, the BU3 note and the test table; German condition translations are pinned to the exact reviewed notes. |
+| GW112.6 1955 × ET user manual `0ef4b1ccdcc4` (1) | The p55 PACK-quantity table names GW112.6-BAT-AC-G10 (11 packs, 112.6 kWh); the p29 parallel-operation note is the reviewed passage with its own section reset. |
+
+The associations themselves, the originals and the customer-visible wording are unchanged; only the evidence binding was added. Production publication and readback of the generation carrying these anchors follow the existing paired-publication flow.
+
 ## November 2: CB2 title correction in production
 
 After PR 848's verified WordPress switch, the approved receipt `78b62c5db4940e7bc097309d58822a70e7fb6d00a15dcf1eafc91c692662dca6` was checked against all 12 metadata fields and the German option. All 13 were at their before values. The full recovery point was `cutover-20261102-0142` (database SHA-256 `9697d339c5b9a7aef7be12d5874f43b46a3ae02e2259cb68db803183d052cb11`); the release also retained its native switch-time database snapshot. The checked write and independent verify returned all 13 after values. Woo source is `2015e9ea08b5f7d612e81e6807e954b5f42ea1b58db6d78d1d447daaccbb3a0c`, and the guide document revision is `78d492fad643795d70be0c0a4621388a42ccfcdaae1b5e713fe7d74c8a15b4e4`. The original file was fetched over the public route: HTTP 200, 5,388,817 bytes, SHA-256 `a70cb4c39824185fb9f570a59f4966c54ec94a33c870d00c7ccd756393321dac`. All four EN/DE product pages and both EN/DE library pages returned HTTP 200 and the corrected title. The four K/non-K guide associations remain unprepared; the new title is not applicability evidence.
@@ -83,11 +100,11 @@ The actual German question asked the warranty duration and starting date for GW1
 | certificate | `0d33ea23ff2d` | 1956 | GW208.9-BAT-LC-G10 | Usable passage in the loaded epoch 56 index. |
 | certificate | `0d33ea23ff2d` | 1957 | GW208.9-BAT-LCD-G10 | Usable passage in the loaded epoch 56 index. |
 | certificate | `0d33ea23ff2d` | 1958 | GW261.2-BAT-LCD-G10 | Usable passage in the loaded epoch 56 index. |
-| certificate | `43d6efd869b4` | 1185 | HS3-12K-T2-W/G-PX | Conditional evidence for the separate W and G variants, using declaration p1, data sheet p2 and manual p18. Combined-model certificate remains incomplete. |
-| certificate | `43d6efd869b4` | 1186 | HS3-6K-T2-W/G-PX | Conditional evidence for the separate W and G variants, using declaration p1, data sheet p2 and manual p18. Combined-model certificate remains incomplete. |
-| certificate | `43d6efd869b4` | 1187 | HS3-8K-T2-W/G-PX | Conditional evidence for the separate W and G variants, using declaration p1, data sheet p2 and manual p18. Combined-model certificate remains incomplete. |
-| certificate | `43d6efd869b4` | 2198 | HS3-5K-T2-W/G-PX | Conditional evidence for the separate W and G variants, using declaration p1, data sheet p2 and manual p18. Combined-model certificate remains incomplete. |
-| certificate | `43d6efd869b4` | 2199 | HS3-10K-T2-W/G-PX | Conditional evidence for the separate W and G variants, using declaration p1, data sheet p2 and manual p18. Combined-model certificate remains incomplete. |
+| certificate | `43d6efd869b4` | 1185 | HS3-12K-T2-W/G-PX | Prepared by the conditional three-source statement (declaration p1, data sheet p2, manual p18); the combined-model certificate stays conditional on the nameplate. |
+| certificate | `43d6efd869b4` | 1186 | HS3-6K-T2-W/G-PX | Prepared by the conditional three-source statement (declaration p1, data sheet p2, manual p18); the combined-model certificate stays conditional on the nameplate. |
+| certificate | `43d6efd869b4` | 1187 | HS3-8K-T2-W/G-PX | Prepared by the conditional three-source statement (declaration p1, data sheet p2, manual p18); the combined-model certificate stays conditional on the nameplate. |
+| certificate | `43d6efd869b4` | 2198 | HS3-5K-T2-W/G-PX | Prepared by the conditional three-source statement (declaration p1, data sheet p2, manual p18); the combined-model certificate stays conditional on the nameplate. |
+| certificate | `43d6efd869b4` | 2199 | HS3-10K-T2-W/G-PX | Prepared by the conditional three-source statement (declaration p1, data sheet p2, manual p18); the combined-model certificate stays conditional on the nameplate. |
 | certificate | `576232ede954` | 3557 | GW11K-HCA-20 | Usable passage in the loaded epoch 56 index. |
 | certificate | `576232ede954` | 3586 | GW7K-HCA-20 | Usable passage in the loaded epoch 56 index. |
 | certificate | `576232ede954` | 3587 | GW22K-HCA-20 | Usable passage in the loaded epoch 56 index. |
@@ -115,7 +132,7 @@ The actual German question asked the warranty duration and starting date for GW1
 | certificate | `75a3a83432a9` | 1183 | HS2-6K-T2-X | Usable passage in the loaded epoch 56 index. |
 | certificate | `75a3a83432a9` | 1184 | HS2-8K-T2-X | Usable passage in the loaded epoch 56 index. |
 | certificate | `75a3a83432a9` | 4109 | HS2-5K-T2-X | Usable passage in the loaded epoch 56 index. |
-| certificate | `8158c2cc2ff1` | 3557 | GW11K-HCA-20 | Certificate lists GW11KHCA- 20. Woo lists a different hyphenated model. |
+| certificate | `8158c2cc2ff1` | 3557 | GW11K-HCA-20 | Prepared: the page-1 list is matched exactly as printed, including the `GW11KHCA- 20` spacing typo. |
 | certificate | `8158c2cc2ff1` | 3586 | GW7K-HCA-20 | Usable passage in the loaded epoch 56 index. |
 | certificate | `8158c2cc2ff1` | 3587 | GW22K-HCA-20 | Usable passage in the loaded epoch 56 index. |
 | certificate | `9881d06dabba` | 1179 | H2-25K-T3 | Usable passage in the loaded epoch 56 index. |
@@ -124,7 +141,7 @@ The actual German question asked the warranty duration and starting date for GW1
 | certificate | `9881d06dabba` | 2064 | H2-20K-T3 | Usable passage in the loaded epoch 56 index. |
 | certificate | `9881d06dabba` | 4107 | H2-10K-T3 | Usable passage in the loaded epoch 56 index. |
 | certificate | `9881d06dabba` | 4108 | H2-12K-T3 | Usable passage in the loaded epoch 56 index. |
-| certificate | `9bc6ae93800c` | 3573 | eSolar AIO3 | Certificate lists AlO3. The published product is AIO3. |
+| certificate | `9bc6ae93800c` | 3573 | eSolar AIO3 | Prepared: the extracted `eSolar AlO3，eSolar AlO3 Pro` axis is matched exactly as printed for the AIO3 product. |
 | certificate | `9cb10f8699f6` | 1832 | B2-5.0-HV1 | Usable passage in the loaded epoch 56 index. |
 | certificate | `9cb10f8699f6` | 2067 | B2-10.0-HV1 | Usable passage in the loaded epoch 56 index. |
 | certificate | `9cb10f8699f6` | 2068 | B2-15.0-HV1 | Usable passage in the loaded epoch 56 index. |
@@ -171,7 +188,7 @@ The actual German question asked the warranty duration and starting date for GW1
 | compatibility | `8951dd1d8a64` | 1954 | GW61.4-BAT-AC-G10 | Usable passage in the loaded epoch 56 index. |
 | compatibility | `8951dd1d8a64` | 1955 | GW112.6-BAT-AC-G10 | Usable passage in the loaded epoch 56 index. |
 | compatibility | `8951dd1d8a64` | 1956 | GW208.9-BAT-LC-G10 | Usable passage in the loaded epoch 56 index. |
-| compatibility | `8951dd1d8a64` | 1957 | GW208.9-BAT-LCD-G10 | LCD variant absent from matrix. |
+| compatibility | `8951dd1d8a64` | 1957 | GW208.9-BAT-LCD-G10 | Prepared by the page-1 overview statement with the BAT-C 208.9 kWh LCD datasheet. |
 | compatibility | `8951dd1d8a64` | 1958 | GW261.2-BAT-LCD-G10 | Usable passage in the loaded epoch 56 index. |
 | compatibility | `8951dd1d8a64` | 3595 | GW125K-ETR-G10 | Loaded index binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
 | compatibility | `8951dd1d8a64` | 6507 | GW80K-ETR-G10 | Loaded index binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
@@ -185,7 +202,7 @@ The actual German question asked the warranty duration and starting date for GW1
 | compatibility | `ea081f6f6fb2` | 1954 | GW61.4-BAT-AC-G10 | Usable passage in the loaded epoch 56 index. |
 | compatibility | `ea081f6f6fb2` | 1955 | GW112.6-BAT-AC-G10 | Usable passage in the loaded epoch 56 index. |
 | compatibility | `ea081f6f6fb2` | 1956 | GW208.9-BAT-LC-G10 | Usable passage in the loaded epoch 56 index. |
-| compatibility | `ea081f6f6fb2` | 1957 | GW208.9-BAT-LCD-G10 | LCD variant absent from matrix. |
+| compatibility | `ea081f6f6fb2` | 1957 | GW208.9-BAT-LCD-G10 | Prepared by the German page-1 overview statement with the BAT-C 208.9 kWh LCD datasheet. |
 | compatibility | `ea081f6f6fb2` | 1958 | GW261.2-BAT-LCD-G10 | Usable passage in the loaded epoch 56 index. |
 | compatibility | `ea081f6f6fb2` | 3595 | GW125K-ETR-G10 | Loaded index binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
 | compatibility | `ea081f6f6fb2` | 6507 | GW80K-ETR-G10 | Loaded index binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
@@ -203,13 +220,14 @@ The actual German question asked the warranty duration and starting date for GW1
 | datasheet | `b681fbb51b16` | 6520 | GW8.3-BAT-D-G20 | Usable passage in the loaded epoch 56 index. |
 | datasheet | `b681fbb51b16` | 6521 | GW5.1-BAT-D-G21 | Usable passage in the loaded epoch 56 index. |
 | datasheet | `b681fbb51b16` | 6522 | GW8.3-BAT-D-G21 | Usable passage in the loaded epoch 56 index. |
-| datasheet | `e00f9645d187` | 1185 | HS3-12K-T2-W/G-PX | The sheet lists -P and the product is -PX. The extracted table also has displaced rows. |
-| datasheet | `e00f9645d187` | 1186 | HS3-6K-T2-W/G-PX | The sheet lists -P and the product is -PX. The extracted table also has displaced rows. |
-| datasheet | `e00f9645d187` | 1187 | HS3-8K-T2-W/G-PX | The sheet lists -P and the product is -PX. The extracted table also has displaced rows. |
-| datasheet | `e00f9645d187` | 2198 | HS3-5K-T2-W/G-PX | The sheet lists -P and the product is -PX. The extracted table also has displaced rows. |
-| datasheet | `e00f9645d187` | 2199 | HS3-10K-T2-W/G-PX | The sheet lists -P and the product is -PX. The extracted table also has displaced rows. |
+| datasheet | `e00f9645d187` | 1185 | HS3-12K-T2-W/G-PX | Prepared by the digest-pinned German overview and table chunks; the -P labels bind to -PX through the English data sheet and manual. |
+| datasheet | `e00f9645d187` | 1186 | HS3-6K-T2-W/G-PX | Prepared by the digest-pinned German overview and table chunks; the -P labels bind to -PX through the English data sheet and manual. |
+| datasheet | `e00f9645d187` | 1187 | HS3-8K-T2-W/G-PX | Prepared by the digest-pinned German overview and table chunks; the -P labels bind to -PX through the English data sheet and manual. |
+| datasheet | `e00f9645d187` | 2198 | HS3-5K-T2-W/G-PX | Prepared by the digest-pinned German overview and table chunks; the -P labels bind to -PX through the English data sheet and manual. |
+| datasheet | `e00f9645d187` | 2199 | HS3-10K-T2-W/G-PX | Prepared by the digest-pinned German overview and table chunks; the -P labels bind to -PX through the English data sheet and manual. |
 | manual | `0adfb3d5e6df` | 6321 | GW125/261-ESA-LCN-G10 | Usable passage in the loaded epoch 56 index. |
 | manual | `0ef4b1ccdcc4` | 6506 | GW75K-ET-G10 | Usable passage in the loaded epoch 56 index. |
+| manual | `0ef4b1ccdcc4` | 1955 | GW112.6-BAT-AC-G10 | Prepared by the reviewed p55 PACK-quantity table naming this model; the p29 parallel note is the passage. |
 | manual | `26a5052fc859` | 1946 | GW80K-ET-G10 | Usable passage in the loaded epoch 56 index. |
 | manual | `26a5052fc859` | 1947 | GW99.99K-ET-G10 | Usable passage in the loaded epoch 56 index. |
 | manual | `26a5052fc859` | 1948 | GW100K-ET-G10 | Usable passage in the loaded epoch 56 index. |
@@ -273,10 +291,10 @@ The actual German question asked the warranty duration and starting date for GW1
 | manual | `a470d6e1be68` | 4107 | H2-10K-T3 | Usable passage in the loaded epoch 56 index. |
 | manual | `a470d6e1be68` | 4108 | H2-12K-T3 | Usable passage in the loaded epoch 56 index. |
 | manual | `a470d6e1be68` | 4109 | HS2-5K-T2-X | Usable passage in the loaded epoch 56 index. |
-| manual | `a70cb4c39824` | 4103 | CB2-57.3-HV5 | The quick guide includes K in the capacity range. The other manufacturer manual lists the models without K. |
-| manual | `a70cb4c39824` | 4104 | CB2-71.6-HV5 | The quick guide includes K in the capacity range. The other manufacturer manual lists the models without K. |
-| manual | `a70cb4c39824` | 4105 | CB2-85.9-HV5 | The quick guide includes K in the capacity range. The other manufacturer manual lists the models without K. |
-| manual | `a70cb4c39824` | 4106 | CB2-100.3-HV5 | The quick guide includes K in the capacity range. The other manufacturer manual lists the models without K. |
+| manual | `a70cb4c39824` | 4103 | CB2-57.3-HV5 | Prepared by the reviewed record mapping the cover range `CB2-(57.3K-100.3K)-HV5` onto this model. |
+| manual | `a70cb4c39824` | 4104 | CB2-71.6-HV5 | Prepared by the reviewed record mapping the cover range `CB2-(57.3K-100.3K)-HV5` onto this model. |
+| manual | `a70cb4c39824` | 4105 | CB2-85.9-HV5 | Prepared by the reviewed record mapping the cover range `CB2-(57.3K-100.3K)-HV5` onto this model. |
+| manual | `a70cb4c39824` | 4106 | CB2-100.3-HV5 | Prepared by the reviewed record mapping the cover range `CB2-(57.3K-100.3K)-HV5` onto this model. |
 | manual | `af395be79aee` | 3573 | eSolar AIO3 | Usable passage in the loaded epoch 56 index. |
 | manual | `d5167d27d5e4` | 6321 | GW125/261-ESA-LCN-G10 | Usable passage in the loaded epoch 56 index. |
 | manual | `f4d53810d74c` | 6321 | GW125/261-ESA-LCN-G10 | Usable passage in the loaded epoch 56 index. |
@@ -291,6 +309,6 @@ The actual German question asked the warranty duration and starting date for GW1
 | other | `be0569b4602a` | 1185 | HS3-12K-T2-W/G-PX | Page 4 conditional claims procedure searchable locally. Full policy terms remain unproven. |
 | other | `be0569b4602a` | 1186 | HS3-6K-T2-W/G-PX | Page 4 conditional claims procedure searchable locally. Full policy terms remain unproven. |
 | other | `be0569b4602a` | 1187 | HS3-8K-T2-W/G-PX | Page 4 conditional claims procedure searchable locally. Full policy terms remain unproven. |
-| other | `be0569b4602a` | 2093 | BU3-5.0-TV2-PRO | Scope and conditions of the full policy remain unproven for this exact product. |
+| other | `be0569b4602a` | 2093 | BU3-5.0-TV2-PRO | Prepared by the BU3 warranty terms from the policy's p2 performance, model, note and test rows. |
 | other | `be0569b4602a` | 2198 | HS3-5K-T2-W/G-PX | Page 4 conditional claims procedure searchable locally. Full policy terms remain unproven. |
 | other | `be0569b4602a` | 2199 | HS3-10K-T2-W/G-PX | Page 4 conditional claims procedure searchable locally. Full policy terms remain unproven. |

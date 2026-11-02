@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.12"
 resolution-markers = [
     "python_full_version >= '3.15'",
@@ -228,7 +228,7 @@ wheels = [
 [[package]]
 name = "linker-local"
 version = "0.1.0"
-source = { directory = "../local" }
+source = { editable = "../local" }
 
 [package.metadata]
 
@@ -256,7 +256,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "linker-local", directory = "../local" }]
+requires-dist = [{ name = "linker-local", editable = "../local" }]
 
 [package.metadata.requires-dev]
 dev = [

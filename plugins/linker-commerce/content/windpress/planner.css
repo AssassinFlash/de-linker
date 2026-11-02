@@ -97,7 +97,7 @@
   [data-linker-planner] .lp-source-note { border-top: 1px solid var(--lp-line); padding-top: 24px; margin-top: 40px; display: flex; gap: 10px; color: var(--proto-teal-800); font-size: 12px; }
   [data-linker-planner] .lp-source-note svg { flex-shrink: 0; }
   [data-linker-planner] .lp-editor-main { max-width: 1040px; width: 100%; min-width: 0; padding: 12px clamp(24px, 4vw, 64px) 64px; }
-  [data-linker-planner] .lp-editor-main > fieldset { min-inline-size: 0; }
+  [data-linker-planner] .lp-editor-main > fieldset { min-inline-size: 0; min-width: 0; border: 0; padding: 0; margin: 0; }
   [data-linker-planner] .lp-brief-fields { border: 0; padding: 0; margin: 0; min-width: 0; }
   [data-linker-planner] .lp-section { padding: 32px 0; border-bottom: 1px solid var(--lp-line); }
   [data-linker-planner] .lp-section-heading { display: flex; gap: 18px; margin-bottom: 24px; }
@@ -360,6 +360,7 @@
     [data-linker-planner] .lp-project-title { margin-bottom: 22px; }
     [data-linker-planner] .lp-overview-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 0; padding-bottom: 24px; margin: 24px 0; }
     [data-linker-planner] .lp-overview-metrics > div:nth-child(odd) { padding-left: 0; border-left: 0; }
+    [data-linker-planner] .lp-overview-metrics dt { min-height: 2.9em; }
     [data-linker-planner] .lp-overview-metrics dd { font-size: 25px; }
     [data-linker-planner] .lp-overview-empty { min-height: 290px; padding: 28px 22px; }
     [data-linker-planner] .lp-overview-next { display: block; }
@@ -370,7 +371,8 @@
 }
 [data-linker-planner] [hidden] { display: none; }
 [data-linker-planner] .lp-section[tabindex="-1"]:focus-visible,
-[data-linker-planner] .lp-overview[tabindex="-1"]:focus-visible { outline: none; }
+[data-linker-planner] .lp-overview[tabindex="-1"]:focus-visible,
+[data-linker-planner] .lp-focus-target[tabindex="-1"]:focus-visible { outline: none; }
 /* chrome.css gives every [id] an unlayered site-header offset. Actual anchor
    targets and action results account for both measured application bars. */
 [data-linker-planner] .lp-section[id],
@@ -448,6 +450,7 @@
   [data-linker-planner] .lp-scenario-steps [aria-current="step"] button { color: var(--proto-teal-900); font-weight: 600; }
   [data-linker-planner] .lp-scenario-steps span { display: block; font: 10px var(--proto-font-mono); margin-bottom: 6px; color: var(--proto-teal-700); }
   [data-linker-planner] .lp-scenario-fields { min-width: 0; padding: 0; margin: 0; border: 0; }
+  [data-linker-planner] .lp-scenario-fields > div + .lp-scenario-block { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--lp-line); }
   [data-linker-planner] .lp-scenario-block > h3 { font-size: 18px; margin: 0 0 12px; }
   [data-linker-planner] .lp-pv-parameters { padding-block: 24px; border-top: 1px solid var(--lp-line); }
   [data-linker-planner] .lp-pv-parameters h4 { font-size: 16px; font-weight: 600; margin: 0 0 20px; }
@@ -539,4 +542,370 @@
   [data-linker-planner] .lp-trace-table { max-height: 420px; }
   [data-linker-planner] .lp-trace-table th, [data-linker-planner] .lp-trace-table td { white-space: nowrap; }
 
+  /* Project overview installation summary and 09 Installation routing rhythm. */
+  [data-linker-planner] #lp-overview > .lp-scenario-block {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 12px 24px;
+    margin-bottom: 28px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--lp-line);
+  }
+  [data-linker-planner] #lp-overview > .lp-scenario-block > h3 { margin: 0; font-size: 16px; }
+  [data-linker-planner] #lp-overview > .lp-scenario-block > .lp-text-button {
+    grid-column: 2;
+    grid-row: 1;
+    min-height: 36px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  [data-linker-planner] #lp-overview > .lp-scenario-block > .lp-text-button::after { content: " →"; }
+  [data-linker-planner] #lp-overview > .lp-scenario-block > .lp-overview-metrics {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 260px));
+    margin: 8px 0 0;
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+  [data-linker-planner] .lp-section-title { display: flex; gap: 18px; margin-bottom: 24px; }
+  [data-linker-planner] .lp-section-title p { color: var(--proto-neutral-500); font-size: 13px; margin: 8px 0 0; max-width: 580px; }
+
+  /* A · Journal disclosures (<details.lp-comparison>, <details.lp-object-inspector>, <details>). */
+  [data-linker-planner] details.lp-comparison {
+    margin-block: 0;
+    border-top: 1px solid var(--lp-line);
+    padding-block: 4px;
+  }
+  [data-linker-planner] details.lp-comparison + details.lp-comparison {
+    border-top: 1px solid var(--lp-line);
+  }
+  [data-linker-planner] details.lp-comparison:last-of-type {
+    border-bottom: 1px solid var(--lp-line);
+  }
+  [data-linker-planner] details.lp-comparison > summary,
+  [data-linker-planner] details.lp-object-inspector > summary {
+    min-height: 46px;
+    padding: 12px 4px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--proto-ink);
+    cursor: pointer;
+    transition: color var(--proto-duration) var(--proto-ease);
+  }
+  [data-linker-planner] details.lp-comparison > summary:hover,
+  [data-linker-planner] details.lp-object-inspector > summary:hover {
+    color: var(--proto-teal-800);
+  }
+  [data-linker-planner] details.lp-comparison[open] > summary,
+  [data-linker-planner] details.lp-object-inspector[open] > summary {
+    margin-bottom: 12px;
+    color: var(--proto-teal-900);
+  }
+  [data-linker-planner] details.lp-comparison[open] {
+    padding-bottom: 20px;
+  }
+  [data-linker-planner] details.lp-comparison details.lp-comparison {
+    margin-top: 16px;
+    border-bottom: 0;
+  }
+  [data-linker-planner] details.lp-comparison .lp-field + p {
+    margin-top: 8px;
+  }
+
+  /* Grid connection information and National rule inputs in #lp-site. */
+  [data-linker-planner] .lp-section:not(:has(.lp-section-heading)) > :is(h2, h3) {
+    font-size: 20px;
+    line-height: 1.4;
+    margin: 0 0 8px;
+  }
+  [data-linker-planner] .lp-section:not(:has(.lp-section-heading)) > p {
+    color: var(--proto-neutral-500);
+    font-size: 13px;
+    max-width: 680px;
+    margin: 0 0 20px;
+  }
+  [data-linker-planner] .lp-section > fieldset {
+    min-width: 0;
+    margin: 24px 0 0;
+    padding: 20px 0 0;
+    border: 0;
+    border-top: 1px solid var(--lp-line);
+  }
+  [data-linker-planner] .lp-section > fieldset > legend {
+    padding: 0 0 14px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--proto-ink);
+  }
+  [data-linker-planner] .lp-section > .lp-button {
+    margin-top: 20px;
+  }
+  [data-linker-planner] .lp-section > p + .lp-button {
+    margin-top: 4px;
+    margin-bottom: 20px;
+  }
+  [data-linker-planner] .lp-section > .lp-field + .grid,
+  [data-linker-planner] .lp-section > .lp-field + p {
+    margin-top: 16px;
+  }
+  [data-linker-planner] .lp-section > [role="alert"] {
+    padding: 12px 16px;
+    margin: 16px 0 0;
+    background: var(--proto-neutral-0);
+    border-left: 2px solid var(--proto-sem-danger);
+    color: var(--proto-sem-danger);
+    font-size: 13px;
+  }
+  [data-linker-planner] .lp-section > [role="status"],
+  [data-linker-planner] #lp-equipment [role="status"],
+  [data-linker-planner] #lp-installation [role="status"] {
+    padding: 10px 14px;
+    margin: 12px 0;
+    background: rgb(255 255 255 / .76);
+    border: 1px solid var(--lp-line);
+    border-left: 2px solid var(--proto-teal-700);
+    border-radius: var(--proto-radius-sm);
+    color: var(--proto-teal-900);
+    font-size: 12px;
+    font-weight: 500;
+  }
+  [data-linker-planner] .lp-run-result section {
+    margin-block: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--lp-line);
+  }
+  [data-linker-planner] .lp-run-result :is(h4, h5) {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 12px;
+  }
+  [data-linker-planner] .lp-run-result h5 {
+    font-size: 14px;
+    margin-top: 18px;
+  }
+  [data-linker-planner] .lp-run-result ul {
+    margin: 12px 0 16px;
+    padding-left: 18px;
+    display: grid;
+    gap: 8px;
+    font-size: 13px;
+  }
+
+  /* 08 Equipment workspace rhythm and controls. */
+  [data-linker-planner] #lp-equipment > .lp-text-button {
+    padding-inline: 14px;
+    min-height: 38px;
+    border: 1px solid var(--proto-neutral-300);
+    background: rgb(255 255 255 / .82);
+    font-size: 13px;
+    font-weight: 500;
+    margin-block: 4px 12px;
+  }
+  [data-linker-planner] #lp-equipment fieldset.lp-scenario-block {
+    margin-block: 16px 24px;
+    padding-block: 20px 4px;
+    border-top: 1px solid var(--lp-line);
+  }
+  [data-linker-planner] #lp-equipment fieldset.lp-scenario-block > legend {
+    padding: 0 0 12px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--proto-ink);
+  }
+  [data-linker-planner] #lp-equipment > p {
+    font-size: 13px;
+    color: var(--proto-neutral-600);
+    max-width: 680px;
+    margin: 0 0 10px;
+  }
+  [data-linker-planner] #lp-equipment .lp-energy-submit {
+    margin-block: 16px 24px;
+  }
+  [data-linker-planner] #lp-equipment .lp-comparison > p {
+    font-size: 13px;
+    color: var(--proto-neutral-600);
+    max-width: 680px;
+    margin: 0 0 16px;
+  }
+
+  /* 09 Installation routing rhythm, subsections, forms and protection panels. */
+  [data-linker-planner] #lp-installation > .lp-text-button {
+    padding-inline: 14px;
+    border: 1px solid var(--proto-neutral-300);
+    background: rgb(255 255 255 / .82);
+    font-weight: 500;
+    margin-bottom: 14px;
+  }
+  [data-linker-planner] #lp-installation > .lp-inline-actions {
+    display: inline-flex;
+    gap: 2px;
+    padding: 3px;
+    margin-left: 12px;
+    margin-bottom: 14px;
+    background: rgb(255 255 255 / .68);
+    border: 1px solid var(--lp-line);
+    border-radius: var(--proto-radius-sm);
+    vertical-align: middle;
+  }
+  [data-linker-planner] #lp-installation > .lp-inline-actions > .lp-text-button {
+    min-height: 38px;
+    min-width: 72px;
+    padding-inline: 12px;
+    font-size: 12px;
+    color: var(--proto-neutral-600);
+  }
+  [data-linker-planner] #lp-installation > .lp-inline-actions > .lp-text-button[aria-pressed="true"] {
+    background: var(--proto-neutral-0);
+    color: var(--proto-teal-800);
+    font-weight: 600;
+    box-shadow: 0 1px 5px rgb(14 40 35 / .09);
+  }
+  [data-linker-planner] #lp-installation .lp-plan-view {
+    padding-top: 0;
+    margin-block: 8px 24px;
+    border: 1px solid var(--lp-line);
+    border-radius: var(--proto-radius-sm);
+    background: rgb(255 255 255 / .72);
+    overflow: hidden;
+  }
+  [data-linker-planner] #lp-installation .lp-plan-view > svg {
+    display: block;
+    width: 100%;
+    height: 240px;
+    color: var(--proto-teal-900);
+    background-image: radial-gradient(var(--proto-neutral-300) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  [data-linker-planner] #lp-installation .lp-plan-view > .lp-profile-help {
+    padding: 10px 16px;
+    border-top: 1px solid var(--lp-line);
+    background: rgb(255 255 255 / .86);
+  }
+  [data-linker-planner] #lp-installation > :is(.lp-scenario-block, .lp-profile-panel) {
+    padding-block: 24px;
+    border-top: 1px solid var(--lp-line);
+  }
+  [data-linker-planner] #lp-installation > :is(.lp-scenario-block, .lp-profile-panel) > h3 {
+    font-size: 18px;
+    margin: 0 0 12px;
+  }
+  [data-linker-planner] #lp-installation > :is(.lp-scenario-block, .lp-profile-panel) > p {
+    font-size: 13px;
+    color: var(--proto-neutral-600);
+    max-width: 680px;
+    margin: 0 0 16px;
+  }
+  [data-linker-planner] #lp-installation > .lp-profile-panel > button + p {
+    margin: 12px 0 0;
+  }
+  [data-linker-planner] #lp-installation article.lp-profile-panel {
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid var(--lp-line);
+    border-radius: var(--proto-radius-sm);
+    background: rgb(255 255 255 / .68);
+  }
+  [data-linker-planner] #lp-installation article.lp-profile-panel > h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 8px;
+  }
+  [data-linker-planner] #lp-installation article.lp-profile-panel h5 {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 20px 0 8px;
+    padding-top: 16px;
+    border-top: 1px solid var(--lp-line);
+  }
+  [data-linker-planner] #lp-installation .lp-selected-profile {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 16px;
+    padding-block: 14px;
+    margin-bottom: 12px;
+  }
+  [data-linker-planner] #lp-installation .lp-selected-profile > p,
+  [data-linker-planner] #lp-installation .lp-selected-profile > details {
+    flex-basis: 100%;
+    margin: 4px 0 0;
+  }
+  [data-linker-planner] #lp-installation .lp-geometry-form {
+    padding: 24px;
+    margin-block: 16px 24px;
+    border: 1px solid var(--lp-line);
+    border-radius: var(--proto-radius-sm);
+    background: rgb(255 255 255 / .78);
+  }
+  [data-linker-planner] #lp-installation .lp-geometry-form fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 16px 0 0;
+    border: 0;
+    border-top: 1px solid var(--lp-line);
+    display: grid;
+    gap: 16px;
+  }
+  [data-linker-planner] #lp-installation .lp-geometry-form fieldset > legend {
+    padding: 0 0 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--proto-ink);
+  }
+  [data-linker-planner] .lp-geometry-form > :is(.lp-button, .lp-text-button),
+  [data-linker-planner] .lp-geometry-form fieldset > :is(.lp-button, .lp-text-button) {
+    justify-self: start;
+  }
+  [data-linker-planner] #lp-installation .lp-geometry-form .lp-scenario-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+    gap: 16px;
+  }
+  [data-linker-planner] #lp-installation details > summary {
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--proto-teal-800);
+    padding-block: 6px;
+  }
+  [data-linker-planner] #lp-installation blockquote {
+    margin: 8px 0 12px;
+    padding: 10px 14px;
+    border-left: 2px solid var(--proto-teal-700);
+    background: var(--proto-teal-50);
+    font-size: 12px;
+    color: var(--proto-neutral-700);
+  }
+  [data-linker-planner] #lp-installation :is(.lp-check, label:has(> input[type="checkbox"])) {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+  [data-linker-planner] #lp-installation input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    min-height: 18px;
+    flex: 0 0 18px;
+    margin: 0;
+    accent-color: var(--proto-accent);
+  }
+  [data-linker-planner] #lp-installation > .lp-button {
+    margin-top: 8px;
+  }
+  @media (max-width: 640px) {
+    [data-linker-planner] .lp-edit-actions { flex-wrap: wrap; row-gap: 6px; }
+    [data-linker-planner] .lp-edit-actions :is(.lp-button, .lp-text-button) { white-space: nowrap; }
+    [data-linker-planner] #lp-overview > .lp-scenario-block > .lp-overview-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    [data-linker-planner] #lp-installation > .lp-inline-actions { margin-left: 0; }
+    [data-linker-planner] #lp-installation .lp-geometry-form { padding: 18px 16px; }
+    [data-linker-planner] #lp-installation > .lp-button,
+    [data-linker-planner] #lp-equipment > .lp-text-button { width: 100%; justify-content: center; }
+  }
 }

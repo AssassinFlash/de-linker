@@ -73,6 +73,13 @@ PAGE_CACHE_PLUGIN = "litespeed-cache"
 PAGE_CACHE_PURGE = ("litespeed-purge", "all")
 PAGE_CACHE_EXCLUSION_OPTION = "litespeed.conf.cache-exc"
 PAGE_CACHE_QUERY_EXCLUSION = "?"
+# LiteSpeed reads this option as the name of its own MD5-valued vary cookie, so
+# the literal "LOGGED_IN_COOKIE" — applied 2026-10-29, corrected 2026-11-01
+# (docs/acceptance/2026-10-29/page-cache/README.md) — made LiteSpeed overwrite
+# WordPress's authentication cookie and broke guest/login cache isolation. The
+# verified value is empty; like the exclusion above, the option is only read
+# and a deploy stops rather than writing it.
+PAGE_CACHE_LOGIN_COOKIE_OPTION = "litespeed.conf.cache-login_cookie"
 
 # The German (Formal) language packs, installed by WP-CLI from the translation
 # API (like INSTALLED_PLUGINS, the native installer is the verified channel):
