@@ -418,6 +418,46 @@ def _report_source_projection(source: Object, locale: str) -> Object:
             )
         instances.append({**device, "id": name, "name": name, "ports": ports})
     plan["instances"] = instances
+    protection = raw_plan.get("protection_review")
+    if isinstance(protection, dict):
+        cases: list[Json] = []
+        for index, item in enumerate(
+            cast(list[Object], protection.get("assessments", [])), 1
+        ):
+
+            def safe_notes(row: Object) -> Object:
+                return {
+                    key: private if key.endswith("source_note") else value
+                    for key, value in row.items()
+                }
+
+            thermal: list[Json] = [
+                {
+                    **safe_notes(row),
+                    "run_id": f"{'Leiter' if locale == 'de' else 'Conductor'} {position}",
+                }
+                for position, row in enumerate(
+                    cast(list[Object], item.get("thermal", [])), 1
+                )
+            ]
+            cases.append(
+                {
+                    "id": f"protection-{index}",
+                    "circuit_id": private,
+                    "protection_material_id": private,
+                    "scenario": f"{'Schutzfall' if locale == 'de' else 'Protection case'} {index}",
+                    "confirmation_status": item.get("confirmation_status"),
+                    "breaking": safe_notes(cast(Object, item["breaking"])),
+                    "disconnection": safe_notes(cast(Object, item["disconnection"])),
+                    "thermal": thermal,
+                    "qualified": False,
+                }
+            )
+        plan["protection_review"] = {
+            "method": protection.get("method"),
+            "assessments": cases,
+            "qualified": False,
+        }
     material_review = raw_plan.get("material_review")
     if isinstance(material_review, dict):
         plan["material_review"] = {
