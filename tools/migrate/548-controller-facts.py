@@ -45,11 +45,11 @@ def plan_for_target(plan: dict[str, Any], origin: str) -> dict[str, Any]:
         citation = figure.get("citation") if isinstance(figure, dict) else None
         if not isinstance(citation, dict) or not isinstance(citation.get("url"), str):
             raise ValueError("The reviewed BAT-C figure source is missing.")
-        target, source = urlsplit(origin), urlsplit(citation["url"])
+        target, source_url = urlsplit(origin), urlsplit(citation["url"])
         if target.scheme not in {"http", "https"} or not target.netloc:
             raise ValueError("The selected target origin is invalid.")
         citation["url"] = urlunsplit(
-            (target.scheme, target.netloc, source.path, "", "")
+            (target.scheme, target.netloc, source_url.path, "", "")
         )
         return selected
     controller = selected.get("controller")

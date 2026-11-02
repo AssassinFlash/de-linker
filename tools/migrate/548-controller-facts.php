@@ -25,8 +25,8 @@ try {
 		if ( ! in_array( $action, array( 'preview', 'apply', 'rollback', 'verify' ), true ) ) {
 			throw new RuntimeException( 'Unknown controller-facts action.' );
 		}
-		$manifest  = Publication::manifest();
-		$mode      = 'preview' === $action ? ( $request['plan']['kind'] ?? 'controller' ) : ( $request['receipt']['mode'] ?? 'controller' );
+		$manifest = Publication::manifest();
+		$mode     = 'preview' === $action ? ( $request['plan']['kind'] ?? 'controller' ) : ( $request['receipt']['mode'] ?? 'controller' );
 		if ( ! in_array( $mode, array( 'controller', 'batc_cabinet_sales_unit_v1' ), true ) ) {
 			throw new RuntimeException( 'Unsupported reviewed equipment-facts mode.' );
 		}
@@ -90,24 +90,28 @@ try {
 		if ( 'preview' === $action ) {
 			$plan = $request['plan'] ?? null;
 			if ( 'batc_cabinet_sales_unit_v1' === $mode ) {
-				$models = array(
+				$models      = array(
 					1956 => array( 'GW208.9-BAT-LC-G10', 'DLK-GOODWE-GW2089BATLCG10' ),
 					1957 => array( 'GW208.9-BAT-LCD-G10', 'DLK-GOODWE-GW2089BATLCDG10' ),
 					1958 => array( 'GW261.2-BAT-LCD-G10', 'DLK-GOODWE-GW2612BATLCDG10' ),
 				);
 				$document_id = 'doc-3e98151c21d284ce5e01603742e3ef027ca73cff3f42b9cf9b3fe164aa91882b';
-				$sha = 'ef85dd1a58fc06e52f2dff79dda228884b412d17db7035aa45d41c57840f3f10';
-				$docs = array_column( $manifest['documents'], null, 'document_id' );
-				$doc = $docs[ $document_id ] ?? null;
-				$figure = $plan['figure'] ?? null;
+				$sha         = 'ef85dd1a58fc06e52f2dff79dda228884b412d17db7035aa45d41c57840f3f10';
+				$docs        = array_column( $manifest['documents'], null, 'document_id' );
+				$doc         = $docs[ $document_id ] ?? null;
+				$figure      = $plan['figure'] ?? null;
 				if ( ! is_array( $plan ) || 1 !== ( $plan['schema_version'] ?? null ) || ! is_array( $doc ) || $doc['blob_sha256'] !== $sha || ! is_array( $figure ) || 'battery_system' !== ( $figure['value'] ?? null ) || null !== ( $figure['unit'] ?? null ) || 3 !== ( $figure['citation']['page'] ?? null ) || (string) wp_parse_url( $figure['citation']['url'] ?? '', PHP_URL_PATH ) !== (string) wp_parse_url( $doc['url'], PHP_URL_PATH ) ) {
 					throw new RuntimeException( 'The BAT-C sales unit requires the reviewed manufacturer manual.' );
 				}
-				$receipt = array(
-					'schema_version' => 1, 'mode' => $mode, 'site' => home_url(),
-					'plan_sha256' => Publication::revision( $plan ),
+				$receipt  = array(
+					'schema_version'             => 1,
+					'mode'                       => $mode,
+					'site'                       => home_url(),
+					'plan_sha256'                => Publication::revision( $plan ),
 					'compatibility_input_sha256' => Publication::revision( $input ),
-					'source_revision' => $manifest['source_revision'], 'products' => array(), 'changes' => array(),
+					'source_revision'            => $manifest['source_revision'],
+					'products'                   => array(),
+					'changes'                    => array(),
 				);
 				$products = array_column( $manifest['products'], null, 'product_id' );
 				foreach ( $models as $id => $identity ) {
@@ -115,10 +119,16 @@ try {
 					if ( ! $product instanceof WC_Product || 'simple' !== $product->get_type() || $product->get_sku() !== $identity[1] || false === stripos( $product->get_short_description(), 'cabinet' ) || ( $products[ $id ]['model'] ?? null ) !== $identity[0] || Publication::canonical_id( $id ) !== $id || ! Publication::is_published( $id ) || ! in_array( $id, $doc['product_ids'], true ) ) {
 						throw new RuntimeException( 'A reviewed BAT-C Woo cabinet identity changed.' );
 					}
-					$receipt['products'][ $id ] = array( 'model' => $identity[0], 'product_revision' => $products[ $id ]['product_revision'], 'protected_sha256' => $protected( $id ), 'documents' => $documents( $id, $manifest ), 'meta' => array() );
-					$raw = get_post_meta( $id, SelectionFacts::FIGURES_META_KEY, true );
-					$figures = is_string( $raw ) ? json_decode( $raw, true, 512, JSON_THROW_ON_ERROR ) : $raw;
-					$bindings = get_post_meta( $id, EvidenceBindings::META_KEY, true );
+					$receipt['products'][ $id ] = array(
+						'model'            => $identity[0],
+						'product_revision' => $products[ $id ]['product_revision'],
+						'protected_sha256' => $protected( $id ),
+						'documents'        => $documents( $id, $manifest ),
+						'meta'             => array(),
+					);
+					$raw                        = get_post_meta( $id, SelectionFacts::FIGURES_META_KEY, true );
+					$figures                    = is_string( $raw ) ? json_decode( $raw, true, 512, JSON_THROW_ON_ERROR ) : $raw;
+					$bindings                   = get_post_meta( $id, EvidenceBindings::META_KEY, true );
 					if ( ! is_array( $figures ) || ! is_array( $bindings ) || array_diff_key( $bindings, $figures ) ) {
 						throw new RuntimeException( 'Existing BAT-C figures or bindings are malformed.' );
 					}
@@ -127,156 +137,160 @@ try {
 							throw new RuntimeException( 'An existing BAT-C evidence binding changed.' );
 						}
 					}
-					$expected_binding = array( 'document_id' => $doc['document_id'], 'blob_sha256' => $doc['blob_sha256'], 'figure_revision' => Publication::revision( $figure ) );
+					$expected_binding = array(
+						'document_id'     => $doc['document_id'],
+						'blob_sha256'     => $doc['blob_sha256'],
+						'figure_revision' => Publication::revision( $figure ),
+					);
 					if ( array_key_exists( 'sales_unit_kind', $figures ) && ( $figures['sales_unit_kind'] !== $figure || ( $bindings['sales_unit_kind'] ?? null ) !== $expected_binding ) ) {
 						throw new RuntimeException( 'An existing sales-unit fact differs; explicit review is required.' );
 					}
-					$figures['sales_unit_kind'] = $figure;
+					$figures['sales_unit_kind']  = $figure;
 					$bindings['sales_unit_kind'] = $expected_binding;
 					$record( $id, SelectionFacts::FIGURES_META_KEY, is_string( $raw ) ? wp_json_encode( $figures, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) : $figures, $receipt );
 					$record( $id, EvidenceBindings::META_KEY, $bindings, $receipt );
 				}
 			} else {
-			if ( ! is_array( $plan ) || 1 !== ( $plan['schema_version'] ?? null ) || ! is_array( $plan['controller'] ?? null ) || ! is_array( $plan['requirement'] ?? null ) ) {
-				throw new RuntimeException( 'A reviewed controller plan is required.' );
-			}
-			$controller  = $plan['controller'];
-			$requirement = $plan['requirement'];
-			if ( 2409 !== ( $controller['product_id'] ?? null ) || 'SEC3000C' !== ( $controller['model'] ?? null ) || array( 1946, 1947, 1948 ) !== ( $requirement['owners'] ?? null ) || 'max_lan_inverters' !== ( $controller['figure_key'] ?? null ) ) {
-				throw new RuntimeException( 'The plan differs from the reviewed ET / SEC scope.' );
-			}
-			$docs = array_column( $manifest['documents'], null, 'document_id' );
-			foreach ( $requirement['source_documents'] as $id => $sha ) {
-				if ( ! isset( $docs[ $id ] ) || $docs[ $id ]['blob_sha256'] !== $sha ) {
-					throw new RuntimeException( 'A reviewed manufacturer original is unavailable or changed.' );
+				if ( ! is_array( $plan ) || 1 !== ( $plan['schema_version'] ?? null ) || ! is_array( $plan['controller'] ?? null ) || ! is_array( $plan['requirement'] ?? null ) ) {
+					throw new RuntimeException( 'A reviewed controller plan is required.' );
 				}
-			}
-			$doc    = $docs[ $controller['document_id'] ] ?? null;
-			$figure = $controller['figure'];
-			if ( ! is_array( $doc ) || $doc['blob_sha256'] !== $controller['blob_sha256'] || ! in_array( 2409, $doc['product_ids'], true ) || ! is_array( $figure ) || ! is_int( $figure['value'] ?? null ) || $figure['value'] < 1 || 'units' !== ( $figure['unit'] ?? null ) || ( $figure['citation']['page'] ?? null ) !== $controller['page'] || (string) wp_parse_url( $figure['citation']['url'], PHP_URL_PATH ) !== (string) wp_parse_url( $doc['url'], PHP_URL_PATH ) ) {
-				throw new RuntimeException( 'The maintained LAN count needs the reviewed controller original and page.' );
-			}
-			$matched = array_values( array_filter( $input['requirements'], static fn( array $row ): bool => $row['inverter'] === $requirement['selector'] && $row['kind'] === $requirement['kind'] ) );
-			if ( 1 !== count( $matched ) || ( $matched[0]['applicability'] ?? null ) !== array(
-				'operating_mode'        => 'grid_connected',
-				'topology'              => 'parallel_group',
-				'control_network'       => 'lan',
-				'controller_product_id' => 2409,
-			) || isset( $matched[0]['max_units'] ) ) {
-				throw new RuntimeException( 'Exactly one optional, selected-controller LAN declaration is required.' );
-			}
-			$receipt  = array(
-				'schema_version'             => 1,
-				'site'                       => home_url(),
-				'plan_sha256'                => Publication::revision( $plan ),
-				'compatibility_input_sha256' => Publication::revision( $input ),
-				'source_revision'            => $manifest['source_revision'],
-				'products'                   => array(),
-				'changes'                    => array(),
-			);
-			$products = array_column( $manifest['products'], null, 'product_id' );
-			foreach ( $keys as $id => $unused ) {
-				if ( ! isset( $products[ $id ] ) || Publication::canonical_id( $id ) !== $id || ! Publication::is_published( $id ) ) {
-					throw new RuntimeException( 'A reviewed canonical Woo identity is unavailable.' );
+				$controller  = $plan['controller'];
+				$requirement = $plan['requirement'];
+				if ( 2409 !== ( $controller['product_id'] ?? null ) || 'SEC3000C' !== ( $controller['model'] ?? null ) || array( 1946, 1947, 1948 ) !== ( $requirement['owners'] ?? null ) || 'max_lan_inverters' !== ( $controller['figure_key'] ?? null ) ) {
+					throw new RuntimeException( 'The plan differs from the reviewed ET / SEC scope.' );
 				}
-				$receipt['products'][ $id ] = array(
-					'model'            => $products[ $id ]['model'],
-					'product_revision' => $products[ $id ]['product_revision'],
-					'protected_sha256' => $protected( $id ),
-					'documents'        => $documents( $id, $manifest ),
-					'meta'             => array(),
+				$docs = array_column( $manifest['documents'], null, 'document_id' );
+				foreach ( $requirement['source_documents'] as $id => $sha ) {
+					if ( ! isset( $docs[ $id ] ) || $docs[ $id ]['blob_sha256'] !== $sha ) {
+						throw new RuntimeException( 'A reviewed manufacturer original is unavailable or changed.' );
+					}
+				}
+				$doc    = $docs[ $controller['document_id'] ] ?? null;
+				$figure = $controller['figure'];
+				if ( ! is_array( $doc ) || $doc['blob_sha256'] !== $controller['blob_sha256'] || ! in_array( 2409, $doc['product_ids'], true ) || ! is_array( $figure ) || ! is_int( $figure['value'] ?? null ) || $figure['value'] < 1 || 'units' !== ( $figure['unit'] ?? null ) || ( $figure['citation']['page'] ?? null ) !== $controller['page'] || (string) wp_parse_url( $figure['citation']['url'], PHP_URL_PATH ) !== (string) wp_parse_url( $doc['url'], PHP_URL_PATH ) ) {
+					throw new RuntimeException( 'The maintained LAN count needs the reviewed controller original and page.' );
+				}
+				$matched = array_values( array_filter( $input['requirements'], static fn( array $row ): bool => $row['inverter'] === $requirement['selector'] && $row['kind'] === $requirement['kind'] ) );
+				if ( 1 !== count( $matched ) || ( $matched[0]['applicability'] ?? null ) !== array(
+					'operating_mode'        => 'grid_connected',
+					'topology'              => 'parallel_group',
+					'control_network'       => 'lan',
+					'controller_product_id' => 2409,
+				) || isset( $matched[0]['max_units'] ) ) {
+					throw new RuntimeException( 'Exactly one optional, selected-controller LAN declaration is required.' );
+				}
+				$receipt  = array(
+					'schema_version'             => 1,
+					'site'                       => home_url(),
+					'plan_sha256'                => Publication::revision( $plan ),
+					'compatibility_input_sha256' => Publication::revision( $input ),
+					'source_revision'            => $manifest['source_revision'],
+					'products'                   => array(),
+					'changes'                    => array(),
 				);
-			}
-			if ( $products[2409]['model'] !== $controller['model'] ) {
-				throw new RuntimeException( 'The selected controller model changed.' );
-			}
-			$raw      = get_post_meta( 2409, SelectionFacts::FIGURES_META_KEY, true );
-			$figures  = is_string( $raw ) ? json_decode( $raw, true, 512, JSON_THROW_ON_ERROR ) : $raw;
-			$bindings = get_post_meta( 2409, EvidenceBindings::META_KEY, true );
-			if ( ! is_array( $figures ) || ! is_array( $bindings ) ) {
-				throw new RuntimeException( 'Existing controller figure maintenance or bindings are malformed.' );
-			}
-			foreach ( $figures as $key => $entry ) {
-				if ( is_array( $entry ) && isset( $entry['citation'] ) && ( $bindings[ $key ]['figure_revision'] ?? null ) !== Publication::revision( $entry ) ) {
-					throw new RuntimeException( 'An unrelated figure needs its own evidence review before this update.' );
+				$products = array_column( $manifest['products'], null, 'product_id' );
+				foreach ( $keys as $id => $unused ) {
+					if ( ! isset( $products[ $id ] ) || Publication::canonical_id( $id ) !== $id || ! Publication::is_published( $id ) ) {
+						throw new RuntimeException( 'A reviewed canonical Woo identity is unavailable.' );
+					}
+					$receipt['products'][ $id ] = array(
+						'model'            => $products[ $id ]['model'],
+						'product_revision' => $products[ $id ]['product_revision'],
+						'protected_sha256' => $protected( $id ),
+						'documents'        => $documents( $id, $manifest ),
+						'meta'             => array(),
+					);
 				}
-			}
-			if ( array_diff_key( $bindings, $figures ) ) {
-				throw new RuntimeException( 'Unrelated obsolete bindings require separate maintenance.' );
-			}
-			if ( array_key_exists( $controller['figure_key'], $figures ) && $figures[ $controller['figure_key'] ] !== $figure ) {
-				throw new RuntimeException( 'An existing LAN figure differs; this additive plan cannot overwrite it.' );
-			}
-			$expected_binding = array(
-				'document_id'     => $doc['document_id'],
-				'blob_sha256'     => $doc['blob_sha256'],
-				'figure_revision' => Publication::revision( $figure ),
-			);
-			if ( array_key_exists( $controller['figure_key'], $figures ) && ( $bindings[ $controller['figure_key'] ] ?? null ) !== $expected_binding ) {
-				throw new RuntimeException( 'The existing LAN figure requires an explicit evidence renewal.' );
-			}
-			$figures[ $controller['figure_key'] ]  = $figure;
-			$bindings[ $controller['figure_key'] ] = array(
-				'document_id'     => $doc['document_id'],
-				'blob_sha256'     => $doc['blob_sha256'],
-				'figure_revision' => Publication::revision( $figure ),
-			);
-			$record( 2409, SelectionFacts::FIGURES_META_KEY, is_string( $raw ) ? wp_json_encode( $figures, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) : $figures, $receipt );
-			$record( 2409, EvidenceBindings::META_KEY, $bindings, $receipt );
-			$package      = get_post_meta( 2409, PackageContents::META_KEY, true );
-			$package      = '' === $package ? array(
-				'schema_version' => 1,
-				'items'          => array(),
-			) : $package;
-			$installation = get_post_meta( 2409, InstallationFacts::META_KEY, true );
-			$installation = '' === $installation ? array(
-				'schema_version' => 1,
-				'items'          => array(),
-			) : $installation;
-			$append       = static function ( array $existing, array $item ): array {
-				if ( 1 !== ( $existing['schema_version'] ?? null ) || ! is_array( $existing['items'] ?? null ) ) {
-					throw new RuntimeException( 'Existing maintained items are malformed.' );
+				if ( $products[2409]['model'] !== $controller['model'] ) {
+					throw new RuntimeException( 'The selected controller model changed.' );
 				}
-				foreach ( $existing['items'] as $old ) {
-					if ( $old['id'] === $item['id'] ) {
-						if ( $old !== $item ) {
-							throw new RuntimeException( 'A maintained item with this identity already differs.' );
+				$raw      = get_post_meta( 2409, SelectionFacts::FIGURES_META_KEY, true );
+				$figures  = is_string( $raw ) ? json_decode( $raw, true, 512, JSON_THROW_ON_ERROR ) : $raw;
+				$bindings = get_post_meta( 2409, EvidenceBindings::META_KEY, true );
+				if ( ! is_array( $figures ) || ! is_array( $bindings ) ) {
+					throw new RuntimeException( 'Existing controller figure maintenance or bindings are malformed.' );
+				}
+				foreach ( $figures as $key => $entry ) {
+					if ( is_array( $entry ) && isset( $entry['citation'] ) && ( $bindings[ $key ]['figure_revision'] ?? null ) !== Publication::revision( $entry ) ) {
+						throw new RuntimeException( 'An unrelated figure needs its own evidence review before this update.' );
+					}
+				}
+				if ( array_diff_key( $bindings, $figures ) ) {
+					throw new RuntimeException( 'Unrelated obsolete bindings require separate maintenance.' );
+				}
+				if ( array_key_exists( $controller['figure_key'], $figures ) && $figures[ $controller['figure_key'] ] !== $figure ) {
+					throw new RuntimeException( 'An existing LAN figure differs; this additive plan cannot overwrite it.' );
+				}
+				$expected_binding = array(
+					'document_id'     => $doc['document_id'],
+					'blob_sha256'     => $doc['blob_sha256'],
+					'figure_revision' => Publication::revision( $figure ),
+				);
+				if ( array_key_exists( $controller['figure_key'], $figures ) && ( $bindings[ $controller['figure_key'] ] ?? null ) !== $expected_binding ) {
+					throw new RuntimeException( 'The existing LAN figure requires an explicit evidence renewal.' );
+				}
+				$figures[ $controller['figure_key'] ]  = $figure;
+				$bindings[ $controller['figure_key'] ] = array(
+					'document_id'     => $doc['document_id'],
+					'blob_sha256'     => $doc['blob_sha256'],
+					'figure_revision' => Publication::revision( $figure ),
+				);
+				$record( 2409, SelectionFacts::FIGURES_META_KEY, is_string( $raw ) ? wp_json_encode( $figures, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) : $figures, $receipt );
+				$record( 2409, EvidenceBindings::META_KEY, $bindings, $receipt );
+				$package      = get_post_meta( 2409, PackageContents::META_KEY, true );
+				$package      = '' === $package ? array(
+					'schema_version' => 1,
+					'items'          => array(),
+				) : $package;
+				$installation = get_post_meta( 2409, InstallationFacts::META_KEY, true );
+				$installation = '' === $installation ? array(
+					'schema_version' => 1,
+					'items'          => array(),
+				) : $installation;
+				$append       = static function ( array $existing, array $item ): array {
+					if ( 1 !== ( $existing['schema_version'] ?? null ) || ! is_array( $existing['items'] ?? null ) ) {
+						throw new RuntimeException( 'Existing maintained items are malformed.' );
+					}
+					foreach ( $existing['items'] as $old ) {
+						if ( $old['id'] === $item['id'] ) {
+							if ( $old !== $item ) {
+								throw new RuntimeException( 'A maintained item with this identity already differs.' );
+							}
+							return $existing;
 						}
-						return $existing;
 					}
-				}
-				$existing['items'][] = $item;
-				return $existing;
-			};
-			$record( 2409, PackageContents::META_KEY, $append( $package, PackageContents::bind( 2409, $controller['package_item'], $manifest, true ) ), $receipt );
-			$record( 2409, InstallationFacts::META_KEY, $append( $installation, $json( InstallationFacts::bind( 2409, $controller['installation_item'], $manifest ) ) ), $receipt );
-			foreach ( $requirement['owners'] as $id ) {
-				if ( 1 !== preg_match( '~' . $requirement['selector'] . '~', $products[ $id ]['model'] ) ) {
-					throw new RuntimeException( 'An ET model differs from the reviewed selector.' );
-				}
-				$row = $matched[0];
-				unset( $row['inverter'] );
-				$row['id'] = hash( 'sha256', '548:selected-et-lan-sec3000c:' . $id );
-				$row       = CompatibilityClaims::bind_row( $id, $row, 'requirements', $manifest, true );
-				foreach ( $row['documents'] as $source ) {
-					if ( ( $requirement['source_documents'][ $source['document_id'] ] ?? null ) !== $source['blob_sha256'] ) {
-						throw new RuntimeException( 'The optional scheme cites an unreviewed original.' );
+					$existing['items'][] = $item;
+					return $existing;
+				};
+				$record( 2409, PackageContents::META_KEY, $append( $package, PackageContents::bind( 2409, $controller['package_item'], $manifest, true ) ), $receipt );
+				$record( 2409, InstallationFacts::META_KEY, $append( $installation, $json( InstallationFacts::bind( 2409, $controller['installation_item'], $manifest ) ) ), $receipt );
+				foreach ( $requirement['owners'] as $id ) {
+					if ( 1 !== preg_match( '~' . $requirement['selector'] . '~', $products[ $id ]['model'] ) ) {
+						throw new RuntimeException( 'An ET model differs from the reviewed selector.' );
 					}
+					$row = $matched[0];
+					unset( $row['inverter'] );
+					$row['id'] = hash( 'sha256', '548:selected-et-lan-sec3000c:' . $id );
+					$row       = CompatibilityClaims::bind_row( $id, $row, 'requirements', $manifest, true );
+					foreach ( $row['documents'] as $source ) {
+						if ( ( $requirement['source_documents'][ $source['document_id'] ] ?? null ) !== $source['blob_sha256'] ) {
+							throw new RuntimeException( 'The optional scheme cites an unreviewed original.' );
+						}
+					}
+					$claims = get_post_meta( $id, CompatibilityClaims::META_KEY, true );
+					if ( ! is_array( $claims ) || 1 !== ( $claims['schema_version'] ?? null ) || ! is_array( $claims['pairs'] ?? null ) || ! is_array( $claims['requirements'] ?? null ) ) {
+						throw new RuntimeException( 'The existing Woo declarations must be preserved as a complete object.' );
+					}
+					$rows                   = $append(
+						array(
+							'schema_version' => 1,
+							'items'          => $claims['requirements'],
+						),
+						$row
+					);
+					$claims['requirements'] = $rows['items'];
+					$record( $id, CompatibilityClaims::META_KEY, $claims, $receipt );
 				}
-				$claims = get_post_meta( $id, CompatibilityClaims::META_KEY, true );
-				if ( ! is_array( $claims ) || 1 !== ( $claims['schema_version'] ?? null ) || ! is_array( $claims['pairs'] ?? null ) || ! is_array( $claims['requirements'] ?? null ) ) {
-					throw new RuntimeException( 'The existing Woo declarations must be preserved as a complete object.' );
-				}
-				$rows                   = $append(
-					array(
-						'schema_version' => 1,
-						'items'          => $claims['requirements'],
-					),
-					$row
-				);
-				$claims['requirements'] = $rows['items'];
-				$record( $id, CompatibilityClaims::META_KEY, $claims, $receipt );
-			}
 			}
 		} else {
 			$receipt = $request['receipt'] ?? null;
@@ -394,37 +408,37 @@ try {
 				if ( 'apply' === $action ) {
 					if ( 'batc_cabinet_sales_unit_v1' === $mode ) {
 						foreach ( array_keys( $keys ) as $id ) {
-							$item = EngineeringFeed::item( $id, $fresh );
+							$item    = EngineeringFeed::item( $id, $fresh );
 							$figures = is_array( $item ) ? (array) $item['figures'] : array();
-							$sales = $figures['sales_unit_kind'] ?? null;
+							$sales   = $figures['sales_unit_kind'] ?? null;
 							if ( ! is_array( $sales ) || 'battery_system' !== ( $sales['value'] ?? null ) || 3 !== ( $sales['citation']['page'] ?? null ) ) {
 								throw new RuntimeException( 'The engineering feed did not publish the reviewed BAT-C sales unit.' );
 							}
 						}
 					} else {
-					$item              = EngineeringFeed::item( 2409, $fresh );
-					$published_figures = is_array( $item ) ? (array) $item['figures'] : array();
-					if ( ! is_array( $item ) || ! isset( $published_figures['max_lan_inverters'] ) || 'documented' !== ( $item['package_contents']['status'] ?? null ) || 'documented' !== ( $item['installation_facts']['status'] ?? null ) ) {
-						throw new RuntimeException( 'The actual engineering feed did not publish the maintained facts.' );
-					}
-					foreach ( array( 1946, 1947, 1948 ) as $id ) {
-						$active          = \Linker\Commerce\Products\Compatibility::requirements(
-							$receipt['products'][ $id ]['model'],
-							'parallel_controller',
-							$id,
-							$fresh,
-							array(
-								'operating_mode'        => 'grid_connected',
-								'topology'              => 'parallel_group',
-								'control_network'       => 'lan',
-								'controller_product_id' => 2409,
-							)
-						);
-						$selected_scheme = array_values( array_filter( $active, static fn( array $row ): bool => ( $row['applicability']['controller_product_id'] ?? null ) === 2409 ) );
-						if ( 1 !== count( $selected_scheme ) || isset( $selected_scheme[0]['max_units'] ) ) {
-							throw new RuntimeException( 'The native compatibility consumer did not expose exactly the optional control scheme.' );
+						$item              = EngineeringFeed::item( 2409, $fresh );
+						$published_figures = is_array( $item ) ? (array) $item['figures'] : array();
+						if ( ! is_array( $item ) || ! isset( $published_figures['max_lan_inverters'] ) || 'documented' !== ( $item['package_contents']['status'] ?? null ) || 'documented' !== ( $item['installation_facts']['status'] ?? null ) ) {
+							throw new RuntimeException( 'The actual engineering feed did not publish the maintained facts.' );
 						}
-					}
+						foreach ( array( 1946, 1947, 1948 ) as $id ) {
+							$active          = \Linker\Commerce\Products\Compatibility::requirements(
+								$receipt['products'][ $id ]['model'],
+								'parallel_controller',
+								$id,
+								$fresh,
+								array(
+									'operating_mode'  => 'grid_connected',
+									'topology'        => 'parallel_group',
+									'control_network' => 'lan',
+									'controller_product_id' => 2409,
+								)
+							);
+							$selected_scheme = array_values( array_filter( $active, static fn( array $row ): bool => ( $row['applicability']['controller_product_id'] ?? null ) === 2409 ) );
+							if ( 1 !== count( $selected_scheme ) || isset( $selected_scheme[0]['max_units'] ) ) {
+								throw new RuntimeException( 'The native compatibility consumer did not expose exactly the optional control scheme.' );
+							}
+						}
 					}
 					$receipt['applied_source_revision'] = $fresh['source_revision'];
 				} elseif ( $fresh['source_revision'] !== $receipt['source_revision'] ) {
