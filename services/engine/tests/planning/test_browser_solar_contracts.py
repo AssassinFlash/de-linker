@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import platform
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -243,6 +244,26 @@ HOST_DERIVED_FIXTURE_PATHS = frozenset(
         ("pv_run", "result_sha256"),
     }
 )
+
+
+def host_invariant_view(node: Any, path: tuple[str | int, ...] = ()) -> Any:
+    """Replace only the fixture paths proven to depend on exact host arithmetic."""
+    if path in HOST_DERIVED_FIXTURE_PATHS:
+        return (
+            "<host-derived>"
+            if isinstance(node, str) and re.fullmatch(r"[0-9a-f]{64}", node)
+            else node
+        )
+    if isinstance(node, dict):
+        return {
+            key: host_invariant_view(value, (*path, key)) for key, value in node.items()
+        }
+    if isinstance(node, list):
+        return [
+            host_invariant_view(value, (*path, index))
+            for index, value in enumerate(node)
+        ]
+    return node
 
 
 def different_paths(
@@ -506,15 +527,26 @@ process.stdout.write(JSON.stringify(prepared));
 
 
 def test_preparation_fixture_export_reproduces_the_committed_fixture() -> None:
-    """Compare one full native export with that host's exact committed fixture."""
+    """Compare one native export using the recorded host's arithmetic contract."""
     produced = json.loads(export_preparation_fixture.rendered())
     assert set(produced) == EXPECTED_FIXTURE_KEYS
-    assert produced == preparation_fixture()
+    committed = preparation_fixture()
     pinned = export_preparation_fixture.fixture_runtime_snapshot()
     live = RuntimeSnapshot.capture()
     assert pinned.sha256 != live.sha256
+    runtime = json.loads(live.content)
+    manifest = json.loads(
+        (APP / "tests/fixtures/preparation-flow-platforms.json").read_text()
+    )
+    host = f"{sys.platform}-{platform.machine()}"
+    baseline = manifest["baselines"][host]["runtime"]
+    if all(runtime[key] == value for key, value in baseline.items()):
+        assert produced == committed
+    else:
+        # Hosted Linux runners need not share the reference machine's math libraries.
+        assert host_invariant_view(produced) == host_invariant_view(committed)
     assert set(json.loads(pinned.content)["dependencies"]) == set(
-        json.loads(live.content)["dependencies"]
+        runtime["dependencies"]
     )
     weather_run = cast(Object, produced["weather_run"])
     manifest = cast(Object, weather_run["manifest"])

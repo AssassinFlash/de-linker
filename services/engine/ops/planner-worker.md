@@ -243,7 +243,8 @@ python -c 'from tests.planning.export_preparation_fixture import rendered; print
 The browser fixture runs the real kernels with a stable synthetic runtime
 identity. Each platform baseline records the SHA-256 of the engine file list
 and bytes used for its native export. The test compares every generated field,
-including the exact artifact hashes, with that platform's committed fixture.
+including artifact hashes, on the recorded runtime. Other runtimes retain the
+explicit exceptions for measured differences in native floating-point results.
 Regenerate when this comparison changes. Production releases continue to bind
 each run to the full source, platform and dependency snapshot.
 
