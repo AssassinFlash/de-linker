@@ -85,7 +85,9 @@ defined( 'ABSPATH' ) || exit;
 					}
 					unset( $products[ $id ]['product_revision'], $products[ $id ]['ready'] );
 				}
-				return array( 'source' => $manifest['source_revision'], 'display' => $display, 'stable' => hash( 'sha256', (string) wp_json_encode( array( $products, $docs, $manifest['compatibility_revision'], $manifest['model_identity_revision'] ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) ) );
+				$target_products = array_intersect_key( $products, $pairs );
+				$target_stable   = hash( 'sha256', (string) wp_json_encode( array( $target_products, $docs[ $doc ] ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) );
+				return array( 'source' => $manifest['source_revision'], 'display' => $display, 'target_stable' => $target_stable, 'stable' => hash( 'sha256', (string) wp_json_encode( array( $products, $docs, $manifest['compatibility_revision'], $manifest['model_identity_revision'] ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) ) );
 			};
 			$unbound = static function () use ( $doc ): void {
 				global $wpdb;
@@ -120,8 +122,11 @@ defined( 'ABSPATH' ) || exit;
 				$result = array( 'schema_version' => 1, 'scope' => 'cb2-guide-titles-v1', 'site' => $site, 'action' => 'preview', 'authority' => $auth, 'products' => $products, 'option' => array( 'id' => $opt['id'], 'before' => base64_encode( $opt['raw'] ), 'after' => base64_encode( $option_after_raw ), 'before_sha256' => hash( 'sha256', $opt['raw'] ), 'after_sha256' => hash( 'sha256', $option_after_raw ) ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Preserve option bytes.
 			} else {
 				$receipt = $request['receipt'] ?? null;
-				if ( ! is_array( $receipt ) || 1 !== ( $receipt['schema_version'] ?? null ) || 'cb2-guide-titles-v1' !== ( $receipt['scope'] ?? null ) || 'preview' !== ( $receipt['action'] ?? null ) || $site !== ( $receipt['site'] ?? null ) || ( $receipt['authority']['stable'] ?? null ) !== $auth['stable'] || array_keys( $receipt['products'] ?? array() ) !== array_keys( $pairs ) ) {
+				if ( ! is_array( $receipt ) || 1 !== ( $receipt['schema_version'] ?? null ) || 'cb2-guide-titles-v1' !== ( $receipt['scope'] ?? null ) || 'preview' !== ( $receipt['action'] ?? null ) || $site !== ( $receipt['site'] ?? null ) || ( $receipt['authority']['target_stable'] ?? null ) !== $auth['target_stable'] || array_keys( $receipt['products'] ?? array() ) !== array_keys( $pairs ) ) {
 					throw new RuntimeException( 'Receipt or source authority differs.' );
+				}
+				if ( in_array( $action, array( 'apply', 'verify' ), true ) && ( $receipt['authority']['stable'] ?? null ) !== $auth['stable'] ) {
+					throw new RuntimeException( 'Other source authority changed; inspect receipt.' );
 				}
 				$before_opt = base64_decode( $receipt['option']['before'] ?? '', true ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Recover receipt bytes.
 				$after_opt  = base64_decode( $receipt['option']['after'] ?? '', true ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Recover receipt bytes.
@@ -196,7 +201,7 @@ defined( 'ABSPATH' ) || exit;
 					$current = $read();
 					$opt     = $read_option();
 					$auth    = $authority();
-					if ( $auth['stable'] !== $receipt['authority']['stable'] ) {
+					if ( $auth['target_stable'] !== $receipt['authority']['target_stable'] || ( 'apply' === $action && $auth['stable'] !== $receipt['authority']['stable'] ) ) {
 						throw new RuntimeException( 'Source authority changed; inspect receipt.' );
 					}
 					foreach ( $pairs as $id => $pair ) {
@@ -222,6 +227,10 @@ defined( 'ABSPATH' ) || exit;
 					throw new RuntimeException( 'Original document display revision was not restored.' );
 				}
 				$result = array( 'action' => $action, 'states' => $states, 'authority' => $auth );
+				if ( 'rollback' === $action ) {
+					$result['source_restored'] = $auth['source'] === ( $receipt['authority']['source'] ?? null );
+					$result['recovery'] = $result['source_restored'] ? 'fields_restored_source_revision_matches' : 'fields_restored_source_requires_reconcile';
+				}
 			}
 			echo '@@548-cb2-guide-titles@@' . wp_json_encode( $result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . "\n";
 		} finally {

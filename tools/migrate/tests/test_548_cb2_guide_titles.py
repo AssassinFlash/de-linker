@@ -70,10 +70,11 @@ namespace Linker\Commerce\Products {
   public static function manifest() {
    $products=[];
    foreach($GLOBALS['fx'] as $id=>$p) $products[]=['product_id'=>(int)$id,'documents'=>[$GLOBALS['doc']],'product_revision'=>hash('sha256',json_encode($p['meta'])),'ready'=>['knowledge'=>true],'sku'=>$p['sku']];
+   $products[]=['product_id'=>9999,'documents'=>[],'product_revision'=>$GLOBALS['external'],'ready'=>['knowledge'=>true],'sku'=>'unrelated'];
    $title=json_decode($GLOBALS['fx'][4103]['meta']['_tv_legacy_acf_json'],true)['downloads'][3]['download_title'];
    $m=unserialize($GLOBALS['option_raw']);
    $docs=[['document_id'=>$GLOBALS['doc'],'blob_sha256'=>$GLOBALS['sha'],'product_ids'=>[4103,4104,4105,4106],'type'=>'manual','role'=>'manual','title'=>$title,'title_de'=>$m[$title]??'','document_revision'=>hash('sha256',$title)]];
-   return ['products'=>$products,'documents'=>$docs,'compatibility_revision'=>'compat','model_identity_revision'=>'models','source_revision'=>hash('sha256',json_encode($GLOBALS['fx']))];
+   return ['products'=>$products,'documents'=>$docs,'compatibility_revision'=>'compat','model_identity_revision'=>'models','source_revision'=>hash('sha256',json_encode([$GLOBALS['fx'],$GLOBALS['external']]))];
   }
  }
 }
@@ -82,7 +83,7 @@ namespace {
  $GLOBALS['fx']=json_decode(base64_decode('FIXTURE'),true,512,JSON_THROW_ON_ERROR);
  $GLOBALS['sha']='a70cb4c39824185fb9f570a59f4966c54ec94a33c870d00c7ccd756393321dac';
  $GLOBALS['doc']='doc-74c741e3ff765006ebff2c089f627bf1ff20b13c12b991ec9047f100e3ec87fd';
- $GLOBALS['option_raw']=serialize(['keep'=>'other']); $GLOBALS['bad_pdf']=false; $GLOBALS['bound']=false; $GLOBALS['query_failed']=false; $GLOBALS['fail_id']=0;
+ $GLOBALS['option_raw']=serialize(['keep'=>'other']); $GLOBALS['bad_pdf']=false; $GLOBALS['bound']=false; $GLOBALS['query_failed']=false; $GLOBALS['fail_id']=0; $GLOBALS['external']='before';
  $source=base64_decode('SOURCE');
  class DB {
   public string $options='wp_options'; public string $postmeta='wp_postmeta'; public string $last_error='';
@@ -111,7 +112,8 @@ namespace {
  $old=$GLOBALS['fx'][4106]['meta']['_linker_de_acf_json'];$GLOBALS['fx'][4106]['meta']['_linker_de_acf_json']=str_replace('"keep":[1,2]','"keep":[1,3]',$old);$snap=$GLOBALS['fx'];must(isset(call_migration('apply',$receipt)['error'])&&$GLOBALS['fx']===$snap,'conflict overwritten');$GLOBALS['fx'][4106]['meta']['_linker_de_acf_json']=$old;
  $GLOBALS['fail_id']=0;$r=call_migration('apply',$receipt);must(!isset($r['error']),'resume failed');must(!isset(call_migration('verify',$receipt)['error']),'verify failed');
  $GLOBALS['bound']=true;must(isset(call_migration('rollback',$receipt)['error']),'bound rollback accepted');$GLOBALS['bound']=false;
- $r=call_migration('rollback',$receipt);must(!isset($r['error'])&&$GLOBALS['fx']===$initial&&$GLOBALS['option_raw']===$initial_option,'rollback failed');
+ $r=call_migration('rollback',$receipt);must(!isset($r['error'])&&$r['source_restored']===true&&$r['recovery']==='fields_restored_source_revision_matches'&&$GLOBALS['fx']===$initial&&$GLOBALS['option_raw']===$initial_option,'rollback failed');
+ $receipt=call_migration('preview');must(!isset(call_migration('apply',$receipt)['error']),'second apply failed');$GLOBALS['external']='changed by another product';$r=call_migration('rollback',$receipt);must(!isset($r['error'])&&$r['source_restored']===false&&$r['recovery']==='fields_restored_source_requires_reconcile'&&$GLOBALS['fx']===$initial&&$GLOBALS['option_raw']===$initial_option&&$GLOBALS['external']==='changed by another product','external change was overwritten or falsely reported restored');
  $GLOBALS['bad_pdf']=true;must(isset(call_migration('preview')['error']),'wrong original accepted');echo "OK\n";
 }
 """.replace(
