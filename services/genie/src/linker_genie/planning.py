@@ -41,6 +41,10 @@ RULE = (
     "If unavailable, say the project could not be read in this session; do not guess its data or owner. "
     "A queued/failed job has no numerical result. A provisional bill of materials is never a "
     "complete BOS or final installation materials list, even when the source is not truncated. "
+    "Project-entered installation names may be anonymized. Never infer that a name is absent "
+    "from the original report because it is not visible here; if the exact label matters, "
+    "say it cannot be verified from the available information. Explain recorded quantities "
+    "and their limits without inventing a name. "
     "Preserve unresolved quantities and never turn selected equipment into installation approval. "
     "Do not infer a missing country, timezone or measured value from a title or postcode. "
     "Saved equipment observations do not authorize current product cards, specifications or documents; "
@@ -154,6 +158,11 @@ def view(raw: Any, page: PageContext) -> dict[str, Any]:
     if not runs:
         lines.append("No calculation result is selected in this view.")
     for run in runs:
+        if run.get("kind") == "planning_report_v1":
+            lines.append(
+                "Project-entered installation names and descriptions may be anonymized "
+                "in this view; their absence here is not evidence of absence from the original report."
+            )
         lines.append(
             f"Selected saved result {run.get('id')}: kind={run.get('kind')}; "
             f"revision={run.get('revision')}; state={run.get('state')}; "
@@ -357,6 +366,8 @@ def add_source_card(
                 }
             )
         return
+    if not any(result["groups"] for result in card["results"]):
+        return  # The verified report has no PV or energy sources to display.
     # A recorded-result explanation already has its own relevant next step.
     # A sizing route, or a message asking for new selection/sizing work, keeps
     # the existing follow-up policy. This is never a browser-side filter.

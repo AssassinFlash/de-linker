@@ -86,3 +86,13 @@ test('the project choices ask Genie and the retired nameplate entry is gone',()=
  const source=readFileSync(new URL('../../assets/pdp-ui.js',import.meta.url),'utf8');
  assert.doesNotMatch(source,/lia:open|data-linker-assistant-open/);
 });
+
+test('current product context follows thumbnail selection and keyboard into the viewer',()=>{
+ const caption='The current product introduction.';
+ const dom=new JSDOM(`<div id="tv-storefront-pdp"><button data-pdp-image data-pdp-main data-src="a" data-caption="${caption}"><img class="pdp-gallery-main" alt="Product" src="a"></button><button data-pdp-thumb data-src="a" data-caption="${caption}"></button><button data-pdp-thumb data-src="b" data-caption="Other image context"></button><dialog id="pdp-image-viewer"><img><p data-viewer-caption></p></dialog></div>`,{runScripts:'outside-only'});
+ const {window}=dom;window.matchMedia=()=>({matches:true});const doc=window.document,main=doc.querySelector('[data-pdp-main]'),viewer=doc.querySelector('dialog');viewer.showModal=()=>{viewer.open=true;};
+ window.eval(readFileSync(new URL('../../assets/pdp-ui.js',import.meta.url),'utf8'));
+ main.click();assert.equal(doc.querySelector('[data-viewer-caption]').textContent,caption);
+ doc.querySelectorAll('[data-pdp-thumb]')[1].click();main.click();assert.equal(doc.querySelector('[data-viewer-caption]').textContent,'Other image context');
+ main.dispatchEvent(new window.KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true,cancelable:true}));main.click();assert.equal(doc.querySelector('[data-viewer-caption]').textContent,caption);
+});

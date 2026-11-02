@@ -68,6 +68,13 @@ final class ProductShortcodesTest extends TestCase {
 	private string $pdp_gallery = '6504,6505';
 
 	/**
+	 * Localized native product short description.
+	 *
+	 * @var string
+	 */
+	private string $pdp_intro = '<p>The intro.</p>';
+
+	/**
 	 * The URL of an attachment in the fixture: it names the id, so a test can
 	 * tell which picture a shortcode printed.
 	 *
@@ -1446,7 +1453,7 @@ final class ProductShortcodesTest extends TestCase {
 		$product->allows( 'get_sku' )->andReturn( 'DLK-GOODWE-GW60KSTSG10' );
 		$product->allows( 'get_image_id' )->andReturn( 6503 );
 		$product->allows( 'get_gallery_image_ids' )->andReturn( array( 6504, 6505 ) );
-		$product->allows( 'get_short_description' )->andReturn( '<p>The intro.</p>' );
+		$product->allows( 'get_short_description' )->andReturnUsing( fn (): string => $this->pdp_intro );
 		$product->allows( 'get_description' )->andReturn( '' );
 		$product->allows( 'get_price_html' )->andReturn( '<span>€ 100</span>' );
 		$product->allows( 'get_permalink' )->andReturn( 'http://linker.test/product/goodwe-gw60k-sts-g10/' );
@@ -1720,6 +1727,19 @@ final class ProductShortcodesTest extends TestCase {
 		$this->pdp_gallery = '';
 		$this->assertStringNotContainsString( 'pdp-gallery-secondary', $pdp->pdp_gallery_pair() );
 		$this->assertSame( '', $pdp->pdp_gallery_thumbs() );
+	}
+
+	/** Only an explicit product image note accompanies gallery images. */
+	public function test_product_image_note_reaches_gallery_and_thumbnails(): void {
+		unset( $GLOBALS['product'] );
+		$pdp = $this->pdp( true );
+		$this->assertSame( 2, substr_count( $pdp->pdp_gallery_pair(), 'data-caption=""' ) );
+		$this->assertStringNotContainsString( 'The intro.', $pdp->pdp_gallery_thumbs() );
+		$this->pdp_intro .= '<p class="product-image-note">Current product image context.</p>';
+		// The view is cached for a request; assemble a new request after the edit.
+		$pdp = $this->pdp( true );
+		$this->assertSame( 2, substr_count( $pdp->pdp_gallery_pair(), 'data-caption="Current product image context."' ) );
+		$this->assertSame( 3, substr_count( $pdp->pdp_gallery_thumbs(), 'data-caption="Current product image context."' ) );
 	}
 
 	/**

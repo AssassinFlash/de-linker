@@ -62,6 +62,36 @@ def source() -> tuple[dict[str, Any], PageContext]:
     }, page
 
 
+def test_private_material_label_and_report_without_pv_sources_are_not_denied() -> None:
+    raw, page = source()
+    raw["runs"][0].update(
+        kind="planning_report_v1",
+        manifest_sha256="c" * 64,
+        result_sha256="d" * 64,
+        calculation_sources={"schema_version": 1, "groups": []},
+        rows=[{"label": "Installation material 1", "value": "8 pieces"}],
+    )
+    payload = planning.view(raw, page)
+    assert "anonymized" in payload["text"].lower()
+    assert "absence" in payload["text"].lower()
+    assert "anonymized" in planning.RULE.lower()
+    shipped: dict[str, Any] = {"blocks": [{"type": "text", "text": "8 pieces"}]}
+    planning.add_source_card(shipped, raw, page, "Explain this saved report", "model")
+    assert [block["type"] for block in shipped["blocks"]] == ["text"]
+
+    raw["runs"][0]["calculation_sources"] = None
+    planning.add_source_card(shipped, raw, page, "Explain this saved report", "model")
+    assert shipped["blocks"][-1] == {
+        "type": "planning_sources",
+        "schema_version": 1,
+        "status": "unavailable",
+    }
+    raw["runs"][0]["calculation_sources"] = {"schema_version": 1, "groups": "invalid"}
+    shipped = {"blocks": []}
+    planning.add_source_card(shipped, raw, page, "Explain this saved report", "model")
+    assert shipped["blocks"][-1]["status"] == "unavailable"
+
+
 def test_facts_hydrate_without_granting_product_or_document_permission() -> None:
     raw, page = source()
     raw["runs"][0].update(

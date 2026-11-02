@@ -73,6 +73,8 @@
 				mainTrigger.setAttribute("aria-label", thumbs[selected].getAttribute("aria-label") || main.alt);
 				// Viewer always opens the image currently selected, including desktop.
 				mainTrigger.setAttribute("data-src", source);
+				var caption = thumbs[selected].getAttribute("data-caption") || "";
+				mainTrigger.setAttribute("data-caption", caption);
 			}
 		}
 		thumbs.forEach(function (thumb, index) {
@@ -118,7 +120,7 @@
 			viewerImage.src = trigger.getAttribute("data-src") || "";
 			if (viewerCaption) {
 				var picture = trigger.querySelector("img");
-				viewerCaption.textContent = trigger.getAttribute("aria-label") || (picture ? picture.alt : "");
+				viewerCaption.textContent = trigger.getAttribute("data-caption") || trigger.getAttribute("aria-label") || (picture ? picture.alt : "");
 			}
 			if (typeof viewer.showModal === "function") {
 				viewer.showModal();

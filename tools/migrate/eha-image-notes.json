@@ -1,0 +1,86 @@
+[
+  [
+    {
+      "id": 6523,
+      "sku": "DLK-GOODWE-GW3KEHAG20",
+      "before": "<p>The GW3K-EHA-G20 is the 3 kW single-phase ESA G20 power module: 3.0 kVA rated backup, 6.0 kW PV on 2 MPPT trackers (1/1), backup 3.0 (6.0, 10 s).</p>",
+      "after": "<p>The GW3K-EHA-G20 is the 3 kW single-phase ESA G20 power module: 3.0 kVA rated backup, 6.0 kW PV on 2 MPPT trackers (1/1), backup 3.0 (6.0, 10 s).</p>\n<p class=\"product-image-note\">Example ESA system. This product is the power module; battery modules are not included.</p>"
+    },
+    {
+      "id": 6572,
+      "sku": "DLK-GOODWE-GW3KEHAG20",
+      "before": "<p>Das GW3K-EHA-G20 ist das 3 kW einphasige ESA-G20-Leistungsmodul: 3,0 kVA Nennleistung Notstromversorgung, 6,0 kW PV an 2 MPPT-Trackern (1/1), Notstromversorgung 3,0 (6,0, 10 s).</p>",
+      "after": "<p>Das GW3K-EHA-G20 ist das 3 kW einphasige ESA-G20-Leistungsmodul: 3,0 kVA Nennleistung Notstromversorgung, 6,0 kW PV an 2 MPPT-Trackern (1/1), Notstromversorgung 3,0 (6,0, 10 s).</p>\n<p class=\"product-image-note\">Beispiel eines ESA-Systems. Dieses Produkt ist das Leistungsmodul; Batteriemodule sind nicht enthalten.</p>"
+    }
+  ],
+  [
+    {
+      "id": 6524,
+      "sku": "DLK-GOODWE-GW36KEHAG20",
+      "before": "<p>The GW3.6K-EHA-G20 is the 3.6 kW single-phase ESA G20 power module: 3.6 kVA rated backup, 7.2 kW PV on 2 MPPT trackers (1/1), backup 3.6 (7.2, 10 s).</p>",
+      "after": "<p>The GW3.6K-EHA-G20 is the 3.6 kW single-phase ESA G20 power module: 3.6 kVA rated backup, 7.2 kW PV on 2 MPPT trackers (1/1), backup 3.6 (7.2, 10 s).</p>\n<p class=\"product-image-note\">Example ESA system. This product is the power module; battery modules are not included.</p>"
+    },
+    {
+      "id": 6571,
+      "sku": "DLK-GOODWE-GW36KEHAG20",
+      "before": "<p>Der GW3.6K-EHA-G20 ist das 3,6 kW einphasige ESA-G20-Leistungsmodul: 3,6 kVA Nennleistung Notstromversorgung, 7,2 kW PV an 2 MPPT-Trackern (1/1), Notstromversorgung 3,6 (7,2, 10 s).</p>",
+      "after": "<p>Der GW3.6K-EHA-G20 ist das 3,6 kW einphasige ESA-G20-Leistungsmodul: 3,6 kVA Nennleistung Notstromversorgung, 7,2 kW PV an 2 MPPT-Trackern (1/1), Notstromversorgung 3,6 (7,2, 10 s).</p>\n<p class=\"product-image-note\">Beispiel eines ESA-Systems. Dieses Produkt ist das Leistungsmodul; Batteriemodule sind nicht enthalten.</p>"
+    }
+  ],
+  [
+    {
+      "id": 6525,
+      "sku": "DLK-GOODWE-GW5KEHAG20",
+      "before": "<p>The GW5K-EHA-G20 is the 5 kW single-phase ESA G20 power module: 5.0 kVA rated backup, 10.0 kW PV on 2 MPPT trackers (1/1), backup 5.0 (10.0, 10 s).</p>",
+      "after": "<p>The GW5K-EHA-G20 is the 5 kW single-phase ESA G20 power module: 5.0 kVA rated backup, 10.0 kW PV on 2 MPPT trackers (1/1), backup 5.0 (10.0, 10 s).</p>\n<p class=\"product-image-note\">Example ESA system. This product is the power module; battery modules are not included.</p>"
+    },
+    {
+      "id": 6570,
+      "sku": "DLK-GOODWE-GW5KEHAG20",
+      "before": "<p>Das GW5K-EHA-G20 ist das einphasige 5-kW-ESA-G20-Leistungsmodul: 5,0 kVA Nennleistung Notstromversorgung, 10,0 kW PV an 2 MPPT-Trackern (1/1), Notstromversorgung 5,0 (10,0, 10 s).</p>",
+      "after": "<p>Das GW5K-EHA-G20 ist das einphasige 5-kW-ESA-G20-Leistungsmodul: 5,0 kVA Nennleistung Notstromversorgung, 10,0 kW PV an 2 MPPT-Trackern (1/1), Notstromversorgung 5,0 (10,0, 10 s).</p>\n<p class=\"product-image-note\">Beispiel eines ESA-Systems. Dieses Produkt ist das Leistungsmodul; Batteriemodule sind nicht enthalten.</p>"
+    }
+  ],
+  [
+    {
+      "id": 6526,
+      "sku": "DLK-GOODWE-GW6KEHAG20",
+      "before": "<p>The GW6K-EHA-G20 is the 6 kW single-phase ESA G20 power module: 6.0 kVA rated backup, 12.0 kW PV on 2 MPPT trackers (1/1), backup 6.0 (12.0, 10 s).</p>",
+      "after": "<p>The GW6K-EHA-G20 is the 6 kW single-phase ESA G20 power module: 6.0 kVA rated backup, 12.0 kW PV on 2 MPPT trackers (1/1), backup 6.0 (12.0, 10 s).</p>\n<p class=\"product-image-note\">Example ESA system. This product is the power module; battery modules are not included.</p>"
+    },
+    {
+      "id": 6569,
+      "sku": "DLK-GOODWE-GW6KEHAG20",
+      "before": "<p>Der GW6K-EHA-G20 ist das 6 kW einphasige ESA G20 Leistungsmodul: 6,0 kVA Nennleistung Notstromversorgung, 12,0 kW PV an 2 MPPT-Trackern (1/1), Notstromversorgung 6,0 (12,0, 10 s).</p>",
+      "after": "<p>Der GW6K-EHA-G20 ist das 6 kW einphasige ESA G20 Leistungsmodul: 6,0 kVA Nennleistung Notstromversorgung, 12,0 kW PV an 2 MPPT-Trackern (1/1), Notstromversorgung 6,0 (12,0, 10 s).</p>\n<p class=\"product-image-note\">Beispiel eines ESA-Systems. Dieses Produkt ist das Leistungsmodul; Batteriemodule sind nicht enthalten.</p>"
+    }
+  ],
+  [
+    {
+      "id": 6527,
+      "sku": "DLK-GOODWE-GW8KEHAG20",
+      "before": "<p>The GW8K-EHA-G20 is the 8 kW single-phase ESA G20 power module: 8.0 kVA rated backup, 16.0 kW PV on 4 MPPT trackers (1/1/1/1), backup 8.0 (16.0, 10 s).</p>",
+      "after": "<p>The GW8K-EHA-G20 is the 8 kW single-phase ESA G20 power module: 8.0 kVA rated backup, 16.0 kW PV on 4 MPPT trackers (1/1/1/1), backup 8.0 (16.0, 10 s).</p>\n<p class=\"product-image-note\">Example ESA system. This product is the power module; battery modules are not included.</p>"
+    },
+    {
+      "id": 6568,
+      "sku": "DLK-GOODWE-GW8KEHAG20",
+      "before": "<p>Das GW8K-EHA-G20 ist das 8-kW-einphasige ESA-G20-Leistungsmodul: 8,0 kVA Nennleistung Notstromversorgung, 16,0 kW PV an 4 MPPT-Trackern (1/1/1/1), Notstromversorgung 8,0 (16,0, 10 s).</p>",
+      "after": "<p>Das GW8K-EHA-G20 ist das 8-kW-einphasige ESA-G20-Leistungsmodul: 8,0 kVA Nennleistung Notstromversorgung, 16,0 kW PV an 4 MPPT-Trackern (1/1/1/1), Notstromversorgung 8,0 (16,0, 10 s).</p>\n<p class=\"product-image-note\">Beispiel eines ESA-Systems. Dieses Produkt ist das Leistungsmodul; Batteriemodule sind nicht enthalten.</p>"
+    }
+  ],
+  [
+    {
+      "id": 6528,
+      "sku": "DLK-GOODWE-GW10KEHAG20",
+      "before": "<p>The GW10K-EHA-G20 is the 10 kW single-phase ESA G20 power module: 10.0 kVA rated backup, 20.0 kW PV on 4 MPPT trackers (1/1/1/1), backup 10.0 (20.0, 10 s).</p>",
+      "after": "<p>The GW10K-EHA-G20 is the 10 kW single-phase ESA G20 power module: 10.0 kVA rated backup, 20.0 kW PV on 4 MPPT trackers (1/1/1/1), backup 10.0 (20.0, 10 s).</p>\n<p class=\"product-image-note\">Example ESA system. This product is the power module; battery modules are not included.</p>"
+    },
+    {
+      "id": 6567,
+      "sku": "DLK-GOODWE-GW10KEHAG20",
+      "before": "<p>Das GW10K-EHA-G20 ist das 10 kW einphasige ESA G20 Leistungsmodul: 10,0 kVA Nenn-Notstromversorgung, 20,0 kW PV an 4 MPPT-Trackern (1/1/1/1), Notstromversorgung 10,0 (20,0, 10 s).</p>",
+      "after": "<p>Das GW10K-EHA-G20 ist das 10 kW einphasige ESA G20 Leistungsmodul: 10,0 kVA Nenn-Notstromversorgung, 20,0 kW PV an 4 MPPT-Trackern (1/1/1/1), Notstromversorgung 10,0 (20,0, 10 s).</p>\n<p class=\"product-image-note\">Beispiel eines ESA-Systems. Dieses Produkt ist das Leistungsmodul; Batteriemodule sind nicht enthalten.</p>"
+    }
+  ]
+]
