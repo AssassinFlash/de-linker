@@ -406,3 +406,18 @@ def test_native_woo_save_review_worker_and_retained_outputs(
             )
             assert "50 mm²" in words and "p. 50" in words
             assert b"within_recommendation" in csv_bytes
+            assistant = client.post(
+                "/projects/assistant",
+                json={
+                    "schema_version": 1,
+                    "project_id": project_id,
+                    "revision": 1,
+                    "run_ids": [queued.json()["id"]],
+                    "locale": locale,
+                },
+                headers=headers(owner),
+            )
+            assert assistant.status_code == 200, assistant.text
+            assistant_text = str(assistant.json())
+            assert "50 mm²" in assistant_text and "p. 50" in assistant_text
+            assert "Private conductor note" not in assistant_text
