@@ -7,7 +7,11 @@ import type {
 import type { EquipmentProduct } from "../../data/equipmentProducts.ts";
 import type { GeometryDocument } from "../../domain/geometry.ts";
 import { readObject } from "../../data/readProtocol.ts";
-import { installationId, readInstallation } from "../../domain/installation.ts";
+import {
+	installationId,
+	mountingBasisIsCurrent,
+	readInstallation,
+} from "../../domain/installation.ts";
 import {
 	GeometryForm,
 	GeometryNumber,
@@ -43,6 +47,15 @@ export function InstallationMaterials({
 	const [comparisonChoice, setComparisonChoice] = useState("");
 	const [comparisonConfirmed, setComparisonConfirmed] = useState(false);
 	const [showMountingRule, setShowMountingRule] = useState(false);
+	const [mountingConfirmed, setMountingConfirmed] = useState(false);
+	const [confirmedMountingBasis, setConfirmedMountingBasis] =
+		useState<NonNullable<
+			InstallationMaterial["mounting_quantity_basis"]
+		> | null>(null);
+	const clearMountingConfirmation = () => {
+		setMountingConfirmed(false);
+		setConfirmedMountingBasis(null);
+	};
 	const [mountingError, setMountingError] = useState("");
 	const t = (en: string, de: string) => electricalText(locale, en, de);
 	useEffect(() => {
@@ -121,6 +134,13 @@ export function InstallationMaterials({
 	useEffect(() => {
 		if (comparisonChoice && !activeCandidate) setComparisonConfirmed(false);
 	}, [comparisonChoice, Boolean(activeCandidate)]);
+	useEffect(() => {
+		if (
+			confirmedMountingBasis &&
+			!mountingBasisIsCurrent(confirmedMountingBasis, geometry)
+		)
+			clearMountingConfirmation();
+	}, [confirmedMountingBasis, geometry]);
 	const kinds: [InstallationMaterial["kind"], string][] = [
 		["connector", t("Connector or terminal", "Steckverbinder oder Klemme")],
 		["protection", t("Protection device", "Schutzeinrichtung")],
@@ -243,6 +263,24 @@ export function InstallationMaterials({
 								);
 								setComparisonConfirmed(false);
 								setShowMountingRule(Boolean(item.mounting_quantity_basis));
+								setMountingConfirmed(
+									Boolean(
+										item.mounting_quantity_basis &&
+										mountingBasisIsCurrent(
+											item.mounting_quantity_basis,
+											geometry,
+										),
+									),
+								);
+								setConfirmedMountingBasis(
+									item.mounting_quantity_basis &&
+										mountingBasisIsCurrent(
+											item.mounting_quantity_basis,
+											geometry,
+										)
+										? item.mounting_quantity_basis
+										: null,
+								);
 								setMountingError("");
 								setEditing(item);
 							}}
@@ -277,6 +315,7 @@ export function InstallationMaterials({
 						setComparisonChoice("");
 						setComparisonConfirmed(false);
 						setShowMountingRule(false);
+						clearMountingConfirmation();
 						setMountingError("");
 						setEditing("new");
 					}}
@@ -320,7 +359,7 @@ export function InstallationMaterials({
 								!array ||
 								!roof ||
 								!module ||
-								!v.checked("mounting_confirmed") ||
+								!mountingConfirmed ||
 								item.kind !== "mounting" ||
 								item.unit !== "piece" ||
 								item.quantity !== null ||
@@ -422,7 +461,12 @@ export function InstallationMaterials({
 					/>
 					<label className="lp-field">
 						<span>{t("Material type", "Materialart")}</span>
-						<select name="kind" required defaultValue={before?.kind ?? ""}>
+						<select
+							name="kind"
+							required
+							defaultValue={before?.kind ?? ""}
+							onChange={clearMountingConfirmation}
+						>
 							<option value="">{t("Choose a type", "Art auswählen")}</option>
 							{kinds.map(([value, label]) => (
 								<option value={value} key={value}>
@@ -460,7 +504,12 @@ export function InstallationMaterials({
 					</label>
 					<label className="lp-field">
 						<span>{t("Unit", "Einheit")}</span>
-						<select name="unit" required defaultValue={before?.unit ?? "piece"}>
+						<select
+							name="unit"
+							required
+							defaultValue={before?.unit ?? "piece"}
+							onChange={clearMountingConfirmation}
+						>
 							<option value="piece">{t("Pieces", "Stück")}</option>
 							<option value="m">{t("Metres", "Meter")}</option>
 						</select>
@@ -473,24 +522,26 @@ export function InstallationMaterials({
 						unit=""
 						optional
 					/>
-					<GeometryText
-						name="specification"
-						label={t(
-							"Declared specification and application",
-							"Angegebene Spezifikation und Verwendung",
-						)}
-						value={before?.specification ?? ""}
-						multiline
-					/>
-					<GeometryText
-						name="source"
-						label={t(
-							"Source of this project declaration",
-							"Quelle dieser Projektangabe",
-						)}
-						value={before?.source_note ?? ""}
-						multiline
-					/>
+					<div onInput={clearMountingConfirmation}>
+						<GeometryText
+							name="specification"
+							label={t(
+								"Declared specification and application",
+								"Angegebene Spezifikation und Verwendung",
+							)}
+							value={before?.specification ?? ""}
+							multiline
+						/>
+						<GeometryText
+							name="source"
+							label={t(
+								"Source of this project declaration",
+								"Quelle dieser Projektangabe",
+							)}
+							value={before?.source_note ?? ""}
+							multiline
+						/>
+					</div>
 					<label className="lp-field">
 						<span>
 							{t(
@@ -501,9 +552,10 @@ export function InstallationMaterials({
 						<select
 							name="mounting_array"
 							defaultValue={before?.mounting_quantity_basis?.array.id ?? ""}
-							onChange={(event) =>
-								setShowMountingRule(event.currentTarget.value !== "")
-							}
+							onChange={(event) => {
+								clearMountingConfirmation();
+								setShowMountingRule(event.currentTarget.value !== "");
+							}}
 						>
 							<option value="">
 								{t("Enter a quantity manually", "Menge selbst eingeben")}
@@ -536,35 +588,78 @@ export function InstallationMaterials({
 									"Geben Sie die Mengen Ihrer Montageplanung je Modul, je belegtem Reihenabschnitt und je Paar benachbarter belegter Modulplätze ein. Entfernte Plätze teilen einen Abschnitt. Unterbricht eine Fuge oder ein Abstand den Montagestrang, verwenden Sie getrennte Modulfelder oder geben Sie die Projektmenge selbst ein. Wählen Sie Stück und lassen Sie die feste Menge leer. Die Berechnung prüft weder System, Schienen, Befestigung, statische Lasten noch die Eignung des Dachs.",
 								)}
 							</p>
-							<GeometryNumber
-								name="per_module"
-								label={t("Pieces per module", "Stück je Modul")}
-								value={before?.mounting_quantity_basis?.per_module ?? 0}
-								locale={locale}
-								unit=""
-							/>
-							<GeometryNumber
-								name="per_segment"
-								label={t(
-									"Pieces per continuous row segment",
-									"Stück je zusammenhängendem Reihenabschnitt",
-								)}
-								value={before?.mounting_quantity_basis?.per_segment ?? 0}
-								locale={locale}
-								unit=""
-							/>
-							<GeometryNumber
-								name="per_adjacency"
-								label={t(
-									"Pieces per neighboring slot pair",
-									"Stück je Paar benachbarter Modulplätze",
-								)}
-								value={before?.mounting_quantity_basis?.per_adjacency ?? 0}
-								locale={locale}
-								unit=""
-							/>
+							<div onInput={clearMountingConfirmation}>
+								<GeometryNumber
+									name="per_module"
+									label={t("Pieces per module", "Stück je Modul")}
+									value={before?.mounting_quantity_basis?.per_module ?? 0}
+									locale={locale}
+									unit=""
+								/>
+								<GeometryNumber
+									name="per_segment"
+									label={t(
+										"Pieces per continuous row segment",
+										"Stück je zusammenhängendem Reihenabschnitt",
+									)}
+									value={before?.mounting_quantity_basis?.per_segment ?? 0}
+									locale={locale}
+									unit=""
+								/>
+								<GeometryNumber
+									name="per_adjacency"
+									label={t(
+										"Pieces per neighboring slot pair",
+										"Stück je Paar benachbarter Modulplätze",
+									)}
+									value={before?.mounting_quantity_basis?.per_adjacency ?? 0}
+									locale={locale}
+									unit=""
+								/>
+							</div>
 							<label>
-								<input type="checkbox" name="mounting_confirmed" />{" "}
+								<input
+									type="checkbox"
+									name="mounting_confirmed"
+									checked={mountingConfirmed}
+									onChange={(event) => {
+										if (!event.currentTarget.checked) {
+											clearMountingConfirmation();
+											return;
+										}
+										const selected =
+											event.currentTarget.form?.elements.namedItem(
+												"mounting_array",
+											);
+										const array = geometry.arrays.find(
+											(a) =>
+												a.id ===
+												(selected instanceof window.HTMLSelectElement
+													? selected.value
+													: ""),
+										);
+										const roof = geometry.roofs.find(
+											(r) => r.id === array?.roof_id,
+										);
+										const module = geometry.module_specs.find(
+											(m) => m.id === array?.module_spec_id,
+										);
+										if (!array || !roof || !module) {
+											clearMountingConfirmation();
+											return;
+										}
+										setConfirmedMountingBasis({
+											array,
+											roof,
+											module,
+											per_module: 0,
+											per_segment: 0,
+											per_adjacency: 0,
+											conditions_confirmed: true,
+										});
+										setMountingConfirmed(true);
+									}}
+								/>{" "}
 								{t(
 									"I confirm these counts and the source above apply to this mounting design and array.",
 									"Ich bestätige, dass diese Mengen und die oben genannte Quelle für dieses Montagesystem und Modulfeld gelten.",

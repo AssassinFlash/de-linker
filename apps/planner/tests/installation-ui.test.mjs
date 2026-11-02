@@ -195,6 +195,7 @@ test("mounting quantity records the confirmed array and explicit rule", async (t
 		saved,
 		"project",
 	).material_review;
+	let revised;
 	await act(async () =>
 		root.render(
 			React.createElement(InstallationMaterials, {
@@ -204,7 +205,8 @@ test("mounting quantity records the confirmed array and explicit rule", async (t
 				review,
 				locale: "en",
 				disabled: false,
-				change() {
+				change(value) {
+					revised = value;
 					return true;
 				},
 				onValidity() {},
@@ -213,6 +215,87 @@ test("mounting quantity records the confirmed array and explicit rule", async (t
 	);
 	assert.match(dom.element.textContent, /2 occupied row segments × 4/);
 	assert.match(dom.element.textContent, /= 8 pieces/);
+	await act(async () =>
+		[...document.querySelectorAll("button")]
+			.find((b) => b.textContent === "Edit")
+			.click(),
+	);
+	let editForm = document.querySelector("form");
+	assert.equal(editForm.elements.namedItem("mounting_confirmed").checked, true);
+	await enter(editForm.elements.namedItem("name"), "Renamed clamp");
+	await act(async () =>
+		editForm.dispatchEvent(
+			new window.Event("submit", { bubbles: true, cancelable: true }),
+		),
+	);
+	assert.equal(revised.materials[0].name, "Renamed clamp");
+	assert.equal(
+		revised.materials[0].mounting_quantity_basis.conditions_confirmed,
+		true,
+	);
+	await act(async () =>
+		root.render(
+			React.createElement(InstallationMaterials, {
+				plan: revised,
+				geometry,
+				products: [],
+				review,
+				locale: "en",
+				disabled: false,
+				change(value) {
+					revised = value;
+					return true;
+				},
+				onValidity() {},
+			}),
+		),
+	);
+	await act(async () =>
+		[...document.querySelectorAll("button")]
+			.find((b) => b.textContent === "Edit")
+			.click(),
+	);
+	editForm = document.querySelector("form");
+	await enter(editForm.elements.namedItem("per_segment"), "5");
+	assert.equal(
+		editForm.elements.namedItem("mounting_confirmed").checked,
+		false,
+	);
+	await act(async () =>
+		editForm.elements.namedItem("mounting_confirmed").click(),
+	);
+	const redraw = async (nextGeometry) =>
+		act(async () =>
+			root.render(
+				React.createElement(InstallationMaterials, {
+					plan: revised,
+					geometry: nextGeometry,
+					products: [],
+					review,
+					locale: "en",
+					disabled: false,
+					change(value) {
+						revised = value;
+						return true;
+					},
+					onValidity() {},
+				}),
+			),
+		);
+	await redraw(structuredClone(geometry));
+	assert.equal(editForm.elements.namedItem("mounting_confirmed").checked, true);
+	const changedLayout = structuredClone(geometry);
+	changedLayout.arrays[0].column_gap_m += 0.01;
+	await redraw(changedLayout);
+	assert.equal(
+		editForm.elements.namedItem("mounting_confirmed").checked,
+		false,
+	);
+	await act(async () =>
+		editForm.elements.namedItem("mounting_confirmed").click(),
+	);
+	await redraw(structuredClone(changedLayout));
+	assert.equal(editForm.elements.namedItem("mounting_confirmed").checked, true);
 	response.material_review.rows[0].mounting_quantity_result.quantity = 9;
 	assert.throws(() => readInstallationReview(response, saved, "project"));
 });

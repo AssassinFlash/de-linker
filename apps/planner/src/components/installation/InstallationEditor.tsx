@@ -204,13 +204,22 @@ export function InstallationEditor({
 		reviewContext.projectId === projectId &&
 		reviewContext.queryScope === session.query_scope &&
 		client.isCurrentScope(reviewContext.queryScope) &&
-		reviewContext.revision <= savedRevision &&
-		sameJson(plan, review.prepared_inputs)
-			? review.material_review?.rows.filter(
-					(row) =>
-						row.mounting_quantity_basis &&
-						mountingBasisIsCurrent(row.mounting_quantity_basis, geometry),
-				)
+		reviewContext.revision <= savedRevision
+			? review.material_review?.rows.filter((row) => {
+					const saved = row.mounting_quantity_basis;
+					const current = plan.materials?.find(
+						(item) => item.id === row.id,
+					)?.mounting_quantity_basis;
+					return (
+						saved &&
+						current &&
+						mountingBasisIsCurrent(saved, geometry) &&
+						mountingBasisIsCurrent(current, geometry) &&
+						saved.per_module === current.per_module &&
+						saved.per_segment === current.per_segment &&
+						saved.per_adjacency === current.per_adjacency
+					);
+				})
 			: undefined;
 	function edit(kind: Kind, row: unknown): boolean {
 		try {
