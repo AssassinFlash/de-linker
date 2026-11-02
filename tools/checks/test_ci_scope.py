@@ -110,6 +110,40 @@ class ScopeTest(unittest.TestCase):
             None,
         )
 
+    def test_planner_php_namespace_keeps_native_consumers_not_unread_recipes(self):
+        for name in (
+            "Gateway.php",
+            "Transport.php",
+            "SeriesDownload.php",
+            "NewPlannerService.php",
+        ):
+            path = "plugins/linker-tools/includes/Planner/" + name
+            for status in ("A", "M", "D"):
+                with self.subTest(path=path, status=status):
+                    modules = ci_scope.selected_modules(
+                        [(status, path)], "base", "head"
+                    )
+                    self.assertIn("php:tools", modules)
+                    self.assertIn("native:runtime", modules)
+                    self.assertIn("native:inquiry", modules)
+                    for module in ("engine", "planner"):
+                        self.assertNotIn(module, modules)
+                        self.assertFalse(
+                            ci_scope.module_input_path(
+                                module, path, ci_scope.module_inputs(module)
+                            )
+                        )
+        mixed = ci_scope.selected_modules(
+            [
+                ("M", "plugins/linker-tools/includes/Planner/Gateway.php"),
+                ("M", "apps/planner/src/data/PlannerClient.ts"),
+            ],
+            "base",
+            "head",
+        )
+        self.assertIn("engine", mixed)
+        self.assertIn("planner", mixed)
+
     def test_general_php_mu_and_service_changes_do_not_select_unrelated_stacks(self):
         self.assertEqual(
             self.classify(
@@ -124,7 +158,7 @@ class ScopeTest(unittest.TestCase):
 
     def test_declared_package_dependencies_and_module_matrices(self):
         native = {"native:" + name for name in ci_scope.NATIVE_GROUPS}
-        planner_gateway = {"php:tools", "content", "engine", "planner", *native}
+        planner_gateway = {"php:tools", "content", *native}
         self.assertIn(
             ci_scope.COMMERCE_PROTECTION_CLIENT, ci_scope.module_inputs("js:tools")
         )
@@ -170,6 +204,10 @@ class ScopeTest(unittest.TestCase):
             ),
             ("plugins/linker-tools/includes/Planner/Gateway.php", planner_gateway),
             ("plugins/linker-tools/includes/Planner/Transport.php", planner_gateway),
+            (
+                "plugins/linker-tools/includes/Planner/SeriesDownload.php",
+                planner_gateway,
+            ),
             (
                 "plugins/linker-tools/includes/Planner/ClaimOutbox.php",
                 {"php:tools", "content", *native},

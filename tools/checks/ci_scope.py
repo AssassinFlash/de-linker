@@ -396,14 +396,10 @@ def selected_modules(changes, base="", head=""):
                     selected.update(("engine", "genie"))
                 if name == "commerce" and under(path, GENIE_COMMERCE_INPUTS):
                     selected.add("genie")
-                # Outbox scheduling is a native PHP/AS contract; neither the
-                # engine nor the frontend recipe reads this implementation.
-                if (
-                    name == "tools"
-                    and relative.startswith("includes/Planner/")
-                    and relative != "includes/Planner/ClaimOutbox.php"
-                ):
-                    selected.update(("engine", "planner"))
+                # Planner PHP is exercised by Tools and native consumers.
+                # Engine/Planner recipes do not load these PHP sources; their
+                # cross-language protocols are represented by the schemas and
+                # fixtures selected independently above.
                 if name == "tools" and relative.startswith(
                     ("includes/Genie/", "includes/Protection/")
                 ):
