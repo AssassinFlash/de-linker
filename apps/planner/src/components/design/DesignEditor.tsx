@@ -419,7 +419,7 @@ export function DesignEditor({
 									roof={formRoof}
 									imported={
 										formRoof !== null &&
-										Object.hasOwn(geometryImports.selected, formRoof.id)
+										Object.hasOwn(geometryImports.selected, formRoof.source_id)
 									}
 								/>
 							)}

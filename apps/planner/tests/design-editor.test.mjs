@@ -163,6 +163,24 @@ test("correcting a measured roof pitch keeps its array, holes and source", async
 	assert.deepEqual(app.current.roofs[0].v_axis_enu, changed.v_axis_enu);
 });
 
+test("a source-bound imported roof keeps its original orientation", async (t) => {
+	const initial = structuredClone(flat);
+	initial.sources[0].kind = "user_measurement";
+	const roof = initial.roofs[0];
+	await mount(t, {
+		initial,
+		geometryImports: {
+			schema_version: 1,
+			selected: { [roof.source_id]: "a".repeat(32) },
+		},
+	});
+	await click(roof.name);
+	await click("Edit numeric properties");
+	assert.ok(document.querySelector('[name="boundary"]'));
+	assert.equal(document.querySelector('[name="pitch"]'), null);
+	assert.equal(document.querySelector('[name="bearing"]'), null);
+});
+
 test("invalid staged properties stay visible until corrected or cancelled", async (t) => {
 	const app = await mount(t, { initial: flat });
 	let revealed;
