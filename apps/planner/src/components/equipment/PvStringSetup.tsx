@@ -335,7 +335,11 @@ export function PvStringSetup({
 							<button
 								type="button"
 								className="lp-text-button"
-								disabled={disabled || editing !== null}
+								disabled={
+									disabled ||
+									editing !== null ||
+									!Object.values(fields).every(Boolean)
+								}
 								onClick={() => {
 									backup.current = { selected, mppt, port, batchSize };
 									setEditing({ ...s, module_ids: [...s.module_ids] });

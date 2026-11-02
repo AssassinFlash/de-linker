@@ -18,6 +18,7 @@ async function setup(
 		secondArray = false,
 		secondArrayName = "West array",
 		strings = [],
+		locale = "en-GB",
 	} = {},
 ) {
 	const dom = setupDom();
@@ -76,7 +77,7 @@ async function setup(
 		return React.createElement(PvStringSetup, {
 			draft,
 			inverterId: 1,
-			locale: "en-GB",
+			locale,
 			disabled: false,
 			onValidity() {},
 			edit(operation) {
@@ -227,6 +228,42 @@ test("cancelling a re-edit restores a staged new string rather than changing sav
 	await click(button("Add selected modules to string"));
 	assert.deepEqual(r.plan.strings[1].module_ids, [r.modules[1].id]);
 	assert.equal(r.plan.strings[1].mppt, 3);
+});
+
+test("invalid staged quantity stays intact before switching to a saved string", async (t) => {
+	for (const [locale, raw] of [
+		["en-GB", "1x"],
+		["de-DE", ","],
+	]) {
+		await t.test(locale, async (t) => {
+			const r = await setup(t, {
+				locale,
+				strings: (modules) => [
+					{ id: "keep", mppt: 1, input: 1, module_ids: [modules[0].id] },
+				],
+			});
+			const original = structuredClone(r.plan);
+			await click(button("Select all available modules"));
+			await enter(field("Modules to add to this string"), raw);
+			assert.equal(
+				field("Modules to add to this string").getAttribute("aria-invalid"),
+				"true",
+			);
+			assert.equal(button("Edit string").disabled, true);
+			await click(button("Edit string"));
+			assert.equal(field("Modules to add to this string").value, raw);
+			assert.equal(
+				field("Modules to add to this string").getAttribute("aria-invalid"),
+				"true",
+			);
+			assert.deepEqual(r.plan, original);
+			await enter(field("Modules to add to this string"), "2");
+			assert.equal(button("Edit string").disabled, false);
+			await click(button("Edit string"));
+			await click(button("Cancel editing"));
+			assert.equal(field("Modules to add to this string").value, "2");
+		});
+	}
 });
 
 test("a roof edit cannot silently drop selected modules or rewrite a string changed elsewhere", async (t) => {

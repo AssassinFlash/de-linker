@@ -106,6 +106,9 @@ names, leaving other writers and published blobs untouched. Sudden service or
 host loss still uses the existing stopped-window CAS retention procedure.
 
 The cgroup proof is a host capability, not a capacity claim for all roofs.
+For synthetic host verification, use `systemd-run --collect`; after collecting
+the journal, verify that the owned temporary root and cgroup are absent and the
+transient unit is `not-found`. This does not change persistent production units.
 Production activation additionally needs the actual native queue, pause,
 cancellation, timeout, normal-job latency, health, result and cleanup evidence
 for the selected release. The 96-module synthetic measurement and its scope
