@@ -6,9 +6,10 @@ import type {
 	CoreRole,
 	ElectricalReview,
 } from "./installationElectrical.ts";
-import type { JsonObject } from "../data/protocol.ts";
+import type { Json, JsonObject } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
 import { readObject } from "../data/readProtocol.ts";
+import { documentReference } from "../data/documentReference.ts";
 import { sameJson } from "./draft.ts";
 import type { PvPlantStringPlan } from "./pvPlantStrings.ts";
 import type { EquipmentPlant } from "./equipmentPlant.ts";
@@ -125,6 +126,24 @@ export interface CableRun {
 	/** Absent keeps the specification explicitly open; it never inherits one. */
 	conductor?: ConductorSpecification | null;
 	reference_current_installation?: ReferenceCurrentInstallation | null;
+	manufacturer_comparison?: ConductorManufacturerComparison | null;
+}
+export interface ConductorManufacturerComparison {
+	instance_id: string;
+	product_id: number;
+	product_revision: string;
+	fact_id: string;
+	document_id: string;
+	document_revision: string;
+	conditions_confirmed: boolean;
+	confirmation_context: {
+		circuit: Pick<InstallationCircuit, "id" | "kind" | "start" | "end">;
+		construction: CableRun["construction"];
+		conductor: ConductorSpecification & {
+			cable_reference: ConductorSpecification["cable_reference"];
+		};
+		core_roles: CoreRole[];
+	};
 }
 export interface PvStringLink {
 	string_id: string;
@@ -191,6 +210,7 @@ function canonicalConductor(value: InstallationInputs): InstallationInputs {
 	if (
 		value.cable_runs.every(
 			(run) =>
+				run.manufacturer_comparison !== null &&
 				run.conductor !== null &&
 				run.conductor?.cable_reference !== null &&
 				run.reference_current_installation !== null &&
@@ -202,6 +222,8 @@ function canonicalConductor(value: InstallationInputs): InstallationInputs {
 		...value,
 		cable_runs: value.cable_runs.map((run) => {
 			const next = { ...run };
+			if (next.manufacturer_comparison === null)
+				delete next.manufacturer_comparison;
 			if (next.reference_current_installation === null)
 				delete next.reference_current_installation;
 			else if (
@@ -279,6 +301,7 @@ export interface CableQuantity extends JsonObject {
 	construction: CableRun["construction"];
 	/** Null when the project declared no cross-section for this run. */
 	conductor: ConductorSpecification | null;
+	manufacturer_comparison?: { status: string; qualified: false; fact: Json };
 	specification: "open" | "declared";
 	quantity: number | null;
 	unit: "m";
@@ -621,6 +644,101 @@ export function readInstallationReview(
 			!sameJson(declared, expected) ||
 			c.specification !== (expected === null ? "open" : "declared")
 		)
+			throw new ApiError(502, "invalid_installation_review");
+		if (input.manufacturer_comparison) {
+			const comparison = readObject(c.manufacturer_comparison),
+				binding = input.manufacturer_comparison;
+			const statuses = [
+				"unavailable",
+				"circuit_or_instance_unavailable",
+				"conditions_not_confirmed",
+				"conditions_changed",
+				"instance_mismatch",
+				"product_unavailable",
+				"fact_unavailable",
+				"document_unavailable",
+				"conditions_not_assessed",
+				"scope_mismatch",
+				"within_recommendation",
+				"outside_recommendation",
+			];
+			if (
+				comparison.qualified !== false ||
+				typeof comparison.status !== "string" ||
+				!statuses.includes(comparison.status)
+			)
+				throw new ApiError(502, "invalid_installation_review");
+			if (
+				comparison.status === "within_recommendation" ||
+				comparison.status === "outside_recommendation"
+			) {
+				const fact = readObject(comparison.fact),
+					source = readObject(fact.source),
+					spec = readObject(fact.specification),
+					range = readObject(spec.recommended_conductor_mm2);
+				documentReference(source, true);
+				if (typeof source.quote !== "string")
+					throw new ApiError(502, "invalid_installation_review");
+				const circuit = requested.circuits.find(
+						(item) => item.id === input.circuit_id,
+					),
+					instance = requested.instances.find(
+						(item) => item.id === binding.instance_id,
+					);
+				const matching =
+					circuit?.kind === "ac"
+						? fact.basis === "manufacturer_recommended_ac_conductor" &&
+							spec.terminal_domain === "ac"
+						: circuit?.kind === "protective_earth"
+							? fact.basis === "manufacturer_recommended_pe_conductor" &&
+								spec.terminal_domain === "pe"
+							: circuit?.kind === "battery_dc" &&
+								fact.id === "battery-cluster-conductor" &&
+								fact.basis === "manufacturer_model_specific_conductor" &&
+								spec.terminal_domain === "battery_dc";
+				if (
+					!circuit ||
+					!instance ||
+					!input.conductor ||
+					!matching ||
+					!binding.conditions_confirmed ||
+					![circuit.start.instance_id, circuit.end.instance_id].includes(
+						instance.id,
+					) ||
+					instance.product_id !== binding.product_id ||
+					instance.product_revision !== binding.product_revision ||
+					!sameJson(binding.confirmation_context, {
+						circuit: {
+							id: circuit.id,
+							kind: circuit.kind,
+							start: circuit.start,
+							end: circuit.end,
+						},
+						construction: input.construction,
+						conductor: {
+							...input.conductor,
+							cable_reference: input.conductor.cable_reference ?? null,
+						},
+						core_roles: input.core_roles ?? [],
+					}) ||
+					fact.id !== binding.fact_id ||
+					source.product_id !== binding.product_id ||
+					source.document_id !== binding.document_id ||
+					source.document_revision !== binding.document_revision ||
+					!Array.isArray(fact.conditions) ||
+					fact.conditions.length !== 0 ||
+					typeof range.low !== "number" ||
+					typeof range.high !== "number" ||
+					comparison.status !==
+						(input.conductor.cross_section_mm2 >= range.low &&
+						input.conductor.cross_section_mm2 <= range.high
+							? "within_recommendation"
+							: "outside_recommendation")
+				)
+					throw new ApiError(502, "invalid_installation_review");
+			} else if (comparison.fact !== null)
+				throw new ApiError(502, "invalid_installation_review");
+		} else if (c.manufacturer_comparison !== undefined)
 			throw new ApiError(502, "invalid_installation_review");
 		return c as CableQuantity;
 	});

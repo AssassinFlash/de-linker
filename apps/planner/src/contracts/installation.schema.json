@@ -80,6 +80,17 @@
             }
           ],
           "default": null
+        },
+        "manufacturer_comparison": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ConductorFactComparison"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -220,6 +231,83 @@
         "voltage_limit"
       ],
       "title": "CircuitOperatingCondition",
+      "type": "object"
+    },
+    "ConductorComparisonContext": {
+      "additionalProperties": false,
+      "properties": {
+        "circuit": {
+          "$ref": "#/$defs/MaterialComparisonCircuit"
+        },
+        "construction": {
+          "enum": [
+            "single_conductor",
+            "multicore_cable",
+            "unspecified"
+          ],
+          "title": "Construction",
+          "type": "string"
+        },
+        "conductor": {
+          "$ref": "#/$defs/ConductorSpecification"
+        },
+        "core_roles": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Core Roles",
+          "type": "array"
+        }
+      },
+      "required": [
+        "circuit",
+        "construction",
+        "conductor",
+        "core_roles"
+      ],
+      "title": "ConductorComparisonContext",
+      "type": "object"
+    },
+    "ConductorFactComparison": {
+      "additionalProperties": false,
+      "properties": {
+        "instance_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "product_id": {
+          "$ref": "#/$defs/Count"
+        },
+        "product_revision": {
+          "$ref": "#/$defs/Hash"
+        },
+        "fact_id": {
+          "$ref": "#/$defs/Text"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Text"
+        },
+        "document_revision": {
+          "$ref": "#/$defs/Hash"
+        },
+        "conditions_confirmed": {
+          "title": "Conditions Confirmed",
+          "type": "boolean"
+        },
+        "confirmation_context": {
+          "$ref": "#/$defs/ConductorComparisonContext"
+        }
+      },
+      "required": [
+        "instance_id",
+        "product_id",
+        "product_revision",
+        "fact_id",
+        "document_id",
+        "document_revision",
+        "conditions_confirmed",
+        "confirmation_context"
+      ],
+      "title": "ConductorFactComparison",
       "type": "object"
     },
     "ConductorSpecification": {

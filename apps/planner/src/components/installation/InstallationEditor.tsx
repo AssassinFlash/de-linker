@@ -1,4 +1,5 @@
 import { ElectricalResults } from "./ElectricalResults.tsx";
+import { ConductorManufacturerResults } from "./ConductorManufacturerResults.tsx";
 import { ReferenceCurrentResults } from "./ReferenceCurrentResults.tsx";
 import { electricalText } from "./ElectricalConditionFields.tsx";
 import { useEffect, useRef, useState } from "react";
@@ -507,6 +508,11 @@ export function InstallationEditor({
 					<CableForm
 						{...common}
 						cable={plan.cable_runs.find((d) => d.id === form.id) ?? null}
+						products={
+							products.isError || products.isFetching
+								? []
+								: (products.data?.products ?? [])
+						}
 						cableReferences={
 							products.isError || products.isFetching
 								? []
@@ -715,6 +721,12 @@ export function InstallationEditor({
 								locale={locale}
 							/>
 						</>
+					)}
+					{shown && (
+						<ConductorManufacturerResults
+							cables={shown.cables}
+							locale={locale}
+						/>
 					)}
 					{shown && shown.cables.length > 0 && (
 						<div className="lp-table-scroll" tabIndex={0}>

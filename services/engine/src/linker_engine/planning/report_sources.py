@@ -724,6 +724,7 @@ def report_sources(
     installation: Object | None = None
     if options.include_installation:
         plan = InstallationInputs.read(project.inputs.get("installation"))
+        from .installation_conductor_comparison import has_conductor_comparison
         from .installation_terminals import has_terminal_feature
 
         ports = {
@@ -755,7 +756,7 @@ def report_sources(
         basis = product_basis(
             plan,
             products.equipment_basis(include_cables=True),
-            allow_stale=has_terminal_feature(plan),
+            allow_stale=has_terminal_feature(plan) or has_conductor_comparison(plan),
         )
         installation = route_takeoff(project.inputs, basis)
         geometry = GeometryDocument.read(project.inputs.get("geometry"))

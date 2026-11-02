@@ -8,6 +8,10 @@ from typing import cast
 from .canonical import Json, Object, digest, encode
 from .errors import InvalidInput, ProductEvidenceChanged
 from .geometry_documents import GeometryDocument
+from .installation_conductor_comparison import (
+    conductor_comparison,
+    has_conductor_comparison,
+)
 from .installation_electrical import electrical_review
 from .installation_inputs import InstallationInputs, RoutePoint
 from .installation_materials import material_review
@@ -284,6 +288,15 @@ def product_basis(
         for item in plan.materials
         if (binding := item.comparison) is not None
     )
+    bound_documents.update(
+        (
+            conductor_binding.product_id,
+            conductor_binding.document_id,
+            conductor_binding.document_revision,
+        )
+        for run in plan.cable_runs
+        if (conductor_binding := run.manufacturer_comparison) is not None
+    )
     scoped_documents: list[Json] = []
     for document in cast(list[Object], scope["documents"]):
         key = (
@@ -346,7 +359,11 @@ def route_takeoff(
     if bind_geometry:
         plan = plan.model_copy(update={"geometry_sha256": geometry_sha})
     selected = product_basis(
-        plan, basis, allow_stale=allow_stale_products or has_terminal_feature(plan)
+        plan,
+        basis,
+        allow_stale=allow_stale_products
+        or has_terminal_feature(plan)
+        or has_conductor_comparison(plan),
     )
     products = {
         p["canonical_product_id"]: p for p in cast(list[Object], selected["products"])
@@ -444,6 +461,15 @@ def route_takeoff(
                 "route_name": route.name,
                 "construction": cable.construction,
                 "conductor": conductor,
+                **(
+                    {
+                        "manufacturer_comparison": conductor_comparison(
+                            plan, cable, selected
+                        )
+                    }
+                    if cable.manufacturer_comparison is not None
+                    else {}
+                ),
                 **(
                     {"core_roles": cast(Json, cable.core_roles)}
                     if "core_roles" in cable.model_fields_set
