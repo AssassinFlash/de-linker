@@ -7,7 +7,11 @@
 
 defined( 'ABSPATH' ) || exit;
 ( static function ( string $payload ): void {
-		$request = json_decode( base64_decode( $payload, true ), true, 512, JSON_THROW_ON_ERROR ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Private CLI request.
+		$decoded = base64_decode( $payload, true ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Private CLI request.
+	if ( false === $decoded ) {
+		throw new RuntimeException( 'Invalid request encoding.' );
+	}
+		$request = json_decode( $decoded, true, 512, JSON_THROW_ON_ERROR );
 		$action  = $request['action'] ?? '';
 		$target  = $request['target'] ?? '';
 		$site    = untrailingslashit( home_url() );
@@ -69,20 +73,25 @@ defined( 'ABSPATH' ) || exit;
 				$map[ $new_en ] = $new_de;
 				return maybe_serialize( $map );
 			};
-			$read         = static function () use ( $pairs, $keys ): array {
+			$read_field   = static function ( int $id, string $key ): string {
+				$all = get_post_meta( $id, $key, false );
+				if ( 1 !== count( $all ) || ! is_string( $all[0] ) ) {
+					throw new RuntimeException( 'A reviewed product meta is absent or duplicated.' );
+				}
+				return $all[0];
+			};
+			$read         = static function () use ( $pairs, $read_field ): array {
 				$out = array();
 				foreach ( $pairs as $id => $pair ) {
 					if ( 'publish' !== get_post_status( $id ) || 'publish' !== get_post_status( $pair[0] ) || ! function_exists( 'pll_get_post' ) || pll_get_post( $id, 'en' ) !== $id || pll_get_post( $id, 'de' ) !== $pair[0] || pll_get_post( $pair[0], 'en' ) !== $id || pll_get_post( $pair[0], 'de' ) !== $pair[0] || 'en' !== pll_get_post_language( $id ) || 'de' !== pll_get_post_language( $pair[0] ) || get_post_meta( $id, '_sku', true ) !== $pair[2] || '1' === get_post_meta( $id, '_linker_documents_managed', true ) ) {
 						throw new RuntimeException( 'Product, locale, SKU or document authority changed.' );
 					}
 					wp_cache_delete( $id, 'post_meta' );
-					foreach ( $keys as $key ) {
-						$all = get_post_meta( $id, $key, false );
-						if ( 1 !== count( $all ) || ! is_string( $all[0] ) ) {
-							throw new RuntimeException( 'A reviewed product meta is absent or duplicated.' );
-						}
-						$out[ $id ][ $key ] = $all[0];
-					}
+					$out[ $id ] = array(
+						'_tv_legacy_acf_json'        => $read_field( $id, '_tv_legacy_acf_json' ),
+						'_linker_de_acf_json'        => $read_field( $id, '_linker_de_acf_json' ),
+						'_linker_de_source_acf_json' => $read_field( $id, '_linker_de_source_acf_json' ),
+					);
 				}
 				return $out;
 			};
@@ -252,9 +261,9 @@ defined( 'ABSPATH' ) || exit;
 				if ( 'rollback' === $action ) {
 					$write_option();
 				}
-					$current = $read();
-					$opt     = $read_option();
-					$auth    = $authority();
+				$current  = $read();
+					$opt  = $read_option();
+					$auth = $authority();
 				if ( $auth['target_stable'] !== $receipt['authority']['target_stable'] || ( 'apply' === $action && $auth['stable'] !== $receipt['authority']['stable'] ) ) {
 					throw new RuntimeException( 'Source authority changed; inspect receipt.' );
 				}
