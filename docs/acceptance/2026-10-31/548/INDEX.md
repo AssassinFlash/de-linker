@@ -1,6 +1,14 @@
 # #548 安装事实线 · 验收索引（2026-10-31）
 
-## 2026-11-02 08:33 CST · 线上读回
+## 2026-11-02 09:04 CST · 当前线上读回
+
+#847 合并 a7b690336 的树与最终 CI 41368331519 一致。生产 Planner 已选择 4f616c32，上一版 f4559a3d 保留。HTTP 与 worker 均 ready，runtime 9f359ac9、execution 23ef7bbc、storage f91b6338 一致，队列为空，8901 和 8911 的健康请求均成功。只有扩展任务子进程受 20% CPU、1,200 MiB 内存、禁用 swap 和 16 个进程的限制。普通 worker 保持 Nice 0 且没有新增全局配额。切换前原生增量恢复点 archive-20261102T005236Z-f1b360b4 已通过 841 项内容验证，保留 3 份；旧归档淘汰 226,980,137 逻辑字节，硬链接共享使实际释放量无法独立归因。
+
+公开访客的修订 14 仍可打开，显示 2,623.991 kWh；同一 owner 的英德冻结报告和 8 个附件全部从新 Planner HTTP 读回，哈希与部署前一致。在原访客草稿中将细网格从 2 改到 8，实际页面显示普通步数 52,560 / 220,000、采样 3,526,992 / 2,000,000，以及 96 块、6 串、8,760 小时、841,000 组件时段和 4,300,000 采样的条件性水平屋面范围。撤销后恢复 2、263,376 个采样、Save project 禁用；没有保存新修订或重新计算。一次 Chrome ERR_TUNNEL_CONNECTION_FAILED 在同一 URL 直连与默认连接均返回 200 后重载恢复。实际屏幕按钮可切换光伏设置与计算历史。
+
+WordPress 发布 20261102T005620805038Z-a7b690336 已验站归档，数据库快照 db-20261102T005627Z.sql.gz 为 7,675,592 字节。官方 WindPress Generate 后时间为 09:04:13，公开页引用 tailwind.css?ver=1793581453，planner.js SHA256 为 0afa54209b2586b6d9af7d0d1aae7bdcdba843d2dedb8e85740be53cb57b0a56。独占部署源 1,798 文件、34,603,008 分配字节已回收，当次可用空间增加 35,753,984 字节；原生 SSH 与部署检查点均已关闭。当前运行版本及上一版为唯一保留的 Planner 服务版本。原验收访客窗口暂时保留以在正在实现的组串与安装交付中使用同一项目，下一次同项目读回完成后关闭。
+
+## 2026-11-02 08:33 CST · #846 线上读回
 
 - 原生产访客在修订 14 的同一报告页重试先前报错的逐串 CSV 按钮，Chrome 弹出原生保存框。文件有 8,760 行数据、18 列、5,619,708 字节。SHA-256 为 13fb7aeb29023b3cd3a318c753574c512c2d4d2a3d436c5843bbc4482ff5892a，与冻结附件一致。此次没有重新计算，核完即删除本次下载。
 - 英德资料库在查询 GW10K-EHA-G20 时，手册类型各显示 1 份手册、3 条 FAQ；切回全部后各显示 4 份文档、3 条 FAQ。语言切换保留查询、标签和文档类型。英文宽查询可翻到第二页，焦点落在该页第一个下载链接。
@@ -2454,3 +2462,5 @@ Ordinary-job latency continuation: on the same host, the same synthetic six-modu
 PR 845 production delivery. The tested head b778d0fbf and merge 78fbd1c98 have the same Git tree. Planner release f4559a3d4 verified all 318 source files before activation. HTTP and worker reported the same runtime and execution identity, with zero pending jobs. The existing revision 14 EN and DE reports and all eight frozen assets matched their previous SHA256 over Planner HTTP. WordPress deployment 20261101T235747084308Z-78fbd1c98 archived on native resume following a transient homepage verification 503. Public planner.js SHA256 fae49d7ada9a18ad746b0f89b538c0e83943b3f0d2638b62918d7e04d157f885 and WindPress CSS version 1793578367 matched the served candidate and official Generate. Production guest download of the frozen PV series still returned HTTP 500. The PHP error identified missing wp_tempnam() on the ordinary front-end boot path. The staging tree was removed after archival (34,586,624 allocated bytes). The conditional 96-module profile is disabled in this release.
 
 PR 846 production resource contract, owner root. Create at most one /private/tmp/548-wp-846-source from the exact CI-tested merged tree, native SSH transport and one native code-deploy DB snapshot; use only to switch, verify and archive WordPress for the library/CSV batch. After successful archive remove this owned checkout and wrappers, close the transport, retain the native rollback chain within its existing limits. Reuse the previously documented private Chrome guest and its single expected EN revision-14 CSV output; verify the size, rows and SHA then remove only this new output. No additional planner computation or outgoing email.
+
+PR 847 WordPress production contract, owner root. After the final CI-tested Git tree merges and the dedicated Planner pair is ready, create one /private/tmp/548-wp-847-source from that exact tree for the standard cutover entrypoint, native DB snapshot, verified switch, archive and CSS generation. Use existing native staging, SSH jump and backup rotation. Confirm the new public Planner application/translation and run identity on the existing acceptance project without exposing owner credentials. Remove this checkout and its single wrapper when archived and unreferenced. Preserve the original admin window and the project’s frozen revision 14 attachments.
