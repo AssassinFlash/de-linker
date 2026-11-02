@@ -84,13 +84,13 @@ namespace {
  $GLOBALS['sha']='a70cb4c39824185fb9f570a59f4966c54ec94a33c870d00c7ccd756393321dac';
  $GLOBALS['doc']='doc-74c741e3ff765006ebff2c089f627bf1ff20b13c12b991ec9047f100e3ec87fd';
  $map=['keep'=>'other'];foreach($GLOBALS['fx'] as $p){$en=json_decode($p['meta']['_tv_legacy_acf_json'],true)['downloads'][3]['download_title'];$de=json_decode($p['meta']['_linker_de_acf_json'],true)['downloads'][3]['download_title'];$map[$en]=$de;}
- $GLOBALS['option_raw']=serialize($map); $GLOBALS['bad_pdf']=false; $GLOBALS['bound']=false; $GLOBALS['query_failed']=false; $GLOBALS['fail_id']=0; $GLOBALS['external']='before';
+ $GLOBALS['option_raw']=serialize($map); $GLOBALS['bad_pdf']=false; $GLOBALS['bound']=''; $GLOBALS['query_failed']=false; $GLOBALS['fail_id']=0; $GLOBALS['external']='before';
  $source=base64_decode('SOURCE');
  class DB {
   public string $options='wp_options'; public string $postmeta='wp_postmeta'; public string $last_error='';
   function prepare($sql,...$args){return [$sql,$args];} function get_var($q){return '1';} function esc_like($s){return $s;}
   function get_row($q,$mode){return ['option_id'=>'42','option_value'=>$GLOBALS['option_raw']];}
-  function get_results($q,$mode){$this->last_error=$GLOBALS['query_failed']?'error':'';return $GLOBALS['bound']?[['meta_id'=>1]]:[];}
+  function get_results($q,$mode){$this->last_error=$GLOBALS['query_failed']?'error':'';return $GLOBALS['bound']!==''&&in_array($GLOBALS['bound'],array_slice($q[1],0,3),true)?[['meta_id'=>1]]:[];}
   function query($q){[$to,$id,$name,$from]=$q[1];if($id!==42||$name!=='linker_de_document_titles'||$GLOBALS['option_raw']!==$from)return 0;$GLOBALS['option_raw']=$to;return 1;}
  }
  $GLOBALS['wpdb']=new DB();
@@ -107,12 +107,12 @@ namespace {
  $initial=$GLOBALS['fx'];$initial_option=$GLOBALS['option_raw'];
  $receipt=call_migration('preview');must(($receipt['scope']??'')==='cb2-guide-titles-v1','preview');must($GLOBALS['fx']===$initial&&$GLOBALS['option_raw']===$initial_option,'preview wrote');
  $tampered=$receipt;$tampered['products'][4103]['_tv_legacy_acf_json']['after']=str_replace('"keep":[1,2]','"keep":[1,3]',$tampered['products'][4103]['_tv_legacy_acf_json']['after']);must(isset(call_migration('apply',$tampered)['error']),'tampered receipt accepted');must($GLOBALS['fx']===$initial,'tampered receipt wrote');
- $GLOBALS['bound']=true;must(isset(call_migration('apply',$receipt)['error']),'new binding accepted');must($GLOBALS['fx']===$initial,'binding wrote');$GLOBALS['bound']=false;
+ foreach(['_linker_installation_facts','_linker_package_contents','_linker_compatibility_claims'] as $key){$GLOBALS['bound']=$key;must(isset(call_migration('apply',$receipt)['error']),'new binding accepted');must($GLOBALS['fx']===$initial,'binding wrote');}$GLOBALS['bound']='';
  $GLOBALS['query_failed']=true;must(isset(call_migration('preview')['error']),'query error accepted');$GLOBALS['query_failed']=false;
  $GLOBALS['fail_id']=4104;$r=call_migration('apply',$receipt);must(isset($r['error']),'partial failure hidden');$r=call_migration('inspect',$receipt);must(($r['states']['4103:_tv_legacy_acf_json']??'')==='after'&&($r['states']['4104:_tv_legacy_acf_json']??'')==='before','partial state');must(isset(call_migration('verify',$receipt)['error']),'partial verify passed');
  $old=$GLOBALS['fx'][4106]['meta']['_linker_de_acf_json'];$GLOBALS['fx'][4106]['meta']['_linker_de_acf_json']=str_replace('"keep":[1,2]','"keep":[1,3]',$old);$snap=$GLOBALS['fx'];must(isset(call_migration('apply',$receipt)['error'])&&$GLOBALS['fx']===$snap,'conflict overwritten');$GLOBALS['fx'][4106]['meta']['_linker_de_acf_json']=$old;
  $GLOBALS['fail_id']=0;$r=call_migration('apply',$receipt);must(!isset($r['error']),'resume failed');must(!isset(call_migration('verify',$receipt)['error']),'verify failed');
- $GLOBALS['bound']=true;must(isset(call_migration('rollback',$receipt)['error']),'bound rollback accepted');$GLOBALS['bound']=false;
+ foreach(['_linker_installation_facts','_linker_package_contents','_linker_compatibility_claims'] as $key){$GLOBALS['bound']=$key;must(isset(call_migration('rollback',$receipt)['error']),'bound rollback accepted');}$GLOBALS['bound']='';
  $r=call_migration('rollback',$receipt);must(!isset($r['error'])&&$r['source_restored']===true&&$r['recovery']==='fields_restored_source_revision_matches'&&$GLOBALS['fx']===$initial&&$GLOBALS['option_raw']===$initial_option,'rollback failed');
  $receipt=call_migration('preview');must(!isset(call_migration('apply',$receipt)['error']),'second apply failed');$GLOBALS['external']='changed by another product';$r=call_migration('rollback',$receipt);must(!isset($r['error'])&&$r['source_restored']===false&&$r['recovery']==='fields_restored_source_requires_reconcile'&&$GLOBALS['fx']===$initial&&$GLOBALS['option_raw']===$initial_option&&$GLOBALS['external']==='changed by another product','external change was overwritten or falsely reported restored');
  $GLOBALS['bad_pdf']=true;must(isset(call_migration('preview')['error']),'wrong original accepted');echo "OK\n";
