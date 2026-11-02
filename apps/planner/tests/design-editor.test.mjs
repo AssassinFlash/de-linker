@@ -117,6 +117,70 @@ test("measured roof intake preserves decimal locale, explicit source and one com
 	assert.equal(app.current.sources[0].permissions.export, "unknown");
 });
 
+test("correcting a measured roof pitch keeps its array, holes and source", async (t) => {
+	const initial = structuredClone(flat);
+	const roof = initial.roofs[0];
+	initial.sources[0].kind = "user_measurement";
+	initial.sources[0].rights_basis = "user_attestation";
+	roof.holes_uv = [
+		[
+			[15, 15],
+			[16, 15],
+			[16, 16],
+			[15, 16],
+		],
+	];
+	const app = await mount(t, { initial, locale: "de-DE" });
+	await click(roof.name);
+	await click("Edit numeric properties");
+	const pitch = document.querySelector('[name="pitch"]');
+	assert.ok(pitch, "a measured roof can be corrected after it is saved");
+	assert.equal(pitch.value, "0");
+	await enter(pitch, "30,5");
+	await enter(document.querySelector('[name="bearing"]'), "180");
+	await click("Apply properties");
+	const changed = app.current.roofs[0];
+	assert.equal(changed.id, roof.id);
+	assert.deepEqual(changed.boundary_uv, roof.boundary_uv);
+	assert.deepEqual(changed.holes_uv, roof.holes_uv);
+	assert.deepEqual(app.current.arrays, initial.arrays);
+	assert.deepEqual(app.current.sources, initial.sources);
+	assert.deepEqual(
+		changed.u_axis_enu.map((x) => x || 0),
+		[-1, 0, 0],
+	);
+	assert.ok(
+		Math.abs(changed.v_axis_enu[2] + Math.sin((30.5 * Math.PI) / 180)) < 1e-12,
+	);
+	await click(roof.name);
+	await click("Edit numeric properties");
+	await enter(
+		document.querySelector('[name="name"]'),
+		"Corrected measured roof",
+	);
+	await click("Apply properties");
+	assert.deepEqual(app.current.roofs[0].u_axis_enu, changed.u_axis_enu);
+	assert.deepEqual(app.current.roofs[0].v_axis_enu, changed.v_axis_enu);
+});
+
+test("a source-bound imported roof keeps its original orientation", async (t) => {
+	const initial = structuredClone(flat);
+	initial.sources[0].kind = "user_measurement";
+	const roof = initial.roofs[0];
+	await mount(t, {
+		initial,
+		geometryImports: {
+			schema_version: 1,
+			selected: { [roof.source_id]: "a".repeat(32) },
+		},
+	});
+	await click(roof.name);
+	await click("Edit numeric properties");
+	assert.ok(document.querySelector('[name="boundary"]'));
+	assert.equal(document.querySelector('[name="pitch"]'), null);
+	assert.equal(document.querySelector('[name="bearing"]'), null);
+});
+
 test("invalid staged properties stay visible until corrected or cancelled", async (t) => {
 	const app = await mount(t, { initial: flat });
 	let revealed;

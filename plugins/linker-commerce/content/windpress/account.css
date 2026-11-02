@@ -51,6 +51,22 @@ body.woocommerce-account.logged-in .linker-account #container-content-account {
 
 .linker-account .linker-account-main { display: grid; gap: 20px; min-width: 0; align-content: start; }
 
+.linker-account .linker-account-mobile-menu > summary {
+	min-height: 44px;
+	padding: 12px;
+	border: 1px solid var(--acct-line-soft);
+	border-radius: var(--acct-r-lg);
+	background: var(--acct-card);
+	color: var(--acct-ink);
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.linker-account .linker-account-mobile-menu[open] > .linker-account-nav { margin-top: 8px; }
+.linker-account .linker-account-mobile-menu > summary:focus-visible { outline: 2px solid var(--proto-teal-600); outline-offset: 2px; }
+
+@media (min-width: 1024px) { .linker-account .linker-account-mobile-menu { display: none; } }
+
 .linker-account .linker-account-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 
 .linker-account .linker-account-heading h1 {

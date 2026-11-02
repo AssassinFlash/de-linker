@@ -23,7 +23,11 @@ type InputContract = Literal[
     "installation_conductor_reference_current_v1",
     "installation_physical_materials_v1",
     "project_engineering_v10",
+    "installation_conductor_manufacturer_v1",
 ]
+CONDUCTOR_MANUFACTURER_INPUT_CONTRACT: InputContract = (
+    "installation_conductor_manufacturer_v1"
+)
 ENGINEERING_V10_INPUT_CONTRACT: InputContract = "project_engineering_v10"
 MATERIALS_INPUT_CONTRACT: InputContract = "installation_physical_materials_v1"
 REFERENCE_CURRENT_INPUT_CONTRACT: InputContract = (
@@ -51,6 +55,7 @@ SUPPORTED_INPUT_CONTRACTS: tuple[str, ...] = (
     REFERENCE_CURRENT_INPUT_CONTRACT,
     MATERIALS_INPUT_CONTRACT,
     ENGINEERING_V10_INPUT_CONTRACT,
+    CONDUCTOR_MANUFACTURER_INPUT_CONTRACT,
 )
 
 
@@ -69,6 +74,11 @@ def required_contracts(inputs: Mapping[str, object]) -> tuple[str, ...]:
         if "materials" in installation:
             required.append(MATERIALS_INPUT_CONTRACT)
         circuits, runs = installation.get("circuits"), installation.get("cable_runs")
+        if any(
+            isinstance(row, Mapping) and row.get("manufacturer_comparison") is not None
+            for row in (runs if isinstance(runs, list) else [])
+        ):
+            required.append(CONDUCTOR_MANUFACTURER_INPUT_CONTRACT)
         instances = installation.get("instances")
         if any(
             isinstance(row, Mapping) and "reference_current_installation" in row

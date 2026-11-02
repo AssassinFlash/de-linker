@@ -356,6 +356,17 @@ def _materials_projection(source: Object, private: str) -> Object:
         link = origin.get("link") if isinstance(origin, dict) else None
         if isinstance(origin, dict) and isinstance(link, dict):
             safe["source"] = {**origin, "link": _string_link_projection(link, private)}
+        if isinstance(origin, dict) and isinstance(
+            origin.get("manufacturer_comparison"), dict
+        ):
+            conductor = origin.get("conductor")
+            safe["source"] = {
+                "manufacturer_comparison": origin["manufacturer_comparison"],
+                "cross_section_mm2": conductor.get("cross_section_mm2")
+                if isinstance(conductor, dict)
+                else None,
+                "qualified": False,
+            }
     return {**materials, "lines": lines}
 
 
@@ -458,6 +469,20 @@ def _report_source_projection(source: Object, locale: str) -> Object:
     plan["cables"] = [
         {
             **cable,
+            **(
+                {
+                    "circuit_id": private,
+                    "route_id": private,
+                    "conductor": {
+                        **cast(Object, cable["conductor"]),
+                        "source_note": private,
+                    }
+                    if isinstance(cable.get("conductor"), dict)
+                    else None,
+                }
+                if isinstance(cable.get("manufacturer_comparison"), dict)
+                else {}
+            ),
             "name": f"{text('installation_conductor', locale)} {index}",
             "circuit_name": private,
             "route_name": private,
@@ -525,6 +550,9 @@ def _report_source_projection(source: Object, locale: str) -> Object:
                 )
         if "reference_current_segments" in electrical:
             _project_reference_currents(plan)
+    for index, cable in enumerate(cast(list[Object], plan["cables"]), 1):
+        if isinstance(cable.get("manufacturer_comparison"), dict):
+            cable["id"] = f"run-{index}"
     projected["materials"] = _materials_projection(projected, private)
     return projected
 

@@ -1367,3 +1367,123 @@ test("endpoint labels face inward without changing installation points or comple
 		"-3 -3 36 6",
 	);
 });
+
+test("conductor comparison rejects a changed numeric range or source", () => {
+	const hash = "a".repeat(64),
+		doc = "b".repeat(64),
+		point = { east_m: 0, north_m: 0, height_m: 0 };
+	const circuit = {
+		id: "ac",
+		name: "AC",
+		kind: "ac",
+		start: { instance_id: "device", port_id: "a" },
+		end: { instance_id: "device", port_id: "b" },
+	};
+	const conductor = { cross_section_mm2: 50, source_note: "Fixture" };
+	const binding = {
+		instance_id: "device",
+		product_id: 1946,
+		product_revision: hash,
+		fact_id: "ac-conductor",
+		document_id: "doc",
+		document_revision: doc,
+		conditions_confirmed: true,
+		confirmation_context: {
+			circuit: { id: "ac", kind: "ac", start: circuit.start, end: circuit.end },
+			construction: "single_conductor",
+			conductor: { ...conductor, cable_reference: null },
+			core_roles: [],
+		},
+	};
+	const plan = {
+		...emptyInstallation(),
+		instances: [
+			{
+				id: "device",
+				name: "Device",
+				product_id: 1946,
+				product_revision: hash,
+				source_id: "survey",
+				ports: ["a", "b"].map((id) => ({ id, name: id, position: point })),
+			},
+		],
+		circuits: [circuit],
+		routes: [
+			{
+				id: "route",
+				name: "Route",
+				source_id: "survey",
+				points: [point, { ...point, east_m: 1 }],
+				extra_length_m: 0,
+				extra_length_note: "Fixture",
+			},
+		],
+		cable_runs: [
+			{
+				id: "run",
+				name: "Cable",
+				circuit_id: "ac",
+				route_id: "route",
+				construction: "single_conductor",
+				conductor,
+				manufacturer_comparison: binding,
+			},
+		],
+	};
+	const fact = {
+		id: "ac-conductor",
+		basis: "manufacturer_recommended_ac_conductor",
+		conditions: [],
+		specification: {
+			terminal_domain: "ac",
+			recommended_conductor_mm2: { low: 50, high: 70 },
+		},
+		source: {
+			product_id: 1946,
+			document_id: "doc",
+			document_revision: doc,
+			url: "https://de-linker.com/wp-content/uploads/fixture.pdf",
+			page: 155,
+			quote: "Synthetic source",
+		},
+	};
+	const response = {
+		schema_version: 1,
+		method: "installation_route_takeoff_v1",
+		project_id: "project",
+		qualified: false,
+		geometry_sha256: hash,
+		prepared_inputs: { ...plan, geometry_sha256: hash },
+		cables: [
+			{
+				...plan.cable_runs[0],
+				circuit_name: "AC",
+				route_name: "Route",
+				specification: "declared",
+				quantity: 1,
+				unit: "m",
+				plan_length_m: 1,
+				route_length_m: 1,
+				extra_length_m: 0,
+				reasons: [],
+				manufacturer_comparison: {
+					status: "within_recommendation",
+					qualified: false,
+					fact,
+				},
+			},
+		],
+	};
+	assert.equal(
+		readInstallationReview(response, plan, "project").cables[0]
+			.manufacturer_comparison.status,
+		"within_recommendation",
+	);
+	const changed = structuredClone(response);
+	changed.cables[0].manufacturer_comparison.fact.specification.recommended_conductor_mm2.low = 51;
+	assert.throws(() => readInstallationReview(changed, plan, "project"));
+	const wrongSource = structuredClone(response);
+	wrongSource.cables[0].manufacturer_comparison.fact.source.document_revision =
+		"c".repeat(64);
+	assert.throws(() => readInstallationReview(wrongSource, plan, "project"));
+});

@@ -97,6 +97,15 @@ export function GeometricPvSetup({
 			return null;
 		}
 	}, [session.runtime]);
+	const clearPitchedRoof = useMemo(() => {
+		try {
+			return readGeometricPvClearFlatRoofLimits(
+				session.runtime.limits.geometric_pv_clear_pitched_roof,
+			);
+		} catch {
+			return null;
+		}
+	}, [session.runtime]);
 	const stringCount = useMemo(() => {
 		try {
 			if (inputs.pv_plant_string_plan !== undefined)
@@ -219,19 +228,21 @@ export function GeometricPvSetup({
 			samples <= limits.max_samples,
 		// This is only a numeric ceiling. The service proves the geometry and
 		// conversion-path conditions from the saved inputs before queuing work.
-		withinExpandedCeiling =
-			!!clearFlatRoof &&
-			moduleCount !== null &&
-			rows !== null &&
-			moduleSteps !== null &&
-			samples !== null &&
-			Number.isSafeInteger(moduleSteps) &&
-			Number.isSafeInteger(samples) &&
-			moduleSteps <= clearFlatRoof.max_module_steps &&
-			samples <= clearFlatRoof.max_samples &&
-			moduleCount <= clearFlatRoof.max_modules &&
-			rows <= clearFlatRoof.max_weather_rows &&
-			(stringCount === null || stringCount <= clearFlatRoof.max_strings),
+		withinExpandedCeiling = [clearFlatRoof, clearPitchedRoof].some(
+			(roofLimit) =>
+				!!roofLimit &&
+				moduleCount !== null &&
+				rows !== null &&
+				moduleSteps !== null &&
+				samples !== null &&
+				Number.isSafeInteger(moduleSteps) &&
+				Number.isSafeInteger(samples) &&
+				moduleSteps <= roofLimit.max_module_steps &&
+				samples <= roofLimit.max_samples &&
+				moduleCount <= roofLimit.max_modules &&
+				rows <= roofLimit.max_weather_rows &&
+				(stringCount === null || stringCount <= roofLimit.max_strings),
+		),
 		withinBudget = withinStandardBudget || withinExpandedCeiling;
 	const change = (next: GeometricPvDraft) => {
 		if (!disabled && owned) edit((current) => geometricPvInputs(current, next));
@@ -501,6 +512,39 @@ export function GeometricPvSetup({
 								"The complete weather year exceeds this service's calculation budget at the selected sampling resolution. Reduce the sampling resolution or roof scope; the calculation does not silently omit weather intervals.",
 								"linker-tools",
 							)}
+						</Notice>
+					)}
+					{!withinStandardBudget && clearPitchedRoof && (
+						<Notice>
+							<p>
+								{sprintf(
+									__(
+										"Larger pitched-roof calculations: up to %s modules, %s strings and %s hourly weather intervals.",
+										"linker-tools",
+									),
+									clearPitchedRoof.max_modules.toLocaleString(locale),
+									clearPitchedRoof.max_strings.toLocaleString(locale),
+									clearPitchedRoof.max_weather_rows.toLocaleString(locale),
+								)}
+							</p>
+							<p>
+								{__(
+									"One four-corner roof plane up to 60°, without holes, obstacles or keep-out areas and no more than 40 m along either roof axis. One array parallel to the roof, with up to 8 rows and 12 columns and one module specification.",
+									"linker-tools",
+								)}
+							</p>
+							<p>
+								{__(
+									"Select Series string reference. The service checks the saved roof, module layout, wiring and weather before creating a larger calculation.",
+									"linker-tools",
+								)}
+							</p>
+							<p>
+								{__(
+									"Modules up to 1.134 m wide, 1.762 m long and 0.03 m thick; row gaps of at least 0.4 m, column gaps of at least 0.2 m and clearance below the modules of at least 0.1 m. One system and conversion path, with no more than 16 modules per string. Weather intervals must be contiguous and hourly, with 1 × 1 and 2 × 2 midpoint sampling grids.",
+									"linker-tools",
+								)}
+							</p>
 						</Notice>
 					)}
 					{!withinStandardBudget && clearFlatRoof && (

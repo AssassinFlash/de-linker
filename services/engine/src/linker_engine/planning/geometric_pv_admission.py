@@ -1,10 +1,10 @@
-"""Admit only the measured clear horizontal roof to the expanded work budget."""
+"""Admit declared clear single-plane roofs to their isolated work budgets."""
 
 from __future__ import annotations
 
 from .canonical import Object
 from .direct_beam_geometry import build_scene
-from .direct_beam_index import DirectBeamIndex
+from .direct_beam_index import DirectBeamIndex, PlaneClearance
 from .errors import GeometricPvExpandedScopeRequired
 from .geometric_pv_diffuse import diffuse_sample_upper_bound
 from .geometric_pv_inputs import MODEL_V1, MODEL_V3, GeometricPvInputs
@@ -20,6 +20,8 @@ def admitted_limits(
     request: GeometricPvInputs,
     ordinary: GeometricPvLimits,
     expanded: ClearFlatRoofLimits,
+    *,
+    pitched: bool = False,
 ) -> GeometricPvLimits:
     """Select a budget from saved inputs; never infer clearance from a near-zero slope."""
     geometry = read_geometry(inputs.get("geometry"))
@@ -39,7 +41,7 @@ def admitted_limits(
 
     def refuse() -> None:
         raise GeometricPvExpandedScopeRequired(
-            "geometric PV exceeds the measured clear horizontal roof scope"
+            "geometric PV exceeds the configured clear roof scope"
         )
 
     if (
@@ -66,8 +68,8 @@ def admitted_limits(
     if (
         len(roof.boundary_uv) != 4
         or roof.holes_uv
-        or roof.u_axis_enu[2] != 0
-        or roof.v_axis_enu[2] != 0
+        or (not pitched and (roof.u_axis_enu[2] != 0 or roof.v_axis_enu[2] != 0))
+        or (pitched and roof.u_axis_enu[2] == 0 and roof.v_axis_enu[2] == 0)
         or max(p[0] for p in roof.boundary_uv) - min(p[0] for p in roof.boundary_uv)
         > 40
         or max(p[1] for p in roof.boundary_uv) - min(p[1] for p in roof.boundary_uv)
@@ -97,12 +99,43 @@ def admitted_limits(
     ):
         refuse()
 
-    # One horizontal roof, no obstacles and one non-overlapping horizontal array
-    # place every opaque surface at or below the same receiver-top plane.
-    # Check that assumption on the built scene as well as its declared inputs.
     scene = build_scene(inputs.get("geometry"))
     if len(scene.receivers) != modules:
         refuse()
+    if pitched:
+        first = scene.receivers[0]
+        frame = (first.u, first.v, first.normal)
+        if (
+            first.normal[2] < 0.5
+            or len(scene.opaque) != modules + 1
+            or any((r.u, r.v, r.normal) != frame for r in scene.receivers)
+        ):
+            refuse()
+        plane = PlaneClearance.from_scene(scene, frame)
+        if plane is None:
+            refuse()
+        assert plane is not None
+        for receiver in scene.receivers:
+            points = tuple(
+                receiver.midpoint(x, y, count)
+                for count in (coarse, fine)
+                for y in range(count)
+                for x in range(count)
+            )
+            if (
+                plane.threshold(receiver.id, points, on_bounds_check=lambda: None)
+                is None
+            ):
+                refuse()
+        return GeometricPvLimits.read(
+            {
+                **ordinary.model_dump(mode="json"),
+                "max_module_steps": expanded.max_module_steps,
+                "max_samples": expanded.max_samples,
+            }
+        )
+
+    # Check the flat-roof contract on actual built scene as well as inputs.
     top = scene.receivers[0].centre[2]
     if len(scene.opaque) != modules + 1 or any(
         r.normal != (0.0, 0.0, 1.0) or r.centre[2] != top for r in scene.receivers

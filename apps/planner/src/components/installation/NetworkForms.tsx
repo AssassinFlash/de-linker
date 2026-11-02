@@ -18,7 +18,9 @@ import {
 import type { ReferenceCurrentChoice } from "./ReferenceCurrentFields.tsx";
 import type { CoreRole } from "../../domain/installationElectrical.ts";
 import { referenceCurrentContext } from "../../domain/installationReferenceCurrent.ts";
-import { useRef, useState } from "react";
+import { conductorCandidates } from "../../domain/installationConductorComparison.ts";
+import type { ConductorCandidate } from "../../domain/installationConductorComparison.ts";
+import { useEffect, useRef, useState } from "react";
 import type { GeometryDocument } from "../../domain/geometry.ts";
 import type {
 	DeviceInstance,
@@ -55,6 +57,16 @@ interface Common {
 	plan: InstallationInputs;
 	cancel: () => void;
 	onValidity: (valid: boolean) => void;
+}
+function conductorCandidateKey(candidate: ConductorCandidate): string {
+	return `candidate:${JSON.stringify([
+		candidate.instanceId,
+		candidate.product.id,
+		candidate.product.product_revision,
+		candidate.factId,
+		candidate.documentId,
+		candidate.documentRevision,
+	])}`;
 }
 function SourceChoice({
 	geometry,
@@ -790,14 +802,63 @@ export function CableForm({
 	onValidity,
 	cable,
 	cableReferences = [],
+	products = [],
 	submit,
 }: {
 	cable: CableRun | null;
 	cableReferences?: readonly CableReference[];
+	products?: readonly EquipmentProduct[];
 	submit: (value: CableRun) => boolean;
 } & Common) {
 	const declared = cable?.conductor ?? null;
 	const t = (en: string, de: string) => electricalText(locale, en, de);
+	const [circuitId, setCircuitId] = useState(cable?.circuit_id ?? "");
+	const [manufacturerChoice, setManufacturerChoice] = useState(
+		cable?.manufacturer_comparison ? "saved" : "none",
+	);
+	const [manufacturerConfirmed, setManufacturerConfirmed] = useState(
+		cable?.manufacturer_comparison?.conditions_confirmed ?? false,
+	);
+	const [manufacturerConfirmedHere, setManufacturerConfirmedHere] =
+		useState(false);
+	const candidates = conductorCandidates(plan, products, locale);
+	const eligible = candidates.filter((candidate) => {
+		const circuit = plan.circuits.find((item) => item.id === circuitId);
+		return (
+			circuit?.kind === candidate.kind &&
+			[circuit.start.instance_id, circuit.end.instance_id].includes(
+				candidate.instanceId,
+			)
+		);
+	});
+	const activeManufacturer =
+		manufacturerChoice === "saved"
+			? eligible.find(
+					(candidate) =>
+						candidate.instanceId ===
+							cable?.manufacturer_comparison?.instance_id &&
+						candidate.product.id === cable.manufacturer_comparison.product_id &&
+						candidate.product.product_revision ===
+							cable.manufacturer_comparison.product_revision &&
+						candidate.factId === cable.manufacturer_comparison.fact_id &&
+						candidate.documentId ===
+							cable.manufacturer_comparison.document_id &&
+						candidate.documentRevision ===
+							cable.manufacturer_comparison.document_revision,
+				)
+			: manufacturerChoice.startsWith("candidate:")
+				? eligible.find(
+						(candidate) =>
+							conductorCandidateKey(candidate) === manufacturerChoice,
+					)
+				: undefined;
+	const manufacturerAvailable = activeManufacturer !== undefined;
+	useEffect(() => {
+		if (manufacturerChoice !== "none" && !manufacturerAvailable) {
+			setManufacturerConfirmed(false);
+			setManufacturerConfirmedHere(false);
+		}
+	}, [manufacturerChoice, manufacturerAvailable]);
 	const savedReference = declared?.cable_reference;
 	const savedReferenceKey = savedReference
 		? String(savedReference.product_id) + ":" + savedReference.product_revision
@@ -821,6 +882,8 @@ export function CableForm({
 		setCurrentConfirmed(false);
 		setConfirmedThisEdit(false);
 		setConfirmationNeedsReview(true);
+		setManufacturerConfirmed(false);
+		setManufacturerConfirmedHere(false);
 	};
 	const [roles, setRoles] = useState(() =>
 		(cable?.core_roles ?? []).map((role) => ({
@@ -892,6 +955,63 @@ export function CableForm({
 						: {}),
 				};
 				if (!conductor) delete next.conductor;
+				if (manufacturerChoice === "none") delete next.manufacturer_comparison;
+				else {
+					const saved =
+						manufacturerChoice === "saved"
+							? cable?.manufacturer_comparison
+							: undefined;
+					const selected = manufacturerChoice.startsWith("candidate:")
+						? activeManufacturer
+						: undefined;
+					const circuit = plan.circuits.find(
+						(item) => item.id === next.circuit_id,
+					);
+					if (!saved && (!selected || !circuit || !next.conductor))
+						throw new Error("manufacturer_comparison_requires_conductor");
+					if (
+						selected &&
+						(!circuit ||
+							circuit.kind !== selected.kind ||
+							![circuit.start.instance_id, circuit.end.instance_id].includes(
+								selected.instanceId,
+							))
+					)
+						throw new Error("manufacturer_comparison_requires_circuit");
+					const identity = saved ?? {
+						instance_id: selected!.instanceId,
+						product_id: selected!.product.id,
+						product_revision: selected!.product.product_revision,
+						fact_id: selected!.factId,
+						document_id: selected!.documentId,
+						document_revision: selected!.documentRevision,
+					};
+					let context = saved?.confirmation_context;
+					if (!context || manufacturerConfirmedHere) {
+						if (!next.conductor || !circuit)
+							throw new Error("manufacturer_comparison_requires_conductor");
+						context = {
+							circuit: {
+								id: circuit.id,
+								kind: circuit.kind,
+								start: circuit.start,
+								end: circuit.end,
+							},
+							construction: next.construction,
+							conductor: {
+								...next.conductor,
+								cable_reference: next.conductor.cable_reference ?? null,
+							},
+							core_roles: next.core_roles ?? [],
+						};
+					}
+					next.manufacturer_comparison = {
+						...identity,
+						conditions_confirmed:
+							manufacturerConfirmed && manufacturerAvailable,
+						confirmation_context: context,
+					};
+				}
 				if (current) {
 					next.reference_current_installation = current;
 					if (currentConfirmed && confirmedThisEdit) {
@@ -919,7 +1039,10 @@ export function CableForm({
 					name="circuit"
 					required
 					defaultValue={cable?.circuit_id ?? ""}
-					onChange={invalidateCurrentConfirmation}
+					onChange={(event) => {
+						setCircuitId(event.currentTarget.value);
+						invalidateCurrentConfirmation();
+					}}
 				>
 					<option value="">{__("Choose a circuit", "linker-tools")}</option>
 					{plan.circuits.map((c) => (
@@ -999,17 +1122,24 @@ export function CableForm({
 					)}
 				/>
 			</div>
-			<GeometryText
-				name="conductor_note"
-				label={__("Basis for the declared cross-section", "linker-tools")}
-				value={declared?.source_note ?? ""}
-				optional
-				multiline
-				help={__(
-					"Required together with the cross-section, for example the project cable list or the installer's instruction.",
-					"linker-tools",
-				)}
-			/>
+			<div
+				onInput={() => {
+					setManufacturerConfirmed(false);
+					setManufacturerConfirmedHere(false);
+				}}
+			>
+				<GeometryText
+					name="conductor_note"
+					label={__("Basis for the declared cross-section", "linker-tools")}
+					value={declared?.source_note ?? ""}
+					optional
+					multiline
+					help={__(
+						"Required together with the cross-section, for example the project cable list or the installer's instruction.",
+						"linker-tools",
+					)}
+				/>
+			</div>
 			<label className="lp-field">
 				<span>
 					{t(
@@ -1068,6 +1198,102 @@ export function CableForm({
 			</p>
 			{selectedReference && (
 				<CableReferenceFacts reference={selectedReference} locale={locale} />
+			)}
+			<label className="lp-field">
+				<span>
+					{t(
+						"Equipment manufacturer cross-section instruction (optional)",
+						"Herstellerangabe zum Leiterquerschnitt (optional)",
+					)}
+				</span>
+				<select
+					name="manufacturer_conductor"
+					value={manufacturerChoice}
+					onChange={(event) => {
+						setManufacturerChoice(event.currentTarget.value);
+						setManufacturerConfirmed(false);
+						setManufacturerConfirmedHere(false);
+					}}
+				>
+					<option value="none">
+						{t("No manufacturer comparison", "Kein Herstellervergleich")}
+					</option>
+					{cable?.manufacturer_comparison && (
+						<option value="saved">
+							{t("Saved selection", "Gespeicherte Auswahl")} ·{" "}
+							{cable.manufacturer_comparison.fact_id}
+						</option>
+					)}
+					{manufacturerChoice.startsWith("candidate:") &&
+						!activeManufacturer && (
+							<option value={manufacturerChoice}>
+								{t(
+									"Selected source unavailable",
+									"Ausgewählte Quelle nicht verfügbar",
+								)}
+							</option>
+						)}
+					{eligible.map((candidate) => (
+						<option
+							key={conductorCandidateKey(candidate)}
+							value={conductorCandidateKey(candidate)}
+						>
+							{candidate.product.brand} {candidate.product.model} ·{" "}
+							{candidate.label} · p. {candidate.page}
+						</option>
+					))}
+				</select>
+			</label>
+			{manufacturerChoice !== "none" && (
+				<>
+					{activeManufacturer ? (
+						<details open>
+							<summary>{t("Manufacturer source", "Herstellerquelle")}</summary>
+							<a
+								href={`${activeManufacturer.url}#page=${activeManufacturer.page}`}
+								target="_blank"
+								rel="noreferrer"
+							>
+								{t("Document · page", "Dokument · Seite")}{" "}
+								{activeManufacturer.page}
+							</a>
+							<blockquote>{activeManufacturer.quote}</blockquote>
+							<p>
+								{t("Document revision", "Dokumentrevision")}:{" "}
+								<RevisionCode value={activeManufacturer.documentRevision} />
+							</p>
+						</details>
+					) : (
+						<p>
+							{t(
+								"The saved manufacturer source is unavailable. Select a current source or remove the comparison.",
+								"Die gespeicherte Herstellerquelle ist nicht verfügbar. Wählen Sie eine aktuelle Quelle oder entfernen Sie den Vergleich.",
+							)}
+						</p>
+					)}
+					<p>
+						{t(
+							"Check that the manufacturer's instruction applies to this device and circuit, then compare the conductor cross-section.",
+							"Prüfen Sie, ob die Herstellerangabe für dieses Gerät und diesen Stromkreis gilt. Vergleichen Sie anschließend den Leiterquerschnitt.",
+						)}
+					</p>
+					<label>
+						<input
+							type="checkbox"
+							name="manufacturer_confirmed"
+							disabled={!activeManufacturer}
+							checked={manufacturerConfirmed && manufacturerAvailable}
+							onChange={(event) => {
+								setManufacturerConfirmed(event.currentTarget.checked);
+								setManufacturerConfirmedHere(event.currentTarget.checked);
+							}}
+						/>{" "}
+						{t(
+							"I confirm that this manufacturer instruction applies to this conductor and circuit.",
+							"Ich bestätige, dass diese Herstellerangabe für diesen Leiter und Stromkreis gilt.",
+						)}
+					</label>
+				</>
 			)}
 			<ReferenceCurrentFields
 				locale={locale}

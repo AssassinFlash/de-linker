@@ -576,6 +576,27 @@ def materials_csv(materials: Object, sha256: str, locale: str) -> bytes:
         ]
     )
     for line in cast(list[Object], materials["lines"]):
+        origin = line.get("source")
+        comparison = (
+            origin.get("manufacturer_comparison") if isinstance(origin, dict) else None
+        )
+        assessment = text("material_installation_open", locale)
+        if isinstance(comparison, dict):
+            labels = {
+                "within_recommendation": (
+                    "Within the recommended cross-section range",
+                    "Innerhalb des empfohlenen Querschnittsbereichs",
+                ),
+                "outside_recommendation": (
+                    "Outside the recommended cross-section range",
+                    "Außerhalb des empfohlenen Querschnittsbereichs",
+                ),
+            }
+            label = labels.get(
+                str(comparison.get("status")),
+                ("Comparison unavailable", "Vergleich nicht verfügbar"),
+            )
+            assessment = label[1 if locale == "de" else 0] + " · " + assessment
         provenance = encode(
             {
                 key: line[key]
@@ -601,7 +622,7 @@ def materials_csv(materials: Object, sha256: str, locale: str) -> bytes:
                 material_scope(line, locale),
                 provenance,
                 sha256,
-                text("material_installation_open", locale),
+                assessment,
                 material_unit(line, locale),
             )
         )

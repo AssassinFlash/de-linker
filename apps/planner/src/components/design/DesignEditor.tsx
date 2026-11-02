@@ -414,7 +414,14 @@ export function DesignEditor({
 					{form ? (
 						<>
 							{form.kind === "roof" && (
-								<RoofForm {...formProps} roof={formRoof} />
+								<RoofForm
+									{...formProps}
+									roof={formRoof}
+									imported={
+										formRoof !== null &&
+										Object.hasOwn(geometryImports.selected, formRoof.source_id)
+									}
+								/>
 							)}
 							{form.kind === "coordinates" && (
 								<CoordinatesForm {...formProps} />

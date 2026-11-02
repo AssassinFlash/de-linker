@@ -48,3 +48,7 @@ class ClearFlatRoofLimits(Document):
     max_modules: Annotated[int, Field(strict=True, gt=0, le=96)]
     max_strings: Annotated[int, Field(strict=True, gt=0, le=6)]
     max_weather_rows: Annotated[int, Field(strict=True, gt=0, le=8_760)]
+
+
+class ClearPitchedRoofLimits(ClearFlatRoofLimits):
+    """Opt-in isolated budget, separately enabled from the flat-roof profile."""

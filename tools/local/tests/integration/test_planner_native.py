@@ -624,19 +624,34 @@ def test_native_bootstrap_exposes_only_the_browser_runtime_contract(
     account: Account,
 ) -> None:
     instance, wp = local
-    context = Browser(instance.url).bootstrap()
+    browser = Browser(instance.url)
+    context = browser.bootstrap()
+    cookie = browser.native_cookie()
+    assert isinstance(cookie.value, str)
+    account.guest_sessions.add(urllib.parse.unquote(cookie.value).split("|")[0])
     assert set(context["runtime"]) == {
         "schema_version",
         "runtime_sha256",
         "models",
         "limits",
     }
-    assert set(context["runtime"]["limits"]) == {
+    required_limits = {
         "max_body_bytes",
         "max_csv_bytes",
         "max_page_size",
         "max_json_depth",
     }
+    assert (
+        required_limits
+        <= set(context["runtime"]["limits"])
+        <= required_limits
+        | {
+            "direct_beam_visibility",
+            "geometric_pv_generation",
+            "geometric_pv_clear_flat_roof",
+            "geometric_pv_clear_pitched_roof",
+        }
+    )
     # Exercise the same native classes with Woo's own signed-cookie reader
     # and nonce filter, without another HTTP probe or private-service task.
     result = wp.run(
@@ -726,6 +741,12 @@ try {
     $runtime_override['limits']['geometric_pv_clear_flat_roof'] = $expanded;
     $expanded_ok = $run($mode);
     unset($expanded_ok['data']['nonce'], $expanded_ok['data']['query_scope']);
+    $runtime_override['limits']['geometric_pv_clear_pitched_roof'] = $expanded;
+    $pitched_ok = $run($mode);
+    unset($pitched_ok['data']['nonce'], $pitched_ok['data']['query_scope']);
+    $runtime_override['limits']['geometric_pv_clear_pitched_roof']['max_modules'] = 97;
+    $pitched_invalid = $run($mode);
+    unset($runtime_override['limits']['geometric_pv_clear_pitched_roof']);
     $expanded_invalid = array();
     foreach (array(array('max_modules', 0), array('max_modules', true), array('max_strings', 7), array('extra', 1)) as $bad) {
         $runtime_override['limits']['geometric_pv_clear_flat_roof'] = $expanded;
@@ -789,7 +810,7 @@ try {
     $output = array('cases' => array_map(static function ($case) {
         unset($case['data']['nonce'], $case['data']['query_scope']);
         return $case;
-    }, $cases), 'malformed' => $malformed, 'legacy_allowed' => $legacy_allowed, 'native_nonce' => $native_nonce, 'wrong_action_refused' => $wrong_action, 'row_unchanged' => $row_unchanged, 'writes' => $writes, 'cookie_writes' => $cookie_writes, 'migrations' => $migrations, 'transport_paths' => $calls, 'expanded_ok' => $expanded_ok, 'expanded_invalid' => $expanded_invalid);
+    }, $cases), 'malformed' => $malformed, 'legacy_allowed' => $legacy_allowed, 'native_nonce' => $native_nonce, 'wrong_action_refused' => $wrong_action, 'row_unchanged' => $row_unchanged, 'writes' => $writes, 'cookie_writes' => $cookie_writes, 'migrations' => $migrations, 'transport_paths' => $calls, 'expanded_ok' => $expanded_ok, 'expanded_invalid' => $expanded_invalid, 'pitched_ok' => $pitched_ok, 'pitched_invalid' => $pitched_invalid);
 } finally {
     remove_filter('query', $query_guard);
     remove_filter('woocommerce_set_cookie_enabled', $cookie_guard);
@@ -836,6 +857,19 @@ echo wp_json_encode($output);
         "max_weather_rows": 8760,
     }
     assert all(case["status"] == 502 for case in evidence["expanded_invalid"])
+    assert evidence["pitched_ok"]["status"] == 200
+    assert (
+        evidence["pitched_ok"]["data"]["runtime"]["limits"][
+            "geometric_pv_clear_pitched_roof"
+        ]
+        == evidence["expanded_ok"]["data"]["runtime"]["limits"][
+            "geometric_pv_clear_flat_roof"
+        ]
+    )
+    assert evidence["pitched_invalid"]["status"] == 502
+    assert (
+        evidence["pitched_ok"]["unchanged"] and evidence["pitched_invalid"]["unchanged"]
+    )
     assert evidence["expanded_ok"]["unchanged"]
     assert all(case["unchanged"] for case in evidence["expanded_invalid"])
     assert evidence["legacy_allowed"] and evidence["native_nonce"]

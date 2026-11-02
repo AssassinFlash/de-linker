@@ -4,6 +4,10 @@
 			[linker_account_nav]
 		</aside>
 		<main class="linker-account-main">
+			<details class="linker-account-mobile-menu">
+				<summary>[linker_account_text key="menu"]</summary>
+				[linker_account_nav]
+			</details>
 			<header class="linker-account-heading">
 				<h1>[linker_account_field key="page-title"]</h1>
 				[lc_if condition="wc_is_current_account_menu_item" param="orders"]<a class="linker-account-back" href="[linker_account_url endpoint='dashboard']"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>[linker_account_text key="overview"]</span></a>[/lc_if]

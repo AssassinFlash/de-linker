@@ -210,6 +210,31 @@ class ReferenceCurrentInstallation(Document):
         return value
 
 
+class MaterialComparisonCircuit(Document):
+    id: Identifier
+    kind: Literal["pv_dc", "battery_dc", "ac", "control", "protective_earth", "other"]
+    start: Endpoint
+    end: Endpoint
+
+
+class ConductorComparisonContext(Document):
+    circuit: MaterialComparisonCircuit
+    construction: Literal["single_conductor", "multicore_cable", "unspecified"]
+    conductor: ConductorSpecification
+    core_roles: list[str]
+
+
+class ConductorFactComparison(Document):
+    instance_id: Identifier
+    product_id: Count
+    product_revision: Hash
+    fact_id: Text
+    document_id: Text
+    document_revision: Hash
+    conditions_confirmed: bool
+    confirmation_context: ConductorComparisonContext
+
+
 class CableRun(Document):
     id: Identifier
     name: Text
@@ -235,6 +260,7 @@ class CableRun(Document):
         ]
     ] = Field(default_factory=list)
     reference_current_installation: ReferenceCurrentInstallation | None = None
+    manufacturer_comparison: ConductorFactComparison | None = None
 
     @model_validator(mode="after")
     def roles(self) -> Self:
@@ -247,13 +273,6 @@ class CableRun(Document):
 class PvStringLink(Document):
     string_id: Identifier
     circuit_id: Identifier
-
-
-class MaterialComparisonCircuit(Document):
-    id: Identifier
-    kind: Literal["pv_dc", "battery_dc", "ac", "control", "protective_earth", "other"]
-    start: Endpoint
-    end: Endpoint
 
 
 class MaterialFactComparison(Document):
@@ -331,6 +350,8 @@ class InstallationInputs(Document):
                 dumped["reference_current_installation"] = (
                     run.reference_current_installation.project_document()
                 )
+            if run.manufacturer_comparison is None:
+                dumped.pop("manufacturer_comparison")
         for circuit, dumped in zip(self.circuits, value["circuits"], strict=True):
             if "operating_conditions" not in circuit.model_fields_set:
                 dumped.pop("operating_conditions")

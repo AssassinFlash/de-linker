@@ -8,7 +8,7 @@ from typing import Protocol, cast
 
 from .canonical import Json, Object
 from .direct_beam_geometry import ANGULAR_GUARD, Receiver, Scene, scalar
-from .direct_beam_index import DirectBeamIndex
+from .direct_beam_index import DirectBeamIndex, PlaneClearance
 from .direct_beam_inputs import DirectBeamLimits, DirectBeamSampling
 from .errors import InvalidInput, NumericalFailure
 from .geometry import Vector
@@ -124,6 +124,7 @@ def visibility_row(
     *,
     index: DirectBeamIndex,
     upward_clearances: dict[str, float] | None = None,
+    plane_clearances: dict[str, tuple[PlaneClearance, float]] | None = None,
 ) -> Object:
     if (
         any(not math.isfinite(value) for value in direction)
@@ -146,7 +147,10 @@ def visibility_row(
         delta = None
         if status == "sampled":
             threshold = (upward_clearances or {}).get(receiver.id)
-            if threshold is not None and direction[2] > threshold:
+            plane = (plane_clearances or {}).get(receiver.id)
+            if (threshold is not None and direction[2] > threshold) or (
+                plane is not None and plane[0].clear(direction, plane[1])
+            ):
 
                 def clear_grid(count: int) -> Object:
                     samples = count * count

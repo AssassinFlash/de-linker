@@ -242,8 +242,11 @@ final class Gateway {
 				}
 			}
 		}
-		if ( array_key_exists( 'geometric_pv_clear_flat_roof', $version['limits'] ) ) {
-			$expanded = $version['limits']['geometric_pv_clear_flat_roof'];
+		foreach ( array( 'geometric_pv_clear_flat_roof', 'geometric_pv_clear_pitched_roof' ) as $profile ) {
+			if ( ! array_key_exists( $profile, $version['limits'] ) ) {
+				continue;
+			}
+			$expanded = $version['limits'][ $profile ];
 			$bounds   = array(
 				'max_module_steps' => 841000,
 				'max_modules'      => 96,
@@ -270,7 +273,7 @@ final class Gateway {
 		// Keep operator process/storage identities on the private protocol; the
 		// browser uses its stable, strict runtime view during normal bootstrap.
 		$version           = array_intersect_key( $version, array_flip( array( 'schema_version', 'runtime_sha256', 'models', 'limits' ) ) );
-		$version['limits'] = array_intersect_key( $version['limits'], array_flip( array( 'max_body_bytes', 'max_csv_bytes', 'max_page_size', 'max_json_depth', 'direct_beam_visibility', 'geometric_pv_generation', 'geometric_pv_clear_flat_roof' ) ) );
+		$version['limits'] = array_intersect_key( $version['limits'], array_flip( array( 'max_body_bytes', 'max_csv_bytes', 'max_page_size', 'max_json_depth', 'direct_beam_visibility', 'geometric_pv_generation', 'geometric_pv_clear_flat_roof', 'geometric_pv_clear_pitched_roof' ) ) );
 		return new WP_REST_Response(
 			array(
 				'schema_version'   => 1,

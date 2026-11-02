@@ -8,6 +8,7 @@ import {
 } from "../src/components/installation/NetworkForms.tsx";
 import { CableReferenceFacts } from "../src/components/installation/CableReferenceFacts.tsx";
 import { ElectricalResults } from "../src/components/installation/ElectricalResults.tsx";
+import { ConductorManufacturerResults } from "../src/components/installation/ConductorManufacturerResults.tsx";
 import { readElectricalReview } from "../src/domain/installationElectrical.ts";
 import { readCableReferences } from "../src/data/cableReferences.ts";
 import { emptyInstallation } from "../src/domain/installation.ts";
@@ -590,5 +591,175 @@ test("cable core counts use singular and plural labels in EN and DE", async (t) 
 			),
 		);
 		assert.ok(document.querySelector("h4 + p").textContent.includes(plural));
+	}
+});
+
+test("a physical conductor binds its own cross-section to the selected equipment source", async (t) => {
+	const dom = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const root = createRoot(dom.element);
+	t.after(() => dom.dispose(root));
+	const { plan } = fixture();
+	plan.circuits[0].kind = "ac";
+	plan.circuits[0].operating_conditions = [];
+	plan.instances[0].product_id = 1946;
+	plan.instances[0].product_revision = sha;
+	plan.cable_runs[0].conductor = {
+		cross_section_mm2: 50,
+		source_note: "Fixture cable list",
+	};
+	const product = {
+		id: 1946,
+		product_revision: sha,
+		brand: "Synthetic",
+		model: "Fixture",
+		device_class: "inverter",
+		figures: {},
+		installation_facts: {
+			status: "documented",
+			items: [
+				{
+					id: "ac-conductor",
+					basis: "manufacturer_recommended_ac_conductor",
+					conditions: [],
+					label: { en: "AC conductor", de: "AC-Leiter" },
+					specification: {
+						terminal_domain: "ac",
+						recommended_conductor_mm2: { low: 50, high: 70 },
+					},
+					source: { ...source, product_id: 1946, page: 155 },
+				},
+			],
+		},
+	};
+	const otherProduct = structuredClone(product);
+	otherProduct.id = 1947;
+	otherProduct.model = "Other fixture";
+	otherProduct.installation_facts.items[0].source.product_id = 1947;
+	otherProduct.installation_facts.items[0].source.page = 152;
+	otherProduct.installation_facts.items[0].source.document_id = "other-fixture";
+	plan.instances[1].product_id = otherProduct.id;
+	plan.instances[1].product_revision = sha;
+	let saved;
+	const render = async (products) =>
+		act(async () =>
+			root.render(
+				React.createElement(CableForm, {
+					locale: "en-GB",
+					plan,
+					geometry: { sources: [] },
+					cable: plan.cable_runs[0],
+					products,
+					cancel() {},
+					onValidity() {},
+					submit(value) {
+						saved = value;
+						return true;
+					},
+				}),
+			),
+		);
+	await render([product, otherProduct]);
+	const select = document.querySelector('[name="manufacturer_conductor"]');
+	assert.match(select.textContent, /AC conductor.*155/);
+	await act(async () => {
+		select.value = select.options[1].value;
+		select.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	assert.ok(dom.element.querySelector('a[href$="#page=155"]'));
+	assert.match(
+		dom.element.textContent,
+		/Synthetic source; no manufacturer claim/,
+	);
+	await act(async () =>
+		document.querySelector('[name="manufacturer_confirmed"]').click(),
+	);
+	plan.instances.reverse();
+	await render([otherProduct, product]);
+	assert.ok(dom.element.querySelector('a[href$="#page=155"]'));
+	assert.equal(
+		document.querySelector('[name="manufacturer_confirmed"]').checked,
+		true,
+	);
+	await act(async () =>
+		document
+			.querySelector("form")
+			.dispatchEvent(
+				new window.Event("submit", { bubbles: true, cancelable: true }),
+			),
+	);
+	assert.equal(saved.manufacturer_comparison.conditions_confirmed, true);
+	assert.equal(
+		saved.manufacturer_comparison.confirmation_context.conductor
+			.cross_section_mm2,
+		50,
+	);
+	assert.equal(saved.manufacturer_comparison.fact_id, "ac-conductor");
+	assert.equal(saved.manufacturer_comparison.product_id, 1946);
+	saved = undefined;
+	await render([otherProduct]);
+	assert.match(select.textContent, /Selected source unavailable/);
+	assert.equal(
+		document.querySelector('[name="manufacturer_confirmed"]').disabled,
+		true,
+	);
+	assert.equal(
+		document.querySelector('[name="manufacturer_confirmed"]').checked,
+		false,
+	);
+	await act(async () =>
+		document
+			.querySelector("form")
+			.dispatchEvent(
+				new window.Event("submit", { bubbles: true, cancelable: true }),
+			),
+	);
+	assert.equal(saved, undefined);
+	await render([otherProduct, product]);
+	assert.equal(
+		document.querySelector('[name="manufacturer_confirmed"]').checked,
+		false,
+	);
+	await enter(document.querySelector('[name="cross_section"]'), "70");
+	assert.equal(
+		document.querySelector('[name="manufacturer_confirmed"]').checked,
+		false,
+	);
+});
+
+test("EN and DE conductor results expose declared range and source without approval", async (t) => {
+	const dom = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const root = createRoot(dom.element);
+	t.after(() => dom.dispose(root));
+	const cables = [
+		{
+			id: "run",
+			name: "Fixture conductor",
+			conductor: { cross_section_mm2: 50 },
+			manufacturer_comparison: {
+				status: "within_recommendation",
+				qualified: false,
+				fact: {
+					specification: { recommended_conductor_mm2: { low: 50, high: 70 } },
+					source: { ...source, page: 155 },
+				},
+			},
+		},
+	];
+	for (const locale of ["en-GB", "de-DE"]) {
+		await act(async () =>
+			root.render(
+				React.createElement(ConductorManufacturerResults, { cables, locale }),
+			),
+		);
+		assert.match(dom.element.textContent, /50 mm²/);
+		assert.match(dom.element.textContent, /50–70 mm²/);
+		assert.match(dom.element.textContent, /155/);
+		assert.ok(dom.element.querySelector('a[href$="#page=155"]'));
+		assert.match(
+			dom.element.textContent,
+			locale === "de-DE" ? /gesondert geprüft/ : /require separate checks/,
+		);
 	}
 });

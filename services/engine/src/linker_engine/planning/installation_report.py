@@ -7,6 +7,7 @@ from typing import cast
 from linker_engine.models import ReportRow, ReportSection, ReportTable
 
 from .canonical import Object
+from .installation_conductor_report import conductor_section
 from .installation_current_report import current_sections
 from .installation_electrical_report import electrical_sections
 from .installation_material_report import material_section
@@ -88,6 +89,8 @@ def installation_sections(source: Object, locale: str) -> list[ReportSection]:
     material_review = plan.get("material_review")
     if isinstance(material_review, dict):
         sections.append(material_section(material_review, locale))
+    if any(isinstance(cable.get("manufacturer_comparison"), dict) for cable in cables):
+        sections.append(conductor_section(cables, locale))
     source_rows = [
         ReportRow(
             label=f"{text('source', locale)} · {s['id']}",

@@ -27,10 +27,11 @@ ops = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(ops)
 
 
-@pytest.mark.parametrize("expanded", [False, True])
+@pytest.mark.parametrize("mode", ["none", "flat", "pitched", "both"])
 def test_prepared_policy_is_frozen_and_numerical_operator_has_no_credentials(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, expanded: bool
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, mode: str
 ) -> None:
+    expanded = mode != "none"
     monkeypatch.setattr(
         ops.pwd,
         "getpwnam",
@@ -56,7 +57,10 @@ def test_prepared_policy_is_frozen_and_numerical_operator_has_no_credentials(
     runtime: dict[str, Any] = {"directory": str(root / "state/workspace")}
     policy: dict[str, Any] = {"ready_file": str(root / "run/worker.ready.json")}
     if expanded:
-        runtime["geometric_pv_clear_flat_roof"] = {"fixture": True}
+        if mode in ("flat", "both"):
+            runtime["geometric_pv_clear_flat_roof"] = {"fixture": True}
+        if mode in ("pitched", "both"):
+            runtime["geometric_pv_clear_pitched_roof"] = {"fixture": True}
         policy["expanded_job"] = {"fixture": True}
     (private / "runtime.json").write_text(json.dumps(runtime))
     (private / "worker.json").write_text(json.dumps(policy))

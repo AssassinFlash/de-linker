@@ -10,11 +10,12 @@ import {
 import type { PlantUnitDraft } from "../../domain/equipmentPlant.ts";
 import { PvStringSetup } from "./PvStringSetup.tsx";
 import { Notice } from "../Notice.tsx";
-import { __ } from "../../i18n.ts";
+import { __, sprintf } from "../../i18n.ts";
 
 export function PlantPvStringSetup({
 	draft,
 	unit,
+	units,
 	edit,
 	locale,
 	disabled,
@@ -22,6 +23,7 @@ export function PlantPvStringSetup({
 }: {
 	draft: Draft;
 	unit: PlantUnitDraft;
+	units?: readonly PlantUnitDraft[];
 	edit: (change: (inputs: JsonObject) => JsonObject) => boolean;
 	locale: string;
 	disabled: boolean;
@@ -63,9 +65,26 @@ export function PlantPvStringSetup({
 				(u) => u.unit_id !== unit.id && u.inverter_instance_id === i.id,
 			),
 	);
+	const unavailableModuleLabels = Object.fromEntries(
+		(plant?.units ?? [])
+			.filter((other) => other.unit_id !== unit.id)
+			.flatMap((other) =>
+				other.plan.strings.flatMap((string) =>
+					string.module_ids.map((id) => [
+						id,
+						sprintf(
+							__("Assigned to system %s", "linker-tools"),
+							units?.find((candidate) => candidate.id === other.unit_id)
+								?.name ?? other.unit_id,
+						),
+					]),
+				),
+			),
+	);
 	return (
 		<>
 			<PvStringSetup
+				key={unit.id}
 				draft={draft}
 				edit={edit}
 				inverterId={inverterId}
@@ -74,13 +93,11 @@ export function PlantPvStringSetup({
 				onValidity={onValidity}
 				controlled={{
 					plan,
-					unavailableModuleIds:
-						plant?.units
-							.filter((u) => u.unit_id !== unit.id)
-							.flatMap((u) => u.plan.strings.flatMap((s) => s.module_ids)) ??
-						[],
+					scopeLabel: unit.name,
+					unavailableModuleLabels,
+					unavailableModuleIds: Object.keys(unavailableModuleLabels),
 					change: (value) => {
-						edit((inputs) =>
+						return edit((inputs) =>
 							changePvPlantStringUnit(
 								inputs,
 								unit.id,

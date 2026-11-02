@@ -565,6 +565,28 @@ test("the geometric PV workspace uses all retained intervals, adopts frozen AC e
 		document.body.textContent,
 		/Conditions for larger-roof calculations/,
 	);
+	const { geometric_pv_clear_flat_roof: flatRoof, ...ordinaryLimits } =
+		expanded.runtime.limits;
+	await act(async () =>
+		setRuntime({
+			...expanded,
+			runtime: {
+				...expanded.runtime,
+				limits: {
+					...ordinaryLimits,
+					geometric_pv_clear_pitched_roof: flatRoof,
+				},
+			},
+		}),
+	);
+	await until(
+		() => !button("Calculate saved PV reference with roof shading").disabled,
+	);
+	assert.match(document.body.textContent, /Larger pitched-roof calculations/);
+	assert.match(
+		document.body.textContent,
+		/One four-corner roof plane up to 60°/,
+	);
 	await act(async () =>
 		setRuntime({
 			...expanded,

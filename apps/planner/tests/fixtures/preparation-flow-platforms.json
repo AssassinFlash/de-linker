@@ -4,7 +4,7 @@
 	"baselines": {
 		"darwin-arm64": {
 			"fixture": "preparation-flow-darwin-arm64.json",
-			"canonical_sorted_json_sha256": "9042cad574a349441ad4154d1ba6d04b7f926c5e8bfd7e73e7909672d8caf9d2",
+			"canonical_sorted_json_sha256": "6e1a99e71f67ec88b84e7b04992dd0e30c5e060442ac642b9899325ee07364b3",
 			"runtime": {
 				"dependencies": {
 					"jsonschema": "4.26.0",
@@ -25,11 +25,11 @@
 				"platform": "macOS-26.6.2-arm64-arm-64bit",
 				"python": "3.12.15"
 			},
-			"export_run": "native:darwin-arm64:2026-11-02T00:23:38Z"
+			"export_run": "native:darwin-arm64:2026-11-02T01:21:58Z"
 		},
 		"linux-x86_64": {
 			"fixture": "preparation-flow-linux-x86_64.json",
-			"canonical_sorted_json_sha256": "a04c180883a891af09e8d6f645f3c83132a0143f03a540d8a3d6f07b250ea56f",
+			"canonical_sorted_json_sha256": "5a9106e2e56a87f077a6e4f22b7ebb14503764b60a505ae1301522babe151d13",
 			"runtime": {
 				"dependencies": {
 					"jsonschema": "4.26.0",
@@ -50,7 +50,7 @@
 				"platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
 				"python": "3.12.3"
 			},
-			"export_run": "native:linux-x86_64:2026-11-02T00:30:32Z"
+			"export_run": "native:linux-x86_64:2026-11-02T01:26:17Z"
 		}
 	}
 }

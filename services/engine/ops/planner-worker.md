@@ -61,7 +61,15 @@ frozen request or result bytes to make a version appear compatible.
 
 The optional `geometric_pv_clear_flat_roof` runtime policy may only be enabled
 with an explicit `expanded_job` worker policy. Absence keeps the ordinary
-worker and its existing work limits unchanged. The measured host envelope uses:
+worker and its existing work limits unchanged.
+
+The separate `geometric_pv_clear_pitched_roof` policy is disabled when absent
+and also requires the same isolated worker mechanism. Do not enable it on a
+host until a representative pitched-roof job has completed under that host's
+configured isolation and resource guard; flat-roof measurements do not prove
+the pitched-roof envelope.
+
+The measured flat-roof host envelope uses:
 
 ```json
 {
@@ -98,6 +106,9 @@ names, leaving other writers and published blobs untouched. Sudden service or
 host loss still uses the existing stopped-window CAS retention procedure.
 
 The cgroup proof is a host capability, not a capacity claim for all roofs.
+For synthetic host verification, use `systemd-run --collect`; after collecting
+the journal, verify that the owned temporary root and cgroup are absent and the
+transient unit is `not-found`. This does not change persistent production units.
 Production activation additionally needs the actual native queue, pause,
 cancellation, timeout, normal-job latency, health, result and cleanup evidence
 for the selected release. The 96-module synthetic measurement and its scope
