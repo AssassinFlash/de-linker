@@ -1016,6 +1016,10 @@ export function EnergyWorkspace({
 		if (next !== "comparison") url.searchParams.delete("compare");
 		replacePlannerLocation(url);
 	}
+	function showEquipment() {
+		if (openEquipment) openEquipment();
+		else chooseView("equipment");
+	}
 	async function useRange() {
 		if (!currentSetup || rangeFlight.current || !admitted) return;
 		const controller = new AbortController(),
@@ -1195,9 +1199,7 @@ export function EnergyWorkspace({
 				<button
 					type="button"
 					aria-pressed={view === "equipment"}
-					onClick={() =>
-						openEquipment ? openEquipment() : chooseView("equipment")
-					}
+					onClick={showEquipment}
 				>
 					{__("Equipment", "linker-tools")}
 				</button>
@@ -1229,7 +1231,7 @@ export function EnergyWorkspace({
 			</div>
 			{Boolean(actionError) && (
 				<div ref={errorTarget} className="lp-focus-target" tabIndex={-1}>
-					<EnergyError error={actionError} />
+					<EnergyError error={actionError} openEquipment={showEquipment} />
 				</div>
 			)}
 			{operations.storageFailed && (

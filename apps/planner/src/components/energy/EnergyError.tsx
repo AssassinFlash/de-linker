@@ -352,15 +352,24 @@ export function energyErrorText(error: unknown): string {
 			);
 	}
 }
-export function EnergyError({ error }: { error: unknown }) {
+export function EnergyError({
+	error,
+	openEquipment,
+}: {
+	error: unknown;
+	openEquipment?: () => void;
+}) {
 	const issue = error instanceof ApiError ? error.evidenceIssue : null;
 	return error ? (
 		<Notice error>
 			<p>{energyErrorText(error)}</p>
-			{error instanceof ApiError &&
+			{openEquipment &&
+				error instanceof ApiError &&
 				error.code === "report_wiring_check_required" && (
 					<p>
-						<a href="#lp-equipment">{__("Equipment", "linker-tools")}</a>
+						<button type="button" onClick={openEquipment}>
+							{__("Equipment", "linker-tools")}
+						</button>
 					</p>
 				)}
 			{issue && (

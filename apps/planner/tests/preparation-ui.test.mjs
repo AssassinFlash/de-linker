@@ -471,6 +471,8 @@ test("the geometric PV workspace uses all retained intervals, adopts frozen AC e
 			sent.push(path);
 			assert.equal(command.expected_revision, current.baseline.revision);
 			if (path === "runs/report") {
+				if (sent.filter((name) => name === path).length === 1)
+					throw new ApiError(422, "report_wiring_check_required");
 				submitted = command.options;
 				return native.report_run;
 			}
@@ -689,10 +691,22 @@ test("the geometric PV workspace uses all retained intervals, adopts frozen AC e
 		choice.dispatchEvent(new window.Event("change", { bubbles: true }));
 	});
 	await act(async () => button("Generate planning report").click());
+	const wiringWarning = () =>
+		[...document.querySelectorAll(".lp-notice")].find((node) =>
+			node.textContent.includes("saved PV strings"),
+		);
+	await until(() => Boolean(wiringWarning()));
+	const recovery = wiringWarning().querySelector("button");
+	assert.equal(recovery.textContent, "Equipment");
+	await act(async () => recovery.click());
+	assert.equal(document.getElementById("lp-equipment").hidden, false);
+	await act(async () => button("Planning report").click());
+	assert.equal(choice.value, native.run.id);
+	await act(async () => button("Generate planning report").click());
 	await until(() => submitted !== undefined);
 	assert.equal(submitted.pv_run_id, native.run.id);
 	assert.equal(submitted.direct_beam_run_id, undefined);
-	assert.deepEqual(sent, ["runs/geometric-pv", "runs/report"]);
+	assert.deepEqual(sent, ["runs/geometric-pv", "runs/report", "runs/report"]);
 });
 
 test("owned geometric setup saves with the cumulative contract and shows frozen night/daylight separately from PV", async (t) => {
