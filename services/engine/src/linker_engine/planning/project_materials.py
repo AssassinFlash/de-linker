@@ -192,6 +192,10 @@ def project_materials(source: Object) -> Object:
     installation = source.get("installation")
     if isinstance(installation, dict):
         declared = installation.get("material_review")
+        protection = installation.get("protection_review")
+        protection_rows = (
+            protection.get("assessments", []) if isinstance(protection, dict) else []
+        )
         if isinstance(declared, dict):
             for item in cast(list[Object], declared["rows"]):
                 mounting_result = item.get("mounting_quantity_result")
@@ -209,6 +213,24 @@ def project_materials(source: Object) -> Object:
                             "installation_input_sha256": installation["input_sha256"],
                             "qualified": False,
                             "declaration": item,
+                            **(
+                                {
+                                    "protection_assessments": [
+                                        row
+                                        for row in protection_rows
+                                        if isinstance(row, dict)
+                                        and row.get("protection_material_id")
+                                        == item["id"]
+                                    ]
+                                }
+                                if isinstance(protection_rows, list)
+                                and any(
+                                    isinstance(row, dict)
+                                    and row.get("protection_material_id") == item["id"]
+                                    for row in protection_rows
+                                )
+                                else {}
+                            ),
                         },
                     }
                 )
@@ -617,6 +639,16 @@ def materials_csv(materials: Object, sha256: str, locale: str) -> bytes:
             origin.get("manufacturer_comparison") if isinstance(origin, dict) else None
         )
         assessment = text("material_installation_open", locale)
+        protection_checks = (
+            origin.get("protection_assessments") if isinstance(origin, dict) else None
+        )
+        if isinstance(protection_checks, list) and protection_checks:
+            from .installation_protection_report import protection_section
+
+            section = protection_section({"assessments": protection_checks}, locale)
+            assessment += " · " + " · ".join(
+                f"{row.label}: {row.value}" for row in section.rows
+            )
         if isinstance(comparison, dict):
             labels = {
                 "within_recommendation": (

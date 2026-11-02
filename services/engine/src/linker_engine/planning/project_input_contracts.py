@@ -25,9 +25,13 @@ type InputContract = Literal[
     "project_engineering_v10",
     "installation_conductor_manufacturer_v1",
     "installation_mounting_quantities_v1",
+    "installation_protection_evidence_v1",
 ]
 MOUNTING_QUANTITIES_INPUT_CONTRACT: InputContract = (
     "installation_mounting_quantities_v1"
+)
+PROTECTION_EVIDENCE_INPUT_CONTRACT: InputContract = (
+    "installation_protection_evidence_v1"
 )
 CONDUCTOR_MANUFACTURER_INPUT_CONTRACT: InputContract = (
     "installation_conductor_manufacturer_v1"
@@ -61,6 +65,7 @@ SUPPORTED_INPUT_CONTRACTS: tuple[str, ...] = (
     ENGINEERING_V10_INPUT_CONTRACT,
     CONDUCTOR_MANUFACTURER_INPUT_CONTRACT,
     MOUNTING_QUANTITIES_INPUT_CONTRACT,
+    PROTECTION_EVIDENCE_INPUT_CONTRACT,
 )
 
 
@@ -76,6 +81,8 @@ def required_contracts(inputs: Mapping[str, object]) -> tuple[str, ...]:
     if isinstance(installation, Mapping) and "pv_string_links" in installation:
         required.append(INPUT_CONTRACT)
     if isinstance(installation, Mapping):
+        if "protection_assessments" in installation:
+            required.append(PROTECTION_EVIDENCE_INPUT_CONTRACT)
         if "materials" in installation:
             required.append(MATERIALS_INPUT_CONTRACT)
             materials = installation.get("materials")

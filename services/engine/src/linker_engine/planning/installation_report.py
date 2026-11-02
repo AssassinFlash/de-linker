@@ -11,6 +11,7 @@ from .installation_conductor_report import conductor_section
 from .installation_current_report import current_sections
 from .installation_electrical_report import electrical_sections
 from .installation_material_report import material_section
+from .installation_protection_report import protection_section
 from .installation_terminal_report import terminal_section
 from .project_materials import conductor_specification, material_quantity
 from .report_copy import text
@@ -89,6 +90,9 @@ def installation_sections(source: Object, locale: str) -> list[ReportSection]:
     material_review = plan.get("material_review")
     if isinstance(material_review, dict):
         sections.append(material_section(material_review, locale))
+    protection = plan.get("protection_review")
+    if isinstance(protection, dict):
+        sections.append(protection_section(protection, locale))
     if any(isinstance(cable.get("manufacturer_comparison"), dict) for cable in cables):
         sections.append(conductor_section(cables, locale))
     source_rows = [

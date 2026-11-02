@@ -15,6 +15,7 @@ from .installation_conductor_comparison import (
 from .installation_electrical import electrical_review
 from .installation_inputs import InstallationInputs, RoutePoint
 from .installation_materials import material_review
+from .installation_protection import protection_review
 from .installation_terminals import has_terminal_feature, terminal_assessment
 from .pv_string_inputs import PvPlantStringPlan, PvStringPlan, plant_instance_statuses
 
@@ -505,6 +506,11 @@ def route_takeoff(
         **(
             {"material_review": material_review(plan, selected, geometry)}
             if "materials" in plan.model_fields_set
+            else {}
+        ),
+        **(
+            {"protection_review": protection_review(plan, stale_instances)}
+            if "protection_assessments" in plan.model_fields_set
             else {}
         ),
         **(

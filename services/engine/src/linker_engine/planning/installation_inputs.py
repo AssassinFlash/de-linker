@@ -20,6 +20,7 @@ from .geometry_documents import (
     RoofFace,
     Text,
 )
+from .installation_protection_inputs import ProtectionAssessment
 
 
 class RoutePoint(Document):
@@ -374,6 +375,7 @@ class InstallationInputs(Document):
     pv_string_links: list[PvStringLink] = Field(default_factory=list)
     # User-declared physical items. Absence preserves historic project bytes.
     materials: list[InstallationMaterial] = Field(default_factory=list)
+    protection_assessments: list[ProtectionAssessment] = Field(default_factory=list)
 
     def project_document(self) -> Object:
         value = self.model_dump(mode="json")
@@ -392,6 +394,8 @@ class InstallationInputs(Document):
                     not in item.mounting_quantity_basis.module.source.model_fields_set
                 ):
                     dumped["mounting_quantity_basis"]["module"]["source"].pop("woo")
+        if "protection_assessments" not in self.model_fields_set:
+            value.pop("protection_assessments")
         # A run without a declared conductor keeps its historical bytes, so the
         # frozen input hash of an unchanged project revision does not move.
         # Omitted and explicit null describe the same physical run, so both
@@ -434,6 +438,7 @@ class InstallationInputs(Document):
             self.routes,
             self.cable_runs,
             self.materials,
+            self.protection_assessments,
         ):
             if len({row.id for row in rows}) != len(rows):
                 raise ValueError("installation IDs must be distinct in their scope")

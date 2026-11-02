@@ -12,6 +12,7 @@
     "installation_physical_materials_v1",
     "project_engineering_v10",
     "installation_conductor_manufacturer_v1",
-    "installation_mounting_quantities_v1"
+    "installation_mounting_quantities_v1",
+    "installation_protection_evidence_v1"
   ]
 }
