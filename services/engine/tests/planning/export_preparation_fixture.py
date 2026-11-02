@@ -698,10 +698,19 @@ def native_export() -> dict[str, Any]:
         "baseline": {
             "fixture": f"preparation-flow-{host}.json",
             "source_sha256": source,
+            "runtime_sha256": actual.sha256,
             "canonical_sorted_json_sha256": hashlib.sha256(canonical).hexdigest(),
             "runtime": {
                 key: runtime[key]
-                for key in ("dependencies", "libc", "machine", "platform", "python")
+                for key in (
+                    "dependencies",
+                    "libc",
+                    "machine",
+                    "platform",
+                    "python",
+                    "python_implementation",
+                    "sqlite",
+                )
             },
             "export_run": "native:"
             + host
