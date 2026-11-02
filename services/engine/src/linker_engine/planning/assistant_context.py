@@ -21,6 +21,7 @@ from .geometric_pv_inputs import PROFILE_PURPOSE as GEOMETRIC_PV_PURPOSE
 from .geometric_pv_profile import prepared_profile as geometric_pv_profile
 from .geometric_pv_profile import reference_bundle as geometric_pv_bundle
 from .grid_connection_report import grid_connection_sections
+from .installation_protection_report import protection_section
 from .installation_report import installation_sections
 from .project_materials import (
     material_name,
@@ -1343,19 +1344,42 @@ def assistant_context(
                         if key in row
                     }
 
-                selected_run_view["protection_comparisons"] = [
-                    {
-                        "breaking": comparison(cast(Object, case["breaking"])),
-                        "disconnection": comparison(
-                            cast(Object, case["disconnection"])
-                        ),
-                        "thermal": [
-                            comparison(row)
-                            for row in cast(list[Object], case.get("thermal", []))
+                descriptions: dict[str, Json] = {}
+                for lang in ("en", "de"):
+                    cases: list[Json] = []
+                    for index, case in enumerate(
+                        cast(list[Object], protection["assessments"]), 1
+                    ):
+                        thermal: list[Json] = []
+                        for position, row in enumerate(
+                            cast(list[Object], case.get("thermal", [])), 1
+                        ):
+                            thermal.append(
+                                {
+                                    **comparison(row),
+                                    "run_id": f"{'Leiter' if lang == 'de' else 'Conductor'} {position}",
+                                }
+                            )
+                        cases.append(
+                            {
+                                "scenario": f"{'Schutzfall' if lang == 'de' else 'Protection case'} {index}",
+                                "breaking": comparison(cast(Object, case["breaking"])),
+                                "disconnection": comparison(
+                                    cast(Object, case["disconnection"])
+                                ),
+                                "thermal": thermal,
+                            }
+                        )
+                    section = protection_section({"assessments": cases}, lang)
+                    descriptions[lang] = {
+                        "scope": section.paragraphs[0],
+                        "rows": [
+                            {"label": row.label, "value": row.value}
+                            for row in section.rows
+                            if row.href is None
                         ],
                     }
-                    for case in cast(list[Object], protection["assessments"])
-                ]
+                selected_run_view["protection_comparisons"] = descriptions
             materials = _report_materials(
                 workspace, run, run.result, source_out[0] if source_out else None
             )

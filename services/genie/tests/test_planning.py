@@ -123,60 +123,62 @@ def test_saved_material_answers_use_frozen_anonymous_items_in_both_languages() -
     )
 
 
+def protection_display() -> dict[str, Any]:
+    return {
+        "en": {
+            "scope": "This does not approve selectivity or earthing.",
+            "rows": [
+                {
+                    "label": "Protection case 1 · Breaking capacity",
+                    "value": "Outside the declared values · Maximum prospective fault current 6,000 A > device breaking capacity 5,000 A · 230 V AC",
+                },
+                {
+                    "label": "Protection case 1 · Clearing time",
+                    "value": "Within the declared values · Worst-case device clearing time 0.2 s ≤ required maximum clearing time 0.4 s · Minimum fault current 500 A",
+                },
+                {
+                    "label": "Protection case 1 · Thermal withstand · Conductor 1 / line",
+                    "value": "Not assessed · Let-through evidence does not cover the fault range",
+                },
+            ],
+        },
+        "de": {
+            "scope": "Selektivität und Erdungssystem sind damit nicht freigegeben.",
+            "rows": [
+                {
+                    "label": "Schutzfall 1 · Ausschaltvermögen",
+                    "value": "Außerhalb der angegebenen Werte · Maximaler Fehlerstrom 6.000 A > Ausschaltvermögen des Schutzgeräts 5.000 A · 230 V AC",
+                },
+                {
+                    "label": "Schutzfall 1 · Abschaltzeit",
+                    "value": "Innerhalb der angegebenen Werte · Längste Abschaltzeit 0,2 s ≤ zulässige Abschaltzeit 0,4 s",
+                },
+                {
+                    "label": "Schutzfall 1 · Thermische Beanspruchung · Leiter 1 / line",
+                    "value": "Nicht geprüft · Der Durchlassenergienachweis deckt den Fehlerstrombereich nicht ab",
+                },
+            ],
+        },
+    }
+
+
 def test_saved_protection_comparisons_explain_all_three_statuses() -> None:
     raw, page = source()
     raw["runs"][0].update(
-        kind="planning_report_v1",
-        protection_comparisons=[
-            {
-                "breaking": {
-                    "status": "outside_declared_values",
-                    "measured": 6000,
-                    "maximum": 5000,
-                    "voltage_v": 230,
-                    "current_kind": "ac",
-                },
-                "disconnection": {
-                    "status": "within_declared_values",
-                    "measured": 0.2,
-                    "maximum": 0.4,
-                    "minimum_fault_a": 500,
-                },
-                "thermal": [
-                    {
-                        "status": "within_declared_values",
-                        "measured": 100000,
-                        "maximum": 211600,
-                        "cross_section_mm2": 4,
-                        "k_a_sqrt_s_per_mm2": 115,
-                        "coverage_min_fault_a": 500,
-                        "coverage_max_fault_a": 6000,
-                        "maximum_clear_s": 0.3,
-                    }
-                ],
-            }
-        ],
+        kind="planning_report_v1", protection_comparisons=protection_display()
     )
     answer = planning.protection_answer(raw, page, "en")
-    assert (
-        "maximum prospective fault current 6000 A > device breaking capacity 5000 A"
-        in answer
-    )
-    assert "clearing time 0.2 s ≤ required clearing time 0.4 s" in answer
-    assert (
-        "let-through energy I²t 100000 A²s ≤ thermal withstand k²S² 211600 A²s"
-        in answer
-    )
-    assert "revision 2" in answer and "do not approve" in answer
+    assert "fault current 6,000 A > device breaking capacity 5,000 A" in answer
+    assert "clearing time 0.2 s ≤ required maximum clearing time 0.4 s" in answer
+    assert "Not assessed · Let-through evidence" in answer
+    assert "revision 2" in answer and "does not approve" in answer
     de = planning.protection_answer(raw, page, "de")
-    assert "6000 A > Ausschaltvermögen 5000 A" in de and "0,2 s ≤" in de
-    case = raw["runs"][0]["protection_comparisons"][0]
-    case["breaking"] = {"status": "not_assessed", "reason": "rating_conditions_differ"}
     assert (
-        "Not assessed — device voltage or current type differs"
-        in planning.protection_answer(raw, page, "en")
+        "6.000 A > Ausschaltvermögen des Schutzgeräts 5.000 A" in de and "0,2 s ≤" in de
     )
-    case["disconnection"]["status"] = "outside_declared_values"
+    raw["runs"][0]["protection_comparisons"]["en"]["rows"][0]["private_name"] = (
+        "Private name"
+    )
     assert "could not be verified" in planning.protection_answer(raw, page, "en")
 
 
@@ -188,23 +190,7 @@ def test_real_protection_question_uses_service_route() -> None:
 
     raw, page = source()
     raw["runs"][0].update(
-        kind="planning_report_v1",
-        protection_comparisons=[
-            {
-                "breaking": {
-                    "status": "outside_declared_values",
-                    "measured": 6000,
-                    "maximum": 5000,
-                    "voltage_v": 230,
-                    "current_kind": "ac",
-                },
-                "disconnection": {
-                    "status": "not_assessed",
-                    "reason": "clearing_evidence_missing",
-                },
-                "thermal": [],
-            }
-        ],
+        kind="planning_report_v1", protection_comparisons=protection_display()
     )
     question = "In this report, which protection check is outside the declared values and why? What do the other two comparisons show?"
     request = TurnRequest.model_validate(
@@ -239,7 +225,7 @@ def test_real_protection_question_uses_service_route() -> None:
     block = result.output.blocks[0]
     assert (
         isinstance(block, TextBlock)
-        and "6000 A > device breaking capacity 5000 A" in block.text
+        and "6,000 A > device breaking capacity 5,000 A" in block.text
     )
     assert "Not assessed" in block.text
 
