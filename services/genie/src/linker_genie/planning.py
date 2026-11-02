@@ -93,9 +93,9 @@ def saved_result_question(raw: Any, page: PageContext, question: str) -> bool:
     )
 
 
-def is_material_report(raw: Any, page: PageContext) -> bool:
+def _saved_report_run(raw: Any, page: PageContext) -> dict[str, Any] | None:
     if not isinstance(raw, dict):
-        return False
+        return None
     payload = view(raw, page)
     runs = raw.get("runs")
     if (
@@ -104,15 +104,100 @@ def is_material_report(raw: Any, page: PageContext) -> bool:
         or not isinstance(runs, list)
         or len(runs) != 1
     ):
-        return False
+        return None
     run = runs[0]
+    if (
+        not isinstance(run, dict)
+        or run.get("kind") != "planning_report_v1"
+        or run.get("state") != "succeeded"
+        or run.get("truncated")
+    ):
+        return None
+    return run
+
+
+def is_material_report(raw: Any, page: PageContext) -> bool:
+    run = _saved_report_run(raw, page)
     return bool(
-        isinstance(run, dict)
-        and run.get("kind") == "planning_report_v1"
-        and run.get("state") == "succeeded"
-        and not run.get("truncated")
+        run
         and isinstance(run.get("declared_installation_materials"), list)
         and run["declared_installation_materials"]
+    )
+
+
+def is_protection_report(raw: Any, page: PageContext) -> bool:
+    run = _saved_report_run(raw, page)
+    comparisons = run.get("protection_comparisons") if run else None
+    return bool(
+        isinstance(comparisons, dict)
+        and all(
+            isinstance(comparisons.get(lang), dict)
+            and isinstance(comparisons[lang].get("rows"), list)
+            and comparisons[lang]["rows"]
+            for lang in ("en", "de")
+        )
+    )
+
+
+def protection_answer(raw: Any, page: PageContext, language: str) -> str:
+    """Present the same anonymous frozen comparisons as the report formatter."""
+    de = language == "de"
+    unavailable = (
+        "Die gespeicherten Schutzvergleiche konnten nicht überprüft werden. Bitte öffnen Sie den Bericht."
+        if de
+        else "The saved protection comparisons could not be verified. Please open the report."
+    )
+    if not is_protection_report(raw, page):
+        return unavailable
+    run = _saved_report_run(raw, page)
+    assert run is not None
+    section = run["protection_comparisons"]["de" if de else "en"]
+    rows = section.get("rows")
+    scope = section.get("scope")
+    if (
+        not isinstance(scope, str)
+        or not isinstance(rows, list)
+        or any(
+            not isinstance(row, dict)
+            or set(row) != {"label", "value"}
+            or not isinstance(row["label"], str)
+            or not isinstance(row["value"], str)
+            for row in rows
+        )
+    ):
+        return unavailable
+    heading = (
+        f"Gespeicherter Bericht, Revision {run['revision']}:"
+        if de
+        else f"Saved report, revision {run['revision']}:"
+    )
+    project = raw["project"]
+    viewed = project.get("revision")
+    latest = project.get("current_revision")
+    report = run.get("revision")
+    revisions = [v for v in (report, viewed, latest) if type(v) is int]
+    if len(set(revisions)) > 1:
+        details = []
+        if type(viewed) is int:
+            details.append(
+                f"angezeigter Projektstand: Revision {viewed}"
+                if de
+                else f"viewed project: revision {viewed}"
+            )
+        if type(latest) is int:
+            details.append(
+                f"neuester gespeicherter Projektstand: Revision {latest}"
+                if de
+                else f"latest saved project: revision {latest}"
+            )
+        heading += " " + "; ".join(details) + ". "
+        heading += (
+            "Diese Vergleiche beziehen sich auf den gespeicherten Bericht und gelten nicht automatisch für Geräte eines anderen Projektstands."
+            if de
+            else "These comparisons describe the saved report and do not automatically apply to equipment in another revision."
+        )
+    return "\n".join(
+        [heading, *(f"{row['label']}: {row['value']}" for row in rows), scope]
     )
 
 
@@ -123,23 +208,8 @@ def material_answer(raw: Any, page: PageContext, language: str) -> str:
         if language == "de"
         else "The saved material details could not be verified. Please open the report."
     )
-    payload = view(raw, page)
-    if (
-        payload.get("status") != "available"
-        or payload.get("truncated")
-        or not isinstance(raw, dict)
-    ):
-        return unavailable
-    runs = raw.get("runs")
-    if not isinstance(runs, list) or len(runs) != 1:
-        return unavailable
-    run = runs[0]
-    if (
-        not isinstance(run, dict)
-        or run.get("kind") != "planning_report_v1"
-        or run.get("state") != "succeeded"
-        or run.get("truncated")
-    ):
+    run = _saved_report_run(raw, page)
+    if run is None:
         return unavailable
     items = run.get("declared_installation_materials")
     if not isinstance(items, list) or not items:

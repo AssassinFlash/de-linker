@@ -26,6 +26,7 @@ from linker_engine.planning.project_input_contracts import (
 from linker_engine.planning.records import Actor
 from linker_engine.planning.report_inputs import ReportOptions
 from linker_engine.planning.report_kernel import ReportKernel, ReportService
+from linker_engine.planning.report_numbers import comparison_values
 from linker_engine.planning.worker import Worker
 from linker_engine.planning.workspace import Workspace
 
@@ -100,8 +101,11 @@ def result(inputs: FixtureObject, basis: FixtureObject) -> FixtureObject:
     )
 
 
-def confirmed() -> tuple[FixtureObject, FixtureObject]:
+def confirmed(capacity_a: float = 10000) -> tuple[FixtureObject, FixtureObject]:
     inputs, basis = fixture()
+    inputs["installation"]["protection_assessments"][0]["breaking"]["capacity_a"] = (
+        capacity_a
+    )
     review = result(inputs, basis)
     assert review["confirmation_status"] == "confirmation_required"
     inputs["installation"]["protection_assessments"][0]["confirmed_context_sha256"] = (
@@ -260,7 +264,7 @@ def test_separate_protective_earth_is_checked_only_for_the_same_endpoints() -> N
 def test_worker_freezes_protection_in_report_pdf_csv_and_private_projection(
     workspace: Workspace, owner: Actor, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    inputs, basis = confirmed()
+    inputs, basis = confirmed(capacity_a=5000)
     products = ProductSources(lambda: pytest.fail("unexpected live source"))
     monkeypatch.setattr(products, "equipment_basis", lambda **kwargs: basis)
     monkeypatch.setattr(products, "confirm_basis", lambda *args, **kwargs: None)
@@ -300,9 +304,11 @@ def test_worker_freezes_protection_in_report_pdf_csv_and_private_projection(
     saved = json_object(completed.result)
     report = str(saved["report"])
     assert (
-        "Breaking capacity" in report
-        and "Thermal withstand" in report
-        and "100,000" in report
+        "Maximum prospective fault current 6,000 A > device breaking capacity 5,000 A"
+        in report
+        and "Worst-case device clearing time 0.2 s ≤ required maximum clearing time 0.4 s"
+        in report
+        and "100,000 A²s ≤ conductor withstand k²S² 211,600 A²s" in report
     )
     pdf = Assets(workspace).content(owner, project.id, saved["prepared_asset"]["id"])
     pdf_text = " ".join(
@@ -319,6 +325,16 @@ def test_worker_freezes_protection_in_report_pdf_csv_and_private_projection(
         workspace, owner, project.id, project.revision, [run.id], "en"
     )
     text = str(projection)
+    comparisons = json_object(cast(list[object], projection["runs"])[0])[
+        "protection_comparisons"
+    ]
+    descriptions = json_object(comparisons)
+    english = json_object(descriptions["en"])
+    german = json_object(descriptions["de"])
+    assert "6,000 A > device breaking capacity 5,000 A" in str(english["rows"])
+    assert "6.000 A > Ausschaltvermögen des Schutzgeräts 5.000 A" in str(german["rows"])
+    assert "Within the declared values" in str(english["rows"])
+    assert "not approve" in str(english["scope"])
     assert "Breaking capacity" in text and "Thermal withstand" in text
     assert (
         "Synthetic breaker" not in text
@@ -339,7 +355,8 @@ def test_worker_freezes_protection_in_report_pdf_csv_and_private_projection(
     de_text = " ".join(
         " ".join(p.extract_text().split()) for p in PdfReader(io.BytesIO(de_pdf)).pages
     )
-    assert "Ausschaltvermögen" in de_text and "Thermische Beanspruchung" in de_text
+    assert "Maximaler Fehlerstrom 6.000 A >" in de_text
+    assert "Ausschaltvermögen des Schutzgeräts 5.000 A" in de_text
     de_csv = Assets(workspace).content(
         owner,
         project.id,
@@ -354,4 +371,11 @@ def test_worker_freezes_protection_in_report_pdf_csv_and_private_projection(
     assert (
         "Ausschaltvermögen" in de_projection
         and "Project fault study" not in de_projection
+    )
+
+
+def test_report_comparison_preserves_a_small_exceedance() -> None:
+    assert comparison_values(6000.0004, 6000.0003, "de", "A") == (
+        "6.000,0004 A",
+        "6.000,0003 A",
     )

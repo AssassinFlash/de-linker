@@ -21,6 +21,7 @@ from .geometric_pv_inputs import PROFILE_PURPOSE as GEOMETRIC_PV_PURPOSE
 from .geometric_pv_profile import prepared_profile as geometric_pv_profile
 from .geometric_pv_profile import reference_bundle as geometric_pv_bundle
 from .grid_connection_report import grid_connection_sections
+from .installation_protection_report import protection_section
 from .installation_report import installation_sections
 from .project_materials import (
     material_name,
@@ -1297,6 +1298,88 @@ def assistant_context(
             selected_run_view["calculation_sources"] = calculation_sources(
                 workspace, run
             )
+            installation = source_out[0].get("installation") if source_out else None
+            protection = (
+                installation.get("protection_review")
+                if isinstance(installation, dict)
+                else None
+            )
+            if isinstance(protection, dict) and isinstance(
+                protection.get("assessments"), list
+            ):
+                manifest_context = run.manifest.get("context")
+                assets = (
+                    manifest_context.get("assets")
+                    if isinstance(manifest_context, dict)
+                    else None
+                )
+                dependencies = run.result.get("dependencies")
+                if (
+                    not isinstance(assets, dict)
+                    or not isinstance(dependencies, dict)
+                    or assets.get("report.source") != dependencies.get("report_source")
+                ):
+                    raise InvalidInput(
+                        "saved protection differs from the frozen report source"
+                    )
+
+                def comparison(row: Object) -> Object:
+                    return {
+                        key: row[key]
+                        for key in (
+                            "status",
+                            "reason",
+                            "measured",
+                            "maximum",
+                            "voltage_v",
+                            "current_kind",
+                            "minimum_fault_a",
+                            "core_role",
+                            "cross_section_mm2",
+                            "k_a_sqrt_s_per_mm2",
+                            "maximum_clear_s",
+                            "coverage_min_fault_a",
+                            "coverage_max_fault_a",
+                        )
+                        if key in row
+                    }
+
+                descriptions: dict[str, Json] = {}
+                for lang in ("en", "de"):
+                    cases: list[Json] = []
+                    for index, case in enumerate(
+                        cast(list[Object], protection["assessments"]), 1
+                    ):
+                        thermal: list[Json] = []
+                        for position, row in enumerate(
+                            cast(list[Object], case.get("thermal", [])), 1
+                        ):
+                            thermal.append(
+                                {
+                                    **comparison(row),
+                                    "run_id": f"{'Leiter' if lang == 'de' else 'Conductor'} {position}",
+                                }
+                            )
+                        cases.append(
+                            {
+                                "scenario": f"{'Schutzfall' if lang == 'de' else 'Protection case'} {index}",
+                                "breaking": comparison(cast(Object, case["breaking"])),
+                                "disconnection": comparison(
+                                    cast(Object, case["disconnection"])
+                                ),
+                                "thermal": thermal,
+                            }
+                        )
+                    section = protection_section({"assessments": cases}, lang)
+                    descriptions[lang] = {
+                        "scope": section.paragraphs[0],
+                        "rows": [
+                            {"label": row.label, "value": row.value}
+                            for row in section.rows
+                            if row.href is None
+                        ],
+                    }
+                selected_run_view["protection_comparisons"] = descriptions
             materials = _report_materials(
                 workspace, run, run.result, source_out[0] if source_out else None
             )

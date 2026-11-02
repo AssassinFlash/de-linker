@@ -120,6 +120,7 @@ class Reading:
     seconds: float
     cost: float
     saved_material_question: float | None = None
+    saved_protection_question: float | None = None
 
     def as_log(self) -> dict[str, Any]:
         return {
@@ -131,6 +132,7 @@ class Reading:
             "seconds": round(self.seconds, 3),
             "cost": self.cost,
             "saved_material_question": self.saved_material_question,
+            "saved_protection_question": self.saved_protection_question,
         }
 
 
@@ -177,6 +179,14 @@ class Jev:
                 "saved_material_question": {
                     "type": "noul",
                     "instructions": "Is the customer asking about declared installation materials, their quantities, calculation or project-specific names in this saved report? Answer no for PV module counts, time periods, energy, equipment choice, or which inverter is in a bill of materials.",
+                },
+            }
+        if page.get("saved_protection_report") is True:
+            questions = {
+                **questions,
+                "saved_protection_question": {
+                    "type": "noul",
+                    "instructions": "Is the customer asking to explain the results, values or status of protection comparisons already recorded in this saved report? Answer no to causes of real faults or accidents, general protection device selection, and questions not about the report's recorded comparisons.",
                 },
             }
         payload = {"model": MODEL, "state": state, "questions": questions}
@@ -229,6 +239,11 @@ def _reading(body: dict[str, Any], seconds: float) -> Reading:
             cost=float(usage.get("cost") or 0.0) if isinstance(usage, dict) else 0.0,
             saved_material_question=float(answers["saved_material_question"]["noul"])
             if "saved_material_question" in answers
+            else None,
+            saved_protection_question=float(
+                answers["saved_protection_question"]["noul"]
+            )
+            if "saved_protection_question" in answers
             else None,
         )
     except (KeyError, TypeError, ValueError) as error:
