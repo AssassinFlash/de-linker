@@ -20,12 +20,14 @@ from linker_engine.planning.errors import (
     ReportSourceExportRequired,
 )
 from linker_engine.planning.execution_registry import ExecutionRegistry
+from linker_engine.planning.geometry_documents import PanelArray
 from linker_engine.planning.installation_inputs import InstallationInputs
 from linker_engine.planning.installation_takeoff import route_takeoff
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.product_sources import ProductSources
 from linker_engine.planning.project_input_contracts import (
     MATERIALS_INPUT_CONTRACT,
+    MOUNTING_QUANTITIES_INPUT_CONTRACT,
     SUPPORTED_INPUT_CONTRACTS,
     require_input_contract,
 )
@@ -99,10 +101,12 @@ def test_declared_mounting_rule_uses_the_saved_array_and_reopens_after_change(
         InstallationInputs.read(inputs["installation"]).project_document()
         == inputs["installation"]
     )
-    for writer in (None, *SUPPORTED_INPUT_CONTRACTS[:-1]):
+    floor = SUPPORTED_INPUT_CONTRACTS.index(MOUNTING_QUANTITIES_INPUT_CONTRACT)
+    for writer in (None, *SUPPORTED_INPUT_CONTRACTS[:floor]):
         with pytest.raises(ProjectInputContractRequired):
             require_input_contract(inputs, inputs, writer)
-    require_input_contract(inputs, inputs, SUPPORTED_INPUT_CONTRACTS[-1])
+    for writer in SUPPORTED_INPUT_CONTRACTS[floor:]:
+        require_input_contract(inputs, inputs, writer)
     installation = json_object(route_takeoff(inputs, basis))
     result = installation["material_review"]["rows"][0]["mounting_quantity_result"]
     assert result == {
@@ -133,7 +137,7 @@ def test_declared_mounting_rule_uses_the_saved_array_and_reopens_after_change(
     count_calls = 0
     original_counts = installation_materials._array_counts
 
-    def count_once(array):
+    def count_once(array: PanelArray) -> tuple[int, int]:
         nonlocal count_calls
         count_calls += 1
         return original_counts(array)
@@ -156,7 +160,7 @@ def test_declared_mounting_rule_uses_the_saved_array_and_reopens_after_change(
     source["materials"] = materials
     line = next(
         row
-        for row in materials["lines"]
+        for row in cast(list[FixtureObject], materials["lines"])
         if row["id"].startswith("installation-material:")
     )
     assert line["quantity"] == 14 and line["source"]["qualified"] is False
@@ -187,7 +191,9 @@ def test_declared_mounting_rule_uses_the_saved_array_and_reopens_after_change(
     ]
     assert stale == {"status": "layout_changed", "quantity": None}
     source["installation"] = json_object(route_takeoff(inputs, basis))
-    stale_lines = project_materials(cast(Object, source))["lines"]
+    stale_lines = cast(
+        list[FixtureObject], project_materials(cast(Object, source))["lines"]
+    )
     stale_material = next(
         row for row in stale_lines if row["id"].startswith("installation-material:")
     )
@@ -247,7 +253,7 @@ def test_owned_mounting_rule_report_worker_and_export_permission(
         "Synthetic mounting project",
         inputs,
         key="mounting-project",
-        input_contract=SUPPORTED_INPUT_CONTRACTS[-1],
+        input_contract=MOUNTING_QUANTITIES_INPUT_CONTRACT,
     )
     run = service.evaluate(
         owner, project.id, project.revision, options, key="mounting-report"
@@ -282,7 +288,7 @@ def test_owned_mounting_rule_report_worker_and_export_permission(
             "Synthetic restricted roof",
             denied,
             key=f"restricted-roof-{permission}",
-            input_contract=SUPPORTED_INPUT_CONTRACTS[-1],
+            input_contract=MOUNTING_QUANTITIES_INPUT_CONTRACT,
         )
         with pytest.raises(ReportSourceExportRequired, match="mounting layout"):
             service.evaluate(

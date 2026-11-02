@@ -169,10 +169,13 @@ def test_legacy_project_and_old_writer_protection() -> None:
         InstallationInputs.read(legacy["installation"]).project_document()
     )
     assert "manufacturer_comparison" not in document["cable_runs"][0]
+    previous_writer = SUPPORTED_INPUT_CONTRACTS[
+        SUPPORTED_INPUT_CONTRACTS.index(CONDUCTOR_MANUFACTURER_INPUT_CONTRACT) - 1
+    ]
     for before, after in ((legacy, inputs), (inputs, inputs), (inputs, legacy)):
         with pytest.raises(ProjectInputContractRequired):
             require_input_contract(
-                cast(Object, before), cast(Object, after), SUPPORTED_INPUT_CONTRACTS[-2]
+                cast(Object, before), cast(Object, after), previous_writer
             )
     require_input_contract(
         cast(Object, legacy),
