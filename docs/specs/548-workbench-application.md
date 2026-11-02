@@ -635,8 +635,10 @@ row segment, and adjoining module pair. The result is a project declaration,
 not a manufacturer rule, SKU, structural assessment or complete mounting BOM.
 The designer records the item, specification and source, confirms that the
 rule applies, and can alternatively enter a fixed quantity from a project BOM.
-Array, module and roof snapshots bind the rule; a changed or removed snapshot
-makes the quantity open until the designer reconfirms it. Screen, PDF, CSV and
+Array, module and roof snapshots bind the rule; changes to physical layout or
+module/source identity make the quantity open until the designer reconfirms it.
+Display names, notes and module STC power do not change the mounting basis.
+Screen, PDF, CSV and
 the private saved-report context retain the same subtotal and its arithmetic.
 Hooks, rails, connectors and fasteners are not sized or automatically selected.
 Installation design and outstanding country/manufacturer requirements remain

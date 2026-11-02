@@ -6,7 +6,7 @@ from typing import cast
 
 from .canonical import Json, Object
 from .geometry import validate_geometry
-from .geometry_documents import GeometryDocument
+from .geometry_documents import GeometryDocument, ModuleSpec, PanelArray, RoofFace
 from .installation_inputs import InstallationInputs, InstallationMaterial
 from .installation_terminals import _source_is_current
 
@@ -133,17 +133,7 @@ def _comparison(
     return result
 
 
-def _mounting_quantity(
-    item: InstallationMaterial, geometry: GeometryDocument
-) -> Object:
-    rule = item.mounting_quantity_basis
-    assert rule is not None
-    result: Object = {"status": "layout_changed", "quantity": None}
-    array = next((a for a in geometry.arrays if a.id == rule.array.id), None)
-    module = next((m for m in geometry.module_specs if m.id == rule.module.id), None)
-    roof = next((r for r in geometry.roofs if r.id == rule.roof.id), None)
-    if array != rule.array or module != rule.module or roof != rule.roof:
-        return result
+def _array_counts(array: PanelArray) -> tuple[int, int]:
     excluded = set(array.excluded_slots)
     modules = segments = 0
     for row in range(array.rows):
@@ -155,6 +145,40 @@ def _mounting_quantity(
                 if not previous:
                     segments += 1
             previous = present
+    return modules, segments
+
+
+def _mounting_quantity(
+    item: InstallationMaterial,
+    arrays: dict[str, PanelArray],
+    modules_by_id: dict[str, ModuleSpec],
+    roofs: dict[str, RoofFace],
+    counts: dict[str, tuple[int, int]],
+) -> Object:
+    rule = item.mounting_quantity_basis
+    assert rule is not None
+    result: Object = {"status": "layout_changed", "quantity": None}
+    array = arrays.get(rule.array.id)
+    module = modules_by_id.get(rule.module.id)
+    roof = roofs.get(rule.roof.id)
+    if array is None or module is None or roof is None:
+        return result
+    # Labels and STC power do not affect this mounting layout. Keep physical
+    # dimensions, product/source identity and layout-relevant fields bound.
+    module_identity = module.model_dump(exclude={"stc_power_w"})
+    declared_module = rule.module.model_dump(exclude={"stc_power_w"})
+    module_identity["source"].pop("note")
+    declared_module["source"].pop("note")
+    if (
+        array.model_dump(exclude={"name", "mounting_note"})
+        != rule.array.model_dump(exclude={"name", "mounting_note"})
+        or module_identity != declared_module
+        or roof.model_dump(exclude={"name"}) != rule.roof.model_dump(exclude={"name"})
+    ):
+        return result
+    if array.id not in counts:
+        counts[array.id] = _array_counts(array)
+    modules, segments = counts[array.id]
     if modules == 0:
         return {"status": "no_modules", "quantity": None}
     adjacency = modules - segments
@@ -177,6 +201,10 @@ def material_review(
 ) -> Object:
     if any(item.mounting_quantity_basis is not None for item in plan.materials):
         validate_geometry(geometry)
+    arrays = {array.id: array for array in geometry.arrays}
+    modules = {module.id: module for module in geometry.module_specs}
+    roofs = {roof.id: roof for roof in geometry.roofs}
+    counts: dict[str, tuple[int, int]] = {}
     circuits = {c.id for c in plan.circuits}
     rows: list[Json] = []
     declarations = cast(list[Object], plan.project_document().get("materials", []))
@@ -192,7 +220,11 @@ def material_review(
                 # User-entered specifications are not cited Woo facts.
                 "verification": "not_assessed",
                 **(
-                    {"mounting_quantity_result": _mounting_quantity(item, geometry)}
+                    {
+                        "mounting_quantity_result": _mounting_quantity(
+                            item, arrays, modules, roofs, counts
+                        )
+                    }
                     if item.mounting_quantity_basis
                     else {}
                 ),

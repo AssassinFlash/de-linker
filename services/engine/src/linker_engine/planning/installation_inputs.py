@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Annotated, Literal, Self
 
-from pydantic import Field, model_validator
+from pydantic import Field, field_validator, model_validator
 
 from .canonical import Object
 from .energy_inputs import Document, SchemaVersion
@@ -308,6 +308,14 @@ class MountingQuantityBasis(Document):
     per_module: Annotated[int, Field(strict=True, ge=0, le=10000)]
     per_segment: Annotated[int, Field(strict=True, ge=0, le=10000)]
     per_adjacency: Annotated[int, Field(strict=True, ge=0, le=10000)]
+    conditions_confirmed: Literal[True]
+
+    @field_validator("conditions_confirmed", mode="before")
+    @classmethod
+    def explicit_confirmation(cls, value: object) -> object:
+        if value is not True:
+            raise ValueError("mounting conditions require explicit confirmation")
+        return value
 
     @model_validator(mode="after")
     def nonempty_rule(self) -> Self:

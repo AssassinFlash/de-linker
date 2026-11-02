@@ -24,6 +24,7 @@ import {
 	emptyInstallation,
 	readInstallation,
 	readInstallationReview,
+	mountingBasisIsCurrent,
 } from "../src/domain/installation.ts";
 
 test("installation material entry rejects fractional pieces and recovers", async (t) => {
@@ -137,7 +138,26 @@ test("mounting quantity records the confirmed array and explicit rule", async (t
 		geometry.arrays[0].id,
 	);
 	assert.equal(saved.materials[0].mounting_quantity_basis.per_segment, 4);
+	assert.equal(
+		saved.materials[0].mounting_quantity_basis.conditions_confirmed,
+		true,
+	);
 	assert.equal(saved.materials[0].quantity, null);
+	const renamed = structuredClone(geometry);
+	renamed.roofs[0].name = "Changed roof label";
+	renamed.arrays[0].name = "Changed array label";
+	renamed.arrays[0].mounting_note = "Changed note";
+	renamed.module_specs[0].stc_power_w += 1;
+	renamed.module_specs[0].source.note = "Changed note";
+	assert.equal(
+		mountingBasisIsCurrent(saved.materials[0].mounting_quantity_basis, renamed),
+		true,
+	);
+	renamed.arrays[0].excluded_slots.push("0:1");
+	assert.equal(
+		mountingBasisIsCurrent(saved.materials[0].mounting_quantity_basis, renamed),
+		false,
+	);
 	const hash = "a".repeat(64);
 	const response = {
 		schema_version: 1,

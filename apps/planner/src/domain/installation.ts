@@ -8,7 +8,12 @@ import type {
 	ElectricalReview,
 } from "./installationElectrical.ts";
 import type { Json, JsonObject } from "../data/protocol.ts";
-import type { ModuleSpec, PanelArray, RoofFace } from "./geometry.ts";
+import type {
+	GeometryDocument,
+	ModuleSpec,
+	PanelArray,
+	RoofFace,
+} from "./geometry.ts";
 import { ApiError } from "../data/protocol.ts";
 import { readObject } from "../data/readProtocol.ts";
 import { documentReference } from "../data/documentReference.ts";
@@ -167,6 +172,7 @@ export interface InstallationMaterial {
 		per_module: number;
 		per_segment: number;
 		per_adjacency: number;
+		conditions_confirmed: true;
 	};
 	comparison?: {
 		instance_id: string;
@@ -191,6 +197,37 @@ export interface InstallationInputs {
 	cable_runs: CableRun[];
 	pv_string_links?: PvStringLink[];
 	materials?: InstallationMaterial[];
+}
+
+/** Mounting arithmetic binds only the selected physical layout and its source. */
+export function mountingBasisIsCurrent(
+	basis: NonNullable<InstallationMaterial["mounting_quantity_basis"]>,
+	geometry: GeometryDocument,
+): boolean {
+	const array = geometry.arrays.find((item) => item.id === basis.array.id);
+	const roof = geometry.roofs.find((item) => item.id === basis.roof.id);
+	const module = geometry.module_specs.find(
+		(item) => item.id === basis.module.id,
+	);
+	if (!array || !roof || !module) return false;
+	const arrayValues = (value: PanelArray) => {
+		const { name: _name, mounting_note: _note, ...rest } = value;
+		return rest;
+	};
+	const roofValues = (value: RoofFace) => {
+		const { name: _name, ...rest } = value;
+		return rest;
+	};
+	const moduleValues = (value: ModuleSpec) => {
+		const { stc_power_w: _power, source, ...rest } = value;
+		const { note: _note, ...sourceIdentity } = source;
+		return { ...rest, source: { ...sourceIdentity, woo: source.woo ?? null } };
+	};
+	return (
+		sameJson(arrayValues(array), arrayValues(basis.array)) &&
+		sameJson(roofValues(roof), roofValues(basis.roof)) &&
+		sameJson(moduleValues(module), moduleValues(basis.module))
+	);
 }
 export const installationId = (prefix: string) =>
 	prefix + "_" + crypto.randomUUID().replaceAll("-", "");

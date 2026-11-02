@@ -898,6 +898,11 @@
           "minimum": 0,
           "title": "Per Adjacency",
           "type": "integer"
+        },
+        "conditions_confirmed": {
+          "const": true,
+          "title": "Conditions Confirmed",
+          "type": "boolean"
         }
       },
       "required": [
@@ -906,7 +911,8 @@
         "roof",
         "per_module",
         "per_segment",
-        "per_adjacency"
+        "per_adjacency",
+        "conditions_confirmed"
       ],
       "title": "MountingQuantityBasis",
       "type": "object"

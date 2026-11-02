@@ -20,6 +20,7 @@ export function InstallationMaterials({
 	geometry,
 	products,
 	review,
+	showReviewSummary = true,
 	locale,
 	disabled,
 	change,
@@ -29,6 +30,7 @@ export function InstallationMaterials({
 	geometry: GeometryDocument;
 	products: readonly EquipmentProduct[];
 	review: InstallationReview["material_review"];
+	showReviewSummary?: boolean;
 	locale: string;
 	disabled: boolean;
 	change: (plan: InstallationInputs) => boolean;
@@ -138,7 +140,7 @@ export function InstallationMaterials({
 					"Erfassen Sie die benötigten Bauteile und Mengen. Projektangaben prüfen weder die Eignung von Steckverbindern, die Schutzkoordination oder Erdung noch die Vollständigkeit der Stückliste.",
 				)}
 			</p>
-			{review && (
+			{review && showReviewSummary && (
 				<p role="status">
 					{t(
 						"Material entries reviewed. Technical suitability and completeness remain open.",
@@ -336,6 +338,7 @@ export function InstallationMaterials({
 								array,
 								roof,
 								module,
+								conditions_confirmed: true,
 								per_module: v.number("per_module", {
 									min: 0,
 									max: 10000,

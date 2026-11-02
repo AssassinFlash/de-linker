@@ -10,6 +10,7 @@ import pytest
 from pypdf import PdfReader
 
 from linker_engine import pdf
+from linker_engine.planning import installation_materials
 from linker_engine.planning.assets import Assets
 from linker_engine.planning.assistant_context import _report_source_projection
 from linker_engine.planning.canonical import Object
@@ -67,7 +68,9 @@ def declared() -> list[dict[str, object]]:
     ]
 
 
-def test_declared_mounting_rule_uses_the_saved_array_and_reopens_after_change() -> None:
+def test_declared_mounting_rule_uses_the_saved_array_and_reopens_after_change(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     inputs, basis = circuit_fixture()
     geometry = roof_fixture()
     # Six slots, one excluded: two separate row segments and three neighbours.
@@ -80,8 +83,22 @@ def test_declared_mounting_rule_uses_the_saved_array_and_reopens_after_change() 
         "per_module": 0,
         "per_segment": 4,
         "per_adjacency": 2,
+        "conditions_confirmed": True,
     }
     inputs["installation"]["materials"] = [item]
+    for confirmation in (False, 1, None):
+        invalid = copy.deepcopy(inputs["installation"])
+        rule = invalid["materials"][0]["mounting_quantity_basis"]
+        if confirmation is None:
+            rule.pop("conditions_confirmed")
+        else:
+            rule["conditions_confirmed"] = confirmation
+        with pytest.raises(InvalidInput):
+            InstallationInputs.read(invalid)
+    assert (
+        InstallationInputs.read(inputs["installation"]).project_document()
+        == inputs["installation"]
+    )
     for writer in (None, *SUPPORTED_INPUT_CONTRACTS[:-1]):
         with pytest.raises(ProjectInputContractRequired):
             require_input_contract(inputs, inputs, writer)
@@ -98,6 +115,41 @@ def test_declared_mounting_rule_uses_the_saved_array_and_reopens_after_change() 
         "per_segment": 4,
         "per_adjacency": 2,
     }
+    renamed = copy.deepcopy(inputs)
+    renamed["geometry"]["roofs"][0]["name"] = "Changed roof label"
+    renamed["geometry"]["arrays"][0]["name"] = "Changed array label"
+    renamed["geometry"]["arrays"][0]["mounting_note"] = "Changed note"
+    renamed["geometry"]["module_specs"][0]["stc_power_w"] += 1
+    renamed["geometry"]["module_specs"][0]["source"]["note"] = "Changed note"
+    assert (
+        json_object(route_takeoff(renamed, basis))["material_review"]["rows"][0][
+            "mounting_quantity_result"
+        ]
+        == result
+    )
+    second = copy.deepcopy(item)
+    second["id"] = "another-mounting-item"
+    renamed["installation"]["materials"].append(second)
+    count_calls = 0
+    original_counts = installation_materials._array_counts
+
+    def count_once(array):
+        nonlocal count_calls
+        count_calls += 1
+        return original_counts(array)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(installation_materials, "_array_counts", count_once)
+        reviewed = json_object(route_takeoff(renamed, basis))
+    assert len(reviewed["material_review"]["rows"]) == 2 and count_calls == 1
+    changed_module = copy.deepcopy(inputs)
+    changed_module["geometry"]["module_specs"][0]["model"] = "Different module"
+    assert (
+        json_object(route_takeoff(changed_module, basis))["material_review"]["rows"][0][
+            "mounting_quantity_result"
+        ]["status"]
+        == "layout_changed"
+    )
     source = _source_data()
     source.update(installation=installation, title="Mounting fixture", locale="en")
     materials = project_materials(cast(Object, source))
@@ -164,6 +216,7 @@ def test_owned_mounting_rule_report_worker_and_export_permission(
         "per_module": 0,
         "per_segment": 4,
         "per_adjacency": 0,
+        "conditions_confirmed": True,
     }
     inputs["installation"]["materials"] = [item]
     products = ProductSources(lambda: pytest.fail("unexpected live source"))
