@@ -23,6 +23,11 @@ function failureText(run: PlanningRun): string {
 			: null;
 	if (specific) return specific;
 	switch (run.error?.code) {
+		case "expanded_resource_unavailable":
+			return __(
+				"The server could not finish the calculation for this roof. Your project is saved. Try again later, or reduce the number of modules in the design.",
+				"linker-tools",
+			);
 		case "version_unavailable":
 			return __(
 				"A model or source used by this calculation is unavailable. Its original inputs remain saved.",
