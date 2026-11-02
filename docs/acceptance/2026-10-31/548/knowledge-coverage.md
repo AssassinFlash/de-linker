@@ -1,6 +1,12 @@
 # Genie knowledge preparation for the 217 affected Woo associations
 
-## Production publication on November 1
+## November 2 production readback
+
+The serving Genie index at epoch 60 contains 18,899 passages from 142 original PDFs. The preactivation comparison preserved 598 usable product–document associations across 85 ready products. Nineteen associations still lack the evidence needed for that product and document purpose. Woo's ready acknowledgement and Genie's loaded-index readback agreed. See the PR842 paired-publication entry in [the production acceptance record](INDEX.md).
+
+On the public site, Genie answered the German GW11K-HCA warranty question with the two-year duration and its start conditions. For the English ETR installation question, it distinguished securing the inverter to the bracket (M6, 3–5 N·m) from fixing the bracket to the wall. The epoch 56 table below preserves the first recovery batch and the original failed answers.
+
+## November 1 publication at epoch 56
 
 The baseline was Woo source `c849a2b51dbea4bdc3e2dcc4269be23834175f3395e4af08198a40c90af9d74e`, index `20261101T105022Z-660599000`, epoch 54. Its 217 incomplete product/document associations referred to 55 distinct originals and 73 products within a corpus of 142 PDF originals.
 
