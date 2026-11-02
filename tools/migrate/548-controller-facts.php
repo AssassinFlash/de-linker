@@ -36,6 +36,7 @@ try {
 			1946 => array( SelectionFacts::FIGURES_META_KEY, EvidenceBindings::META_KEY ),
 			1947 => array( SelectionFacts::FIGURES_META_KEY, EvidenceBindings::META_KEY ),
 			1948 => array( SelectionFacts::FIGURES_META_KEY, EvidenceBindings::META_KEY ),
+			6506 => array( SelectionFacts::FIGURES_META_KEY, EvidenceBindings::META_KEY ),
 		) : ( 'batc_cabinet_sales_unit_v1' === $mode ? array(
 			1956 => array( SelectionFacts::FIGURES_META_KEY, EvidenceBindings::META_KEY ),
 			1957 => array( SelectionFacts::FIGURES_META_KEY, EvidenceBindings::META_KEY ),
@@ -144,6 +145,7 @@ try {
 					1946 => array( 'GW80K-ET-G10', 'DLK-GOODWE-GW80KETG10' ),
 					1947 => array( 'GW99.99K-ET-G10', 'DLK-GOODWE-GW9999KETG10' ),
 					1948 => array( 'GW100K-ET-G10', 'DLK-GOODWE-GW100KETG10' ),
+					6506 => array( 'GW75K-ET-G10', 'DLK-GOODWE-GW75KETG10' ),
 				) : array(
 					1956 => array( 'GW208.9-BAT-LC-G10', 'DLK-GOODWE-GW2089BATLCG10' ),
 					1957 => array( 'GW208.9-BAT-LCD-G10', 'DLK-GOODWE-GW2089BATLCDG10' ),

@@ -71,12 +71,6 @@ export function equipmentCheckLabel(id: string): string {
 			return __("Module system voltage (IEC rating)", "linker-tools");
 		case "pv_stc_mppt":
 			return __("MPP voltage at STC", "linker-tools");
-		case "pv_standby_stc":
-			return __("Standby voltage: STC point", "linker-tools");
-		case "pv_standby_hot":
-			return __("Standby voltage: modeled hot case", "linker-tools");
-		case "pv_standby_cold":
-			return __("Standby voltage: modeled cold case", "linker-tools");
 		case "pv_nameplate_layout":
 			return __("Wired PV nameplate power", "linker-tools");
 		case "pv_stc_current":
@@ -142,22 +136,6 @@ export function equipmentCheckLabel(id: string): string {
 	}
 }
 export function equipmentReason(reason: string): string | null {
-	if (
-		reason === "pv_standby_stc_intersection" ||
-		reason === "pv_standby_modeled_intersection"
-	)
-		return __(
-			"The manufacturer states that the inverter enters standby when the input voltage is in this interval. This MPP estimate lies within it. It does not establish actual operation or annual exposure. The exact 950 V recovery boundary differs between the English and German sources and is not assessed here.",
-			"linker-tools",
-		);
-	if (
-		reason === "pv_standby_stc_scope" ||
-		reason === "pv_standby_modeled_scope"
-	)
-		return __(
-			"The manufacturer states that the inverter enters standby when the input voltage is in this interval. This single MPP estimate cannot establish actual operation or exclude exposure during other conditions. The exact 950 V recovery boundary differs between the English and German sources and is not assessed here.",
-			"linker-tools",
-		);
 	if (reason === "manufacturer_requirement_matches_operating_context")
 		return __(
 			"The documented manufacturer requirement applies to the declared operating mode, topology and communication setup. Firmware, model combination and commissioning still require separate checks.",

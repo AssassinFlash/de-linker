@@ -204,24 +204,6 @@ def assess_pv_strings(
             unit="V",
             reason="stc_operating_point_only",
         )
-        if standby_window is not None:
-            # A single STC MPP is neither an actual operating voltage nor an
-            # annual maximum.  950 V is deliberately not classified: the
-            # cited English and German recovery wording differs at that edge.
-            add(
-                f"pv_standby_stc:{item.id}",
-                stc_vmpp,
-                cast(Json, standby_window),
-                cast(list[Json], [*vmpp_refs, standby]),
-                status="unresolved",
-                unit="V",
-                reason=(
-                    "pv_standby_stc_intersection"
-                    if stc_vmpp is not None
-                    and standby_window[0] < stc_vmpp <= standby_window[1]
-                    else "pv_standby_stc_scope"
-                ),
-            )
         tracker_strings.setdefault(item.mppt, []).append(
             (count, tuple(sorted({tuple(p.normal_enu) for p in module_poses})))
         )
@@ -288,22 +270,6 @@ def assess_pv_strings(
                 for tracker, strings in tracker_strings.items()
             },
         )
-        if standby_window is not None:
-            for point in cast(list[dict[str, Any]], operating["points"]):
-                voltage = point["v_mp_v"]
-                add(
-                    f"pv_standby_{point['case']}:{point['string_id']}",
-                    voltage,
-                    cast(Json, standby_window),
-                    cast(list[Json], [standby]),
-                    status="unresolved",
-                    unit="V",
-                    reason=(
-                        "pv_standby_modeled_intersection"
-                        if standby_window[0] < voltage <= standby_window[1]
-                        else "pv_standby_modeled_scope"
-                    ),
-                )
         checks.extend(cast(list[Json], operating["checks"]))
     else:
         add("pv_operating_temperatures", reason="hot_and_cold_mpp_model_required")
@@ -312,6 +278,37 @@ def assess_pv_strings(
         "pv_wiring_protection",
         reason="cables_connectors_fuses_and_isolation_require_design",
     )
+    standby_result: Object | None = None
+    if standby_window is not None:
+        points: list[Json] = []
+
+        def observe(string_id: str, case: str, voltage: float | None) -> None:
+            points.append(
+                {
+                    "string_id": string_id,
+                    "case": case,
+                    "voltage_v": voltage,
+                    "observation": "unavailable"
+                    if voltage is None
+                    else "boundary"
+                    if voltage == standby_window[0]
+                    else "in_interval"
+                    if standby_window[0] < voltage <= standby_window[1]
+                    else "outside_interval",
+                }
+            )
+
+        for row in cast(list[dict[str, Any]], rows):
+            observe(row["id"], "stc", row["stc_vmpp_v"])
+        if operating is not None:
+            for point in cast(list[dict[str, Any]], operating["points"]):
+                observe(point["string_id"], point["case"], point["v_mp_v"])
+        # Observations are informative, not equipment qualification checks.
+        standby_result = {
+            "interval_v": standby_window,
+            "fact": standby,
+            "points": points,
+        }
     return {
         "schema_version": 1,
         "method": "woo_layout_electrical_v2"
@@ -325,4 +322,5 @@ def assess_pv_strings(
         "included_modules": len(poses),
         "nameplate_kwp": float(total_wp / 1000),
         **({"operating": operating} if operating is not None else {}),
+        **({"standby": standby_result} if standby_result is not None else {}),
     }

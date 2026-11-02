@@ -13638,37 +13638,57 @@ msgstr "Eine vierseitige Dachfläche mit höchstens 60° Neigung, ohne Aussparun
 msgid "The report needs an equipment check of the saved PV strings. Check the saved equipment selection in Equipment, then return to Planning report and select that completed result under Equipment checks."
 msgstr "Für den Bericht müssen die gespeicherten PV-Strings geprüft werden. Klicken Sie unter „Geräte“ auf „Gespeicherte Geräteauswahl prüfen“. Kehren Sie anschließend zum Planungsbericht zurück und wählen Sie unter „Prüfung der Geräteauswahl“ das abgeschlossene Ergebnis aus."
 
-#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
-#: build/planner/assets/planner.js
-msgid "Standby voltage: STC point"
-msgstr "Standby-Spannung: STC-Arbeitspunkt"
-
-#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
-#: build/planner/assets/planner.js
-msgid "Standby voltage: modeled hot case"
-msgstr "Standby-Spannung: modellierter warmer Fall"
-
-#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
-#: build/planner/assets/planner.js
-msgid "Standby voltage: modeled cold case"
-msgstr "Standby-Spannung: modellierter kalter Fall"
-
-#: ../../apps/planner/src/components/equipment/EquipmentResult.tsx
-#: build/planner/assets/planner.js
-msgid "MPP estimate"
-msgstr "Geschätzter MPP"
-
-#: ../../apps/planner/src/components/equipment/EquipmentResult.tsx
+#: ../../apps/planner/src/components/equipment/PvStringResult.tsx
 #: build/planner/assets/planner.js
 msgid "Manufacturer standby interval"
 msgstr "Standby-Bereich des Herstellers"
 
-#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: ../../apps/planner/src/components/equipment/PvStringResult.tsx
 #: build/planner/assets/planner.js
-msgid "The manufacturer states that the inverter enters standby when the input voltage is in this interval. This MPP estimate lies within it. It does not establish actual operation or annual exposure. The exact 950 V recovery boundary differs between the English and German sources and is not assessed here."
-msgstr "Laut Hersteller wechselt der Wechselrichter in diesem Eingangsspannungsbereich in den Standby-Modus. Dieser geschätzte MPP liegt in diesem Bereich. Daraus lassen sich weder der tatsächliche Betrieb noch die Häufigkeit über das Jahr ableiten. Die englische und die deutsche Quelle unterscheiden sich bei der genauen 950-V-Grenze für die Rückkehr zum Betrieb; sie wird hier nicht bewertet."
+msgid "The manufacturer describes standby in this input-voltage interval. These MPP estimates do not establish actual operation or annual exposure; a single point cannot determine the state or recovery at the lower boundary. The absolute voltage rating and MPPT window are checked separately."
+msgstr "Der Hersteller beschreibt für diesen Eingangsspannungsbereich den Standby-Modus. Die geschätzten MPP-Werte belegen weder den tatsächlichen Betrieb noch die Häufigkeit über das Jahr. Ein einzelner Punkt bestimmt weder den Zustand an der unteren Grenze noch die Rückkehr zum Betrieb. Die absolute Spannungsgrenze und das MPPT-Fenster werden gesondert geprüft."
 
-#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: ../../apps/planner/src/components/equipment/PvStringResult.tsx
 #: build/planner/assets/planner.js
-msgid "The manufacturer states that the inverter enters standby when the input voltage is in this interval. This single MPP estimate cannot establish actual operation or exclude exposure during other conditions. The exact 950 V recovery boundary differs between the English and German sources and is not assessed here."
-msgstr "Laut Hersteller wechselt der Wechselrichter in diesem Eingangsspannungsbereich in den Standby-Modus. Dieser einzelne geschätzte MPP belegt weder den tatsächlichen Betrieb noch schließt er ein Erreichen des Bereichs unter anderen Bedingungen aus. Die englische und die deutsche Quelle unterscheiden sich bei der genauen 950-V-Grenze für die Rückkehr zum Betrieb; sie wird hier nicht bewertet."
+msgid "In standby interval · review"
+msgstr "Im Standby-Bereich · prüfen"
+
+#: ../../apps/planner/src/components/equipment/PvStringResult.tsx
+#: build/planner/assets/planner.js
+msgid "At the lower boundary · review"
+msgstr "An der unteren Grenze · prüfen"
+
+#: ../../apps/planner/src/components/equipment/PvStringResult.tsx
+#: build/planner/assets/planner.js
+msgid "Outside interval for this point"
+msgstr "Für diesen Punkt außerhalb des Bereichs"
+
+#: ../../apps/planner/src/components/equipment/PvStringResult.tsx
+#: build/planner/assets/planner.js
+msgid "Estimate unavailable"
+msgstr "Kein Schätzwert verfügbar"
+
+#: ../../apps/planner/src/components/equipment/PvStringResult.tsx
+#: build/planner/assets/planner.js
+msgid "Operating point"
+msgstr "Arbeitspunkt"
+
+#: ../../apps/planner/src/components/equipment/PvStringResult.tsx
+#: build/planner/assets/planner.js
+msgid "MPP estimate"
+msgstr "Geschätzter MPP"
+
+#: ../../apps/planner/src/components/equipment/PvStringResult.tsx
+#: build/planner/assets/planner.js
+msgid "Observation"
+msgstr "Einordnung"
+
+#: ../../apps/planner/src/components/equipment/PvStringResult.tsx
+#: build/planner/assets/planner.js
+msgid "Modeled hot case"
+msgstr "Modellierter warmer Fall"
+
+#: ../../apps/planner/src/components/equipment/PvStringResult.tsx
+#: build/planner/assets/planner.js
+msgid "Modeled cold case"
+msgstr "Modellierter kalter Fall"

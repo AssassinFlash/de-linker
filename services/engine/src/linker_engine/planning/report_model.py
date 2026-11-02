@@ -180,6 +180,57 @@ def build_report(source: Object) -> Report:
                     ),
                 )
             )
+        if isinstance(pv_wiring, dict):
+            standby_units = (
+                [(u["unit_name"], u["assessment"]) for u in wiring_units]
+                if plant_wiring
+                else [(None, pv_wiring)]
+            )
+            for unit_index, (unit_name, unit_wiring) in enumerate(standby_units):
+                standby_data = unit_wiring.get("standby")
+                if not isinstance(standby_data, dict):
+                    continue
+                source_fact = cast(dict[str, Any], standby_data["fact"])
+                standby_cited = cast(dict[str, Any], source_fact["source"])
+                unit_rows = cast(list[dict[str, Any]], unit_wiring["strings"])
+                numbers = {s["id"]: i + 1 for i, s in enumerate(unit_rows)}
+                interval = cast(list[float], standby_data["interval_v"])
+                sections.append(
+                    ReportSection(
+                        id=f"pv-standby-{unit_index}",
+                        title=(f"{unit_name} · " if unit_name else "")
+                        + text("pv_standby_title", locale),
+                        paragraphs=[text("pv_standby_scope", locale)],
+                        rows=[
+                            row(
+                                "pv_standby_title",
+                                " – ".join(number(v, locale) for v in interval) + " V",
+                            ),
+                            ReportRow(
+                                label=text("source", locale),
+                                value=f"{text('page', locale)} {standby_cited['page']}",
+                                href=standby_cited["url"],
+                            ),
+                        ],
+                        table=ReportTable(
+                            columns=[
+                                text("pv_string", locale),
+                                text("pv_standby_case", locale),
+                                text("pv_standby_value", locale),
+                                text("pv_standby_observation", locale),
+                            ],
+                            rows=[
+                                [
+                                    str(numbers[p["string_id"]]),
+                                    text("pv_standby_case_" + p["case"], locale),
+                                    number(p["voltage_v"], locale, "V"),
+                                    text("pv_standby_" + p["observation"], locale),
+                                ]
+                                for p in standby_data["points"]
+                            ],
+                        ),
+                    )
+                )
         if isinstance(pv_wiring, dict) and isinstance(pv_wiring.get("operating"), dict):
             sections.extend(
                 operating_sections(
@@ -257,8 +308,6 @@ def build_report(source: Object) -> Report:
                         row(
                             "controller_group_size"
                             if semantic_id == "plant_controller_network_count"
-                            else "pv_standby_actual"
-                            if semantic_id.split(":")[0].startswith("pv_standby_")
                             else "actual",
                             number(check["actual"], locale, unit),
                         )
@@ -284,9 +333,7 @@ def build_report(source: Object) -> Report:
             ):
                 rows.append(
                     row(
-                        "pv_standby_interval"
-                        if semantic_id.split(":")[0].startswith("pv_standby_")
-                        else "required",
+                        "required",
                         " – ".join(number(n, locale) for n in check["required"])
                         + (f" {unit}" if unit else ""),
                     )

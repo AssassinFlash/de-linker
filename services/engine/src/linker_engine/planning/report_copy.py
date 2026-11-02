@@ -1618,27 +1618,33 @@ TEXT = {
         "Sources and methods are identified in this report.",
         "Quellen und Methoden sind in diesem Bericht angegeben.",
     ),
-    "pv_standby_actual": ("MPP estimate", "Geschätzter MPP"),
-    "pv_standby_interval": (
+    "pv_standby_title": (
         "Manufacturer standby interval",
         "Standby-Bereich des Herstellers",
     ),
-    "pv_standby_stc_intersection": (
-        "The manufacturer states that the inverter enters standby when the input voltage is in this interval. This MPP estimate lies within it. It does not establish actual operation or annual exposure. The exact 950 V recovery boundary differs between the English and German sources and is not assessed here.",
-        "Laut Hersteller wechselt der Wechselrichter in diesem Eingangsspannungsbereich in den Standby-Modus. Dieser geschätzte MPP liegt in diesem Bereich. Daraus lassen sich weder der tatsächliche Betrieb noch die Häufigkeit über das Jahr ableiten. Die englische und die deutsche Quelle unterscheiden sich bei der genauen 950-V-Grenze für die Rückkehr zum Betrieb; sie wird hier nicht bewertet.",
+    "pv_standby_scope": (
+        "The manufacturer describes standby in this input-voltage interval. These MPP estimates do not establish actual operation or annual exposure; a single point cannot determine the state or recovery at the lower boundary. The absolute voltage rating and MPPT window are checked separately.",
+        "Der Hersteller beschreibt für diesen Eingangsspannungsbereich den Standby-Modus. Die geschätzten MPP-Werte belegen weder den tatsächlichen Betrieb noch die Häufigkeit über das Jahr. Ein einzelner Punkt bestimmt weder den Zustand an der unteren Grenze noch die Rückkehr zum Betrieb. Die absolute Spannungsgrenze und das MPPT-Fenster werden gesondert geprüft.",
     ),
-    "pv_standby_modeled_intersection": (
-        "The manufacturer states that the inverter enters standby when the input voltage is in this interval. This MPP estimate lies within it. It does not establish actual operation or annual exposure. The exact 950 V recovery boundary differs between the English and German sources and is not assessed here.",
-        "Laut Hersteller wechselt der Wechselrichter in diesem Eingangsspannungsbereich in den Standby-Modus. Dieser geschätzte MPP liegt in diesem Bereich. Daraus lassen sich weder der tatsächliche Betrieb noch die Häufigkeit über das Jahr ableiten. Die englische und die deutsche Quelle unterscheiden sich bei der genauen 950-V-Grenze für die Rückkehr zum Betrieb; sie wird hier nicht bewertet.",
+    "pv_standby_case": ("Operating point", "Arbeitspunkt"),
+    "pv_standby_case_stc": ("STC", "STC"),
+    "pv_standby_case_hot": ("Modeled hot case", "Modellierter warmer Fall"),
+    "pv_standby_case_cold": ("Modeled cold case", "Modellierter kalter Fall"),
+    "pv_standby_value": ("MPP estimate", "Geschätzter MPP"),
+    "pv_standby_observation": ("Observation", "Einordnung"),
+    "pv_standby_in_interval": (
+        "In standby interval · review",
+        "Im Standby-Bereich · prüfen",
     ),
-    "pv_standby_stc_scope": (
-        "The manufacturer states that the inverter enters standby when the input voltage is in this interval. This single MPP estimate cannot establish actual operation or exclude exposure during other conditions. The exact 950 V recovery boundary differs between the English and German sources and is not assessed here.",
-        "Laut Hersteller wechselt der Wechselrichter in diesem Eingangsspannungsbereich in den Standby-Modus. Dieser einzelne geschätzte MPP belegt weder den tatsächlichen Betrieb noch schließt er ein Erreichen des Bereichs unter anderen Bedingungen aus. Die englische und die deutsche Quelle unterscheiden sich bei der genauen 950-V-Grenze für die Rückkehr zum Betrieb; sie wird hier nicht bewertet.",
+    "pv_standby_boundary": (
+        "At the lower boundary · review",
+        "An der unteren Grenze · prüfen",
     ),
-    "pv_standby_modeled_scope": (
-        "The manufacturer states that the inverter enters standby when the input voltage is in this interval. This single MPP estimate cannot establish actual operation or exclude exposure during other conditions. The exact 950 V recovery boundary differs between the English and German sources and is not assessed here.",
-        "Laut Hersteller wechselt der Wechselrichter in diesem Eingangsspannungsbereich in den Standby-Modus. Dieser einzelne geschätzte MPP belegt weder den tatsächlichen Betrieb noch schließt er ein Erreichen des Bereichs unter anderen Bedingungen aus. Die englische und die deutsche Quelle unterscheiden sich bei der genauen 950-V-Grenze für die Rückkehr zum Betrieb; sie wird hier nicht bewertet.",
+    "pv_standby_outside_interval": (
+        "Outside interval for this point",
+        "Für diesen Punkt außerhalb des Bereichs",
     ),
+    "pv_standby_unavailable": ("Estimate unavailable", "Kein Schätzwert verfügbar"),
 }
 
 CHECKS = {
@@ -1725,23 +1731,6 @@ CHECKS = {
         "Systemspannung des Moduls (IEC-Bemessung)",
     ),
     "pv_stc_mppt": ("MPP voltage at STC", "MPP-Spannung unter STC"),
-    "pv_standby_stc": (
-        "Standby voltage: STC point",
-        "Standby-Spannung: STC-Arbeitspunkt",
-    ),
-    "pv_standby_actual": ("MPP estimate", "Geschätzter MPP"),
-    "pv_standby_interval": (
-        "Manufacturer standby interval",
-        "Standby-Bereich des Herstellers",
-    ),
-    "pv_standby_hot": (
-        "Standby voltage: modeled hot case",
-        "Standby-Spannung: modellierter warmer Fall",
-    ),
-    "pv_standby_cold": (
-        "Standby voltage: modeled cold case",
-        "Standby-Spannung: modellierter kalter Fall",
-    ),
     "pv_nameplate_layout": ("Wired PV nameplate power", "Verschaltete PV-Nennleistung"),
     "pv_stc_current": ("MPPT operating current at STC", "MPPT-Betriebsstrom unter STC"),
     "pv_stc_isc": (

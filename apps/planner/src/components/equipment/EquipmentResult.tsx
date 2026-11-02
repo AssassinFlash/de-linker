@@ -142,7 +142,6 @@ export function EquipmentResult({
 							: "";
 		const explanation = equipmentReason(String(check.reason));
 		const networkCount = semantic === "plant_controller_network_count";
-		const standby = semantic.startsWith("pv_standby_");
 		const facts = check.facts as JsonObject[];
 		const unit =
 			(
@@ -188,9 +187,7 @@ export function EquipmentResult({
 							<dt>
 								{networkCount
 									? __("Inverters in this group", "linker-tools")
-									: standby
-										? __("MPP estimate", "linker-tools")
-										: __("Result", "linker-tools")}
+									: __("Result", "linker-tools")}
 							</dt>
 							<dd>
 								{checkValue(check, "actual", semantic)} {unit}
@@ -200,9 +197,7 @@ export function EquipmentResult({
 							<dt>
 								{networkCount
 									? __("Maximum supported", "linker-tools")
-									: standby
-										? __("Manufacturer standby interval", "linker-tools")
-										: __("Requirement", "linker-tools")}
+									: __("Requirement", "linker-tools")}
 							</dt>
 							<dd>
 								{checkValue(check, "required", semantic)} {unit}
