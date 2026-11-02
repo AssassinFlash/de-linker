@@ -171,3 +171,23 @@ Review that the facts receipt preserves the current five facts and adds only
 the eighteen reviewed rows before applying it. To roll back, use the facts
 receipt first, then the association receipt; verify each restored state and
 reconcile the matching Woo/knowledge publication before retiring receipts.
+
+On 2026-11-02 production Woo associated the existing manual with product 1955.
+Its English and German product pages exposed the manual link. Woo and Planner
+read back source `920f26107078055417e7a79b7a5e802551e1e61827e715044716ecec108dc22a`.
+Product 1955 carried all 23 facts. Product 1954 retained its five prior facts.
+The normal guest gateway selected two 1955 cabinets for synthetic project
+`bb83feb529384e8f938320ce84a417f2`, revision 1. Report
+`7af3f23b7a294cbf99325d2f24ec71ce` produced a 58,670-byte English materials
+CSV. Its inter-pack harness row gives quantity 20, unit pc, ten per cabinet
+and page 101 of the hosted manual. It classifies the harnesses as supplied
+with the equipment. Installation design remains project-specific.
+
+The private production receipts are
+`~/de-linker-data/woo-data-548-batc112-facts.receipt.json` and
+`~/de-linker-data/woo-data-548-batc112-manual.receipt.json` in rollback order.
+The shared full backup is `cutover-20261102-1032`. The production preview
+exposed an error in refresh with a custom plan. The operator checked the same
+original bytes and changed only the product revision before applying the
+private plan. The executable refresh path now reads the file selected by
+`--plan`.
