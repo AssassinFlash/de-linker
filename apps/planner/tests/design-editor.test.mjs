@@ -163,6 +163,23 @@ test("correcting a measured roof pitch keeps its array, holes and source", async
 	assert.deepEqual(app.current.roofs[0].v_axis_enu, changed.v_axis_enu);
 });
 
+test("the measured 30-degree production roof reopens with the angle the customer entered", async (t) => {
+	const initial = structuredClone(flat);
+	initial.sources[0].kind = "user_measurement";
+	initial.sources[0].rights_basis = "user_attestation";
+	const app = await mount(t, { initial });
+	await click(initial.roofs[0].name);
+	await click("Edit numeric properties");
+	await enter(document.querySelector('[name="pitch"]'), "30");
+	await click("Apply properties");
+	const saved = structuredClone(app.current.roofs[0]);
+	await click(saved.name);
+	await click("Edit numeric properties");
+	assert.equal(document.querySelector('[name="pitch"]').value, "30");
+	await click("Apply properties");
+	assert.deepEqual(app.current.roofs[0], saved);
+});
+
 test("a source-bound imported roof keeps its original orientation", async (t) => {
 	const initial = structuredClone(flat);
 	initial.sources[0].kind = "user_measurement";
