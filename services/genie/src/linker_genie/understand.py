@@ -302,6 +302,23 @@ class Understander:
                 message,
                 planning_context=request.planning_context,
             )
+            if (
+                reading is not None
+                and reading.saved_material_question is not None
+                and reading.saved_material_question >= 0.5
+                and route.name
+                in ("model", "planning_project", "sizing", "documents", "products")
+                and planning.material_answer(
+                    request.planning_context, request.page_context, language
+                )
+                is not None
+            ):
+                route = Route(
+                    "planning_project",
+                    no_cards=True,
+                    no_handoff=True,
+                    reasons=("verified saved material explanation",),
+                )
         log.update(route.as_log())
         prepared = Prepared(
             route=route, log=log, reading=reading, readings=fresh, timing=clock
@@ -352,11 +369,14 @@ class Understander:
         # (jev.Reading.as_log), which is a different, narrower number.
         with timing.phase(clock, timing.JEV):
             try:
+                current_page = page_state(
+                    request.page_context.type, name, request.page_context.title
+                )
+                if request.page_context.planning_run_ids and request.planning_context:
+                    current_page["saved_report"] = True
                 reading = self._jev.read(
                     message,
-                    page_state(
-                        request.page_context.type, name, request.page_context.title
-                    ),
+                    current_page,
                     history,
                 )
             except JevError as error:

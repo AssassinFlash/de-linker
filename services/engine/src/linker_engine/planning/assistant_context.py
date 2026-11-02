@@ -27,6 +27,7 @@ from .project_materials import (
     material_quantity,
     material_reference,
     material_scope,
+    mounting_quantity_explanation,
     project_materials,
 )
 from .pvgis_reference_inputs import PvgisReferenceInputs
@@ -132,7 +133,9 @@ def _rows(value: Json, locale: str, prefix: str = "") -> list[Json]:
     return result
 
 
-def _report_materials(workspace: Workspace, run: Run, result: Object) -> Json | None:
+def _report_materials(
+    workspace: Workspace, run: Run, result: Object, source: Object | None = None
+) -> Json | None:
     """Expose one verified materials projection without duplicating its rows."""
     materials_sha = result.get("materials_sha256")
     if materials_sha is None:
@@ -165,7 +168,8 @@ def _report_materials(workspace: Workspace, run: Run, result: Object) -> Json | 
         or dependencies.get("report_source") != pinned["report.source"]
     ):
         raise InvalidInput("saved materials differ from the frozen report source")
-    source = report_source_with_information(workspace.blobs, dependencies)
+    if source is None:
+        source = report_source_with_information(workspace.blobs, dependencies)
     source_dependencies = source.get("dependencies")
     if (
         source.get("project_id") != run.project_id
@@ -740,7 +744,9 @@ def _country_rule_rows(assessment: Object, locale: str) -> list[Json]:
     return rows
 
 
-def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
+def _result_rows(
+    workspace: Workspace, run: Run, locale: str, source_out: list[Object] | None = None
+) -> list[Json]:
     result = run.result
     if result is None:
         return []
@@ -778,6 +784,8 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
                 or source.get("input_sha256") != run.manifest.get("input_sha256")
             ):
                 raise InvalidInput("saved report source differs from selected result")
+            if source_out is not None:
+                source_out.append(source)
         if report.get("locale") != locale or (has_installation and source is not None):
             # Localize only presentation of its frozen source; no kernel, source
             # refresh, PDF, job, or persistent artifact is produced by this read.
@@ -1209,7 +1217,12 @@ def assistant_context(
         run = workspace.run(actor, run_id)
         if run.project_id != project.id:
             raise InvalidInput("selected result belongs to a different project")
-        rows = _result_rows(workspace, run, locale) if run.state == "succeeded" else []
+        source_out: list[Object] = []
+        rows = (
+            _result_rows(workspace, run, locale, source_out)
+            if run.state == "succeeded"
+            else []
+        )
         omitted = len(rows) > remaining
         selected_run_view: dict[str, Json] = {
             "id": run.id,
@@ -1244,9 +1257,47 @@ def assistant_context(
             selected_run_view["calculation_sources"] = calculation_sources(
                 workspace, run
             )
-            materials = _report_materials(workspace, run, run.result)
+            materials = _report_materials(
+                workspace, run, run.result, source_out[0] if source_out else None
+            )
             if materials is not None:
                 selected_run_view["materials"] = materials
+                installation = source_out[0].get("installation") if source_out else None
+                review = (
+                    installation.get("material_review")
+                    if isinstance(installation, dict)
+                    else None
+                )
+                if isinstance(review, dict) and isinstance(review.get("rows"), list):
+                    items: list[Json] = []
+                    for item in cast(list[Object], review["rows"]):
+                        calculated = item.get("mounting_quantity_result")
+                        quantity = (
+                            calculated.get("quantity")
+                            if isinstance(calculated, dict)
+                            else item.get("quantity")
+                        )
+                        items.append(
+                            {
+                                "quantity": {
+                                    lang: material_quantity(
+                                        {**item, "quantity": quantity}, lang
+                                    )
+                                    if quantity is not None
+                                    else ("Offen" if lang == "de" else "Open")
+                                    for lang in ("en", "de")
+                                },
+                                "explanation": {
+                                    lang: mounting_quantity_explanation(
+                                        calculated, lang
+                                    )
+                                    for lang in ("en", "de")
+                                }
+                                if isinstance(calculated, dict)
+                                else None,
+                            }
+                        )
+                    selected_run_view["declared_installation_materials"] = items
         runs.append(selected_run_view)
         remaining -= min(max(0, remaining), len(rows))
         if omitted:

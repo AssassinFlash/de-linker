@@ -92,6 +92,162 @@ def test_private_material_label_and_report_without_pv_sources_are_not_denied() -
     assert shipped["blocks"][-1]["status"] == "unavailable"
 
 
+def test_saved_material_answers_use_frozen_anonymous_items_in_both_languages() -> None:
+    raw, page = source()
+    raw["runs"][0].update(
+        kind="planning_report_v1",
+        declared_installation_materials=[
+            {
+                "quantity": {"en": "8 pc", "de": "8 Stk."},
+                "explanation": {
+                    "en": "5 × 0 + 2 × 4 + 3 × 0 = 8 pieces",
+                    "de": "5 × 0 + 2 × 4 + 3 × 0 = 8 Stück",
+                },
+            },
+            {"quantity": {"en": "Open", "de": "Offen"}, "explanation": None},
+        ],
+    )
+    answer = planning.material_answer(raw, page, "en")
+    assert answer and "5 × 0 + 2 × 4 + 3 × 0 = 8 pieces" in answer
+    assert "Installation material 2" in answer and "Open" in answer
+    assert "cannot verify" in answer and "not assessed" in answer
+    answer = planning.material_answer(raw, page, "de")
+    assert answer and "5 × 0 + 2 × 4 + 3 × 0 = 8 Stück" in answer
+    assert "nicht bestätigen" in answer and "nicht geprüft" in answer
+    raw["runs"][0]["declared_installation_materials"][0]["private_name"] = (
+        "Private name"
+    )
+    refused = planning.material_answer(raw, page, "en")
+    assert (
+        refused and "could not be verified" in refused and "Private name" not in refused
+    )
+
+
+def test_actual_saved_report_question_takes_the_service_answer_path() -> None:
+    from types import SimpleNamespace
+
+    from linker_genie.app import _answer
+    from linker_genie.understand import Understander
+
+    raw, page = source()
+    raw["runs"][0].update(
+        kind="planning_report_v1",
+        declared_installation_materials=[
+            {
+                "quantity": {"en": "8 pc", "de": "8 Stk."},
+                "explanation": {
+                    "en": "5 × 0 + 2 × 4 + 3 × 0 = 8 pieces",
+                    "de": "5 × 0 + 2 × 4 + 3 × 0 = 8 Stück",
+                },
+            }
+        ],
+    )
+    question = "How many end clamps does this saved report calculate, and what does that calculation establish? What is the name of the material in the report?"
+    request = TurnRequest.model_validate(
+        {
+            "conversation_id": "test",
+            "messages": [{"role": "user", "content": question}],
+            "locale": "en",
+            "page_context": page.model_dump(),
+        }
+    ).model_copy(update={"planning_context": raw})
+    reading = Reading(
+        intent="documents_specs",
+        confidence=0.9,
+        about_this_page=1,
+        wants_person=0,
+        needs_followup=0,
+        seconds=0,
+        cost=0,
+        saved_material_question=0.85,
+    )
+    subject = Subject(ids=(), device_class={})
+    route = plan(question, [], reading, subject, "en", False)
+    assert route.name == "documents"
+
+    class RecordedJev:
+        def read(
+            self, message: str, page: dict[str, Any], history: Any = ()
+        ) -> Reading:
+            assert message == question and page["saved_report"] is True
+            return reading
+
+    prepared = Understander(None, RecordedJev()).prepare(request, None)  # type: ignore[arg-type]
+    assert prepared.route.name == "planning_project" and prepared.route.calls == ()
+    result, _ = _answer(request, prepared, SimpleNamespace(), None, abilities=None)  # type: ignore[arg-type]
+    assert result.attempts == 0 and prepared.log["saved_material_answer"] is True
+    block = result.output.blocks[0]
+    assert isinstance(block, TextBlock)
+    assert "5 × 0 + 2 × 4 + 3 × 0 = 8 pieces" in block.text
+    assert "cannot verify" in block.text
+
+
+@pytest.mark.parametrize(
+    ("question", "score"),
+    [
+        ("How many hours does this report cover?", 0.16),
+        ("Which inverter is in my bill of materials?", 0.16),
+        ("How many hours does this report cover?", None),
+    ],
+)
+def test_unrelated_saved_report_questions_keep_their_normal_route(
+    monkeypatch: pytest.MonkeyPatch, question: str, score: float | None
+) -> None:
+    from types import SimpleNamespace
+
+    import linker_genie.app as app_module
+    from linker_genie.cycle import TurnResult
+    from linker_genie.facts import TurnFacts
+    from linker_genie.understand import Prepared
+
+    raw, page = source()
+    raw["runs"][0].update(
+        kind="planning_report_v1",
+        declared_installation_materials=[
+            {"quantity": {"en": "8 pc", "de": "8 St."}, "explanation": None}
+        ],
+    )
+    request = TurnRequest.model_validate(
+        {
+            "conversation_id": "test",
+            "messages": [{"role": "user", "content": question}],
+            "locale": "en",
+            "page_context": page.model_dump(),
+        }
+    ).model_copy(update={"planning_context": raw})
+    reading = Reading(
+        intent="other",
+        confidence=0.9,
+        about_this_page=1,
+        wants_person=0,
+        needs_followup=0,
+        seconds=0,
+        cost=0,
+        saved_material_question=score,
+    )
+    prepared = Prepared(route=Route("model"), reading=reading)
+    expected = TurnResult(
+        output=TurnOutput(language="en", blocks=[TextBlock(text="normal route")]),
+        facts=TurnFacts(),
+        grounded=True,
+        failures=(),
+        fallback=False,
+        attempts=1,
+    )
+    monkeypatch.setattr(app_module, "run", lambda *args, **kwargs: expected)
+    native_request = SimpleNamespace(
+        app=SimpleNamespace(state=SimpleNamespace(generate=object()))
+    )
+    result, _ = app_module._answer(
+        request,
+        prepared,
+        native_request,  # type: ignore[arg-type]
+        None,  # type: ignore[arg-type]
+        abilities=None,  # type: ignore[arg-type]
+    )
+    assert result is expected and "saved_material_answer" not in prepared.log
+
+
 def test_facts_hydrate_without_granting_product_or_document_permission() -> None:
     raw, page = source()
     raw["runs"][0].update(

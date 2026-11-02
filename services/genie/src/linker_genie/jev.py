@@ -119,6 +119,7 @@ class Reading:
     needs_followup: float
     seconds: float
     cost: float
+    saved_material_question: float | None = None
 
     def as_log(self) -> dict[str, Any]:
         return {
@@ -129,6 +130,7 @@ class Reading:
             "needs_followup": round(self.needs_followup, 3),
             "seconds": round(self.seconds, 3),
             "cost": self.cost,
+            "saved_material_question": self.saved_material_question,
         }
 
 
@@ -168,7 +170,16 @@ class Jev:
                 {"role": role, "content": content[:HISTORY_CHARS]}
                 for role, content in list(history)[-HISTORY_MESSAGES:]
             ]
-        payload = {"model": MODEL, "state": state, "questions": QUESTIONS}
+        questions = QUESTIONS
+        if page.get("saved_report") is True:
+            questions = {
+                **QUESTIONS,
+                "saved_material_question": {
+                    "type": "noul",
+                    "instructions": "Is the customer asking about declared installation materials, their quantities, calculation or project-specific names in this saved report? Answer no for PV module counts, time periods, energy, equipment choice, or which inverter is in a bill of materials.",
+                },
+            }
+        payload = {"model": MODEL, "state": state, "questions": questions}
         started = time.perf_counter()
         body = self._post(payload)
         return _reading(body, time.perf_counter() - started)
@@ -216,6 +227,9 @@ def _reading(body: dict[str, Any], seconds: float) -> Reading:
             needs_followup=float(answers["needs_followup"]["noul"]),
             seconds=seconds,
             cost=float(usage.get("cost") or 0.0) if isinstance(usage, dict) else 0.0,
+            saved_material_question=float(answers["saved_material_question"]["noul"])
+            if "saved_material_question" in answers
+            else None,
         )
     except (KeyError, TypeError, ValueError) as error:
         raise JevError(f"jev answer is incomplete: {error!r}") from error

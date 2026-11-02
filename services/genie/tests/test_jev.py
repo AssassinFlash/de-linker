@@ -70,6 +70,32 @@ def test_one_request_asks_the_four_questions_of_jev_itself() -> None:
     assert reading.as_log()["cost"] == 3.2046e-05
 
 
+def test_saved_report_adds_material_intent_to_existing_jev_request() -> None:
+    seen: list[dict[str, Any]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(json.loads(request.content))
+        return httpx.Response(
+            200,
+            json={
+                **ANSWER,
+                "answers": {
+                    **ANSWER["answers"],
+                    "saved_material_question": {"type": "noul", "noul": 0.95},
+                },
+            },
+        )
+
+    jev, _ = _jev(handler)
+    reading = jev.read(
+        "How many end clamps does this saved report calculate?",
+        {"type": "other", "saved_report": True},
+    )
+    assert reading.saved_material_question == 0.95
+    instructions = seen[0]["questions"]["saved_material_question"]["instructions"]
+    assert "time periods" in instructions and "which inverter" in instructions
+
+
 def test_a_transient_failure_is_retried() -> None:
     answers = iter([httpx.Response(503), httpx.Response(200, json=ANSWER)])
     jev, waits = _jev(lambda request: next(answers))
