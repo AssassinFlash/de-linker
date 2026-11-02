@@ -20,6 +20,22 @@ export function PvStringResult({
 	const standbySource = standbyFact?.source
 		? readObject(standbyFact.source)
 		: null;
+	const formatStandby = (value: unknown) => {
+		const shown = format(value);
+		if (typeof value === "number" && standby) {
+			const bound = (standby.interval_v as number[]).find(
+				(edge) => value !== edge && shown === format(edge),
+			);
+			if (bound !== undefined) {
+				if ((String(value).split(".")[1] ?? "").length > 8)
+					return `${value < bound ? "<" : ">"} ${format(bound)}`;
+				return new Intl.NumberFormat(locale, {
+					maximumSignificantDigits: 17,
+				}).format(value);
+			}
+		}
+		return shown;
+	};
 	const observation = (result: unknown) =>
 		result === "in_interval"
 			? __("In standby interval · review", "linker-tools")
@@ -133,7 +149,7 @@ export function PvStringResult({
 													? __("Modeled hot case", "linker-tools")
 													: __("Modeled cold case", "linker-tools")}
 										</td>
-										<td>{format(point.voltage_v)} V</td>
+										<td>{formatStandby(point.voltage_v)} V</td>
 										<td>{observation(point.observation)}</td>
 									</tr>
 								))}

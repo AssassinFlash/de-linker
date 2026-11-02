@@ -24,6 +24,7 @@ from .project_materials import (
 from .pv_operating_report import operating_sections
 from .report_capacity import capacity_section
 from .report_copy import TEXT, check_label, text
+from .report_numbers import comparison_values
 from .report_numbers import number as number
 from .report_numbers import percent
 from .report_pvlib import pvlib_sections
@@ -195,6 +196,21 @@ def build_report(source: Object) -> Report:
                 unit_rows = cast(list[dict[str, Any]], unit_wiring["strings"])
                 numbers = {s["id"]: i + 1 for i, s in enumerate(unit_rows)}
                 interval = cast(list[float], standby_data["interval_v"])
+
+                def standby_voltage(value: float | None) -> str:
+                    if value is None:
+                        return number(None, locale, "V")
+                    shown = number(value, locale, "V")
+                    for bound in interval:
+                        distinct, _ = comparison_values(value, bound, locale, "V")
+                        if distinct != shown:
+                            if len(str(value).partition(".")[2]) > 8:
+                                return ("< " if value < bound else "> ") + number(
+                                    bound, locale, "V"
+                                )
+                            return distinct
+                    return shown
+
                 sections.append(
                     ReportSection(
                         id=f"pv-standby-{unit_index}",
@@ -223,7 +239,7 @@ def build_report(source: Object) -> Report:
                                 [
                                     str(numbers[p["string_id"]]),
                                     text("pv_standby_case_" + p["case"], locale),
-                                    number(p["voltage_v"], locale, "V"),
+                                    standby_voltage(p["voltage_v"]),
                                     text("pv_standby_" + p["observation"], locale),
                                 ]
                                 for p in standby_data["points"]

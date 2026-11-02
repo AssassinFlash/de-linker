@@ -2776,6 +2776,28 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
     with_standby = json_object(assess_equipment(standby_value, standby_basis))
     assert without_standby["checks"] == with_standby["checks"]
     assert without_standby["equipment_status"] == with_standby["equipment_status"]
+    for voltage, expected in (
+        (949.9999, "949.9999 V"),
+        (950.0001, "950.0001 V"),
+        (950.0000000000001, "> 950 V"),
+        (1000.0001, "1,000.0001 V"),
+    ):
+        comparison = copy.deepcopy(with_standby)
+        comparison["pv_electrical"]["standby"]["points"][0]["voltage_v"] = voltage
+        formatted = build_report(
+            {
+                "locale": "en",
+                "title": "Display precision",
+                "project_id": "a" * 32,
+                "revision": 1,
+                "input_sha256": "b" * 64,
+                "generated_at": "2026-10-26T00:00:00+00:00",
+                "source_runs": [],
+                "equipment": comparison,
+            }
+        )
+        section = next(s for s in formatted.sections if s.id == "pv-standby-0")
+        assert section.table is not None and section.table.rows[0][2] == expected
     for locale in ("en", "de"):
         report = build_report(
             {

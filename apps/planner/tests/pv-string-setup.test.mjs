@@ -7,8 +7,61 @@ import { PlantPvStringSetup } from "../src/components/equipment/PlantPvStringSet
 import { equipmentDraft } from "../src/domain/equipment.ts";
 import { readPvPlantStringPlan } from "../src/domain/pvPlantStrings.ts";
 import { PvStringSetup } from "../src/components/equipment/PvStringSetup.tsx";
+import { PvStringResult } from "../src/components/equipment/PvStringResult.tsx";
 import { panelPoses } from "../src/domain/panelPoses.ts";
 import fixture from "./fixtures/index.ts";
+
+test("standby observations keep near-boundary values distinguishable", async (t) => {
+	const dom = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const root = createRoot(dom.element);
+	t.after(() => dom.dispose(root));
+	const value = {
+		strings: [
+			{
+				id: "a",
+				mppt: 1,
+				input: 1,
+				module_count: 20,
+				stc_vmpp_v: 950,
+				cold_voc_v: 1000,
+			},
+		],
+		standby: {
+			interval_v: [950, 1000],
+			fact: { source: { url: "https://example.invalid/source.pdf", page: 2 } },
+			points: [
+				{
+					string_id: "a",
+					case: "stc",
+					voltage_v: 949.9999,
+					observation: "outside_interval",
+				},
+				{
+					string_id: "a",
+					case: "hot",
+					voltage_v: 950.0001,
+					observation: "in_interval",
+				},
+				{
+					string_id: "a",
+					case: "cold",
+					voltage_v: 950.0000000000001,
+					observation: "in_interval",
+				},
+			],
+		},
+	};
+	await act(async () =>
+		root.render(
+			React.createElement(PvStringResult, { value, locale: "en-GB" }),
+		),
+	);
+	const text = dom.element.textContent;
+	assert.match(text, /949\.9999 V/);
+	assert.match(text, /950\.0001 V/);
+	assert.match(text, /> 950 V/);
+});
 
 async function setup(
 	t,
