@@ -16,7 +16,9 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools/local/src"))
-from linker_local.processes import without_research_credentials  # noqa: E402
+from linker_local.processes import (  # type: ignore[import-not-found]  # noqa: E402
+    without_research_credentials,
+)
 
 PHP = Path(__file__).with_suffix(".php")
 MARKER = "@@548-cb2-guide-titles@@"
