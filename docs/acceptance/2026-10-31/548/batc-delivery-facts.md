@@ -76,6 +76,15 @@ The focused CSV quantity readback used a separate temporary local project and
 its CSV SHA-256 was
 `e5edca3086701b6724b73124f29b3e4921857100b543ca5e4a2ae35e38f51afd`.
 
+## Production readback for the large cabinets
+
+On 2026-11-02 Woo, both engineering readers and Genie epoch 66 loaded source
+`dd9ba12fc54ea7f3b38eb99d7c8273fbd51e2b91a1a27a8e59fd6ba400d4c29a`.
+Production guest project `90e7c146419b454fa295b45c21ee5004` revision 1
+selected two GW208.9-BAT-LC-G10 cabinets. The downloaded English report PDF
+and materials CSV both give eight expansion bolts. The CSV identifies four
+per cabinet, PDF page 35 and the included-equipment category.
+
 ## BAT-C 61.4 and 112.6: locally verified source candidate
 
 The reviewed, source-neutral delivery rows for products 1954 and 1955 are in
@@ -114,3 +123,51 @@ be the directly bound document for these facts. The source-neutral data above
 is an evidence candidate only: production Woo publication and consumer use
 require a supported, byte-verified original-link binding with the existing
 source revision and withdrawal guarantees. No production product was changed.
+
+## A hosted original for the 112.6 kWh cabinet
+
+The existing [ET user manual V1.2](https://de-linker.com/wp-content/uploads/2026/10/GW_ET-100kW_User-Manual-EN_V1.2.pdf),
+SHA-256 `0ef4b1ccdcc418e3ca8de31194b3d9e2969be39aa739ffa0ca1f038fcfac6615`,
+PDF pages 100–102 (printed 99–101), lists the BAT 92.1–112.6 kWh delivery
+items and explicitly identifies `GW112.6-BAT-AC-G10` with ten inter-pack
+harnesses. Eighteen items agree with the separately reviewed BAT-C 60–112
+manual. The latter's ET100-only adapter brackets are absent from this ET table
+and are not imported. The ET table does not list `GW61.4-BAT-AC-G10`; no
+association or package claim is inferred for product 1954.
+
+The checked association plan `548-batc-112-manual.json` adds this already
+hosted manual to product 1955 only. The checked facts plan
+`548-batc-112-delivery.json` preserves its five existing facts and adds eighteen
+items using the ET manual's actual page citations. Sales-unit data remain as
+currently maintained. A private source refresh is required after the document
+association because that association changes the product revision.
+
+In p548 the native association preview/apply, facts preview/apply, engineering
+feed and product-download readback succeeded: 1955 had 23 facts and the manual,
+and 1954 was not associated. Facts and then association were rolled back; the
+original source revision `e1773a35f189b2eec9267b9f757a55c60bd996e62df9e5d1812d90f0b8c337d4`
+and publication options were restored. The previous two-cabinet local worker
+and report results were not rerun. An in-memory scope compilation using the
+existing epoch66 corpus's 623 original ET chunks, the local Woo model statuses
+and a hypothetical 1955 association admitted zero passages for 1955; it does
+not authorize unrelated ET passages or claim that Genie can answer this table.
+No vector build or production write was performed.
+
+For the single production data window, after the normal verified full backup,
+use private 0600 paths for `DOC_RECEIPT`, `FACT_RECEIPT` and `PRIVATE_PLAN`:
+
+```sh
+python tools/migrate/548-controller-facts.py --production preview --plan tools/migrate/548-batc-112-manual.json --receipt "$DOC_RECEIPT"
+python tools/migrate/548-controller-facts.py --production apply --receipt "$DOC_RECEIPT"
+python tools/migrate/548-controller-facts.py --production verify --receipt "$DOC_RECEIPT"
+install -m 600 tools/migrate/548-batc-112-delivery.json "$PRIVATE_PLAN"
+python tools/migrate/548-installation-facts.py --production refresh --plan "$PRIVATE_PLAN" --write
+python tools/migrate/548-installation-facts.py --production preview --plan "$PRIVATE_PLAN" --receipt "$FACT_RECEIPT"
+python tools/migrate/548-installation-facts.py --production apply --receipt "$FACT_RECEIPT"
+python tools/migrate/548-installation-facts.py --production verify --receipt "$FACT_RECEIPT"
+```
+
+Review that the facts receipt preserves the current five facts and adds only
+the eighteen reviewed rows before applying it. To roll back, use the facts
+receipt first, then the association receipt; verify each restored state and
+reconcile the matching Woo/knowledge publication before retiring receipts.

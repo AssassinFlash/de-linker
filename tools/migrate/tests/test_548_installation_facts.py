@@ -285,6 +285,37 @@ def test_batc_delivery_plan_keeps_existing_facts_and_source_conditions() -> None
         )
 
 
+def test_batc_112_plan_keeps_only_evidenced_delivery_rows() -> None:
+    products = migration.load_plan(HERE.parent / "548-batc-112-delivery.json")[
+        "products"
+    ]
+    assert set(products) == {"1955"}
+    items = products["1955"]["items"]
+    original = migration.load_plan()["products"]["1955"]["items"]
+    assert items[: len(original)] == original
+    delivery = items[len(original) :]
+    assert len(delivery) == 18
+    assert len({item["id"] for item in delivery}) == 18
+    assert not any(item["id"] == "et100-adapter-bracket" for item in delivery)
+    assert (
+        next(item for item in delivery if item["id"] == "expansion-anchor")["quantity"]
+        == 4
+    )
+    assert (
+        next(item for item in delivery if item["id"] == "pack-interconnection-harness")[
+            "quantity"
+        ]
+        == 10
+    )
+    assert all(
+        item["source"]["blob_sha256"]
+        == "0ef4b1ccdcc418e3ca8de31194b3d9e2969be39aa739ffa0ca1f038fcfac6615"
+        and item["source"]["product_id"] == 1955
+        and item["source"]["page"] in (100, 101, 102)
+        for item in delivery
+    )
+
+
 def test_batc_plan_passes_native_installation_facts_binding() -> None:
     reviewed = migration.load_plan(HERE.parent / "548-batc-delivery.json")["products"]
     source = reviewed["1956"]["items"][0]["source"]
