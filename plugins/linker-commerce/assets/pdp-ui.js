@@ -171,6 +171,31 @@
 		});
 	});
 
+	/* Info decks (specifications and project scenarios): keep role="tab"
+	   aria-selected, roving tabindex and panel visibility in sync on click.
+	   Decks marked .pdp-all-panels keep every panel visible in the grid. */
+	root.addEventListener("click", function (event) {
+		var button = event.target.closest(".pdp-info-tabs [role=\"tab\"]");
+		if (!button || !root.contains(button)) {
+			return;
+		}
+		var deck = button.closest(".pdp-info-deck");
+		if (!deck) {
+			return;
+		}
+		var target = button.getAttribute("aria-controls");
+		deck.querySelectorAll(".pdp-info-tabs [role=\"tab\"]").forEach(function (tab) {
+			var active = tab === button;
+			tab.setAttribute("aria-selected", active ? "true" : "false");
+			tab.setAttribute("tabindex", active ? "0" : "-1");
+		});
+		if (!deck.classList.contains("pdp-all-panels")) {
+			deck.querySelectorAll(".pdp-info-panel").forEach(function (panel) {
+				panel.hidden = panel.id !== target;
+			});
+		}
+	});
+
 	/* The rail's own cues: while the rail scrolls inside its sticky box, the
 	   fades mark the copy that is out of view. */
 	function railCue() {
