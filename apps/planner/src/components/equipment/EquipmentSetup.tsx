@@ -89,6 +89,7 @@ export function EquipmentSetup({
 	}, [
 		draft.history.current.equipment_setup,
 		draft.history.current.equipment_selection,
+		draft.history.current.equipment_requirements,
 	]);
 	const products = catalog.data?.products ?? [],
 		blocked =

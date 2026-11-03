@@ -79,6 +79,9 @@ export function usePlanningRuns({
 			),
 		enabled: active && admitted,
 		retry: false,
+		// Searches finish server-side within seconds; a backgrounded tab must
+		// not freeze the history on a pending state until it regains focus.
+		refetchIntervalInBackground: true,
 		refetchInterval: (query) =>
 			query.state.data?.items.some((run) => runPending(run.state))
 				? POLL_MS
@@ -104,6 +107,9 @@ export function usePlanningRuns({
 			}),
 		enabled: active && readSelected && admitted && runId !== null,
 		retry: false,
+		// Searches finish server-side within seconds; a backgrounded tab must
+		// not freeze the selected run on a pending state until it regains focus.
+		refetchIntervalInBackground: true,
 		refetchInterval: (query) =>
 			query.state.data && runPending(query.state.data.state) ? POLL_MS : false,
 	});
