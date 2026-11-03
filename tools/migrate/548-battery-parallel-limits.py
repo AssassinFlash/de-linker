@@ -185,7 +185,7 @@ def build_request(
     """Build exactly one of the two transport shapes sent to the PHP side."""
     if action == "preview" and plan is not None and receipt is None:
         return {"action": action, "plan": plan}
-    if action in {"apply", "rollback", "verify"} and receipt and plan is None:
+    if action in {"apply", "rollback"} and receipt and plan is None:
         return {"action": action, "receipt": receipt}
     raise MigrationError(f"Invalid request for action {action}.")
 
@@ -235,7 +235,7 @@ def main() -> int:
     target = parser.add_mutually_exclusive_group(required=True)
     target.add_argument("--instance")
     target.add_argument("--production", action="store_true")
-    parser.add_argument("action", choices=("preview", "apply", "rollback", "verify"))
+    parser.add_argument("action", choices=("preview", "apply", "rollback"))
     parser.add_argument("--receipt", type=Path, required=True)
     args = parser.parse_args()
     site = remote_target() if args.production else local_target(args.instance)

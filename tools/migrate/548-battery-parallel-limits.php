@@ -135,7 +135,7 @@ try {
 			}
 		} else {
 			$receipt = $request['receipt'];
-			if ( ! is_array( $receipt ) || ( $receipt['site'] ?? null ) !== $site || ! in_array( $request['action'], array( 'apply', 'rollback', 'verify' ), true ) ) {
+			if ( ! is_array( $receipt ) || ( $receipt['site'] ?? null ) !== $site || ! in_array( $request['action'], array( 'apply', 'rollback' ), true ) ) {
 				throw new RuntimeException( 'Receipt belongs to another site or action.' );
 			}
 			$from = 'rollback' === $request['action'] ? 'after' : 'before';
