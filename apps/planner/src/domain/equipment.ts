@@ -62,6 +62,34 @@ export function readEquipmentSelection(value: unknown): EquipmentSelection {
 		throw new ApiError(422, "equipment_selection_incomplete");
 	return value;
 }
+
+const EQUIPMENT_SETUP_FIELDS = [
+	"inverter_product_id",
+	"battery_product_id",
+	"modules_per_stack",
+	"parallel_stacks",
+	"operating_mode",
+	"grid_phase",
+	"pv_dc_kw",
+	"required_usable_kwh",
+	"required_discharge_ac_kw",
+] as const;
+
+/**
+ * A saved equipment_setup row can be an all-null placeholder (written before
+ * any field was touched) while equipment_requirements already carries the
+ * prepared search inputs. Such an empty row must not shadow the saved
+ * requirements, or the reopened form shows nothing.
+ */
+function equipmentSetupEmpty(row: JsonObject): boolean {
+	const accessories = row.accessory_product_ids;
+	return (
+		Array.isArray(accessories) &&
+		accessories.length === 0 &&
+		EQUIPMENT_SETUP_FIELDS.every((key) => row[key] === null)
+	);
+}
+
 export function equipmentDraft(inputs: JsonObject): JsonObject {
 	if (inputs.equipment_setup !== undefined) {
 		const row = readObject(inputs.equipment_setup);
@@ -96,7 +124,7 @@ export function equipmentDraft(inputs: JsonObject): JsonObject {
 			)
 				throw new ApiError(422, "equipment_selection_incomplete");
 		}
-		return row;
+		if (!equipmentSetupEmpty(row)) return row;
 	}
 	if (inputs.equipment_selection !== undefined)
 		return readEquipmentSelection(inputs.equipment_selection);
