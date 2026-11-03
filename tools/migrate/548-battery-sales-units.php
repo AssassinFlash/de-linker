@@ -134,7 +134,9 @@ try {
 				}
 				++$written;
 			}
-			if ( 'apply' === $request['action'] && $written > 0 ) {
+			// Verify on every apply run, including an idempotent re-run after an
+			// interrupted readback: the writes may already be in place.
+			if ( 'apply' === $request['action'] ) {
 				// The engine admits a battery only when the feed publishes a resolvable
 				// sales_unit_kind citation, so prove both the value and the association.
 				$fresh = \Linker\Commerce\Products\Publication::manifest();
@@ -142,11 +144,13 @@ try {
 					$figures = json_decode( (string) $entry['after'], true, 512, JSON_THROW_ON_ERROR );
 					$figure  = $figures['sales_unit_kind'] ?? null;
 					$item    = \Linker\Commerce\Products\EngineeringFeed::item( (int) $id, $fresh );
-					$urls    = array();
+					// The feed item publishes figures as a top-level object; read it as one.
+					$feed_figures = is_array( $item ) ? (array) ( $item['figures'] ?? null ) : array();
+					$urls         = array();
 					foreach ( is_array( $item ) ? (array) ( $item['documents'] ?? array() ) : array() as $doc ) {
 						$urls[] = $doc['url'] ?? null;
 					}
-					if ( ! is_array( $figure ) || ! is_array( $item ) || ( $item['figures']['sales_unit_kind']['value'] ?? null ) !== $figure['value'] || ! in_array( $figure['citation']['url'] ?? null, $urls, true ) ) {
+					if ( ! is_array( $figure ) || ! is_array( $item ) || ( $feed_figures['sales_unit_kind']['value'] ?? null ) !== $figure['value'] || ! in_array( $figure['citation']['url'] ?? null, $urls, true ) ) {
 						throw new RuntimeException( esc_html( "The engineering feed did not publish the reviewed sales unit for {$id}." ) );
 					}
 				}
