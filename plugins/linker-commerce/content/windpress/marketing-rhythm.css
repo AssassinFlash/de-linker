@@ -95,9 +95,14 @@ html[lang^="de"]
 
 /* Services audience tabs on EN2748/DE6700 use the existing14px action
    type and44px target. Two IDs outrank retained desktop11px/mobile10px rules. */
-#service-redesign #solutions .service-role-nav button {
-	min-height: 44px;
-	font-size: var(--proto-size-sm);
+#service-redesign #solutions .service-role-nav button,
+#service-redesign .service-role-nav button[role="tab"] {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: var(--proto-control-height, 44px);
+	padding-block: 11px;
+	font-size: var(--proto-size-sm, 0.875rem);
 	line-height: 1.4;
 	white-space: normal;
 }
@@ -676,7 +681,8 @@ html[lang^="de"] #tv-utility-page-v1 .lk-hero-utility h1 {
 #tv-solutions-developers-v1 #sp-workbench .lk-sp-bar:hover::before {
 	background: var(--proto-teal-700);
 }
-#tv-solutions-developers-v1 #sp-workbench .epc-motion-toggle {
+:is(#tv-solutions-developers-v1 #sp-workbench, #home-a #testimonials)
+	.epc-motion-toggle {
 	display: inline-flex;
 	flex: 0 0 44px;
 	align-items: center;
@@ -689,25 +695,36 @@ html[lang^="de"] #tv-utility-page-v1 .lk-hero-utility h1 {
 	background: var(--proto-neutral-0);
 	color: var(--proto-teal-700);
 }
-#tv-solutions-developers-v1 #sp-workbench .epc-motion-toggle:hover {
+:is(#tv-solutions-developers-v1 #sp-workbench, #home-a #testimonials)
+	.epc-motion-toggle[hidden] {
+	display: none;
+}
+:is(#tv-solutions-developers-v1 #sp-workbench, #home-a #testimonials)
+	.epc-motion-toggle:hover {
 	background: var(--proto-teal-50);
 }
-#tv-solutions-developers-v1 #sp-workbench .epc-motion-toggle svg {
+:is(#tv-solutions-developers-v1 #sp-workbench, #home-a #testimonials)
+	.epc-motion-toggle
+	svg {
 	width: 18px;
 	height: 18px;
 	fill: none;
 	stroke: currentColor;
 	stroke-width: 2;
 }
-#tv-solutions-developers-v1 #sp-workbench .epc-motion-play,
-#tv-solutions-developers-v1 #sp-workbench .is-paused .epc-motion-pause {
+:is(#tv-solutions-developers-v1 #sp-workbench, #home-a #testimonials)
+	.epc-motion-play,
+:is(#tv-solutions-developers-v1 #sp-workbench, #home-a #testimonials)
+	.is-paused
+	.epc-motion-pause {
 	display: none;
 }
-#tv-solutions-developers-v1 #sp-workbench .is-paused .epc-motion-play {
+:is(#tv-solutions-developers-v1 #sp-workbench, #home-a #testimonials)
+	.is-paused
+	.epc-motion-play {
 	display: block;
 }
-#tv-solutions-developers-v1
-	#sp-workbench
+:is(#tv-solutions-developers-v1 #sp-workbench, #home-a #testimonials)
 	:is(.lk-sp-bar, .epc-motion-toggle):focus-visible {
 	outline: 2px solid var(--proto-teal-700);
 	outline-offset: 4px;

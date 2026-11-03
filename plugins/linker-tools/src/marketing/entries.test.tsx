@@ -1274,3 +1274,15 @@ test( 'a fresh marketing Attach under A cannot give its later edited bytes to th
 	);
 	expect( sendTurn ).not.toHaveBeenCalled();
 } );
+
+test( 'unlabelled marketing prompt adopts its trimmed placeholder as aria-label', () => {
+	document.body.innerHTML =
+		'<section id="system-search"><textarea class="lk-dialog-prompt" placeholder="Search outdoor cabinets, peak-shaving, or datasheets..."></textarea><a href="/genie/" class="lk-send-btn">Send query</a></section>';
+	const mount = document.createElement( 'div' );
+	stop = bindMarketingEntries( document, readConfig( mount ) );
+	const prompt =
+		document.querySelector< HTMLTextAreaElement >( '.lk-dialog-prompt' )!;
+	expect( prompt.getAttribute( 'aria-label' ) ).toBe(
+		'Search outdoor cabinets, peak-shaving, or datasheets'
+	);
+} );

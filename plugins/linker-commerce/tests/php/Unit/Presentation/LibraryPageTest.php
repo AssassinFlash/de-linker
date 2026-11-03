@@ -215,7 +215,7 @@ final class LibraryPageTest extends TestCase {
 		$this->assertStringContainsString( 'id="linker-library-zone-trade"', $html );
 		$this->assertStringContainsString( 'id="linker-library-trade-0"', $html );
 		$this->assertStringContainsString( 'data-library-kind="trade"', $html );
-		$this->assertStringContainsString( 'Ordering & delivery', $html );
+		$this->assertStringContainsString( 'Inquiries & delivery', $html );
 		$this->assertStringContainsString( 'What is the minimum order quantity, and where does Linker deliver?', $html );
 		$this->assertStringContainsString( 'There is no pallet minimum.', $html );
 		$this->assertStringContainsString( 'id="linker-library-zone-answers"', $html );
