@@ -1,589 +1,589 @@
 {
-  "schema_version": 1,
-  "products": {
-    "1954": {
-      "model": "GW61.4-BAT-AC-G10",
-      "product_revision": "dd9f785d4f4111cad28b36a399aa18120520af65450027e4e852177a79ac0576",
-      "items": [
-        {
-          "id": "dc-power-terminals",
-          "handling": "site_engineering_required",
-          "label": {
-            "en": "DC power terminals (P+/P-)",
-            "de": "DC-Leistungsanschlüsse (P+/P-)"
-          },
-          "quantity": null,
-          "unit": "piece",
-          "basis": "manufacturer_terminal_map",
-          "specification": {
-            "terminal_domain": "battery_dc",
-            "terminals": [
-              "P+",
-              "P-"
-            ],
-            "rating_note": "Three P+ and three P- terminals are shown on each battery system."
-          },
-          "conditions": [],
-          "source": {
-            "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
-            "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
-            "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
-            "product_id": 1954,
-            "page": 2,
-            "quote": "P+ P+ P+ P- P- P-"
-          }
-        },
-        {
-          "id": "bms-communication-terminals",
-          "handling": "site_engineering_required",
-          "label": {
-            "en": "BMS communication terminals (COM/Alarm)",
-            "de": "BMS-Kommunikationsanschlüsse (COM/Alarm)"
-          },
-          "quantity": null,
-          "unit": "piece",
-          "basis": "manufacturer_terminal_map",
-          "specification": {
-            "terminal_domain": "communication",
-            "terminals": [
-              "COM",
-              "Alarm"
-            ],
-            "rating_note": "Two COM terminals and one Alarm terminal are shown on each battery system."
-          },
-          "conditions": [],
-          "source": {
-            "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
-            "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
-            "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
-            "product_id": 1954,
-            "page": 2,
-            "quote": "COM COM Alarm"
-          }
-        },
-        {
-          "id": "inverter-power-conductor-et100-et50",
-          "handling": "site_engineering_required",
-          "label": {
-            "en": "Inverter power conductor for ET100/ET50",
-            "de": "Wechselrichter-Leistungsleiter für ET100/ET50"
-          },
-          "quantity": null,
-          "unit": "m",
-          "basis": "manufacturer_model_specific_conductor",
-          "specification": {
-            "terminal_domain": "battery_dc",
-            "terminals": [],
-            "recommended_conductor_mm2": {
-              "low": 25,
-              "high": 25
-            },
-            "rating_note": "Cu conductor."
-          },
-          "conditions": [
-            {
-              "en": "Applicable to ET100/ET50.",
-              "de": "Gilt für ET100/ET50."
-            }
-          ],
-          "source": {
-            "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
-            "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
-            "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
-            "product_id": 1954,
-            "page": 2,
-            "quote": "ET100/ET50: Cu, S=25mm²"
-          }
-        },
-        {
-          "id": "inverter-power-conductor-et30",
-          "handling": "site_engineering_required",
-          "label": {
-            "en": "Inverter power conductor for ET30",
-            "de": "Wechselrichter-Leistungsleiter für ET30"
-          },
-          "quantity": null,
-          "unit": "m",
-          "basis": "manufacturer_model_specific_conductor",
-          "specification": {
-            "terminal_domain": "battery_dc",
-            "terminals": [],
-            "recommended_conductor_mm2": {
-              "low": 10,
-              "high": 10
-            },
-            "rating_note": "Cu conductor."
-          },
-          "conditions": [
-            {
-              "en": "Applicable to ET30.",
-              "de": "Gilt für ET30."
-            }
-          ],
-          "source": {
-            "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
-            "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
-            "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
-            "product_id": 1954,
-            "page": 2,
-            "quote": "ET30: Cu, S=10mm²"
-          }
-        },
-        {
-          "id": "battery-cluster-conductor",
-          "handling": "site_engineering_required",
-          "label": {
-            "en": "Battery cluster power conductor",
-            "de": "Batteriecluster-Leistungsleiter"
-          },
-          "quantity": null,
-          "unit": "m",
-          "basis": "manufacturer_model_specific_conductor",
-          "specification": {
-            "terminal_domain": "battery_dc",
-            "terminals": [],
-            "recommended_conductor_mm2": {
-              "low": 50,
-              "high": 50
-            },
-            "rating_note": "Cu conductor."
-          },
-          "conditions": [],
-          "source": {
-            "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
-            "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
-            "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
-            "product_id": 1954,
-            "page": 2,
-            "quote": "Cu, S=50mm²"
-          }
-        },
-        {
-          "id": "pack-interconnection-harness",
-          "handling": "manufacturer_included",
-          "label": {
-            "en": "Pack interconnection harness",
-            "de": "Pack-Verbindungskabelbaum"
-          },
-          "quantity": 5,
-          "unit": "piece",
-          "basis": "manufacturer_included_per_sales_unit",
-          "specification": {
-            "rating_note": "Shipped with the GW61.4-BAT-AC-G10 cabinet."
-          },
-          "conditions": [],
-          "source": {
-            "document_id": "doc-0ee8a88e3e74d10e542a38aaab00259352253f35e80216b2cea1b63460f1d52a",
-            "document_revision": "caa2e292a2c784906f32f2ab98153b4c3e2cfc1e05436627a53cf2caec7571bc",
-            "blob_sha256": "c29cbf257d51559ef53f5da36a46ca10b4e5738fbd4a0d06fd74fbaff4a7fcb7",
-            "product_id": 1954,
-            "page": 34,
-            "quote": "Packinterconnecti on harness • GW61.4-BAT-AC- G10：×5"
-          }
-        },
-        {
-          "id": "expansion-anchor",
-          "handling": "manufacturer_included",
-          "label": {
-            "en": "Expansion anchor (4 per cabinet)",
-            "de": "Spreizdübel (4 je Schrank)"
-          },
-          "quantity": 4,
-          "unit": "piece",
-          "basis": "manufacturer_included_per_sales_unit",
-          "specification": {
-            "rating_note": "Shipped with the GW61.4-BAT-AC-G10 cabinet."
-          },
-          "conditions": [],
-          "source": {
-            "document_id": "doc-0ee8a88e3e74d10e542a38aaab00259352253f35e80216b2cea1b63460f1d52a",
-            "document_revision": "caa2e292a2c784906f32f2ab98153b4c3e2cfc1e05436627a53cf2caec7571bc",
-            "blob_sha256": "c29cbf257d51559ef53f5da36a46ca10b4e5738fbd4a0d06fd74fbaff4a7fcb7",
-            "product_id": 1954,
-            "page": 33,
-            "quote": "Anchors×4"
-          }
-        },
-        {
-          "id": "grounding-m5-screw",
-          "handling": "manufacturer_included",
-          "label": {
-            "en": "M5 grounding screw (3 per cabinet)",
-            "de": "M5-Erdungsschraube (3 je Schrank)"
-          },
-          "quantity": 3,
-          "unit": "piece",
-          "basis": "manufacturer_delivery_per_cabinet",
-          "specification": {},
-          "conditions": [],
-          "source": {
-            "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
-            "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
-            "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
-            "product_id": 1954,
-            "page": 1,
-            "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
-            "quote": "BAT10INT0012 · Grounding M5 Screws ×3"
-          }
-        },
-        {
-          "id": "grounding-terminal",
-          "handling": "manufacturer_included",
-          "label": {
-            "en": "Grounding terminal (3 per cabinet)",
-            "de": "Erdungsanschluss (3 je Schrank)"
-          },
-          "quantity": 3,
-          "unit": "piece",
-          "basis": "manufacturer_delivery_per_cabinet",
-          "specification": {},
-          "conditions": [],
-          "source": {
-            "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
-            "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
-            "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
-            "product_id": 1954,
-            "page": 1,
-            "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
-            "quote": "BAT10INT0012 · Grounding Terminals ×3"
-          }
-        },
-        {
-          "id": "inverter-battery-terminal-25",
-          "handling": "manufacturer_included",
-          "label": {
-            "en": "25 mm² inverter-to-battery connection terminal (2 per cabinet)",
-            "de": "25-mm²-Anschluss für Wechselrichter und Batterie (2 je Schrank)"
-          },
-          "quantity": 2,
-          "unit": "piece",
-          "basis": "manufacturer_delivery_per_cabinet",
-          "specification": {},
-          "conditions": [],
-          "source": {
-            "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
-            "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
-            "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
-            "product_id": 1954,
-            "page": 1,
-            "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
-            "quote": "BAT10INT0012 · Inverter-to-Battery Connection Terminals 25mm² ×2"
-          }
-        },
-        {
-          "id": "inter-battery-terminal-50",
-          "handling": "manufacturer_included",
-          "label": {
-            "en": "50 mm² inter-battery connection terminal (2 per cabinet)",
-            "de": "50-mm²-Anschluss zwischen Batterieschränken (2 je Schrank)"
-          },
-          "quantity": 2,
-          "unit": "piece",
-          "basis": "manufacturer_delivery_per_cabinet",
-          "specification": {},
-          "conditions": [],
-          "source": {
-            "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
-            "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
-            "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
-            "product_id": 1954,
-            "page": 1,
-            "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
-            "quote": "BAT10INT0012 · Inter-battery Connection Terminals 50mm² ×2"
-          }
-        },
-        {
-          "id": "pack-negative-hv-harness",
-          "handling": "manufacturer_included",
-          "label": {
-            "en": "Pack-to-high-voltage-box negative harness (1 per cabinet)",
-            "de": "Negatives Verbindungskabel vom Batterie-Pack zum Hochvoltkasten (1 je Schrank)"
-          },
-          "quantity": 1,
-          "unit": "piece",
-          "basis": "manufacturer_delivery_per_cabinet",
-          "specification": {},
-          "conditions": [],
-          "source": {
-            "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
-            "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
-            "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
-            "product_id": 1954,
-            "page": 1,
-            "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
-            "quote": "BAT10INT0012 · Pack negative-to-high-voltage-box negative harness ×1"
-          }
-        },
-        {
-          "id": "inverter-battery-positive-cable",
-          "handling": "manufacturer_included",
-          "label": {
-            "en": "Positive inverter-to-battery cable (1 per cabinet)",
-            "de": "Positives Verbindungskabel zwischen Wechselrichter und Batterie (1 je Schrank)"
-          },
-          "quantity": 1,
-          "unit": "piece",
-          "basis": "manufacturer_delivery_per_cabinet",
-          "specification": {},
-          "conditions": [],
-          "source": {
-            "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
-            "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
-            "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
-            "product_id": 1954,
-            "page": 1,
-            "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
-            "quote": "BAT10INT0012 · Positive inverter-to-battery cable ×1"
-          }
-        },
-        {
-          "id": "inverter-battery-negative-cable",
-          "handling": "manufacturer_included",
-          "label": {
-            "en": "Negative inverter-to-battery cable (1 per cabinet)",
-            "de": "Negatives Verbindungskabel zwischen Wechselrichter und Batterie (1 je Schrank)"
-          },
-          "quantity": 1,
-          "unit": "piece",
-          "basis": "manufacturer_delivery_per_cabinet",
-          "specification": {},
-          "conditions": [],
-          "source": {
-            "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
-            "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
-            "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
-            "product_id": 1954,
-            "page": 1,
-            "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
-            "quote": "BAT10INT0012 · Negative inverter-to-battery cable ×1"
-          }
-        },
-        {
-          "id": "et100-adapter-bracket",
-          "handling": "site_engineering_required",
-          "label": {
-            "en": "ET100 adapter mounting bracket (2 per cabinet, conditional)",
-            "de": "ET100-Adaptermontagehalterung (2 je Schrank, bedingt)"
-          },
-          "quantity": null,
-          "unit": "piece",
-          "basis": "manufacturer_conditional_delivery_per_cabinet",
-          "specification": {},
-          "conditions": [
-            {
-              "en": "Two per cabinet only when required for ET100; verify the ordered configuration.",
-              "de": "Zwei je Schrank nur bei Bedarf für ET100; bestellte Konfiguration prüfen."
-            }
-          ],
-          "source": {
-            "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
-            "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
-            "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
-            "product_id": 1954,
-            "page": 1,
-            "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
-            "quote": "BAT10INT0012 · Adapter mounting bracket ×2 (Required only for ET100)"
-          }
-        },
-        {
-          "id": "inverter-communication-cable",
-          "handling": "manufacturer_included",
-          "label": {
-            "en": "Battery-to-inverter communication Ethernet cable (1 per cabinet)",
-            "de": "Ethernet-Kommunikationskabel zwischen Batterie und Wechselrichter (1 je Schrank)"
-          },
-          "quantity": 1,
-          "unit": "piece",
-          "basis": "manufacturer_delivery_per_cabinet",
-          "specification": {},
-          "conditions": [],
-          "source": {
-            "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
-            "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
-            "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
-            "product_id": 1954,
-            "page": 1,
-            "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
-            "quote": "BAT10INT0012 · Battery-to-inverter communication Ethernet cable ×1"
-          }
-        },
-        {
-          "id": "ac-power-harness-package",
-          "handling": "manufacturer_included",
-          "label": {
-            "en": "Air-conditioner power-supply harness package (1 per cabinet)",
-            "de": "Kabelsatz für die Stromversorgung der Klimaanlage (1 je Schrank)"
-          },
-          "quantity": 1,
-          "unit": "piece",
-          "basis": "manufacturer_delivery_per_cabinet",
-          "specification": {},
-          "conditions": [],
-          "source": {
-            "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
-            "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
-            "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
-            "product_id": 1954,
-            "page": 1,
-            "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
-            "quote": "BAT10INT0012 · Air conditioner power supply harness package ×1"
-          }
-        },
-        {
-          "id": "firestop-putty",
-          "handling": "manufacturer_included",
-          "label": {
-            "en": "Firestop putty (8 per cabinet)",
-            "de": "Brandschutzkitt-Stück (8 je Schrank)"
-          },
-          "quantity": 8,
-          "unit": "piece",
-          "basis": "manufacturer_delivery_per_cabinet",
-          "specification": {},
-          "conditions": [],
-          "source": {
-            "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
-            "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
-            "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
-            "product_id": 1954,
-            "page": 1,
-            "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
-            "quote": "BAT10INT0012 · Firestop putty ×8"
-          }
-        },
-        {
-          "id": "cable-tie",
-          "handling": "manufacturer_included",
-          "label": {
-            "en": "Cable tie (20 per cabinet)",
-            "de": "Kabelbinder (20 je Schrank)"
-          },
-          "quantity": 20,
-          "unit": "piece",
-          "basis": "manufacturer_delivery_per_cabinet",
-          "specification": {},
-          "conditions": [],
-          "source": {
-            "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
-            "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
-            "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
-            "product_id": 1954,
-            "page": 1,
-            "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
-            "quote": "BAT10INT0012 · Cable ties ×20"
-          }
-        },
-        {
-          "id": "ac-water-pipe-package",
-          "handling": "manufacturer_included",
-          "label": {
-            "en": "Air-conditioner water-pipe package (1 per cabinet)",
-            "de": "Wasserleitungssatz der Klimaanlage (1 je Schrank)"
-          },
-          "quantity": 1,
-          "unit": "piece",
-          "basis": "manufacturer_delivery_per_cabinet",
-          "specification": {},
-          "conditions": [],
-          "source": {
-            "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
-            "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
-            "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
-            "product_id": 1954,
-            "page": 1,
-            "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
-            "quote": "BAT10INT0012 · Air conditioner water pipe package ×1"
-          }
-        },
-        {
-          "id": "lifting-eye",
-          "handling": "manufacturer_included",
-          "label": {
-            "en": "Lifting eye (4 per cabinet)",
-            "de": "Hebeöse (4 je Schrank)"
-          },
-          "quantity": 4,
-          "unit": "piece",
-          "basis": "manufacturer_delivery_per_cabinet",
-          "specification": {},
-          "conditions": [],
-          "source": {
-            "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
-            "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
-            "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
-            "product_id": 1954,
-            "page": 1,
-            "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
-            "quote": "BAT10INT0012 · Lifting eye ×4"
-          }
-        },
-        {
-          "id": "corrugated-conduit-fitting",
-          "handling": "manufacturer_included",
-          "label": {
-            "en": "Corrugated conduit fitting (6 per cabinet)",
-            "de": "Wellrohrverschraubung (6 je Schrank)"
-          },
-          "quantity": 6,
-          "unit": "piece",
-          "basis": "manufacturer_delivery_per_cabinet",
-          "specification": {},
-          "conditions": [],
-          "source": {
-            "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
-            "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
-            "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
-            "product_id": 1954,
-            "page": 1,
-            "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
-            "quote": "BAT10INT0012 · Corrugated conduit fittings ×6"
-          }
-        },
-        {
-          "id": "tube-terminal-25-to-10",
-          "handling": "manufacturer_included",
-          "label": {
-            "en": "25 mm² to 10 mm² round tube terminal (4 per cabinet)",
-            "de": "Rundrohranschluss 25 mm² auf 10 mm² (4 je Schrank)"
-          },
-          "quantity": 4,
-          "unit": "piece",
-          "basis": "manufacturer_delivery_per_cabinet",
-          "specification": {},
-          "conditions": [],
-          "source": {
-            "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
-            "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
-            "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
-            "product_id": 1954,
-            "page": 1,
-            "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
-            "quote": "BAT10INT0012 · 25mm² to 10mm² Round tube terminal ×4"
-          }
-        },
-        {
-          "id": "product-documentation",
-          "handling": "manufacturer_included",
-          "label": {
-            "en": "Product documentation (1 per cabinet)",
-            "de": "Produktdokumentation (1 je Schrank)"
-          },
-          "quantity": 1,
-          "unit": "piece",
-          "basis": "manufacturer_delivery_per_cabinet",
-          "specification": {},
-          "conditions": [],
-          "source": {
-            "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
-            "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
-            "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
-            "product_id": 1954,
-            "page": 1,
-            "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
-            "quote": "BAT10INT0012 · Product documentation ×1"
-          }
-        }
-      ]
+ "schema_version": 1,
+ "products": {
+  "1954": {
+   "model": "GW61.4-BAT-AC-G10",
+   "product_revision": "dd9f785d4f4111cad28b36a399aa18120520af65450027e4e852177a79ac0576",
+   "items": [
+    {
+     "id": "dc-power-terminals",
+     "handling": "site_engineering_required",
+     "label": {
+      "en": "DC power terminals (P+/P-)",
+      "de": "DC-Leistungsanschlüsse (P+/P-)"
+     },
+     "quantity": null,
+     "unit": "piece",
+     "basis": "manufacturer_terminal_map",
+     "specification": {
+      "terminal_domain": "battery_dc",
+      "terminals": [
+       "P+",
+       "P-"
+      ],
+      "rating_note": "Three P+ and three P- terminals are shown on each battery system."
+     },
+     "conditions": [],
+     "source": {
+      "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
+      "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
+      "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+      "product_id": 1954,
+      "page": 2,
+      "quote": "P+ P+ P+ P- P- P-"
+     }
+    },
+    {
+     "id": "bms-communication-terminals",
+     "handling": "site_engineering_required",
+     "label": {
+      "en": "BMS communication terminals (COM/Alarm)",
+      "de": "BMS-Kommunikationsanschlüsse (COM/Alarm)"
+     },
+     "quantity": null,
+     "unit": "piece",
+     "basis": "manufacturer_terminal_map",
+     "specification": {
+      "terminal_domain": "communication",
+      "terminals": [
+       "COM",
+       "Alarm"
+      ],
+      "rating_note": "Two COM terminals and one Alarm terminal are shown on each battery system."
+     },
+     "conditions": [],
+     "source": {
+      "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
+      "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
+      "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+      "product_id": 1954,
+      "page": 2,
+      "quote": "COM COM Alarm"
+     }
+    },
+    {
+     "id": "inverter-power-conductor-et100-et50",
+     "handling": "site_engineering_required",
+     "label": {
+      "en": "Inverter power conductor for ET100/ET50",
+      "de": "Wechselrichter-Leistungsleiter für ET100/ET50"
+     },
+     "quantity": null,
+     "unit": "m",
+     "basis": "manufacturer_model_specific_conductor",
+     "specification": {
+      "terminal_domain": "battery_dc",
+      "terminals": [],
+      "recommended_conductor_mm2": {
+       "low": 25,
+       "high": 25
+      },
+      "rating_note": "Cu conductor."
+     },
+     "conditions": [
+      {
+       "en": "Applicable to ET100/ET50.",
+       "de": "Gilt für ET100/ET50."
+      }
+     ],
+     "source": {
+      "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
+      "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
+      "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+      "product_id": 1954,
+      "page": 2,
+      "quote": "ET100/ET50: Cu, S=25mm²"
+     }
+    },
+    {
+     "id": "inverter-power-conductor-et30",
+     "handling": "site_engineering_required",
+     "label": {
+      "en": "Inverter power conductor for ET30",
+      "de": "Wechselrichter-Leistungsleiter für ET30"
+     },
+     "quantity": null,
+     "unit": "m",
+     "basis": "manufacturer_model_specific_conductor",
+     "specification": {
+      "terminal_domain": "battery_dc",
+      "terminals": [],
+      "recommended_conductor_mm2": {
+       "low": 10,
+       "high": 10
+      },
+      "rating_note": "Cu conductor."
+     },
+     "conditions": [
+      {
+       "en": "Applicable to ET30.",
+       "de": "Gilt für ET30."
+      }
+     ],
+     "source": {
+      "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
+      "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
+      "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+      "product_id": 1954,
+      "page": 2,
+      "quote": "ET30: Cu, S=10mm²"
+     }
+    },
+    {
+     "id": "battery-cluster-conductor",
+     "handling": "site_engineering_required",
+     "label": {
+      "en": "Battery cluster power conductor",
+      "de": "Batteriecluster-Leistungsleiter"
+     },
+     "quantity": null,
+     "unit": "m",
+     "basis": "manufacturer_model_specific_conductor",
+     "specification": {
+      "terminal_domain": "battery_dc",
+      "terminals": [],
+      "recommended_conductor_mm2": {
+       "low": 50,
+       "high": 50
+      },
+      "rating_note": "Cu conductor."
+     },
+     "conditions": [],
+     "source": {
+      "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
+      "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
+      "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+      "product_id": 1954,
+      "page": 2,
+      "quote": "Cu, S=50mm²"
+     }
+    },
+    {
+     "id": "pack-interconnection-harness",
+     "handling": "manufacturer_included",
+     "label": {
+      "en": "Pack interconnection harness",
+      "de": "Pack-Verbindungskabelbaum"
+     },
+     "quantity": 5,
+     "unit": "piece",
+     "basis": "manufacturer_included_per_sales_unit",
+     "specification": {
+      "rating_note": "Shipped with the GW61.4-BAT-AC-G10 cabinet."
+     },
+     "conditions": [],
+     "source": {
+      "document_id": "doc-0ee8a88e3e74d10e542a38aaab00259352253f35e80216b2cea1b63460f1d52a",
+      "document_revision": "caa2e292a2c784906f32f2ab98153b4c3e2cfc1e05436627a53cf2caec7571bc",
+      "blob_sha256": "c29cbf257d51559ef53f5da36a46ca10b4e5738fbd4a0d06fd74fbaff4a7fcb7",
+      "product_id": 1954,
+      "page": 34,
+      "quote": "Packinterconnecti on harness • GW61.4-BAT-AC- G10：×5"
+     }
+    },
+    {
+     "id": "expansion-anchor",
+     "handling": "manufacturer_included",
+     "label": {
+      "en": "Expansion anchor (4 per cabinet)",
+      "de": "Spreizdübel (4 je Schrank)"
+     },
+     "quantity": 4,
+     "unit": "piece",
+     "basis": "manufacturer_included_per_sales_unit",
+     "specification": {
+      "rating_note": "Shipped with the GW61.4-BAT-AC-G10 cabinet."
+     },
+     "conditions": [],
+     "source": {
+      "document_id": "doc-0ee8a88e3e74d10e542a38aaab00259352253f35e80216b2cea1b63460f1d52a",
+      "document_revision": "caa2e292a2c784906f32f2ab98153b4c3e2cfc1e05436627a53cf2caec7571bc",
+      "blob_sha256": "c29cbf257d51559ef53f5da36a46ca10b4e5738fbd4a0d06fd74fbaff4a7fcb7",
+      "product_id": 1954,
+      "page": 33,
+      "quote": "Anchors×4"
+     }
+    },
+    {
+     "id": "grounding-m5-screw",
+     "handling": "manufacturer_included",
+     "label": {
+      "en": "M5 grounding screw (3 per cabinet)",
+      "de": "M5-Erdungsschraube (3 je Schrank)"
+     },
+     "quantity": 3,
+     "unit": "piece",
+     "basis": "manufacturer_delivery_per_cabinet",
+     "specification": {},
+     "conditions": [],
+     "source": {
+      "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
+      "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
+      "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+      "product_id": 1954,
+      "page": 1,
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+      "quote": "BAT10INT0012 · Grounding M5 Screws ×3"
+     }
+    },
+    {
+     "id": "grounding-terminal",
+     "handling": "manufacturer_included",
+     "label": {
+      "en": "Grounding terminal (3 per cabinet)",
+      "de": "Erdungsanschluss (3 je Schrank)"
+     },
+     "quantity": 3,
+     "unit": "piece",
+     "basis": "manufacturer_delivery_per_cabinet",
+     "specification": {},
+     "conditions": [],
+     "source": {
+      "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
+      "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
+      "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+      "product_id": 1954,
+      "page": 1,
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+      "quote": "BAT10INT0012 · Grounding Terminals ×3"
+     }
+    },
+    {
+     "id": "inverter-battery-terminal-25",
+     "handling": "manufacturer_included",
+     "label": {
+      "en": "25 mm² inverter-to-battery connection terminal (2 per cabinet)",
+      "de": "25-mm²-Anschluss für Wechselrichter und Batterie (2 je Schrank)"
+     },
+     "quantity": 2,
+     "unit": "piece",
+     "basis": "manufacturer_delivery_per_cabinet",
+     "specification": {},
+     "conditions": [],
+     "source": {
+      "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
+      "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
+      "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+      "product_id": 1954,
+      "page": 1,
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+      "quote": "BAT10INT0012 · Inverter-to-Battery Connection Terminals 25mm² ×2"
+     }
+    },
+    {
+     "id": "inter-battery-terminal-50",
+     "handling": "manufacturer_included",
+     "label": {
+      "en": "50 mm² inter-battery connection terminal (2 per cabinet)",
+      "de": "50-mm²-Anschluss zwischen Batterieschränken (2 je Schrank)"
+     },
+     "quantity": 2,
+     "unit": "piece",
+     "basis": "manufacturer_delivery_per_cabinet",
+     "specification": {},
+     "conditions": [],
+     "source": {
+      "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
+      "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
+      "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+      "product_id": 1954,
+      "page": 1,
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+      "quote": "BAT10INT0012 · Inter-battery Connection Terminals 50mm² ×2"
+     }
+    },
+    {
+     "id": "pack-negative-hv-harness",
+     "handling": "manufacturer_included",
+     "label": {
+      "en": "Pack-to-high-voltage-box negative harness (1 per cabinet)",
+      "de": "Negatives Verbindungskabel vom Batterie-Pack zum Hochvoltkasten (1 je Schrank)"
+     },
+     "quantity": 1,
+     "unit": "piece",
+     "basis": "manufacturer_delivery_per_cabinet",
+     "specification": {},
+     "conditions": [],
+     "source": {
+      "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
+      "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
+      "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+      "product_id": 1954,
+      "page": 1,
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+      "quote": "BAT10INT0012 · Pack negative-to-high-voltage-box negative harness ×1"
+     }
+    },
+    {
+     "id": "inverter-battery-positive-cable",
+     "handling": "manufacturer_included",
+     "label": {
+      "en": "Positive inverter-to-battery cable (1 per cabinet)",
+      "de": "Positives Verbindungskabel zwischen Wechselrichter und Batterie (1 je Schrank)"
+     },
+     "quantity": 1,
+     "unit": "piece",
+     "basis": "manufacturer_delivery_per_cabinet",
+     "specification": {},
+     "conditions": [],
+     "source": {
+      "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
+      "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
+      "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+      "product_id": 1954,
+      "page": 1,
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+      "quote": "BAT10INT0012 · Positive inverter-to-battery cable ×1"
+     }
+    },
+    {
+     "id": "inverter-battery-negative-cable",
+     "handling": "manufacturer_included",
+     "label": {
+      "en": "Negative inverter-to-battery cable (1 per cabinet)",
+      "de": "Negatives Verbindungskabel zwischen Wechselrichter und Batterie (1 je Schrank)"
+     },
+     "quantity": 1,
+     "unit": "piece",
+     "basis": "manufacturer_delivery_per_cabinet",
+     "specification": {},
+     "conditions": [],
+     "source": {
+      "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
+      "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
+      "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+      "product_id": 1954,
+      "page": 1,
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+      "quote": "BAT10INT0012 · Negative inverter-to-battery cable ×1"
+     }
+    },
+    {
+     "id": "et100-adapter-bracket",
+     "handling": "site_engineering_required",
+     "label": {
+      "en": "ET100 adapter mounting bracket (2 per cabinet, conditional)",
+      "de": "ET100-Adaptermontagehalterung (2 je Schrank, bedingt)"
+     },
+     "quantity": null,
+     "unit": "piece",
+     "basis": "manufacturer_conditional_delivery_per_cabinet",
+     "specification": {},
+     "conditions": [
+      {
+       "en": "Two per cabinet only when required for ET100; verify the ordered configuration.",
+       "de": "Zwei je Schrank nur bei Bedarf für ET100; bestellte Konfiguration prüfen."
+      }
+     ],
+     "source": {
+      "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
+      "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
+      "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+      "product_id": 1954,
+      "page": 1,
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+      "quote": "BAT10INT0012 · Adapter mounting bracket ×2 (Required only for ET100)"
+     }
+    },
+    {
+     "id": "inverter-communication-cable",
+     "handling": "manufacturer_included",
+     "label": {
+      "en": "Battery-to-inverter communication Ethernet cable (1 per cabinet)",
+      "de": "Ethernet-Kommunikationskabel zwischen Batterie und Wechselrichter (1 je Schrank)"
+     },
+     "quantity": 1,
+     "unit": "piece",
+     "basis": "manufacturer_delivery_per_cabinet",
+     "specification": {},
+     "conditions": [],
+     "source": {
+      "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
+      "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
+      "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+      "product_id": 1954,
+      "page": 1,
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+      "quote": "BAT10INT0012 · Battery-to-inverter communication Ethernet cable ×1"
+     }
+    },
+    {
+     "id": "ac-power-harness-package",
+     "handling": "manufacturer_included",
+     "label": {
+      "en": "Air-conditioner power-supply harness package (1 per cabinet)",
+      "de": "Kabelsatz für die Stromversorgung der Klimaanlage (1 je Schrank)"
+     },
+     "quantity": 1,
+     "unit": "piece",
+     "basis": "manufacturer_delivery_per_cabinet",
+     "specification": {},
+     "conditions": [],
+     "source": {
+      "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
+      "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
+      "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+      "product_id": 1954,
+      "page": 1,
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+      "quote": "BAT10INT0012 · Air conditioner power supply harness package ×1"
+     }
+    },
+    {
+     "id": "firestop-putty",
+     "handling": "manufacturer_included",
+     "label": {
+      "en": "Firestop putty (8 per cabinet)",
+      "de": "Brandschutzkitt-Stück (8 je Schrank)"
+     },
+     "quantity": 8,
+     "unit": "piece",
+     "basis": "manufacturer_delivery_per_cabinet",
+     "specification": {},
+     "conditions": [],
+     "source": {
+      "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
+      "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
+      "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+      "product_id": 1954,
+      "page": 1,
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+      "quote": "BAT10INT0012 · Firestop putty ×8"
+     }
+    },
+    {
+     "id": "cable-tie",
+     "handling": "manufacturer_included",
+     "label": {
+      "en": "Cable tie (20 per cabinet)",
+      "de": "Kabelbinder (20 je Schrank)"
+     },
+     "quantity": 20,
+     "unit": "piece",
+     "basis": "manufacturer_delivery_per_cabinet",
+     "specification": {},
+     "conditions": [],
+     "source": {
+      "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
+      "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
+      "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+      "product_id": 1954,
+      "page": 1,
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+      "quote": "BAT10INT0012 · Cable ties ×20"
+     }
+    },
+    {
+     "id": "ac-water-pipe-package",
+     "handling": "manufacturer_included",
+     "label": {
+      "en": "Air-conditioner water-pipe package (1 per cabinet)",
+      "de": "Wasserleitungssatz der Klimaanlage (1 je Schrank)"
+     },
+     "quantity": 1,
+     "unit": "piece",
+     "basis": "manufacturer_delivery_per_cabinet",
+     "specification": {},
+     "conditions": [],
+     "source": {
+      "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
+      "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
+      "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+      "product_id": 1954,
+      "page": 1,
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+      "quote": "BAT10INT0012 · Air conditioner water pipe package ×1"
+     }
+    },
+    {
+     "id": "lifting-eye",
+     "handling": "manufacturer_included",
+     "label": {
+      "en": "Lifting eye (4 per cabinet)",
+      "de": "Hebeöse (4 je Schrank)"
+     },
+     "quantity": 4,
+     "unit": "piece",
+     "basis": "manufacturer_delivery_per_cabinet",
+     "specification": {},
+     "conditions": [],
+     "source": {
+      "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
+      "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
+      "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+      "product_id": 1954,
+      "page": 1,
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+      "quote": "BAT10INT0012 · Lifting eye ×4"
+     }
+    },
+    {
+     "id": "corrugated-conduit-fitting",
+     "handling": "manufacturer_included",
+     "label": {
+      "en": "Corrugated conduit fitting (6 per cabinet)",
+      "de": "Wellrohrverschraubung (6 je Schrank)"
+     },
+     "quantity": 6,
+     "unit": "piece",
+     "basis": "manufacturer_delivery_per_cabinet",
+     "specification": {},
+     "conditions": [],
+     "source": {
+      "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
+      "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
+      "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+      "product_id": 1954,
+      "page": 1,
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+      "quote": "BAT10INT0012 · Corrugated conduit fittings ×6"
+     }
+    },
+    {
+     "id": "tube-terminal-25-to-10",
+     "handling": "manufacturer_included",
+     "label": {
+      "en": "25 mm² to 10 mm² round tube terminal (4 per cabinet)",
+      "de": "Rundrohranschluss 25 mm² auf 10 mm² (4 je Schrank)"
+     },
+     "quantity": 4,
+     "unit": "piece",
+     "basis": "manufacturer_delivery_per_cabinet",
+     "specification": {},
+     "conditions": [],
+     "source": {
+      "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
+      "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
+      "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+      "product_id": 1954,
+      "page": 1,
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+      "quote": "BAT10INT0012 · 25mm² to 10mm² Round tube terminal ×4"
+     }
+    },
+    {
+     "id": "product-documentation",
+     "handling": "manufacturer_included",
+     "label": {
+      "en": "Product documentation (1 per cabinet)",
+      "de": "Produktdokumentation (1 je Schrank)"
+     },
+     "quantity": 1,
+     "unit": "piece",
+     "basis": "manufacturer_delivery_per_cabinet",
+     "specification": {},
+     "conditions": [],
+     "source": {
+      "document_id": "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f",
+      "document_revision": "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
+      "blob_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+      "product_id": 1954,
+      "page": 1,
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+      "quote": "BAT10INT0012 · Product documentation ×1"
+     }
     }
+   ]
   }
+ }
 }
