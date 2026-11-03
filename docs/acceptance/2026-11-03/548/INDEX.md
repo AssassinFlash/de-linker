@@ -105,3 +105,39 @@ cd tools/cutover && .venv/bin/python -m linker_cutover.cli snapshot --write
   "root":"/opt/linker-planner","schema_version":1,"start_seconds":30,
   "stop_seconds":30,"user":"linker-planner"}`，并在该不可变路径下建 `.venv`）。
   本条不宣称这一项已完成。
+
+## 4. `prepared` 契约修复已通过 planner release 上线（2026-11-03 17:0x CST）
+
+第 3 节的根因（引擎从不返回 `prepared`）已修复并部署，执行记录见
+[planner-release.md](planner-release.md)：
+
+- 修复 `ab368fd0b`（PR #868）经新 planner release
+  `08256b932b3bec053a221c95d328152fe318859c86b5872600f518ec1c3946e6` 上线
+  （activate 一次通过，current+previous 保留，health 全绿，写前已备份
+  workspace.sqlite 到本机）。
+- 生产读回：`POST /wp-json/linker/v1/planner/rpc/products/current` → 200，
+  顶层 `"prepared": true`（发布前为 `null`）。
+- UI 层（Equipment 面板不再显示 "being prepared"）待浏览器实走确认。
+
+## 5. ETR 机型已进入生产候选；搜索评估明细与电池准入门（17:1x CST）
+
+对第 3 节同一次搜索 run（`71d9d923…`）的深入读回：
+
+- 10 个候选中 **6508/6509/6510/6511 全部在列**（第 6–9 名，均配电池 1958，
+  5 模块 1 簇，`status: unresolved`，0 violated / 8 unresolved）——ETR 四机型
+  已被生产搜索真实覆盖。
+- 候选评估明细存在 planner workspace blobs（按 sha256 分片）：
+  `6508+1958` 的 8 项 unresolved 为 `pv_dc_input`、`pv_electrical_topology`、
+  `manufacturer_pair`、`modules_per_stack`、`battery_voltage`、`usable_energy`、
+  `continuous_battery_ac_output`、`battery_discharge_path`——全部是
+  已知缺证类（`manufacturer_pair` 要求 released 且无条件，51/51 都带条件；
+  `continuous_battery_ac_output` feed 0/106），与本轮落库的安装事实无关，
+  属 `manufacturer-evidence.md` 的 (a)/(b) 类补证范围。
+- **电池准入门**：`equipment_search_space.py:49-60` 要求
+  `evidence.sales_unit(pid) ∈ {battery_module, battery_system}` 才入池；
+  本次 18 个电池产品全部因 `sales_unit_evidence_missing` 被排除
+  （1832、2067–2070、2090、2092、2093、3611、3612、4103–4106、6519–6522）。
+  注意 615-dc-figures 线给过 2090/2092 的 sales_unit，但引擎侧仍判缺证
+  ——补 sales_unit 证据（文档绑定）可直接扩大候选池。
+- 导体/端子结论（`ConductorManufacturerResults`）在安装阶段渲染，需在
+  配置器里选中候选并确认条件后才出现；本日未走到该步，不宣称。
