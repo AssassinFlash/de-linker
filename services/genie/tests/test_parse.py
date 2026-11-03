@@ -248,7 +248,7 @@ def test_partial_or_erroneous_ocr_retries_and_never_becomes_successful_cache(
         def close(self) -> None:
             pass
 
-    converter = Converter()
+    converter: Any = Converter()
     monkeypatch.setattr(parse, "docling_version", lambda: "docling fixture")
     monkeypatch.setattr(
         parse, "_page_texts", lambda path: ["readable page one", GARBLED]
@@ -283,6 +283,7 @@ def test_parse_status_uses_import_captured_identity_not_later_disk_measurement(
         def convert(self, *args: Any, **kwargs: Any) -> Any:
             raise OSError("task-owned converter failure")
 
+    failed_converter: Any = FailedConverter()
     monkeypatch.setattr(parse, "_page_texts", lambda path: ["readable"])
-    failed = parse.parse_one(FailedConverter(), tmp_path / f"{SHA}.pdf", directory)
+    failed = parse.parse_one(failed_converter, tmp_path / f"{SHA}.pdf", directory)
     assert failed.parser_revision == original
