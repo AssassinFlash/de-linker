@@ -6053,8 +6053,8 @@
    ],
    "conditions": [
     {
-     "en": "The SEC3000C is optional for this grid-connected LAN configuration. If you select it, check the firmware on site before commissioning. The ET manual specifies SEC main program V7.5.32 or later. The SEC manual specifies WiFi/LAN Kit-20 V2.5.49 or later.",
-     "de": "Der SEC3000C ist für diese netzgekoppelte LAN-Konfiguration optional. Wenn Sie ihn einsetzen, prüfen Sie vor der Inbetriebnahme vor Ort die Firmwarestände. Laut ET-Handbuch ist für das SEC-Hauptprogramm mindestens V7.5.32 erforderlich. Für das WiFi/LAN Kit-20 nennt das SEC-Handbuch mindestens V2.5.49."
+     "en": "The SEC3000C is optional for this grid-connected LAN configuration. The SEC3000C datasheet (EMEA, EN, p.1) prints Max. Inverters Supported RS485: 60, LAN: 10, so a LAN connection carries at most 10 inverters. If you select it, check the firmware on site before commissioning: the ET manual specifies SEC main program V7.5.32 or later, the SEC manual specifies WiFi/LAN Kit-20 V2.5.49 or later.",
+     "de": "Der SEC3000C ist fuer diese netzgekoppelte LAN-Konfiguration optional. Das SEC3000C-Datenblatt (EMEA, EN, S. 1) nennt Max. Inverters Supported RS485: 60, LAN: 10; eine LAN-Verbindung traegt daher hoechstens 10 Wechselrichter. Wenn Sie ihn einsetzen, pruefen Sie vor der Inbetriebnahme die Firmwarestaende: Laut ET-Handbuch ist fuer das SEC-Hauptprogramm mindestens V7.5.32 erforderlich, fuer das WiFi/LAN Kit-20 mindestens V2.5.49."
     }
    ],
    "documents": [
@@ -6078,8 +6078,62 @@
      "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_Datasheet_EMEA-EN.pdf",
      "page": 1
     }
-   ]
+   ],
+   "max_units": 10
+  },
+  {
+   "inverter": "^GW(80K|99\\.99K|100K)-ET-G10$",
+   "kind": "parallel_controller",
+   "included": false,
+   "phase": 3,
+   "applicability": {
+    "operating_mode": "grid_connected",
+    "topology": "parallel_group",
+    "control_network": "rs485",
+    "controller_product_id": 2409
+   },
+   "accessories": [
+    {
+     "model": "^SEC3000C$",
+     "product_id": 2409,
+     "quantity": 1,
+     "per": "system"
+    }
+   ],
+   "conditions": [
+    {
+     "en": "The SEC3000C is optional for this grid-connected RS485 configuration. The SEC3000C datasheet (EMEA, EN, p.1) prints Max. Inverters Supported RS485: 60, LAN: 10; the SEC3000C manual (p.53) limits one RS485 bus to 20 inverters and the unit provides three usable RS485 terminals, so 60 needs at least three buses. If you select it, check the firmware on site before commissioning.",
+     "de": "Der SEC3000C ist fuer diese netzgekoppelte RS485-Konfiguration optional. Das SEC3000C-Datenblatt (EMEA, EN, S. 1) nennt Max. Inverters Supported RS485: 60, LAN: 10; das SEC3000C-Handbuch (S. 53) begrenzt einen RS485-Bus auf 20 Wechselrichter, und das Geraet bietet drei nutzbare RS485-Klemmen, sodass 60 mindestens drei Busse erfordert. Wenn Sie ihn einsetzen, pruefen Sie vor der Inbetriebnahme die Firmwarestaende."
+    }
+   ],
+   "documents": [
+    {
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ET-100kW_User-Manual-EN_V1.2.pdf",
+     "page": 30
+    },
+    {
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ET-100kW_User-Manual-EN_V1.2.pdf",
+     "page": 32
+    },
+    {
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_User-Manual-EN.pdf",
+     "page": 41
+    },
+    {
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_User-Manual-EN.pdf",
+     "page": 54
+    },
+    {
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_Datasheet_EMEA-EN.pdf",
+     "page": 1
+    },
+    {
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_User-Manual-EN.pdf",
+     "page": 53
+    }
+   ],
+   "max_units": 60
   }
  ],
- "version": "c642d3c9333ff453f4e1790d88c8c50dce7006b78b63e9a713e14027a24705c9"
+ "version": "159ddcb6c4c452c0a3629adaabd2d44b514fae454051f1e403e23b60c99d3b66"
 }

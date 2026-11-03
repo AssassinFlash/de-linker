@@ -1,0 +1,256 @@
+{
+ "schema_version": 1,
+ "kind": "battery_parallel_limits_v1",
+ "purpose": "One-time reviewed import of the battery parallel-cluster limit (stacks_parallel_max) for the products whose own associated documents state it; never a runtime product source.",
+ "evidence": {
+  "batch": "docs/acceptance/2026-11-03/548/manufacturer-evidence.md sections 1-2",
+  "engine_consumer": "services/engine/src/linker_engine/planning/equipment_assessment.py:548 (number(battery_id, \"stacks_parallel_max\", \"count\"))",
+  "engine_counts": "services/engine/src/linker_engine/planning/equipment_facts.py:40-55 (_COUNTS)"
+ },
+ "reviewed_sources": [
+  {
+   "document_id": "doc-3e98151c21d284ce5e01603742e3ef027ca73cff3f42b9cf9b3fe164aa91882b",
+   "blob_sha256": "ef85dd1a58fc06e52f2dff79dda228884b412d17db7035aa45d41c57840f3f10",
+   "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_BAT-C-208-261kWh_User-Manual-EN.pdf",
+   "pages": [
+    53
+   ]
+  },
+  {
+   "document_id": "doc-595423f7b5faeafeeb9e81ff2c54f75dcdb99fc0546e063bc86f02258f6fb1fe",
+   "blob_sha256": "31e69160217850be491a5b7ab31dae2bbf17ec33723c0368a1aec4d751c04ab9",
+   "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Lynx-D-G2_Datasheet_EU-EN_V1.1.pdf",
+   "pages": [
+    1
+   ]
+  },
+  {
+   "document_id": "doc-4a29f4d37aa9bf978721029ac126b5bed045a5141b1b7d1439f0d85e63efc9f8",
+   "blob_sha256": "0adfb3d5e6df42e6dd465c0f6170a7c21fd82452acd64e00956fbd9aba099e43",
+   "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_User-Manual-EN_V1.6.pdf",
+   "pages": [
+    46
+   ]
+  },
+  {
+   "document_id": "doc-bcbd6d79682cc69e868fdb0b5c5eccb5715ed00a78af2e2e679f5a756f66f47f",
+   "blob_sha256": "bb6712735d77af454a30605abc5b93542f723efe3206d73eee5d73bb086a1699",
+   "url": "https://de-linker.com/wp-content/uploads/2026/09/OPTIMUSL260-OMNI_20240926105739A032.pdf",
+   "pages": [
+    2
+   ]
+  }
+ ],
+ "products": {
+  "1956": {
+   "model": "GW208.9-BAT-LC-G10",
+   "sku": "DLK-GOODWE-GW2089BATLCG10",
+   "figures": {
+    "stacks_parallel_max": {
+     "expect": null,
+     "set": {
+      "value": "4",
+      "unit": "units",
+      "citation": {
+       "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_BAT-C-208-261kWh_User-Manual-EN.pdf",
+       "page": 53
+      }
+     },
+     "source": {
+      "document_id": "doc-3e98151c21d284ce5e01603742e3ef027ca73cff3f42b9cf9b3fe164aa91882b",
+      "blob_sha256": "ef85dd1a58fc06e52f2dff79dda228884b412d17db7035aa45d41c57840f3f10",
+      "document_revision": "aaf54a301d81f354cff2a06dd8bf2c599705fcd5549e0dd271efa49402f28ca1",
+      "page": 53,
+      "quote": "The BAT-C Series 208.9kWh Commercial & Industrial Battery System supports a maximum of 4 battery cabinet clusters in parallel.",
+      "basis": "GoodWe BAT-C 208.9-261.2 kWh user manual (EN) p.53 limits the BAT-C 208.9 kWh system to four parallel cabinet clusters."
+     }
+    }
+   }
+  },
+  "1957": {
+   "model": "GW208.9-BAT-LCD-G10",
+   "sku": "DLK-GOODWE-GW2089BATLCDG10",
+   "figures": {
+    "stacks_parallel_max": {
+     "expect": null,
+     "set": {
+      "value": "4",
+      "unit": "units",
+      "citation": {
+       "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_BAT-C-208-261kWh_User-Manual-EN.pdf",
+       "page": 53
+      }
+     },
+     "source": {
+      "document_id": "doc-3e98151c21d284ce5e01603742e3ef027ca73cff3f42b9cf9b3fe164aa91882b",
+      "blob_sha256": "ef85dd1a58fc06e52f2dff79dda228884b412d17db7035aa45d41c57840f3f10",
+      "document_revision": "aaf54a301d81f354cff2a06dd8bf2c599705fcd5549e0dd271efa49402f28ca1",
+      "page": 53,
+      "quote": "The BAT-C Series 208.9kWh Commercial & Industrial Battery System supports a maximum of 4 battery cabinet clusters in parallel.",
+      "basis": "GoodWe BAT-C 208.9-261.2 kWh user manual (EN) p.53 limits the BAT-C 208.9 kWh system to four parallel cabinet clusters."
+     }
+    }
+   }
+  },
+  "3611": {
+   "model": "GW6.0-BAT-D-G20",
+   "sku": "DLK-GOODWE-GW60BATDG20",
+   "figures": {
+    "stacks_parallel_max": {
+     "expect": null,
+     "set": {
+      "value": "12",
+      "unit": "units",
+      "citation": {
+       "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Lynx-D-G2_Datasheet_EU-EN_V1.1.pdf",
+       "page": 1
+      }
+     },
+     "source": {
+      "document_id": "doc-595423f7b5faeafeeb9e81ff2c54f75dcdb99fc0546e063bc86f02258f6fb1fe",
+      "blob_sha256": "31e69160217850be491a5b7ab31dae2bbf17ec33723c0368a1aec4d751c04ab9",
+      "document_revision": "2977d5d0acddc95aca69569fa9d8ee285d4a881be8c15d4d4f1c9c0b28a6a3ee",
+      "page": 1,
+      "quote": "supporting up to 12 units in parallel and multi- cluster expansion.",
+      "basis": "GoodWe Lynx D G2 datasheet (EN, EMEA V1.1) p.1 states up to 12 units in parallel with multi-cluster expansion."
+     }
+    }
+   }
+  },
+  "3612": {
+   "model": "GW9.0-BAT-D-G20",
+   "sku": "DLK-GOODWE-GW90BATDG20",
+   "figures": {
+    "stacks_parallel_max": {
+     "expect": null,
+     "set": {
+      "value": "12",
+      "unit": "units",
+      "citation": {
+       "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Lynx-D-G2_Datasheet_EU-EN_V1.1.pdf",
+       "page": 1
+      }
+     },
+     "source": {
+      "document_id": "doc-595423f7b5faeafeeb9e81ff2c54f75dcdb99fc0546e063bc86f02258f6fb1fe",
+      "blob_sha256": "31e69160217850be491a5b7ab31dae2bbf17ec33723c0368a1aec4d751c04ab9",
+      "document_revision": "2977d5d0acddc95aca69569fa9d8ee285d4a881be8c15d4d4f1c9c0b28a6a3ee",
+      "page": 1,
+      "quote": "supporting up to 12 units in parallel and multi- cluster expansion.",
+      "basis": "GoodWe Lynx D G2 datasheet (EN, EMEA V1.1) p.1 states up to 12 units in parallel with multi-cluster expansion."
+     }
+    }
+   }
+  },
+  "6519": {
+   "model": "GW5.1-BAT-D-G20",
+   "sku": "DLK-GOODWE-GW51BATDG20",
+   "figures": {
+    "stacks_parallel_max": {
+     "expect": null,
+     "set": {
+      "value": "12",
+      "unit": "units",
+      "citation": {
+       "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Lynx-D-G2_Datasheet_EU-EN_V1.1.pdf",
+       "page": 1
+      }
+     },
+     "source": {
+      "document_id": "doc-595423f7b5faeafeeb9e81ff2c54f75dcdb99fc0546e063bc86f02258f6fb1fe",
+      "blob_sha256": "31e69160217850be491a5b7ab31dae2bbf17ec33723c0368a1aec4d751c04ab9",
+      "document_revision": "2977d5d0acddc95aca69569fa9d8ee285d4a881be8c15d4d4f1c9c0b28a6a3ee",
+      "page": 1,
+      "quote": "supporting up to 12 units in parallel and multi- cluster expansion.",
+      "basis": "GoodWe Lynx D G2 datasheet (EN, EMEA V1.1) p.1 states up to 12 units in parallel with multi-cluster expansion."
+     }
+    }
+   }
+  },
+  "6520": {
+   "model": "GW8.3-BAT-D-G20",
+   "sku": "DLK-GOODWE-GW83BATDG20",
+   "figures": {
+    "stacks_parallel_max": {
+     "expect": null,
+     "set": {
+      "value": "12",
+      "unit": "units",
+      "citation": {
+       "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Lynx-D-G2_Datasheet_EU-EN_V1.1.pdf",
+       "page": 1
+      }
+     },
+     "source": {
+      "document_id": "doc-595423f7b5faeafeeb9e81ff2c54f75dcdb99fc0546e063bc86f02258f6fb1fe",
+      "blob_sha256": "31e69160217850be491a5b7ab31dae2bbf17ec33723c0368a1aec4d751c04ab9",
+      "document_revision": "2977d5d0acddc95aca69569fa9d8ee285d4a881be8c15d4d4f1c9c0b28a6a3ee",
+      "page": 1,
+      "quote": "supporting up to 12 units in parallel and multi- cluster expansion.",
+      "basis": "GoodWe Lynx D G2 datasheet (EN, EMEA V1.1) p.1 states up to 12 units in parallel with multi-cluster expansion."
+     }
+    }
+   }
+  },
+  "6321": {
+   "model": "GW125/261-ESA-LCN-G10",
+   "sku": "DLK-GOODWE-GW125261ESALCNG10",
+   "figures": {
+    "stacks_parallel_max": {
+     "expect": null,
+     "set": {
+      "value": "8",
+      "unit": "units",
+      "citation": {
+       "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_User-Manual-EN_V1.6.pdf",
+       "page": 46
+      }
+     },
+     "source": {
+      "document_id": "doc-4a29f4d37aa9bf978721029ac126b5bed045a5141b1b7d1439f0d85e63efc9f8",
+      "blob_sha256": "0adfb3d5e6df42e6dd465c0f6170a7c21fd82452acd64e00956fbd9aba099e43",
+      "document_revision": "78404847b831e96f36117f3eeb8989ff98a93ff3d5152e7487bf1e0bf946740e",
+      "page": 46,
+      "quote": "The energy storage system supports master-slave parallel connection. The system does not support connection to a PV inverter, and can support up to 8 units in parallel.",
+      "basis": "GoodWe ESA 261 kWh user manual (EN V1.6) p.46 limits master-slave parallel connection to eight units."
+     }
+    }
+   }
+  },
+  "2003": {
+   "model": "L260-OMNI",
+   "sku": "DLK-PYLONTECH-OPTIMUSL260OMNI",
+   "figures": {
+    "stacks_parallel_max": {
+     "expect": null,
+     "set": {
+      "value": "6",
+      "unit": "units",
+      "citation": {
+       "url": "https://de-linker.com/wp-content/uploads/2026/09/OPTIMUSL260-OMNI_20240926105739A032.pdf",
+       "page": 2
+      }
+     },
+     "source": {
+      "document_id": "doc-bcbd6d79682cc69e868fdb0b5c5eccb5715ed00a78af2e2e679f5a756f66f47f",
+      "blob_sha256": "bb6712735d77af454a30605abc5b93542f723efe3206d73eee5d73bb086a1699",
+      "document_revision": "1e57802495b07a2dcc35529da12a84a4a3b16837c1f159160866083288122497",
+      "page": 2,
+      "quote": "Max.parallel No. 6",
+      "basis": "Pylontech OPTIM US L260-OMNI datasheet p.2 prints Max.parallel No. 6."
+     }
+    }
+   }
+  }
+ },
+ "unbound": {
+  "BAT-S 35.8-56.3 kWh (six parallel units)": "GoodWe ET 50-100 kW user manual (EN V1.3) p.11 states six parallel units, but no BAT-S product exists in the current 85-product engineering feed, so no product can carry the figure.",
+  "SAJ B2/BU2 (five modules)": "Already covered by modules_per_stack_max on 1832/2067-2070/2090; the SAJ datasheet limit is modules per system, not parallel clusters.",
+  "SAJ HS3 (eight batteries per inverter)": "Already covered by modules_per_stack_max = 8 on 2093; the limit is batteries per inverter.",
+  "SAJ CB2 x CH2 (four CB2 per CH2)": "The CB2 manuals (user manual p.8) limit four CB2 systems per CH2 inverter. That is systems per inverter, which no maintained figure expresses; recording it as stacks_parallel_max would misstate it.",
+  "GoodWe BAT-C 92.1/102.4/112.6 (four per cluster)": "The ET 50-100 kW manual (EN V1.3) p.12 states four parallel units. Product 1955 (GW112.6-BAT-AC-G10) already carries stacks_parallel_max = 4 from the BAT-C 60-112 datasheet p.1.",
+  "GoodWe ET 50-100 kW (15 inverters in parallel)": "ET 50-100 kW manual (EN V1.3) p.11 states a maximum of 15 inverters in parallel. compatibility.schema.json documents max_units as \"the most inverters one controller coordinates\", so storing a system limit there would mislabel it; it stays a documented gap.",
+  "GoodWe Lynx D G2 G21 variants (6521/6522)": "The 12-unit parallel statement lives in the Lynx D G2 datasheet (EU-EN V1.1), which is associated with 3611/3612/6519/6520 only. 6521/6522 carry the IEC 62619 certificate, which prints no parallel limit, so no figure is written for them.",
+  "GoodWe BAT-C 261.2 kWh": "The BAT-C 208.9-261.2 manual limits the 208.9 kWh product explicitly; it prints no separate cluster limit for the 261.2 kWh model."
+ }
+}
