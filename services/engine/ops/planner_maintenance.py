@@ -76,7 +76,12 @@ if action=='plan':
     result={'selected':selected,'runtime':identity['runtime_sha256'],'recovery':marker(),
             'recovery_seconds':12*r.spec['start_seconds']+r.spec['stop_seconds']+r.policy['drain_timeout_seconds']+10}
     if control['draining'] or control['pending']: result.update(status='busy')
-    else: result.update(status='idle',plan=r.operator('retention'))
+    else:
+        # The retention scan shares this invocation's alarm-bounded budget; the
+        # operator subprocess timeout must follow the same deadline instead of
+        # the 30-second service-start budget, which a grown CAS outlives cold.
+        scan_budget=max(1.0, work_deadline-time.monotonic()-5)
+        result.update(status='idle',plan=r.operator('retention',timeout=scan_budget))
 elif action=='snapshot':
     ready(); control=r.operator('control','status')
     if control['draining'] or control['pending']: raise RuntimeError('busy_before_snapshot')
