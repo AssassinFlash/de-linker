@@ -842,13 +842,23 @@ def _fragments_inside_one_box(
     fragments: Sequence[tuple[float, float, float, float]],
     boxes: Sequence[tuple[float, float, float, float]] | None,
 ) -> bool:
-    """One native TOPLEFT box physically holds every fragment of the wrap."""
+    """One native TOPLEFT box physically holds every fragment of the wrap.
+
+    Docling measures a header cell box independently of the text layer's own
+    charboxes, and on the BAT-C p.80-83 headers its box clips 0.2-0.3 pt
+    inside the measured ink (box top 160.5 against fragment top 160.3 over
+    8.93994 pt glyphs). Containment therefore tolerates a 0.5 pt sub-glyph
+    slop — 5.6% of that glyph height — which stays far below the ≈15 pt
+    gutters between value columns, so no neighbouring column's wrap can
+    ride along on measurement noise.
+    """
+    slop = 0.5
     return boxes is not None and any(
         all(
-            box[0] <= part[0]
-            and part[2] <= box[2]
-            and box[1] <= part[1]
-            and part[3] <= box[3]
+            box[0] - slop <= part[0]
+            and part[2] <= box[2] + slop
+            and box[1] - slop <= part[1]
+            and part[3] <= box[3] + slop
             for part in fragments
         )
         for box in boxes
@@ -1755,10 +1765,12 @@ def _span_stays_in_cell(
     ):
         return True
     return all(
-        box[0] <= f["bbox"][0]
-        and f["bbox"][2] <= box[2]
-        and box[1] <= f["bbox"][1]
-        and f["bbox"][3] <= box[3]
+        # The same sub-glyph slop as _fragments_inside_one_box: Docling's own
+        # cell box can sit a fraction of a glyph inside the text-layer ink.
+        box[0] - 0.5 <= f["bbox"][0]
+        and f["bbox"][2] <= box[2] + 0.5
+        and box[1] - 0.5 <= f["bbox"][1]
+        and f["bbox"][3] <= box[3] + 0.5
         for f in fragments
     )
 

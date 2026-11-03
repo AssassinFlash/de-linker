@@ -267,10 +267,14 @@ def _header_cell_wrap(fragments: object, cell: object) -> bool:
     return all(
         isinstance(part, dict)
         and isinstance(part.get("bbox"), (tuple, list))
-        and box[0] <= part["bbox"][0]
-        and part["bbox"][2] <= box[2]
-        and box[1] <= part["bbox"][1]
-        and part["bbox"][3] <= box[3]
+        # The same 0.5 pt sub-glyph slop as index.extract: Docling's own
+        # cell box can sit a fraction of a glyph inside the text-layer ink
+        # (BAT-C p.80: box top 160.5 against fragment top 160.3), far below
+        # the ≈15 pt gutters between value columns.
+        and box[0] - 0.5 <= part["bbox"][0]
+        and part["bbox"][2] <= box[2] + 0.5
+        and box[1] - 0.5 <= part["bbox"][1]
+        and part["bbox"][3] <= box[3] + 0.5
         for part in fragments
     )
 
