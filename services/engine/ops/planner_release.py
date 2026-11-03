@@ -726,7 +726,9 @@ class Release:
                 raise RuntimeError("running process imports a different release")
         return record
 
-    def recovery_covers(self, recovery: Path, candidates: list[str]) -> None:
+    def recovery_covers(
+        self, recovery: Path, candidates: list[str], *, timeout: float | None = None
+    ) -> None:
         """Reject unavailable recovery before closing admission; apply checks again."""
         command(
             [
@@ -754,7 +756,7 @@ class Release:
                     "candidates": candidates,
                 }
             ),
-            timeout=self.spec["start_seconds"],
+            timeout=self.spec["start_seconds"] if timeout is None else timeout,
         )
 
 
@@ -885,12 +887,28 @@ def maintain(
             return {"schema_version": 1, "mode": "skipped", "reason": "busy"}
         # An apply request with nothing to remove must not restart a healthy pair.
         # This plan is advisory; the stopped collector still recomputes everything.
-        plan = release.operator("retention", *arguments[1:])
+        # Both the scan and the recovery-cover check walk the whole CAS, so under
+        # a work budget their subprocess timeouts follow the remaining budget
+        # rather than the 30-second service-start budget.
+        scan_timeout = (
+            max(1.0, work_deadline - time.monotonic() - 5)
+            if work_deadline is not None
+            else None
+        )
+        plan = release.operator(
+            "retention",
+            *arguments[1:],
+            **({"timeout": scan_timeout} if scan_timeout else {}),
+        )
         if plan["candidate_count"] == 0 and plan["temporary_count"] == 0:
             return {**plan, "mode": "noop"}
         if recovery is None:
             raise ValueError("apply requires an existing verified recovery archive")
-        release.recovery_covers(recovery, plan["candidate_sha256"])
+        release.recovery_covers(
+            recovery,
+            plan["candidate_sha256"],
+            **({"timeout": scan_timeout} if scan_timeout else {}),
+        )
         release.preflight()
         identity = release.probe()
         if not release.ready(identity):

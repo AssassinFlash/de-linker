@@ -254,6 +254,38 @@ def full_backup_reminder(home: Path, *, now: datetime | None = None) -> str | No
     )
 
 
+def _reclaim_finished_checkpoint(target: Target, staging: Path) -> None:
+    """Drop a local checkpoint whose host batch already terminated.
+
+    A rollback or a completed archive ends the batch on the host manifest, but
+    a crash between those and the local cleanup leaves ``.deploy.json`` behind,
+    which would block every later deploy. The host manifest is authoritative:
+    only ``archived`` or ``rolled_back`` releases the local record; anything
+    else (``pending``, unreadable, absent) keeps the original refusal.
+    """
+    state_path = deployment.path(staging)
+    message = f"unfinished deployment at {state_path}; use resume-deploy"
+    try:
+        checkpoint = json.loads(state_path.read_text())
+        deploy_id = atomic._check_id(str(checkpoint.get("deploy_id", "")))
+    except (OSError, ValueError, KeyError, CutoverError):
+        raise CutoverError(message) from None
+    directory = str(Path(atomic.backup_root(target)) / deploy_id)
+    manifest = atomic._manifest_path(directory)
+    raw = target.shell(
+        f"if [ -f {shlex.quote(manifest)} ]; then cat {shlex.quote(manifest)}; fi"
+    ).strip()
+    if not raw:
+        raise CutoverError(message)
+    try:
+        state = str(json.loads(raw)["state"])
+    except (ValueError, KeyError, TypeError):
+        raise CutoverError(message) from None
+    if state not in {"archived", "rolled_back"}:
+        raise CutoverError(message)
+    deployment.cleanup(staging)
+
+
 def deploy(
     target: Target,
     *,
@@ -279,7 +311,7 @@ def deploy(
     source = deployment.source_identity(repository, artifacts)
     state_path = deployment.path(staging)
     if state_path.exists() and not resume:
-        raise CutoverError(f"unfinished deployment at {state_path}; use resume-deploy")
+        _reclaim_finished_checkpoint(target, staging)
     if resume:
         checkpoint = deployment.load(staging, target, source)
         if deploy_id is not None and deploy_id != checkpoint.deploy_id:

@@ -345,8 +345,10 @@ def test_batc_61_plan_keeps_only_evidenced_delivery_rows() -> None:
     original = migration.load_plan()["products"]["1954"]["items"]
     assert items[: len(original)] == original
     delivery = items[len(original) :]
-    assert len(delivery) == 19
-    assert len({item["id"] for item in delivery}) == 19
+    # The two packing rows (harness and anchors) moved into the reviewed plan
+    # itself, cited to the user manual p.33-34; this plan keeps the rest.
+    assert len(delivery) == 17
+    assert len({item["id"] for item in delivery}) == 17
     # The GW61.4 quick guide lists the ET100 bracket as a conditional delivery
     # row; unlike the 112 cabinet it stays in the plan with its own condition.
     bracket = next(item for item in delivery if item["id"] == "et100-adapter-bracket")
@@ -355,16 +357,12 @@ def test_batc_61_plan_keeps_only_evidenced_delivery_rows() -> None:
         and bracket["handling"] == "site_engineering_required"
     )
     assert any("ET100" in condition["en"] for condition in bracket["conditions"])
-    assert (
-        next(item for item in delivery if item["id"] == "expansion-anchor")["quantity"]
-        == 4
+    anchors = next(item for item in original if item["id"] == "expansion-anchor")
+    assert anchors["quantity"] == 4
+    assert not any(
+        item["id"] in {"pack-interconnection-harness", "expansion-anchor"}
+        for item in delivery
     )
-    harness = next(
-        item for item in delivery if item["id"] == "pack-interconnection-harness"
-    )
-    assert harness["quantity"] == 5
-    assert harness["label"]["en"] == "Pack interconnection harness (5 per cabinet)"
-    assert "GW61.4-BAT-AC-G10：×5" in harness["source"]["quote"]
     assert all(
         item["source"]["blob_sha256"]
         == "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2"
@@ -460,45 +458,59 @@ def test_preview_uses_the_explicit_plan_and_writes_private_receipt(
 def test_reviewed_production_plan_is_frozen() -> None:
     loaded = migration.load_plan()
     products = loaded["products"]
-    expected_products = {
-        "1946": "0648c8aa0b650d17621e50744c61feb010c58a2e5a448fde016c686fd2438742",
-        "1947": "15e0b0767810a724225b087cc3ec73b8fe3a8a1282cc7db3dc1579ee20d15265",
-        "1948": "d8e229d764db3166800870ee5c557f84699339dae26b2d2e1e0432f0cf2e0c0a",
-        "1954": "1037614099efe170172740951c617922ee5fc85d28804c929f329fdd7329e6f1",
-        "1955": "9676819e7e5c10f877b2d35afdbd5ef5e7446fa5ea260edf396777c3df0aa8c4",
-        "1956": "9104ae6aaa016d9bd59fc3f5fc83a7d78277aff7cd1fa29fbd2b55de023391fd",
-        "1957": "f5596878526182efb277dbcba304d6a1400a2ee111539c3fe2b1809ec20ea2ce",
-        "1958": "cd3bffeafc67000c8f94c63b203b13916604d44891ff43200bc3864f0e69230c",
-        "6506": "5e368eccda3f40fc1e38bfc4a341bc1eef23e939ba6143af68dfe62dd4a71b2d",
-        "6508": "2e375a64a64072206a19b9afb28f264b72b56d21e472dbff7a5ea88d47ac242d",
-        "6509": "36cee323c7b04dc13adcdc59f379216101f93ed1751301c9c8b692af4a0b8c3b",
-        "6510": "830ca6597193b83379895926bfc5ec499981c348e4a31fe801edd51d34862086",
-        "6511": "829a52e7504213453d56ba633038b947ecb1414aca55df6de589607eac10c52b",
+    # Every revision is the production engineering feed's current revision for
+    # that product; a drift must be re-frozen deliberately, never silently.
+    assert {key: value["product_revision"] for key, value in products.items()} == {
+        "1946": "1905e54d159db08b051fd5f4c4a2a0482553ecba6b3cb69281f2655cec6f0079",
+        "1947": "57645b8a899a88306789a8a5438e5ae149e776ab15671c62d31358de85ae45f5",
+        "1948": "6a90f36f123d723c8b3d4521c5c7370c2c5c013a07b637661194999a6cd92456",
+        "6506": "09a55babbc7084f36f3f5cfbe7df2af0f41c4062ef53260a302fa6cab8c69b1a",
+        "1954": "dd9f785d4f4111cad28b36a399aa18120520af65450027e4e852177a79ac0576",
+        "1955": "c48c197c2ded9e1e8649605d4df814bcf0f2a73708376c5d741512c6f1ed1bfa",
+        "1956": "36d74190a353e7d0feeeb0b39eaf2132fae7b62b89494c43d118f59174643df4",
+        "1957": "ab932ff62fafe8258a289655ceed3844b266c413c2ee7a5592c055b2db087fd3",
+        "1958": "7bf010528262953fc52fdce9e9f01131c857331745f4dd716ced8f46ec427923",
+        "6508": "6d219f809af9df61366af537ac5aa2ebae92126c6349f246b6e8c8fc13248c0c",
+        "6509": "3b7f8c0e00aff5a9bf25b77a3999a21f78ca81c13f6946100b2804f657a26691",
+        "6510": "5a0d03c3019daaf62a44905f71fa20d7bc735f0b61b78f480a3356f45cafb1c9",
+        "6511": "e06d299cdcddc5d052169accd523c0a1a149792b374c24a5d47d08eaa6405039",
+        "6507": "cb1b6e1929d1d909884cd9fc877c90a0a861b29518f68c2d35598a6af42a3eb5",
+        "3556": "c61d005dd608416b42ca50cbbfb3c3becaf8683323dcf5a972c03e039ba2ecdb",
+        "3583": "0b06639d065d0274f3238694eb3d546c9b0dbe39601a02908a15b7fde62f4aa4",
+        "3584": "4d19772168857ce10e0afdc2441eb549a8ceccef69e0759feeddb893ac92597c",
+        "3585": "1660557909692586588594c653ecc7a7cfec82fc7f3c3b7079a5e861f721049f",
+        "6512": "6ddcff19b8e4cdfdc42f57f0b83d3626a7b4110525ac90202a27ba193140d0a8",
+        "6513": "3fb82f2e52ac14fabb0242f0cb6a8979b0d1b362ebcdb175ca2c738cbdda0d1f",
+        "6514": "f416421f7a010ba040c71a74142c9fd36da746e5c07bab1a7ebdcf728979d049",
+        "6515": "2104492d0f27b6b4f20bdae90182678b2f9f51b8f1140bea1575d64c89362e87",
+        "6516": "d2b572d65dea4c75755a8d7f0ff5e98e7da26dc0934c83e2217e1c4045cb0f10",
+        "6517": "186176acb187a2a5e10916f828233b8fb4ae3bb80078a10f91ac04566328b704",
+        "6518": "1b7295f6cfb5839bcc420aaaf943f385887e6b2f42674efb0ead30e5512dc5b3",
+        "6523": "6a057ec30223888f8e72dd56f82990d046393c9aa80520516700c49a8354251a",
+        "6524": "4a142d8ba66d41ec66c5062f52b3e42c0b8d182a4020a0cd895fcf1e4ed471d9",
+        "6525": "9d98356f090e9d13370dbe727b250eeb1a783f7e9ca031dce04394e1b5571812",
+        "6526": "516da9f7e81d38a5b7d0c259a453ced9969b786980a2354f23465c4fa63cce8a",
+        "6527": "53803361db782dcc92b499cfc7c2d21c9efa9503bc48e6ba1c21471cf80a19a1",
+        "6528": "087c31c1b966063adb4fe3d288628e8c1c6f385c039800d99598e2a3f4829604",
+        "1179": "1dc26f004eba03a95b54971efac6f0bbf3e954c21ed8350fc4fd59a9bef471e4",
+        "1181": "04df76aded6d942785a2038708978e85f3c35c6fe5b8f4e1f58e973aeb2bc1fa",
+        "2063": "8e949f05e2a8e160a20277179bcc0a6710b369db712d38ec0c77836f1ef9a92f",
+        "2064": "fe3af484e443e4b15a0489172278cdb58fbbf93b7091267be08625a3bd1c4f8e",
+        "4107": "9b1031b5fbf03d272a3feab2c98e51801a8678a3a9636ed219f071fccbdfa483",
+        "4108": "8aeb8912cbb86c764e456468882945e5e00082e8e668b703083289039688b8f0",
     }
-    expected_documents = {
-        "doc-3e98151c21d284ce5e01603742e3ef027ca73cff3f42b9cf9b3fe164aa91882b": (
-            "aaf54a301d81f354cff2a06dd8bf2c599705fcd5549e0dd271efa49402f28ca1",
-            "ef85dd1a58fc06e52f2dff79dda228884b412d17db7035aa45d41c57840f3f10",
-        ),
-        "doc-cbd6d3d2db163cf7bce09abf348fd8531756f4e1f3e1ae9a2d82418b322a2568": (
-            "049d06e27cb8f711c57de5c72058f5c1bc2ddface3b698cd1690ebcac5c0870b",
-            "0ef4b1ccdcc418e3ca8de31194b3d9e2969be39aa739ffa0ca1f038fcfac6615",
-        ),
-        "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f": (
-            "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
-            "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
-        ),
-        "doc-e135c80bd4befdcd3c7e807944036da9a13c966b4c61ad40e6ff7886cf10b42f": (
-            "f802c3c76d87d6e4dc6b724b400a1ce6fe9ebcb38a3475f3e4d5dcfaffc2ba63",
-            "50bdd49b7be0ef036cafec286994f33af79dab5fc54dfcebbf4549f7e429acf9",
-        ),
-    }
-
-    assert {
-        key: value["product_revision"] for key, value in products.items()
-    } == expected_products
     items = [item for product in products.values() for item in product["items"]]
-    assert len(items) == 91
+    assert len(items) == 244
+    assert (
+        len(
+            {
+                (key, item["id"])
+                for key, product in products.items()
+                for item in product["items"]
+            }
+        )
+        == 244
+    )
     terminal_uses = {
         (key, item["id"]): item["specification"]["terminal_use"]
         for key, product in products.items()
@@ -517,7 +529,40 @@ def test_reviewed_production_plan_is_frozen() -> None:
         )
         for item in items
     }
-    assert sources == expected_documents
+    assert sources == {
+        "doc-cbd6d3d2db163cf7bce09abf348fd8531756f4e1f3e1ae9a2d82418b322a2568": (
+            "049d06e27cb8f711c57de5c72058f5c1bc2ddface3b698cd1690ebcac5c0870b",
+            "0ef4b1ccdcc418e3ca8de31194b3d9e2969be39aa739ffa0ca1f038fcfac6615",
+        ),
+        "doc-e135c80bd4befdcd3c7e807944036da9a13c966b4c61ad40e6ff7886cf10b42f": (
+            "f802c3c76d87d6e4dc6b724b400a1ce6fe9ebcb38a3475f3e4d5dcfaffc2ba63",
+            "50bdd49b7be0ef036cafec286994f33af79dab5fc54dfcebbf4549f7e429acf9",
+        ),
+        "doc-a7cfa5ad5c55cfba8128f3992a05ac5cb86138460b1e9dcbea4fd833142abdf7": (
+            "50f227b4ca819bc905bda317c96e5b0cfbab936e282dd03c04a0372498ddc695",
+            "67a7f715ca9db734edba1b4f15b50d1a29c866b172ffd1909759e0abc66c8d2a",
+        ),
+        "doc-c4fbcd9555254fb0b1bf2e727cf62baeba7508def61a72cad65bee85e88cba1c": (
+            "45179e2995ca322ecb0da13093dd34f62f19f2fc3ae929cac23fcc958cfe297e",
+            "5cd104b9e006bd3b8265d0518dabdaaec01058f44ac065544da1d00d8cb4b619",
+        ),
+        "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551": (
+            "ef3d49749a232536940ce99dcc245820cd53bbfa1cd05b12057d4e398c4cef49",
+            "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+        ),
+        "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f": (
+            "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
+            "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+        ),
+        "doc-3e98151c21d284ce5e01603742e3ef027ca73cff3f42b9cf9b3fe164aa91882b": (
+            "aaf54a301d81f354cff2a06dd8bf2c599705fcd5549e0dd271efa49402f28ca1",
+            "ef85dd1a58fc06e52f2dff79dda228884b412d17db7035aa45d41c57840f3f10",
+        ),
+        "doc-0ee8a88e3e74d10e542a38aaab00259352253f35e80216b2cea1b63460f1d52a": (
+            "caa2e292a2c784906f32f2ab98153b4c3e2cfc1e05436627a53cf2caec7571bc",
+            "c29cbf257d51559ef53f5da36a46ca10b4e5738fbd4a0d06fd74fbaff4a7fcb7",
+        ),
+    }
 
     def without_revisions(value: object) -> object:
         if isinstance(value, dict):
@@ -537,8 +582,47 @@ def test_reviewed_production_plan_is_frozen() -> None:
         separators=(",", ":"),
     ).encode()
     assert hashlib.sha256(canonical).hexdigest() == (
-        "2b7c79f7a7ffb7dd9eb6e35057fe8e6cc59076fde0892384ff9bf5ae3d461452"
+        "ac3a6f44c621cdbc2b72ceb40c3b765dd06094d8b4fb9e9cddb2ebbe94beb3ce"
     )
+
+
+def test_every_quote_appears_on_the_page_its_source_cites() -> None:
+    """A page number alone is not evidence; the quote must be on that page."""
+    excerpts = json.loads((HERE.parent / "548-page-excerpts.json").read_text())
+    plan = migration.load_plan()
+    checked = 0
+    for key, product in plan["products"].items():
+        for item in product["items"]:
+            source = item["source"]
+            document = excerpts["documents"].get(source["document_id"])
+            assert document is not None, f"{key}/{item['id']} has no excerpt"
+            assert document["blob_sha256"] == source["blob_sha256"]
+            page = document["pages"].get(str(source["page"]))
+            assert page is not None, (
+                f"{key}/{item['id']} cites an excerpted-missing page"
+            )
+            assert not _absent_words(source["quote"], page), f"{key}/{item['id']}"
+            checked += 1
+    assert checked == 244
+
+
+def _absent_words(quote: str, page: str) -> list[str]:
+    """Words of the quote that do not appear on the page, ignoring line wrapping.
+
+    PDF extraction splits words at column and line breaks ("pre- assembled",
+    "50- 70mm²"), so a word is present when its letters and digits appear in
+    order on the page with nothing between them.
+    """
+
+    def squash(value: str) -> str:
+        return re.sub(r"[^a-z0-9]+", "", value.lower())
+
+    flat = squash(page)
+    return [
+        word
+        for word in quote.split()
+        if len(re.sub(r"[^A-Za-z0-9]", "", word)) >= 3 and squash(word) not in flat
+    ]
 
 
 def test_plan_rejects_extra_fields_and_empty_products(tmp_path: Path) -> None:

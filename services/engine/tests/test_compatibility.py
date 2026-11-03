@@ -186,6 +186,35 @@ def test_parallel_limits_come_from_the_controller_documents(
     ] == [6]
 
 
+def test_shipped_et_rs485_scheme_carries_the_sixty_inverter_limit(
+    shipped_compatibility: Compatibility,
+) -> None:
+    """RS485 and LAN are different limits on the same controller, never one number."""
+    for model in ("GW80K-ET-G10", "GW99.99K-ET-G10", "GW100K-ET-G10"):
+        rows = shipped_compatibility.requirements(
+            model,
+            "parallel_controller",
+            operating_mode="grid_connected",
+            topology="parallel_group",
+            control_network="rs485",
+            controller_product_id=2409,
+        )
+        assert len(rows) == 1 and rows[0].max_units == 60
+        assert {d.page for d in rows[0].documents} >= {1, 53}
+        assert any("20 inverters" in condition.en for condition in rows[0].conditions)
+        # Without the controller the limit does not apply to a bare inverter.
+        assert (
+            shipped_compatibility.requirements(
+                model,
+                "parallel_controller",
+                operating_mode="grid_connected",
+                topology="parallel_group",
+                control_network="rs485",
+            )
+            == []
+        )
+
+
 def test_shipped_et_lan_scheme_requires_the_selected_optional_controller(
     shipped_compatibility: Compatibility,
 ) -> None:
@@ -209,7 +238,9 @@ def test_shipped_et_lan_scheme_requires_the_selected_optional_controller(
             control_network="lan",
             controller_product_id=2409,
         )
-        assert len(rows) == 1 and rows[0].max_units is None
+        # The SEC3000C datasheet (EMEA, EN, p.1) prints the per-network limit,
+        # so the LAN scheme now carries 10 instead of an empty bound.
+        assert len(rows) == 1 and rows[0].max_units == 10
         assert rows[0].accessories[0].product_id == 2409
         assert rows[0].accessories[0].quantity == 1
         assert any(
@@ -227,17 +258,15 @@ def test_shipped_et_lan_scheme_requires_the_selected_optional_controller(
             )
             == []
         )
-        assert (
-            shipped_compatibility.requirements(
-                model,
-                "parallel_controller",
-                operating_mode="grid_connected",
-                topology="parallel_group",
-                control_network="rs485",
-                controller_product_id=2409,
-            )
-            == []
+        rs485 = shipped_compatibility.requirements(
+            model,
+            "parallel_controller",
+            operating_mode="grid_connected",
+            topology="parallel_group",
+            control_network="rs485",
+            controller_product_id=2409,
         )
+        assert len(rs485) == 1 and rs485[0].max_units == 60
 
 
 def test_the_shipped_contract_keeps_the_one_module_b2_off_the_h2(
