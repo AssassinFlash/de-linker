@@ -24,6 +24,21 @@ export function bindMarketingEntries(
 			return () => undefined;
 		}
 		field.dataset.genieEntryBound = '1';
+		if (
+			! field.getAttribute( 'aria-label' ) &&
+			! field.getAttribute( 'aria-labelledby' ) &&
+			( ! field.id ||
+				! root.querySelector(
+					`label[for="${ field.id.replace( /"/g, '\\"' ) }"]`
+				) )
+		) {
+			const placeholder = field.placeholder
+				.replace( /(?:\.\.\.|…)+$/u, '' )
+				.trim();
+			if ( placeholder ) {
+				field.setAttribute( 'aria-label', placeholder );
+			}
+		}
 		const section =
 			field.closest< HTMLElement >(
 				'#system-search, .installer-mobile-assistant'

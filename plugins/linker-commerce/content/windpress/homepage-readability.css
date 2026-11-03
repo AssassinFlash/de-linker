@@ -24,6 +24,20 @@
 	#home-a .hero-dialog .hero-nameplate-btn > svg {
 		flex: 0 0 16px;
 	}
+
+	/* On German phones (390x844 capture) the booth backdrop's English tagline
+	   occupies 14%-50% of .hero-cinematic behind the four-line German subtitle,
+	   while ceiling trusses sit at 0%-12% and the team stands below 54%. */
+	html[lang^="de"] #home-a .hero-cinematic::before {
+		background: linear-gradient(
+			180deg,
+			rgba(6, 21, 38, 0.78) 0%,
+			rgba(6, 21, 38, 0.98) 14%,
+			rgba(6, 21, 38, 0.98) 50%,
+			rgba(4, 14, 25, 0.68) 64%,
+			rgba(4, 14, 25, 0.78) 100%
+		);
+	}
 }
 
 @media (max-width: 560px) {

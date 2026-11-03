@@ -383,3 +383,63 @@ def test_partial_or_drifted_focus_scroll_path_is_refused(tabs: str, fault: str) 
         controls.plan_pair(
             "services", services("en").replace(old, changed), services("de")
         )
+
+
+def _home_fixture(language: str) -> str:
+    prev_label = "Previous story" if language == "en" else "Vorherige Geschichte"
+    body = "\n".join(before for before, _ in controls._HOME_TESTIMONIALS_SCRIPT_EDITS)
+    return (
+        f'<div id="home-a"><section id="testimonials">'
+        f'<nav class="home-story-nav">'
+        f'<a href="#story-0" id="testi-prev" aria-label="{prev_label}">←</a>\n'
+        f'      <div class="home-stor-dots" aria-hidden="true"></div>'
+        f"</nav></section><script>\n{body}\n</script></div>" + UNCHANGED
+    )
+
+
+def test_home_testimonials_adds_epc_motion_toggle_and_drops_touchend() -> None:
+    before = (_home_fixture("en"), _home_fixture("de"))
+    after = controls.plan_pair("home_testimonials", *before)
+    assert controls.plan_pair("home_testimonials", *after) == after
+    assert (
+        'data-pause-label="Pause slideshow" data-play-label="Play slideshow"'
+        in after[0]
+    )
+    assert (
+        'data-pause-label="Diashow pausieren" data-play-label="Diashow abspielen"'
+        in after[1]
+    )
+    for page in after:
+        assert "touchend" not in page
+        assert "touchstart" not in page
+        assert 'motionButton.addEventListener("click"' in page
+        assert UNCHANGED in page
+    with pytest.raises(ValueError, match="Partially changed Home testimonials"):
+        controls.plan_pair("home_testimonials", after[0], before[1])
+
+
+def test_commercial_and_residential_prompts_and_inquiry_copy_are_idempotent() -> None:
+    cs_en = (
+        '<main id="tv-cs-page-v1">'
+        '<textarea class="lk-dialog-prompt" placeholder="Search outdoor cabinets, peak-shaving, or datasheets..." rows="2"></textarea>'
+        + UNCHANGED
+        + "</main>"
+    )
+    cs_de = (
+        '<main id="tv-cs-page-v1">'
+        '<textarea class="lk-dialog-prompt" placeholder="Suchen Sie nach Außenschränken, Lastspitzenkappung oder Datenblättern..." rows="2"></textarea>'
+        + UNCHANGED
+        + "</main>"
+    )
+    cs_after = controls.plan_pair("commercial_storage", cs_en, cs_de)
+    assert controls.plan_pair("commercial_storage", *cs_after) == cs_after
+    assert (
+        'aria-label="Search outdoor cabinets, peak-shaving, or datasheets"'
+        in cs_after[0]
+    )
+    assert (
+        'aria-label="Suchen Sie nach Außenschränken, Lastspitzenkappung oder Datenblättern"'
+        in cs_after[1]
+    )
+    with pytest.raises(ValueError, match="Partially changed Commercial Storage"):
+        controls.plan_pair("commercial_storage", cs_after[0], cs_de)

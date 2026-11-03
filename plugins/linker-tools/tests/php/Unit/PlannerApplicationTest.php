@@ -94,4 +94,52 @@ final class PlannerApplicationTest extends TestCase {
 		$this->assertSame( '', $app->mount() );
 		$this->assertConditionsMet();
 	}
+
+	/**
+	 * The 272 KB planner catalog is split into a compact inline shell subset
+	 * plus a versioned on-demand catalog loader for the full dictionary.
+	 */
+	public function test_script_module_translations_inline_shell_subset_and_load_full_catalog_on_demand(): void {
+		$root = dirname( __DIR__, 3 ) . '/';
+		$base = 'https://fixture.invalid/wp-content/plugins/linker-tools/';
+		$file = $root . 'languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json';
+		$raw  = (string) file_get_contents( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local test fixture.
+		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => $root ) );
+		WP_Mock::userFunction( 'plugin_dir_url', array( 'return' => $base ) );
+		WP_Mock::userFunction(
+			'wp_json_encode',
+			array(
+				'return' => static fn( mixed $data, int $flags = 0 ): string|false => json_encode( $data, $flags ), // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- mocked encoder.
+			)
+		);
+
+		$app = new Application( $root . 'linker-tools.php' );
+		$this->assertSame( $raw, $app->filter_translations( $raw, $file, 'other-handle', 'linker-tools' ) );
+
+		$filtered = $app->filter_translations( $raw, $file, Application::HANDLE, 'linker-tools' );
+		$this->assertIsString( $filtered );
+		// The 42-message shell subset is ~4.9 KB (versus 272 KB for the full 2,028-entry catalog).
+		$this->assertLessThan( 10000, strlen( $filtered ) );
+		$decoded  = json_decode( $filtered, true );
+		$messages = $decoded['locale_data']['messages'] ?? array();
+		$this->assertSame( array( 'Ihr Arbeitsbereich wird geöffnet…' ), $messages['Opening your workspace…'] ?? null );
+		$this->assertSame( array( 'Lösungskonfigurator' ), $messages['Solution Configurator'] ?? null );
+		$this->assertSame( array( 'Ihre Projekte' ), $messages['Your projects'] ?? null );
+
+		$inline_tag = '<script id="wp-script-module-translation-data-linker-planner">wp.i18n.setLocaleData({}, "linker-tools");</script>';
+		$unchanged  = $app->inline_translation_loader( $inline_tag, '', array( 'id' => 'other-script' ) );
+		$this->assertSame( $inline_tag, $unchanged );
+
+		$augmented    = $app->inline_translation_loader(
+			$inline_tag,
+			'',
+			array( 'id' => 'wp-script-module-translation-data-' . Application::HANDLE )
+		);
+		$expected_ver = substr( (string) hash_file( 'sha256', $file ), 0, 12 );
+		$this->assertStringContainsString(
+			$base . 'languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json?ver=' . $expected_ver,
+			$augmented
+		);
+		$this->assertStringContainsString( 'window.wp.i18n.setLocaleData', $augmented );
+	}
 }
