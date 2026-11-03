@@ -1,0 +1,636 @@
+[
+	{
+		"searchQuery": {
+			"term": "site:geoservices.ign.fr BD ORTHO WMTS",
+			"url": "http://www.google.com/search?q=site%3Ageoservices.ign.fr+BD+ORTHO+WMTS&gl=us",
+			"device": "DESKTOP",
+			"page": 1,
+			"type": "SEARCH",
+			"domain": "google.com",
+			"countryCode": "US",
+			"languageCode": null,
+			"locationUule": null,
+			"resultsPerPage": 10
+		},
+		"url": "http://www.google.com/search?q=site%3Ageoservices.ign.fr+BD+ORTHO+WMTS&gl=us",
+		"hasNextPage": true,
+		"serpProviderCode": "L",
+		"relatedQueries": [],
+		"paidResults": [],
+		"paidProducts": [],
+		"organicResults": [
+			{
+				"title": "Mises à jour Février 2026 | IGN | Aide",
+				"websiteTitle": "ign.fr",
+				"url": "https://geoservices.ign.fr/actualites/2026-02-mises-a-jour",
+				"displayedUrl": "https://geoservices.ign.fr › actualites",
+				"description": "Liste des mises à jour de flux en accès libre # ; BD Ortho IRC, ORTHOIMAGERY.ORTHOPHOTOS.IRC, WMS-Raster et WMTS ; Graphe de mosaïquage BD Ortho ...",
+				"date": "2026-02-03T12:00:00.000Z",
+				"emphasizedKeywords": [
+					"BD Ortho IRC, ORTHOIMAGERY.ORTHOPHOTOS.IRC, WMS-Raster et WMTS"
+				],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 1
+			},
+			{
+				"title": "Mises à jour Mars 2026 | IGN | Aide",
+				"websiteTitle": "ign.fr",
+				"url": "https://geoservices.ign.fr/actualites/2026-03-mises-a-jour",
+				"displayedUrl": "https://geoservices.ign.fr › actualites",
+				"description": "Liste des mises à jour de données en téléchargement # ; BD ORTHO® IRC, D972, 2025 ; BD ORTHO® RVB, D972, 2025 ; BD TOPO® EXPRESS, FXX + DROM ...",
+				"date": "2026-03-02T12:00:00.000Z",
+				"emphasizedKeywords": ["BD ORTHO® IRC, D972, 2025"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 2
+			},
+			{
+				"title": "Mises à jour Novembre 2025 | IGN | Aide",
+				"websiteTitle": "ign.fr",
+				"url": "https://geoservices.ign.fr/actualites/2025-11-mises-a-jour",
+				"displayedUrl": "https://geoservices.ign.fr › actualites",
+				"description": "Liste des mises à jour de flux en accès libre # ; BD Ortho IRC, ORTHOIMAGERY.ORTHOPHOTOS.IRC, WMS-Raster et WMTS ; Graphe de mosaïquage BD Ortho ...",
+				"date": "2025-11-03T12:00:00.000Z",
+				"emphasizedKeywords": [
+					"BD Ortho IRC, ORTHOIMAGERY.ORTHOPHOTOS.IRC, WMS-Raster et WMTS"
+				],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 3
+			},
+			{
+				"title": "Utiliser les services de la Géoplateforme | Aide",
+				"websiteTitle": "ign.fr",
+				"url": "https://geoservices.ign.fr/services-web-experts-ortho",
+				"displayedUrl": "https://geoservices.ign.fr › services...",
+				"description": "API de diffusion. Tous les détails sur les services de diffusion de la Géoplateforme (WFS/WMS/TMS/WMTS). API de téléchargement. Tous les ...",
+				"date": "2026-03-04T12:00:00.000Z",
+				"emphasizedKeywords": ["API"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 4
+			},
+			{
+				"title": "Mises à jour Septembre 2025 | IGN | Aide",
+				"websiteTitle": "ign.fr",
+				"url": "https://geoservices.ign.fr/actualites/2025-09-mises-a-jour",
+				"displayedUrl": "https://geoservices.ign.fr › actualites",
+				"description": "Liste des mises à jour de flux en accès libre # ; Ortho Express RVB 2025, ORTHOIMAGERY.ORTHOPHOTOS.ORTHO-EXPRESS.2025, WMS-Raster et WMTS ; Ortho ...",
+				"date": "2025-09-02T12:00:00.000Z",
+				"emphasizedKeywords": ["Ortho Express RVB 2025"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 5
+			},
+			{
+				"title": "Mises à jour Octobre 2025 | IGN | Aide",
+				"websiteTitle": "ign.fr",
+				"url": "https://geoservices.ign.fr/actualites/2025-10-mises-a-jour",
+				"displayedUrl": "https://geoservices.ign.fr › actualites",
+				"description": "Liste des mises à jour de flux en accès libre # ; BD Ortho IRC, ORTHOIMAGERY.ORTHOPHOTOS.IRC, WMS-Raster et WMTS ; Graphe de mosaïquage BD Ortho ...",
+				"date": "2025-10-01T12:00:00.000Z",
+				"emphasizedKeywords": [
+					"BD Ortho IRC, ORTHOIMAGERY.ORTHOPHOTOS.IRC, WMS-Raster et WMTS"
+				],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 6
+			},
+			{
+				"title": "QGIS - Utiliser les données libres en flux WMS/WMTS",
+				"websiteTitle": "ign.fr",
+				"url": "https://geoservices.ign.fr/documentation/services/utilisation-sig/tutoriel-qgis/wms-wmts",
+				"displayedUrl": "https://geoservices.ign.fr › services",
+				"description": "Dans le menu « Couche », allez sur « Ajouter une couche » puis « Ajouter une couche WMS/WMTS ». Ajouter une couche WMS/WMTS.",
+				"date": "2026-05-27T12:00:00.000Z",
+				"emphasizedKeywords": ["WMTS", "WMTS"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 7
+			},
+			{
+				"title": "Mises à jour Janvier 2026 | IGN | Aide",
+				"websiteTitle": "ign.fr",
+				"url": "https://geoservices.ign.fr/actualites/2026-01-mises-a-jour",
+				"displayedUrl": "https://geoservices.ign.fr › actualites",
+				"description": "Liste des mises à jour de données en téléchargement # ; BD ORTHO® IRC, D003, D005, D009, D010, 2025 ; BD ORTHO® RVB, D003, D005, D009, D010, D063 ...",
+				"date": "2026-01-05T12:00:00.000Z",
+				"emphasizedKeywords": ["BD ORTHO® IRC, D003, D005, D009, D010, 2025"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 8
+			},
+			{
+				"title": "Les évolutions de la BD TOPO® de l'édition de décembre ...",
+				"websiteTitle": "ign.fr",
+				"url": "https://geoservices.ign.fr/actualites/2026-01-bdtopo-evolutions",
+				"displayedUrl": "https://geoservices.ign.fr › actualites",
+				"description": "La BD TOPO® du mois de décembre 2025 est disponible en téléchargement sous différents formats ainsi qu'en web services (TMS, WFS, WMS et WMTS).",
+				"date": "2026-01-22T12:00:00.000Z",
+				"emphasizedKeywords": ["BD", "WMTS"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 9
+			},
+			{
+				"title": "Mises à jour Décembre 2025 | IGN | Aide",
+				"websiteTitle": "ign.fr",
+				"url": "https://geoservices.ign.fr/actualites/2025-12-mises-a-jour",
+				"displayedUrl": "https://geoservices.ign.fr › actualites",
+				"description": "Liste des mises à jour de flux en accès libre # ; BD Ortho IRC, ORTHOIMAGERY.ORTHOPHOTOS.IRC, WMS-Raster et WMTS ; Graphe de mosaïquage BD Ortho ...",
+				"date": "2025-12-01T12:00:00.000Z",
+				"emphasizedKeywords": [
+					"BD Ortho IRC, ORTHOIMAGERY.ORTHOPHOTOS.IRC, WMS-Raster et WMTS"
+				],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 10
+			}
+		],
+		"suggestedResults": [],
+		"peopleAlsoAsk": [],
+		"customData": null,
+		"htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/zkBLjA3Vc7sgwSjph/records/QFFUG96KOZasE00-0.html?signature=188vHhfYQdktjLHHOVewg"
+	},
+	{
+		"searchQuery": {
+			"term": "site:joint-research-centre.ec.europa.eu PVGIS 5.3 coverage Europe",
+			"url": "http://www.google.com/search?q=site%3Ajoint-research-centre.ec.europa.eu+PVGIS+5.3+coverage+Europe&gl=us",
+			"device": "DESKTOP",
+			"page": 1,
+			"type": "SEARCH",
+			"domain": "google.com",
+			"countryCode": "US",
+			"languageCode": null,
+			"locationUule": null,
+			"resultsPerPage": 10
+		},
+		"url": "http://www.google.com/search?q=site%3Ajoint-research-centre.ec.europa.eu+PVGIS+5.3+coverage+Europe&gl=us",
+		"hasNextPage": true,
+		"serpProviderCode": "L",
+		"relatedQueries": [
+			{
+				"title": "Pvgis 5.3 coverage europe 2023",
+				"url": "https://www.google.com/search?sca_esv=877d8b9d163770b6&hl=en&gl=us&sxsrf=APpeQnuod_5cPSbzK-ExQ4eENgyvyzjwWQ:1792659160859&q=Pvgis+5.3+coverage+europe+2023&sa=X&ved=2ahUKEwjnx_Hjn82XAxVOzwIHHcg1FmUQ1QJ6BAg9EAE"
+			},
+			{
+				"title": "Pvgis 5.3 coverage europe map",
+				"url": "https://www.google.com/search?sca_esv=877d8b9d163770b6&hl=en&gl=us&sxsrf=APpeQnuod_5cPSbzK-ExQ4eENgyvyzjwWQ:1792659160859&q=Pvgis+5.3+coverage+europe+map&sa=X&ved=2ahUKEwjnx_Hjn82XAxVOzwIHHcg1FmUQ1QJ6BAg8EAE"
+			},
+			{
+				"title": "Pvgis 5.3 coverage europe calculator",
+				"url": "https://www.google.com/search?sca_esv=877d8b9d163770b6&hl=en&gl=us&sxsrf=APpeQnuod_5cPSbzK-ExQ4eENgyvyzjwWQ:1792659160859&q=Pvgis+5.3+coverage+europe+calculator&sa=X&ved=2ahUKEwjnx_Hjn82XAxVOzwIHHcg1FmUQ1QJ6BAg7EAE"
+			},
+			{
+				"title": "Pvgis 5.3 coverage europe 2023",
+				"url": "https://www.google.com/search?sca_esv=877d8b9d163770b6&hl=en&gl=us&sxsrf=APpeQnuod_5cPSbzK-ExQ4eENgyvyzjwWQ:1792659160859&q=Pvgis+5.3+coverage+europe+2023&sa=X&ved=2ahUKEwjnx_Hjn82XAxVOzwIHHcg1FmUQ1QJ6BAg9EAE"
+			},
+			{
+				"title": "Pvgis 5.3 coverage europe map",
+				"url": "https://www.google.com/search?sca_esv=877d8b9d163770b6&hl=en&gl=us&sxsrf=APpeQnuod_5cPSbzK-ExQ4eENgyvyzjwWQ:1792659160859&q=Pvgis+5.3+coverage+europe+map&sa=X&ved=2ahUKEwjnx_Hjn82XAxVOzwIHHcg1FmUQ1QJ6BAg8EAE"
+			},
+			{
+				"title": "Pvgis 5.3 coverage europe calculator",
+				"url": "https://www.google.com/search?sca_esv=877d8b9d163770b6&hl=en&gl=us&sxsrf=APpeQnuod_5cPSbzK-ExQ4eENgyvyzjwWQ:1792659160859&q=Pvgis+5.3+coverage+europe+calculator&sa=X&ved=2ahUKEwjnx_Hjn82XAxVOzwIHHcg1FmUQ1QJ6BAg7EAE"
+			}
+		],
+		"paidResults": [],
+		"paidProducts": [],
+		"organicResults": [
+			{
+				"title": "Using PVGIS 5 - Joint Research Centre - European Commission",
+				"websiteTitle": "europa.eu",
+				"url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/using-pvgis-5_en",
+				"displayedUrl": "https://joint-research-centre.ec.europa.eu › using-pvgis-...",
+				"description": "PVGIS 5.3 includes the following improvements: Update and extension of the temporal coverage of current PVGIS solar radiation and meteorological ...Read more",
+				"date": "2024-09-26T12:00:00.000Z",
+				"emphasizedKeywords": ["PVGIS 5.3", "coverage", "PVGIS"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 1
+			},
+			{
+				"title": "Photovoltaic Geographical Information System (PVGIS)",
+				"websiteTitle": "europa.eu",
+				"url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis_en",
+				"displayedUrl": "https://joint-research-centre.ec.europa.eu › photovoltaic...",
+				"description": "PVGIS provides information on solar radiation and photovoltaic system performance for any location in the world, except the North and South ...Read more",
+				"date": "2026-01-21T12:00:00.000Z",
+				"emphasizedKeywords": [
+					"information on solar radiation and photovoltaic system performance"
+				],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 2
+			},
+			{
+				"title": "PVGIS 5 user manual - Joint Research Centre - European Union",
+				"websiteTitle": "europa.eu",
+				"url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/using-pvgis-5/pvgis-5-user-manual_en",
+				"displayedUrl": "https://joint-research-centre.ec.europa.eu › using-pvgis-5",
+				"description": "Coverage is worldwide at hourly time resolution and a spatial resolution of 0.28° lat/lon. More information about the reanalysis-based solar radiation data is ...Read more",
+				"emphasizedKeywords": ["Coverage"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 3
+			},
+			{
+				"title": "Grid-connected PV - Joint Research Centre - European Union",
+				"websiteTitle": "europa.eu",
+				"url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/using-pvgis-5/pvgis-5-tools/grid-connected-pv_en",
+				"displayedUrl": "https://joint-research-centre.ec.europa.eu › pvgis-5-tools",
+				"description": "This tool makes it possible to estimate the average monthly and yearly energy production of a PV system connected to the electricity grid, without battery ...Read more",
+				"emphasizedKeywords": [],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 4
+			},
+			{
+				"title": "API non-interactive service - Joint Research Centre",
+				"websiteTitle": "europa.eu",
+				"url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/using-pvgis-5/api-non-interactive-service_en",
+				"displayedUrl": "https://joint-research-centre.ec.europa.eu › using-pvgis-5",
+				"description": "All the PVGIS tools can be accessed non-interactively using our web APIs. The entry points are: PVGIS 5.3: https://re.jrc.ec.europa.eu/api/v5_3/tool_name?param1 ...Read more",
+				"emphasizedKeywords": ["PVGIS"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 5
+			},
+			{
+				"title": "Updates & bug fixes - Joint Research Centre - European Union",
+				"websiteTitle": "europa.eu",
+				"url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/updates-bug-fixes_en",
+				"displayedUrl": "https://joint-research-centre.ec.europa.eu › updates-bug...",
+				"description": "For PVGIS 5.2 and 5.3 only SARAH3 data is used, up to its full eastern extent. However the previous offset was still being applied for longitudes over 40 ...Read more",
+				"emphasizedKeywords": ["PVGIS", "5.3"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 6
+			},
+			{
+				"title": "Geospatial Data Download - Joint Research Centre",
+				"websiteTitle": "europa.eu",
+				"url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/geospatial-data-download_en",
+				"displayedUrl": "https://joint-research-centre.ec.europa.eu › geospatial-d...",
+				"description": "PVGIS 5.3 Geospatial Solar Radiation and Photovoltaic Energy Production Data : Geospatial maps of average annual solar irradiation (kWh/m2) and photovoltaic ...Read more",
+				"emphasizedKeywords": ["PVGIS 5.3"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 7
+			},
+			{
+				"title": "Hourly radiation - Joint Research Centre - European Union",
+				"websiteTitle": "europa.eu",
+				"url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/using-pvgis-5/pvgis-5-tools/hourly-radiation_en",
+				"displayedUrl": "https://joint-research-centre.ec.europa.eu › pvgis-5-tools",
+				"description": "In this tool you can get the full data set of solar radiation and other data needed to calculate PV power hour by hour for long time periods. PVGIS ... Europe.Read more",
+				"emphasizedKeywords": ["In", "PVGIS", "Europe"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 8
+			},
+			{
+				"title": "Getting started with PVGIS 5 - Joint Research Centre",
+				"websiteTitle": "europa.eu",
+				"url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/using-pvgis-5/getting-started-pvgis-5_en",
+				"displayedUrl": "https://joint-research-centre.ec.europa.eu › using-pvgis-5",
+				"description": "PVGIS is a web site that gives you information about solar radiation and PhotoVoltaic (PV) system performance. You can use PVGIS to calculate how much energy ...Read more",
+				"emphasizedKeywords": ["PVGIS", "PVGIS"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 9
+			},
+			{
+				"title": "Innovative photovoltaic technology could stabilise the EU ...",
+				"websiteTitle": "europa.eu",
+				"url": "https://joint-research-centre.ec.europa.eu/jrc-news-and-updates/innovative-photovoltaic-technology-could-stabilise-eu-energy-market-2024-09-23_en",
+				"displayedUrl": "https://joint-research-centre.ec.europa.eu › innovative-p...",
+				"description": "East-west facing bifacial solar panels could boost solar power's economic value and help stabilise electricity prices across the EU.",
+				"date": "2024-09-23T12:00:00.000Z",
+				"emphasizedKeywords": ["EU"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 10
+			}
+		],
+		"suggestedResults": [],
+		"peopleAlsoAsk": [],
+		"customData": null,
+		"htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/zkBLjA3Vc7sgwSjph/records/wFcpiRMtFCZpxKb-0.html?signature=psXpdRzO2BEU9rXEMuWm"
+	},
+	{
+		"searchQuery": {
+			"term": "site:pdok.nl 3D Basisvoorziening luchtfoto",
+			"url": "http://www.google.com/search?q=site%3Apdok.nl+3D+Basisvoorziening+luchtfoto&gl=us",
+			"device": "DESKTOP",
+			"page": 1,
+			"type": "SEARCH",
+			"domain": "google.com",
+			"countryCode": "US",
+			"languageCode": null,
+			"locationUule": null,
+			"resultsPerPage": 10
+		},
+		"url": "http://www.google.com/search?q=site%3Apdok.nl+3D+Basisvoorziening+luchtfoto&gl=us",
+		"hasNextPage": true,
+		"serpProviderCode": "OX",
+		"relatedQueries": [
+			{
+				"title": "3d basisvoorziening luchtfoto pdok",
+				"url": "https://www.google.com/search?sca_esv=9e44a9c1964ca618&gl=us&hl=en&sxsrf=APpeQnvaY30Vii79JG9Qpm6h9-sn_86jzg:1792659163555&q=3d+basisvoorziening+luchtfoto+pdok&sa=X&ved=2ahUKEwjWmZbln82XAxXrrJUCHS7JOK8Q1QJ6BAg4EAE"
+			},
+			{
+				"title": "3d basisvoorziening luchtfoto download",
+				"url": "https://www.google.com/search?sca_esv=9e44a9c1964ca618&gl=us&hl=en&sxsrf=APpeQnvaY30Vii79JG9Qpm6h9-sn_86jzg:1792659163555&q=3d+basisvoorziening+luchtfoto+download&sa=X&ved=2ahUKEwjWmZbln82XAxXrrJUCHS7JOK8Q1QJ6BAg5EAE"
+			},
+			{
+				"title": "3d basisvoorziening luchtfoto pdok",
+				"url": "https://www.google.com/search?sca_esv=9e44a9c1964ca618&gl=us&hl=en&sxsrf=APpeQnvaY30Vii79JG9Qpm6h9-sn_86jzg:1792659163555&q=3d+basisvoorziening+luchtfoto+pdok&sa=X&ved=2ahUKEwjWmZbln82XAxXrrJUCHS7JOK8Q1QJ6BAg4EAE"
+			},
+			{
+				"title": "3d basisvoorziening luchtfoto download",
+				"url": "https://www.google.com/search?sca_esv=9e44a9c1964ca618&gl=us&hl=en&sxsrf=APpeQnvaY30Vii79JG9Qpm6h9-sn_86jzg:1792659163555&q=3d+basisvoorziening+luchtfoto+download&sa=X&ved=2ahUKEwjWmZbln82XAxXrrJUCHS7JOK8Q1QJ6BAg5EAE"
+			}
+		],
+		"paidResults": [],
+		"paidProducts": [],
+		"organicResults": [
+			{
+				"title": "PDOK 3D-Viewer",
+				"websiteTitle": "PDOK",
+				"url": "https://app.pdok.nl/3d-viewer/",
+				"displayedUrl": "https://app.pdok.nl › 3d-viewer",
+				"description": "3D Basisvoorziening (2) Luchtfoto BRT-A standaard BRT-A Grijs BRT-A Pastel BRT-A Water Geen",
+				"emphasizedKeywords": ["3D Basisvoorziening"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 1
+			},
+			{
+				"title": "Nieuwe data van de 3D basisvoorziening beschikbaar op ...",
+				"websiteTitle": "PDOK",
+				"url": "https://www.pdok.nl/-/nieuwe-data-van-de-3d-basisvoorziening-beschikbaar-op-pdok-3",
+				"displayedUrl": "https://www.pdok.nl › nieuwe-data...",
+				"description": "Het Digitaal Oppervlakte Model ( DSM ) (20 cm en 8 cm) is nu gebaseerd op de luchtfoto's van 2025. De DSM collecties worden alleen aangeboden ...",
+				"date": "2026-04-22T12:00:00.000Z",
+				"emphasizedKeywords": ["luchtfoto's"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 2
+			},
+			{
+				"title": "3D Basisvoorziening - Collections",
+				"websiteTitle": "PDOK",
+				"url": "https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/collections",
+				"displayedUrl": "https://api.pdok.nl › kadaster › ogc",
+				"description": "De hoogte van deze LoD 1.3 gebouwen is gebaseerd op puntenwolken gegenereerd uit luchtfotobeelden. De 3D Tiles Gebouwen zijn beschikbaar in het (OGC) 3D Tiles ...Read more",
+				"emphasizedKeywords": ["3D", "3D"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 3
+			},
+			{
+				"title": "Download instructie Downloaden van de 3D ...",
+				"websiteTitle": "PDOK",
+				"url": "https://www.pdok.nl/documents/d/pdok/3d_downloadinstructie?download=true",
+				"displayedUrl": "https://www.pdok.nl › documents › pdok › 3d_d...",
+				"description": "Dit document beschrijft per collectie hoe de 3D Basisvoorziening kan worden gedownload. Deze informatie is samengevat in onderstaande tabel.Read more",
+				"date": "2024-09-26T12:00:00.000Z",
+				"emphasizedKeywords": ["3D Basisvoorziening"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 4
+			},
+			{
+				"title": "3D Terugmeldingen",
+				"websiteTitle": "PDOK",
+				"url": "https://api.pdok.nl/kadaster/3d-basisvoorziening-terugmeldingen/ogc/v1/collections/kad3dbasisvoorzieningterugmeldingen/items",
+				"displayedUrl": "https://api.pdok.nl › ogc › items",
+				"description": "omschrijving, Op de aangewezen ligplaatsen met de (BAG) adressen Taludweg 20 en 22 liggen 2 bouwwerken met omgevingsvergunning bouwen en gebruik woonfunctie.",
+				"emphasizedKeywords": [],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 5
+			},
+			{
+				"title": "3D Basisvoorziening - Digitaal Terreinmodel (DTM)",
+				"websiteTitle": "PDOK",
+				"url": "https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/collections/digitaalterreinmodel",
+				"displayedUrl": "https://api.pdok.nl › ... › Collections",
+				"description": "Dit is een terreinmodel van heel Nederland, waarbij de maaiveld terreinhoogte ter plaatse van gebouwen en water wordt geïnterpoleerd. Het 3D DTM is beschikbaar ...Read more",
+				"emphasizedKeywords": ["3D"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 6
+			},
+			{
+				"title": "Nieuws",
+				"websiteTitle": "PDOK",
+				"url": "https://www.pdok.nl/nieuws",
+				"displayedUrl": "https://www.pdok.nl › nieuws",
+				"description": "Mijlpaal: 3D Basisvoorziening publiceert Gebouwen en Terreinen met hoogtesituatie 2025 ... NIEUW: Lage resolutie luchtfoto 2024 nu beschikbaar bij PDOK. 17 ...Read more",
+				"emphasizedKeywords": ["3D Basisvoorziening", "luchtfoto"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 7
+			},
+			{
+				"title": "Datasets",
+				"websiteTitle": "PDOK",
+				"url": "https://www.pdok.nl/datasets",
+				"displayedUrl": "https://www.pdok.nl › datasets",
+				"description": "3D Basisvoorziening Kadaster. Luchtfoto / Landelijke Voorziening Beeldmateriaal (Gesloten) Kamer van Koophandel",
+				"emphasizedKeywords": ["3D Basisvoorziening Kadaster. Luchtfoto"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 8
+			},
+			{
+				"title": "Status overzicht",
+				"websiteTitle": "PDOK",
+				"url": "https://www.pdok.nl/status-overzicht",
+				"displayedUrl": "https://www.pdok.nl › status-overz...",
+				"description": "Dit dashboard geeft het overzicht van de beschikbaarheid en de uptime van de PDOK services en diensten.",
+				"emphasizedKeywords": [],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 9
+			}
+		],
+		"suggestedResults": [],
+		"peopleAlsoAsk": [],
+		"customData": null,
+		"htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/zkBLjA3Vc7sgwSjph/records/Z4qQZbVVyTX03uw-0.html?signature=47bO2lwYhGZF90rS8iqm"
+	},
+	{
+		"searchQuery": {
+			"term": "site:swisstopo.admin.ch swissBUILDINGS3D 3.0 roof",
+			"url": "http://www.google.com/search?q=site%3Aswisstopo.admin.ch+swissBUILDINGS3D+3.0+roof&gl=us",
+			"device": "DESKTOP",
+			"page": 1,
+			"type": "SEARCH",
+			"domain": "google.com",
+			"countryCode": "US",
+			"languageCode": null,
+			"locationUule": null,
+			"resultsPerPage": 10
+		},
+		"url": "http://www.google.com/search?q=site%3Aswisstopo.admin.ch+swissBUILDINGS3D+3.0+roof&gl=us",
+		"hasNextPage": true,
+		"serpProviderCode": "L",
+		"relatedQueries": [],
+		"paidResults": [],
+		"paidProducts": [],
+		"organicResults": [
+			{
+				"title": "swissBUILDINGS3D 3.0 Beta",
+				"websiteTitle": "Swisstopo",
+				"url": "https://www.swisstopo.admin.ch/en/landscape-model-swissbuildings3d-3-0-beta",
+				"displayedUrl": "https://www.swisstopo.admin.ch › landscape-model-swi...",
+				"description": "swissBUILDINGS3D 3.0 beta is a dataset containing buildings as 3D-models including roof geometries and roof overhangs. Two sets are available: a model depicting ...Read more",
+				"emphasizedKeywords": ["roof geometries and roof"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 1
+			},
+			{
+				"title": "Landscape Models",
+				"websiteTitle": "Swisstopo",
+				"url": "https://www.swisstopo.admin.ch/en/landscape-models",
+				"displayedUrl": "https://www.swisstopo.admin.ch › landscape-models",
+				"description": "swissBUILDINGS3D 3.0 beta is a dataset containing buildings as 3D-models including roof geometries and roof overhangs. Two sets are available: a ...Read more",
+				"date": "2024-01-08T12:00:00.000Z",
+				"emphasizedKeywords": ["swissBUILDINGS3D 3.0 beta"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 2
+			},
+			{
+				"title": "Other services - Swisstopo",
+				"websiteTitle": "Swisstopo",
+				"url": "https://www.swisstopo.admin.ch/en/various-services-3d-geodata",
+				"displayedUrl": "https://www.swisstopo.admin.ch › ...",
+				"description": "The buildings are available as closed solid models (roof and building) and as surface models with separate roofs, facades and footprints.",
+				"date": "2024-01-08T12:00:00.000Z",
+				"emphasizedKeywords": ["roof", "roofs"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 3
+			},
+			{
+				"title": "Switzerland in 3D",
+				"websiteTitle": "Swisstopo",
+				"url": "https://www.swisstopo.admin.ch/en/switzerland-in-3d",
+				"displayedUrl": "https://www.swisstopo.admin.ch › ...",
+				"description": "swisstopo has digitalised every building in Switzerland used them to create 3D building models with realistic roof shapes and overhangs.",
+				"date": "2025-07-01T12:00:00.000Z",
+				"emphasizedKeywords": ["realistic"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 4
+			},
+			{
+				"title": "New features in the 3D view of map.geo.admin.ch",
+				"websiteTitle": "Swisstopo",
+				"url": "https://www.swisstopo.admin.ch/en/3d-viewer-update-data",
+				"displayedUrl": "https://www.swisstopo.admin.ch › ...",
+				"description": "The 3D view of the map.geo.admin.ch map viewer has some new features: the terrain model is now much more detailed, and 3D buildings have been ...Read more",
+				"date": "2025-07-13T12:00:00.000Z",
+				"emphasizedKeywords": [],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 5
+			},
+			{
+				"title": "New tasks and Topographic Landscape Model - Swisstopo",
+				"websiteTitle": "Swisstopo",
+				"url": "https://www.swisstopo.admin.ch/en/third-dimension",
+				"displayedUrl": "https://www.swisstopo.admin.ch › third-dimension",
+				"description": "Production of three new 3D datasets from the topographic landscape model: swissBUILDINGS3D (building volume excluding roof shape), SWISSIMAGE ...",
+				"date": "2024-01-08T12:00:00.000Z",
+				"emphasizedKeywords": ["swissBUILDINGS3D"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 6
+			},
+			{
+				"title": "3D printing",
+				"websiteTitle": "Swisstopo",
+				"url": "https://www.swisstopo.admin.ch/en/3d-print-geodata-swisstopo",
+				"displayedUrl": "https://www.swisstopo.admin.ch › ...",
+				"description": "swissBUILDINGS3D 3.0 Beta Modell 64x64mm. Overhangs, such as building roofs, can lead to errors depending on the printing process and thickness.",
+				"date": "2024-01-08T12:00:00.000Z",
+				"emphasizedKeywords": ["swissBUILDINGS3D 3.0 Beta Modell 64x64mm"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 7
+			},
+			{
+				"title": "3D Geodata in Brief",
+				"websiteTitle": "Swisstopo",
+				"url": "https://www.swisstopo.admin.ch/dam/en/sd-web/ykbny7sw6jyC/Broschuere-3DGeodaten-EN.pdf",
+				"displayedUrl": "https://www.swisstopo.admin.ch › dam › sd-web",
+				"description": "The building models consist of the building footprint, the façades, the roof overhangs and realistic roof shapes, but without texture.",
+				"emphasizedKeywords": ["roof", "roof"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 8
+			},
+			{
+				"title": "Buildings and terrain as IFC files",
+				"websiteTitle": "Swisstopo",
+				"url": "https://www.swisstopo.admin.ch/en/buildings-terrain-ifc",
+				"displayedUrl": "https://www.swisstopo.admin.ch › buildings-terrain-ifc",
+				"description": "The buildings consist of the building solid (ifcWall) and the roof solid (ifcRoof). Buildings that touch the border of the export area are fully ...Read more",
+				"date": "2024-01-08T12:00:00.000Z",
+				"emphasizedKeywords": ["roof", "ifcRoof"],
+				"siteLinks": [],
+				"productInfo": {},
+				"type": "organic",
+				"position": 9
+			}
+		],
+		"suggestedResults": [],
+		"peopleAlsoAsk": [],
+		"customData": null,
+		"htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/zkBLjA3Vc7sgwSjph/records/Uuh0TrO0YOmD6Yq-1.html?signature=Bsb0bDj21sp9kAv6dNN1"
+	}
+]

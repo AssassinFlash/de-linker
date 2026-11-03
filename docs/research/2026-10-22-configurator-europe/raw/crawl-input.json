@@ -1,0 +1,28 @@
+{
+	"startUrls": [
+		{
+			"url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis_en"
+		},
+		{
+			"url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/using-pvgis-5/pvgis-5-user-manual_en"
+		},
+		{
+			"url": "https://geoservices.ign.fr/services-web-experts-ortho"
+		},
+		{
+			"url": "https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/collections"
+		},
+		{
+			"url": "https://www.swisstopo.admin.ch/en/landscape-model-swissbuildings3d-3-0-beta"
+		},
+		{
+			"url": "https://solar.htw-berlin.de/faq-unabhaengigkeitsrechner/"
+		}
+	],
+	"crawlerType": "cheerio",
+	"maxCrawlDepth": 0,
+	"maxCrawlPages": 6,
+	"saveMarkdown": true,
+	"saveText": true,
+	"respectRobotsTxtFile": true
+}

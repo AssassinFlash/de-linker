@@ -53,3 +53,4 @@ wp-snapshot.yml
 # Local tool state never ships (same sweep).
 .v2c/
 .video_agent/
+.codex/
