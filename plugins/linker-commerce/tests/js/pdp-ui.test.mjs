@@ -96,3 +96,26 @@ test('current product context follows thumbnail selection and keyboard into the 
  doc.querySelectorAll('[data-pdp-thumb]')[1].click();main.click();assert.equal(doc.querySelector('[data-viewer-caption]').textContent,'Other image context');
  main.dispatchEvent(new window.KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true,cancelable:true}));main.click();assert.equal(doc.querySelector('[data-viewer-caption]').textContent,caption);
 });
+
+test('clicking a deck tab syncs aria-selected, tabindex and panel visibility per deck',()=>{
+ const dom=new JSDOM(`<div id="tv-storefront-pdp"><div class="pdp-info-deck pdp-spec-deck"><div class="pdp-info-tabs" role="tablist"><button type="button" id="pdp-spec-tab-0" role="tab" aria-controls="pdp-spec-panel-0" aria-selected="true" tabindex="0">Input (DC)</button><button type="button" id="pdp-spec-tab-1" role="tab" aria-controls="pdp-spec-panel-1" aria-selected="false" tabindex="-1">Output (AC)</button></div><div class="pdp-info-panel" id="pdp-spec-panel-0" role="tabpanel"></div><div class="pdp-info-panel" id="pdp-spec-panel-1" hidden role="tabpanel"></div></div><div class="pdp-info-deck pdp-project-deck pdp-all-panels"><div class="pdp-info-tabs" role="tablist" hidden><button type="button" id="pdp-project-0-tab-0" role="tab" aria-controls="pdp-project-0-panel-0" aria-selected="true" tabindex="0">Project</button><button type="button" id="pdp-project-0-tab-1" role="tab" aria-controls="pdp-project-0-panel-1" aria-selected="false" tabindex="-1">Checks</button></div><div class="pdp-info-panel" id="pdp-project-0-panel-0"></div><div class="pdp-info-panel" id="pdp-project-0-panel-1"></div></div></div>`,{runScripts:'outside-only'});
+ const {window}=dom;window.matchMedia=()=>({matches:false});
+ const doc=window.document;
+ window.eval(readFileSync(new URL('../../assets/pdp-ui.js',import.meta.url),'utf8'));
+ doc.querySelector('#pdp-project-0-tab-1').click();
+ assert.equal(doc.querySelector('#pdp-project-0-tab-0').getAttribute('aria-selected'),'false');
+ assert.equal(doc.querySelector('#pdp-project-0-tab-0').getAttribute('tabindex'),'-1');
+ assert.equal(doc.querySelector('#pdp-project-0-tab-1').getAttribute('aria-selected'),'true');
+ assert.equal(doc.querySelector('#pdp-project-0-tab-1').getAttribute('tabindex'),'0');
+ assert.equal(doc.querySelector('#pdp-project-0-panel-0').hidden,false);
+ assert.equal(doc.querySelector('#pdp-project-0-panel-1').hidden,false);
+ assert.equal(doc.querySelector('#pdp-spec-tab-0').getAttribute('aria-selected'),'true');
+ doc.querySelector('#pdp-spec-tab-1').click();
+ assert.equal(doc.querySelector('#pdp-spec-tab-0').getAttribute('aria-selected'),'false');
+ assert.equal(doc.querySelector('#pdp-spec-tab-0').getAttribute('tabindex'),'-1');
+ assert.equal(doc.querySelector('#pdp-spec-tab-1').getAttribute('aria-selected'),'true');
+ assert.equal(doc.querySelector('#pdp-spec-tab-1').getAttribute('tabindex'),'0');
+ assert.equal(doc.querySelector('#pdp-spec-panel-0').hidden,true);
+ assert.equal(doc.querySelector('#pdp-spec-panel-1').hidden,false);
+ assert.equal(doc.querySelector('#pdp-project-0-tab-1').getAttribute('aria-selected'),'true');
+});

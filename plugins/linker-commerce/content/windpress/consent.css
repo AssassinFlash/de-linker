@@ -74,6 +74,16 @@ body .cky-btn-close:focus-visible {
   outline: 2px solid var(--proto-accent);
   outline-offset: 3px;
 }
+/* CookieYes keeps .cky-modal at max-width: 100%, visibility: hidden and
+ * display: block when closed (:not(.cky-modal-open)), while its child
+ * .cky-preference-center has width: 845px and only shrinks via flex: 1 1 0
+ * once .cky-modal.cky-modal-open switches the container to display: flex.
+ * Clipping .cky-modal keeps the hidden 845px panel inside the viewport box
+ * without affecting the open modal, whose sole child .cky-preference-center
+ * already sets overflow: hidden and scrolls .cky-preference-body-wrapper. */
+body .cky-modal {
+  overflow: hidden;
+}
 body .cky-preference-center {
   font-family: var(--proto-font-sans);
   border: 1px solid var(--proto-line-journal);

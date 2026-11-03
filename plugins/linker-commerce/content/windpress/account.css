@@ -49,7 +49,7 @@ body.woocommerce-account.logged-in .linker-account #container-content-account {
 	.linker-account .linker-account-sidebar { position: sticky; top: 92px; display: block; align-self: start; }
 }
 
-.linker-account .linker-account-main { display: grid; gap: 20px; min-width: 0; align-content: start; }
+.linker-account .linker-account-main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; min-width: 0; align-content: start; }
 
 .linker-account .linker-account-mobile-menu > summary {
 	min-height: 44px;
@@ -815,9 +815,9 @@ body.woocommerce-account .linker-account-undo:focus-visible { outline: 2px solid
 
 .linker-account .woocommerce-Address { padding: 22px; background: var(--acct-card); border: 1px solid var(--acct-line-soft); border-radius: var(--acct-r-lg); box-shadow: var(--acct-shadow-card); }
 
-.linker-account .woocommerce-Addresses { display: grid; gap: 20px; margin: 0; padding: 0; }
+.linker-account .woocommerce-Addresses { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; margin: 0; padding: 0; }
 
-.linker-account .woocommerce-Address-title { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 0 12px; }
+.linker-account .woocommerce-Address-title { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin: 0 0 12px; }
 
 .linker-account .woocommerce-Address-title h2,
 .linker-account .woocommerce-Address-title h3 { margin: 0; font-size: 17px; font-weight: 600; color: var(--acct-ink); }
