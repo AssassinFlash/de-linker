@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import re
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import replace
 from typing import Any, cast
 
@@ -60,6 +60,31 @@ SCOPE_DECLARATION = re.compile(
     re.IGNORECASE,
 )
 
+# A declaration about the manual's own artwork governs figures, not the
+# engineering content around it. The GoodWe BAT-C manual opens with
+# "The illustrations in this manual are based on model GW112.6-BAT-AC-G10"
+# while the spec tables on p.80-82 physically cover the whole model axis.
+# Kept as a document-wide boundary, that sentence vetoes every other model's
+# passage and table proof for the rest of the manual.
+ILLUSTRATION_SCOPE = re.compile(
+    r"\b(?:illustrations?|figures?|abbildungen|illustrationen)\b"
+    r"[^.\n]*\b(?:based?|basieren|basiert|beziehen sich)\b",
+    re.IGNORECASE,
+)
+
+
+def _strip_illustration_scope(text: str) -> str:
+    """Remove artwork-attribution sentences, keep the rest verbatim.
+
+    Sentence boundaries need whitespace after the punctuation so decimal
+    points inside model codes (``GW112.6``) never split a sentence. A
+    genuine narrowing that shares the chunk with an artwork sentence must
+    survive on its own words.
+    """
+    sentences = re.split(r"(?<=[.!?])\s+|\n+", text)
+    kept = [s for s in sentences if ILLUSTRATION_SCOPE.search(s) is None]
+    return " ".join(kept)
+
 
 def _author_contexts(
     chunks: list[Chunk], source: Snapshot, statuses: dict[str, str]
@@ -93,7 +118,12 @@ def _author_contexts(
     output = {}
     for chunk in chunks:
         sha = chunk.doc_sha256
-        boundaries = list(active.get(sha, []))
+        boundaries = [
+            boundary
+            for boundary in active.get(sha, [])
+            if not boundary.get("table_local")
+            or boundary["table_local"] == chunk.source_table
+        ]
         headings = chunk.source_headings
         if not headings and chunk.section != previous.get(sha):
             headings = (chunk.section,) if chunk.section else ()
@@ -116,6 +146,17 @@ def _author_contexts(
                     and not has_explicit_exclusion(text)
                 ):
                     continue
+                elif ILLUSTRATION_SCOPE.search(text) is not None:
+                    # Artwork attribution scopes the figures it describes; it
+                    # is not an author restriction on the document's content.
+                    # Strip those sentences and judge the remainder on its own
+                    # words so a co-located real narrowing still lands.
+                    text = _strip_illustration_scope(text)
+                    if not text or (
+                        SCOPE_DECLARATION.search(text) is None
+                        and not has_explicit_exclusion(text)
+                    ):
+                        continue
             if kind == "heading":
                 numbered = re.match(r"^\s*(\d+(?:\.\d+)*)(?:[.)]\s*|\s+)", text)
                 if numbered is not None:
@@ -205,6 +246,11 @@ def _author_contexts(
                     )
                 ):
                     boundary["rating_cover"] = True
+                if kind == "heading" and chunk.source_table:
+                    # A table's own caption restricts that table, not the
+                    # document around it. "Table38 BAT Port Quantity by
+                    # Inverter Model" must not veto later spec tables.
+                    boundary["table_local"] = chunk.source_table
                 boundaries.append(boundary)
         if chunk.source_picture:
             assert outer is not None
@@ -461,6 +507,75 @@ def _series_cover_for_axis(
             for label in axis
         )
     )
+
+
+def _quote_covers_axis(quote: Any, axis: Sequence[str]) -> bool:
+    """A declaration naming every axis label covers the family, not a column.
+
+    The BAT-C manual opens with "This document applies to battery systems of
+    the following models: GW61.4-BAT-AC-G10 GW92.1-BAT-AC-G10 ..." — that list
+    is the family cover for the spec-table axis, not a narrowing of it.
+    Explicit restrictive wording still narrows, even on a one-label axis.
+    """
+    return bool(
+        isinstance(quote, str)
+        and axis
+        and all(model_pattern(label).search(quote) for label in axis)
+        and not re.search(r"\b(?:only|nur|solely|exclusively)\b", quote, re.IGNORECASE)
+    )
+
+
+def _quote_shares_axis_family(
+    quote: Any,
+    axis_products: set[int],
+    products: Mapping[int, Mapping[str, Any]],
+) -> bool:
+    """A plain topic heading about other products cannot narrow this axis.
+
+    "Connect to SEC3000C" inside a battery manual restricts its own
+    connectivity section, not spec tables whose header cells physically
+    prove the models they cover. Two classes keep their fail-closed veto:
+
+    - Explicitly restrictive wording ("Only GW10K-ETA-G20", "Nur für …")
+      narrows even across families; a battery-options table is still scoped
+      by the inverter section it belongs to.
+    - A quote naming no known product (an engineering range such as
+      "Only 5-30kW/5-108kWh All-in-One models") carries no family
+      information to relax.
+    """
+    if not isinstance(quote, str) or not axis_products:
+        return True
+    if SCOPE_DECLARATION.search(quote) is not None:
+        return True
+    subjects = {
+        pid
+        for pid, product in products.items()
+        if product.get("model") and model_pattern(str(product["model"])).search(quote)
+    }
+    if not subjects:
+        return True
+    return bool(subjects & axis_products)
+
+
+TABLE_CAPTION = re.compile(r"^\s*table\s*\d+\b", re.IGNORECASE)
+
+# "This function is available only on battery systems that support cloud
+# board communication" (GoodWe BAT-C manual p.61) restricts a capability,
+# not which models the spec tables cover.
+FEATURE_AVAILABILITY = re.compile(
+    r"\b(?:function|feature|funktion)\b[^.\n]*\bavailable\b[^.\n]*\bonly\b",
+    re.IGNORECASE,
+)
+
+
+def _is_table_caption(quote: Any) -> bool:
+    """A caption titles its own table ("Table38 BAT Port Quantity …")."""
+    return isinstance(quote, str) and TABLE_CAPTION.search(quote) is not None
+
+
+def _is_feature_availability_note(quote: Any) -> bool:
+    """A capability note narrows a feature, not a table's model membership."""
+    return isinstance(quote, str) and FEATURE_AVAILABILITY.search(quote) is not None
 
 
 def _footnote_sources(
@@ -1010,12 +1125,30 @@ def compile_scopes(
             if first.id in contexts:
                 # The exact, physically proven table axis is narrower than an
                 # unqualified engineering-range cover heading. Other authored
-                # model restrictions remain authoritative.
+                # model restrictions remain authoritative — except kinds that
+                # cannot restrict a physically proven axis column: a quote
+                # naming every axis label covers the axis family rather than
+                # narrowing it; a plain topic heading about products outside
+                # the axis family restricts its own section; another table's
+                # caption titles that table; and a feature-availability note
+                # restricts a capability, not which models a spec table
+                # covers.
+                axis_products = {
+                    current[label.casefold()]
+                    for label in axis
+                    if label.casefold() in current
+                }
                 boundaries = [
                     boundary
                     for boundary in contexts[first.id]
                     if boundary.get("rating_cover") is not True
                     and not _series_cover_for_axis(boundary, axis, by_id)
+                    and not _quote_covers_axis(boundary.get("quote"), axis)
+                    and _quote_shares_axis_family(
+                        boundary.get("quote"), axis_products, source.products
+                    )
+                    and not _is_table_caption(boundary.get("quote"))
+                    and not _is_feature_availability_note(boundary.get("quote"))
                 ]
                 if boundaries:
                     proof = _constrain(proof, boundaries)
