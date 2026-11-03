@@ -1,0 +1,2365 @@
+[
+  {
+    "kind": "lc_dynamic_template",
+    "id": 6969,
+    "title": "FAQ & documents",
+    "lang": "en",
+    "sha256": "f9d1c42ea4a0f8828a6f23767a43f6ecfe1ed07b8595c844ae1e52530f7fec10",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "linker-faq",
+    "assignments": [],
+    "effective_languages": [
+      "en"
+    ],
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/faq-download/",
+        "lang": "en",
+        "source": "inventory-baseline.json:page:932",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "document-library"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "library",
+      "files-print",
+      "search-pagination",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "faq_authority_performance_656": {
+        "status": "bounded-model-pass",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-workspace-faq.json",
+        "scope": "Actualnative ENDE sevenfragments identical;onefreshassembly. Markup/styleunchanged;otherinteractive/templatefamiliesstillpending."
+      },
+      "library_model_search_660": {
+        "status": "accepted-associated-search-scope",
+        "receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-library-model-search.json",
+        "scope": "NativefragmentJSONattributes;localENDE1440/390;onlineEN1440/DE390;currentassociation hit/explanation/clear/download only;templateoverallstatus unchanged."
+      },
+      "731_native_filtered_language_state": {
+        "status": "bounded-production-readback",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/integrated-731-library-online.json",
+        "release_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-library-model-search.json",
+        "receipt_key": "language_selection_followup.production_native_731",
+        "scope": "Existing staff session: native EN→DE→EN with GW10K-EHA-G20, documents tab and manual type retained; the resulting EN/DE views were read at 1440 and 390, then Clear removed q while retaining tab/type. These are two language actions plus four viewport readbacks, not four independent switch actions; anonymous permissions and whole-page acceptance remain open.",
+        "binding_boundary": "Actual named library pages were exercised; this does not independently prove template assignment or close overall template status."
+      }
+    }
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 6970,
+    "title": "FAQ & Dokumente",
+    "lang": "en",
+    "sha256": "b1d82f2328cafd8fe7698fc42cf76c0cfd55301b839c8d73653e13073a0d6a4d",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "linker-faq-de",
+    "assignments": [],
+    "effective_languages": [
+      "de"
+    ],
+    "language_note": "Explicit per-page German slug assignment; Polylang metadata alone is not its use-language.",
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/de/faq-dokumente/",
+        "lang": "de",
+        "source": "inventory-baseline.json:page:6863",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "document-library"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "library",
+      "files-print",
+      "search-pagination",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "faq_authority_performance_656": {
+        "status": "bounded-model-pass",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-workspace-faq.json",
+        "scope": "Actualnative ENDE sevenfragments identical;onefreshassembly. Markup/styleunchanged;otherinteractive/templatefamiliesstillpending."
+      },
+      "library_model_search_660": {
+        "status": "accepted-associated-search-scope",
+        "receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-library-model-search.json",
+        "scope": "NativefragmentJSONattributes;localENDE1440/390;onlineEN1440/DE390;currentassociation hit/explanation/clear/download only;templateoverallstatus unchanged."
+      },
+      "731_native_filtered_language_state": {
+        "status": "bounded-production-readback",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/integrated-731-library-online.json",
+        "release_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-library-model-search.json",
+        "receipt_key": "language_selection_followup.production_native_731",
+        "scope": "Existing staff session: native EN→DE→EN with GW10K-EHA-G20, documents tab and manual type retained; the resulting EN/DE views were read at 1440 and 390, then Clear removed q while retaining tab/type. These are two language actions plus four viewport readbacks, not four independent switch actions; anonymous permissions and whole-page acceptance remain open.",
+        "binding_boundary": "Actual named library pages were exercised; this does not independently prove template assignment or close overall template status."
+      }
+    }
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 6971,
+    "title": "Genie",
+    "lang": "en",
+    "sha256": "07af703cb97defb8b657d4fce909dc27bfb71298308321ea3ed434f4d8d6cc91",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-genie-recovery.json"
+    ],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "linker-advisor",
+    "assignments": [],
+    "effective_languages": [
+      "en"
+    ],
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/genie/",
+        "lang": "en",
+        "source": "inventory-baseline.json:page:4083",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "genie"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "consumer-readback",
+      "permissions",
+      "marketing-entries",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "premount_load_error_viewport_717": {
+        "status": "passed-named-context-only",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-genie-recovery.json#premount_load_error_viewport",
+        "source": "699e2a554454ccdcfab28a4131fc81bcf755aa6e",
+        "merge": "9a916f384b9264b7802630cf791c44aaa1799967",
+        "source_and_volume_sha256": "1f9788159857ec28f4389f400db11221ff1976f3bd94540f56735f5f58593c47",
+        "compiled_css": {
+          "status": 200,
+          "mime": "text/css",
+          "bytes": 886534,
+          "sha256": "3b967370a2e3a45830ee827bb89d9ffc75d6a001aa1f7bb35c01de66713360be",
+          "rule_count": 1,
+          "remaining_diff_after_rule_removal": []
+        },
+        "native_archive": "20261027T231924Z-genie-recovery-699e2a55",
+        "archive_state": "scoped-accepted-online-native-archived; final SSH read interrupted after manifest commit, one compact readback confirmed hashes/siblings; no republish/recompile",
+        "unchanged_runtime_boundary": "Only3-line WindPress rule; exact remainingCSS unchanged, Tools319 inventory and Publication e3bdb2d3 unchanged. No loader/model/prompt/business write.",
+        "reuse": "Existing unchanged loader/focus/native bootstrap evidence retained; this batch proves only the empty-root viewport displacement correction and named retry/close consumers.",
+        "remaining": "No full ENDE×bothwidth×helper/workspace matrix. HomeContinue, ordinary failed-draft/owner isolation, source/durable pending entry preservation and late ready after explicit pre-mount Close remain independent gates; no whole Genie/page PASS. Online inherited staff is not guest account-sibling proof.",
+        "verified_at_utc": "2026-11-03T17:15:06.462277+00:00",
+        "environment": "production-inherited-staff-workspace",
+        "actual": {
+          "title_y": 137,
+          "retry_y": 238.3984375,
+          "retry_height": 44,
+          "close_present": false,
+          "native_retry": "Error removed; root nonempty/displayblock/composer present."
+        },
+        "route": "https://de-linker.com/genie/",
+        "template_attribution_boundary": "Named candidate-route workspace consumer only. This CSS fault/retry evidence does not independently prove literal numericLCtemplate assignment or all template states; baseline IDs, template overallstatus, rendered_routes and assignments unchanged."
+      }
+    }
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 6972,
+    "title": "Genie",
+    "lang": "en",
+    "sha256": "07af703cb97defb8b657d4fce909dc27bfb71298308321ea3ed434f4d8d6cc91",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-genie-recovery.json"
+    ],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "linker-advisor-de",
+    "assignments": [],
+    "effective_languages": [
+      "de"
+    ],
+    "language_note": "Explicit per-page German slug assignment; Polylang metadata alone is not its use-language.",
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/de/genie/",
+        "lang": "de",
+        "source": "inventory-baseline.json:page:6633",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "genie"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "consumer-readback",
+      "permissions",
+      "marketing-entries",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "premount_load_error_viewport_717": {
+        "status": "passed-named-context-only",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-genie-recovery.json#premount_load_error_viewport",
+        "source": "699e2a554454ccdcfab28a4131fc81bcf755aa6e",
+        "merge": "9a916f384b9264b7802630cf791c44aaa1799967",
+        "source_and_volume_sha256": "1f9788159857ec28f4389f400db11221ff1976f3bd94540f56735f5f58593c47",
+        "compiled_css": {
+          "status": 200,
+          "mime": "text/css",
+          "bytes": 886534,
+          "sha256": "3b967370a2e3a45830ee827bb89d9ffc75d6a001aa1f7bb35c01de66713360be",
+          "rule_count": 1,
+          "remaining_diff_after_rule_removal": []
+        },
+        "native_archive": "20261027T231924Z-genie-recovery-699e2a55",
+        "archive_state": "scoped-accepted-online-native-archived; final SSH read interrupted after manifest commit, one compact readback confirmed hashes/siblings; no republish/recompile",
+        "unchanged_runtime_boundary": "Only3-line WindPress rule; exact remainingCSS unchanged, Tools319 inventory and Publication e3bdb2d3 unchanged. No loader/model/prompt/business write.",
+        "reuse": "Existing unchanged loader/focus/native bootstrap evidence retained; this batch proves only the empty-root viewport displacement correction and named retry/close consumers.",
+        "remaining": "No full ENDE×bothwidth×helper/workspace matrix. HomeContinue, ordinary failed-draft/owner isolation, source/durable pending entry preservation and late ready after explicit pre-mount Close remain independent gates; no whole Genie/page PASS. Online inherited staff is not guest account-sibling proof.",
+        "verified_at_utc": "2026-11-03T17:15:06.462277+00:00",
+        "environment": "local-Chrome-guest-workspace",
+        "actual": {
+          "failure": "German title/error/Erneut versuchen visible; retry44px; no Close as intended for independent workspace.",
+          "title_y": 174,
+          "retry_y": 275.3984375,
+          "retry_height": 44,
+          "root_display_on_failure": "none",
+          "native_retry_after_unblock": "Existing app populated; error removed, root display block and composer present."
+        },
+        "route": "https://de-linker.com/de/genie/",
+        "template_attribution_boundary": "Named candidate-route workspace consumer only. This CSS fault/retry evidence does not independently prove literal numericLCtemplate assignment or all template states; baseline IDs, template overallstatus, rendered_routes and assignments unchanged."
+      }
+    }
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 6973,
+    "title": "Solution Configurator",
+    "lang": "en",
+    "sha256": "d1d98433d21093a3096b40306170507d32b6bcc2a66952c501ccc3396b5ec141",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "linker-configurator",
+    "assignments": [],
+    "effective_languages": [
+      "en"
+    ],
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/solution-configurator/",
+        "lang": "en",
+        "source": "inventory-baseline.json:page:3302",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "configurator",
+      "roof",
+      "project-brief"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "brief-consumers",
+      "consumer-readback",
+      "files-print",
+      "overlay-responsive",
+      "permissions",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use."
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 6974,
+    "title": "Lösungskonfigurator",
+    "lang": "en",
+    "sha256": "d1d98433d21093a3096b40306170507d32b6bcc2a66952c501ccc3396b5ec141",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "linker-configurator-de",
+    "assignments": [],
+    "effective_languages": [
+      "de"
+    ],
+    "language_note": "Explicit per-page German slug assignment; Polylang metadata alone is not its use-language.",
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/de/loesungskonfigurator/",
+        "lang": "de",
+        "source": "inventory-baseline.json:page:6693",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "configurator",
+      "roof",
+      "project-brief"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "brief-consumers",
+      "consumer-readback",
+      "files-print",
+      "overlay-responsive",
+      "permissions",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use."
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 6961,
+    "title": "Shop page",
+    "lang": "en",
+    "sha256": "4d9854644ed3c2208dde57f7fe6ad66fa54bf9933fe6d95eb27abdd092a74b5b",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "shop-page",
+    "assignments": {
+      "is_shop_page": [
+        "1"
+      ]
+    },
+    "effective_languages": [
+      "en",
+      "de"
+    ],
+    "language_note": "Shared semantic/native template or global script; validate both request languages.",
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/products/",
+        "lang": "en",
+        "source": "inventory-baseline.json:page:1034",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      },
+      {
+        "url": "https://de-linker.com/de/produkte/",
+        "lang": "de",
+        "source": "inventory-baseline.json:page:6853",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "product-archive"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "taxonomy-context",
+      "search-pagination",
+      "consumer-readback",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "751_recovery_component": {
+        "status": "pass-scoped-rendered-consumer",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json",
+        "scope": "Unchanged LC template protected in native release; named product-empty/recovery shortcode/template path consumers only. Does not establish all template bindings/states."
+      }
+    }
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 6962,
+    "title": "Solution draft",
+    "lang": "en",
+    "sha256": "e24d4358f583077161de55b7a0b0c82ed74e0244fc169d4108a8ae0ba0def3e6",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-online-en1440.png",
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-online-de1440.png",
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-online-de390.png",
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-online-en390.png"
+    ],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "solution-draft",
+    "assignments": {
+      "is_cart_page": [
+        "1"
+      ]
+    },
+    "effective_languages": [
+      "en",
+      "de"
+    ],
+    "language_note": "Shared semantic/native template or global script; validate both request languages.",
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/cart/",
+        "lang": "en",
+        "source": "inventory-baseline.json:page:1035",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      },
+      {
+        "url": "https://de-linker.com/de/loesungsentwurf/",
+        "lang": "de",
+        "source": "inventory-baseline.json:page:6855",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "draft"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "inquiry-native-entry",
+      "consumer-readback",
+      "brief-consumers",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "guest-empty-layout-actions": {
+        "status": "bounded-production-pass",
+        "source": "15194fa7230b84caf0bbe900185ac13e06f376d1",
+        "receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
+        "record": "empty_native_followup.spacing_followup",
+        "deploy_id": "20261027T131252Z-empty-actions-15194fa7",
+        "accepted_at": "2026-10-27T13:26:59.226252+00:00",
+        "environment": "local-and-production",
+        "contexts": [
+          "en1440",
+          "en390",
+          "de1440",
+          "de390"
+        ],
+        "scope": "Shared Solution draft initial guest-empty action spacing accepted locally and online in all four views. Template markup and native behavior unchanged. This does not establish whole-template acceptance, populated states, last-item Remove/zero, Undo, or other unique draft transitions; existing status and binding/state lists retained."
+      }
+    }
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 6963,
+    "title": "Proforma request",
+    "lang": "en",
+    "sha256": "6ba4be52970f04b17970efb31ad00dc20f3dc2bbd1bdaa3d23dbf4d886ac34cf",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json"
+    ],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "proforma-request",
+    "assignments": {
+      "is_checkout_page": [
+        "1"
+      ]
+    },
+    "effective_languages": [
+      "en",
+      "de"
+    ],
+    "language_note": "Shared semantic/native template or global script; validate both request languages.",
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/proforma-request/",
+        "lang": "en",
+        "source": "inventory-baseline.json:page:1036",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      },
+      {
+        "url": "https://de-linker.com/de/proforma-anfrage/",
+        "lang": "de",
+        "source": "inventory-baseline.json:page:6857",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "inquiry"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "inquiry-native-entry",
+      "route-fixtures",
+      "permissions",
+      "brief-consumers",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "712_native_receipt_notes": {
+        "result": "passed-affected-notes-and-stylesheet-scope",
+        "environment": "local-native-render-only-fixture-plus-production-source-volume-css-consumer",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
+        "receipt_pointer": "newlocal_success_consumer.visual_findings.message_only_order_table",
+        "pr": 712,
+        "source_head": "59204c66300bae6727ca17e50828a4bf7d18b495",
+        "main": "83419073e8ed62a62572a6913759d2b3347b199a",
+        "source_sha256": "974168d13cccf215a7f821ab48591c01f1708931f5857d9a44e7f90993490495",
+        "ci": {
+          "pr": {
+            "run": 40587890562,
+            "attempt": 1,
+            "status": "completed",
+            "conclusion": "success",
+            "head": "59204c66300bae6727ca17e50828a4bf7d18b495",
+            "scope": "Record validation scope (presentation):SUCCESS",
+            "tested_merge_ref": "e715db31a8bf0052c83f27d42efbf2d5d26c9414",
+            "tree": "312088a986291099b7a4f76231bd3e1974ede73c",
+            "jobs": {
+              "plan": "SUCCESS122484128540",
+              "check": "SUCCESS122484509234",
+              "mu_smoke": "SUCCESS122484509288"
+            },
+            "completed_at": "2026-10-27T21:36:06Z"
+          },
+          "main_readback": {
+            "run": 40588229641,
+            "attempt": 1,
+            "status": "completed",
+            "conclusion": "success",
+            "merge": "83419073e8ed62a62572a6913759d2b3347b199a",
+            "tree": "312088a986291099b7a4f76231bd3e1974ede73c",
+            "exact_PR_tested_tree": true,
+            "parents": [
+              "0d5dba6831fc11e1107c01654679c185176f72f7",
+              "59204c66300bae6727ca17e50828a4bf7d18b495"
+            ],
+            "scope": "Record validation scope (reuse):SUCCESS",
+            "jobs": {
+              "plan": "SUCCESS122485307460",
+              "check": "SUCCESS122485658844",
+              "mu_smoke": "SUCCESS122485659019"
+            },
+            "completed_at": "2026-10-27T21:37:44Z",
+            "runtime_checks": "Skipped by accepted identical-tree reuse; not newly rerun"
+          },
+          "boundary": "Source/CI only; root owns production claim/publish/Generate/readback/archive. No deployment or712writer action by monitor. No old649rerun or extraCI."
+        },
+        "scope": "Hide Product/Total heading only when the native order-details tbody has no product rows. Native Notes label top-aligned/25%/16px gap; note body regular400/start/anywhere on empty and product-bearing receipts. Monetary/action cells excluded.",
+        "local_final_notes": {
+          "environment": "existing local8888 native pending guest render-only order; no form submission/authorization/model/mail",
+          "source_sha256": "974168d13cccf215a7f821ab48591c01f1708931f5857d9a44e7f90993490495",
+          "views": [
+            {
+              "actions_rows": 0,
+              "document_overflow": false,
+              "guest": true,
+              "label": "empty-en1440-readability",
+              "lang": "en-US",
+              "note": {
+                "font_size": "14px",
+                "font_weight": "400",
+                "label": "Notes:",
+                "label_padding_end": "16px",
+                "label_text_top": 490.09375,
+                "label_vertical_align": "top",
+                "label_width": 282,
+                "long_word_present": true,
+                "value_align": "start",
+                "value_overflow": false,
+                "value_text_top": 490.09375,
+                "wrap": "anywhere"
+              },
+              "price": null,
+              "product": null,
+              "product_rows": 0,
+              "table_width": 1128,
+              "thead_display": "none",
+              "viewport": {
+                "clientWidth": 1425,
+                "height": 900,
+                "width": 1440
+              }
+            },
+            {
+              "actions_rows": 0,
+              "document_overflow": false,
+              "guest": true,
+              "label": "empty-de390-readability",
+              "lang": "de-DE",
+              "note": {
+                "font_size": "14px",
+                "font_weight": "400",
+                "label": "Anmerkungen:",
+                "label_padding_end": "16px",
+                "label_text_top": 464.9921875,
+                "label_vertical_align": "top",
+                "label_width": 116.984375,
+                "long_word_present": true,
+                "value_align": "start",
+                "value_overflow": false,
+                "value_text_top": 464.9921875,
+                "wrap": "anywhere"
+              },
+              "price": null,
+              "product": null,
+              "product_rows": 0,
+              "table_width": 343,
+              "thead_display": "none",
+              "viewport": {
+                "clientWidth": 375,
+                "height": 844,
+                "width": 390
+              }
+            },
+            {
+              "actions_rows": 0,
+              "document_overflow": false,
+              "guest": true,
+              "label": "product-de390-readability",
+              "lang": "de-DE",
+              "note": {
+                "font_size": "14px",
+                "font_weight": "400",
+                "label": "Anmerkungen:",
+                "label_padding_end": "16px",
+                "label_text_top": 640.9921875,
+                "label_vertical_align": "top",
+                "label_width": 116.984375,
+                "long_word_present": true,
+                "value_align": "start",
+                "value_overflow": false,
+                "value_text_top": 640.9921875,
+                "wrap": "anywhere"
+              },
+              "price": {
+                "align": "right",
+                "box": {
+                  "left": 132.984375,
+                  "right": 359,
+                  "width": 226.015625,
+                  "within_page": true
+                },
+                "text": "Preise nach Anmeldung"
+              },
+              "product": {
+                "box": {
+                  "left": 16,
+                  "right": 132.984375,
+                  "width": 116.984375,
+                  "within_page": true
+                },
+                "text": "GoodWe GW8.3-BAT-D-G21 (ESA battery module, 8.32 kWh) × 1"
+              },
+              "product_rows": 1,
+              "table_width": 343,
+              "thead_display": "table-header-group",
+              "viewport": {
+                "clientWidth": 375,
+                "height": 844,
+                "width": 390
+              }
+            },
+            {
+              "actions_rows": 0,
+              "document_overflow": false,
+              "guest": true,
+              "label": "product-en1440-readability",
+              "lang": "en-US",
+              "note": {
+                "font_size": "14px",
+                "font_weight": "400",
+                "label": "Notes:",
+                "label_padding_end": "16px",
+                "label_text_top": 603.09375,
+                "label_vertical_align": "top",
+                "label_width": 282,
+                "long_word_present": true,
+                "value_align": "start",
+                "value_overflow": false,
+                "value_text_top": 603.09375,
+                "wrap": "anywhere"
+              },
+              "price": {
+                "align": "right",
+                "box": {
+                  "left": 430.5,
+                  "right": 1276.5,
+                  "width": 846,
+                  "within_page": true
+                },
+                "text": "Log in for prices"
+              },
+              "product": {
+                "box": {
+                  "left": 148.5,
+                  "right": 430.5,
+                  "width": 282,
+                  "within_page": true
+                },
+                "text": "GoodWe GW8.3-BAT-D-G21 (ESA battery module, 8.32 kWh) × 1"
+              },
+              "product_rows": 1,
+              "table_width": 1128,
+              "thead_display": "table-header-group",
+              "viewport": {
+                "clientWidth": 1425,
+                "height": 900,
+                "width": 1440
+              }
+            }
+          ],
+          "root_three_image_review": {
+            "phase": "PASS",
+            "reviewer": "root",
+            "reviewed_images": [
+              "fullsite-notes-20261028-product-de390.jpg",
+              "fullsite-notes-20261028-empty-de390.jpg",
+              "fullsite-notes-20261028-product-en1440.jpg"
+            ],
+            "finding": "Root personally inspected final three native images; Notes readability, spacing, wrapping, product name/quantity and price hint complete. Current974 candidate visual scope PASS.",
+            "review_received_at": "2026-10-27T21:34:14.481716+00:00"
+          },
+          "images": [
+            {
+              "path": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/fullsite-notes-20261028-empty-de390.jpg",
+              "bytes": 35727,
+              "sha256": "44ab4df8ee357042ee47c327ef997117ef75d7ae10f3b35bcfcc2591a0a60744",
+              "format": "JPEG/JFIF",
+              "mime": "image/jpeg",
+              "height": 812,
+              "width": 375
+            },
+            {
+              "path": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/fullsite-notes-20261028-product-de390.jpg",
+              "bytes": 35679,
+              "sha256": "b1fa4920abf3164f5291c26d52c6f7a78429d524458cc240604d033ce90b8b6a",
+              "format": "JPEG/JFIF",
+              "mime": "image/jpeg",
+              "height": 812,
+              "width": 375
+            },
+            {
+              "path": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/fullsite-notes-20261028-product-en1440.jpg",
+              "bytes": 67900,
+              "sha256": "36b64b00ca11768231998e1ecbcbdba95a0d9a1346d5dfc5bd72e2f22887c426",
+              "format": "JPEG/JFIF",
+              "mime": "image/jpeg",
+              "height": 891,
+              "width": 1425
+            }
+          ],
+          "boundary": "Final974 readability directly observed for EN1440 and DE390 empty/product. Earlier EN/DE1440/390 empty-header/no-overflow and unaffected layout evidence reused as mechanism only, not fresh final Notes visual at every viewport. Existing product canonical name was reused; no DE product-translation acceptance."
+        },
+        "production_source_and_style": {
+          "native_deploy": "20261027T214038Z-receipt-notes-59204c66",
+          "source_and_volume_sha256": "974168d13cccf215a7f821ab48591c01f1708931f5857d9a44e7f90993490495",
+          "official_generate": {
+            "browser": "Chrome1",
+            "tab": "329398074",
+            "activations": 1,
+            "method": "native Generate Enter",
+            "accepted": "Generating disabled+Generating cache notification",
+            "completed_ui": "Last Generated2026-10-28 05:44:26;886.41kB;Generate enabled",
+            "cache_size_matches_final_local": true,
+            "at_readback": "2026-10-27T21:45:38.117103+00:00"
+          },
+          "compiled_delta_review": "PASS exactly three intended nativeNotes rules added; no other compiled CSS delta",
+          "public_css": {
+            "status": 200,
+            "mime": "text/css",
+            "bytes": 886413,
+            "sha256": "3c97ad2454d3917339f0dfd25d35e49393919eb0f2d08b5b935a24c99d676db7"
+          },
+          "actual_loader": {
+            "anonymous_html": {
+              "url": "https://de-linker.com/privacy-policy/",
+              "status": 200,
+              "staff_toolbar_absent": true,
+              "headers": {
+                "Cache-Control": null,
+                "Age": null,
+                "CF-Cache-Status": null,
+                "X-LiteSpeed-Cache": null
+              }
+            },
+            "actual_guest_linked_stylesheet": {
+              "url": "https://de-linker.com/wp-content/uploads/windpress/cache/tailwind.css?ver=1793137466",
+              "status": 200,
+              "mime": "text/css",
+              "sha256": "3c97ad2454d3917339f0dfd25d35e49393919eb0f2d08b5b935a24c99d676db7"
+            },
+            "native_browser_cssom": {
+              "browser": "Chrome1",
+              "tab": "329398098",
+              "page": "https://de-linker.com/privacy-policy/",
+              "role": "staff/publicpage",
+              "href": "https://de-linker.com/wp-content/uploads/windpress/cache/tailwind.css?ver=1793137466",
+              "new_notes_rules_parsed": 3,
+              "scope": "Stylesheet execution/consumption only; no new privacy or production receipt layout acceptance."
+            }
+          },
+          "protected": {
+            "all31_templates_body_meta_language_pairs_unchanged": true,
+            "privacy_unchanged": true,
+            "tools_and_staff_cart_unchanged": true,
+            "volume_changes_only": [
+              "storefront.css",
+              "storefront.css.bak"
+            ]
+          },
+          "boundary": "Public anonymous HTML-linked CSS bytes and native browser CSSOM three parsed rules prove actual stylesheet consumption only. No authorized surviving production keyed receipt URL exists; no production keyed confirmation-page visual or full-page acceptance."
+        },
+        "native_archive": {
+          "state": "archived",
+          "at": "2026-10-27T21:51:27.603362+00:00",
+          "deploy_id": "20261027T214038Z-receipt-notes-59204c66",
+          "path": "/home/u388076051/deploy-prev/20261027T214038Z-receipt-notes-59204c66",
+          "prior709_recovery": "exactauth7aa+oldcache818 full1917 verified; current prior712cacheee4 uniquely preserved in existingrollbackgzip",
+          "previous_storefront_full_backup": "/Users/chesterjohn/de-linker-data/cutover-20261027-1917/wp-content/plugins/linker-commerce/content/windpress/storefront.css"
+        },
+        "delivery_phase": "published-official-compiled-public-loader-readback-native-archived",
+        "overall_acceptance_boundary": "Named Notes/style delta only; retain existing overall status and unverified template binding, inquiry send/success, owner/guest/receipt contents and production keyed-page visual gates.",
+        "template_scope": "Shared checkout/native Woo family for EN/DE; no new selected-ID/binding or whole-template acceptance."
+      }
+    }
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 6964,
+    "title": "Account",
+    "lang": "en",
+    "sha256": "6ff7873f87bfc33a20253ca5223eaedbab74d43f0b80fc7dad55b3a83e80a9a7",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "account",
+    "assignments": {
+      "is_account_page": [
+        "1"
+      ]
+    },
+    "effective_languages": [
+      "en",
+      "de"
+    ],
+    "language_note": "Shared semantic/native template or global script; validate both request languages.",
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/my-account/",
+        "lang": "en",
+        "source": "inventory-baseline.json:page:1037",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      },
+      {
+        "url": "https://de-linker.com/de/mein-konto/",
+        "lang": "de",
+        "source": "inventory-baseline.json:page:6859",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "account",
+      "authentication"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "route-fixtures",
+      "permissions",
+      "files-print",
+      "consumer-readback",
+      "overlay-responsive",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "751_recovery_component": {
+        "status": "pass-scoped-rendered-consumer",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json",
+        "scope": "Unchanged LC template protected in native release; named product-empty/recovery shortcode/template path consumers only. Does not establish all template bindings/states."
+      }
+    }
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 6967,
+    "title": "Compare products",
+    "lang": "en",
+    "sha256": "0f8355269d0f5120a4d7d42137001b2c2dafd6228b26e5dec05b770d10176076",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "linker-compare",
+    "assignments": [],
+    "effective_languages": [
+      "en"
+    ],
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/compare-products/",
+        "lang": "en",
+        "source": "inventory-baseline.json:page:5385",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "comparison"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "consumer-readback",
+      "overlay-responsive",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "compare_continuity_661": {
+        "status": "pass",
+        "source": "f93504305156974fcddf04d67834fd4b8c176f5d",
+        "receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-compare-continuity.json",
+        "scope": "Native current presentation guard+actual comparison selection/locale/controls ENDE1440/390; overall template/state statuses retained.",
+        "later_source_continuity": "PR 661/663 comparison behavior is historical direct consumer evidence; PR 747 changed compare-selection.js to ad60ed6c16c24b404cbf4b9385e2f55f4269c7f110cc28f97c0a54217994fb3f to track chip position under the header, with current selected/cleared chip readback in 747-online-consumers.json. Do not infer new comparison states from the chip readback."
+      },
+      "comparison_753_spec_integrity": {
+        "status": "pass-bounded-online",
+        "source": "ad78756547ba3753779ec4ea978f47c17ac22e4e",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/753-online-consumers.json",
+        "delivery_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/comparison-integrity-browser.json",
+        "scope": "Named EN comparison route, actual 1440/390 grouped and sparse power rows for products 1832 and 6530 read correctly; mobile scroll evidenced. The entry is associated with the candidate template only: template binding, other states and overall template status remain pending."
+      }
+    }
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 6968,
+    "title": "Produkte vergleichen",
+    "lang": "en",
+    "sha256": "69a8e0f2302984a9673c69b1fef9ae1b4058d3e8540dcfcc0435e74e54c4ca32",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "linker-compare-de",
+    "assignments": [],
+    "effective_languages": [
+      "de"
+    ],
+    "language_note": "Explicit per-page German slug assignment; Polylang metadata alone is not its use-language.",
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/de/produkte-vergleichen/",
+        "lang": "de",
+        "source": "inventory-baseline.json:page:6600",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "comparison"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "consumer-readback",
+      "overlay-responsive",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "compare_continuity_661": {
+        "status": "pass",
+        "source": "f93504305156974fcddf04d67834fd4b8c176f5d",
+        "receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-compare-continuity.json",
+        "scope": "Native current presentation guard+actual comparison selection/locale/controls ENDE1440/390; overall template/state statuses retained.",
+        "later_source_continuity": "PR 661/663 comparison behavior is historical direct consumer evidence; PR 747 changed compare-selection.js to ad60ed6c16c24b404cbf4b9385e2f55f4269c7f110cc28f97c0a54217994fb3f to track chip position under the header, with current selected/cleared chip readback in 747-online-consumers.json. Do not infer new comparison states from the chip readback."
+      },
+      "comparison_753_spec_integrity": {
+        "status": "pass-bounded-online",
+        "source": "ad78756547ba3753779ec4ea978f47c17ac22e4e",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/753-online-consumers.json",
+        "delivery_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/comparison-integrity-browser.json",
+        "scope": "Named DE comparison route, actual 1440/390 grouped and sparse power rows for products 1832 and 6530 read correctly; mobile scroll evidenced. The entry is associated with the candidate template only: template binding, other states and overall template status remain pending."
+      }
+    }
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 940,
+    "title": "Template for 404",
+    "lang": "en",
+    "sha256": "2bc5956df04e195a386a16ee24e3b2793413699c6c97f6d7b2b2453119e1149d",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "template-for-404",
+    "assignments": {
+      "is_404": [
+        "1"
+      ]
+    },
+    "effective_languages": [
+      "en"
+    ],
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/_coverage-review-missing-route/",
+        "lang": "en",
+        "source": "coverage-contract.md#route-fixtures",
+        "status": "pending",
+        "scope": "Synthetic fixture candidate; first prove missing-route/search applicability and expected response."
+      }
+    ],
+    "required_state_families": [
+      "dynamic-routes"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "route-fixtures",
+      "search-pagination",
+      "permissions",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use."
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 6861,
+    "title": "Vorlage für 404",
+    "lang": "de",
+    "sha256": "1fbec46ac6f24b8bc4b2bd9ff3b6495c551ecb23a86bace71bda88e2ed168398",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "vorlage-fur-404",
+    "assignments": {
+      "is_404": [
+        "1"
+      ]
+    },
+    "effective_languages": [
+      "de"
+    ],
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/de/_coverage-review-missing-route/",
+        "lang": "de",
+        "source": "coverage-contract.md#route-fixtures",
+        "status": "pending",
+        "scope": "Synthetic fixture candidate; first prove missing-route/search applicability and expected response."
+      }
+    ],
+    "required_state_families": [
+      "dynamic-routes"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "route-fixtures",
+      "search-pagination",
+      "permissions",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use."
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 619,
+    "title": "Blog search results",
+    "lang": "en",
+    "sha256": "8a8170434531cbe463558f078137feb841df7f9b36fb4a349b8cd4494d20940d",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+    ],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "template-for-search",
+    "assignments": {
+      "is_search": [
+        "1"
+      ]
+    },
+    "effective_languages": [
+      "en"
+    ],
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/?s=SAJ",
+        "lang": "en",
+        "source": "coverage-contract.md#route-fixtures",
+        "status": "pending",
+        "scope": "Synthetic fixture candidate; first prove missing-route/search applicability and expected response."
+      }
+    ],
+    "required_state_families": [
+      "global-navigation",
+      "blog",
+      "dynamic-routes"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "overlay-responsive",
+      "search-pagination",
+      "route-fixtures",
+      "permissions",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "679_native_pagination_source_and_consumers": {
+        "result": "bounded-pass",
+        "source_body_sha256": "95f6d1311e823e870f870a060d4fba4efa326c05402c24c7821ca73b587f066d",
+        "production_body_exact": true,
+        "metadata_and_pairs_unchanged": true,
+        "scope": "Native LC screen_reader_text parameter, published body readback; shared numeric/hidden rule proved in site search, current one-page EN blog and EN/DE category checked. Does not close all template bindings or required families.",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+        "production_body_exact_context": "Historical at PR 679; later PR 746 updated the English and German search template bodies and verified their production readback. Pagination code in that diff remained unchanged."
+      },
+      "708_product_thumbnail_accessible_name": {
+        "result": "passed-affected-a11y-scope",
+        "environment": "production-native-with-local-viewport-proof",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+        "receipt_pointer": "product_thumbnail_alt_followup",
+        "pr": 708,
+        "source_head": "d85c276901f1fa8fe4e36888b7ae548f878ce02f",
+        "merge": "a6cf057335265bf587372a7b2d8b919df82e6e36",
+        "ci_run": 40566624007,
+        "native_deploy": "20261027T195157Z-search-product-alt-d85c2769",
+        "native_archive_state": "archived",
+        "scope": "General-search product thumbnail is decorative inside its already titled anchor; accessible name is the localized product heading once. Nonproduct/journal alt branches, original media, URLs, classes, layout and CSS are preserved.",
+        "production_proof": {
+          "en": "Ten native AX product link names observed; fresh exact viewport/DOM reread not confirmed. No onlineEN1440 claim.",
+          "de390": {
+            "url": "https://de-linker.com/de/?s=SAJ",
+            "lang": "de-DE",
+            "width": 390,
+            "results": 10,
+            "all_single_image_empty_alt": true,
+            "no_horizontal_overflow": true,
+            "native_AX_names": "eachlocalizedproducttitleonce",
+            "screenshot": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-product-alt-online-de390.jpg"
+          }
+        },
+        "local_proof": {
+          "en1440": "Ten product links, each one image/empty alt/localized heading, no overflow.",
+          "de390": "Ten product links, each one image/empty alt/localized heading, no overflow.",
+          "nonproduct": "Existing last-page missing-image fallback retained; nonproduct image-alt/journal branches preserved by final source diff."
+        },
+        "reuse_boundary": "Server-rendered naming delta is independent of viewport; reuse unchanged679 layout/consumer proof for other widths. Whole search/query/permission/edge-state and page acceptance remain open.",
+        "locale": "en",
+        "source_body_sha256": "c55eed917ac435664ae6726bb9f20c6babb9e38028533480bd68112846f5104f"
+      },
+      "746_native_search_template": {
+        "status": "bounded-native-and-consumer-readback",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/blog-reading-rhythm.json",
+        "receipt_key": "local_blog_locale_candidate_20261029.production_live_746",
+        "body_sha256_at_release": "7e5d7456889e3eb93dd0362cf290264f3b9fa2f408e16b51dffc50fe8315d8fc",
+        "consumer_evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/746-blog-online-browser.json",
+        "scope": "Current after PR 746: search LC body read back exactly; staff 390 bilingual journal search and language-switch cases observed, earlier 1440 proof reused. No whole-template visual or binding closure."
+      }
+    }
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 6875,
+    "title": "Vorlage für die Suche",
+    "lang": "de",
+    "sha256": "ce230ffe9b8ec62d6f565b6c111db7cbe5d4352a7c823d14598715801586f591",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+    ],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "vorlage-fur-die-suche",
+    "assignments": {
+      "is_search": [
+        "1"
+      ]
+    },
+    "effective_languages": [
+      "de"
+    ],
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/de/?s=SAJ",
+        "lang": "de",
+        "source": "coverage-contract.md#route-fixtures",
+        "status": "pending",
+        "scope": "Synthetic fixture candidate; first prove missing-route/search applicability and expected response."
+      }
+    ],
+    "required_state_families": [
+      "global-navigation",
+      "blog",
+      "dynamic-routes"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "overlay-responsive",
+      "search-pagination",
+      "route-fixtures",
+      "permissions",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "679_native_pagination_source_and_consumers": {
+        "result": "bounded-pass",
+        "source_body_sha256": "ee4e845c40fcd503c2bd4526655266ea36948c889c9d5cd928d702cfa1a5c044",
+        "production_body_exact": true,
+        "metadata_and_pairs_unchanged": true,
+        "scope": "Native LC screen_reader_text parameter, published body readback; shared numeric/hidden rule proved in site search, current one-page EN blog and EN/DE category checked. Does not close all template bindings or required families.",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+        "production_body_exact_context": "Historical at PR 679; later PR 746 updated the English and German search template bodies and verified their production readback. Pagination code in that diff remained unchanged."
+      },
+      "708_product_thumbnail_accessible_name": {
+        "result": "passed-affected-a11y-scope",
+        "environment": "production-native-with-local-viewport-proof",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+        "receipt_pointer": "product_thumbnail_alt_followup",
+        "pr": 708,
+        "source_head": "d85c276901f1fa8fe4e36888b7ae548f878ce02f",
+        "merge": "a6cf057335265bf587372a7b2d8b919df82e6e36",
+        "ci_run": 40566624007,
+        "native_deploy": "20261027T195157Z-search-product-alt-d85c2769",
+        "native_archive_state": "archived",
+        "scope": "General-search product thumbnail is decorative inside its already titled anchor; accessible name is the localized product heading once. Nonproduct/journal alt branches, original media, URLs, classes, layout and CSS are preserved.",
+        "production_proof": {
+          "en": "Ten native AX product link names observed; fresh exact viewport/DOM reread not confirmed. No onlineEN1440 claim.",
+          "de390": {
+            "url": "https://de-linker.com/de/?s=SAJ",
+            "lang": "de-DE",
+            "width": 390,
+            "results": 10,
+            "all_single_image_empty_alt": true,
+            "no_horizontal_overflow": true,
+            "native_AX_names": "eachlocalizedproducttitleonce",
+            "screenshot": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-product-alt-online-de390.jpg"
+          }
+        },
+        "local_proof": {
+          "en1440": "Ten product links, each one image/empty alt/localized heading, no overflow.",
+          "de390": "Ten product links, each one image/empty alt/localized heading, no overflow.",
+          "nonproduct": "Existing last-page missing-image fallback retained; nonproduct image-alt/journal branches preserved by final source diff."
+        },
+        "reuse_boundary": "Server-rendered naming delta is independent of viewport; reuse unchanged679 layout/consumer proof for other widths. Whole search/query/permission/edge-state and page acceptance remain open.",
+        "locale": "de",
+        "source_body_sha256": "f78abafb3b86a3368176b95cd4e505bf0a72018150670fb8277346a1358f1982"
+      },
+      "746_native_search_template": {
+        "status": "bounded-native-and-consumer-readback",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/blog-reading-rhythm.json",
+        "receipt_key": "local_blog_locale_candidate_20261029.production_live_746",
+        "body_sha256_at_release": "c7daa8f39fdf21dc6c9728c6a6eb142ce174f667fcf877ea4bb0c13d94d854dd",
+        "consumer_evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/746-blog-online-browser.json",
+        "scope": "Current after PR 746: search LC body read back exactly; staff 390 bilingual journal search and language-switch cases observed, earlier 1440 proof reused. No whole-template visual or binding closure."
+      }
+    }
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 613,
+    "title": "Blog single post",
+    "lang": "en",
+    "sha256": "b80053cc0fb57109c14a57ec88b66b787f456001ba7eaab023d28efa8ae9e2cb",
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/installer-checklist-inverter-battery-pairing/",
+        "width": 1440,
+        "lang": "en",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json",
+        "scope": "649 controls only"
+      },
+      {
+        "url": "https://de-linker.com/installer-checklist-inverter-battery-pairing/",
+        "width": 390,
+        "lang": "en",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json",
+        "scope": "649 controls only"
+      }
+    ],
+    "applicable_states": [],
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json"
+    ],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "template-for-single-post",
+    "assignments": {
+      "is_single_post": [
+        "1"
+      ]
+    },
+    "effective_languages": [
+      "en"
+    ],
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/hybrid-inverter-vs-ac-coupled-storage/",
+        "lang": "en",
+        "source": "inventory-baseline.json:post:551",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "blog"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "search-pagination",
+      "route-fixtures",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "649_blog_control_affordances": {
+        "status": "passed-affected-scope",
+        "source": "5b16bd703faeb9af8951913a2571f95f7fcfa0fc",
+        "pr": "https://github.com/AssassinFlash/de-linker/pull/649",
+        "deploy_id": "20261025T090725Z-blog-controls-5b16bd70",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json",
+        "scope": "Main/secondary article CTA, Back/All posts 44px, mobile TOC44px, action spacing, hover/focus; all labels/hrefs/prose preserved. ENDE1440/390. Native keyboard, DE mobile TOC destination and quote contact landing. Other article states/fullpage remain open."
+      }
+    },
+    "resolved_findings": {
+      "blog-mobile-touch-and-action-affordance": {
+        "pr": 649,
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json"
+      }
+    }
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 6877,
+    "title": "Vorlage für einzelnen Beitrag",
+    "lang": "de",
+    "sha256": "9c178db3f4c7542260ffe8ecfeb4e84e96d5eafe5e71df5d3e648432ce4325fe",
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/installateur-checkliste-wechselrichter-akku/",
+        "width": 1440,
+        "lang": "de",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json",
+        "scope": "649 controls only"
+      },
+      {
+        "url": "https://de-linker.com/de/installateur-checkliste-wechselrichter-akku/",
+        "width": 390,
+        "lang": "de",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json",
+        "scope": "649 controls only"
+      }
+    ],
+    "applicable_states": [],
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json"
+    ],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "vorlage-fur-einzelnen-beitrag",
+    "assignments": {
+      "is_single_post": [
+        "1"
+      ]
+    },
+    "effective_languages": [
+      "de"
+    ],
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/de/hybridwechselrichter-vs-ac-speicher/",
+        "lang": "de",
+        "source": "inventory-baseline.json:post:6883",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "blog"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "search-pagination",
+      "route-fixtures",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "649_blog_control_affordances": {
+        "status": "passed-affected-scope",
+        "source": "5b16bd703faeb9af8951913a2571f95f7fcfa0fc",
+        "pr": "https://github.com/AssassinFlash/de-linker/pull/649",
+        "deploy_id": "20261025T090725Z-blog-controls-5b16bd70",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json",
+        "scope": "Main/secondary article CTA, Back/All posts 44px, mobile TOC44px, action spacing, hover/focus; all labels/hrefs/prose preserved. ENDE1440/390. Native keyboard, DE mobile TOC destination and quote contact landing. Other article states/fullpage remain open."
+      }
+    },
+    "resolved_findings": {
+      "blog-mobile-touch-and-action-affordance": {
+        "pr": 649,
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json"
+      }
+    }
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 607,
+    "title": "Blog category archive",
+    "lang": "en",
+    "sha256": "f8d2fd7e85d2e4a720601697d0df7a4934a9126e23aaa57957231c4061fb2460",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+    ],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "template-for-archive-for-tax-category",
+    "assignments": {
+      "is_archive_for_tax_category": [
+        "1"
+      ]
+    },
+    "effective_languages": [
+      "en"
+    ],
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/category/applications-blog/",
+        "lang": "en",
+        "source": "inventory-baseline.json:term:14",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "blog"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "search-pagination",
+      "route-fixtures",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "679_native_pagination_source_and_consumers": {
+        "result": "bounded-pass",
+        "source_body_sha256": "35775cf33ccf0139dd8b9bf56548727eaa57d66840e0253f89d892fbddece11f",
+        "production_body_exact": true,
+        "metadata_and_pairs_unchanged": true,
+        "scope": "Native LC screen_reader_text parameter, published body readback; shared numeric/hidden rule proved in site search, current one-page EN blog and EN/DE category checked. Does not close all template bindings or required families.",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      }
+    }
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 6879,
+    "title": "Vorlage für Archiv der Steuerkategorie",
+    "lang": "de",
+    "sha256": "43aff298cce307024df69f491efae66aec124a7d33876ae463c43cfd512e5314",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+    ],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "vorlage-fur-archiv-der-steuerkategorie",
+    "assignments": {
+      "is_archive_for_tax_category": [
+        "1"
+      ]
+    },
+    "effective_languages": [
+      "de"
+    ],
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/de/kategorie/anwendungen/",
+        "lang": "de",
+        "source": "inventory-baseline.json:term:574",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "blog"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "search-pagination",
+      "route-fixtures",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "679_native_pagination_source_and_consumers": {
+        "result": "bounded-pass",
+        "source_body_sha256": "ab7a7192cd835462c451859093e6074e6caf7c828b5470ac6742c8ec3cae031e",
+        "production_body_exact": true,
+        "metadata_and_pairs_unchanged": true,
+        "scope": "Native LC screen_reader_text parameter, published body readback; shared numeric/hidden rule proved in site search, current one-page EN blog and EN/DE category checked. Does not close all template bindings or required families.",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      }
+    }
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 574,
+    "title": "Blog posts index",
+    "lang": "en",
+    "sha256": "42dde3ad317a1ce5d7486f7fefd88093cc11a59abab4e418d2baf05338e34dfc",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+    ],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "template-for-blog-posts-index",
+    "assignments": {
+      "is_blog_posts_index": [
+        "1"
+      ]
+    },
+    "effective_languages": [
+      "en"
+    ],
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/blog/",
+        "lang": "en",
+        "source": "inventory-baseline.json:page:14",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "blog"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "search-pagination",
+      "route-fixtures",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "679_native_pagination_source_and_consumers": {
+        "result": "bounded-pass",
+        "source_body_sha256": "a44bd49d810d9320068469a731301ffed5bb8b35a3cce24ea43d82ccf925ac21",
+        "production_body_exact": true,
+        "metadata_and_pairs_unchanged": true,
+        "scope": "Native LC screen_reader_text parameter, published body readback; shared numeric/hidden rule proved in site search, current one-page EN blog and EN/DE category checked. Does not close all template bindings or required families.",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      }
+    }
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 6881,
+    "title": "Vorlage für Blog-Beitragsindex",
+    "lang": "de",
+    "sha256": "cb237b5c97363742238ae448f0860a0f7468ab5eadb9ea93a4fbe991932d5939",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+    ],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "vorlage-fur-blog-beitragsindex",
+    "assignments": {
+      "is_blog_posts_index": [
+        "1"
+      ]
+    },
+    "effective_languages": [
+      "de"
+    ],
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/de/blog/",
+        "lang": "de",
+        "source": "inventory-baseline.json:page:6915",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "blog"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "search-pagination",
+      "route-fixtures",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "679_native_pagination_source_and_consumers": {
+        "result": "bounded-pass",
+        "source_body_sha256": "5bd61c6e4a360f2b8cffa0811a1bcc589c8cfd7de45da45e046f37d5761d12a3",
+        "production_body_exact": true,
+        "metadata_and_pairs_unchanged": true,
+        "scope": "Native LC screen_reader_text parameter, published body readback; shared numeric/hidden rule proved in site search, current one-page EN blog and EN/DE category checked. Does not close all template bindings or required families.",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      }
+    }
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 234,
+    "title": "Single product",
+    "lang": "en",
+    "sha256": "a6f090b41d435cb9052543d600aa5b3378ce02170f5093f467c7f622db4719c2",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "template-for-single-product",
+    "assignments": {
+      "is_single_product": [
+        "1"
+      ]
+    },
+    "effective_languages": [
+      "en"
+    ],
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/product/saj-ats1-t63-a/",
+        "lang": "en",
+        "source": "inventory-baseline.json:product:1178",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "product"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "permissions",
+      "consumer-readback",
+      "files-print",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use."
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 6903,
+    "title": "Vorlage für einzelnes Produkt",
+    "lang": "de",
+    "sha256": "e12c8970c0f470068eef9c5b354d74908f4854bb4f204ec18cb4c55dc9978f98",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "vorlage-fur-einzelnes-produkt",
+    "assignments": {
+      "is_single_product": [
+        "1"
+      ]
+    },
+    "effective_languages": [
+      "de"
+    ],
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/de/produkt/goodwe-gw60k-sts-g10/",
+        "lang": "de",
+        "source": "inventory-baseline.json:product:6565",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "product"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "permissions",
+      "consumer-readback",
+      "files-print",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use."
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 231,
+    "title": "Product archive",
+    "lang": "en",
+    "sha256": "4d9854644ed3c2208dde57f7fe6ad66fa54bf9933fe6d95eb27abdd092a74b5b",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "template-for-archive-for-post-type-product",
+    "assignments": {
+      "is_archive_for_post_type_product": [
+        "1"
+      ]
+    },
+    "effective_languages": [
+      "en"
+    ],
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/product-category/accessories/",
+        "lang": "en",
+        "source": "inventory-baseline.json:term:456",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "product-archive",
+      "taxonomy-routing"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "taxonomy-context",
+      "search-pagination",
+      "consumer-readback",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "home_storage_category_lc_renderer_shortcode_20261028_1440": {
+        "status": "passed-affected-scope",
+        "category_term_id": 450,
+        "lang": "en",
+        "width": 1440,
+        "scope": "Existing actual taxonomy routes/canonical/locale + LC-owned #linker-products.sf-products wrapper + current nine family cards + native category-to-real-PDP consumer, composed with the LC export→registered shortcode→family/card emitter chain; no new runtime observation.",
+        "page_check": "page-matrix.json:term:product_cat:450:1440:home_storage_category_current_20261028",
+        "evidence": [
+          "/Users/chesterjohn/Documents/de-linker/docs/acceptance/2026-10-22/full-site/products/live-review.md",
+          "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-marketing-correction.json#services_controls_followup.production_after_generate.templates"
+        ],
+        "source_chain": [
+          "plugins/linker-commerce/content/livecanvas/archive_product.html",
+          "plugins/linker-commerce/content/livecanvas/de/archive_product.html",
+          "plugins/linker-commerce/includes/Presentation/ProductShortcodes.php::register/products_families/products_card",
+          "LiveCanvas modules/templating.php::lc_render_dynamic_template and modules/templates/dynamic-template.php"
+        ],
+        "numeric_template_attribution": "unproven; this template row names the configured candidate, not an observed selected numeric ID",
+        "missing_numeric_discriminator": "Numeric LC231/6905 attribution remains unproven: saved opaque metadata hashes do not rule out a higher-priority is_archive_for_tax_product_cat__<slug> owner. An existing raw assignment/resolver record is the missing discriminator; no literal HTML ID marker is required for renderer/shortcode execution.",
+        "final_solution_draft_consumer": "OPEN",
+        "overall_template_status_unchanged": true,
+        "new_tests_http_or_ui_actions": false
+      },
+      "home_storage_category_lc_renderer_shortcode_20261028_390": {
+        "status": "passed-affected-scope",
+        "category_term_id": 450,
+        "lang": "en",
+        "width": 390,
+        "scope": "Existing actual taxonomy routes/canonical/locale + LC-owned #linker-products.sf-products wrapper + current nine family cards + native category-to-real-PDP consumer, composed with the LC export→registered shortcode→family/card emitter chain; no new runtime observation.",
+        "page_check": "page-matrix.json:term:product_cat:450:390:home_storage_category_current_20261028",
+        "evidence": [
+          "/Users/chesterjohn/Documents/de-linker/docs/acceptance/2026-10-22/full-site/products/live-review.md",
+          "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-marketing-correction.json#services_controls_followup.production_after_generate.templates"
+        ],
+        "source_chain": [
+          "plugins/linker-commerce/content/livecanvas/archive_product.html",
+          "plugins/linker-commerce/content/livecanvas/de/archive_product.html",
+          "plugins/linker-commerce/includes/Presentation/ProductShortcodes.php::register/products_families/products_card",
+          "LiveCanvas modules/templating.php::lc_render_dynamic_template and modules/templates/dynamic-template.php"
+        ],
+        "numeric_template_attribution": "unproven; this template row names the configured candidate, not an observed selected numeric ID",
+        "missing_numeric_discriminator": "Numeric LC231/6905 attribution remains unproven: saved opaque metadata hashes do not rule out a higher-priority is_archive_for_tax_product_cat__<slug> owner. An existing raw assignment/resolver record is the missing discriminator; no literal HTML ID marker is required for renderer/shortcode execution.",
+        "final_solution_draft_consumer": "OPEN",
+        "overall_template_status_unchanged": true,
+        "new_tests_http_or_ui_actions": false
+      }
+    }
+  },
+  {
+    "kind": "lc_dynamic_template",
+    "id": 6905,
+    "title": "Vorlage für Archiv für Beitragstyp Produkt",
+    "lang": "de",
+    "sha256": "857843c916e4fd0b0c06ae741189141ac5fa1d9d8789fdb3d88db4214d0e8ba8",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "vorlage-fur-archiv-fur-beitragstyp-produkt",
+    "assignments": {
+      "is_archive_for_post_type_product": [
+        "1"
+      ]
+    },
+    "effective_languages": [
+      "de"
+    ],
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/batteriesysteme/",
+        "lang": "de",
+        "source": "inventory-baseline.json:term:630",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "product-archive",
+      "taxonomy-routing"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "taxonomy-context",
+      "search-pagination",
+      "consumer-readback",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "home_storage_category_lc_renderer_shortcode_20261028_1440": {
+        "status": "passed-affected-scope",
+        "category_term_id": 613,
+        "lang": "de",
+        "width": 1440,
+        "scope": "Existing actual taxonomy routes/canonical/locale + LC-owned #linker-products.sf-products wrapper + current nine family cards + native category-to-real-PDP consumer, composed with the LC export→registered shortcode→family/card emitter chain; no new runtime observation.",
+        "page_check": "page-matrix.json:term:product_cat:613:1440:home_storage_category_current_20261028",
+        "evidence": [
+          "/Users/chesterjohn/Documents/de-linker/docs/acceptance/2026-10-22/full-site/products/live-review.md",
+          "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-marketing-correction.json#services_controls_followup.production_after_generate.templates"
+        ],
+        "source_chain": [
+          "plugins/linker-commerce/content/livecanvas/archive_product.html",
+          "plugins/linker-commerce/content/livecanvas/de/archive_product.html",
+          "plugins/linker-commerce/includes/Presentation/ProductShortcodes.php::register/products_families/products_card",
+          "LiveCanvas modules/templating.php::lc_render_dynamic_template and modules/templates/dynamic-template.php"
+        ],
+        "numeric_template_attribution": "unproven; this template row names the configured candidate, not an observed selected numeric ID",
+        "missing_numeric_discriminator": "Numeric LC231/6905 attribution remains unproven: saved opaque metadata hashes do not rule out a higher-priority is_archive_for_tax_product_cat__<slug> owner. An existing raw assignment/resolver record is the missing discriminator; no literal HTML ID marker is required for renderer/shortcode execution.",
+        "final_solution_draft_consumer": "OPEN",
+        "overall_template_status_unchanged": true,
+        "new_tests_http_or_ui_actions": false
+      },
+      "home_storage_category_lc_renderer_shortcode_20261028_390": {
+        "status": "passed-affected-scope",
+        "category_term_id": 613,
+        "lang": "de",
+        "width": 390,
+        "scope": "Existing actual taxonomy routes/canonical/locale + LC-owned #linker-products.sf-products wrapper + current nine family cards + native category-to-real-PDP consumer, composed with the LC export→registered shortcode→family/card emitter chain; no new runtime observation.",
+        "page_check": "page-matrix.json:term:product_cat:613:390:home_storage_category_current_20261028",
+        "evidence": [
+          "/Users/chesterjohn/Documents/de-linker/docs/acceptance/2026-10-22/full-site/products/live-review.md",
+          "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-marketing-correction.json#services_controls_followup.production_after_generate.templates"
+        ],
+        "source_chain": [
+          "plugins/linker-commerce/content/livecanvas/archive_product.html",
+          "plugins/linker-commerce/content/livecanvas/de/archive_product.html",
+          "plugins/linker-commerce/includes/Presentation/ProductShortcodes.php::register/products_families/products_card",
+          "LiveCanvas modules/templating.php::lc_render_dynamic_template and modules/templates/dynamic-template.php"
+        ],
+        "numeric_template_attribution": "unproven; this template row names the configured candidate, not an observed selected numeric ID",
+        "missing_numeric_discriminator": "Numeric LC231/6905 attribution remains unproven: saved opaque metadata hashes do not rule out a higher-priority is_archive_for_tax_product_cat__<slug> owner. An existing raw assignment/resolver record is the missing discriminator; no literal HTML ID marker is required for renderer/shortcode execution.",
+        "final_solution_draft_consumer": "OPEN",
+        "overall_template_status_unchanged": true,
+        "new_tests_http_or_ui_actions": false
+      }
+    }
+  },
+  {
+    "kind": "lc_partial",
+    "id": 30,
+    "title": "Global JavaScript Code",
+    "lang": "en",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "global-javascript-code",
+    "assignments": {
+      "is_global_js": [
+        "1"
+      ]
+    },
+    "effective_languages": [
+      "en",
+      "de"
+    ],
+    "language_note": "Shared semantic/native template or global script; validate both request languages.",
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/",
+        "lang": "en",
+        "source": "inventory-baseline.json:page:13",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      },
+      {
+        "url": "https://de-linker.com/de/",
+        "lang": "de",
+        "source": "inventory-baseline.json:page:6913",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "global-navigation",
+      "content",
+      "marketing-genie-entry"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "overlay-responsive",
+      "search-pagination",
+      "route-fixtures",
+      "marketing-entries",
+      "consumer-readback",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "required_execution_evidence": "Prove the installed global JavaScript executes its applicable behavior on a real route; database assignment or an empty screenshot is insufficient."
+  },
+  {
+    "kind": "lc_partial",
+    "id": 17,
+    "title": "Header",
+    "lang": "en",
+    "sha256": "1ec44224f94e0535cb114a8571a02812710b6d7bf16eeb1fc315ce09a9e1f4e3",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "header",
+    "assignments": {
+      "is_header": [
+        "1"
+      ]
+    },
+    "effective_languages": [
+      "en"
+    ],
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/",
+        "lang": "en",
+        "source": "inventory-baseline.json:page:13",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      },
+      {
+        "url": "https://de-linker.com/cart/",
+        "lang": "en",
+        "source": "inventory-baseline.json:page:1035",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      },
+      {
+        "url": "https://de-linker.com/privacy-policy/",
+        "lang": "en",
+        "source": "inventory-baseline.json:page:1673",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "global-navigation"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "overlay-responsive",
+      "search-pagination",
+      "route-fixtures",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "751_native_menu_and_search": {
+        "status": "bounded-direct-staff-consumer",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json",
+        "scope": "Actual staff Chrome: EN/DE 1440 desktop five groups and EN/DE 390 mobile five groups expanded/closed; EN desktop Products had Tab to first card and Escape back to trigger, mobile Escape closed menu and returned focus in both languages. Four EN desktop non-product groups, all five EN mobile groups and four DE mobile non-product groups have collected link lists; EN desktop Products and DE mobile Products were directly opened but not every link was captured. Does not prove every destination, guest identity, touchscreen or whole-template parity.",
+        "binding_boundary": "Observed shared header on real production pages; does not independently close all template assignments, roles or routes."
+      }
+    }
+  },
+  {
+    "kind": "lc_partial",
+    "id": 18,
+    "title": "Footer",
+    "lang": "en",
+    "sha256": "baddb86fa90ab09a4ce5035d3cff84ccbfa29f82f05624fca2fa2f36717fd110",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "footer",
+    "assignments": {
+      "is_footer": [
+        "1"
+      ]
+    },
+    "effective_languages": [
+      "en"
+    ],
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/",
+        "lang": "en",
+        "source": "inventory-baseline.json:page:13",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      },
+      {
+        "url": "https://de-linker.com/cart/",
+        "lang": "en",
+        "source": "inventory-baseline.json:page:1035",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      },
+      {
+        "url": "https://de-linker.com/privacy-policy/",
+        "lang": "en",
+        "source": "inventory-baseline.json:page:1673",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "global-navigation"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "overlay-responsive",
+      "search-pagination",
+      "route-fixtures",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use."
+  },
+  {
+    "kind": "lc_partial",
+    "id": 6909,
+    "title": "Kopfzeile",
+    "lang": "de",
+    "sha256": "daf8d1a6372ba7df23ef429fb9bf44432119ac9930c9aa21d8ed4d3f0f235415",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "kopfzeile",
+    "assignments": {
+      "is_header": [
+        "1"
+      ]
+    },
+    "effective_languages": [
+      "de"
+    ],
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/de/",
+        "lang": "de",
+        "source": "inventory-baseline.json:page:6913",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      },
+      {
+        "url": "https://de-linker.com/de/loesungsentwurf/",
+        "lang": "de",
+        "source": "inventory-baseline.json:page:6855",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      },
+      {
+        "url": "https://de-linker.com/de/datenschutz/",
+        "lang": "de",
+        "source": "inventory-baseline.json:page:6827",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "global-navigation"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "overlay-responsive",
+      "search-pagination",
+      "route-fixtures",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "751_native_menu_and_search": {
+        "status": "bounded-direct-staff-consumer",
+        "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json",
+        "scope": "Actual staff Chrome: EN/DE 1440 desktop five groups and EN/DE 390 mobile five groups expanded/closed; EN desktop Products had Tab to first card and Escape back to trigger, mobile Escape closed menu and returned focus in both languages. Four EN desktop non-product groups, all five EN mobile groups and four DE mobile non-product groups have collected link lists; EN desktop Products and DE mobile Products were directly opened but not every link was captured. Does not prove every destination, guest identity, touchscreen or whole-template parity.",
+        "binding_boundary": "Observed shared header on real production pages; does not independently close all template assignments, roles or routes."
+      }
+    }
+  },
+  {
+    "kind": "lc_partial",
+    "id": 6911,
+    "title": "Fußzeile",
+    "lang": "de",
+    "sha256": "c84e4ba2824651ddff96ed5ab987cdb40b95e63c4757d5bc682d1f254053070c",
+    "status": "pending",
+    "rendered_routes": [],
+    "applicable_states": [],
+    "evidence": [],
+    "findings": [],
+    "assignment_baseline": {
+      "source": "template-assignments-local.json",
+      "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
+    },
+    "slug": "fuszeile",
+    "assignments": {
+      "is_footer": [
+        "1"
+      ]
+    },
+    "effective_languages": [
+      "de"
+    ],
+    "route_candidates": [
+      {
+        "url": "https://de-linker.com/de/",
+        "lang": "de",
+        "source": "inventory-baseline.json:page:6913",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      },
+      {
+        "url": "https://de-linker.com/de/loesungsentwurf/",
+        "lang": "de",
+        "source": "inventory-baseline.json:page:6855",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      },
+      {
+        "url": "https://de-linker.com/de/datenschutz/",
+        "lang": "de",
+        "source": "inventory-baseline.json:page:6827",
+        "status": "pending",
+        "scope": "Candidate only; actual template binding/render and state evidence are unverified."
+      }
+    ],
+    "required_state_families": [
+      "global-navigation"
+    ],
+    "required_fixture_contracts": [
+      "template-binding",
+      "overlay-responsive",
+      "search-pagination",
+      "route-fixtures",
+      "provenance"
+    ],
+    "coverage_contract": "coverage-contract.md",
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use."
+  }
+]
