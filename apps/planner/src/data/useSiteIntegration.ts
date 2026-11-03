@@ -1,4 +1,5 @@
 import { savedSolutionId } from "../domain/savedSolution.ts";
+import { projectBriefId } from "../domain/projectBrief.ts";
 import { useEffect } from "react";
 import { initialEnergyView, PLANNER_NAVIGATION } from "./plannerLocation.ts";
 import { measurePlannerChrome } from "./measurePlannerChrome.ts";
@@ -40,9 +41,12 @@ export function projectLanguageUrl(
 	target.searchParams.delete("run");
 	target.searchParams.delete("compare");
 	target.searchParams.delete("energy_view");
+	target.searchParams.delete("brief");
 	for (const key of ENTRY_QUERY_KEYS) target.searchParams.delete(key);
 	const saved = id === null ? savedSolutionId(page.searchParams) : null;
 	if (saved !== null) target.searchParams.set("saved_solution", String(saved));
+	const brief = id === null ? projectBriefId(page.searchParams) : null;
+	if (brief !== null && brief !== "") target.searchParams.set("brief", brief);
 	const hints = id === null ? readEntryHints(page.searchParams) : null;
 	if (hints?.invalid) {
 		for (const key of ENTRY_QUERY_KEYS) {

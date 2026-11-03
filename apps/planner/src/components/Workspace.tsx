@@ -16,7 +16,9 @@ import { recoveryScopes } from "../data/recoveryScopes.ts";
 import { __, sprintf } from "../i18n.ts";
 import { Icon } from "./Icon.tsx";
 import { NewProject } from "./NewProject.tsx";
+import { ProjectBriefStart } from "./ProjectBriefStart.tsx";
 import { SavedSolutionStart } from "./SavedSolutionStart.tsx";
+import { projectBriefId } from "../domain/projectBrief.ts";
 import { savedSolutionId } from "../domain/savedSolution.ts";
 import { ProjectEditor } from "./ProjectEditor.tsx";
 import { Notice } from "./Notice.tsx";
@@ -43,6 +45,9 @@ export function Workspace({
 	const [selected, setSelected] = useState<string | null>(currentProject);
 	const [savedSource, setSavedSource] = useState(() =>
 		savedSolutionId(new URL(location.href).searchParams),
+	);
+	const [briefSource, setBriefSource] = useState(() =>
+		projectBriefId(new URL(location.href).searchParams),
 	);
 	const [entryHints, setEntryHints] = useState(() =>
 		readEntryHints(new URL(location.href).searchParams),
@@ -97,11 +102,13 @@ export function Workspace({
 			url.searchParams.delete("run");
 			url.searchParams.delete("compare");
 			url.searchParams.delete("energy_view");
+			url.searchParams.delete("brief");
 			for (const key of ENTRY_QUERY_KEYS) url.searchParams.delete(key);
 			url.hash = destination;
 			replacePlannerLocation(url);
 			setEntryHints(null);
 			setSavedSource(null);
+			setBriefSource(null);
 			setSelected(id);
 		},
 		[client, session.query_scope],
@@ -268,6 +275,26 @@ export function Workspace({
 								url.searchParams.delete("saved_solution");
 								replacePlannerLocation(url);
 								setSavedSource(null);
+							}}
+							locale={config.locale}
+							session={session}
+							client={client}
+							store={store}
+							created={created}
+							recheck={recheck}
+							recoveryScopes={recovery.data}
+							recoveryChecking={recovery.isFetching}
+							recoveryDiscoveryFailed={recovery.isError}
+						/>
+					) : briefSource !== null ? (
+						<ProjectBriefStart
+							briefId={briefSource}
+							entryHints={entryHints}
+							dismiss={() => {
+								const url = new URL(location.href);
+								url.searchParams.delete("brief");
+								replacePlannerLocation(url);
+								setBriefSource(null);
 							}}
 							locale={config.locale}
 							session={session}

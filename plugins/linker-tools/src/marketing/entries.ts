@@ -9,10 +9,28 @@ import {
 	type EntryDraft,
 	type EntryMode,
 } from '../genie/shared/entryDraft';
+import {
+	MAX_PROJECT_BRIEF_LENGTH,
+	UNSTAGED_BRIEF_ID,
+	clearProjectBrief,
+	readProjectBrief,
+	stageProjectBrief,
+	writeProjectBrief,
+	type ProjectBriefV1,
+} from '../genie/shared/projectBriefDraft';
+
+function defaultNavigate( url: string ): void {
+	try {
+		window.location.assign( url );
+	} catch {
+		// Non-navigating test environments observe the custom event and href.
+	}
+}
 
 export function bindMarketingEntries(
 	root: Document,
-	config: GenieConfig
+	config: GenieConfig,
+	navigate: ( url: string ) => void = defaultNavigate
 ): () => void {
 	const editors = [
 		...root.querySelectorAll< HTMLTextAreaElement >(
@@ -46,7 +64,7 @@ export function bindMarketingEntries(
 		if ( ! section ) {
 			return () => undefined;
 		}
-		// Installer markup's field/send share the nearest mobile panel. Never bind desktop Plan.
+		// Installer markup's field/send share the nearest mobile panel. Never bind desktop Plan here.
 		const owner =
 			field.id === 'installer-mobile-query'
 				? ( field.closest< HTMLElement >(
@@ -218,5 +236,197 @@ export function bindMarketingEntries(
 			status.remove();
 		};
 	} );
-	return () => cleanup.forEach( ( stop ) => stop() );
+
+	const planInputs = [
+		...root.querySelectorAll< HTMLInputElement | HTMLTextAreaElement >(
+			'#lki-hero-query'
+		),
+	];
+	const planCleanup = planInputs.map( ( field ) => {
+		if ( field.dataset.geniePlanBound ) {
+			return () => undefined;
+		}
+		field.dataset.geniePlanBound = '1';
+		const owner =
+			field.closest< HTMLElement >(
+				'.lk-console-input-row, .lk-hero-console, #installer-journal'
+			) ?? field.parentElement;
+		if ( ! owner ) {
+			return () => undefined;
+		}
+		const planLink =
+			owner.querySelector< HTMLAnchorElement >( '.lk-btn-query' ) ??
+			root.querySelector< HTMLAnchorElement >( '.lk-btn-query' );
+		const baseHref =
+			planLink?.getAttribute( 'href' ) || '/solution-configurator/';
+		let staged: ProjectBriefV1 | null = null;
+		let preparing = false;
+		let scope = '';
+		let live = true;
+		const status = root.createElement( 'p' );
+		status.className = 'screen-reader-text';
+		status.setAttribute( 'role', 'status' );
+		owner.append( status );
+		const verify = async ( fresh = false ) => {
+			const next = await entryScope( config, fresh );
+			if ( scope && scope !== next ) {
+				staged = null;
+			}
+			scope = next;
+			return next;
+		};
+		void verify()
+			.then( ( current ) => {
+				if ( ! live || field.value ) {
+					return;
+				}
+				const stored = readProjectBrief( current );
+				if ( stored ) {
+					field.value = stored.text;
+					staged = stored;
+				}
+			} )
+			.catch( () => undefined );
+		const onInput = () => {
+			status.textContent = '';
+			status.className = 'screen-reader-text';
+			if ( ! scope ) {
+				return;
+			}
+			const value = field.value;
+			if ( ! value.trim() ) {
+				clearProjectBrief( scope );
+				staged = null;
+				return;
+			}
+			if ( Array.from( value ).length <= MAX_PROJECT_BRIEF_LENGTH ) {
+				const draft: ProjectBriefV1 = {
+					v: 1,
+					id: staged?.id ?? UNSTAGED_BRIEF_ID,
+					text: value,
+					sourcePath: location.pathname || '/for-installer/',
+					contextScope: scope,
+					revision: staged?.revision ?? '0'.repeat( 64 ),
+					confirmed: staged?.confirmed ?? {},
+				};
+				writeProjectBrief( draft );
+			}
+		};
+		const deliverPlan = async () => {
+			if ( preparing || ! field.value.trim() ) {
+				return;
+			}
+			const snapshot = field.value;
+			if ( Array.from( snapshot ).length > MAX_PROJECT_BRIEF_LENGTH ) {
+				status.className = 'linker-genie-app__error';
+				status.textContent = __(
+					'The project note could not be carried over. Your text is still here.',
+					'linker-tools'
+				);
+				return;
+			}
+			preparing = true;
+			let handed = false;
+			planLink?.setAttribute( 'aria-busy', 'true' );
+			try {
+				const current = await verify();
+				if ( ! live ) {
+					return;
+				}
+				const record = await stageProjectBrief( config, {
+					text: snapshot,
+					sourcePath: location.pathname || '/for-installer/',
+					briefId:
+						staged &&
+						staged.contextScope === current &&
+						staged.id !== UNSTAGED_BRIEF_ID
+							? staged.id
+							: null,
+					expectedRevision:
+						staged &&
+						staged.contextScope === current &&
+						staged.id !== UNSTAGED_BRIEF_ID
+							? staged.revision
+							: null,
+					confirmed: staged?.confirmed ?? {},
+				} );
+				if ( ! live ) {
+					return;
+				}
+				staged = record;
+				scope = record.contextScope;
+				status.textContent = '';
+				status.className = 'screen-reader-text';
+				const destination = new URL( baseHref, location.origin );
+				destination.searchParams.set( 'brief', record.id );
+				handed = true;
+				window.dispatchEvent(
+					new CustomEvent( 'linker-project-brief-ready', {
+						detail: { brief: record, url: destination.href },
+					} )
+				);
+				navigate( destination.href );
+			} catch {
+				status.className = 'linker-genie-app__error';
+				status.textContent = __(
+					'The project note could not be carried over. Your text is still here.',
+					'linker-tools'
+				);
+			} finally {
+				preparing = false;
+				if ( ! handed ) {
+					planLink?.removeAttribute( 'aria-busy' );
+				}
+			}
+		};
+		const onPlanClick = ( event: Event ) => {
+			if ( ! field.value.trim() ) {
+				if ( preparing ) {
+					event.preventDefault();
+				}
+				return;
+			}
+			event.preventDefault();
+			void deliverPlan();
+		};
+		const onPlanKey = ( event: Event ) => {
+			const key = event as KeyboardEvent;
+			// Another field's Enter is not this entry's gesture.
+			if ( key.target !== field || key.key !== 'Enter' ) {
+				return;
+			}
+			// A composing Enter belongs to the IME; Shift+Enter stays editing.
+			if ( key.shiftKey || key.isComposing || key.keyCode === 229 ) {
+				return;
+			}
+			if ( ! field.value.trim() ) {
+				return;
+			}
+			// The LC page registers its own Enter handler on this input before
+			// this binder runs, and same-node listeners fire in registration
+			// order. A window capture listener runs before the target's list, so
+			// the page's plain link click cannot pre-empt the staged delivery.
+			event.preventDefault();
+			event.stopImmediatePropagation();
+			void deliverPlan();
+		};
+		field.addEventListener( 'input', onInput );
+		window.addEventListener( 'keydown', onPlanKey, { capture: true } );
+		planLink?.addEventListener( 'click', onPlanClick );
+		return () => {
+			live = false;
+			delete field.dataset.geniePlanBound;
+			field.removeEventListener( 'input', onInput );
+			window.removeEventListener( 'keydown', onPlanKey, {
+				capture: true,
+			} );
+			planLink?.removeEventListener( 'click', onPlanClick );
+			status.remove();
+		};
+	} );
+
+	return () => {
+		cleanup.forEach( ( stop ) => stop() );
+		planCleanup.forEach( ( stop ) => stop() );
+	};
 }

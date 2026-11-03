@@ -109,6 +109,7 @@ lp-profile-review
 lp-project
 lp-project-aside
 lp-project-bar
+lp-project-brief-start
 lp-project-index
 lp-project-layout
 lp-project-nav-title

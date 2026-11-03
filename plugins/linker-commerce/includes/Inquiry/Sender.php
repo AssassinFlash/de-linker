@@ -103,6 +103,7 @@ final class Sender {
 				return $this->unknown();
 			}
 			$transaction->commit();
+			\Linker\Commerce\Planning\Context::consume_captured_notes( $order );
 			WC()->cart->empty_cart();
 			return $order;
 		} catch ( \Linker\Commerce\Protection\CapacityFull $error ) {
@@ -130,7 +131,7 @@ final class Sender {
 		if ( $planning instanceof WP_Error ) {
 			return $planning;
 		}
-		if ( WC()->cart->is_empty() && '' === $details->message ) {
+		if ( WC()->cart->is_empty() && '' === $details->message && ! \Linker\Commerce\Planning\Context::has_included_notes() ) {
 			return new WP_Error( 'linker_inquiry_empty', __( 'Please add a product or write a message.', 'linker-commerce' ) );
 		}
 		// Woo's check_cart_item_validity removes an invalid line. Before proof

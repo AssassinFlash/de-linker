@@ -22,7 +22,7 @@ final class Gateway {
 	public const MAX_BODY_BYTES = 16 * 1024 * 1024;
 	public const MAX_JSON_DEPTH = 32;
 	/** The account-claim and identity-status commands are deliberately private. */
-	private const PATHS = 'projects/(?:create|list|read|revise|runs)|runs/(?:read|compare|cancel|energy|report|pv|direct-beam|geometric-pv|pvgis-reference|equipment(?:-search)?|weather(?:/status)?|trace)|assets/(?:read|content)|profiles/(?:csv|inspect|preview)|weather/(?:assets|preview)|geometry/(?:review|import)|installation/review|battery/scenario|products/current|equipment/(?:candidates|certificates)/read|recovery/scopes|sources/saved-solution|draft/(?:apply|preview|read)';
+	private const PATHS = 'projects/(?:create|list|read|revise|runs)|runs/(?:read|compare|cancel|energy|report|pv|direct-beam|geometric-pv|pvgis-reference|equipment(?:-search)?|weather(?:/status)?|trace)|assets/(?:read|content)|profiles/(?:csv|inspect|preview)|weather/(?:assets|preview)|geometry/(?:review|import)|installation/review|battery/scenario|products/current|equipment/(?:candidates|certificates)/read|recovery/scopes|sources/(?:saved-solution|project-brief(?:/stage)?)|draft/(?:apply|preview|read)';
 	/**
 	 * A rejected request stays rejected if an installed integration returns null.
 	 *
@@ -341,6 +341,14 @@ final class Gateway {
 		if ( 'sources/saved-solution' === $path ) {
 			$source = ( new SavedSolutionSource() )->read( $principal, $command );
 			return is_wp_error( $source ) ? $source : new WP_REST_Response( $source );
+		}
+		if ( 'sources/project-brief' === $path ) {
+			$source = ( new ProjectBriefSource() )->read( $principal, $command );
+			return is_wp_error( $source ) ? $source : new WP_REST_Response( $source );
+		}
+		if ( 'sources/project-brief/stage' === $path ) {
+			$staged = ( new ProjectBriefSource() )->stage( $principal, $command );
+			return is_wp_error( $staged ) ? $staged : new WP_REST_Response( $staged );
 		}
 		if ( 'equipment/certificates/read' === $path ) {
 			return ( new CertificateEvidence() )->read( $principal, $command, $this->transport );

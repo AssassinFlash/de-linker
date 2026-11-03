@@ -383,6 +383,9 @@ export function BriefForm({
 					<span className="lp-index">04</span>
 					<div>
 						<h2 id="lp-notes-heading">{__("Project notes", "linker-tools")}</h2>
+						<p>
+							{__("This note is not used in the calculation.", "linker-tools")}
+						</p>
 					</div>
 				</div>
 				<label className="lp-field">

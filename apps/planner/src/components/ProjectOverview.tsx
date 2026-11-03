@@ -106,6 +106,15 @@ export function ProjectOverview({
 					</small>
 				</div>
 			</dl>
+			{brief.project_note.trim() !== "" && (
+				<section className="lp-scenario-block">
+					<h3>{__("Your project note", "linker-tools")}</h3>
+					<p>{brief.project_note}</p>
+					<small>
+						{__("This note is not used in the calculation.", "linker-tools")}
+					</small>
+				</section>
+			)}
 			<section className="lp-scenario-block">
 				<h3>{__("Installation routing", "linker-tools")}</h3>
 				<dl className="lp-overview-metrics">

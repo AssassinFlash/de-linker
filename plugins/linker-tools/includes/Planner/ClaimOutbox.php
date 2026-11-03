@@ -87,6 +87,7 @@ final class ClaimOutbox {
 		}
 		$subject = NativeIdentity::guest_subject( $guest );
 		$scope   = NativeIdentity::query_scope( new Principal( 'guest', $subject ), $guest );
+		( new ProjectBriefSource() )->claim( $subject, $current );
 		// Bind to the native event's user before any persistence attempt. A
 		// subsequent shared-browser login cannot retarget a failed insert.
 		$this->ticket->issue( $subject, $proof['expires'], $current, $scope );
@@ -339,7 +340,7 @@ final class ClaimOutbox {
 		if ( is_wp_error( $reply ) || 1 !== ( $reply['schema_version'] ?? null ) || 'claimed' !== ( $reply['status'] ?? null ) || true !== ( $reply['guest_retired'] ?? null ) || ! is_int( $reply['transferred_count'] ?? null ) || $reply['transferred_count'] < 0 ) {
 			return false;
 		}
-		if ( isset( $event['recovery_scope'] ) && ! ( new RecoveryScopes() )->remember( $event['user'], $event['recovery_scope'] ) ) {
+		if ( isset( $event['recovery_scope'] ) && ( ! ( new RecoveryScopes() )->remember( $event['user'], $event['recovery_scope'] ) || ! ( new ProjectBriefSource() )->claim( $event['guest'], $event['user'] ) ) ) {
 			return false;
 		}
 		// A failed delete retains the event. Replaying the same key is safe.

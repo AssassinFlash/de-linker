@@ -162,17 +162,22 @@ final class SavedSolutions {
 		if ( 0 === $customer_id || ! is_array( $kept ) || array() === $kept ) {
 			return;
 		}
-		WC()->session->set( self::SESSION_KEY, null );
+		$remaining = array();
 		foreach ( $kept as $solution ) {
-			if ( is_array( $solution ) ) {
-				$this->save(
-					$customer_id,
-					(string) ( $solution['title'] ?? '' ),
-					self::clean_items( (array) ( $solution['items'] ?? array() ) ),
-					(array) ( $solution['design'] ?? array() )
-				);
+			if ( ! is_array( $solution ) ) {
+				continue;
+			}
+			$saved_id = $this->save(
+				$customer_id,
+				(string) ( $solution['title'] ?? '' ),
+				self::clean_items( (array) ( $solution['items'] ?? array() ) ),
+				(array) ( $solution['design'] ?? array() )
+			);
+			if ( $saved_id <= 0 ) {
+				$remaining[] = $solution;
 			}
 		}
+		WC()->session->set( self::SESSION_KEY, array() === $remaining ? null : $remaining );
 	}
 
 	/**
