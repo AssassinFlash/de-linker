@@ -6054,7 +6054,7 @@
    "conditions": [
     {
      "en": "The SEC3000C is optional for this grid-connected LAN configuration. The SEC3000C datasheet (EMEA, EN, p.1) prints Max. Inverters Supported RS485: 60, LAN: 10, so a LAN connection carries at most 10 inverters. If you select it, check the firmware on site before commissioning: the ET manual specifies SEC main program V7.5.32 or later, the SEC manual specifies WiFi/LAN Kit-20 V2.5.49 or later.",
-     "de": "Der SEC3000C ist fuer diese netzgekoppelte LAN-Konfiguration optional. Das SEC3000C-Datenblatt (EMEA, EN, S. 1) nennt Max. Inverters Supported RS485: 60, LAN: 10; eine LAN-Verbindung traegt daher hoechstens 10 Wechselrichter. Wenn Sie ihn einsetzen, pruefen Sie vor der Inbetriebnahme die Firmwarestaende: Laut ET-Handbuch ist fuer das SEC-Hauptprogramm mindestens V7.5.32 erforderlich, fuer das WiFi/LAN Kit-20 mindestens V2.5.49."
+     "de": "Der SEC3000C ist für diese netzgekoppelte LAN-Konfiguration optional. Das SEC3000C-Datenblatt (EMEA, EN, S. 1) nennt Max. Inverters Supported RS485: 60, LAN: 10; eine LAN-Verbindung trägt daher höchstens 10 Wechselrichter. Wenn Sie ihn einsetzen, prüfen Sie vor der Inbetriebnahme vor Ort die Firmwarestände: Laut ET-Handbuch ist für das SEC-Hauptprogramm mindestens V7.5.32 erforderlich, für das WiFi/LAN Kit-20 nennt das SEC-Handbuch mindestens V2.5.49."
     }
    ],
    "documents": [
@@ -6102,27 +6102,11 @@
    ],
    "conditions": [
     {
-     "en": "The SEC3000C is optional for this grid-connected RS485 configuration. The SEC3000C datasheet (EMEA, EN, p.1) prints Max. Inverters Supported RS485: 60, LAN: 10; the SEC3000C manual (p.53) limits one RS485 bus to 20 inverters and the unit provides three usable RS485 terminals, so 60 needs at least three buses. If you select it, check the firmware on site before commissioning.",
-     "de": "Der SEC3000C ist fuer diese netzgekoppelte RS485-Konfiguration optional. Das SEC3000C-Datenblatt (EMEA, EN, S. 1) nennt Max. Inverters Supported RS485: 60, LAN: 10; das SEC3000C-Handbuch (S. 53) begrenzt einen RS485-Bus auf 20 Wechselrichter, und das Geraet bietet drei nutzbare RS485-Klemmen, sodass 60 mindestens drei Busse erfordert. Wenn Sie ihn einsetzen, pruefen Sie vor der Inbetriebnahme die Firmwarestaende."
+     "en": "The SEC3000C is optional for this grid-connected RS485 configuration. The SEC3000C datasheet (EMEA, EN, p.1) prints Max. Inverters Supported RS485: 60, LAN: 10. The SEC3000C manual (p.53) limits one RS485 bus to 20 inverters, and the unit provides three usable RS485 terminals, so 60 inverters need at least three buses.",
+     "de": "Der SEC3000C ist für diese netzgekoppelte RS485-Konfiguration optional. Das SEC3000C-Datenblatt (EMEA, EN, S. 1) nennt Max. Inverters Supported RS485: 60, LAN: 10. Das SEC3000C-Handbuch (S. 53) begrenzt einen RS485-Bus auf 20 Wechselrichter, und das Gerät bietet drei nutzbare RS485-Klemmen; 60 Wechselrichter benötigen daher mindestens drei Busse."
     }
    ],
    "documents": [
-    {
-     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ET-100kW_User-Manual-EN_V1.2.pdf",
-     "page": 30
-    },
-    {
-     "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ET-100kW_User-Manual-EN_V1.2.pdf",
-     "page": 32
-    },
-    {
-     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_User-Manual-EN.pdf",
-     "page": 41
-    },
-    {
-     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_User-Manual-EN.pdf",
-     "page": 54
-    },
     {
      "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_Datasheet_EMEA-EN.pdf",
      "page": 1
@@ -6130,10 +6114,14 @@
     {
      "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_User-Manual-EN.pdf",
      "page": 53
+    },
+    {
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_User-Manual-EN.pdf",
+     "page": 19
     }
    ],
    "max_units": 60
   }
  ],
- "version": "159ddcb6c4c452c0a3629adaabd2d44b514fae454051f1e403e23b60c99d3b66"
+ "version": "cea8748acbf437e0d275f04fffd958b88ed324963da6f413f07811cfa571e540"
 }
