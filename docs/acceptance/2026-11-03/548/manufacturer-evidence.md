@@ -80,3 +80,25 @@ BYD Battery-Box（HVS/HVM/HVB）、Huawei LUNA2000、Sungrow SBR/SBH/PowerStack/
 - BAT-C 的 `0.98` 可用比例可用于校验报告里的可用能量，而不是重新推导。
 
 **仍未解决、且不能靠本文件绕过的**：无条件连续充放电 AC 功率标量（0/106）、`manufacturer_pair` 要求"已发布且无 condition"而 51/51 已发布 pair 都带 condition、AC/多芯/>6 mm² 载流表（`cable-references.json` 仍只有 2 根单芯 DC 光伏电缆）。这三项照旧必须是 `unresolved`。
+
+## 7. 组网上限：SEC3000C（本轮补）
+
+`GoodWe SEC3000C Datasheet (EMEA, EN) p.1` 原文表格：
+
+> `| Max. Inverters Supported | RS485: 60, LAN: 10 |`
+
+结论：所谓「一台 EzLogger 带 10 台逆变器」只在 **LAN 模式**下成立；走 RS485 是 60。任何把它当通用上限的用法都是错的，必须绑定接入方式。
+`EzLogger3000C` 本身在 143 份托管文档中**没有独立手册**，只作为 `Datalogger | EzLogger3000C × 1` 出现在 SEC3000C 的配置表里。
+
+## 8. 生产载荷实测：德语配置器的翻译内联（2026-11-03 14:47 CST）
+
+`/de/loesungskonfigurator/` 的 HTML 里有 `<script id="wp-script-module-translation-data-linker-planner">`，内容是 `build/planner/assets/planner.js` 的**整份**德语翻译目录，278,563 B，一个 `setLocaleData("linker-tools", …)` 调用。
+
+| 页面 | 原始 HTML | 压缩传输 |
+| --- | --- | --- |
+| `/solution-configurator/` | 279,781 B | **45,253 B** |
+| `/de/loesungskonfigurator/` | 587,690 B | **137,123 B** |
+| `/proforma-request/` | — | 66,302 B |
+| `/de/proforma-anfrage/` | — | 75,201 B |
+
+判断：德语配置器比英语多传约 92 KB（gzip 后），来源就是这份内联翻译目录。137 KB 的压缩传输对一个工具页在可接受范围内，**不构成缺陷**；先前「2.1 倍体积」的比较是未压缩字节，不作为性能问题成立。若将来要压，唯一正路是拆分 `planner.js` 的翻译目录或按需加载，而不是绕开 WP 的脚本模块翻译机制。
