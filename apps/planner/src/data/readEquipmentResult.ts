@@ -47,7 +47,7 @@ export function readEquipmentResult(
 		typeof pinned["woo.equipment_inputs"] !== "string" ||
 		!/^[a-f0-9]{64}$/.test(pinned["woo.equipment_inputs"]) ||
 		!status(assessment.equipment_status) ||
-		!["unresolved", "violated"].includes(String(assessment.overall_status)) ||
+		!status(assessment.overall_status) ||
 		!Array.isArray(assessment.checks) ||
 		!Array.isArray(assessment.provisional_bill_of_materials) ||
 		!Array.isArray(assessment.selected_products)
@@ -61,7 +61,7 @@ export function readEquipmentAssessment(value: unknown): JsonObject {
 	const assessment = readObject(value);
 	if (
 		!status(assessment.equipment_status) ||
-		!["unresolved", "violated"].includes(String(assessment.overall_status)) ||
+		!status(assessment.overall_status) ||
 		!Array.isArray(assessment.checks) ||
 		!Array.isArray(assessment.provisional_bill_of_materials) ||
 		!Array.isArray(assessment.selected_products)
@@ -275,8 +275,9 @@ export function readEquipmentAssessment(value: unknown): JsonObject {
 	if (
 		assessment.equipment_status !== expected ||
 		readObject(assessment.country_assessment).status !== "unresolved" ||
-		assessment.overall_status !==
-			(expected === "violated" ? "violated" : "unresolved")
+		![expected, expected === "violated" ? "violated" : "unresolved"].includes(
+			String(assessment.overall_status),
+		)
 	)
 		throw new ApiError(502, "invalid_run_result");
 	for (const value of assessment.provisional_bill_of_materials) {
