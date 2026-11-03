@@ -502,6 +502,7 @@ class ProductSources:
                 encode(
                     {
                         "schema_version": 1,
+                        "prepared": True,
                         "provider": "woocommerce",
                         "compatibility_origin": feed.get("compatibility_origin"),
                         "figure_projection_version": feed.get(

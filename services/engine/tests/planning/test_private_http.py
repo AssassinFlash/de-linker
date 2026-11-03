@@ -347,6 +347,7 @@ def test_current_products_use_shared_woo_preparation_and_close_on_change(
         assert [row["canonical_product_id"] for row in result["references"]] == [
             reference["product_id"]
         ]
+        assert result["prepared"] is True
         assert (
             result["loaded_source_revision"]
             == loaded.publication.feed["source_revision"]
