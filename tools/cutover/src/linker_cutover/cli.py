@@ -294,6 +294,13 @@ def _run_steps(
                 print(
                     "deploy: would switch every artifact in one shell, verify, then archive outside the web root (retain latest deploy only)"
                 )
+                print(
+                    "deploy: WARN: would verify after present that "
+                    f"{plan.WINDPRESS_CACHE} mtime advanced when the templates "
+                    f"or {plan.WINDPRESS_VOLUME} changed; a stale cache fails "
+                    "the deploy until wp-admin → WindPress → Performance → "
+                    "Generate runs (AGENTS.md §4)"
+                )
                 return 0
             deployed = steps.deploy(
                 target,

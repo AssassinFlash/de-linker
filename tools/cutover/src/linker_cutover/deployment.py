@@ -30,6 +30,13 @@ class Checkpoint:
     uploaded: dict[str, str] = field(default_factory=dict)
     completed: list[str] = field(default_factory=list)
     actions: list[str] = field(default_factory=list)
+    # The present phase's cache guard keeps its before-state here: the compiled
+    # cache's mtime (int, None when the file was missing) and the WindPress
+    # volume's tree (`<path> <sha256>` lines, None when the directory was
+    # absent), captured once before present first runs. A resume compares
+    # against this original state, not the one present already wrote — the
+    # guard must keep failing until the cache actually advances.
+    windpress: dict[str, int | list[str] | None] = field(default_factory=dict)
 
 
 def path(staging: Path) -> Path:

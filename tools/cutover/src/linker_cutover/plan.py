@@ -81,6 +81,24 @@ PAGE_CACHE_QUERY_EXCLUSION = "?"
 # and a deploy stops rather than writing it.
 PAGE_CACHE_LOGIN_COOKIE_OPTION = "litespeed.conf.cache-login_cookie"
 
+# WindPress compiles the volume (and the templates' Tailwind classes) into
+# this cache from a real browser, and a deploy has no browser: after present
+# changes anything the cache feeds on, only WindPress's own Generate (wp-admin
+# → Performance, or `just windpress-compile <instance>` locally) refreshes it.
+# The deploy cannot run that step, so `steps.deploy` verifies it instead —
+# AGENTS.md §4, the 2026-11-03 incident: the deploy completed 19:09, the
+# frontend kept serving the CSS compiled six hours earlier, and the fix only
+# reached visitors when Generate ran by hand at 19:19.
+WINDPRESS_VOLUME = "wp-content/uploads/windpress/data"
+WINDPRESS_CACHE = "wp-content/uploads/windpress/cache/tailwind.css"
+# Reads the cache's mtime through WordPress's own uploads directory — the same
+# read `just windpress-compile` uses — so no local/remote path has to be
+# assumed. Prints `missing` when the file does not exist.
+WINDPRESS_CACHE_MTIME_EVAL = (
+    "$m = @filemtime( wp_upload_dir()['basedir'] . '/windpress/cache/tailwind.css' );"
+    " echo false === $m ? 'missing' : $m;"
+)
+
 # The German (Formal) language packs, installed by WP-CLI from the translation
 # API (like INSTALLED_PLUGINS, the native installer is the verified channel):
 # WordPress core's and WooCommerce's de_DE_formal. The site is English and
