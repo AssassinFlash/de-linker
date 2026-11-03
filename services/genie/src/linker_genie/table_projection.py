@@ -249,7 +249,33 @@ def display_cell_text(
     return display
 
 
-def _pdf_span(span: object) -> bool:
+def _header_cell_wrap(fragments: object, cell: object) -> bool:
+    """Mirror of index.extract: a wrap whose every fragment sits inside one
+    native column-header cell is proven by that cell, even when the manual's
+    header leading exceeds the glyph-height rule (GoodWe BAT-C manual blob
+    c29cbf257d51559ef53f5da36a46ca10b4e5738fbd4a0d06fd74fbaff4a7fcb7,
+    p.80-83: 9.02405 pt gap over 8.93994 pt glyphs)."""
+    if not isinstance(fragments, list) or not isinstance(cell, dict):
+        return False
+    box = cell.get("bbox")
+    if (
+        not isinstance(box, (tuple, list))
+        or cell.get("bbox_origin") != "TOPLEFT"
+        or cell.get("column_header") is not True
+    ):
+        return False
+    return all(
+        isinstance(part, dict)
+        and isinstance(part.get("bbox"), (tuple, list))
+        and box[0] <= part["bbox"][0]
+        and part["bbox"][2] <= box[2]
+        and box[1] <= part["bbox"][1]
+        and part["bbox"][3] <= box[3]
+        for part in fragments
+    )
+
+
+def _pdf_span(span: object, cell: object = None) -> bool:
     if not isinstance(span, dict):
         return False
     size, box = span.get("page_size"), span.get("bbox")
@@ -300,15 +326,21 @@ def _pdf_span(span: object) -> bool:
         != span["text"].casefold()
     ):
         return False
+    # The containing header cell — not a wider global gap tolerance — can
+    # prove a wrap beyond the glyph-height rule; see _header_cell_wrap.
+    header_wrap = _header_cell_wrap(fragments, cell)
     for a, b in zip(fragments, fragments[1:], strict=False):
         first, second = a["bbox"], b["bbox"]
         if (
             a["char_end"] + 1 != b["char_start"]
             or not first[0] <= (second[0] + second[2]) / 2 <= first[2]
             or not second[0] <= (first[0] + first[2]) / 2 <= second[2]
-            or not 0
-            <= second[1] - first[3]
-            <= min(first[3] - first[1], second[3] - second[1])
+            or not (
+                0
+                <= second[1] - first[3]
+                <= min(first[3] - first[1], second[3] - second[1])
+                or header_wrap
+            )
         ):
             return False
     return True
@@ -473,7 +505,9 @@ def read_cells(value: object) -> tuple[SourceCell, ...] | None:
         spans = cell.get("model_spans", [])
         if not isinstance(spans, list):
             return None
-        if not all(_pdf_span(span) for span in spans):
+        # The owning cell supplies the header-containment proof for wraps
+        # recovered beyond the glyph-height rule (index.extract).
+        if not all(_pdf_span(span, cell) for span in spans):
             return None
         external = None
         if "external_axis" in cell:
