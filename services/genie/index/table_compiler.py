@@ -118,12 +118,7 @@ def _author_contexts(
     output = {}
     for chunk in chunks:
         sha = chunk.doc_sha256
-        boundaries = [
-            boundary
-            for boundary in active.get(sha, [])
-            if not boundary.get("table_local")
-            or boundary["table_local"] == chunk.source_table
-        ]
+        boundaries = list(active.get(sha, []))
         headings = chunk.source_headings
         if not headings and chunk.section != previous.get(sha):
             headings = (chunk.section,) if chunk.section else ()
@@ -246,11 +241,6 @@ def _author_contexts(
                     )
                 ):
                     boundary["rating_cover"] = True
-                if kind == "heading" and chunk.source_table:
-                    # A table's own caption restricts that table, not the
-                    # document around it. "Table38 BAT Port Quantity by
-                    # Inverter Model" must not veto later spec tables.
-                    boundary["table_local"] = chunk.source_table
                 boundaries.append(boundary)
         if chunk.source_picture:
             assert outer is not None

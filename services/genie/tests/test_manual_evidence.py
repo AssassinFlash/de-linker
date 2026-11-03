@@ -16,6 +16,7 @@ from index import corpus, store
 from index.chunking import Chunk
 from index.corpus import DocumentRow
 from index.manual_evidence import compile_manual_evidence
+from index.table_compiler import _author_contexts
 from linker_genie.manual_evidence import (
     evidence_id,
     subject_matches,
@@ -35,7 +36,8 @@ FIXTURE = (
 def fixture() -> tuple[dict[str, Any], list[Chunk], dict[str, list[dict[str, Any]]]]:
     value = json.loads(gzip.decompress(FIXTURE.read_bytes()))
     chunks = [Chunk(**item) for item in value["chunks"]]
-    return value["manifest"], chunks, value["contexts"]
+    contexts = _author_contexts(chunks, Snapshot.read(value["manifest"]), {})
+    return value["manifest"], chunks, contexts
 
 
 def selected() -> tuple[dict[str, Any], list[Chunk], dict[str, Any]]:
@@ -82,6 +84,35 @@ def test_reviewed_sources_obey_exact_model_and_finer_section_boundaries() -> Non
         proof["product_ids"] == [6321] and "Locate the fault position" in unit.text
         for unit in units
         for proof in [proofs[unit.id]]
+    )
+
+    # Cover headings attached to a TOC table chunk (f4d53810d74c-p2-c0136c0d)
+    # must survive across subsequent tables (docling:p3:#/tables/1) until p.16.
+    esa_anchor = next(c for c in original if c.id == "f4d53810d74c-p2-c0136c0d")
+    esa_toc_p3 = replace(
+        esa_anchor,
+        id="f4d53810d74c-p3-3db83bb6",
+        page=3,
+        source_table="docling:p3:#/tables/1",
+        source_headings=(),
+        text="| 5.6 Replacement of the Transformer |",
+    )
+    with_toc_p3 = [
+        *original[:-1],
+        esa_toc_p3,
+        original[-1],
+    ]
+    toc_units, toc_proofs = compile_manual_evidence(
+        with_toc_p3,
+        Snapshot.read(raw),
+        Words(),
+        512,
+        restricted_contexts=_author_contexts(with_toc_p3, Snapshot.read(raw), {}),
+    )
+    assert any(
+        proof["product_ids"] == [6321] and "Locate the fault position" in unit.text
+        for unit in toc_units
+        for proof in [toc_proofs[unit.id]]
     )
 
     # An unreviewed, finer author restriction cannot borrow a known reset.

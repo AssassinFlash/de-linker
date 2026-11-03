@@ -2492,12 +2492,18 @@ def chunks_with_intro(prefix: str, intro: list[Block]) -> list[Chunk]:
         # Another table's caption and a feature-availability note cannot
         # narrow a physically proven axis (BAT-C "Table38 …" / "This function
         # is available only on battery systems that support cloud board
-        # communication").
+        # communication"), including when the caption is attached to a table.
         (
             [
                 Block(
-                    "text",
+                    "heading",
                     text="Table38 BAT Port Quantity by Inverter Model",
+                ),
+                Block(
+                    "table",
+                    rows=(("Inverter Model", "Quantity"), ("GW80K-ET-G10", "2")),
+                    header_rows=1,
+                    source_id="#/tables/38",
                 ),
                 Block(
                     "text",
@@ -2508,6 +2514,23 @@ def chunks_with_intro(prefix: str, intro: list[Block]) -> list[Chunk]:
                 ),
             ],
             {1179, 1181, 2063, 2064},
+        ),
+        # A genuine narrowing heading emitted on a preceding table chunk is a
+        # section boundary, not a table-local caption, and still fails closed.
+        (
+            [
+                Block(
+                    "heading",
+                    text="Nur für H2-25K-T3",
+                ),
+                Block(
+                    "table",
+                    rows=(("Contents", "Page"), ("1 Overview", "4")),
+                    header_rows=1,
+                    source_id="#/tables/0",
+                ),
+            ],
+            {1179},
         ),
     ],
 )
