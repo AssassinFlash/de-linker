@@ -636,3 +636,121 @@ def test_a_header_cell_proves_a_wrap_beyond_the_glyph_height_rule(
         assert "model_spans" not in header[2]
         assert header[2]["text"] == "GW92.1-BAT- AC-G10"
         assert model_axis(header) is None
+
+
+@pytest.mark.parametrize("clip_pt", [0.3, pytest.param(2.0, id="beyond-slop")])
+def test_header_cell_containment_tolerates_only_subglyph_measurement_clip(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    clip_pt: float,
+) -> None:
+    # On the same BAT-C p.80 geometry Docling's own header cell box is drawn
+    # a fraction of a glyph inside the text layer's ink (box top 160.5
+    # against fragment top 160.3 over 8.93994 pt glyphs). Containment keeps
+    # its meaning while absorbing that cross-tool measurement noise: a clip
+    # within the 0.5 pt sub-glyph slop still proves the wrap, a clip of
+    # 2 pt — a fifth of the glyph — does not.
+    models = ["GW61.4-BAT", "GW92.1-BAT", "GW102.4-BAT", "GW112.6-BAT"]
+    raw = ""
+    char_boxes: dict[int, tuple[float, float, float, float]] = {}
+    index = 0
+    upper_bottom, glyph_height = 111.026, 8.93994
+    for column, model in enumerate(models):
+        left = 130.0 + column * 90.0
+        gap = 7.3741 if column == 0 else 9.02405
+        lower_top = upper_bottom - gap
+        for offset, char in enumerate(model):
+            char_boxes[index] = (
+                left + 20.0 + offset * 4.0,
+                upper_bottom,
+                left + 24.0 + offset * 4.0,
+                upper_bottom + glyph_height,
+            )
+            raw += char
+            index += 1
+        char_boxes[index] = (
+            left + 60.0,
+            upper_bottom,
+            left + 64.0,
+            upper_bottom + glyph_height,
+        )
+        raw += "￾"
+        index += 1
+        for offset, char in enumerate("AC-G10"):
+            char_boxes[index] = (
+                left + 24.0 + offset * 4.0,
+                lower_top - glyph_height,
+                left + 28.0 + offset * 4.0,
+                lower_top,
+            )
+            raw += char
+            index += 1
+        raw += "\r\n"
+        index += 2
+
+    def charbox(position: int) -> tuple[float, float, float, float]:
+        return char_boxes.get(position, (0.0, 0.0, 0.0, 0.0))
+
+    text_page = MagicMock()
+    text_page.get_text_range.return_value = raw
+    text_page.count_chars.return_value = len(raw)
+    text_page.get_charbox.side_effect = charbox
+    page = MagicMock()
+    page.get_rotation.return_value = 0
+    page.get_bbox.return_value = (0.0, 0.0, 595.0, 200.0)
+    page.get_textpage.return_value = text_page
+    document = MagicMock()
+    document.__getitem__.return_value = page
+    monkeypatch.setattr("pypdfium2.PdfDocument", lambda _path: document)
+    content = b"BAT-C clipped header cell fixture"
+    pdf = tmp_path / f"{hashlib.sha256(content).hexdigest()}.pdf"
+    pdf.write_bytes(content)
+    # TOPLEFT frame: the upper fragment's top edge sits at
+    # 200 - (upper_bottom + glyph_height) = 80.034. The cell box top cuts
+    # clip_pt into that ink, exactly like Docling's measured BAT-C boxes.
+    frag_top = 200.0 - (upper_bottom + glyph_height)
+    box_top = frag_top + clip_pt
+    cells = tuple(
+        SourceCell(
+            row_start=0,
+            row_end=1,
+            col_start=col,
+            col_end=col + 1,
+            text="Technical Data" if col == 0 else f"{models[col - 1]}- AC-G10",
+            column_header=True,
+            row_header=False,
+            row_section=False,
+            bbox=(40.0, 78.0, 120.0, 108.0)
+            if col == 0
+            else (
+                130.0 + (col - 1) * 90.0,
+                box_top,
+                220.0 + (col - 1) * 90.0,
+                108.0,
+            ),
+            bbox_origin="TOPLEFT",
+        )
+        for col in range(5)
+    )
+    block = Block("table", source_cells=cells)
+
+    enriched = enrich_model_axes([Page(2, "docling", [block])], pdf)[0].blocks[0]
+    header = enriched.source_cells
+
+    if clip_pt <= 0.5:
+        axis = [
+            "GW61.4-BAT-AC-G10",
+            "GW92.1-BAT-AC-G10",
+            "GW102.4-BAT-AC-G10",
+            "GW112.6-BAT-AC-G10",
+        ]
+        assert model_axis(header) == axis
+        assert header[2]["text"] == "GW92.1-BAT-AC-G10"
+        # The serving-side validator re-proves the slopped containment from
+        # the same clipped header cell.
+        served = read_cells(header)
+        assert served is not None
+        assert model_axis(served) == axis
+    else:
+        assert "model_spans" not in header[2]
+        assert model_axis(header) is None
