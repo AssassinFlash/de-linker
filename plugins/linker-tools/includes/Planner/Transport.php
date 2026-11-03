@@ -131,6 +131,22 @@ final class Transport {
 	 * @return array<string,mixed>|WP_Error Successful object or private refusal.
 	 */
 	public function object( Principal $principal, string $path, array $command, string $previous_guest = '' ): array|WP_Error {
+		if ( 'projects/list' === $path ) {
+			$command += array(
+				'page_size' => 10,
+				'after'     => null,
+			);
+		} elseif ( 'projects/read' === $path ) {
+			$command += array(
+				'revision' => null,
+			);
+		} elseif ( 'projects/runs' === $path ) {
+			$command += array(
+				'page_size'         => 20,
+				'before_created_at' => null,
+				'before_id'         => null,
+			);
+		}
 		$body = wp_json_encode( $command );
 		if ( ! is_string( $body ) ) {
 			return Failure::make( 'input', 400 );

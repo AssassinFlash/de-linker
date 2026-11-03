@@ -66,6 +66,7 @@ final class Gateway {
 
 	/** Registered before any REST dispatch, so unknown routes/errors are private. */
 	public function lifecycle(): void {
+		add_filter( 'determine_current_user', array( $this->identity, 'rest_nonce_user' ), 25 );
 		add_filter( 'rest_pre_dispatch', array( $this, 'before_parse' ), 0, 3 );
 		// Installed ACF initialisation returns null even after an earlier error.
 		// Native integrations are at priority 10; retain the refusal after them.

@@ -20,6 +20,24 @@ final class NativeIdentity {
 	public const NONCE_ACTION = 'woocommerce_linker_planner_v1';
 
 	/**
+	 * Authenticate the core rest-nonce AJAX action against LOGGED_IN_COOKIE
+	 * so the issued wp_rest nonce matches the session token /wp-json reads.
+	 *
+	 * @param mixed $user Resolved user ID or false.
+	 */
+	public function rest_nonce_user( mixed $user ): mixed {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Core rest-nonce action is compared strictly against a constant literal to issue the REST nonce.
+		$action = isset( $_REQUEST['action'] ) && is_string( $_REQUEST['action'] ) ? $_REQUEST['action'] : '';
+		if ( function_exists( 'wp_doing_ajax' ) && wp_doing_ajax() && 'rest-nonce' === $action ) {
+			$logged_in = wp_validate_auth_cookie( '', 'logged_in' );
+			if ( false !== $logged_in ) {
+				return (int) $logged_in;
+			}
+		}
+		return $user;
+	}
+
+	/**
 	 * Resolve only after WordPress REST authentication has run.
 	 *
 	 * @param WP_REST_Request $request Native request.
@@ -75,8 +93,8 @@ final class NativeIdentity {
 			if ( is_wp_error( $session ) ) {
 				return $session;
 			}
-			$cookie = wp_parse_auth_cookie( '', 'logged_in' );
-			return $this->context( $principal, true, is_array( $cookie ) ? (int) $cookie['expiration'] : 0, wp_get_session_token(), wp_create_nonce( 'wp_rest' ) );
+			$token = wp_get_session_token();
+			return $this->context( $principal, true, $this->user_expiry( get_current_user_id(), $token ), $token, wp_create_nonce( 'wp_rest' ) );
 		}
 		if ( false !== wp_validate_auth_cookie( '', 'logged_in' ) ) {
 			return Failure::make( 'rest_nonce', 403 );
@@ -119,8 +137,8 @@ final class NativeIdentity {
 			if ( is_wp_error( $principal ) ) {
 				return $principal;
 			}
-			$cookie = wp_parse_auth_cookie( '', 'logged_in' );
-			return $this->context( $principal, true, is_array( $cookie ) ? (int) $cookie['expiration'] : 0, wp_get_session_token(), wp_create_nonce( 'wp_rest' ) );
+			$token = wp_get_session_token();
+			return $this->context( $principal, true, $this->user_expiry( get_current_user_id(), $token ), $token, wp_create_nonce( 'wp_rest' ) );
 		}
 		if ( false !== wp_validate_auth_cookie( '', 'logged_in' ) ) {
 			return Failure::make( 'rest_nonce', 403 );
@@ -218,6 +236,29 @@ final class NativeIdentity {
 	 */
 	public static function query_scope( Principal $principal, string $session ): string {
 		return wp_hash( 'linker-planner-query:v1|' . $principal->kind . '|' . $principal->subject . '|' . $session, 'nonce', 'sha256' );
+	}
+
+	/**
+	 * Resolve positive session expiration across cookie schemes and session tokens.
+	 *
+	 * @param int    $user    Verified user ID.
+	 * @param string $session Active session token.
+	 */
+	private function user_expiry( int $user, string $session ): int {
+		$cookie = wp_parse_auth_cookie( '', 'logged_in' );
+		if ( ! is_array( $cookie ) || (int) $cookie['expiration'] <= 0 ) {
+			$cookie = wp_parse_auth_cookie();
+		}
+		if ( is_array( $cookie ) && (int) $cookie['expiration'] > 0 ) {
+			return (int) $cookie['expiration'];
+		}
+		if ( '' !== $session && class_exists( \WP_Session_Tokens::class ) ) {
+			$record = \WP_Session_Tokens::get_instance( $user )->get( $session );
+			if ( is_array( $record ) && (int) ( $record['expiration'] ?? 0 ) > 0 ) {
+				return (int) $record['expiration'];
+			}
+		}
+		return time() + 2 * DAY_IN_SECONDS;
 	}
 
 	/**

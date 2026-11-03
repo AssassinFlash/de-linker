@@ -112,6 +112,74 @@ final class TransportTest extends TestCase {
 		self::assertInstanceOf( \WP_Error::class, $refusal );
 		self::assertSame( 'linker_planner_claim_conflict', $refusal->get_error_code() );
 	}
+
+	/** Omitted optional pagination and revision fields are filled before engine dispatch. */
+	public function test_omitted_optional_command_fields_receive_gateway_defaults(): void {
+		$sent      = array();
+		$transport = new Transport(
+			static function ( string $url, array $args ) use ( &$sent ): array {
+				$sent[ $url ] = json_decode( $args['body'], true );
+				return array(
+					'status' => 200,
+					'type'   => 'application/json',
+					'body'   => '{"ok":true}',
+				);
+			}
+		);
+		$owner     = new Principal( 'user', 'wp:1:user:1' );
+		self::assertSame(
+			array( 'ok' => true ),
+			$transport->object( $owner, 'projects/list', array( 'schema_version' => 1 ) )
+		);
+		self::assertSame(
+			array( 'ok' => true ),
+			$transport->object(
+				$owner,
+				'projects/read',
+				array(
+					'schema_version' => 1,
+					'project_id'     => 'proj_1',
+				)
+			)
+		);
+		self::assertSame(
+			array( 'ok' => true ),
+			$transport->object(
+				$owner,
+				'projects/runs',
+				array(
+					'schema_version' => 1,
+					'project_id'     => 'proj_1',
+				)
+			)
+		);
+		self::assertSame(
+			array(
+				'schema_version' => 1,
+				'page_size'      => 10,
+				'after'          => null,
+			),
+			$sent['https://engine.test/projects/list']
+		);
+		self::assertSame(
+			array(
+				'schema_version' => 1,
+				'project_id'     => 'proj_1',
+				'revision'       => null,
+			),
+			$sent['https://engine.test/projects/read']
+		);
+		self::assertSame(
+			array(
+				'schema_version'    => 1,
+				'project_id'        => 'proj_1',
+				'page_size'         => 20,
+				'before_created_at' => null,
+				'before_id'         => null,
+			),
+			$sent['https://engine.test/projects/runs']
+		);
+	}
 	/** A series stream must be owned, purpose-bound and match the frozen hash. */
 	public function test_owned_series_is_streamed_and_removed_on_refusal(): void {
 		$bytes     = "interval,value\n0,1\n";

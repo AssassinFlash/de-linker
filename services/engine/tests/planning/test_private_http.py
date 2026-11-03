@@ -1878,3 +1878,45 @@ def test_profile_preview_checks_owner_before_parsing_and_enforces_wire_page_boun
             "/profiles/preview", json={**body, **changed}, headers=headers()
         )
         assert response.status_code == 422
+
+
+def test_project_list_read_and_runs_accept_omitted_optional_parameters(
+    rig: Rig,
+) -> None:
+    project_id = rig.create("optional-params")
+    listed = rig.client.post(
+        "/projects/list",
+        json={"schema_version": 1},
+        headers=headers(),
+    )
+    assert listed.status_code == 200
+    assert [row["id"] for row in listed.json()["items"]] == [project_id]
+    listed_with_size = rig.client.post(
+        "/projects/list",
+        json={"schema_version": 1, "page_size": 2},
+        headers=headers(),
+    )
+    assert listed_with_size.status_code == 200
+    read_latest = rig.client.post(
+        "/projects/read",
+        json={"schema_version": 1, "project_id": project_id},
+        headers=headers(),
+    )
+    assert read_latest.status_code == 200
+    assert read_latest.json()["id"] == project_id
+    runs = rig.client.post(
+        "/projects/runs",
+        json={"schema_version": 1, "project_id": project_id},
+        headers=headers(),
+    )
+    assert runs.status_code == 200
+    assert runs.json()["items"] == []
+    for path, bad in (
+        ("/projects/list", {"schema_version": 1, "page_size": None}),
+        (
+            "/projects/runs",
+            {"schema_version": 1, "project_id": project_id, "page_size": None},
+        ),
+    ):
+        refused = rig.client.post(path, json=bad, headers=headers())
+        assert refused.status_code == 422
