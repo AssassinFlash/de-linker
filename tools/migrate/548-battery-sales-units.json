@@ -1,0 +1,568 @@
+{
+  "schema_version": 1,
+  "kind": "battery_sales_unit_v1",
+  "purpose": "One-time reviewed import of the sales_unit_kind figure for the 17 battery products the engineering engine excluded as sales_unit_evidence_missing; never a runtime product source.",
+  "evidence": {
+    "draft": "docs/acceptance/2026-11-03/548/evidence/sales-unit-draft.json",
+    "engine_gate": "services/engine/src/linker_engine/planning/equipment_search_space.py:49-60",
+    "citation_substitution": "Products 6521 and 6522: the draft cites the ESA user manual EN V1.4 (doc-ef7a310231d18d71e7a17232419255190c83d76026ecdc24d9e7186d48cd98a8) p.47 and the ESA quick installation guide POLY V1.7 (doc-4dfeb5cd8c5860ec44ae7683f8c352bcd543141753659bb920e2a57dff5aed6d), neither of which is associated with these products in the production feed read on 2026-11-03; the citation therefore binds to the associated ESA user manual EN V1.5 (doc-a7cfa5ad5c55cfba8128f3992a05ac5cb86138460b1e9dcbea4fd833142abdf7) p.48, which carries the identical sentence verbatim."
+  },
+  "excluded": {
+    "2092": "BC2-HV1 is the B2 stack's high-voltage control module (battery_controller); it is outside the admission enumeration {battery_module, battery_system} in equipment_search_space.py:49-60 and stays excluded by design."
+  },
+  "products": {
+    "1832": {
+      "model": "B2-5.0-HV1",
+      "sku": "DLK-SAJ-B250HV1",
+      "device_class": "home-storage",
+      "product_revision": "42877aece6adcf49349bad7e3ca22c3fbcaf4e69864718683fc1f1dd7ec1fb70",
+      "documents": {
+        "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a"
+      },
+      "conditions": [],
+      "basis": {
+        "sales_unit": "battery_system",
+        "modules_per_sales_unit": 1,
+        "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+        "document_revision": "02d20e0d3ef6a38fc484e5ff72676b176baa4c26b9356993a0f41fe74cb41758",
+        "blob_sha256": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a",
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+        "page": 2,
+        "quote": "MODEL | B2-5.0-HV1 | B2-10.0-HV1 | B2-15.0-HV1 | B2-20.0-HV1 | B2-25.0-HV1 | Battery Module | BU2-5.0-HV1 (32S1P 102.4V50Ah) | BU2-5.0-HV1 (32S1P 102.4V50Ah) | BU2-5.0-HV1 (32S1P 102.4V50Ah) | BU2-5.0-HV1 (32S1P 102.4V50Ah) | BU2-5.0-HV1 (32S1P 102.4V50Ah) | No. of Modules | 1 | 2 | 3 | 4 | 5 | Rated Energy [kWh] | 5.0 | 10.0 | 15.0 | 20.0 | 25.0"
+      },
+      "figures": {
+        "sales_unit_kind": {
+          "expect": null,
+          "set": {
+            "value": "battery_system",
+            "unit": null,
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+              "page": 2
+            }
+          }
+        }
+      }
+    },
+    "2067": {
+      "model": "B2-10.0-HV1",
+      "sku": "DLK-SAJ-B2100HV1",
+      "device_class": "home-storage",
+      "product_revision": "81e0658a21b984008531d9f919f7868fa508817d9383874af918b4d3fd17e742",
+      "documents": {
+        "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a"
+      },
+      "conditions": [],
+      "basis": {
+        "sales_unit": "battery_system",
+        "modules_per_sales_unit": 2,
+        "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+        "document_revision": "02d20e0d3ef6a38fc484e5ff72676b176baa4c26b9356993a0f41fe74cb41758",
+        "blob_sha256": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a",
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+        "page": 2,
+        "quote": "MODEL | B2-5.0-HV1 | B2-10.0-HV1 | B2-15.0-HV1 | B2-20.0-HV1 | B2-25.0-HV1 | Battery Module | BU2-5.0-HV1 (32S1P 102.4V50Ah) | BU2-5.0-HV1 (32S1P 102.4V50Ah) | BU2-5.0-HV1 (32S1P 102.4V50Ah) | BU2-5.0-HV1 (32S1P 102.4V50Ah) | BU2-5.0-HV1 (32S1P 102.4V50Ah) | No. of Modules | 1 | 2 | 3 | 4 | 5 | Rated Energy [kWh] | 5.0 | 10.0 | 15.0 | 20.0 | 25.0"
+      },
+      "figures": {
+        "sales_unit_kind": {
+          "expect": null,
+          "set": {
+            "value": "battery_system",
+            "unit": null,
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+              "page": 2
+            }
+          }
+        }
+      }
+    },
+    "2068": {
+      "model": "B2-15.0-HV1",
+      "sku": "DLK-SAJ-B2150HV1",
+      "device_class": "home-storage",
+      "product_revision": "b91f8897cdbd3e46e033e49f868216fb4ff6fff177502aa5292c4d350256740d",
+      "documents": {
+        "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a"
+      },
+      "conditions": [],
+      "basis": {
+        "sales_unit": "battery_system",
+        "modules_per_sales_unit": 3,
+        "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+        "document_revision": "02d20e0d3ef6a38fc484e5ff72676b176baa4c26b9356993a0f41fe74cb41758",
+        "blob_sha256": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a",
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+        "page": 2,
+        "quote": "MODEL | B2-5.0-HV1 | B2-10.0-HV1 | B2-15.0-HV1 | B2-20.0-HV1 | B2-25.0-HV1 | Battery Module | BU2-5.0-HV1 (32S1P 102.4V50Ah) | BU2-5.0-HV1 (32S1P 102.4V50Ah) | BU2-5.0-HV1 (32S1P 102.4V50Ah) | BU2-5.0-HV1 (32S1P 102.4V50Ah) | BU2-5.0-HV1 (32S1P 102.4V50Ah) | No. of Modules | 1 | 2 | 3 | 4 | 5 | Rated Energy [kWh] | 5.0 | 10.0 | 15.0 | 20.0 | 25.0"
+      },
+      "figures": {
+        "sales_unit_kind": {
+          "expect": null,
+          "set": {
+            "value": "battery_system",
+            "unit": null,
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+              "page": 2
+            }
+          }
+        }
+      }
+    },
+    "2069": {
+      "model": "B2-20.0-HV1",
+      "sku": "DLK-SAJ-B2200HV1",
+      "device_class": "home-storage",
+      "product_revision": "65a741b4511dc53a0fcff8ca0a2cc0eeb8dbad548270a156de8c96163ca3d2cd",
+      "documents": {
+        "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a"
+      },
+      "conditions": [],
+      "basis": {
+        "sales_unit": "battery_system",
+        "modules_per_sales_unit": 4,
+        "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+        "document_revision": "02d20e0d3ef6a38fc484e5ff72676b176baa4c26b9356993a0f41fe74cb41758",
+        "blob_sha256": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a",
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+        "page": 2,
+        "quote": "MODEL | B2-5.0-HV1 | B2-10.0-HV1 | B2-15.0-HV1 | B2-20.0-HV1 | B2-25.0-HV1 | Battery Module | BU2-5.0-HV1 (32S1P 102.4V50Ah) | BU2-5.0-HV1 (32S1P 102.4V50Ah) | BU2-5.0-HV1 (32S1P 102.4V50Ah) | BU2-5.0-HV1 (32S1P 102.4V50Ah) | BU2-5.0-HV1 (32S1P 102.4V50Ah) | No. of Modules | 1 | 2 | 3 | 4 | 5 | Rated Energy [kWh] | 5.0 | 10.0 | 15.0 | 20.0 | 25.0"
+      },
+      "figures": {
+        "sales_unit_kind": {
+          "expect": null,
+          "set": {
+            "value": "battery_system",
+            "unit": null,
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+              "page": 2
+            }
+          }
+        }
+      }
+    },
+    "2070": {
+      "model": "B2-25.0-HV1",
+      "sku": "DLK-SAJ-B2250HV1",
+      "device_class": "home-storage",
+      "product_revision": "d22d846475575a9182400e2c6a02a42ab1aa504367947e9695884d4978672ede",
+      "documents": {
+        "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a"
+      },
+      "conditions": [],
+      "basis": {
+        "sales_unit": "battery_system",
+        "modules_per_sales_unit": 5,
+        "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+        "document_revision": "02d20e0d3ef6a38fc484e5ff72676b176baa4c26b9356993a0f41fe74cb41758",
+        "blob_sha256": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a",
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+        "page": 2,
+        "quote": "MODEL | B2-5.0-HV1 | B2-10.0-HV1 | B2-15.0-HV1 | B2-20.0-HV1 | B2-25.0-HV1 | Battery Module | BU2-5.0-HV1 (32S1P 102.4V50Ah) | BU2-5.0-HV1 (32S1P 102.4V50Ah) | BU2-5.0-HV1 (32S1P 102.4V50Ah) | BU2-5.0-HV1 (32S1P 102.4V50Ah) | BU2-5.0-HV1 (32S1P 102.4V50Ah) | No. of Modules | 1 | 2 | 3 | 4 | 5 | Rated Energy [kWh] | 5.0 | 10.0 | 15.0 | 20.0 | 25.0"
+      },
+      "figures": {
+        "sales_unit_kind": {
+          "expect": null,
+          "set": {
+            "value": "battery_system",
+            "unit": null,
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+              "page": 2
+            }
+          }
+        }
+      }
+    },
+    "4103": {
+      "model": "CB2-57.3-HV5",
+      "sku": "DLK-SAJ-CB2573HV5",
+      "device_class": "battery-systems",
+      "product_revision": "c5b70c0960b29c593e185222e4b66226d397ed43de5fa61ea91aa97a4fca765f",
+      "documents": {
+        "doc-62719ddebe0f8a4b3f070630ac3824f78b75e4cb60f416a64b66eb3c6953074a": "ee6b3a41b8250367c67e285e5d69c15f19981eda3d83fdd476226393cb38cff5"
+      },
+      "conditions": [],
+      "basis": {
+        "sales_unit": "battery_system",
+        "modules_per_sales_unit": 4,
+        "document_id": "doc-62719ddebe0f8a4b3f070630ac3824f78b75e4cb60f416a64b66eb3c6953074a",
+        "document_revision": "cfcb53a726f19fb059ea48b534fcd4fa85f3a27081d76780b034672444b8259a",
+        "blob_sha256": "ee6b3a41b8250367c67e285e5d69c15f19981eda3d83fdd476226393cb38cff5",
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_User-Manual_EN_V0.0.pdf",
+        "page": 12,
+        "quote": "Model | CB2-57.3-HV5 | CB2-71.6-HV5 | CB2-85.9-HV5 | CB2-100.3-HV5 | Rated Energy [kWh] | 57.3 | 71.6 | 85.9 | 100.3 | Usable Energy [kWh] | 51.5 | 64.4 | 77.3 | 90.2 | Rated Capacity [Ah] | 280 | 280 | 280 | 280 | No. of Battery Modules | 4 | 5 | 6 | 7"
+      },
+      "figures": {
+        "sales_unit_kind": {
+          "expect": null,
+          "set": {
+            "value": "battery_system",
+            "unit": null,
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_User-Manual_EN_V0.0.pdf",
+              "page": 12
+            }
+          }
+        }
+      }
+    },
+    "4104": {
+      "model": "CB2-71.6-HV5",
+      "sku": "DLK-SAJ-CB2716HV5",
+      "device_class": "battery-systems",
+      "product_revision": "54fd89f5d0de731c020628455d6a3418f7ebb5f5f1912d86341dcd67dd1eee7a",
+      "documents": {
+        "doc-62719ddebe0f8a4b3f070630ac3824f78b75e4cb60f416a64b66eb3c6953074a": "ee6b3a41b8250367c67e285e5d69c15f19981eda3d83fdd476226393cb38cff5"
+      },
+      "conditions": [],
+      "basis": {
+        "sales_unit": "battery_system",
+        "modules_per_sales_unit": 5,
+        "document_id": "doc-62719ddebe0f8a4b3f070630ac3824f78b75e4cb60f416a64b66eb3c6953074a",
+        "document_revision": "cfcb53a726f19fb059ea48b534fcd4fa85f3a27081d76780b034672444b8259a",
+        "blob_sha256": "ee6b3a41b8250367c67e285e5d69c15f19981eda3d83fdd476226393cb38cff5",
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_User-Manual_EN_V0.0.pdf",
+        "page": 12,
+        "quote": "Model | CB2-57.3-HV5 | CB2-71.6-HV5 | CB2-85.9-HV5 | CB2-100.3-HV5 | Rated Energy [kWh] | 57.3 | 71.6 | 85.9 | 100.3 | Usable Energy [kWh] | 51.5 | 64.4 | 77.3 | 90.2 | Rated Capacity [Ah] | 280 | 280 | 280 | 280 | No. of Battery Modules | 4 | 5 | 6 | 7"
+      },
+      "figures": {
+        "sales_unit_kind": {
+          "expect": null,
+          "set": {
+            "value": "battery_system",
+            "unit": null,
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_User-Manual_EN_V0.0.pdf",
+              "page": 12
+            }
+          }
+        }
+      }
+    },
+    "4105": {
+      "model": "CB2-85.9-HV5",
+      "sku": "DLK-SAJ-CB2859HV5",
+      "device_class": "battery-systems",
+      "product_revision": "cdfcb04ca728c2b9b32d972acf162fe4334b1b2b88017c06b6a93b0437168e59",
+      "documents": {
+        "doc-62719ddebe0f8a4b3f070630ac3824f78b75e4cb60f416a64b66eb3c6953074a": "ee6b3a41b8250367c67e285e5d69c15f19981eda3d83fdd476226393cb38cff5"
+      },
+      "conditions": [],
+      "basis": {
+        "sales_unit": "battery_system",
+        "modules_per_sales_unit": 6,
+        "document_id": "doc-62719ddebe0f8a4b3f070630ac3824f78b75e4cb60f416a64b66eb3c6953074a",
+        "document_revision": "cfcb53a726f19fb059ea48b534fcd4fa85f3a27081d76780b034672444b8259a",
+        "blob_sha256": "ee6b3a41b8250367c67e285e5d69c15f19981eda3d83fdd476226393cb38cff5",
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_User-Manual_EN_V0.0.pdf",
+        "page": 12,
+        "quote": "Model | CB2-57.3-HV5 | CB2-71.6-HV5 | CB2-85.9-HV5 | CB2-100.3-HV5 | Rated Energy [kWh] | 57.3 | 71.6 | 85.9 | 100.3 | Usable Energy [kWh] | 51.5 | 64.4 | 77.3 | 90.2 | Rated Capacity [Ah] | 280 | 280 | 280 | 280 | No. of Battery Modules | 4 | 5 | 6 | 7"
+      },
+      "figures": {
+        "sales_unit_kind": {
+          "expect": null,
+          "set": {
+            "value": "battery_system",
+            "unit": null,
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_User-Manual_EN_V0.0.pdf",
+              "page": 12
+            }
+          }
+        }
+      }
+    },
+    "4106": {
+      "model": "CB2-100.3-HV5",
+      "sku": "DLK-SAJ-CB21003HV5",
+      "device_class": "battery-systems",
+      "product_revision": "6ad1407147bc8c8002508b989e1fdf8b6c2bcfbc9c63f43d22555c7136081010",
+      "documents": {
+        "doc-62719ddebe0f8a4b3f070630ac3824f78b75e4cb60f416a64b66eb3c6953074a": "ee6b3a41b8250367c67e285e5d69c15f19981eda3d83fdd476226393cb38cff5"
+      },
+      "conditions": [],
+      "basis": {
+        "sales_unit": "battery_system",
+        "modules_per_sales_unit": 7,
+        "document_id": "doc-62719ddebe0f8a4b3f070630ac3824f78b75e4cb60f416a64b66eb3c6953074a",
+        "document_revision": "cfcb53a726f19fb059ea48b534fcd4fa85f3a27081d76780b034672444b8259a",
+        "blob_sha256": "ee6b3a41b8250367c67e285e5d69c15f19981eda3d83fdd476226393cb38cff5",
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_User-Manual_EN_V0.0.pdf",
+        "page": 12,
+        "quote": "Model | CB2-57.3-HV5 | CB2-71.6-HV5 | CB2-85.9-HV5 | CB2-100.3-HV5 | Rated Energy [kWh] | 57.3 | 71.6 | 85.9 | 100.3 | Usable Energy [kWh] | 51.5 | 64.4 | 77.3 | 90.2 | Rated Capacity [Ah] | 280 | 280 | 280 | 280 | No. of Battery Modules | 4 | 5 | 6 | 7"
+      },
+      "figures": {
+        "sales_unit_kind": {
+          "expect": null,
+          "set": {
+            "value": "battery_system",
+            "unit": null,
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_User-Manual_EN_V0.0.pdf",
+              "page": 12
+            }
+          }
+        }
+      }
+    },
+    "2090": {
+      "model": "BU2-5.0-HV1",
+      "sku": "DLK-SAJ-BU250HV1",
+      "device_class": "home-storage",
+      "product_revision": "7ef533314f23c57b4762418b665d639501bb4b64b76c6bd831d48ec7887cb2a3",
+      "documents": {
+        "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a"
+      },
+      "conditions": [],
+      "basis": {
+        "sales_unit": "battery_module",
+        "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+        "document_revision": "02d20e0d3ef6a38fc484e5ff72676b176baa4c26b9356993a0f41fe74cb41758",
+        "blob_sha256": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a",
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+        "page": 2,
+        "quote": "MODEL | B2-5.0-HV1 | B2-10.0-HV1 | B2-15.0-HV1 | B2-20.0-HV1 | B2-25.0-HV1 | Battery Module | BU2-5.0-HV1 (32S1P 102.4V50Ah) | BU2-5.0-HV1 (32S1P 102.4V50Ah) | BU2-5.0-HV1 (32S1P 102.4V50Ah) | BU2-5.0-HV1 (32S1P 102.4V50Ah) | BU2-5.0-HV1 (32S1P 102.4V50Ah) | No. of Modules | 1 | 2 | 3 | 4 | 5 | Rated Energy [kWh] | 5.0 | 10.0 | 15.0 | 20.0 | 25.0"
+      },
+      "figures": {
+        "sales_unit_kind": {
+          "expect": null,
+          "set": {
+            "value": "battery_module",
+            "unit": null,
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+              "page": 2
+            }
+          }
+        }
+      }
+    },
+    "2093": {
+      "model": "BU3-5.0-TV2-PRO",
+      "sku": "DLK-SAJ-BU350TV2PRO",
+      "device_class": "home-storage",
+      "product_revision": "10f38f4819946de814d24f378ba5a022169dca7f33fd2e7e2728a94508add257",
+      "documents": {
+        "doc-df9998a7bef786ff08b6d70159531e8909358c27caf0495be7527d80596ac2e1": "c68e43b669c1dad71c56a25455613036eca2991ea8f3a67ca9a5867843613603"
+      },
+      "conditions": [],
+      "basis": {
+        "sales_unit": "battery_module",
+        "document_id": "doc-df9998a7bef786ff08b6d70159531e8909358c27caf0495be7527d80596ac2e1",
+        "document_revision": "986f14b06c28f467102c39c51153ad0b8d580ee7808898c9ae3bdea4795be2c4",
+        "blob_sha256": "c68e43b669c1dad71c56a25455613036eca2991ea8f3a67ca9a5867843613603",
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/DLK-SAJ-BU350TV2PRO_datasheet.pdf",
+        "page": 1,
+        "quote": "Battery module integrated with a DC/DC optimiser, expandable whenever you need BU3-5.0-TV2-PRO"
+      },
+      "figures": {
+        "sales_unit_kind": {
+          "expect": null,
+          "set": {
+            "value": "battery_module",
+            "unit": null,
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/DLK-SAJ-BU350TV2PRO_datasheet.pdf",
+              "page": 1
+            }
+          }
+        }
+      }
+    },
+    "3611": {
+      "model": "GW6.0-BAT-D-G20",
+      "sku": "DLK-GOODWE-GW60BATDG20",
+      "device_class": "home-storage",
+      "product_revision": "21ec761399ec8beeb483e8f0b6021e8d73aef5a0835e270aea704aa834ef8833",
+      "documents": {
+        "doc-595423f7b5faeafeeb9e81ff2c54f75dcdb99fc0546e063bc86f02258f6fb1fe": "31e69160217850be491a5b7ab31dae2bbf17ec33723c0368a1aec4d751c04ab9"
+      },
+      "conditions": [],
+      "basis": {
+        "sales_unit": "battery_module",
+        "document_id": "doc-595423f7b5faeafeeb9e81ff2c54f75dcdb99fc0546e063bc86f02258f6fb1fe",
+        "document_revision": "2977d5d0acddc95aca69569fa9d8ee285d4a881be8c15d4d4f1c9c0b28a6a3ee",
+        "blob_sha256": "31e69160217850be491a5b7ab31dae2bbf17ec33723c0368a1aec4d751c04ab9",
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Lynx-D-G2_Datasheet_EU-EN_V1.1.pdf",
+        "page": 1,
+        "quote": "Each battery pack is a standalone unit with a dedicated Battery Management Unit (BMU), supporting up to 12 units in parallel and multicluster expansion. It also supports mixing of new and existing battery packs as well as different capacity modules, ensuring flexible and future-ready scalability."
+      },
+      "figures": {
+        "sales_unit_kind": {
+          "expect": null,
+          "set": {
+            "value": "battery_module",
+            "unit": null,
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Lynx-D-G2_Datasheet_EU-EN_V1.1.pdf",
+              "page": 1
+            }
+          }
+        }
+      }
+    },
+    "3612": {
+      "model": "GW9.0-BAT-D-G20",
+      "sku": "DLK-GOODWE-GW90BATDG20",
+      "device_class": "home-storage",
+      "product_revision": "fff0934583f9342cca78cb43ef9180378782a8cf785eaa7db41f3012f049507a",
+      "documents": {
+        "doc-595423f7b5faeafeeb9e81ff2c54f75dcdb99fc0546e063bc86f02258f6fb1fe": "31e69160217850be491a5b7ab31dae2bbf17ec33723c0368a1aec4d751c04ab9"
+      },
+      "conditions": [],
+      "basis": {
+        "sales_unit": "battery_module",
+        "document_id": "doc-595423f7b5faeafeeb9e81ff2c54f75dcdb99fc0546e063bc86f02258f6fb1fe",
+        "document_revision": "2977d5d0acddc95aca69569fa9d8ee285d4a881be8c15d4d4f1c9c0b28a6a3ee",
+        "blob_sha256": "31e69160217850be491a5b7ab31dae2bbf17ec33723c0368a1aec4d751c04ab9",
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Lynx-D-G2_Datasheet_EU-EN_V1.1.pdf",
+        "page": 1,
+        "quote": "Each battery pack is a standalone unit with a dedicated Battery Management Unit (BMU), supporting up to 12 units in parallel and multicluster expansion. It also supports mixing of new and existing battery packs as well as different capacity modules, ensuring flexible and future-ready scalability."
+      },
+      "figures": {
+        "sales_unit_kind": {
+          "expect": null,
+          "set": {
+            "value": "battery_module",
+            "unit": null,
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Lynx-D-G2_Datasheet_EU-EN_V1.1.pdf",
+              "page": 1
+            }
+          }
+        }
+      }
+    },
+    "6519": {
+      "model": "GW5.1-BAT-D-G20",
+      "sku": "DLK-GOODWE-GW51BATDG20",
+      "device_class": "home-storage",
+      "product_revision": "e3566437d53846acad4ca5a5b50c419d33364e598872b99061b01305503269e5",
+      "documents": {
+        "doc-595423f7b5faeafeeb9e81ff2c54f75dcdb99fc0546e063bc86f02258f6fb1fe": "31e69160217850be491a5b7ab31dae2bbf17ec33723c0368a1aec4d751c04ab9"
+      },
+      "conditions": [],
+      "basis": {
+        "sales_unit": "battery_module",
+        "document_id": "doc-595423f7b5faeafeeb9e81ff2c54f75dcdb99fc0546e063bc86f02258f6fb1fe",
+        "document_revision": "2977d5d0acddc95aca69569fa9d8ee285d4a881be8c15d4d4f1c9c0b28a6a3ee",
+        "blob_sha256": "31e69160217850be491a5b7ab31dae2bbf17ec33723c0368a1aec4d751c04ab9",
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Lynx-D-G2_Datasheet_EU-EN_V1.1.pdf",
+        "page": 1,
+        "quote": "Each battery pack is a standalone unit with a dedicated Battery Management Unit (BMU), supporting up to 12 units in parallel and multicluster expansion. It also supports mixing of new and existing battery packs as well as different capacity modules, ensuring flexible and future-ready scalability."
+      },
+      "figures": {
+        "sales_unit_kind": {
+          "expect": null,
+          "set": {
+            "value": "battery_module",
+            "unit": null,
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Lynx-D-G2_Datasheet_EU-EN_V1.1.pdf",
+              "page": 1
+            }
+          }
+        }
+      }
+    },
+    "6520": {
+      "model": "GW8.3-BAT-D-G20",
+      "sku": "DLK-GOODWE-GW83BATDG20",
+      "device_class": "home-storage",
+      "product_revision": "cad9a33a067513d9593b0414b8231faa1359f237746833b13fd89d45e98b1782",
+      "documents": {
+        "doc-595423f7b5faeafeeb9e81ff2c54f75dcdb99fc0546e063bc86f02258f6fb1fe": "31e69160217850be491a5b7ab31dae2bbf17ec33723c0368a1aec4d751c04ab9"
+      },
+      "conditions": [],
+      "basis": {
+        "sales_unit": "battery_module",
+        "document_id": "doc-595423f7b5faeafeeb9e81ff2c54f75dcdb99fc0546e063bc86f02258f6fb1fe",
+        "document_revision": "2977d5d0acddc95aca69569fa9d8ee285d4a881be8c15d4d4f1c9c0b28a6a3ee",
+        "blob_sha256": "31e69160217850be491a5b7ab31dae2bbf17ec33723c0368a1aec4d751c04ab9",
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Lynx-D-G2_Datasheet_EU-EN_V1.1.pdf",
+        "page": 1,
+        "quote": "Each battery pack is a standalone unit with a dedicated Battery Management Unit (BMU), supporting up to 12 units in parallel and multicluster expansion. It also supports mixing of new and existing battery packs as well as different capacity modules, ensuring flexible and future-ready scalability."
+      },
+      "figures": {
+        "sales_unit_kind": {
+          "expect": null,
+          "set": {
+            "value": "battery_module",
+            "unit": null,
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Lynx-D-G2_Datasheet_EU-EN_V1.1.pdf",
+              "page": 1
+            }
+          }
+        }
+      }
+    },
+    "6521": {
+      "model": "GW5.1-BAT-D-G21",
+      "sku": "DLK-GOODWE-GW51BATDG21",
+      "device_class": "home-storage",
+      "product_revision": "d9b8c9d0f7ea9a73284a7fc6a2d6341ede50c907e2cfd0d3fdc015d1fdc7e9c9",
+      "documents": {
+        "doc-a7cfa5ad5c55cfba8128f3992a05ac5cb86138460b1e9dcbea4fd833142abdf7": "67a7f715ca9db734edba1b4f15b50d1a29c866b172ffd1909759e0abc66c8d2a"
+      },
+      "conditions": [],
+      "basis": {
+        "sales_unit": "battery_module",
+        "document_id": "doc-a7cfa5ad5c55cfba8128f3992a05ac5cb86138460b1e9dcbea4fd833142abdf7",
+        "document_revision": "50f227b4ca819bc905bda317c96e5b0cfbab936e282dd03c04a0372498ddc695",
+        "blob_sha256": "67a7f715ca9db734edba1b4f15b50d1a29c866b172ffd1909759e0abc66c8d2a",
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+        "page": 48,
+        "quote": "The system supports battery capacity expansion, and the total battery capacity is determined by the quantity and specifications of battery modules. Configuration must strictly adhere to the restrictions specified in this section. System over all configuration description: A：GW5.1-BAT-D-G20，GW5.1-BAT-D-G21，GW6.0-BAT-D-G20 B：GW8.3-BAT-D-G20，GW8.3-BAT-D-G21，GW9.0-BAT-D-G20"
+      },
+      "figures": {
+        "sales_unit_kind": {
+          "expect": null,
+          "set": {
+            "value": "battery_module",
+            "unit": null,
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+              "page": 48
+            }
+          }
+        }
+      }
+    },
+    "6522": {
+      "model": "GW8.3-BAT-D-G21",
+      "sku": "DLK-GOODWE-GW83BATDG21",
+      "device_class": "home-storage",
+      "product_revision": "8fbec19aeb77967ff92e73fd65410aec7c399aec41add77731f59b523230f9a4",
+      "documents": {
+        "doc-a7cfa5ad5c55cfba8128f3992a05ac5cb86138460b1e9dcbea4fd833142abdf7": "67a7f715ca9db734edba1b4f15b50d1a29c866b172ffd1909759e0abc66c8d2a"
+      },
+      "conditions": [],
+      "basis": {
+        "sales_unit": "battery_module",
+        "document_id": "doc-a7cfa5ad5c55cfba8128f3992a05ac5cb86138460b1e9dcbea4fd833142abdf7",
+        "document_revision": "50f227b4ca819bc905bda317c96e5b0cfbab936e282dd03c04a0372498ddc695",
+        "blob_sha256": "67a7f715ca9db734edba1b4f15b50d1a29c866b172ffd1909759e0abc66c8d2a",
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+        "page": 48,
+        "quote": "The system supports battery capacity expansion, and the total battery capacity is determined by the quantity and specifications of battery modules. Configuration must strictly adhere to the restrictions specified in this section. System over all configuration description: A：GW5.1-BAT-D-G20，GW5.1-BAT-D-G21，GW6.0-BAT-D-G20 B：GW8.3-BAT-D-G20，GW8.3-BAT-D-G21，GW9.0-BAT-D-G20"
+      },
+      "figures": {
+        "sales_unit_kind": {
+          "expect": null,
+          "set": {
+            "value": "battery_module",
+            "unit": null,
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+              "page": 48
+            }
+          }
+        }
+      }
+    }
+  }
+}
