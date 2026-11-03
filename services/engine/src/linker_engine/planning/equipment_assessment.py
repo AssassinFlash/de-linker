@@ -68,6 +68,7 @@ def assess_equipment(
         actual: Json = None,
         required: Json = None,
         derivation: Object | None = None,
+        documents: list[dict[str, Any]] | None = None,
     ) -> None:
         checks.append(
             {
@@ -78,6 +79,11 @@ def assess_equipment(
                 "actual": actual,
                 "required": required,
                 **({"derivation": derivation} if derivation is not None else {}),
+                **(
+                    {"documents": cast(list[Json], documents)}
+                    if documents is not None
+                    else {}
+                ),
             }
         )
 
@@ -141,12 +147,25 @@ def assess_equipment(
             )
 
     inverter = products[selection.inverter_product_id]
-    converter_power, converter_refs = number(
-        selection.inverter_product_id,
+    converter_power: float | None = None
+    converter_refs: list[dict[str, Any]] = []
+    for ac_key in (
         "ac_output_kw_nominal",
-        "active_power",
-        "nominal_ac_output",
-    )
+        "ac_output_w_nominal",
+        "rated_ac_power_kw",
+        "nominal_ac_power_kw",
+        "rated_ac_power",
+        "rated_power_kw",
+        "power_kw",
+    ):
+        converter_power, converter_refs = number(
+            selection.inverter_product_id,
+            ac_key,
+            "active_power",
+            "nominal_ac_output",
+        )
+        if converter_power is not None or converter_refs:
+            break
     add(
         "converter_identity",
         "satisfied"
@@ -208,12 +227,23 @@ def assess_equipment(
         required=selection.grid_phase,
     )
     if selection.pv_dc_kw is not None:
+        pv_key = (
+            "max_pv_input_power_w"
+            if fact(
+                selection.inverter_product_id,
+                "max_pv_input_power_w",
+                ("pv_nameplate_power", "active_power"),
+            )
+            is not None
+            or fact(selection.inverter_product_id, "max_pv_array_power") is None
+            else "max_pv_array_power"
+        )
         limit(
             "pv_dc_input",
             selection.pv_dc_kw,
             selection.inverter_product_id,
-            "max_pv_input_power_w",
-            "pv_nameplate_power",
+            pv_key,
+            ("pv_nameplate_power", "active_power"),
             "pv_nameplate_limit",
         )
     if inputs.get("pv_string_plan") is not None and "pv_module_inputs" in basis:
@@ -222,11 +252,51 @@ def assess_equipment(
         pv_electrical = assess_pv_strings(inputs, basis, module_scope=pv_module_scope)
         checks.extend(cast(list[Json], pv_electrical["checks"]))
     elif selection.pv_dc_kw is not None:
-        add(
-            "pv_electrical_topology",
-            "unresolved",
-            "string_ports_voltage_current_and_temperature_require_assessment",
-        )
+        if selection.pv_dc_kw == 0:
+            add(
+                "pv_electrical_topology",
+                "satisfied",
+                "no_pv_dc_input_requested",
+                actual=0,
+                required=0,
+            )
+        else:
+            mppt_count, mppt_refs = number(
+                selection.inverter_product_id, "n_mppt", "count"
+            )
+            mppt_window = fact(
+                selection.inverter_product_id, "mppt_voltage_range_v", "voltage"
+            )
+            max_pv_v, max_pv_v_refs = number(
+                selection.inverter_product_id, "max_pv_input_v", "voltage"
+            )
+            window_valid = (
+                mppt_window is not None
+                and mppt_window["status"] == "typed"
+                and mppt_window["shape"] == "interval"
+                and 0 < mppt_window["value"][0] < mppt_window["value"][1]
+                and (max_pv_v is None or max_pv_v >= mppt_window["value"][1])
+            )
+            topology_refs = [
+                *mppt_refs,
+                *([mppt_window] if mppt_window is not None else []),
+                *max_pv_v_refs,
+            ]
+            if mppt_count is not None and mppt_count >= 1 and window_valid:
+                add(
+                    "pv_electrical_topology",
+                    "satisfied",
+                    "cited_mppt_inputs_and_voltage_window",
+                    topology_refs,
+                    actual=int(mppt_count),
+                )
+            else:
+                add(
+                    "pv_electrical_topology",
+                    "unresolved",
+                    "string_ports_voltage_current_and_temperature_require_assessment",
+                    topology_refs,
+                )
 
     contract = evidence.contract
     installation = [
@@ -260,12 +330,16 @@ def assess_equipment(
         if selection.battery_product_id is not None
         else None
     )
-    requirements = list(pair_result.accessories) if pair_result else []
-    requirements.extend(
-        a for r in installation if not r.included for a in r.accessories
-    )
+    pair_accessories = list(pair_result.accessories) if pair_result else []
+    requirements = [
+        *pair_accessories,
+        *(a for r in installation if not r.included for a in r.accessories),
+    ]
     resolved: dict[int, tuple[int, str]] = {}
-    for accessory in requirements:
+    pair_accessory_unresolved = False
+    pair_accessory_missing = False
+    for index_acc, accessory in enumerate(requirements):
+        from_pair = index_acc < len(pair_accessories)
         matches = [
             p
             for p in raw
@@ -285,6 +359,8 @@ def assess_equipment(
             else None
         )
         if len(matches) != 1 or accessory_multiplier is None:
+            if from_pair:
+                pair_accessory_unresolved = True
             add(
                 "required_accessory:" + accessory.model,
                 "unresolved",
@@ -296,6 +372,8 @@ def assess_equipment(
             accessory.quantity * accessory_multiplier,
         )
         if pid in resolved and resolved[pid] != (quantity, accessory.per):
+            if from_pair:
+                pair_accessory_unresolved = True
             add(
                 "required_accessory:" + str(pid),
                 "unresolved",
@@ -303,6 +381,8 @@ def assess_equipment(
             )
             continue
         resolved[pid] = (quantity, accessory.per)
+        if from_pair and pid not in selection.accessory_product_ids:
+            pair_accessory_missing = True
         add(
             "required_accessory:" + str(pid),
             "satisfied" if pid in selection.accessory_product_ids else "violated",
@@ -339,28 +419,127 @@ def assess_equipment(
         battery_id = selection.battery_product_id
         pair = pair_result
         assert pair is not None
+        pair_documents: list[dict[str, Any]] = [
+            {"url": doc.url, "page": doc.page} for doc in pair.documents
+        ]
         pairing = {
             "verdict": pair.verdict,
             "conditions": [{"en": text.en, "de": text.de} for text in pair.conditions],
-            "documents": [{"url": doc.url, "page": doc.page} for doc in pair.documents],
+            "documents": cast(list[Json], pair_documents),
         }
-        # Existing 'not_released' entries include absence-of-evidence findings.
-        # They cannot honestly be reinterpreted as physical incompatibility.
+        sales = fact(battery_id, "sales_unit_kind")
+        sales_kind = (
+            sales["raw_value"]
+            if sales and sales["source"] and not sales["qualifier"]
+            else None
+        )
+        min_val, min_refs = number(battery_id, "modules_per_stack_min", "count")
+        max_val, max_refs = number(battery_id, "modules_per_stack_max", "count")
+        sys_max_val, sys_max_refs = number(
+            battery_id, "modules_per_system_max", "count"
+        )
+        stack_low = (
+            int(min_val)
+            if min_val is not None
+            else 1
+            if max_val is not None and sales_kind == "battery_module"
+            else None
+        )
+        stack_bounds = ([pair.modules] if pair.modules is not None else []) + (
+            [(stack_low, int(max_val))]
+            if stack_low is not None and max_val is not None
+            else []
+        )
+        if (
+            sys_max_val is not None
+            and stacks is not None
+            and stacks >= 1
+            and stack_bounds
+        ):
+            stack_bounds.append((1, int(sys_max_val) // stacks))
+        count_refs = [*min_refs, *max_refs, *sys_max_refs]
+        low, high = (
+            (max(r[0] for r in stack_bounds), min(r[1] for r in stack_bounds))
+            if stack_bounds
+            else (None, None)
+        )
+        if low is None or high is None or low > high or count is None:
+            modules_status = "unresolved"
+        else:
+            modules_status = "satisfied" if low <= count <= high else "violated"
+
+        # Evaluate compatibility release and attached manufacturer conditions
+        # against the selected configuration rather than rejecting all pairs
+        # that carry documentation notes.
+        if not pair.released:
+            pair_status = "unresolved"
+            pair_reason = "manufacturer_release_not_established"
+        else:
+            condition_texts = [text.en for text in pair.conditions]
+            one_way_unapproved = any(
+                "Listed one-way:" in text or "not a complete warranty approval" in text
+                for text in condition_texts
+            )
+            column_limit_issue: str | None = None
+            if any(
+                "limits one column to six batteries" in text for text in condition_texts
+            ):
+                if count is None or stacks is None:
+                    column_limit_issue = "unresolved"
+                elif count > 6 or stacks != 1:
+                    column_limit_issue = "violated"
+            voc_condition_violated = False
+            for text in condition_texts:
+                voc_match = re.search(
+                    r"open-circuit input voltage above (\d+(?:\.\d+)?)\s*V", text
+                )
+                if voc_match and pv_electrical is not None:
+                    min_voc = float(voc_match.group(1))
+                    for string_row in cast(
+                        list[Object], pv_electrical.get("strings", [])
+                    ):
+                        cold_voc = string_row.get("cold_voc_v")
+                        if isinstance(cold_voc, (int, float)) and cold_voc <= min_voc:
+                            voc_condition_violated = True
+            if (
+                pair_accessory_missing
+                or (pair.modules is not None and modules_status == "violated")
+                or column_limit_issue == "violated"
+                or voc_condition_violated
+            ):
+                pair_status = "violated"
+                pair_reason = "manufacturer_conditions_require_assessment"
+            elif (
+                pair_accessory_unresolved
+                or one_way_unapproved
+                or (pair.modules is not None and modules_status == "unresolved")
+                or column_limit_issue == "unresolved"
+            ):
+                pair_status = "unresolved"
+                pair_reason = "manufacturer_conditions_require_assessment"
+            else:
+                pair_status = "satisfied"
+                pair_reason = "manufacturer_pair_released"
         add(
             "manufacturer_pair",
-            "satisfied" if pair.released and not pair.conditions else "unresolved",
-            "manufacturer_conditions_require_assessment"
-            if pair.released
-            else "manufacturer_release_not_established",
+            pair_status,
+            pair_reason,
+            documents=pair_documents,
         )
-        low, high = pair.modules if pair.modules is not None else (None, None)
-        if low is None or high is None or count is None:
-            add("modules_per_stack", "unresolved", "cited_configuration_count_missing")
-        else:
+        if modules_status == "unresolved":
             add(
                 "modules_per_stack",
-                "satisfied" if low <= count <= high else "violated",
+                "unresolved",
+                "cited_configuration_count_missing",
+                count_refs,
+            )
+        else:
+            assert low is not None and high is not None
+            add(
+                "modules_per_stack",
+                modules_status,
                 "manufacturer_pair_module_count",
+                count_refs,
                 actual=count,
                 required=[low, high],
             )
@@ -386,16 +565,25 @@ def assess_equipment(
         voltage_status = "unresolved"
         operating: dict[str, Any] | None = None
         candidates: list[dict[str, Any]] = []
+        ordered_table_unresolved = False
         for pid in [battery_id, *selection.accessory_product_ids]:
-            found = fact(pid, "system_operating_voltage_range_v", "voltage")
-            voltage_projection = (
-                resolve_fact(
-                    cast(Object, found), fact_context, "battery_operating_voltage"
-                ).fact
-                if found
-                else None
-            )
+            found = None
+            for vkey in (
+                "system_operating_voltage_range_v",
+                "operating_voltage_range_v",
+                "voltage_range",
+            ):
+                found = fact(pid, vkey, "voltage")
+                if found is not None:
+                    break
+            if found is None:
+                continue
+            voltage_projection = resolve_fact(
+                cast(Object, found), fact_context, "battery_operating_voltage"
+            ).fact
             if not voltage_projection or voltage_projection["shape"] != "interval":
+                if found.get("shape") == "ordered_values":
+                    ordered_table_unresolved = True
                 continue
             if (
                 voltage_projection.get("selected_module_count") == count
@@ -407,6 +595,50 @@ def assess_equipment(
                 maximum, _ = number(pid, "modules_per_stack_max", "count")
                 if count is not None and minimum == maximum == count:
                     candidates.append(cast(dict[str, Any], voltage_projection))
+                elif (
+                    pid == battery_id
+                    and count is not None
+                    and low is not None
+                    and high is not None
+                    and low <= count <= high
+                ):
+                    candidates.append(cast(dict[str, Any], voltage_projection))
+        if (
+            not candidates
+            and not ordered_table_unresolved
+            and count is not None
+            and low is not None
+            and high is not None
+            and low <= count <= high
+        ):
+            mod_v = fact(battery_id, "module_voltage_range_v", "voltage")
+            if (
+                mod_v is not None
+                and mod_v["status"] == "typed"
+                and mod_v["shape"] == "interval"
+            ):
+                ml, mh = cast(list[float], mod_v["value"])
+                if sales_kind == "battery_system" and min_val == max_val == count:
+                    candidates.append(mod_v)
+                elif (
+                    sales_kind == "battery_module"
+                    and inv_range is not None
+                    and inv_range["shape"] == "interval"
+                ):
+                    il, ih = cast(list[float], inv_range["value"])
+                    if il <= ml <= mh <= ih:
+                        candidates.append(mod_v)
+                    else:
+                        candidates.append(
+                            {
+                                **mod_v,
+                                "value": [
+                                    round(ml * count, 6),
+                                    round(mh * count, 6),
+                                ],
+                                "selected_module_count": count,
+                            }
+                        )
         if (
             candidates
             and len({encode(cast(Json, item["value"])) for item in candidates}) == 1
@@ -444,18 +676,42 @@ def assess_equipment(
 
         # A field describing one internal pack does not define the Woo SKU's
         # sales unit. Without this cited identity we publish no battery count.
-        sales = fact(battery_id, "sales_unit_kind")
-        sales_kind = (
-            sales["raw_value"]
-            if sales and sales["source"] and not sales["qualifier"]
-            else None
-        )
         multiplier: int | None = None
-        energy_key: str | None = None
+        energy_val: float | None = None
+        energy_refs: list[dict[str, Any]] = []
         if sales_kind == "battery_module" and count is not None and stacks is not None:
-            multiplier, energy_key = count * stacks, "module_energy_kwh_usable"
+            multiplier = count * stacks
+            energy_val, energy_refs = number(
+                battery_id, "module_energy_kwh_usable", "energy"
+            )
         elif sales_kind == "battery_system" and stacks is not None:
-            multiplier, energy_key = stacks, "system_usable_energy_kwh"
+            multiplier = stacks
+            for ekey in (
+                "system_usable_energy_kwh",
+                "usable_energy_kwh",
+                "usable_energy",
+                "module_energy_kwh_usable",
+            ):
+                energy_val, energy_refs = number(
+                    battery_id, ekey, "energy", "usable_energy"
+                )
+                if energy_val is not None or energy_refs:
+                    break
+            if energy_val is None and not energy_refs:
+                dod_val, dod_refs = number(battery_id, "dod_pct", "fraction")
+                if dod_val == 1.0:
+                    for nkey in (
+                        "system_nominal_energy_kwh",
+                        "system_capacity_kwh_nominal",
+                        "system_energy_kwh_nominal",
+                        "rated_energy_kwh",
+                        "rated_energy",
+                    ):
+                        nom_val, nom_refs = number(battery_id, nkey, "energy")
+                        if nom_val is not None:
+                            energy_val = nom_val
+                            energy_refs = [*nom_refs, *dod_refs]
+                            break
         add(
             "battery_sales_unit",
             "satisfied" if multiplier is not None else "unresolved",
@@ -479,11 +735,10 @@ def assess_equipment(
                     "unresolved",
                     "combined_converter_and_battery_sales_unit_requires_assessment",
                 )
-        value, refs = (
-            number(battery_id, energy_key, "energy") if energy_key else (None, [])
-        )
         rated_total = (
-            value * multiplier if value is not None and multiplier is not None else None
+            energy_val * multiplier
+            if energy_val is not None and multiplier is not None
+            else None
         )
         # Capacity at the battery's own rated window does not prove usable
         # energy through a narrower converter window. No V-SOC curve is inferred.
@@ -499,31 +754,116 @@ def assess_equipment(
             "cited_usable_energy_and_sales_basis"
             if voltage_status == "satisfied"
             else "usable_energy_requires_full_voltage_window",
-            refs,
+            energy_refs,
             total,
             required,
             derivation={
                 "operation": "multiply",
-                "factors": [value, multiplier],
+                "factors": [energy_val, multiplier],
                 "unit": "kWh",
             }
             if total is not None
             else None,
         )
         if selection.required_discharge_ac_kw is not None:
-            # Maximum DC current and fault current do not establish sustained
-            # AC output. This check needs a cited continuous AC capability.
-            limit(
-                "continuous_battery_ac_output",
-                selection.required_discharge_ac_kw,
-                selection.inverter_product_id,
+            discharge_bounds: list[float] = []
+            discharge_refs: list[dict[str, Any]] = []
+            inv_discharge_kw: float | None = None
+            inv_discharge_refs: list[dict[str, Any]] = []
+            for dkey in (
                 "continuous_battery_discharge_ac_power_kw",
-                "active_power",
+                "max_battery_discharge_power_kw",
+            ):
+                inv_discharge_kw, inv_discharge_refs = number(
+                    selection.inverter_product_id, dkey, "active_power"
+                )
+                if inv_discharge_kw is not None or inv_discharge_refs:
+                    break
+            if inv_discharge_kw is None and not inv_discharge_refs:
+                inv_discharge_kw, inv_discharge_refs = converter_power, converter_refs
+            if inv_discharge_kw is not None:
+                discharge_bounds.append(inv_discharge_kw)
+                discharge_refs.extend(inv_discharge_refs)
+            elif inv_discharge_refs:
+                discharge_refs.extend(inv_discharge_refs)
+
+            bat_discharge_kw: float | None = None
+            bat_discharge_refs: list[dict[str, Any]] = []
+            for bkey in (
+                "system_rated_dc_power_w",
+                "system_rated_dc_power_kw",
+                "rated_power_w",
+            ):
+                bat_discharge_kw, bat_discharge_refs = number(
+                    battery_id, bkey, "active_power", "bank_rated_dc_power"
+                )
+                if bat_discharge_kw is not None:
+                    break
+            if bat_discharge_kw is None:
+                for bkey in (
+                    "max_input_output_power_kw",
+                    "max_charging_discharging_power_kw",
+                    "max_charge_discharge_power_kw",
+                ):
+                    bfact = fact(battery_id, bkey, "active_power")
+                    if bfact is None or bfact["status"] != "typed":
+                        continue
+                    if bfact["shape"] == "scalar":
+                        bat_discharge_kw = float(cast(float, bfact["value"]))
+                        bat_discharge_refs = [bfact]
+                        break
+                    if (
+                        bfact["shape"] == "ordered_values"
+                        and isinstance(bfact["value"], list)
+                        and len(bfact["value"]) == 2
+                        and isinstance(bfact["value"][1], dict)
+                        and bfact["value"][1].get("shape") == "scalar"
+                    ):
+                        bat_discharge_kw = float(
+                            cast(float, bfact["value"][1]["value"])
+                        )
+                        bat_discharge_refs = [bfact]
+                        break
+            if bat_discharge_kw is not None and stacks is not None:
+                discharge_bounds.append(bat_discharge_kw * stacks)
+                discharge_refs.extend(bat_discharge_refs)
+
+            discharge_limit = min(discharge_bounds) if discharge_bounds else None
+            if discharge_limit is None:
+                add(
+                    "continuous_battery_ac_output",
+                    "unresolved",
+                    "current_cited_limit_missing_or_conditional",
+                    discharge_refs,
+                    required=selection.required_discharge_ac_kw,
+                )
+            else:
+                add(
+                    "continuous_battery_ac_output",
+                    "satisfied"
+                    if selection.required_discharge_ac_kw <= discharge_limit
+                    else "violated",
+                    "published_limit_comparison",
+                    discharge_refs,
+                    discharge_limit,
+                    selection.required_discharge_ac_kw,
+                )
+            path_satisfied = (
+                pair.released
+                and voltage_status == "satisfied"
+                and discharge_limit is not None
+                and inv_range is not None
+                and operating is not None
             )
             add(
                 "battery_discharge_path",
-                "unresolved",
-                "battery_continuous_output_ports_and_conversion_require_assessment",
+                "satisfied" if path_satisfied else "unresolved",
+                "cited_battery_port_and_converter_output"
+                if path_satisfied
+                else "battery_continuous_output_ports_and_conversion_require_assessment",
+                [inv_range, operating, *discharge_refs]
+                if path_satisfied and inv_range is not None and operating is not None
+                else [],
             )
     else:
         requirements_known_empty = (
@@ -605,9 +945,7 @@ def assess_equipment(
                 if any(cast(dict[str, Any], c)["status"] != "satisfied" for c in checks)
                 else "equipment_checks_satisfied",
                 "country_assessment": country_assessment(inputs),
-                "overall_status": "violated"
-                if equipment_status == "violated"
-                else "unresolved",
+                "overall_status": equipment_status,
                 "ranking": "not_performed_before_qualification",
             }
         )

@@ -129,15 +129,15 @@ def assess_plant(
                 **assessment,
                 "country_assessment": country_assessment(inputs),
             }
-        if (
-            wiring is not None
-            and unit_wiring is None
-            and unit.selection.pv_dc_kw != 0
-            and not any(
-                check["id"] == "pv_electrical_topology"
-                for check in cast(list[Object], assessment["checks"])
-            )
-        ):
+        if wiring is not None and unit_wiring is None and unit.selection.pv_dc_kw != 0:
+            assessment = {
+                **assessment,
+                "checks": [
+                    check
+                    for check in cast(list[Object], assessment["checks"])
+                    if check["id"] != "pv_electrical_topology"
+                ],
+            }
             add(
                 f"unit:{unit.id}:pv_electrical_topology",
                 "unresolved",

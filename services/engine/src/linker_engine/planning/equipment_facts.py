@@ -145,7 +145,15 @@ def compile_facts(product: dict[str, Any]) -> Object:
         source = _source(product, key, figure)
         unit = figure.get("unit")
         unit_spec = _UNITS.get(unit) if isinstance(unit, str) else None
-        if key in _COUNTS and unit in (None, "", "units", "modules", "packs"):
+        if key in _COUNTS and unit in (
+            None,
+            "",
+            "units",
+            "modules",
+            "packs",
+            "count",
+            "pcs",
+        ):
             unit_spec = ("count", "count", 1)
         shape: str = "text"
         value: Json = str(figure["value"])

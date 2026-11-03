@@ -2122,7 +2122,7 @@ def test_stack_window_is_not_a_flattened_range_or_a_fault_current_power(
     )
     checks = {item["id"]: item for item in result["checks"]}
     assert checks["battery_voltage"]["status"] == voltage_status
-    assert checks["continuous_battery_ac_output"]["status"] == "unresolved"
+    assert checks["continuous_battery_ac_output"]["status"] == "satisfied"
     assert checks["battery_sales_unit"]["status"] == "satisfied"
     assert checks["parallel_stacks"]["status"] == "satisfied"
     assert checks["usable_energy"]["status"] == (
@@ -2555,8 +2555,9 @@ def test_search_enumerates_documented_counts_and_keeps_budget_exhaustion_visible
     rows = result["candidates"]
     assert [r["selection"]["modules_per_stack"] for r in rows] == [2, 3, 4, 5]
     assert all(r["selection"]["accessory_product_ids"] == [2092] for r in rows)
-    assert rows[1]["status"] == "violated" and rows[2]["status"] == "unresolved"
-    assert result["qualified_count"] == 0
+    assert rows[0]["status"] == "unresolved"
+    assert rows[1]["status"] == "violated" and rows[2]["status"] == "satisfied"
+    assert result["qualified_count"] == 2
     compact = json_object(workspace.blobs.object(rows[2]["assessment_sha256"]))
     assert "facts" not in compact["selected_products"][0]
     assert all("facts" not in c for c in compact["checks"])
@@ -2569,8 +2570,6 @@ def test_search_enumerates_documented_counts_and_keeps_budget_exhaustion_visible
         limited["completion"] == "budget_exhausted" and len(limited["candidates"]) == 1
     )
 
-    # A necessary ceiling excludes underpowered grid proposals without
-    # replacing the separate missing continuous battery-output evidence.
     ceiling_inputs = inputs(feed, 3)
     ceiling_inputs["equipment_selection"]["required_discharge_ac_kw"] = 50
     bounded = json_object(assess_equipment(ceiling_inputs, basis))
@@ -2589,7 +2588,7 @@ def test_search_enumerates_documented_counts_and_keeps_budget_exhaustion_visible
         next(c for c in bounded["checks"] if c["id"] == "continuous_battery_ac_output")[
             "status"
         ]
-        == "unresolved"
+        == "violated"
     )
     ceiling_inputs["equipment_selection"]["operating_mode"] = "backup"
     assert not any(
@@ -3294,3 +3293,183 @@ def test_multi_system_pv_strings_scope_currents_bindings_and_saved_reports(
         report_sources(
             workspace, sources, owner, replace(project, inputs=changed), options
         )
+
+
+def test_conditional_pairs_and_equipment_checks_assess_real_woo_candidates(
+    feed: FixtureObject, workspace: Workspace
+) -> None:
+    basis = copy.deepcopy(feed)
+    for pid, kind in (
+        (1956, "battery_system"),
+        (1958, "battery_system"),
+        (2068, "battery_system"),
+        (3611, "battery_module"),
+    ):
+        product = next(p for p in basis["products"] if p["id"] == pid)
+        first_citation = next(iter(product["figures"].values()))["citation"]
+        product["figures"]["sales_unit_kind"] = {
+            "value": kind,
+            "unit": None,
+            "citation": copy.deepcopy(first_citation),
+        }
+    b2 = next(p for p in basis["products"] if p["id"] == 2068)
+    b2["figures"]["modules_per_stack_min"]["unit"] = "count"
+    b2["figures"]["modules_per_stack_max"]["unit"] = "count"
+    b2["figures"]["module_energy_kwh_usable"] = {
+        "value": "13.5",
+        "unit": "kWh",
+        "citation": copy.deepcopy(
+            b2["figures"]["module_energy_kwh_nominal"]["citation"]
+        ),
+    }
+    etr_template = copy.deepcopy(next(p for p in basis["products"] if p["id"] == 3595))
+    etr_6508 = {
+        **etr_template,
+        "id": 6508,
+        "canonical_product_id": 6508,
+        "sku": "DLK-GOODWE-GW9999KETRG10",
+        "model": "GW99.99K-ETR-G10",
+        "ac_power_kw": 99.99,
+        "pv_input_kw": 200,
+    }
+    etr_6508["figures"]["ac_output_kw_nominal"]["value"] = "99.99"
+    etr_6508["figures"]["max_pv_input_power_w"]["value"] = "200"
+    for doc in etr_6508["documents"]:
+        doc["product_ids"] = [*doc.get("product_ids", []), 6508]
+    basis["products"].append(etr_6508)
+    basis["compatibility"]["pairs"].append(
+        {
+            "inverter": "^GW99\\.99K\\-ETR\\-G10$",
+            "inverter_product_id": 6508,
+            "battery": "^GW261\\.2\\-BAT\\-LCD\\-G10$",
+            "battery_product_id": 1958,
+            "verdict": "released",
+            "conditions": [
+                {
+                    "en": "GoodWe's Battery Compatibility Overview (p. 6) lists GW261.2-BAT-LCD-G10 in its ETR 80–125 kW column, which covers the GW80K/99.99K/100K/110K/124.99K-ETR-G10 models.",
+                    "de": "Die Batterie-Kompatibilitätsübersicht von GoodWe (S. 6) führt den GW261.2-BAT-LCD-G10 in der Spalte ETR 80–125 kW auf.",
+                }
+            ],
+            "documents": [
+                {
+                    "url": etr_6508["documents"][0]["url"],
+                    "page": 6,
+                }
+            ],
+        }
+    )
+    basis = publication_feed(basis, basis["compatibility"])
+    revisions = {str(p["id"]): p["product_revision"] for p in basis["products"]}
+
+    # 1. 6508 + 1958: kW PV limit, MPPT topology, conditional release note,
+    # fixed battery_system pack count, operating_voltage_range_v, 100% DoD
+    # rated_energy_kwh, continuous AC output and discharge path all satisfy.
+    sel_6508: FixtureObject = {
+        "schema_version": 1,
+        "inverter_product_id": 6508,
+        "battery_product_id": 1958,
+        "modules_per_stack": 5,
+        "parallel_stacks": 1,
+        "accessory_product_ids": [],
+        "grid_phase": 3,
+        "operating_mode": "grid_connected",
+        "pv_dc_kw": 200.0,
+        "required_usable_kwh": 200.0,
+        "required_discharge_ac_kw": 99.99,
+        "product_revisions": {"6508": revisions["6508"], "1958": revisions["1958"]},
+    }
+    assessed_6508 = json_object(
+        assess_equipment({"equipment_selection": sel_6508}, basis)
+    )
+    assert assessed_6508["equipment_status"] == "satisfied"
+    assert assessed_6508["overall_status"] == "satisfied"
+    checks_6508 = {c["id"]: c for c in assessed_6508["checks"]}
+    for check_id in (
+        "converter_identity",
+        "grid_phase",
+        "pv_dc_input",
+        "pv_electrical_topology",
+        "manufacturer_pair",
+        "modules_per_stack",
+        "parallel_stacks",
+        "battery_voltage",
+        "battery_sales_unit",
+        "usable_energy",
+        "continuous_battery_ac_output",
+        "battery_discharge_path",
+    ):
+        assert checks_6508[check_id]["status"] == "satisfied", check_id
+    assert checks_6508["usable_energy"]["actual"] == pytest.approx(261.2)
+    assert checks_6508["continuous_battery_ac_output"]["actual"] == pytest.approx(99.99)
+
+    # 2. One-way non-warranty condition stays unresolved on manufacturer_pair.
+    one_way_basis = copy.deepcopy(basis)
+    one_way_basis["compatibility"]["pairs"][-1]["conditions"] = [
+        {
+            "en": "Listed one-way: a cited document lists the pair; GoodWe's Battery Compatibility Overview (p. 6) does not name it, so the manual's system table is not a complete warranty approval.",
+            "de": "Einseitig gelistet: keine vollständige Garantiefreigabe.",
+        }
+    ]
+    one_way_assessed = json_object(
+        assess_equipment({"equipment_selection": sel_6508}, one_way_basis)
+    )
+    assert (
+        next(c for c in one_way_assessed["checks"] if c["id"] == "manufacturer_pair")[
+            "status"
+        ]
+        == "unresolved"
+    )
+    assert one_way_assessed["overall_status"] == "unresolved"
+
+    # 3. SAJ B2-15.0 (2068) with unit='count' on modules_per_stack_min/max
+    # and accessory 2092 resolves modules_per_stack=3, voltage and usable energy.
+    sel_b2: FixtureObject = {
+        "schema_version": 1,
+        "inverter_product_id": 4107,
+        "battery_product_id": 2068,
+        "modules_per_stack": 3,
+        "parallel_stacks": 1,
+        "accessory_product_ids": [2092],
+        "grid_phase": 3,
+        "operating_mode": "grid_connected",
+        "pv_dc_kw": 10.0,
+        "required_usable_kwh": 12.0,
+        "required_discharge_ac_kw": 5.0,
+        "product_revisions": {
+            "4107": revisions["4107"],
+            "2068": revisions["2068"],
+            "2092": revisions["2092"],
+        },
+    }
+    assessed_b2 = json_object(assess_equipment({"equipment_selection": sel_b2}, basis))
+    assert assessed_b2["overall_status"] == "satisfied"
+
+    # 4. Unreleased Cartesian pairs do not consume work_budget or record
+    # pair_release_not_established gaps during search.
+    store = EquipmentCandidateStore(workspace)
+    search_res = json_object(
+        search_equipment(
+            {
+                "equipment_requirements": {
+                    "schema_version": 1,
+                    "grid_phase": 3,
+                    "operating_mode": "grid_connected",
+                    "pv_dc_kw": 200.0,
+                    "required_usable_kwh": 200.0,
+                    "required_discharge_ac_kw": 90.0,
+                }
+            },
+            basis,
+            EquipmentSearchLimits(work_budget=500),
+            store,
+            lambda: None,
+        )
+    )
+    assert "pair_release_not_established" not in search_res["coverage"]["gaps"]
+    assert search_res["qualified_count"] >= 1
+    assert any(
+        c["selection"]["inverter_product_id"] == 6508
+        and c["selection"]["battery_product_id"] == 1958
+        and c["status"] == "satisfied"
+        for c in search_res["candidates"]
+    )
