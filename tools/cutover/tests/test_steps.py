@@ -293,6 +293,11 @@ class FilesystemTarget(Target):
                     for slug in (*plan.NEW_PLUGINS, *plan.INSTALLED_PLUGINS)
                 ]
             )
+        if args == ("eval", plan.WINDPRESS_CACHE_MTIME_EVAL):
+            cache = Path(self.path_of(plan.WINDPRESS_CACHE))
+            return str(int(cache.stat().st_mtime)) if cache.is_file() else "missing"
+        if args[:2] == ("linker-commerce", "present"):
+            return "templates: created 0, updated 0, unchanged 16"
         return ""
 
     def http(self, path: str, *, cache_buster: str | None = None) -> tuple[int, str]:
@@ -2041,3 +2046,179 @@ def test_checkpoint_workspace_keeps_one_stable_empty_lock_inode(
                 raise AssertionError("an old descriptor must exclude a new writer")
     assert lock.stat().st_ino == inode
     assert lock.stat().st_size == 0
+
+
+def test_windpress_cache_guard_passes_when_volume_and_templates_are_unchanged(
+    tmp_path: Path,
+) -> None:
+    """An unchanged WindPress volume and template report keep the existing cache."""
+    target = FilesystemTarget(tmp_path / "site")
+    volume = Path(target.path_of(plan.WINDPRESS_VOLUME))
+    volume.mkdir(parents=True)
+    (volume / "storefront.css").write_text(".btn { color: green; }\n")
+    cache = Path(target.path_of(plan.WINDPRESS_CACHE))
+    cache.parent.mkdir(parents=True)
+    cache.write_text("/* compiled */")
+    os.utime(cache, (1_700_000_000, 1_700_000_000))
+
+    deployed = steps.deploy(
+        target,
+        repository=_repository(tmp_path),
+        staging=tmp_path / "staging",
+        deploy_id="20261103T190900Z-unchanged",
+    )
+
+    assert any(
+        "templates and the WindPress volume unchanged, so the compiled cache stands"
+        in action
+        for action in deployed.actions
+    )
+
+
+def test_windpress_cache_guard_fails_or_warns_when_cache_mtime_does_not_advance(
+    tmp_path: Path,
+) -> None:
+    """When present updates inputs and cache mtime stays put, write fails and dry-run warns."""
+
+    class VolumeUpdatingTarget(FilesystemTarget):
+        def wp(self, *args: str, check: bool = True) -> str:
+            if args[:2] == ("linker-commerce", "present"):
+                volume = Path(self.path_of(plan.WINDPRESS_VOLUME))
+                volume.mkdir(parents=True, exist_ok=True)
+                (volume / "storefront.css").write_text(".btn { color: emerald; }\n")
+                return "templates: created 0, updated 1, unchanged 15"
+            return super().wp(*args, check=check)
+
+    target = VolumeUpdatingTarget(tmp_path / "site")
+    cache = Path(target.path_of(plan.WINDPRESS_CACHE))
+    cache.parent.mkdir(parents=True)
+    cache.write_text("/* 6 hours old */")
+    os.utime(cache, (1_700_000_000, 1_700_000_000))
+    before = {
+        "cache": steps.windpress_cache_mtime(target),
+        "volume": steps.windpress_volume_state(target),
+    }
+
+    warning = steps.windpress_cache_guard(
+        target,
+        before=dict(before),
+        report="templates: created 0, updated 1, unchanged 15",
+        writes=False,
+    )
+    assert warning.startswith("WARN: ")
+    assert "wp-admin → WindPress → Performance → Generate" in warning
+    assert plan.WINDPRESS_CACHE_MTIME_EVAL in warning
+
+    with pytest.raises(CutoverError) as exc_info:
+        steps.deploy(
+            target,
+            repository=_repository(tmp_path),
+            staging=tmp_path / "staging",
+            deploy_id="20261103T190900Z-stale",
+        )
+    message = str(exc_info.value)
+    assert "mtime stayed at 1700000000" in message
+    assert "wp-admin → WindPress → Performance → Generate" in message
+    assert "Settings > Performance > Generate" in message
+    assert plan.WINDPRESS_CACHE_MTIME_EVAL in message
+
+    cache.unlink()
+    assert steps.windpress_cache_mtime(target) is None
+    with pytest.raises(CutoverError, match="no compiled cache exists"):
+        steps.windpress_cache_guard(
+            target,
+            before={"cache": None, "volume": None},
+            report="templates: created 0, updated 1, unchanged 15",
+        )
+
+
+def test_windpress_cache_guard_passes_when_cache_mtime_advances(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Generating a fresh cache advances mtime and unlocks deploy / resume-deploy."""
+    import gzip
+
+    def take(site: Target, home: Path, **options: object) -> snapshot.Snapshot:
+        del site
+        reservation = options.get("reservation")
+        assert isinstance(reservation, snapshot.Reservation)
+        path = home / "snapshots" / reservation.name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(gzip.compress(b"CREATE TABLE fixture (id int);"))
+        result = snapshot.Snapshot(
+            path.name, path, path.stat().st_size, backup.sha256(path)
+        )
+        callback = options.get("on_verified")
+        assert callable(callback)
+        callback(result)
+        return result
+
+    monkeypatch.setattr(snapshot, "take", take)
+
+    class StagedGenerateTarget(FilesystemTarget):
+        def __init__(self, root: Path) -> None:
+            super().__init__(root)
+            self.generated = False
+
+        def wp(self, *args: str, check: bool = True) -> str:
+            if args[:2] == ("linker-commerce", "present"):
+                volume = Path(self.path_of(plan.WINDPRESS_VOLUME))
+                volume.mkdir(parents=True, exist_ok=True)
+                (volume / "storefront.css").write_text(".btn { color: teal; }\n")
+                if self.generated:
+                    cache = Path(self.path_of(plan.WINDPRESS_CACHE))
+                    cache.parent.mkdir(parents=True, exist_ok=True)
+                    cache.write_text("/* freshly compiled */")
+                    os.utime(cache, (1_700_000_600, 1_700_000_600))
+                return "templates: created 0, updated 0, unchanged 16"
+            return super().wp(*args, check=check)
+
+    target = StagedGenerateTarget(tmp_path / "site")
+    cache = Path(target.path_of(plan.WINDPRESS_CACHE))
+    cache.parent.mkdir(parents=True)
+    cache.write_text("/* old compiled */")
+    os.utime(cache, (1_700_000_000, 1_700_000_000))
+    repository = _repository(tmp_path)
+    staging = tmp_path / "staging"
+
+    with pytest.raises(CutoverError, match="mtime stayed at 1700000000"):
+        steps.deploy(
+            target,
+            repository=repository,
+            staging=staging,
+            deploy_id="20261103T191900Z-generated",
+        )
+
+    # Even when the volume matches on retry, resume-deploy still demands the
+    # cache advance past the original pre-present mtime (1_700_000_000).
+    with pytest.raises(CutoverError, match="mtime stayed at 1700000000"):
+        steps.resume_deploy(
+            target,
+            repository=repository,
+            staging=staging,
+            cache_buster="fixture",
+        )
+
+    target.generated = True
+    resumed = steps.resume_deploy(
+        target,
+        repository=repository,
+        staging=staging,
+        cache_buster="fixture",
+    )
+    assert not resumed.notes
+    assert any(
+        "cache mtime advanced 1700000000 → 1700000600" in action
+        for action in resumed.actions
+    )
+    assert (
+        steps.windpress_cache_guard(
+            target,
+            before={"cache": None, "volume": None},
+            report="templates: created 1, updated 0, unchanged 15",
+        )
+        == "present changed the WindPress inputs and the cache was generated"
+    )
+
+

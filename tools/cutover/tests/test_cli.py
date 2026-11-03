@@ -29,6 +29,11 @@ class CliTarget(Target):
 
     def wp(self, *args: str, check: bool = True) -> str:
         del check
+        if args == ("eval", plan.WINDPRESS_CACHE_MTIME_EVAL):
+            cache = Path(self.path_of(plan.WINDPRESS_CACHE))
+            return str(int(cache.stat().st_mtime)) if cache.is_file() else "missing"
+        if args[:2] == ("linker-commerce", "present"):
+            return "templates: created 0, updated 0, unchanged 16"
         return json.dumps(
             [{"name": slug, "status": "active"} for slug in plan.NEW_PLUGINS]
         )
@@ -191,9 +196,10 @@ def test_rollback_deploy_command_is_dry_unless_write_is_given(
 
 @pytest.mark.parametrize("failure", ["lost-reply", "verify"])
 def test_resume_deploy_finishes_pending_batch_without_republishing(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, failure: str
+    data_home: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, failure: str
 ) -> None:
     """Lost SSH replies and transient verify failures need no new upload/rename."""
+    del data_home
 
     class PendingTarget(CliTarget):
         unavailable = failure == "verify"
@@ -349,3 +355,19 @@ def test_local_probe_leaves_site_write_lock_to_deploy_child(
     with cli._local_operation(Namespace(command="probe", target="local:owned")):
         with retirement.available(tmp_path, "owned"):
             pass
+
+
+def test_deploy_dry_run_warns_about_windpress_cache_freshness_guard(
+    data_home: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    site = _target(data_home)
+    monkeypatch.setattr(cli, "_target", lambda _: site)
+
+    assert cli.main(["deploy"]) == 0
+    out = capsys.readouterr().out
+    assert "WARN:" in out
+    assert plan.WINDPRESS_CACHE in out
+    assert "wp-admin → WindPress → Performance → Generate" in out
+

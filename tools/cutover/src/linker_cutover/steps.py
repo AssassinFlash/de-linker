@@ -445,6 +445,99 @@ def deploy(
     )
 
 
+def windpress_cache_mtime(target: Target) -> int | None:
+    """The compiled WindPress cache's mtime; None when no cache file exists."""
+    reply = target.wp("eval", plan.WINDPRESS_CACHE_MTIME_EVAL).strip()
+    if reply == "missing":
+        return None
+    if not reply.isdigit():
+        raise CutoverError(f"cannot read the WindPress cache mtime: {reply!r}")
+    return int(reply)
+
+
+def windpress_volume_state(target: Target) -> list[str] | None:
+    """The WindPress volume's content identity; None when it is not installed."""
+    if not target.exists(plan.WINDPRESS_VOLUME):
+        return None
+    return target.tree(plan.WINDPRESS_VOLUME)
+
+
+# present's own report of its template sync. Templates are LiveCanvas posts
+# whose Tailwind classes compile into the same cache the volume feeds, so a
+# present that wrote them needs the cache regenerated even when every volume
+# file stayed identical.
+_TEMPLATES_REPORT = re.compile(r"templates: created (\d+), updated (\d+), unchanged (\d+)")
+
+
+def windpress_templates_changed(report: str) -> bool:
+    """Whether present reported template writes; an unparseable report is treated as changed."""
+    counts = _TEMPLATES_REPORT.search(report)
+    return counts is None or int(counts[1]) + int(counts[2]) > 0
+
+
+def windpress_cache_guard(
+    target: Target,
+    *,
+    before: dict[str, int | list[str] | None],
+    report: str,
+    writes: bool = True,
+) -> str:
+    """Verify the cache the frontend serves advanced past present's inputs.
+
+    Present writes what the cache is compiled FROM — the templates' Tailwind
+    classes and the WindPress volume — while the cache itself is compiled by
+    WindPress's Generate in a browser, which a deploy has no instance of
+    (AGENTS.md §4: the pipeline forces the rebuild). Two signals say present
+    changed those inputs: the volume's content identity, and present's own
+    templates report; a report this code cannot parse counts as a change,
+    because an input it failed to see is exactly the stale CSS the 2026-11-03
+    incident shipped (deploy done 19:09, frontend stale until Generate ran by
+    hand at 19:19). Either signal changing means the compiled cache must
+    advance past what it was when this deployment began.
+    """
+    volume_before = before["volume"]
+    raw_cache_before = before["cache"]
+    cache_before = raw_cache_before if isinstance(raw_cache_before, int) else None
+    changed = (
+        volume_before != windpress_volume_state(target)
+        or bool(before.get("templates_changed"))
+        or windpress_templates_changed(report)
+    )
+    cache = windpress_cache_mtime(target)
+    advanced = cache is not None and (
+        cache_before is None or cache > cache_before
+    )
+    if not changed:
+        return (
+            "templates and the WindPress volume unchanged, so the compiled "
+            "cache stands"
+        )
+    if advanced:
+        if cache_before is None:
+            return "present changed the WindPress inputs and the cache was generated"
+        return (
+            "present changed the WindPress inputs and the cache mtime advanced "
+            f"{cache_before} → {cache}"
+        )
+    state = (
+        "no compiled cache exists"
+        if cache is None
+        else f"its mtime stayed at {cache}"
+    )
+    message = (
+        f"present changed the WindPress inputs, but {state}: the frontend "
+        f"would keep serving the previous CSS ({plan.WINDPRESS_CACHE}; "
+        "AGENTS.md §4). Generate the cache — wp-admin → WindPress → "
+        "Performance → Generate (Settings > Performance > Generate), or "
+        "`just windpress-compile <name>` on a local instance — then "
+        "`just cutover resume-deploy`. Verify first: "
+        f'{wp_prefix_for(target)} eval "{plan.WINDPRESS_CACHE_MTIME_EVAL}"'
+    )
+    if not writes:
+        return f"WARN: {message}"
+    raise CutoverError(message)
+
+
 def _post_deploy(
     target: Target,
     *,
@@ -508,11 +601,32 @@ def _post_deploy(
         return phase_actions
 
     def present() -> list[str]:
-        target.wp("linker-commerce", "present", "--user=1", "--allow-stale")
+        # AGENTS.md §4: the deploy pipeline forces the cache rebuild. Present
+        # writes only the inputs — templates and the WindPress volume — while
+        # the cache the frontend serves is compiled by WindPress's Generate in
+        # a browser a deploy has none of, so the step verifies the cache
+        # instead of printing a reminder no one runs (the 2026-11-03 incident).
+        # The before-state is kept in the checkpoint: a resumed deploy compares
+        # against the state the FIRST present of this deployment found, not the
+        # one present already wrote, so the guard keeps failing until the cache
+        # actually advances.
+        if not checkpoint.windpress:
+            checkpoint.windpress = {
+                "cache": windpress_cache_mtime(target),
+                "volume": windpress_volume_state(target),
+            }
+            deployment.save(staging, checkpoint)
+        report = target.wp("linker-commerce", "present", "--user=1", "--allow-stale")
+        if windpress_templates_changed(report) and not checkpoint.windpress.get(
+            "templates_changed"
+        ):
+            checkpoint.windpress["templates_changed"] = 1
+            deployment.save(staging, checkpoint)
         return [
-            "wp linker-commerce present --user=1 --allow-stale. In the signed-in "
-            "WindPress dashboard open Settings > Performance > Generate, then "
-            "check that Last Generated advances and the frontend loads that CSS version."
+            "wp linker-commerce present --user=1 --allow-stale; "
+            + windpress_cache_guard(
+                target, before=checkpoint.windpress, report=report
+            )
         ]
 
     def refresh() -> list[str]:
