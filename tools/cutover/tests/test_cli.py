@@ -370,4 +370,3 @@ def test_deploy_dry_run_warns_about_windpress_cache_freshness_guard(
     assert "WARN:" in out
     assert plan.WINDPRESS_CACHE in out
     assert "wp-admin → WindPress → Performance → Generate" in out
-

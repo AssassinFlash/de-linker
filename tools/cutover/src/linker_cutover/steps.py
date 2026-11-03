@@ -466,7 +466,9 @@ def windpress_volume_state(target: Target) -> list[str] | None:
 # whose Tailwind classes compile into the same cache the volume feeds, so a
 # present that wrote them needs the cache regenerated even when every volume
 # file stayed identical.
-_TEMPLATES_REPORT = re.compile(r"templates: created (\d+), updated (\d+), unchanged (\d+)")
+_TEMPLATES_REPORT = re.compile(
+    r"templates: created (\d+), updated (\d+), unchanged (\d+)"
+)
 
 
 def windpress_templates_changed(report: str) -> bool:
@@ -504,13 +506,10 @@ def windpress_cache_guard(
         or windpress_templates_changed(report)
     )
     cache = windpress_cache_mtime(target)
-    advanced = cache is not None and (
-        cache_before is None or cache > cache_before
-    )
+    advanced = cache is not None and (cache_before is None or cache > cache_before)
     if not changed:
         return (
-            "templates and the WindPress volume unchanged, so the compiled "
-            "cache stands"
+            "templates and the WindPress volume unchanged, so the compiled cache stands"
         )
     if advanced:
         if cache_before is None:
@@ -520,9 +519,7 @@ def windpress_cache_guard(
             f"{cache_before} → {cache}"
         )
     state = (
-        "no compiled cache exists"
-        if cache is None
-        else f"its mtime stayed at {cache}"
+        "no compiled cache exists" if cache is None else f"its mtime stayed at {cache}"
     )
     message = (
         f"present changed the WindPress inputs, but {state}: the frontend "
@@ -624,9 +621,7 @@ def _post_deploy(
             deployment.save(staging, checkpoint)
         return [
             "wp linker-commerce present --user=1 --allow-stale; "
-            + windpress_cache_guard(
-                target, before=checkpoint.windpress, report=report
-            )
+            + windpress_cache_guard(target, before=checkpoint.windpress, report=report)
         ]
 
     def refresh() -> list[str]:

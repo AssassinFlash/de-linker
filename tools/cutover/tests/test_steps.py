@@ -2220,5 +2220,3 @@ def test_windpress_cache_guard_passes_when_cache_mtime_advances(
         )
         == "present changed the WindPress inputs and the cache was generated"
     )
-
-
