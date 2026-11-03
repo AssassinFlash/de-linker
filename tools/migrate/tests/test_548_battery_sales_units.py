@@ -169,7 +169,9 @@ def test_reviewed_plan_is_frozen() -> None:
 
 
 def test_cli_preview_ships_reviewed_plan_and_writes_private_receipt(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     migration = load_migration()
     observed: dict[str, Any] = {}
@@ -242,7 +244,7 @@ def test_cli_preview_refuses_to_shadow_an_existing_receipt(
     assert receipt.read_text() == "{}"
 
 
-def _target(site: str):  # noqa: ANN202 - minimal transport double
+def _target(site: str) -> Any:  # minimal transport double
     # The migration module registered linker_cutover on sys.path at import.
     from linker_cutover.target import (  # type: ignore[import-not-found]
         Target,
