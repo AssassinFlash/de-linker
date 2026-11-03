@@ -102,3 +102,39 @@ BYD Battery-Box（HVS/HVM/HVB）、Huawei LUNA2000、Sungrow SBR/SBH/PowerStack/
 | `/de/proforma-anfrage/` | — | 75,201 B |
 
 判断：德语配置器比英语多传约 92 KB（gzip 后），来源就是这份内联翻译目录。137 KB 的压缩传输对一个工具页在可接受范围内，**不构成缺陷**；先前「2.1 倍体积」的比较是未压缩字节，不作为性能问题成立。若将来要压，唯一正路是拆分 `planner.js` 的翻译目录或按需加载，而不是绕开 WP 的脚本模块翻译机制。
+
+## 9. ETR 50–125 kW：可直接落库的安装事实（2026-11-03 14:45 CST）
+
+来源文档已在生产 `Publication::manifest()` 中绑定到产品 3595、6507–6511：
+
+- `document_id` `doc-e135c80bd4befdcd3c7e807944036da9a13c966b4c61ad40e6ff7886cf10b42f`
+- `blob_sha256` `50bdd49b7be0ef036cafec286994f33af79dab5fc54dfcebbf4549f7e429acf9`
+- `document_revision` `f802c3c76d87d6e4dc6b724b400a1ce6fe9ebcb38a3475f3e4d5dcfaffc2ba63`
+- 标题 `GW ETR-50-125kW User-Manual-EN V1.0`，215 页
+
+原文表格（`No. | Cable | Recommended Specification | Acquisition Method`）：
+
+| 页码 | 项目 | 原文规格 |
+| --- | --- | --- |
+| p.60 | Inverter Protective Grounding Cable | 单芯户外铜缆，导体截面 **25–35 mm²**，User-provided |
+| p.60 | Battery DC Cable | 单芯户外铜缆，导体截面 **70 mm²**，外径 **14.5–15.5 mm**，Obtained from the battery system accessory kit |
+| p.60 | PV DC Cable | 行业标准户外光伏电缆，导体截面 **4–6 mm²**，外径 **5.9–8.8 mm**，User-provided |
+| p.61 | Inverter AC Cable（单芯） | 单芯户外铜缆，导体截面 **50–70 mm²**，外径 **14–34 mm**，**SPE ≥ 1/2×SAC** |
+| p.61 | Inverter AC Cable（多芯） | 多芯户外铜缆，导体截面 **50–70 mm²**，外径 **22–43 mm**，**SPE ≥ 1/2×SAC** |
+| p.62 | DO 并联通信线 | 长度 5 m，Shipped with the unit（仅离网并机场景） |
+| p.62 | Meter Communication cable | 长度 10 m，Shipped with the unit |
+
+生产工程 feed（`GET /wp-json/linker/v1/engineering-feed`，85 个产品）中四个 ETR 机型的当前版本与事实状态：
+
+| 产品 | 型号 | `product_revision` | `installation_facts` |
+| --- | --- | --- | --- |
+| 6508 | GW99.99K-ETR-G10 | `2e375a64a64072206a19b9afb28f264b72b56d21e472dbff7a5ea88d47ac242d` | 无 |
+| 6509 | GW100K-ETR-G10 | `36cee323c7b04dc13adcdc59f379216101f93ed1751301c9c8b692af4a0b8c3b` | 无 |
+| 6510 | GW110K-ETR-G10 | `830ca6597193b83379895926bfc5ec499981c348e4a31fe801edd51d34862086` | 无 |
+| 6511 | GW124.99K-ETR-G10 | `829a52e7504213453d56ba633038b947ecb1414aca55df6de589607eac10c52b` | 无 |
+
+即：文档已绑定、页码与原文已核对，缺的只是把这四项 conductor 事实写进 `548-installation-facts.json` 并走一次 guarded 迁移。这是下一段工作的直接输入，不需要再查资料。
+
+## 10. 全站 URL 状态（2026-11-03 14:43 CST）
+
+sitemap 五张子图合计 **258** 条 URL，逐条请求：**249 条直接 200**；9 条首次并发超时，单独串行重试后全部 **200**。合计 **258/258 = 200**，没有断链、没有 404、没有 5xx。
