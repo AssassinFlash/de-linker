@@ -658,8 +658,8 @@ class Target:
         listing = self.shell(
             f"cd {shlex.quote(self.path_of(relative))} && find . -type f -print0 "
             "| sort -z | xargs -0 sh -c '"
-            "if command -v shasum >/dev/null 2>&1; then exec shasum -a 256 \"$@\"; "
-            "else exec sha256sum \"$@\"; fi' sh"
+            'if command -v shasum >/dev/null 2>&1; then exec shasum -a 256 "$@"; '
+            'else exec sha256sum "$@"; fi\' sh'
         )
         return [line.strip() for line in listing.splitlines() if line.strip()]
 
