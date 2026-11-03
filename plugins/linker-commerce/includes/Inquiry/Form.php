@@ -34,8 +34,16 @@ final class Form {
 		add_shortcode( 'linker_inquiry_form', array( $this, 'render' ) );
 		add_shortcode( 'linker_inquiry_text', array( $this, 'text' ) );
 		add_shortcode( 'linker_inquiry_hidden', array( $this, 'hidden' ) );
+		add_shortcode( 'linker_inquiry_project_notes', array( $this, 'project_notes' ) );
 		add_shortcode( 'linker_inquiry_lines', array( $this, 'lines' ) );
 		add_shortcode( 'linker_inquiry_draft_nonce', array( $this, 'draft_nonce' ) );
+	}
+
+	/**
+	 * Active planning project notes, rendered separately from the customer message.
+	 */
+	public function project_notes(): string {
+		return \Linker\Commerce\Planning\Context::inquiry_notes_section( (array) ( $this->flash['fields'] ?? array() ) );
 	}
 
 	/**

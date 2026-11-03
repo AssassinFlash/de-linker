@@ -112,7 +112,7 @@ class Entries {
 			return;
 		}
 		$post = get_post();
-		if ( $post instanceof \WP_Post && ( str_contains( $post->post_content, 'lk-dialog-prompt' ) || str_contains( $post->post_content, 'installer-mobile-query' ) ) && ! is_front_page() ) {
+		if ( $post instanceof \WP_Post && ( str_contains( $post->post_content, 'lk-dialog-prompt' ) || str_contains( $post->post_content, 'installer-mobile-query' ) || str_contains( $post->post_content, 'lki-hero-query' ) ) && ! is_front_page() ) {
 			wp_enqueue_script( 'linker-tools-marketing' );
 		}
 	}

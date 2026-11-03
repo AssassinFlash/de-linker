@@ -13692,3 +13692,72 @@ msgstr "Modellierter warmer Fall"
 #: build/planner/assets/planner.js
 msgid "Modeled cold case"
 msgstr "Modellierter kalter Fall"
+
+#: ../../apps/planner/src/components/BriefForm.tsx
+#: ../../apps/planner/src/components/ProjectBriefStart.tsx
+#: ../../apps/planner/src/components/ProjectOverview.tsx
+#: build/planner/assets/planner.js
+msgid "This note is not used in the calculation."
+msgstr "Diese Notiz fließt nicht in die Berechnung ein."
+
+#: ../../apps/planner/src/components/ProjectBriefStart.tsx
+#: build/planner/assets/planner.js
+msgid "The project note could not be opened."
+msgstr "Die Projektnotiz konnte nicht geöffnet werden."
+
+#: ../../apps/planner/src/components/ProjectBriefStart.tsx
+#: build/planner/assets/planner.js
+msgid "Back to your entry"
+msgstr "Zurück zur Eingabe"
+
+#: ../../apps/planner/src/components/ProjectBriefStart.tsx
+#: build/planner/assets/planner.js
+msgid "Confirmed"
+msgstr "Bestätigt"
+
+#: ../../apps/planner/src/components/ProjectBriefStart.tsx
+#: build/planner/assets/planner.js
+msgid "Carried over"
+msgstr "Übernommen"
+
+#: ../../apps/planner/src/components/ProjectBriefStart.tsx
+#: ../../apps/planner/src/components/ProjectOverview.tsx
+#: build/planner/assets/planner.js
+msgid "Your project note"
+msgstr "Ihre Projektnotiz"
+
+#: ../../apps/planner/src/components/ProjectBriefStart.tsx
+#: build/planner/assets/planner.js
+msgid "Save"
+msgstr "Speichern"
+
+#: ../../apps/planner/src/components/ProjectBriefStart.tsx
+#: build/planner/assets/planner.js
+msgid "Project note saved."
+msgstr "Projektnotiz gespeichert."
+
+#: ../../apps/planner/src/components/ProjectBriefStart.tsx
+#: ../../apps/planner/src/marketing/entries.ts
+#: build/planner/assets/planner.js
+msgid "The project note could not be carried over. Your text is still here."
+msgstr "Die Projektnotiz konnte nicht übernommen werden. Ihr Text ist weiterhin vorhanden."
+
+#: ../../apps/planner/src/components/ProjectBriefStart.tsx
+#: build/planner/assets/planner.js
+msgid "Sizing uses the planning inputs shown below."
+msgstr "Die Auslegung verwendet die folgenden Angaben."
+
+#: ../../apps/planner/src/components/ProjectBriefStart.tsx
+#: build/planner/assets/planner.js
+msgid "Details to confirm"
+msgstr "Angaben zur Bestätigung"
+
+#: ../../apps/planner/src/components/ProjectBriefStart.tsx
+#: build/planner/assets/planner.js
+msgid "Not entered"
+msgstr "Nicht angegeben"
+
+#: ../../apps/planner/src/components/ProjectBriefStart.tsx
+#: build/planner/assets/planner.js
+msgid "Use these values"
+msgstr "Angaben übernehmen"

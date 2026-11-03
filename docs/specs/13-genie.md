@@ -159,7 +159,7 @@ markup 归 archive 的 LC 模板（#16 重建），行为与数据归本票，�
   - **站头站脚**：`/genie/` 的链接（页头菜单卡、移动链接、站脚 Plan with Linker 面板）与全站常驻 dock；工作区页（`/genie/`）由 `[linker_genie_workspace]` 承载。
   - **首页 hero**（#232）：首页 `.hero-cinematic` 自己的输入框、发送、胶囊、拍照、附件与语音按钮；见下节"首页 hero"。
   - `Entries::*_chips()` 仍是可挂载的钩子（Woo 模板面：`woocommerce_single_product_summary` / `woocommerce_account_dashboard`），当前 LiveCanvas 模板不触发；`[linker_genie_chips page_type="…"]` 可随时显式挂载。首次点击才加载 JS。
-- **营销页输入转入同一个 Genie（2026-10-22，Batch A）**：住宅、工商业英德页的 `#system-search` 与 Installer 手机的 `.installer-mobile-assistant`，由 tools 的 `marketing` 入口绑定现有 LC 输入框。胶囊仍只预填原输入框；普通 Genie 链接仍是导航；Installer 桌面 Plan 仍进入配置器，项目原文完整下传属于另一个尚未完成的 Batch B。
+- **营销页输入转入同一个 Genie（2026-10-22，Batch A）**：住宅、工商业英德页的 `#system-search` 与 Installer 手机的 `.installer-mobile-assistant`，由 tools 的 `marketing` 入口绑定现有 LC 输入框。胶囊仍只预填原输入框；普通 Genie 链接仍是导航；Installer 桌面 Plan 仍进入配置器（Batch B，见下条）。
   - 输入框 Enter 发送，Shift+Enter 换行，IME 合成期间 Enter 不发送。源问题在接收方成功持久接管前保留；加载失败解除 busy 并允许重试同一 attempt。App 在 await/队列前同步认领 attempt，同 tick 重投及 ready 后 ACK 重投不会新增一轮。暖态已有轮次忙碌时，下一问题保留为待处理项，不接入上一轮的附件。
   - 当前输入框、文件或待重选文件名算已有草稿，显示保留、添加、单独发送的明确选择。单独发送先原子停放旧草稿；停放/认领持久写入失败不清原 owner，也不回 accepted ACK。恢复停放稿等待身份核验后再次检查输入版本、文件与 busy，避免迟到恢复覆盖新一轮。未发送附件准备完成后的字节，在隔离、Close、pagehide 或换线程前按上文原 owner 的 editing 合同保留；尚未完成准备或未能保留的附件明确列为待重选文件，重选或明确移除前禁止发送。
   - 附件、铭牌、语音只将原文接入现有 composer，并展示现有选择/听写操作，不自动发送或启动麦克风。浏览器原生听写使用当前页面语言，插在光标处；拒绝、不支持、停止与关闭均保留原文，停止后的迟到转录不得再插入。
@@ -168,6 +168,14 @@ markup 归 archive 的 LC 模板（#16 重建），行为与数据归本票，�
   - composer 沿用最多六行（24px × 6 = 144px），超出则内部滚动；恢复后即使原文没变，实际 textarea 重新挂载、面板打开、宽度变化与字体就绪都要重新测量，不能隐藏第二行。打开 dock 后焦点进入 composer。860px 以下为当前完整可见 sheet 的 dialog 边界（含 React 根外 LC 账号链接），背景 inert、原 body scroll 状态保存/恢复、Tab 不离开；关闭的 Help details 仅首个 summary 可 Tab。桌面 dock 为非模态，不锁页面焦点。Help/history 优先处理 Esc，再按现有关闭动作关闭 dock；仅在焦点仍属于该面或丢失时返回有效原触发器，不抢用户已主动移开的焦点。
   - 应用 bundle 加载失败时，由既有原生 loader 提供 Genie 标题、错误、重试；helper 另有 Close/Esc 和同一完整 mount 的临时键盘边界，workspace 不提供 Close。重试前释放该边界，再交给 React；重试不覆盖有效原触发器。关闭取消本次尚未发送的 volatile 问题/entry 投递意图，但保留源输入与 durable entry。迟到 ready 不重开、不发送；plain Open 仅恢复可选稿，新问题不得自动先发已关闭的旧问题。所有 fallback 样式经同一 WindPress 管线，在缺少应用 CSS 时仍可用。
   - 本地真实 LC → App → 单一 turn 的模型拦截夹具与状态截图见 `docs/acceptance/2026-10-22/full-site/genie-entry-inventory/batch-a/`。单测、设计评审、浏览器与线上读回分别记录，不互相代替。该段为本批实现合同；最终验收状态以证据记录为准。
+- **Installer 桌面项目原文（2026-11-04，Batch B）**：`#lki-hero-query` 与 `.lk-btn-query` 不进入 Genie，而是把客户原话带进配置器项目，再随项目走完报告、草稿与询盘。
+  - 输入点 Plan 或 Enter 时先取该标签页的当前身份，把原话**逐字**暂存到以已核验原生 principal 为准的记录里（`Linker\Tools\Planner\ProjectBriefSource`，选项侧车、整段 JSON 的字节级 compare-and-set、写后绕过选项缓存读回）；暂存失败、存储失败或读回不一致都保留输入框原文、显式报错，**不导航**。成功后只把不透明 `?brief=<32 位十六进制>` 带给当前语言的配置器，客户原文不进 URL。Shift+Enter 与 IME 合成中的 Enter 不发送；空输入走原有链接导航。
+  - 配置器按当前原生 scope 读出该记录，以“Your project note / Ihre Projektnotiz”显示原文，并给五行确认面（邮编、年用电、PV、相数、备电）：未提供的显示“Not entered / Nicht angegeben”，带过来的结构化值在客户按下“Use these values / Angaben übernehmen”前只算“Carried over / Übernommen”。**不新增抽取器**：原话里的数字、型号、温度不得填进任何 sizing 字段；空 Plan 导航仍是普通空配置器。
+  - 原文以 `brief.project_note` 进入项目输入。引擎报告已把它渲染成站点区“Project note / Projektnotiz”一行并进 PDF（`report_model.py`、`report_copy.py`），本批不改引擎，只保证它真的被写进去。
+  - 询盘表单把项目笔记与客户留言**分开**显示，并给显式“Include project notes with this inquiry / Projektnotizen dieser Anfrage beifügen”勾选；提交时按勾选里记录的精确 revision 校验，漂移即 409 `linker_project_notes_changed`（在任何原生写入之前，归 `Protection\Outcome` 的 REFUSED/invalid），订单私有快照这些精确记录，团队邮件/HTML 标注“Project note from the customer / Projektnotiz des Kunden”与“This note is not used in the calculation. / Diese Notiz fließt nicht in die Berechnung ein.”。只有笔记、没有产品且留言为空也是一份有效询盘。
+  - 刷新、返回与英德切换都保留同一个 `brief` 选择器（`useSiteIntegration` 的语言跳转带上它）；客户原文不翻译、不写入任何 URL；记录缺失或格式不符时报“The project note could not be opened. / Die Projektnotiz konnte nicht geöffnet werden.”并提供“Back to your entry / Zurück zur Eingabe”，不伪装成成功转入。访客登录后的认领只搬移逐条读回成功的记录，失败记录留在原处可重试。
+  - 原文上限沿用引擎 `PlanningBrief.project_note` 的 4096 字符（`brief.schema.json` 是同一份合同），不新造阈值；超限在输入框拒绝并说明，不静默截断。
+  - 文案：13 条新句先写英文、德文独立撰写（Sie 体），进 `linker-tools-de_DE_formal.po` 并重生成脚本 JSON/MO。测试：`projectBrief.test.ts`、`planEntry.test.tsx`、`ProjectBriefSourceTest.php`、`ProjectNotesTest.php` 覆盖上面每条真实边界；浏览器与线上验收不在本批声明。
 - 组件：线程、消息、追问芯片、ProductCard（加入 Lösungsentwurf 并读回数量；加入方案；状态 pending/added/unverified/retry 在卡内、高度稳定）、CompareTable、Handoff。
 - 文案：按 AGENTS.md 规则逐处写，EN/DE；对抗评审记录附 PR。
 

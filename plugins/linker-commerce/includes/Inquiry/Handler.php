@@ -63,9 +63,15 @@ final class Handler {
 				'billing' => BillingFields::values( $post ),
 				'draft'   => $draft,
 			);
-			$sender  = new Sender();
+			if ( isset( $post[ \Linker\Commerce\Planning\Context::PRESENT_FIELD ] ) || isset( $post[ \Linker\Commerce\Planning\Context::REVISIONS_FIELD ] ) ) {
+				$payload['project_notes'] = \Linker\Commerce\Planning\Context::submission_fingerprint( $post );
+			}
+			$sender = new Sender();
 			// Conversation summaries belong to the separately reviewed Genie confirmation.
-			return Business::run( 'inquiry', $post, $payload, static fn () => $sender->request( $details, $post, false ), ! Business::enabled() || hash_equals( WC()->cart->get_cart_hash(), $draft ), static fn () => $sender->preflight( $details ) );
+			return \Linker\Commerce\Planning\Context::with_submission(
+				$post,
+				static fn (): WC_Order|WP_Error => Business::run( 'inquiry', $post, $payload, static fn () => $sender->request( $details, $post, false ), ! Business::enabled() || hash_equals( WC()->cart->get_cart_hash(), $draft ), static fn () => $sender->preflight( $details ) )
+			);
 		} finally {
 			$locale->back();
 		}
@@ -93,10 +99,11 @@ final class Handler {
 				WC()->session->set_customer_session_cookie( true );
 			}
 			$fields = array();
-			foreach ( array( 'name', 'email', 'company', 'message', 'linker_request_id', 'linker_individual_review' ) as $key ) {
+			foreach ( array( 'name', 'email', 'company', 'message', 'linker_request_id', 'linker_individual_review', \Linker\Commerce\Planning\Context::PRESENT_FIELD ) as $key ) {
 				$fields[ $key ] = isset( $post[ $key ] ) && is_string( $post[ $key ] ) ? sanitize_textarea_field( $post[ $key ] ) : '';
 			}
 			$fields['consent'] = '1' === ( $post['consent'] ?? '' ) ? '1' : '';
+			$fields[ \Linker\Commerce\Planning\Context::INCLUDE_FIELD ] = '1' === ( $post[ \Linker\Commerce\Planning\Context::INCLUDE_FIELD ] ?? '' ) ? '1' : '';
 			// A definite refusal returns to fresh verification. Unknown/pending
 			// outcomes may first recover their existing UUID without a new proof.
 			$fields['linker_recovery_available'] = \Linker\Commerce\Protection\FormRecovery::after_error( $result ) ? '1' : '0';

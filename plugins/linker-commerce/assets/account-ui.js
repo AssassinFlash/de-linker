@@ -84,6 +84,9 @@
 				if ( field( 'consent' ) ) {
 					field( 'consent' ).checked = kept.consent === true;
 				}
+				if ( field( 'linker_include_project_notes' ) && typeof kept.includeProjectNotes === 'boolean' ) {
+					field( 'linker_include_project_notes' ).checked = kept.includeProjectNotes;
+				}
 				if ( field( 'linker_inquiry_retained' ) ) {
 					// The existing handoff contract also preserves intentionally empty text.
 					field( 'linker_inquiry_retained' ).value = '1';
@@ -115,14 +118,16 @@
 			}
 			const fields = Object.fromEntries( names.map( ( name ) => [ name, field( name )?.value || '' ] ) );
 			const consent = field( 'consent' )?.checked === true;
-			if ( ! consent && names.every( ( name ) => fields[ name ] === '' ) ) {
+			const notesToggle = field( 'linker_include_project_notes' );
+			const includeProjectNotes = notesToggle ? notesToggle.checked === true : null;
+			if ( ! consent && includeProjectNotes !== false && names.every( ( name ) => fields[ name ] === '' ) ) {
 				return;
 			}
 			try {
 				if ( ! context ) {
 					throw new Error( 'Missing native inquiry context' );
 				}
-				window.sessionStorage.setItem( inquiryStorageKey, JSON.stringify( { context, fields, consent } ) );
+				window.sessionStorage.setItem( inquiryStorageKey, JSON.stringify( { context, fields, consent, ...( null !== includeProjectNotes ? { includeProjectNotes } : {} ) } ) );
 			} catch {
 				event.preventDefault();
 				if ( retentionError ) {
