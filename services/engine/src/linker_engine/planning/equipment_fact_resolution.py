@@ -27,6 +27,7 @@ type FactUse = Literal[
     "battery_terminal_power",
     "bank_rated_dc_power",
     "battery_operating_voltage",
+    "usable_energy",
 ]
 
 
@@ -373,6 +374,12 @@ def resolve_fact(
                     return FactResolution(None, "battery_temperature_outside_condition")
                 else:
                     match["battery_temperature_c"] = context.battery_temperature_c
+        elif use == "usable_energy":
+            valid = (
+                fact.get("quantity") == "energy"
+                and set(q) == {"en", "de"}
+                and all(isinstance(v, str) and bool(v.strip()) for v in q.values())
+            )
         else:
             valid = False
         if not valid:

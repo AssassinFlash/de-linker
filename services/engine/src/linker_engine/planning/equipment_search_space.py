@@ -87,8 +87,6 @@ class EquipmentSearchSpace:
                 [None] if no_battery else [*self.included]
             )
             for battery in options:
-                if not self.available():
-                    break
                 battery_id = battery["canonical_product_id"] if battery else None
                 counts: range | tuple[None] = (None,)
                 pair = (
@@ -101,10 +99,11 @@ class EquipmentSearchSpace:
                     if battery
                     else None
                 )
+                if pair is not None and not pair.released:
+                    continue
+                if not self.available():
+                    break
                 if pair is not None:
-                    if not pair.released:
-                        self.gaps["pair_release_not_established"] += 1
-                        continue
                     assert battery_id is not None
                     minimum = self.evidence.scalar(
                         battery_id, "modules_per_stack_min", "count"
@@ -112,9 +111,17 @@ class EquipmentSearchSpace:
                     maximum = self.evidence.scalar(
                         battery_id, "modules_per_stack_max", "count"
                     )
+                    stack_low = (
+                        int(minimum)
+                        if minimum is not None
+                        else 1
+                        if maximum is not None
+                        and self.evidence.sales_unit(battery_id) == "battery_module"
+                        else None
+                    )
                     bounds = ([pair.modules] if pair.modules else []) + (
-                        [(int(minimum), int(maximum))]
-                        if minimum is not None and maximum is not None
+                        [(stack_low, int(maximum))]
+                        if stack_low is not None and maximum is not None
                         else []
                     )
                     if bounds:
