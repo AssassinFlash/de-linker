@@ -178,3 +178,15 @@ cd tools/cutover && .venv/bin/python -m linker_cutover.cli snapshot --write
 已知未竟（输入完备性，非缺陷）：takeoff 表 `Calculated length —` +
 `Extra length or its basis is missing`（导体长度需 extra length 输入，
 不影响导体对比门）。UI 驱动细节与字段 id 见 `installation-flow.md`。
+
+## §7 生产部署与三修复读回（2026-11-03 19:20 CST）
+
+部署：`linker_cutover.cli deploy --write`（main 7e2f6502，含 PR #871 planner 资产 + PR #874 commerce 修复）；原子切换 0.018s，插件激活、present、litespeed purge 完成。**WindPress 缓存重建为后台手工步骤**（wp-admin → WindPress → Performance → Generate）：点击后缓存 mtime 1793646409（03:06）→ 1793704734（19:19），读回 `body .cky-modal{overflow:hidden}` 生效。
+
+生产读回（有头 Playwright，视口 390×844 / 1440×900）：
+- **PR #871 缺陷 2（表单回填）**：`/solution-configurator/?project=1c62e459…` Equipment 表单回填 200 kWp / 61.4 kWh / 100 kW，operating mode=grid_connected、grid phase=3 ✓（修复前全空）
+- **D1（DE 390 溢出）**：`/de/mein-konto/unternehmen/` innerWidth=390、scrollWidth=390（修复前 402）、`.cky-modal` computed overflow=hidden、账户卡 grid 294px ✓
+- **O2（PDP tab ARIA）**：`/product/goodwe-esa-gw3k-eha-g20-3-kw-single-phase-power-module/` 点击 "PV input" tab → aria-selected="true"、其余 tab 全 "false" ✓（5 tabs）
+- PR #871 缺陷 1（stale spinner）：新 release 08256b93 实走 ETR 时 ~1 分钟无刷新出结果（b45 已记录），本次部署 planner.js ver=9397743b…（CI 构建）确认线上即该版。
+
+已知部署管线缺口：cutover deploy 的 present 步骤只打印"去后台点 Generate"，不强制执行也不校验缓存新鲜度——违反 AGENTS §4"部署流程含缓存强制重建"。修复臂已派（见 #875 后续）。
