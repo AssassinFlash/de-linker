@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Tools\Tests\Unit;
 
 use Linker\Tools\Planner\Gateway;
+use Linker\Tools\Planner\NativeIdentity;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
 
@@ -17,6 +18,7 @@ use WP_Mock\Tools\TestCase;
  * Public customer task routes do not expose private operator controls.
  *
  * @covers \Linker\Tools\Planner\Gateway
+ * @covers \Linker\Tools\Planner\NativeIdentity
  */
 final class PlannerTaskGatewayTest extends TestCase {
 
@@ -46,5 +48,18 @@ final class PlannerTaskGatewayTest extends TestCase {
 			$this->assertSame( 0, preg_match( $pattern, '/planner/rpc/' . $path ), $path );
 		}
 		$this->assertConditionsMet();
+	}
+
+	/** Core rest-nonce AJAX action resolves the logged_in cookie owner so wp_rest nonce matches REST requests. */
+	public function test_rest_nonce_ajax_uses_logged_in_cookie_owner(): void {
+		$identity           = new NativeIdentity();
+		$_REQUEST['action'] = 'rest-nonce';
+		WP_Mock::userFunction( 'wp_doing_ajax' )->once()->andReturn( true );
+		WP_Mock::userFunction( 'wp_validate_auth_cookie' )->once()->with( '', 'logged_in' )->andReturn( 17 );
+		try {
+			$this->assertSame( 17, $identity->rest_nonce_user( false ) );
+		} finally {
+			unset( $_REQUEST['action'] );
+		}
 	}
 }

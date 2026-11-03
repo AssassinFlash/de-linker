@@ -492,10 +492,13 @@ def create_private_app(
 
     @app.post("/projects/list")
     def listing(body: ProjectList, request: Request) -> Object:
-        if body.page_size > limits.max_page_size:
+        page_size = (
+            min(30, limits.max_page_size) if body.page_size is None else body.page_size
+        )
+        if page_size > limits.max_page_size:
             raise InvalidInput("project page exceeds deployment limit")
         return project_page(
-            workspace, verified_actor(request.scope), body.page_size, body.after
+            workspace, verified_actor(request.scope), page_size, body.after
         )
 
     @app.post("/projects/read")
@@ -554,13 +557,16 @@ def create_private_app(
 
     @app.post("/projects/runs")
     def runs(body: ProjectRuns, request: Request) -> Object:
-        if body.page_size > limits.max_page_size:
+        page_size = (
+            min(20, limits.max_page_size) if body.page_size is None else body.page_size
+        )
+        if page_size > limits.max_page_size:
             raise InvalidInput("run page exceeds deployment limit")
         return run_page(
             workspace,
             verified_actor(request.scope),
             body.project_id,
-            body.page_size,
+            page_size,
             body.before_created_at,
             body.before_id,
         )

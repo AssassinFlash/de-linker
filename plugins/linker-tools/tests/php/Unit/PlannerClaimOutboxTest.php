@@ -279,12 +279,36 @@ final class PlannerClaimOutboxTest extends TestCase {
 		WP_Mock::userFunction( 'wp_hash' )->with( 'linker-planner-claim:v1|' . $guest . '|7', 'auth', 'sha256' )->andReturn( $key );
 		WP_Mock::userFunction( 'wp_slash' )->andReturnUsing( static fn ( mixed $value ): mixed => $value );
 		WP_Mock::userFunction( 'wp_insert_post' )->once()->andReturn( 42 );
-		WP_Mock::userFunction( 'wp_next_scheduled' )->with( ClaimOutbox::SWEEP )->andReturn( time() + 60 );
+		WP_Mock::userFunction( 'as_has_scheduled_action' )->with( ClaimOutbox::SWEEP, array(), ClaimOutbox::GROUP )->andReturn( true );
 		$outbox = $this->outbox();
 		$this->assertSame( 42, $outbox->enqueue( $guest, 7 ) );
 		$this->assertCount( 0, $this->actions );
 		$this->scheduler_ready = 1;
 		$outbox->schedule();
+		$this->assertCount( 1, $this->actions );
+		$this->assertSame( array( 42, 0 ), $this->actions[0]['args'] );
+	}
+
+	/** When the recurring sweep action is absent, action_scheduler_init registers it and sweeps once. */
+	public function test_schedule_registers_recurring_action_scheduler_sweep_when_missing(): void {
+		$recurring = array();
+		WP_Mock::userFunction( 'as_has_scheduled_action' )->once()->with( ClaimOutbox::SWEEP, array(), ClaimOutbox::GROUP )->andReturn( false );
+		WP_Mock::userFunction( 'as_schedule_recurring_action' )->once()->andReturnUsing(
+			static function ( int $timestamp, int $interval, string $hook, array $args, string $group, bool $unique ) use ( &$recurring ): int {
+				$recurring[] = array( $timestamp, $interval, $hook, $args, $group, $unique );
+				return 99;
+			}
+		);
+		$outbox = $this->outbox();
+		$before = time();
+		$outbox->schedule();
+		$this->assertCount( 1, $recurring );
+		$this->assertGreaterThanOrEqual( $before + HOUR_IN_SECONDS, $recurring[0][0] );
+		$this->assertSame( HOUR_IN_SECONDS, $recurring[0][1] );
+		$this->assertSame( ClaimOutbox::SWEEP, $recurring[0][2] );
+		$this->assertSame( array(), $recurring[0][3] );
+		$this->assertSame( ClaimOutbox::GROUP, $recurring[0][4] );
+		$this->assertTrue( $recurring[0][5] );
 		$this->assertCount( 1, $this->actions );
 		$this->assertSame( array( 42, 0 ), $this->actions[0]['args'] );
 	}

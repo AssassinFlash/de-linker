@@ -186,8 +186,8 @@ final class ClaimOutbox {
 			unset( $this->deferred[ $id ] );
 			$this->queue( $id, $attempt );
 		}
-		if ( ! wp_next_scheduled( self::SWEEP ) ) {
-			wp_schedule_event( time() + HOUR_IN_SECONDS, 'hourly', self::SWEEP );
+		if ( ! as_has_scheduled_action( self::SWEEP, array(), self::GROUP ) ) {
+			as_schedule_recurring_action( time() + HOUR_IN_SECONDS, HOUR_IN_SECONDS, self::SWEEP, array(), self::GROUP, true );
 			$this->sweep();
 		}
 	}

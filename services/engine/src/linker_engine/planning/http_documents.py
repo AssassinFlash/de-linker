@@ -44,8 +44,15 @@ class Cursor(Document):
 
 
 class ProjectList(Command):
-    page_size: Annotated[int, Field(strict=True, gt=0)]
-    after: Cursor | None
+    page_size: Annotated[int, Field(strict=True, gt=0)] | None = None
+    after: Cursor | None = None
+
+    @field_validator("page_size", mode="before")
+    @classmethod
+    def explicit_page_size(cls, value: object) -> object:
+        if value is None:
+            raise ValueError("page_size must be a positive integer when provided")
+        return value
 
 
 class ProjectAssistant(Command):
@@ -192,7 +199,7 @@ class InstallationReview(Command):
 
 class ProjectRead(Command):
     project_id: Id
-    revision: Revision | None
+    revision: Revision | None = None
 
 
 class RunCompare(Command):
@@ -221,9 +228,16 @@ class ProjectRevise(ProjectInputs):
 
 class ProjectRuns(Command):
     project_id: Id
-    page_size: Annotated[int, Field(strict=True, gt=0)]
-    before_created_at: Annotated[float, Field(allow_inf_nan=False)] | None
-    before_id: Id | None
+    page_size: Annotated[int, Field(strict=True, gt=0)] | None = None
+    before_created_at: Annotated[float, Field(allow_inf_nan=False)] | None = None
+    before_id: Id | None = None
+
+    @field_validator("page_size", mode="before")
+    @classmethod
+    def explicit_page_size(cls, value: object) -> object:
+        if value is None:
+            raise ValueError("page_size must be a positive integer when provided")
+        return value
 
 
 class EnergyEvaluate(Command):
