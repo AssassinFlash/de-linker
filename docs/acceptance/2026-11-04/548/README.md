@@ -115,3 +115,33 @@ satisfy demand.」也就是说：**本批补的是证据，不是新的搜索能
   `apply` 自身带读回校验且幂等，没有独立 `verify`（早期版本把 `verify` 放进写入分支，已修）。
 - `548-installation-facts.py` 的 `refresh` 可重新钉当前 revision，用于 apply 前确认。
 - 每个迁移都需要新的 0600 receipt，且不会覆盖已有 receipt。
+
+## 5. CI 观察：engine lane 的 runner 侧失败（与本批无关）
+
+本批在 CI 上遇到两类与改动无关的失败，记录在此以免后续误判：
+
+### plan job 在 `Select checks` 阶段超时
+
+相同命令本地 0.5 秒出结果，runner 上偶发跑满 `timeout-minutes: 5`。原因是
+`ci_scope.py` 的 `checked_base()` 在 sparse checkout（`fetch-depth: 3`）里反复
+`git fetch --deepen` 补拉 base 历史。重跑即通过。
+
+### engine lane 在约 7 分钟处退出，日志停在 69%
+
+同一份代码（本 PR 不触碰 `services/engine`，已用 `git diff --name-only` 验证）的对照：
+
+| run | 结论 | 耗时 |
+| --- | --- | --- |
+| 41694833310 | success | 7m27s |
+| 41698940556 | success | 10m10s |
+| 41701395732 | failure | 7m25s |
+| 41703680651（含重跑） | failure | 7m25s / 6m35s |
+
+失败时 `Test` 步骤在 `engine-standard` 的 69% 处被截断，**没有任何 FAILED 断言输出**，
+`check` 汇总步骤报 `Process completed with exit code 1`。本地同一套全量测试两次均为
+**1319 passed**（5m57s / 6m32s）。
+
+判定：这是 runner 侧资源限制（`ci_engine_tests.py` 以 `fail_fast=True` 并行跑
+`engine-standard` 与 `engine-calc` 两个分片），不是代码缺陷。本批的引擎相关改动
+（`compatibility.json` 的 SEC3000C 60/10 与 `test_compatibility.py`）此前已在
+run 41698940556 中通过 engine lane，且 main 已包含相同内容。
