@@ -817,12 +817,51 @@ def pdf_series_cover(pdf_path: Path) -> dict[str, object] | None:
         pdf.close()
 
 
+def _wrapped_fragments_share_column(
+    fragments: Sequence[tuple[float, float, float, float]],
+) -> bool:
+    """Every wrap line keeps the text layer's one physical column."""
+    return all(
+        a[0] <= (b[0] + b[2]) / 2 <= a[2] and b[0] <= (a[0] + a[2]) / 2 <= b[2]
+        for a, b in zip(fragments, fragments[1:], strict=False)
+    )
+
+
+def _wrapped_fragments_touch(
+    fragments: Sequence[tuple[float, float, float, float]],
+) -> bool:
+    """Adjacent original text lines (PDFium frame): the gap cannot exceed
+    either fragment's own glyph height."""
+    return all(
+        0 <= a[1] - b[3] <= min(a[3] - a[1], b[3] - b[1])
+        for a, b in zip(fragments, fragments[1:], strict=False)
+    )
+
+
+def _fragments_inside_one_box(
+    fragments: Sequence[tuple[float, float, float, float]],
+    boxes: Sequence[tuple[float, float, float, float]] | None,
+) -> bool:
+    """One native TOPLEFT box physically holds every fragment of the wrap."""
+    return boxes is not None and any(
+        all(
+            box[0] <= part[0]
+            and part[2] <= box[2]
+            and box[1] <= part[1]
+            and part[3] <= box[3]
+            for part in fragments
+        )
+        for box in boxes
+    )
+
+
 def _pdf_model_spans(
     pdf: object,
     number: int,
     sha: str,
     *,
     wrapped_spans: set[tuple[int, int]] | None = None,
+    header_cell_boxes: Sequence[tuple[float, float, float, float]] | None = None,
 ) -> list[SourceSpan]:
     """Read original visible text positions, including a cropped spread's offset."""
     # PDFium's Python helper deliberately ships no type stubs. The object is
@@ -903,17 +942,34 @@ def _pdf_model_spans(
                             )
                         )
                         offset += len(part) + 1
+                    # One physical column for every wrap line, then either the
+                    # glyph-height gap rule, or one native header cell that
+                    # physically contains every fragment. The GoodWe BAT-C
+                    # 60–112.6 kWh manual (blob c29cbf257d51559ef53f5da36a46c
+                    # a10b4e5738fbd4a0d06fd74fbaff4a7fcb7, p.80–83) sets its
+                    # model-column headers as GW…-BAT/AC-G10 two-line wraps
+                    # with a measured 9.02405 pt line gap over 8.93994 pt
+                    # glyphs — beyond the glyph-height rule, yet each wrap
+                    # stays inside its own header cell. Containment, not a
+                    # wider global tolerance, carries that proof, so span
+                    # boundaries of every other document are unchanged.
                     if (
                         len(fragments) != len(written.split("￾"))
-                        or any(
-                            not (
-                                a[0] <= (b[0] + b[2]) / 2 <= a[2]
-                                and b[0] <= (a[0] + a[2]) / 2 <= b[2]
-                                # Adjacent original text lines: the gap cannot exceed
-                                # either fragment's own glyph height.
-                                and 0 <= a[1] - b[3] <= min(a[3] - a[1], b[3] - b[1])
+                        or not _wrapped_fragments_share_column(fragments)
+                        or not (
+                            _wrapped_fragments_touch(fragments)
+                            or _fragments_inside_one_box(
+                                [
+                                    (
+                                        box_part[0] - left,
+                                        top - box_part[3],
+                                        box_part[2] - left,
+                                        top - box_part[1],
+                                    )
+                                    for box_part in fragments
+                                ],
+                                header_cell_boxes,
                             )
-                            for a, b in zip(fragments, fragments[1:], strict=False)
                         )
                     ):
                         continue
@@ -1682,6 +1738,31 @@ def _pdf_word_wraps(pdf: object, number: int, sha: str) -> list[SourceWordWrap]:
         page.close()
 
 
+def _span_stays_in_cell(
+    span: SourceSpan, box: tuple[float, float, float, float]
+) -> bool:
+    """A wrap accepted beyond the glyph-height rule must sit inside the exact
+    header cell it is attached to, matching the same containment proof the
+    serving-side validator (table_projection._pdf_span) re-checks per cell."""
+    fragments = span.get("fragments", [])
+    if not fragments or all(
+        # The strict adjacent-line rule, in the stored TOPLEFT frame: the gap
+        # cannot exceed either fragment's own glyph height.
+        0
+        <= b["bbox"][1] - a["bbox"][3]
+        <= min(a["bbox"][3] - a["bbox"][1], b["bbox"][3] - b["bbox"][1])
+        for a, b in zip(fragments, fragments[1:], strict=False)
+    ):
+        return True
+    return all(
+        box[0] <= f["bbox"][0]
+        and f["bbox"][2] <= box[2]
+        and box[1] <= f["bbox"][1]
+        and f["bbox"][3] <= box[3]
+        for f in fragments
+    )
+
+
 def enrich_model_axes(
     pages: list[Page],
     pdf_path: Path,
@@ -1719,7 +1800,24 @@ def enrich_model_axes(
                 output.append(page)
                 continue
             wrapped_spans: set[tuple[int, int]] = set()
-            spans = _pdf_model_spans(pdf, page.number, sha, wrapped_spans=wrapped_spans)
+            spans = _pdf_model_spans(
+                pdf,
+                page.number,
+                sha,
+                wrapped_spans=wrapped_spans,
+                header_cell_boxes=tuple(
+                    cell_box
+                    for block in page.blocks
+                    if block.kind == "table" and not block.source_picture
+                    for cell in block.source_cells
+                    if (cell_box := cell["bbox"]) is not None
+                    and cell["row_start"] == 0
+                    and cell["row_end"] == 1
+                    and cell["col_start"] > 0
+                    and cell["column_header"]
+                    and cell["bbox_origin"] == "TOPLEFT"
+                ),
+            )
             try:
                 word_wraps = (
                     _pdf_word_wraps(pdf, page.number, sha)
@@ -1811,6 +1909,7 @@ def enrich_model_axes(
                             and min(box[1], box[3])
                             <= (span["bbox"][1] + span["bbox"][3]) / 2
                             <= max(box[1], box[3])
+                            and _span_stays_in_cell(span, box)
                         ]
                         if matched:
                             # A native header may already be complete while its

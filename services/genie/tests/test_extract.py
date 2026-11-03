@@ -11,7 +11,12 @@ import pytest
 from docling_core.types.doc.document import DoclingDocument
 
 from index.extract import Block, Page, clean, enrich_model_axes, extract, pages_of
-from linker_genie.table_projection import SourceCell, model_axis, render_projection
+from linker_genie.table_projection import (
+    SourceCell,
+    model_axis,
+    read_cells,
+    render_projection,
+)
 
 FIXTURES = Path(__file__).parent / "fixtures" / "parsed"
 STS = "1b7e18cd26ff29b57f8cc5cc827249d56624a6c1a048588d5ec5c80080538663"
@@ -496,3 +501,138 @@ def test_wrapped_pdf_model_needs_its_own_physical_column(
         span = enriched.source_cells[1]["model_spans"][0]
         assert span["char_start"] == 0 and span["char_end"] == 12
         assert span["page"] == 2 and span["source_sha256"] == pdf.stem
+
+
+@pytest.mark.parametrize("shared_header_cell", [True, False])
+def test_a_header_cell_proves_a_wrap_beyond_the_glyph_height_rule(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    shared_header_cell: bool,
+) -> None:
+    # The GoodWe BAT-C 60-112.6 kWh manual (blob c29cbf257d51559ef53f5da36a4
+    # 6ca10b4e5738fbd4a0d06fd74fbaff4a7fcb7, p.80-83) prints every model
+    # column header as GW…-BAT / AC-G10 over two lines with 8.93994 pt
+    # glyphs: only column 1's measured 7.3741 pt gap meets the glyph-height
+    # rule; columns 2-4 sit at 9.02405 pt and need their own header cell as
+    # the containing proof instead of a wider global gap tolerance.
+    models = ["GW61.4-BAT", "GW92.1-BAT", "GW102.4-BAT", "GW112.6-BAT"]
+    raw = ""
+    char_boxes: dict[int, tuple[float, float, float, float]] = {}
+    index = 0
+    upper_bottom, glyph_height = 111.026, 8.93994
+    for column, model in enumerate(models):
+        left = 130.0 + column * 90.0
+        gap = 7.3741 if column == 0 else 9.02405
+        lower_top = upper_bottom - gap
+        for offset, char in enumerate(model):
+            char_boxes[index] = (
+                left + 20.0 + offset * 4.0,
+                upper_bottom,
+                left + 24.0 + offset * 4.0,
+                upper_bottom + glyph_height,
+            )
+            raw += char
+            index += 1
+        # The wrap hyphen ends the first physical line, like the manual's.
+        char_boxes[index] = (
+            left + 60.0,
+            upper_bottom,
+            left + 64.0,
+            upper_bottom + glyph_height,
+        )
+        raw += "￾"
+        index += 1
+        for offset, char in enumerate("AC-G10"):
+            char_boxes[index] = (
+                left + 24.0 + offset * 4.0,
+                lower_top - glyph_height,
+                left + 28.0 + offset * 4.0,
+                lower_top,
+            )
+            raw += char
+            index += 1
+        raw += "\r\n"
+        index += 2
+
+    def charbox(position: int) -> tuple[float, float, float, float]:
+        return char_boxes.get(position, (0.0, 0.0, 0.0, 0.0))
+
+    text_page = MagicMock()
+    text_page.get_text_range.return_value = raw
+    text_page.count_chars.return_value = len(raw)
+    text_page.get_charbox.side_effect = charbox
+    page = MagicMock()
+    page.get_rotation.return_value = 0
+    page.get_bbox.return_value = (0.0, 0.0, 595.0, 200.0)
+    page.get_textpage.return_value = text_page
+    document = MagicMock()
+    document.__getitem__.return_value = page
+    monkeypatch.setattr("pypdfium2.PdfDocument", lambda _path: document)
+    content = b"BAT-C header wrap fixture"
+    pdf = tmp_path / f"{hashlib.sha256(content).hexdigest()}.pdf"
+    pdf.write_bytes(content)
+    # The native header cells keep both physical lines only when Docling's
+    # own cell box spans them; a box ending between the two lines still
+    # centers the span but no longer contains its lower fragment, leaving
+    # the second line without its containing proof.
+    cell_bottom = 108.0 if shared_header_cell else 96.0
+    cells = tuple(
+        SourceCell(
+            row_start=0,
+            row_end=1,
+            col_start=col,
+            col_end=col + 1,
+            text="Technical Data" if col == 0 else f"{models[col - 1]}- AC-G10",
+            column_header=True,
+            row_header=False,
+            row_section=False,
+            bbox=(40.0, 78.0, 120.0, cell_bottom)
+            if col == 0
+            else (
+                130.0 + (col - 1) * 90.0,
+                78.0,
+                220.0 + (col - 1) * 90.0,
+                cell_bottom,
+            ),
+            bbox_origin="TOPLEFT",
+        )
+        for col in range(5)
+    )
+    block = Block("table", source_cells=cells)
+
+    enriched = enrich_model_axes([Page(2, "docling", [block])], pdf)[0].blocks[0]
+    header = enriched.source_cells
+
+    # Column 1's 7.3741 pt gap meets the glyph-height rule either way.
+    assert header[1]["model_spans"][0]["text"] == "GW61.4-BAT-AC-G10"
+    assert header[1]["text"] == "GW61.4-BAT-AC-G10"
+    if shared_header_cell:
+        axis = [
+            "GW61.4-BAT-AC-G10",
+            "GW92.1-BAT-AC-G10",
+            "GW102.4-BAT-AC-G10",
+            "GW112.6-BAT-AC-G10",
+        ]
+        assert model_axis(header) == axis
+        assert header[2]["text"] == "GW92.1-BAT-AC-G10"
+        span = header[2]["model_spans"][0]
+        assert span["fragments"][0]["text"] == "GW92.1-BAT"
+        assert span["fragments"][1]["text"] == "AC-G10"
+        # The serving-side validator re-proves the relaxed wrap from the
+        # same header cell it is attached to.
+        served = read_cells(header)
+        assert served is not None
+        assert model_axis(served) == axis
+        tightened = [
+            {**cell, "bbox": (box[0], 78.0, box[2], 96.0)}
+            if cell["col_start"] == 2 and (box := cell["bbox"]) is not None
+            else cell
+            for cell in header
+        ]
+        assert read_cells(tightened) is None
+    else:
+        # Without the containing cell the 9.02405 pt gap keeps its span
+        # dropped; no threshold silently widened for the other documents.
+        assert "model_spans" not in header[2]
+        assert header[2]["text"] == "GW92.1-BAT- AC-G10"
+        assert model_axis(header) is None
