@@ -140,8 +140,8 @@ function makeRun(projectId, state) {
 								required_usable_kwh: 61.4,
 								required_discharge_ac_kw: 100,
 								product_revisions: {
-									"101": "6".repeat(64),
-									"201": "6".repeat(64),
+									101: "6".repeat(64),
+									201: "6".repeat(64),
 								},
 							},
 						},
@@ -232,7 +232,8 @@ async function equipmentApp(t, { projectId, inputs, hash }) {
 		});
 	}
 	const { createRoot } = await import("react-dom/client");
-	const { SessionBoundary } = await import("../src/components/SessionBoundary.tsx");
+	const { SessionBoundary } =
+		await import("../src/components/SessionBoundary.tsx");
 	const { Workspace } = await import("../src/components/Workspace.tsx");
 	const { emptyBrief } = await import("../src/domain/brief.ts");
 	const { ApiError } = await import("../src/data/protocol.ts");
@@ -338,9 +339,9 @@ async function equipmentApp(t, { projectId, inputs, hash }) {
 				?.textContent.includes(label),
 		);
 	const fieldSelect = (label) =>
-		[...document.querySelectorAll("label.lp-field")].find((node) =>
-			node.querySelector("span")?.textContent.includes(label),
-		)?.querySelector("select");
+		[...document.querySelectorAll("label.lp-field")]
+			.find((node) => node.querySelector("span")?.textContent.includes(label))
+			?.querySelector("select");
 	return {
 		root,
 		fixture,

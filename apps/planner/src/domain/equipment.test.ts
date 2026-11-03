@@ -69,7 +69,10 @@ test("editing a backfilled draft keeps the backfilled values", () => {
 		draft,
 		changeEquipment(draft.history.current, { pv_dc_kw: 220 }),
 	);
-	const changed = next.history.current.equipment_setup as Record<string, unknown>;
+	const changed = next.history.current.equipment_setup as Record<
+		string,
+		unknown
+	>;
 	assert.equal(changed.pv_dc_kw, 220);
 	assert.equal(changed.required_usable_kwh, 61.4);
 	assert.equal(changed.operating_mode, "grid_connected");
