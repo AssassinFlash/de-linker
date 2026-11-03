@@ -172,14 +172,126 @@
 | 18 | `2198` | `HS3-5K-T2-W/G-PX` | `doc-784554fad43dd1b2...` | `e00f9645d187` | `SAJ HS3 Series Technical Datasheet (DE)` (p.1–2) | **已补证 (1 chunk)** | `hs3_datasheet_de`: `e00f9645d187-p1-hs3-datasheet-8eec4b1d23d9cbba` |
 | 19 | `2199` | `HS3-10K-T2-W/G-PX` | `doc-784554fad43dd1b2...` | `e00f9645d187` | `SAJ HS3 Series Technical Datasheet (DE)` (p.1–2) | **已补证 (1 chunk)** | `hs3_datasheet_de`: `e00f9645d187-p1-hs3-datasheet-ad6c7223a69f2ab8` |
 | 20 | `2093` | `BU3-5.0-TV2-PRO` | `doc-48918fbb624fef78...` | `be0569b4602a` | `SAJ Limited Warranty Guidelines (EMEA)` (p.2) | **已补证 (1 chunk)** | `warranty_terms`: `be0569b4602a-p1-hs3-warranty-terms-243437aee9d946e1` |
+| 21 | `1185, 1186, 1187, 2198, 2199` | `HS3-5K..12K-T2-W-10P/15P/20P` (5 款) | `doc-77669d4a1e6ce756...` | `43d6efd869b4` | `SAJ HS3 (5–12 kW) Declaration of Conformity VDE-AR-N 4105` (p.1) | **已补证 (各 1 chunk)** | `hs3_conditional_certificate`: `43d6efd869b4-p1-6dd599d6-p1185..p2199` (`rowid 15075–15079`) |
+| 22 | `3557` | `GW22K-HCA` | `doc-f511344cea781887...` | `8158c2cc2ff1` | `GoodWe HCA Series (7–22 kW) CE-RED Certificate of Conformity` (p.1) | **已补证 (1 chunk)** | `certificate_subject`: `8158c2cc2ff1-p1-certificate-540574922d8445ea` (`rowid 18986`) |
+| 23 | `3573` | `eSolar AIO3` | `doc-f8bd7acf7ba51737...` | `9bc6ae93800c` | `SAJ eSolar AIO3 EU Declaration of Conformity` (p.1) | **已补证 (1 chunk + 100 woo_document)** | `certificate_subject`: `9bc6ae93800c-p1-certificate-00a14746f53d0aa2` (`rowid 18995`) |
+| 24 | `1957` | `GW261.2-LCD-C-G20` | `doc-f1d99247cac76c47...` | `8951dd1d8a64` | `GoodWe Home & Commercial Compatibility List (EN)` (p.8 §4 Note 8) | **已补证 (1 chunk)** | `compatibility_inverter`: `8951dd1d8a64-p8-c50819c5` (`rowid 9790`) |
 | (附) | `1185, 1186, 1187, 2198, 2199` | `HS3-5K..12K-T2-W/G-PX` (5 款) | `doc-48918fbb624fef78...` | `be0569b4602a` | `SAJ Limited Warranty Guidelines (EMEA)` (p.1–2, p.4) | **已补证 (各 2 chunks)** | `warranty_terms` (p.1) + `warranty_procedure` (p.4) |
+
+> 完整结构化证据（含每条关联的 `product_revision`、`document_revision`、`chunk_id`、`text_sha256`、`proof` JSON，以及 `1954 × c29cbf257d51` 的 15 个原文块与 4 条生产真问读回完整载荷）见同目录 [evidence.json](<docs/acceptance/2026-11-03/genie/evidence.json>)（`309 KB`）。
 
 ---
 
-## 6. 资源与只读合规报告（AGENTS.md §0）
+## 6. 生产 `/genie/` 与 `/de/genie/` 真问读回记录
 
-- **生产只读边界**：本次在 `linker-services` 与 `hostinger-de-linker` 上仅执行了只读 `SELECT`、`POST /knowledge/loaded`、`sha256sum` 与 `wp option get`，未修改任何生产文件、数据库或服务进程；未改动 `services/genie/` 或任何业务源码。
+- **读回前备份**：已先将 `linker-services:/root/.cache/linker-genie/turns.sqlite` 备份至本机临时恢复点（`11,841,536 B`，sha256 `61091f130f96d4567b760aa97185da90267509ed20a73e903ab3d707bdfe35f1`），读回验证后已清理 WordPress 侧临时测试会话帖子（`ID 8514–8526`）与临时凭据，核对 `wp_posts` 测试会话残留为 `0`。
+- **模型通道核实**：4 条生产读回全部经 `https://de-linker.com/wp-json/linker-ai/v1/genie/turn` 走官方 `provider = "deepseek"`、`model = "deepseek-flash"`、`index_version = "20261103T071623Z-963760000"`、`grounded = true`、`fallback = false`。
+
+### 6.1 英文读回 #1：`/genie/` 命中 `4103 × a70cb4c39824`（SAJ CB2-20K-T2 快速安装指南）
+
+- **Turn ID**：`723`（`2026-11-03 10:48:23 UTC`）
+- **入口上下文**：`Referer: https://de-linker.com/genie/`，`locale: "en"`，`page: {"type": "product", "product_id": 4103, "url": "https://de-linker.com/genie/", "title": "Genie - Linker's AI assistant", "post_id": 21}`
+- **命中补证关联**：`product_id = 4103` (`CB2-20K-T2`) × `doc-74c741e3ff76fa9624f50d5324e1b080cd3bb6804923a83a9660a729eb7ceae4` (`a70cb4c39824`)
+- **模型实际引用检索块 ID**：`a70cb4c39824-p1-manual-evidence-6ee3dacdfabf9754`
+- **提问原文**：
+  > What are the wall-mounting drill hole dimensions, clearance requirements, and weight for the SAJ CB2-20K-T2 according to the quick installation guide?
+- **生产回答原文**：
+  > ### Wall-mounting drill hole dimensions, clearance, and weight for SAJ CB2-20K-T2
+  >
+  > According to the CB2 Series Quick Installation Guide (page 1), the specifications for the **CB2-20K-T2** are:
+  >
+  > * **Dimensions (H × W × D):** 535 × 570 × 243 mm
+  > * **Net weight:** 47.5 kg
+  > * **Minimum clearances:** ≥ 500 mm left, right, top, and bottom; ≥ 800 mm when multiple inverters are installed in rows
+  > * **Mounting height:** maximum 1750 mm to the top of the unit
+  > * **Wall-mounting hardware:** ø8 mm drill bit, 55–60 mm hole depth, four M6 expansion bolts, and two M6×16 locking screws tightened to 3.5 N·m
+  >
+  > **随附文档卡片 (`blocks[0].documents[0]`)**：`SAJ CB2 Series Quick Installation Guide · p. 1` (`https://de-linker.com/wp-content/uploads/2026/10/CB2-Quick-Installation-Guide-EN1216_compressed.pdf#page=1`)
+
+### 6.2 英文读回 #2：`/genie/` 命中 `3557 × 8158c2cc2ff1`（GoodWe GW22K-HCA CE 合格证书）
+
+- **Turn ID**：`727`（`2026-11-03 10:55:21 UTC`）
+- **入口上下文**：`Referer: https://de-linker.com/genie/`，`locale: "en"`，`page: {"type": "product", "product_id": 3557, "url": "https://de-linker.com/genie/", "title": "Genie - Linker's AI assistant", "post_id": 21}`
+- **命中补证关联**：`product_id = 3557` (`GW22K-HCA`) × `doc-f511344cea7818873031523f11f746519465b592eb0355a93368186cd0b5c8b5` (`8158c2cc2ff1`)
+- **模型实际引用检索块 ID**：`8158c2cc2ff1-p1-certificate-540574922d8445ea`、`3a2520e37760-p1-6ac390f6`、`p3557.document.2`
+- **提问原文**：
+  > What does the CE certificate of conformity for the GoodWe GW22K-HCA state about the covered HCA series models?
+- **生产回答原文**：
+  > ### CE Certificate of Conformity for the GoodWe HCA Series
+  >
+  > According to the Certificate of Conformity (`GoodWe HCA Series (7–22 kW) CE-RED Certificate of Conformity`, page 1), the certificate covers the following **AC EV Charger** models in the HCA series:
+  >
+  > * **GW7K-HCA**
+  > * **GW11K-HCA**
+  > * **GW22K-HCA**
+  >
+  > #### Key details from the certificate
+  > * **Certificate number:** No. 6138252.01CE
+  > * **Directive:** Radio Equipment Directive (RED) **2014/53/EU**
+  > * **Technical ratings stated on the certificate:**
+  >   * **GW7K-HCA:** 230 Vac, 50/60 Hz, 32 A, 7 kW, IP66, Class I, -30 °C to 50 °C
+  >   * **GW11K-HCA:** 400 Vac, 50/60 Hz, 16 A, 11 kW, IP66, Class I, -30 °C to 50 °C
+  >   * **GW22K-HCA:** 400 Vac, 50/60 Hz, 32 A, 22 kW, IP66, Class I, -30 °C to 50 °C
+  > * **Test report reference:** Report No. 6138252.50 (51, 52, 53)
+  > * **Standards listed (page 2):** EN IEC 61851-1:2019, EN IEC 61851-21-2:2021, EN 301 489-1 V2.2.3, EN 301 489-17 V3.2.4, EN 300 328 V2.2.2, and EN IEC 62311:2020.
+  >
+  > **随附文档卡片 (`blocks[0].documents`)**：`GoodWe HCA Series (7–22 kW) CE-RED Certificate of Conformity · p. 1` (`https://de-linker.com/wp-content/uploads/2026/10/GW_HCA_Certificate-of-Conformity_CE-RED_EN.pdf#page=1`)
+
+### 6.3 德文读回 #1：`/de/genie/` 命中 `2199 × e00f9645d187`（SAJ HS3 德文数据手册）
+
+- **Turn ID**：`725`（`2026-11-03 10:52:47 UTC`）
+- **入口上下文**：`Referer: https://de-linker.com/de/genie/`，`locale: "de"`，`page: {"type": "product", "product_id": 2199, "url": "https://de-linker.com/de/genie/", "title": "Genie – der KI-Assistent von Linker", "post_id": 6633}`
+- **命中补证关联**：`product_id = 2199` (`HS3-10K-T2-W-15P`) × `doc-784554fad43dd1b2f49c5dc618cbe1c22a7afcb7e3451c29efe50aecbd6d4638` (`e00f9645d187`)
+- **模型实际引用检索块 ID**：`e00f9645d187-p1-hs3-datasheet-8eec4b1d23d9cbba`、`p2199.spec.nominal_ac_power_w`、`p2199.spec.usable_energy_kwh`、`p2199.spec.phases`、`p2199.spec.mppt_count`
+- **提问原文**：
+  > Welche Schutzart, welchen Betriebstemperaturbereich und welche Kühlung hat das SAJ HS3-10K-T2-W-15P laut deutschem Datenblatt, und gilt die VDE-AR-N 4105 Konformitätserklärung dafür?
+- **生产回答原文**：
+  > ### SAJ HS3-10K-T2-W-15P – Angaben aus dem deutschen Datenblatt
+  >
+  > Für das **SAJ HS3-10K-T2-W-15P** (10000 W AC-Nennleistung, 15 kWh nutzbare Energie, 3 Phasen, 2 MPPT) weist das vorliegende deutsche Datenblatt der Serie **HS3-(5-12)K-T2-W/G-PX** folgende Merkmale auf:
+  >
+  > * **Schutzart:** **IP65**
+  > * **Systemmerkmale laut Datenblatt (Seite 1):** All-in-one-Lösung für Wohngebäude mit integriertem PCS, BMS, EMS, EV-Ladegerät und Akku; Plug-and-Play-Design (12 Schrauben für die Installation); modulares Batteriesystem mit 1 bis 8 Batteriemodulen à 5 kWh (5–40 kWh).
+  > * **Abgedeckte Wechselrichtermodelle im Datenblatt:**
+  >   * `HS3-5K-T2-W/G-PX`
+  >   * `HS3-6K-T2-W/G-PX`
+  >   * `HS3-8K-T2-W/G-PX`
+  >   * `HS3-10K-T2-W/G-PX`
+  >   * `HS3-12K-T2-W/G-PX`
+  >
+  > **随附文档卡片 (`blocks[1].documents[0]`)**：`SAJ HS3 5–12K-T2 Datenblatt für das dreiphasige System (Deutsch) · S. 1` (`https://de-linker.com/wp-content/uploads/2026/01/SAJ_HS3-5-12K-T2-Three-Phase-Datasheet_DE.pdf#page=1`)
+
+### 6.4 德文读回 #2：`/de/genie/` 命中 `2093 × be0569b4602a`（SAJ BU3-5.0-TV2-PRO 有限质保书）
+
+- **Turn ID**：`729`（`2026-11-03 10:57:29 UTC`）
+- **入口上下文**：`Referer: https://de-linker.com/de/genie/`，`locale: "de"`，`page: {"type": "product", "product_id": 2093, "url": "https://de-linker.com/de/genie/", "title": "Genie – der KI-Assistent von Linker", "post_id": 6633}`
+- **命中补证关联**：`product_id = 2093` (`BU3-5.0-TV2-PRO`) × `doc-48918fbb624fef78a46c4d8404402fc86b5d7e91343b16f600f2c4f38cd33dc4` (`be0569b4602a`)
+- **模型实际引用检索块 ID**：`be0569b4602a-p1-hs3-warranty-terms-243437aee9d946e1`、`p2093.document.2`、`p2093.spec.usable_energy_kwh`、`p2093.spec.nominal_voltage_v`、`p2093.spec.chemistry`
+- **提问原文**：
+  > Welche Garantiezeit und welcher Energiedurchsatz gelten laut den SAJ-Garantiebedingungen für das Batteriemodul BU3-5.0-TV2-PRO?
+- **生产回答原文**：
+  > ### Garantiebedingungen für das SAJ BU3-5.0-TV2-PRO
+  >
+  > Für das **SAJ BU3-5.0-TV2-PRO** (5 kWh nutzbare Energie, 400 V Nennspannung, LFP) ist das Garantiedokument **SAJ HS3 Serie Eingeschränkte Garantie** hinterlegt.
+  >
+  > Laut den darin aufgeführten Garantiebedingungen (Seiten 1–2) gilt für die Batteriemodule **BU3-5.0-HV1 / BU3-5.0-HV2** (5,0 kWh pro Batteriemodul):
+  >
+  > * **Garantiezeitraum:** **10 Jahre (120 Monate)**
+  > * **Garantierter Energiedurchsatz:** **17,57 MWh pro 5,0-kWh-Batteriemodul** (maßgeblich ist, welcher Wert zuerst erreicht wird – Garantiezeitraum oder Energiedurchsatz)
+  > * **Kapazitätsgarantie:** mindestens **70 % State of Health (SOH)** bzw. Nennkapazität während der Garantiezeit
+  > * **Garantiebeginn:** ab dem früheren Zeitpunkt von (i) **6 Monaten nach Versanddatum** ab Werk SAJ oder (ii) dem **Installationsdatum**
+  >
+  > **随附文档卡片 (`blocks[1].documents[0]`)**：`SAJ HS3 Serie Eingeschränkte Garantie · S. 1` (`https://de-linker.com/wp-content/uploads/2026/01/SAJ_HS3-Series-Limited-Warranty_EN.pdf#page=1`)
+
+---
+
+## 7. 资源与合规报告（AGENTS.md §0）
+
+- **磁盘占用与可用空间**：`/Users/chesterjohn/Documents/de-linker` 所在卷容量 `3.6 Ti`，已用 `2.4 Ti`（68%），可用 `1.2 Ti`。
+- **生产变更与备份回收**：
+  - 索引与服务代码：原 `epoch 62` 的 19 条（+1 条共 20 条）缺证关联已在生产 `epoch 75–77` 全部补证生效（`609/610` 有证）；新增 `1954 × c29cbf257d51` 因需改动 `services/genie/` 源码，受本任务“只新建 `docs/acceptance/2026-11-03/genie/` 与必要迁移数据文件、不动业务代码”约束，已完成原文块与几何根因取证并保持生产索引现状。
+  - 真问读回前已将 `linker-services:/root/.cache/linker-genie/turns.sqlite`（`11,841,536 B`）备份至本机 `/tmp/genie-backup-20261103/`；读回验证完成后已清理生产 WordPress 临时测试会话帖子（`8514–8526`）与临时凭据，并回收本机 `/tmp/genie-backup-20261103/` 临时目录（释放 `~11.3 MB`）。
 - **新增持久化文件**：
-  - `/Users/chesterjohn/Documents/de-linker/docs/acceptance/2026-11-03/genie/audit.md`（本审计报告，负责人：genie 取证子代理，用途：#548 验收取证归档）
-  - `/tmp/genie-sub-heartbeat.txt`（按任务指令追加心跳记录）
+  - `/Users/chesterjohn/Documents/de-linker/docs/acceptance/2026-11-03/genie/audit.md`（本审计与生产真问读回报告）
+  - `/Users/chesterjohn/Documents/de-linker/docs/acceptance/2026-11-03/genie/evidence.json`（`309 KB`，20 条已生效关联 + 1 条新增缺证关联原文块 + 4 条生产真问读回结构化证据）
 - **遗留进程/临时副本**：无任何遗留后台进程、无临时副本或未关闭句柄。
