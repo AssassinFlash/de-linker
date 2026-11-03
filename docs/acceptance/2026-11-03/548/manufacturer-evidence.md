@@ -1,0 +1,82 @@
+# 厂商证据采集：储能、端子、组网上限（2026-11-03）
+
+本文件把 2026-11-03 从**我们自托管的知识索引**（142 份文档 / 19,107 个分块，按页切片）里查到的厂商事实固定下来，供引擎证据补齐直接取用。
+
+采集方式：VPS 上只读 FTS5 检索 `python3 /tmp/kbq.py "<query>"`，返回文档标题、页码、原文片段。每条数值都必须能回溯到「文档 + 页码 + 原文」。查不到的一律记 `not found`，不补常识、不推公式。
+
+> 说明：四路并行采集的原始 JSON 在导出时被截断（约 50 KB 上限），本文件是已核对到页码的部分；未收录的条目按「未采集」处理，不视为已证。
+> Apify 未参与本次采集，也没有任何集成进产品的路径（AGENTS.md §6：仅研发取证）。
+
+## 1. 储能：每销售单元的模块数与能量
+
+| 型号 | 模块型号 | 模块数/单元 | 标称 kWh | 可用 kWh | 来源（文档 / 页） |
+| --- | --- | --- | --- | --- | --- |
+| GoodWe GW61.4-BAT-AC-G10 | GW10.2-PACK-ACI-G10 | 6 | 61.4 | 60 | BAT-C 60–112.6 kWh User Manual (EN V1.0) p.80；BAT-C Datasheet (EMEA, EN) p.2 |
+| GoodWe GW92.1-BAT-AC-G10 | GW10.2-PACK-ACI-G10 | 9 | 92.1 | 90 | 同上 p.80；ET 50–100 kW user manual (EN) p.55 |
+| GoodWe GW102.4-BAT-AC-G10 | GW10.2-PACK-ACI-G10 | 10 | 102.4 | 100 | 同上 p.80；ET 50–100 kW p.55 |
+| GoodWe GW112.6-BAT-AC-G10 | GW10.2-PACK-ACI-G10 | 11 | 112.6 | 110 | 同上 p.80；BAT-C Datasheet p.2 |
+| GoodWe GW208.9-BAT-LC-G10 | GW52.2-PACK-LC-G10 | 4 | 208.9 | 未载明 | BAT-C 208.9–261.2 Datasheet (EMEA, EN V1.1) p.2 |
+| GoodWe GW208.9-BAT-LCD-G10 | GW52.2-PACK-LC-G10 | 4 | 208.9 | 未载明 | 同上（V1.0 版）p.2 |
+| GoodWe GW261.2-BAT-LCD-G10 | GW52.2-PACK-LC-G10 | 5 | 261.2 | 未载明 | 同上 p.2；BAT-C 208.9–261.2 User Manual p.76 |
+| GoodWe GW35.8/40.9/46.0/51.2/56.3-BAT-I-G10 | — | 7 / 8 / 9 / 10 / 11 | 35.8–56.3 | 同标称 | GoodWe ET 50–100 kW user manual (EN) p.52 |
+| SAJ B2-5.0..25.0-HV1/HV5、BU2-5.0..25.0-HV1/HV5 | 单个电池模块 5.0 kWh | 1 / 2 / 3 / 4 / 5 | 5.0–25.0 | 4.5–22.5 | SAJ B2 Series HV User Manual (EN) p.10 |
+| SAJ CB2-57.3 / 71.6 / 85.9 / 100.3-HV5 | — | 4 / 5 / 6 / 7 | 57.3–100.3 | 51.5–90.2 | SAJ CHS2 Datasheet (EN, BEU) p.4；SAJ CB2 User Manual (EN) p.12 |
+| GoodWe GW125/261-ESA-LCN-G10/G11 | 52.25 kWh/模块 | 5 | 261.25 | 261.25 | GW ESA 261kWh User Manual EN V1.6 p.94 |
+| Pylontech L260-OMNI (M7-1000V-125kW/260kWh) | — | 未载明 | 260 | 254.8（DoD 98%） | Pylontech OPTIM US L260-OMNI Datasheet p.2 |
+
+关键比例：BAT-C 系列 `可用/标称 = 0.98`（GoodWe BAT-C Limited Warranty, Europe p.1 原文：`The usable energy per kilowatt-hour (kWh) of nominal capacity is 0.98 kWh.`）。
+
+## 2. 并联上限（可直接变成 `max_units` 类边界）
+
+| 系统 | 上限 | 来源 |
+| --- | --- | --- |
+| BAT-C 92.1/102.4/112.6（单簇） | 4 台/簇；最大簇容量 368.4/409.6/450.4 kWh | ET 50–100 kW Systemhandbuch (DE) p.12；EN p.4 |
+| BAT 35.8–56.3 kWh | 6 台并联 | ET 50–100 kW user manual (EN) p.37 |
+| Lynx D G2（GW5.1/8.3-BAT-D-G2x） | 12 台并联 | Lynx D G2 datasheet (EN, EMEA) p.1 |
+| SAJ B2/BU2 | 最多 5 个模块 | SAJ HS2 series datasheet (EN) p.2 |
+| SAJ HS3 系统 | 单机最多 8 个电池；落地堆叠 ≤4，壁挂 ≤3 | SAJ HS3 T2 User Manual (EN V4) p.18、p.39 |
+| SAJ CB2 × CH2 逆变器 | 1 台 CH2 最多接 4 个 CB2 | SAJ CB2 User Manual (EN) p.8；Quick Installation Guide p.5 |
+| GoodWe ESA 261 kWh | 主从并联最多 8 台 | GW ESA 261kWh User Manual EN V1.6 p.46 |
+| Pylontech L260-OMNI | 最多 6 台并联（260→1560 kWh） | L260-OMNI datasheet excerpt pp.17-18 |
+
+`EzLogger / EzManager 每台可带多少台逆变器`：在已托管文档中**未查到明确上限**。fixtures 里的 `max_units: 10` 至今**没有任何原始出处**，因此不得恢复（AGENTS.md §2：项目里的数字不天然可信）。
+
+## 3. 逆变器端子图（`manufacturer_terminal_map`）
+
+### GoodWe ET 50–100 kW（对应产品 1946 / 1947 / 1948 / 6506 所在系列）
+
+- DC 侧：8 路 MPPT、每路 2 串，共 16 个 PV 直流接线端子（`PV-CZM-61100`，Cu 4–6 mm²）；串联数 <9 时按 MPPT1→MPPT8 顺序接（ET 50–100 kW User Manual EN p.160）。
+- 电池侧：2 路电池输入（正/负各 2），压接工具 YQK-70（p.49、p.95）。
+- AC 侧：`3L/N/PE`，220/380、230/400、240/415 V；AC 接线模块 = 部件 4，接地端子 = 部件 5，PE 端子 ×2（25–35 mm² Cu）（p.49、p.182）。
+- 备电：逆变器本体**没有** BACK-UP 端子，必须经外部 STS（GW125K-STS-G10 / GW375K-STS-A-G10 / GW750K-STS-A-G10）；STS 端口为 PE、INVERTER、BACK-UP(L1/L2/L3/N/PE)、SMART-PORT、GRID（p.51、p.185）。
+- 通信：COM1（PAR1/PAR2、RSD-1/2、DI-1/2、DRM&RCR、EMS RS485-A1/B1、LOAD、GEN）、COM2（CAN-H1/L1、CAN-H2/L2、STS、Meter RS485）、COM3（Dongle）（p.190–192）。
+
+### 其他已核对型号（同上文档集）
+
+- **GoodWe ETR 50–125 kW**：8 或 10 路 MPPT、每路 2 串（8→16 串端子，10→20）；1 路电池输入（Cu 70 mm²）；`3L/N/PE` 或 `3L/N`；BACK-UP 仅经 STS；COM1/COM2 端口定义见 EN p.24、p.71。
+- **GoodWe ESA 5–30 kW**：MPPT 3/4，串数 1/1/1 与 1/1/2/2；本体带 BACK-UP 端口；电池接口为单连接器（BAT+、BAT-、PE、BMS）；通信口含 PAR1/PAR2、CT、DRM/RCR、METER、DI、LOAD、GEN、EMS（EN V1.5 p.52、p.163–164）。
+- **GoodWe ESA 3–10 kW（单相）**：MPPT 2 或 4，串数 1/1 与 1/1/1/1；`L/N/PE`；本体带 BACK-UP（EN V1.8 p.124、p.152–153）。
+- **SAJ H2 (10–30K) T2/T3**：MPPT 2（T2）或 3（T3），串数 2/2 与 2/2/2；双电池输入 BAT1/BAT2；`3L+N+PE`；本体带 BACK-UP；通信含 LAN/CAN/PART/EMS/RS485/METER/DRM（User Manual DE/EN p.43、p.45）。
+
+## 4. 采集中发现的文档冲突（不得替业主择一）
+
+| 型号 | 字段 | 值 A | 值 B |
+| --- | --- | --- | --- |
+| GoodWe GW6.0-BAT-D-G20 | 可用能量 | 5.8 kWh（Lynx D G2 datasheet p.2） | 5.9 kWh（ESA 5–30 kW Benutzerhandbuch DE V1.4 p.368） |
+| GoodWe GW9.0-BAT-D-G20 | 可用能量 | 8.7 kWh（同上 p.2） | 8.85 kWh（同上 p.368） |
+| SAJ BU3-5.0-TV2-PRO | 可用能量 | 4.8 kWh（HS3 T2 User Manual EN V4 p.114） | 4.5 kWh（同文档 p.121） |
+| GoodWe GW25K/29.999K/30K-ETA-G20 | 每 MPPT 串数 | 1/1/2/2（Datasheet p.2；DE 手册 p.337） | 外观图 p.51–52 写 4 |
+
+这四处保持冲突状态入库，需要业主或原厂更新版本文档裁决，不能按「取最新」或「取较大值」自行合并。
+
+## 5. 本次未采到（知识库里没有对应文档）
+
+BYD Battery-Box（HVS/HVM/HVB）、Huawei LUNA2000、Sungrow SBR/SBH/PowerStack/PowerTitan、Pylontech US/Force 系列、GoodWe Lynx Home F/U/A/C 系列——索引里只有型号名（出现在 GoodWe 兼容性总表与保修文件），**没有数据手册**。这些型号的模块数、可用能量、并联上限目前无证据，引擎只能保持 `unresolved`。
+
+## 6. 这批证据能解锁什么
+
+- BAT-C 与 SAJ/Pylontech 的**并联上限**可把 `plant_assessment` 的并行边界从"恒为空"变成可判定（前提是 `compatibility.json` 的对应 pair 记上 `max_units` 并带本条来源）。
+- GoodWe ET 系列的**端子图**可让 1946/1947/1948/6506 的 AC/PE/电池/通信端点从 `not_assessed` 进入 `documented`，前提是按 `installation_facts` 的既有 schema（`basis: manufacturer_terminal_map` + `specification.terminal_domain` + `terminals[]` + `source`）落库，并绑定当前 `product_revision`。
+- BAT-C 的 `0.98` 可用比例可用于校验报告里的可用能量，而不是重新推导。
+
+**仍未解决、且不能靠本文件绕过的**：无条件连续充放电 AC 功率标量（0/106）、`manufacturer_pair` 要求"已发布且无 condition"而 51/51 已发布 pair 都带 condition、AC/多芯/>6 mm² 载流表（`cable-references.json` 仍只有 2 根单芯 DC 光伏电缆）。这三项照旧必须是 `unresolved`。
