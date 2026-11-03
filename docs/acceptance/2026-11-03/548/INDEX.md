@@ -64,3 +64,44 @@ cd tools/cutover && .venv/bin/python -m linker_cutover.cli snapshot --write
 - 引擎对外层仍保留刻意 unresolved 的工程边界项（scenario 参数基准、模型域、DSO/TAB 签核等，
   见 #548 与 `manufacturer-evidence.md` 第 5、6 节），这些**不因本条写入而变绿**。
 - 剩余 9 个已漂移产品的计划需要重新 binding，不在本条范围。
+
+## 3. 配置器真实运行：搜索成功，前端状态门与 API 契约不一致（2026-11-03 15:5x–16:2x CST）
+
+用真实管理员账号在生产上走了一次完整配置器流程，项目
+`ETR conductor walk 2026-11-03`（`1c62e4591c1549f3b5c7dbbf2a3f22cf`）：
+
+- 需求 200 kWp / 61.4 kWh 可用 / 100 kW 连续放电，`grid_connected`、三相；
+  先 `Prepare equipment search`，再 `Save project`（revision 2），
+  `Find equipment combinations` 才从 disabled 变 enabled——这个顺序是实测出来的。
+- 搜索任务 `71d9d923cf374f6dab59cd4b93190fae` 在生产 **`state: succeeded`**，
+  `result.search.candidates` 有内容（首个候选 1946 + 1956，4 模块 1 簇）。
+  判定：**设备搜索在生产可用**。
+- 但 UI 停留在 `Searching for equipment combinations…`，直到手动刷新才消失；
+  刷新后 Equipment 表单不回填已保存的需求。
+
+同一路径上发现一个真实的接口契约缺口：
+
+- 配置器四个表单都以 `catalog.data.prepared` 作为准入门
+  （`apps/planner/src/components/equipment/EquipmentSetup.tsx:309`、
+  `energy/DcStorageForm.tsx:71,120`、`equipment/PlantSetup.tsx:234`、
+  `NewProject.tsx:466`），
+  而 `products/current` 的响应从来没有这个字段——顶层键只有
+  `battery_assemblies, cable_references, compatibility_origin, dc_battery_ports,
+  figure_projection_version, loaded_engine_version, loaded_source_revision,
+  module_diagnostics, parallel_controller_product_ids, products, provider, publication`，
+  `publication` 里也没有，所以每个客户都会看到
+  `Current product data is being prepared.`，即使目录完整（85 个产品、614 份发布文档）。
+- 修复：`services/engine/src/linker_engine/planning/product_sources.py` 在响应中补
+  `prepared: True`（该响应只在 `publication.prepared_view(...)` 成功后才构造），
+  测试断言该契约。PR #868 → main `ab368fd0b`，CI `engine` pass 5m10s。
+- **部署边界（重要）**：Engine 服务已用
+  `services/engine/ops/legacy_release.py prepare/activate` 发布为
+  `20261103T083700000000Z-ab368fd0`；但 `planner/rpc/products/current` 由 **planner**
+  服务提供，而 planner 的每个 release 里 **vendored** 了一份
+  `src/linker_engine/...`（`/opt/linker-planner/releases/<sha>/src/linker_engine/planning/product_sources.py`）。
+  因此生产读回仍是 `prepared: null`——必须为 planner 出一个新 release
+  （`planner_source.py prepare` + `planner_release.py prepare/activate`，
+  spec 形如 `{"port":8911,"prefix":"linker-planner","release":"<新路径>",
+  "root":"/opt/linker-planner","schema_version":1,"start_seconds":30,
+  "stop_seconds":30,"user":"linker-planner"}`，并在该不可变路径下建 `.venv`）。
+  本条不宣称这一项已完成。
