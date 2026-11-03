@@ -2389,3 +2389,143 @@ def test_actual_legacy_certificates_keep_only_bound_safe_facts(tmp_path: Path) -
         )
     finally:
         loaded.close()
+
+
+def chunks_with_intro(prefix: str, intro: list[Block]) -> list[Chunk]:
+    """Fixture chunks with extra blocks injected at the head of page 1."""
+    raw = manifest()
+    doc = next(d for d in raw["documents"] if d["blob_sha256"].startswith(prefix))
+    sha = doc["blob_sha256"]
+    document = DoclingDocument.model_validate_json(
+        gzip.decompress((FIXTURES / f"{sha}.json.gz").read_bytes())
+    )
+    pages = [Page(n, "docling", blocks) for n, blocks in pages_of(document).items()]
+    pdf = FIXTURES / f"{sha}.pdf"
+    if pdf.is_file():
+        pages = enrich_model_axes(pages, pdf)
+    else:
+        physical = json.loads(
+            gzip.decompress((FIXTURES / "physical-header-spans.json.gz").read_bytes())
+        ).get(sha, [])
+        for page in pages:
+            for i, block in enumerate(page.blocks):
+                cells = deepcopy(block.source_cells)
+                for cell in cells:
+                    for original in physical:
+                        if (
+                            original["page"] == page.number
+                            and original["table"] == block.source_id
+                            and original["row_start"] == cell["row_start"]
+                            and original["col_start"] == cell["col_start"]
+                            and original["text"] == cell["text"]
+                        ):
+                            cell["model_spans"] = original["model_spans"]
+                page.blocks[i] = replace(block, source_cells=cells)
+    first = pages[0]
+    pages[0] = Page(first.number, first.source, [*intro, *first.blocks])
+    meta = DocumentMeta(
+        sha,
+        doc["title"],
+        "",
+        (),
+        tuple(
+            p["model"] for p in raw["products"] if p["product_id"] in doc["product_ids"]
+        ),
+        "datasheet",
+        "de",
+    )
+    return chunk_document(meta, pages, Words(), lambda _: "en")
+
+
+@pytest.mark.parametrize(
+    "intro,expected",
+    [
+        # Artwork attribution and a foreign-product section heading cannot
+        # narrow a physically proven table axis (BAT-C manual pattern).
+        (
+            [
+                Block(
+                    "text",
+                    text=(
+                        "This document applies to battery systems of the "
+                        "following models: H2-15K-T3 H2-20K-T3 H2-25K-T3 "
+                        "H2-30K-T3-DE H2-30K-T3"
+                    ),
+                ),
+                Block(
+                    "text",
+                    text=(
+                        "The illustrations in this manual are based on model H2-30K-T3."
+                    ),
+                ),
+                Block(
+                    "heading",
+                    text="Connect to GW80K-ET-G10",
+                ),
+            ],
+            {1179, 1181, 2063, 2064},
+        ),
+        # A genuine same-family narrowing declaration still fails closed.
+        (
+            [
+                Block(
+                    "text",
+                    text="Nur für H2-25K-T3.",
+                )
+            ],
+            {1179},
+        ),
+        # Artwork attribution must not shield a co-located real narrowing:
+        # stripping the illustration sentence leaves the restriction behind.
+        (
+            [
+                Block(
+                    "text",
+                    text=(
+                        "The illustrations in this manual are based on model "
+                        "H2-30K-T3. Nur für H2-25K-T3."
+                    ),
+                )
+            ],
+            {1179},
+        ),
+        # Another table's caption and a feature-availability note cannot
+        # narrow a physically proven axis (BAT-C "Table38 …" / "This function
+        # is available only on battery systems that support cloud board
+        # communication").
+        (
+            [
+                Block(
+                    "text",
+                    text="Table38 BAT Port Quantity by Inverter Model",
+                ),
+                Block(
+                    "text",
+                    text=(
+                        "This function is available only on battery systems "
+                        "that support cloud board communication."
+                    ),
+                ),
+            ],
+            {1179, 1181, 2063, 2064},
+        ),
+    ],
+)
+def test_table_axis_survives_foreign_boundaries(
+    intro: list[Block], expected: set[int]
+) -> None:
+    raw = manifest()
+    combined = chunks_with_intro(H2_DE, intro)
+    compiled, proofs = compile_publication(
+        combined,
+        raw,
+        authority(raw),
+        Words(),
+    )
+    projected = {
+        pid
+        for c in compiled
+        if (p := proofs.get(c.id)) and p.get("basis") == "table_projection"
+        for pid in p["product_ids"]
+    }
+    assert projected == expected
