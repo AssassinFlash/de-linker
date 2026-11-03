@@ -53,6 +53,17 @@ revision 重绑：1946/1947/1948/1954–1958/6506 九个漂移产品，加 ETR �
    ET 50–100 kW EN V1.3 里，只在 307 页的 `GW_ET-100kW_User-Manual-EN_V1.2` 里。
    本批按后者绑页，并在 `terminal-map-coverage.md` 记录。
 
+### 这批 figure 不会自动放大搜索范围（如实说明）
+
+`stacks_parallel_max` 落库后，`equipment_assessment.py` 的 `parallel_stacks` 判定就有了可核对的上限，
+但 `equipment_search_space.py:180` 仍固定 `parallel_stacks = 1`，注释写明
+「The supported template has one external battery assembly. No undocumented parallel count is invented to
+satisfy demand.」也就是说：**本批补的是证据，不是新的搜索能力**。要让配置器真的给出多簇方案，
+需要另一次产品裁定（模板是否支持外部多簇、报表如何呈现），不在本批范围。
+
+同理，SEC3000C 的 `max_units = 60` 只对**显式选择了该控制器**的并联组生效
+（`applicability.controller_product_id = 2409`），不会让裸并联的逆变器凭空获得上限。
+
 ### 兼容合同 SEC3000C 60 / 10
 
 `compatibility.json` 的 LAN 方案原本 `max_units` 为空。现在：
