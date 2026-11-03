@@ -3,8 +3,13 @@
 Description=Prepare changed Woo engineering data automatically
 
 [Timer]
+# 15m reconcile: measured 2026-11-03 (docs/research/2026-11-03-feed-sync-cadence.md)
+# — 98.2% of 1m ticks were no-op over 6.79 days (24 real syncs, ~3.5/day) while
+# Hostinger transient 500/503/TLS errors caused ~18 failed starts/day. Woo data
+# changes reaching the engine within 15 minutes remains far inside publication
+# batching; delisting and permission checks never wait for this timer (above).
 OnBootSec=1m
-OnUnitInactiveSec=1m
+OnUnitInactiveSec=15m
 Persistent=true
 Unit=linker-engine-feed-sync.service
 
