@@ -1,0 +1,147 @@
+{
+ "rows": [
+  {
+   "model": "GW30K-STS-G10",
+   "item": "AC (GRID/BACK-UP/SMART-PORT)",
+   "spec": "14-25 mm², multi-core outdoor copper, cable OD 10-32 mm",
+   "acquisition": "Customer-supplied",
+   "doc_title": "GoodWe ESA 5-30 kW user manual (EN, V1.4)",
+   "page": 146,
+   "quote": "| 4 | STS Power Cable | Multi-core outdoor copper cable • SMART-PORT AC cable, BACK-UP AC cable, GRID AC cable Conductor cross-sectional area: GW30K-STS-G10: 14-25mm² ■ GW60K-STS-G10: 16-25mm² ■ ○ Cable outer diameter: 10-32mm ○ • | Customer- supplied |"
+  },
+  {
+   "model": "GW30K-STS-G10",
+   "item": "PE (STS protective grounding)",
+   "spec": "10-16 mm², single-core outdoor copper, cable OD 18-25 mm",
+   "acquisition": "Customer-supplied",
+   "doc_title": "GoodWe ESA 5-30 kW user manual (EN, V1.4)",
+   "page": 144,
+   "quote": "| 1 | PE cable | STS Protective Grounding: Conductor cross-sectional area: GW30K-STS-G10: 10-16mm² ○ GW60K-STS-G10: 16-25mm² ○ • Cable outer diameter: GW30K-STS-G10: 18-25mm ○ GW60K-STS-G10: 24-32mm ○ • | Customer- supplied |"
+  },
+  {
+   "model": "GW60K-STS-G10",
+   "item": "AC (GRID/BACK-UP/SMART-PORT)",
+   "spec": "16-25 mm², multi-core outdoor copper, cable OD 10-32 mm",
+   "acquisition": "Customer-supplied",
+   "doc_title": "GoodWe ESA 5-30 kW user manual (EN, V1.4)",
+   "page": 146,
+   "quote": "| 4 | STS Power Cable | Multi-core outdoor copper cable • SMART-PORT AC cable, BACK-UP AC cable, GRID AC cable Conductor cross-sectional area: GW30K-STS-G10: 14-25mm² ■ GW60K-STS-G10: 16-25mm² ■ ○ Cable outer diameter: 10-32mm ○ • | Customer- supplied |"
+  },
+  {
+   "model": "GW60K-STS-G10",
+   "item": "PE (STS protective grounding)",
+   "spec": "16-25 mm², single-core outdoor copper, cable OD 24-32 mm",
+   "acquisition": "Customer-supplied",
+   "doc_title": "GoodWe ESA 5-30 kW user manual (EN, V1.4)",
+   "page": 144,
+   "quote": "| 1 | PE cable | STS Protective Grounding: Conductor cross-sectional area: GW30K-STS-G10: 10-16mm² ○ GW60K-STS-G10: 16-25mm² ○ • Cable outer diameter: GW30K-STS-G10: 18-25mm ○ GW60K-STS-G10: 24-32mm ○ • | Customer- supplied |"
+  },
+  {
+   "model": "HS2 (5-10K-T2)",
+   "item": "AC (GRID/BACK-UP)",
+   "spec": "2.5-6.0 mm², recommended 4 mm², copper",
+   "acquisition": "User-prepared",
+   "doc_title": "SAJ HS2/AS2 user manual V0.3, HS2-5K to HS2-10K-T2 (DE)",
+   "page": 25,
+   "quote": "| Leiterquerschnitt der Kabel (mm²) | Leiterquerschnitt der Kabel (mm²) | Leitermaterial |\n| Anwendungsbereich | Empfohlener Wert | Kupfer |\n| 2,5 - 6,0 | 4 | Kupfer |"
+  },
+  {
+   "model": "HS2 (5-10K-T2)",
+   "item": "PE (additional grounding)",
+   "spec": "6 mm² recommended",
+   "acquisition": "User-prepared",
+   "doc_title": "SAJ HS2/AS2 user manual V0.3, HS2-5K to HS2-10K-T2 (DE)",
+   "page": 23,
+   "quote": "Dieses zusätzliche Erdungskabel muss vor anderen elektrischen Anschlüssen angeschlossen werden. Für das zusätzliche Erdungskabel wird eine Leiterquerschnittsfläche von 6 mm² empfohlen."
+  },
+  {
+   "model": "HS3 (3-12K-T2)",
+   "item": "AC (GRID/BACK-UP)",
+   "spec": "4-6 mm² (12-10 AWG), recommended 6 mm² (10 AWG), copper",
+   "acquisition": "User-prepared",
+   "doc_title": "SAJ HS3 (3K-12K) T2 Three-Phase ESS User Manual (EN, V4)",
+   "page": 73,
+   "quote": "| Conductor cross-sectional area of cables | Conductor cross-sectional area of cables | Conductor material |\n| Scope 4-6 mm² or 12-10 AWG | Recommended value 6 mm² or 10 AWG | Copper |"
+  },
+  {
+   "model": "HS3 (3-12K-T2)",
+   "item": "PE (additional grounding)",
+   "spec": "6 mm² recommended",
+   "acquisition": "User-prepared",
+   "doc_title": "SAJ HS3 (3K-12K) T2 Three-Phase ESS User Manual (EN, V4)",
+   "page": 66,
+   "quote": "It is recommended that a 6-mm2 conductor cross-sectional area of cable be used."
+  },
+  {
+   "model": "HS3 (3-12K-T2)",
+   "item": "Battery DC (stack-to-stack power cable)",
+   "spec": "6-10 mm², cable OD 6-8 mm, copper 1000 VDC, terminal VP-D4B-CHDM8B",
+   "acquisition": "User-prepared",
+   "doc_title": "SAJ HS3 (3K-12K) T2 Three-Phase ESS User Manual (EN, V4)",
+   "page": 40,
+   "quote": "| Conductor cross-sectional area (mm²) | Outer diameter (mm) | Conductor material | Terminal |\n| 6-10 | 6-8 | Copper wire (1000VDC, working temperature ≤105 °C) | VP-D4B-CHDM8B |"
+  },
+  {
+   "model": "CB2 (57.3-100.3-HV5)",
+   "item": "PE (grounding)",
+   "spec": "35 mm², copper, 1000 V AC, RNBS38-8 OT/DT",
+   "acquisition": "User-prepared",
+   "doc_title": "SAJ CB2 57.3-100.3-HV5 user manual, English, V0.0 (covers the CB2-57.3-HV5)",
+   "page": 20,
+   "quote": "| Grounding | Outdoor cable | 35 | - | Copper | 1000 V AC | RNBS38-8 OT/DT |"
+  },
+  {
+   "model": "CB2 (57.3-100.3-HV5)",
+   "item": "Battery DC (inverter to CB2)",
+   "spec": "50 mm², copper, 1000 V DC, cable OD 13-13.8 mm, SQNBS60-6",
+   "acquisition": "User-prepared",
+   "doc_title": "SAJ CB2 57.3-100.3-HV5 user manual, English, V0.0 (covers the CB2-57.3-HV5)",
+   "page": 20,
+   "quote": "| Battery power | Outdoor cable | 50 | 13-13.8 | Copper | 1000 V DC | SQNBS60-6 |"
+  },
+  {
+   "model": "CB2 (57.3-100.3-HV5)",
+   "item": "AC 220 V supply (inverter to CB2)",
+   "spec": "2.5 mm², copper, 220 V AC, cable OD 7-12 mm, E2508",
+   "acquisition": "User-prepared",
+   "doc_title": "SAJ CB2 57.3-100.3-HV5 user manual, English, V0.0 (covers the CB2-57.3-HV5)",
+   "page": 20,
+   "quote": "| 220V AC | Outdoor twisted pair power cable | 2.5 | 7-12 | Copper | 220 V AC | E2508 |"
+  }
+ ],
+ "not_found": [
+  {
+   "model": "HS2 (5-10K-T2)",
+   "searched": [
+    "Batteriekabel Querschnitt",
+    "Stromkabel B+ B-",
+    "Leiterquerschnitt Batterie",
+    "battery power cable cross-section",
+    "DC cable"
+   ]
+  },
+  {
+   "model": "B2 (5.0-25.0 HV1/HV5)",
+   "searched": [
+    "grounding cable cross-section",
+    "additional grounding cable",
+    "battery power cable cross-section",
+    "mm²",
+    "mm2",
+    "AWG",
+    "conductor"
+   ]
+  },
+  {
+   "model": "BU2 (5.0-HV1/HV5)",
+   "searched": [
+    "BU2 installation manual",
+    "BU2-5.0-HV1 manual",
+    "BU2-5.0-HV5 manual",
+    "battery module cable cross-section",
+    "AC cable",
+    "PE cable"
+   ]
+  }
+ ]
+}

@@ -470,6 +470,10 @@ def test_reviewed_production_plan_is_frozen() -> None:
         "1957": "f5596878526182efb277dbcba304d6a1400a2ee111539c3fe2b1809ec20ea2ce",
         "1958": "cd3bffeafc67000c8f94c63b203b13916604d44891ff43200bc3864f0e69230c",
         "6506": "5e368eccda3f40fc1e38bfc4a341bc1eef23e939ba6143af68dfe62dd4a71b2d",
+        "6508": "2e375a64a64072206a19b9afb28f264b72b56d21e472dbff7a5ea88d47ac242d",
+        "6509": "36cee323c7b04dc13adcdc59f379216101f93ed1751301c9c8b692af4a0b8c3b",
+        "6510": "830ca6597193b83379895926bfc5ec499981c348e4a31fe801edd51d34862086",
+        "6511": "829a52e7504213453d56ba633038b947ecb1414aca55df6de589607eac10c52b",
     }
     expected_documents = {
         "doc-3e98151c21d284ce5e01603742e3ef027ca73cff3f42b9cf9b3fe164aa91882b": (
@@ -484,13 +488,17 @@ def test_reviewed_production_plan_is_frozen() -> None:
             "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
             "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
         ),
+        "doc-e135c80bd4befdcd3c7e807944036da9a13c966b4c61ad40e6ff7886cf10b42f": (
+            "f802c3c76d87d6e4dc6b724b400a1ce6fe9ebcb38a3475f3e4d5dcfaffc2ba63",
+            "50bdd49b7be0ef036cafec286994f33af79dab5fc54dfcebbf4549f7e429acf9",
+        ),
     }
 
     assert {
         key: value["product_revision"] for key, value in products.items()
     } == expected_products
     items = [item for product in products.values() for item in product["items"]]
-    assert len(items) == 79
+    assert len(items) == 91
     terminal_uses = {
         (key, item["id"]): item["specification"]["terminal_use"]
         for key, product in products.items()
@@ -529,7 +537,7 @@ def test_reviewed_production_plan_is_frozen() -> None:
         separators=(",", ":"),
     ).encode()
     assert hashlib.sha256(canonical).hexdigest() == (
-        "e431b80f7bcc7decf02ac43e5fd8751f8ab6826848af62138c138e63fa1b1648"
+        "2b7c79f7a7ffb7dd9eb6e35057fe8e6cc59076fde0892384ff9bf5ae3d461452"
     )
 
 

@@ -1,0 +1,239 @@
+{
+  "rows": [
+    {
+      "device": "GoodWe SEC3000C",
+      "limit": "RS485: 60 台；LAN: 10 台",
+      "condition": "C&I 并网与混合逆变器集中监控/并机；RS485 4 路接口、3 组可用端子，LAN 为 2×RJ45 + 15 口交换机",
+      "doc_title": "GoodWe SEC3000C Datasheet (EMEA, EN)",
+      "page": 1,
+      "quote": "| Max. Inverters Supported | RS485: 60, LAN: 10 |"
+    },
+    {
+      "device": "GoodWe SEC3000C（单路 RS485）",
+      "limit": "每路 RS485 总线最多 20 台并网逆变器",
+      "condition": "SEC3000C 提供 3 组可用 RS485 端子，接任一组；每组最多 20 台，整机标称 60 台",
+      "doc_title": "GoodWe SEC3000C User Manual (EN)",
+      "page": 53,
+      "quote": "Maximum number of grid-tied inverters supported per RS485 bus: 20 units."
+    },
+    {
+      "device": "GoodWe SEC3000C RS485 A1/B1",
+      "limit": "默认被内置 GM330 电表占用；占用时整机仅 3 组 RS485 端子可用",
+      "condition": "不使用内置电表时可断开占用线缆，释放该端口",
+      "doc_title": "GoodWe SEC3000C User Manual (EN)",
+      "page": 19,
+      "quote": "The A1/B1 port is occupied and is connected to the internal meter of the SEC3000C by default. If the built-in meter is not used, the connection cable of the occupied port can be disconnected."
+    },
+    {
+      "device": "GoodWe SEC3000C（并机固件）",
+      "limit": "SEC 主程序 V7.5.32 及以上",
+      "condition": "ET 50–100 kW 并机场景（SEC3000C 为选配）；同书 p.38 另写 7.18 or above，版本号口径不一致",
+      "doc_title": "GoodWe ET 50–100 kW user manual (EN)",
+      "page": 32,
+      "quote": "SEC main program version is V7.5.32 or higher"
+    },
+    {
+      "device": "GoodWe SEC3000C（微电网固件）",
+      "limit": "软件版本 7.18 及以上",
+      "condition": "微电网系统必须配置 SEC3000C（非选配）",
+      "doc_title": "GoodWe ET 50–100 kW user manual (EN)",
+      "page": 47,
+      "quote": "A smart energy control box must be used in the microgrid system • Software version is 7.18 or higher"
+    },
+    {
+      "device": "GoodWe SEC3000C 并机数量",
+      "limit": "并网逆变器并机台数受各机型自身并机能力限制",
+      "condition": "并机场景；SEC3000C 不改变逆变器侧上限",
+      "doc_title": "GoodWe ET 50–100 kW user manual (EN)",
+      "page": 47,
+      "quote": "The number of grid-tied inverters in parallel should be determined according to the parallel capability of the corresponding model"
+    },
+    {
+      "device": "GoodWe EzLogger3000C（固件）",
+      "limit": "EzLogger3000C 固件 02 及以上（部分机型 04 及以上）",
+      "condition": "SMT 25–36K / SMT 40K JP 为 02+；SMT 50K JP 为 04+；SEC3000C 兼容性清单 v18",
+      "doc_title": "GoodWe Compatibility List of Inverters and IoT Products, Version 18 (EN)",
+      "page": 11,
+      "quote": "EzLogger3000C 02 or above"
+    },
+    {
+      "device": "GoodWe SEC3000C（逆变器兼容版本）",
+      "limit": "例：SDT G3 8–25 kW 需 ARM 60+（GD 芯片）/ARM 24+（ST 芯片）、DSP 23+",
+      "condition": "兼容性清单 v18 的 SEC3000C 列；逐机型不同",
+      "doc_title": "GoodWe Compatibility List of Inverters and IoT Products, Version 18 (EN)",
+      "page": 10,
+      "quote": "*3 ARM 60 or above for GD chip; ARM 24 or above for ST chip; DSP 23 or above"
+    },
+    {
+      "device": "GoodWe EzLogger3000C",
+      "limit": "SEC3000C 内置 1 个数据采集器；无独立网关形态",
+      "condition": "作为 SEC3000C 的 Data Collector 模块；SEC3000C 手册 p.56 引用其独立手册但未托管",
+      "doc_title": "GoodWe SEC3000C User Manual (EN)",
+      "page": 18,
+      "quote": "Built-in smart data collector, model: EzLogger3000C."
+    },
+    {
+      "device": "SAJ eSolar AIO3",
+      "limit": "1 台逆变器",
+      "condition": "RS232（USB joints）接逆变器；Wi-Fi/Ethernet 上行",
+      "doc_title": "SAJ eSolar AIO3 Datasheet (EN)",
+      "page": 1,
+      "quote": "| Connecting inverters No. [set] | 1 |"
+    },
+    {
+      "device": "SAJ eManager（RS485）",
+      "limit": "最多 6 台逆变器（3 对 RS485 × 每对 2 台）",
+      "condition": "同一对端口仅同类型逆变器；混合逆变器与并网逆变器不得同对；电表仅接 A3/B3；每台仅接 1 台 EV 充电桩",
+      "doc_title": "SAJ eManager Smart Energy Controller User Manual",
+      "page": 24,
+      "quote": "A maximum of six inverters can be connected in parallel."
+    },
+    {
+      "device": "SAJ eManager（LAN 并机）",
+      "limit": "最多 10 台逆变器",
+      "condition": "并机部署；所有 eManager LAN 口与逆变器 LAN 口通信线接网络交换机",
+      "doc_title": "SAJ eManager Smart Energy Controller User Manual",
+      "page": 25,
+      "quote": "In parallel deployment, the eManager can be connected to a maximum of ten inverters through LAN communication."
+    },
+    {
+      "device": "SAJ eManager（Datasheet 口径）",
+      "limit": "up to 6 PCS or 9 inverters",
+      "condition": "不含 SMA Energy Meter；与手册 6 台（RS485）/10 台（LAN）口径不同，按现场设备类型核对",
+      "doc_title": "SAJ eManager Energy Management System Module Datasheet (EN, BEU)",
+      "page": 2,
+      "quote": "| Total Number of Devices in the System | up to 6 PCS or 9 inverters |"
+    },
+    {
+      "device": "SAJ eManager-C1 Pro",
+      "limit": "CHS2 2~10 台并机",
+      "condition": "仅推荐用于 CHS2 并机应用；德文版同",
+      "doc_title": "SAJ eManager-C1 Datasheet",
+      "page": 2,
+      "quote": "* eManager-C1 Pro is recommended to be used for CHS2 2~10 parallel connection application."
+    },
+    {
+      "device": "SAJ CHS2（并机 EMS 供电）",
+      "limit": "至少 2 台逆变器为 EMS 供电；供电线 ≤50 m；图示最多 10 台",
+      "condition": "并机部署；EMS.1/EMS.2 额定 20 V DC；图 6.18 标注 Inverter-1…Inverter-10",
+      "doc_title": "SAJ CHS2 29.9-50K user manual, English, V0.2 (covers the CHS2-29.9K-T4-X)",
+      "page": 25,
+      "quote": "At least two inverters must provide the power supply to the EMS in parallel deployment. The length of the power supply wire to the EMS is limited to 50 meters."
+    },
+    {
+      "device": "GoodWe BAT-C 208.9–261.2 kWh",
+      "limit": "最多 4 个电池柜簇并联",
+      "condition": "BAT-C 208.9 kWh 机型；DCDC 版本支持新旧/不同容量电池簇混并（p.18）",
+      "doc_title": "GoodWe BAT-C 208.9–261.2 kWh Commercial and Industrial Battery System User Manual (EN)",
+      "page": 53,
+      "quote": "The BAT-C Series 208.9kWh Commercial & Industrial Battery System supports a maximum of 4 battery cabinet clusters in parallel."
+    },
+    {
+      "device": "GoodWe BAT-C 208.9–261.2 kWh（LAN/云板通信）",
+      "limit": "最多 60 个电池系统并联",
+      "condition": "LAN/云板传电芯级信息；路由器须为逆变器所用；最远电池到逆变器 ≤50 m",
+      "doc_title": "GoodWe BAT-C 208.9–261.2 kWh Commercial and Industrial Battery System User Manual (EN)",
+      "page": 57,
+      "quote": "LAN communication between batteries supports transmission of cell-level information, with a maximum of 60 battery systems in parallel."
+    },
+    {
+      "device": "GoodWe BAT-C 60–112.6 kWh（每台逆变器）",
+      "limit": "最多 4 簇并联",
+      "condition": "接 ET 10–30K 逆变器时不支持并联成簇；接 SEC3000C 需云板固件 01+、SEC 06+",
+      "doc_title": "GoodWe BAT-C 60–112.6 kWh User Manual (EN V1.0)",
+      "page": 59,
+      "quote": "The battery system supports a maximum of four parallel clusters."
+    },
+    {
+      "device": "GoodWe BAT-C 60–112.6 kWh（系统总数）",
+      "limit": "m×n（m=并机逆变器数，n≤4）",
+      "condition": "云板通信；每台逆变器 n≤4；m 取决于逆变器并机能力",
+      "doc_title": "GoodWe BAT-C 60–112.6 kWh User Manual (EN V1.0)",
+      "page": 61,
+      "quote": "Communication between battery cloud boards can transmit cell-level information and supports parallel connection of up to m×n battery systems."
+    },
+    {
+      "device": "Pylontech L260-OMNI",
+      "limit": "最多 6 台并联",
+      "condition": "M7-1000V-125kW/260kWh 机型",
+      "doc_title": "Pylontech L260-OMNI 125 kW / 260 kWh - datasheet excerpt, printed pp. 17-18 (EN)",
+      "page": 2,
+      "quote": "| Max. Parallel No. | 6 |"
+    },
+    {
+      "device": "SAJ CB2 57.3–100.3-HV5",
+      "limit": "每台 CH2 逆变器最多 4 个 CB2 电池系统",
+      "condition": "所有 CB2 必须同额定能量；多簇按 4 簇接线方案",
+      "doc_title": "SAJ CB2 57.3-100.3-HV5 user manual, English, V0.0 (covers the CB2-57.3-HV5)",
+      "page": 8,
+      "quote": "One CH2 inverter can be integrated with four CB2 battery systems at maximum. All the CB2 systems are required to have the same rated energy."
+    },
+    {
+      "device": "SAJ B2/BU2",
+      "limit": "每簇最多 5 个 BU2 模块（B2-25.0-HV1 = 25.0 kWh）",
+      "condition": "单簇堆叠上限；多簇并联台数在托管文档中未给（见 not_found）",
+      "doc_title": "SAJ B2 Series (5.0-25.0) HV1/HV5 Battery Datasheet (EN, BEU)",
+      "page": 2,
+      "quote": "| No. of Modules | 1 | 2 | 3 | 4 | 5 |"
+    }
+  ],
+  "not_found": [
+    {
+      "item": "GoodWe EzLogger3000C 独立手册",
+      "reason": "143 份托管文档中没有以 EzLogger3000C 为标题或独立成册的文档；它以 SEC3000C 内置数据采集器/附件出现，SEC3000C 手册 p.56 引用的《EzLogger3000C User Manual》本身未托管。",
+      "keywords": [
+        "EzLogger",
+        "EzLogger3000C",
+        "Datalogger",
+        "EzManager3000"
+      ],
+      "appears_in": [
+        {
+          "doc_title": "GoodWe SEC3000C User Manual (EN)",
+          "page": 18,
+          "quote": "Built-in smart data collector, model: EzLogger3000C."
+        },
+        {
+          "doc_title": "GoodWe SEC3000C User Manual (EN)",
+          "page": 155,
+          "quote": "| Data Acquisition | EzLogger3000C*1 |"
+        },
+        {
+          "doc_title": "GoodWe SEC3000C Datasheet (EMEA, EN)",
+          "page": 1,
+          "quote": "| Datalogger | EzLogger3000C × 1 |"
+        },
+        {
+          "doc_title": "GoodWe SEC3000C attestation EN 303 645 (EN)",
+          "page": 1,
+          "quote": "Models EzLogger3000C, EzLogger3000R, SEC3000C, SEC3000"
+        },
+        {
+          "doc_title": "GoodWe SEC3000C User Manual (EN)",
+          "page": 56,
+          "quote": "Please refer to the corresponding cable requirements and specific wiring steps in the EzLogger3000C User Manual."
+        }
+      ]
+    },
+    {
+      "item": "SAJ B2/BU2 多簇并联台数上限",
+      "reason": "B2 手册与数据表只给单簇 1–5 个 BU2 模块（25.0 kWh）和并联端口，未给可并联簇数/台数；CB2 才有 4 簇/CH2 的明确上限。",
+      "keywords": [
+        "B2 parallel",
+        "BU2 parallel",
+        "max parallel",
+        "units in parallel",
+        "stack",
+        "cluster",
+        "No. of Modules"
+      ],
+      "appears_in": [
+        {
+          "doc_title": "SAJ B2 Series (5.0-25.0) HV1/HV5 Battery Datasheet (EN, BEU)",
+          "page": 2,
+          "quote": "| No. of Modules | 1 | 2 | 3 | 4 | 5 |"
+        }
+      ]
+    }
+  ]
+}
