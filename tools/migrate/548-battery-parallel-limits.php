@@ -10,11 +10,11 @@ defined( 'ABSPATH' ) || exit;
 try {
 	( static function ( string $payload ): void {
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- JSON transport from the companion CLI, never a runtime source.
-		$request         = json_decode( base64_decode( $payload ), true, 512, JSON_THROW_ON_ERROR );
-		$key             = \Linker\Commerce\Products\SelectionFacts::FIGURES_META_KEY;
-		$site            = home_url();
-		$written         = 0;
-		$protect         = static function ( int $id ): string {
+		$request           = json_decode( base64_decode( $payload ), true, 512, JSON_THROW_ON_ERROR );
+		$key               = \Linker\Commerce\Products\SelectionFacts::FIGURES_META_KEY;
+		$site              = home_url();
+		$written           = 0;
+		$protect           = static function ( int $id ): string {
 			$product = wc_get_product( $id );
 			if ( ! $product instanceof WC_Product ) {
 				throw new RuntimeException( esc_html( "Missing product {$id}." ) );

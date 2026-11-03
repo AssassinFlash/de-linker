@@ -138,7 +138,11 @@ sys.stdout.buffer.write(pathlib.Path(sys.argv[2]).read_bytes())
     assert len(result.source.weather(LIMITS).points) == 8760
 
 
-@pytest.mark.parametrize("body", [b"unframed metadata", b"x" * 100_001])
+@pytest.mark.parametrize(
+    "body",
+    [b"unframed metadata", b"x" * 100_001],
+    ids=["unframed metadata", "oversized metadata"],
+)
 def test_missing_receipt_and_unbounded_metadata_are_rejected(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
