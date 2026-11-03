@@ -89,3 +89,17 @@ ACF PRO 旧版风险按业主最新指示移出当前优先处置，停止追查
 [逐消费者矩阵](../acceptance/2026-10-22/533/entry-matrix.md)沿当前生产003cedd3证明：非确切活动的已验证业务仍没有独立站级接收与持久未处理/邮件任务总数和字节信封。既有验证次数、receipt保留、模型和运输日额不能替代这个边界；换文案/域名的攻击仍可能逐条落库。它正在[已验证业务的站级接收与通知积压上限](https://github.com/AssassinFlash/de-linker/issues/568)中于本轮实现，完成前不得把本次活动3样本措施称为通用防护。容量必须保留员工已审批客户预留、满额诚实未保存/保留输入草稿，以及已经持久化业务的可靠通知恢复。
 
 管理入口研究已明确Hostinger的2FA关闭、新设备验证开启，DE REST配置通过原生只读内存hash比较唯一绑定terravolt应用密码且使用元数据不变。[管理员MFA准备与客户无障碍验证](https://github.com/AssassinFlash/de-linker/issues/565)已在独立本地快照安装官方0.17.0并严格校验，真实认证/客户回归与设备登记尚未完成，生产尚未安装或启用。
+
+## 最终生产验收与结案读回（2026-11-03）
+
+- **#542 / #543 / #545 公开入口端到端闭环**：
+  - 验证失败恢复路径：公开入口 `/contact/` 先通过 `POST /wp-json/linker/v1/protection/prepare`（`mode=enforce`，`lifetime=300`）初始化会话，再以空 `linker_proof` 提交至 `POST /wp-admin/admin-post.php`（`linker_request_id = 3dc83609-d113-4fdb-969f-d65755ab3804`），服务端返回 `302` 重定向至 `/contact/?contact=verification_failed#contact-form`，完整保留客户原文、姓名、邮箱、公司、意图与请求 UUID，未创建伪造订单记录，且复位恢复属性以允许后续正常验证提交。
+  - `G542-LIVE-NORMAL-SAVE`：同一会话携带有效 `verified` proof（`challenge_id = 18863dea-86fc-4dbc-a801-aaf9ab1ac78f`）提交至 `POST /wp-admin/admin-post.php`，生成生产 HPOS 询盘 **#8535**（`wc_order_AJUVCDxHTdrml`，`status = wc-inquiry-received`，`created_gmt = 2026-11-03 16:25:03`），完整保存原文（`snapshot_sha256 = 3921413407badd23e9fb67692b83d3c4746e2621da87ca32f9e1559e628465f0`）并签发 `linker_inquiry_send_8535`（`status = normal`，`policy = inquiry-mail-v1`，`source_sha256 = b061f7e4c52b0f4c82900e8419b54c2600ea68c82eb6292b52a0062d64c2b2b3`）。连同带两款产品草稿的 Proforma 询盘 **#8457**（`1946` GoodWe GW80K-ET-G10 + `1954` GoodWe GW61.4-BAT-AC-G10）均已完成正常授权与投递。
+  - `G543-LIVE-DISPATCH-TIMING`：`accepted_at = 1793723102.048209`，`deadline = 1793723112.048209`（10.0 秒窗口）；`issued_at = 1793723103.198649`，`claimed_at = 1793723103.832100`（签发后 0.633 秒、持久化后 1.784 秒即被后台 worker 原子领取）；主模型 `typesafe/jev-1.13`（`0.283s`）与级联 `deepseek-flash`（`3.402s`）完成评估，`completed_at = 1793723107.910581`（总耗时 `5.862s < 10.0s`），`_linker_inquiry_assessment_pending = "complete"`。
+  - `G545-LIVE-NORMAL-TRANSPORT-INBOX`：`linker_commerce_mail_transport_sends` 原子递增 `next_id`（`26 → 28`），记录内部团队通知 `smtp` 扣账（`id = 26`）与客户回执 `php` 扣账（`id = 27`）；`linker_inquiry_send_8535.jobs.team` 记录 `delivered_at = 1793723165` 与 `witness.message_id = <8JOLNCpBmVwINKKArJwbFOQygdzKl43BCoxCNjRbTa0@de-fra-web1798.main-hosting.eu>`；经 `ssl://imap.hostinger.com:993` 只读 `EXAMINE INBOX` 核实 `sales@sunriverinverter.com` 收件箱 `UID 1441` 实收同一 `Message-ID` 邮件。38 条历史攻击隔离任务保持 `private` 冻结（`attempts = 0`）。
+- **#538 托管 PHP 与 ACF PRO 6.3.1 最终裁定**：
+  - 生产 PHP 8.3 已升级至 `8.3.36`（`Build Date: Oct 21 2026 00:00:00`），且 `session.upload_progress.enabled = Off`（`''`），覆盖 CVE-2026-109618 / 109619 修复与 CVE-2026-115560 缓解。
+  - ACF PRO 6.3.1 因无有效付费订阅升级包（`connect.advancedcustomfields.com/v2/plugins/update-check` 返回 `403 Forbidden`）且含 2 个字段组、10 处 PRO 专属 `repeater` 字段与 93 条引用记录（替换免费版将丢失 `repeater` 破坏后台结构），经核实全站 0 前台 `get_field`/`acf_form`/ACF Blocks 调用、`enable_shortcode = false`、无订单字段组、`linker-site-guards.php` 优先级 20 拦截 `/wp/v2/users` 枚举且 `/wp/v2/product` 的 `acf` 载荷为空 `[]`，按授权接受缓解并结案。
+- **生产队列清理与凭证卫生**：
+  - 写入前先通过 `linker_cutover.snapshot.take()` 生成并校验生产数据库快照 `db-20261103T160842Z.sql.gz`（SHA-256 `2b630dc97638573ae7aeaee9fea344b38f8919fe5bd1065e142d4dcfcf17ab1c`），并完成过期快照滚动淘汰。
+  - 生产 Action Scheduler 当前 `failed = 0`、`pending = 13`（均为正常周期任务），孤立旧组、旧死任务及残留测试选项已全部清零并通过读回核实；工作树明文 Apify token 扫描为 0 命中。
