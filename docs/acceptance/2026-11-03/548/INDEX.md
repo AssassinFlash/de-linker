@@ -141,3 +141,40 @@ cd tools/cutover && .venv/bin/python -m linker_cutover.cli snapshot --write
   ——补 sales_unit 证据（文档绑定）可直接扩大候选池。
 - 导体/端子结论（`ConductorManufacturerResults`）在安装阶段渲染，需在
   配置器里选中候选并确认条件后才出现；本日未走到该步，不宣称。
+
+## 6. ETR 最后一公里：厂商导体对比在生产渲染（18:01 CST）
+
+第 1 节落库的安装事实，已在生产配置器里走完整条消费链。操作序列来自
+安装流代码审计（`installation-flow.md`），由真实管理员账号在生产 UI 逐步驱动：
+
+1. 项目 `1c62e4591c1549f3b5c7dbbf2a3f22cf` 重新搜索
+   （run `715970aa8aa4465eaeb4081745359a92`，2026-11-03 09:33:32Z），
+   10 个候选含 6508–6511（第 6–9 名，配电池 1958、5 模块 1 簇）；
+   采纳候选[6]（**6508 = GoodWe GW99.99K-ETR-G10**）并保存。
+2. Installation routing 按审计序列补齐前置输入：
+   测量源（Site measurement，精度 0.1）→ 设备实例 "GW99.99K-ETR inverter"
+   （product=6508，连接点 AC grid side / Battery side）→ 回路
+   "Inverter AC output"（type AC，两点都落该实例）→ 路由（经 circuit 自动带入两点）→
+   导体 "AC feeder 50 mm2"（Declared cross-section 50，basis 文案）。
+3. conductor instruction 下拉在 cross-section+basis 有效后出现
+   **"GoodWe GW99.99K-ETR-G10 · AC conductor · p. 61"**，选中并勾确认框，
+   Apply → Save project。
+4. 点 `Review routes and circuit conditions`，**`Manufacturer conductor
+   cross-section comparisons` 渲染**（截图 `evidence/etr-walk/etr-final-comparison.png`）：
+
+   | 导体 | Declared | Manufacturer range | 结论 |
+   |---|---|---|---|
+   | AC feeder 50 mm2 | 50 mm² | **50–70 mm²** | Within the recommended cross-section range |
+
+   展开 `Manufacturer source`：链接 `Document · page 61` →
+   `https://de-linker.com/wp-content/uploads/2026/10/GW_ETR-50-125kW_User-Manual-EN_…`，
+   原文引用 "Inverter AC Cable \| Multi-core outdoor copper cable Conductor
+   cross-sectional area: 50mm²-70mm² • Cable outer diameter: …"。
+
+**判定**：ETR 手册事实（p.61 AC 50–70 mm²）→ `installation_facts` 落库（§1）→
+引擎 `installation_conductor_comparison` 校核 → 配置器结果卡片，全链在生产打通；
+第 1–6 节构成本日 #548 的完整交付证据链。
+
+已知未竟（输入完备性，非缺陷）：takeoff 表 `Calculated length —` +
+`Extra length or its basis is missing`（导体长度需 extra length 输入，
+不影响导体对比门）。UI 驱动细节与字段 id 见 `installation-flow.md`。
