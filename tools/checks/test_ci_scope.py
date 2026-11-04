@@ -1756,6 +1756,10 @@ class ModuleReuseTest(unittest.TestCase):
             original_base = commit("original base")
             build.write_text("current build")
             unchanged_base = commit("build already on base")
+            run("git", "checkout", "-qB", "divergent", original_base)
+            Path("docs").mkdir()
+            Path("docs/divergent.md").write_text("a base this PR never used")
+            divergent_base = commit("divergent base")
             run("git", "checkout", "-qB", "source", original_base)
             build.write_text("current build")
             app = Path("apps/planner/src/app.ts")
@@ -1858,9 +1862,11 @@ class ModuleReuseTest(unittest.TestCase):
                                     )
                                 )
                             verification["conclusion"] = "success"
-                            # Gate reads native merge/run evidence again, not a supplied flag.
+                            # Gate reads native merge/run evidence again, not a
+                            # supplied flag; only the recorded base or its
+                            # descendant verifies, never a divergent tip.
                             with patch.dict(
-                                os.environ, {"BASE_SHA": bases[not new_flag]}
+                                os.environ, {"BASE_SHA": divergent_base}
                             ):
                                 self.assertFalse(
                                     ci_scope.validate_module_reuse(
@@ -1942,6 +1948,96 @@ class ModuleReuseTest(unittest.TestCase):
                                 ci_scope.reusable_modules(["presentation"], head), {}
                             )
                             self.job["name"] = "planner"
+
+    def test_planner_verification_tolerates_a_base_github_advanced(self):
+        with TemporaryDirectory() as folder:
+            previous = Path.cwd()
+            os.chdir(folder)
+            self.addCleanup(os.chdir, previous)
+
+            def run(*args):
+                return subprocess.check_output(args, text=True).strip()
+
+            def commit(message):
+                run("git", "add", ".")
+                run("git", "commit", "-qm", message)
+                return run("git", "rev-parse", "HEAD")
+
+            def merge(base, source):
+                run("git", "checkout", "-qB", "merge", base)
+                run("git", "merge", "--no-ff", "-qm", "CI merge", source)
+                return run("git", "rev-parse", "HEAD")
+
+            run("git", "init", "-q")
+            run("git", "config", "user.email", "ci@example.invalid")
+            run("git", "config", "user.name", "CI fixture")
+            build = Path("plugins/linker-tools/build/planner/app.js")
+            build.parent.mkdir(parents=True)
+            build.write_text("old build")
+            root = commit("shared root")
+            build.write_text("base build")
+            base = commit("push-time base recorded in the event payload")
+            note = Path("docs/acceptance/main.md")
+            note.parent.mkdir(parents=True)
+            note.write_text("main advanced")
+            main_tip = commit("main advanced past the pushed base")
+            run("git", "checkout", "-qB", "source", base)
+            app = Path("apps/planner/src/app.ts")
+            app.parent.mkdir(parents=True)
+            app.write_text("current source")
+            source = commit("planner source change")
+            run("git", "checkout", "-qB", "build-source", base)
+            build.write_text("current build")
+            build_source = commit("planner build change")
+            # GitHub rebuilt refs/pull/N/merge against the advanced main tip,
+            # so the merge's first parent descends from the stale BASE_SHA.
+            head = merge(main_tip, source)
+            self.assertFalse(ci_scope.planner_build_flag(head, base=base))
+            with patch.dict(
+                os.environ,
+                {
+                    "BASE_SHA": base,
+                    "HEAD_SHA": head,
+                    "PLANNER_BUILD_CHANGED": "false",
+                },
+            ):
+                ci_scope.verify_planner_invocation()
+                # A declared flag that contradicts the tested merge is still
+                # rejected on the advanced base.
+                with patch.dict(os.environ, {"PLANNER_BUILD_CHANGED": "true"}):
+                    with self.assertRaises(SystemExit):
+                        ci_scope.verify_planner_invocation()
+            built_head = merge(main_tip, build_source)
+            self.assertTrue(ci_scope.planner_build_flag(built_head, base=base))
+            with patch.dict(
+                os.environ,
+                {
+                    "BASE_SHA": base,
+                    "HEAD_SHA": built_head,
+                    "PLANNER_BUILD_CHANGED": "true",
+                },
+            ):
+                ci_scope.verify_planner_invocation()
+            # A base that moved backwards or off the recorded history is a
+            # mismatch the event never claimed, not GitHub's forward movement.
+            older_head = merge(root, source)
+            self.assertIsNone(ci_scope.planner_build_flag(older_head, base=base))
+            run("git", "checkout", "-qB", "unrelated", root)
+            Path("README.md").write_text("divergent history")
+            forged = commit("divergent tip")
+            forged_head = merge(forged, source)
+            self.assertIsNone(ci_scope.planner_build_flag(forged_head, base=base))
+            for mismatched in (older_head, forged_head):
+                with patch.dict(
+                    os.environ,
+                    {
+                        "BASE_SHA": base,
+                        "HEAD_SHA": mismatched,
+                        "PLANNER_BUILD_CHANGED": "false",
+                    },
+                ):
+                    with self.assertRaises(SystemExit):
+                        ci_scope.verify_planner_invocation()
 
     def test_gate_rejects_forged_attempt_input_job_and_module_proofs(self):
         proof = {
