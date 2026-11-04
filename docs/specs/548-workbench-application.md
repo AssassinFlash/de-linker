@@ -282,10 +282,15 @@ settings. Search availability is explicitly advertised by the configured
 service. The deployment supplies an operational work budget; it is never a
 physical limit or an infeasibility claim.
 
-The implemented template is one converter with one external battery assembly,
-or no battery when both storage demands are explicitly zero. Current
-manufacturer-listed pairings, intersected documented module-count bounds and
-unambiguous required components generate selections. No missing count,
+The implemented template is one converter with one external battery
+assembly, or no battery when both storage demands are explicitly zero.
+Within that assembly, parallel stacks are enumerated only by cited
+`stacks_parallel_max` facts (both `battery_module` and `battery_system`
+sales units); a battery without that fact stays single-stack and is counted
+as the coverage gap `stacks_parallel_max_missing` — no fact, no invention.
+Current manufacturer-listed pairings, intersected documented module-count
+bounds, cited parallel-stack maxima and unambiguous required components
+generate selections. No missing count,
 parallel capability, sales-unit identity or manufacturer condition is invented.
 The same assessment function checks every selection. In grid-connected mode,
 a cited applicable maximum active or apparent grid output also gives a necessary
@@ -293,8 +298,9 @@ upper bound on requested continuous active discharge. For apparent power,
 `|P| <= S` supplies only an active-power ceiling; the original kVA quantity stays
 in the source facts. Passing the ceiling never establishes continuous battery
 output, and a grid limit is not applied to backup operation. Missing or
-uninterpreted source conditions remain unresolved. A single external
-assembly does not require evidence for inter-assembly parallel operation.
+uninterpreted source conditions remain unresolved. Stack legality is the cited `parallel_stacks` fact check; a documented
+per-column battery limit constrains only that column's count. A single
+stack requires no evidence for inter-stack parallel operation.
 Wp/kWp are PV nameplate quantities, distinct from continuous active AC power;
 an unlabeled active-power field cannot establish an installed STC array limit.
 Meter requirements apply even when no battery is chosen, and included
