@@ -2,6 +2,8 @@
 import { __ } from '@wordpress/i18n';
 
 interface PublicClient {
+	/** A current cached proof for this container, '' when there is none. */
+	ready?: ( action: string, container: HTMLElement ) => string;
 	proof: ( action: string, container: HTMLElement ) => Promise< string >;
 	complete?: ( action: string, proof: string ) => boolean;
 	cancel?: ( action: string, container: HTMLElement ) => boolean;
@@ -283,28 +285,90 @@ export async function resourceFetch(
 	let proof = '';
 	let verification: HTMLElement | undefined;
 	const displayOwner = Symbol();
+	let challenged = false;
 	let response: Response;
+	/**
+	 * The transport init this attempt leaves with. `linkerFinalDispatch`
+	 * tells the caller's transport wrapper whether this use is the turn's
+	 * final dispatch — fetch itself ignores the extra member — so the
+	 * response window and cancellation boundary stay on the one attempt
+	 * that really carries the turn (a proofless genie probe is not it).
+	 */
+	type FinalInit = RequestInit & { linkerFinalDispatch?: boolean };
+	const send = ( final: boolean ) => {
+		const transport: FinalInit = {
+			...init,
+			headers,
+			credentials: 'same-origin',
+		};
+		transport.linkerFinalDispatch = final;
+		return fetcher( input, transport );
+	};
+	/**
+	 * Runs the challenge for this attempt and arms its proof. For the genie
+	 * action this only happens on demand: the server's admission refusal, or
+	 * a cached proof that the server no longer accepts.
+	 */
+	const challenge = async (): Promise< void > => {
+		challenged = true;
+		proof = await client!.proof( action, verification! );
+		if ( typeof proof !== 'string' || ! proof ) {
+			throw new Error( 'verification_unavailable' );
+		}
+		headers.set( 'X-Linker-Proof', proof );
+	};
 	try {
 		init?.signal?.throwIfAborted();
 		if ( ! observe ) {
 			verification = containerFor( action, ownedSlot );
 			displayOwners.set( verification, displayOwner );
-			proof = await client!.proof( action, verification );
-			if ( typeof proof !== 'string' || ! proof ) {
-				throw new Error( 'verification_unavailable' );
+			if ( 'genie' === action ) {
+				// An already-verified genie session sends its turn without a
+				// fresh challenge: the server admits an identity whose solved
+				// challenge is still trusted, so the wall never appears for
+				// an ongoing conversation. Only the admission refusal below
+				// runs the challenge.
+				proof = client!.ready?.( action, verification ) ?? '';
+				if ( proof ) {
+					headers.set( 'X-Linker-Proof', proof );
+				}
+			} else {
+				await challenge();
 			}
-			headers.set( 'X-Linker-Proof', proof );
 		}
 		init?.signal?.throwIfAborted();
 		if ( id && ! observe ) {
 			onOperation?.( id );
 		}
 		init?.signal?.throwIfAborted();
-		response = await fetcher( input, {
-			...init,
-			headers,
-			credentials: 'same-origin',
-		} );
+		// A genie attempt that leaves without a proof is a probe of the
+		// session's trust, not the turn's dispatch; everything else is final.
+		response = await send( ! ( 'genie' === action && '' === proof ) );
+		if (
+			! observe &&
+			'genie' === action &&
+			! challenged &&
+			400 === response.status
+		) {
+			const refusal = await response
+				.clone()
+				.json()
+				.catch( () => null );
+			if (
+				refusal &&
+				typeof refusal === 'object' &&
+				refusal.code === 'linker_admission_proof'
+			) {
+				// The one specific verification-required refusal: this
+				// identity is not trusted yet (or the cached proof was no
+				// longer accepted). Run the challenge and send the same
+				// operation once more; any other 400 stands as answered.
+				init?.signal?.throwIfAborted();
+				await challenge();
+				init?.signal?.throwIfAborted();
+				response = await send( true );
+			}
+		}
 	} finally {
 		if (
 			verification &&

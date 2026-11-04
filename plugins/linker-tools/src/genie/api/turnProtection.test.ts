@@ -40,6 +40,30 @@ function verificationSlot() {
 	return slot;
 }
 
+/** Challenge-on-demand: the admission refusal that starts the challenge. */
+function admissionRefusal(): Response {
+	return new Response( JSON.stringify( { code: 'linker_admission_proof' } ), {
+		status: 400,
+	} );
+}
+
+/**
+ * A transport that answers the proofless probe with the refusal, then wraps.
+ * @param finalTransport
+ */
+function onDemand( finalTransport: typeof fetch ) {
+	const calls = { count: 0 };
+	return vi.fn< typeof fetch >( async ( input, init ) => {
+		if ( ++calls.count === 1 ) {
+			expect(
+				new Headers( init?.headers ).get( 'X-Linker-Proof' )
+			).toBeNull();
+			return admissionRefusal();
+		}
+		return finalTransport( input, init );
+	} );
+}
+
 test( 'verification preparation does not consume the native turn response window', async () => {
 	vi.useFakeTimers();
 	const slot = verificationSlot();
@@ -49,10 +73,7 @@ test( 'verification preparation does not consume the native turn response window
 	} );
 	window.linkerPublicProtection = { proof, reset: vi.fn() };
 	const onOperation = vi.fn();
-	const fetcher = vi.fn< typeof fetch >( async ( _url, init ) => {
-		expect( new Headers( init?.headers ).get( 'X-Linker-Proof' ) ).toBe(
-			'synthetic-proof'
-		);
+	const fetcher = onDemand( async () => {
 		await new Promise( ( resolve ) => setTimeout( resolve, 60_001 ) );
 		return new Response(
 			JSON.stringify( {
@@ -81,13 +102,13 @@ test( 'verification preparation does not consume the native turn response window
 	);
 	await vi.waitFor( () => expect( proof ).toHaveBeenCalledOnce() );
 	await vi.advanceTimersByTimeAsync( 38_000 );
-	expect( fetcher ).toHaveBeenCalledOnce();
+	await vi.waitFor( () => expect( fetcher ).toHaveBeenCalledTimes( 2 ) );
 	await vi.advanceTimersByTimeAsync( 60_001 );
 	await expect( outcome ).resolves.toMatchObject( {
 		blocks: [ { type: 'text', text: '25000 W' } ],
 	} );
 	expect( onOperation ).toHaveBeenCalledOnce();
-	expect( fetcher ).toHaveBeenCalledOnce();
+	expect( fetcher ).toHaveBeenCalledTimes( 2 );
 	expect( vi.getTimerCount() ).toBe( 0 );
 } );
 
@@ -104,7 +125,7 @@ test( 'a dispatched turn keeps the 90-second response window, not the challenge 
 	} );
 	window.linkerPublicProtection = { proof, reset: vi.fn() };
 	// The proxy accepted the request and never answered it.
-	const fetcher = vi.fn< typeof fetch >(
+	const fetcher = onDemand(
 		() => new Promise< Response >( () => undefined )
 	);
 	let dispatchedAt = 0;
@@ -116,8 +137,10 @@ test( 'a dispatched turn keeps the 90-second response window, not the challenge 
 			slot: () => slot,
 			signal: new AbortController().signal,
 			challenge: true,
-			onDispatch: () => {
-				dispatchedAt = Date.now();
+			onDispatch: ( final ) => {
+				if ( final ) {
+					dispatchedAt = Date.now();
+				}
 			},
 		},
 	} ).then(
@@ -132,7 +155,7 @@ test( 'a dispatched turn keeps the 90-second response window, not the challenge 
 	} );
 	await vi.waitFor( () => expect( proof ).toHaveBeenCalledOnce() );
 	await vi.advanceTimersByTimeAsync( 38_000 );
-	expect( fetcher ).toHaveBeenCalledOnce();
+	expect( fetcher ).toHaveBeenCalledTimes( 2 );
 	expect( dispatchedAt ).toBeGreaterThan( 0 );
 	// Stop one millisecond short of the response deadline counted from the
 	// actual dispatch, whatever the fake clock's absolute origin is.
@@ -152,7 +175,7 @@ test( 'a hanging verification is bounded and a late proof cannot dispatch the ti
 		() => new Promise< string >( ( resolve ) => ( release = resolve ) )
 	);
 	window.linkerPublicProtection = { proof, reset: vi.fn() };
-	const fetcher = vi.fn< typeof fetch >();
+	const fetcher = vi.fn< typeof fetch >( async () => admissionRefusal() );
 	const outcome = sendTurn( {
 		...request,
 		messages: [ { role: 'user', content: 'hanging verification check' } ],
@@ -166,10 +189,11 @@ test( 'a hanging verification is bounded and a late proof cannot dispatch the ti
 	await vi.waitFor( () => expect( proof ).toHaveBeenCalledOnce() );
 	await vi.advanceTimersByTimeAsync( TURN_VERIFICATION_TIMEOUT_MS );
 	await expect( outcome ).resolves.toMatchObject( { name: 'AbortError' } );
-	expect( fetcher ).not.toHaveBeenCalled();
+	// Only the refused proofless probe left; the turn itself never did.
+	expect( fetcher ).toHaveBeenCalledTimes( 1 );
 	release( 'late-proof' );
 	await vi.advanceTimersByTimeAsync( 0 );
-	expect( fetcher ).not.toHaveBeenCalled();
+	expect( fetcher ).toHaveBeenCalledTimes( 1 );
 	expect( vi.getTimerCount() ).toBe( 0 );
 } );
 
@@ -180,7 +204,7 @@ test( 'a turn without a verification context never takes the challenge window', 
 	vi.useFakeTimers();
 	const proof = vi.fn( () => new Promise< string >( () => undefined ) );
 	window.linkerPublicProtection = { proof, reset: vi.fn() };
-	const fetcher = vi.fn< typeof fetch >();
+	const fetcher = vi.fn< typeof fetch >( async () => admissionRefusal() );
 	const outcome = sendTurn( {
 		...request,
 		messages: [ { role: 'user', content: 'ordinary unverified turn' } ],
@@ -194,7 +218,7 @@ test( 'a turn without a verification context never takes the challenge window', 
 	await vi.waitFor( () => expect( proof ).toHaveBeenCalledOnce() );
 	await vi.advanceTimersByTimeAsync( TURN_TIMEOUT_MS );
 	await expect( outcome ).resolves.toMatchObject( { name: 'AbortError' } );
-	expect( fetcher ).not.toHaveBeenCalled();
+	expect( fetcher ).toHaveBeenCalledTimes( 1 );
 	expect( vi.getTimerCount() ).toBe( 0 );
 } );
 
@@ -252,7 +276,7 @@ test( 'an empty proof cannot mark dispatch or call the turn transport', async ()
 		proof: vi.fn( async () => '' ),
 		reset: vi.fn(),
 	};
-	const fetcher = vi.fn< typeof fetch >();
+	const fetcher = vi.fn< typeof fetch >( async () => admissionRefusal() );
 	const onDispatch = vi.fn();
 	await expect(
 		sendTurn( {
@@ -269,8 +293,11 @@ test( 'an empty proof cannot mark dispatch or call the turn transport', async ()
 			},
 		} )
 	).rejects.toThrow( 'verification_unavailable' );
-	expect( fetcher ).not.toHaveBeenCalled();
-	expect( onDispatch ).not.toHaveBeenCalled();
+	// The probe went out and was refused; the turn never dispatched, so the
+	// surface is not marked past cancellation for a final send.
+	expect( fetcher ).toHaveBeenCalledTimes( 1 );
+	expect( onDispatch ).toHaveBeenCalledWith( false );
+	expect( onDispatch ).not.toHaveBeenCalledWith( true );
 	expect( slot.hidden ).toBe( true );
 } );
 

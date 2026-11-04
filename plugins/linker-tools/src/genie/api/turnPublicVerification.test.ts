@@ -85,6 +85,18 @@ function fixture( challenge: ( options: Widget ) => void ) {
 	} );
 	Object.assign( window, { turnstile: { render, remove } } );
 	const transport = vi.fn< typeof fetch >( async ( _input, init ) => {
+		// Challenge on demand: the first attempt goes out without a proof
+		// and is refused with the one verification-required admission error;
+		// after the challenge the same operation is sent with its proof.
+		if ( transport.mock.calls.length === 1 ) {
+			expect(
+				new Headers( init?.headers ).get( 'X-Linker-Proof' )
+			).toBeNull();
+			return new Response(
+				JSON.stringify( { code: 'linker_admission_proof' } ),
+				{ status: 400 }
+			);
+		}
 		expect( new Headers( init?.headers ).get( 'X-Linker-Proof' ) ).toBe(
 			'signed-proof'
 		);
@@ -134,7 +146,9 @@ test( 'a retryable 300030 keeps the same visible check and sends exactly once af
 	await vi.advanceTimersByTimeAsync( 0 );
 	expect( f.outcome() ).toBeUndefined();
 	expect( f.remove ).not.toHaveBeenCalled();
-	expect( f.transport ).not.toHaveBeenCalled();
+	// The proofless attempt went out and was refused by admission; the turn
+	// itself still has not been dispatched.
+	expect( f.transport ).toHaveBeenCalledTimes( 1 );
 	const widget = document.querySelector< HTMLElement >(
 		'[data-linker-resource-verification="genie"]'
 	)!;
@@ -150,7 +164,8 @@ test( 'a retryable 300030 keeps the same visible check and sends exactly once af
 		blocks: [ { type: 'text', text: 'Answer' } ],
 	} );
 	expect( f.validation ).toHaveBeenCalledTimes( 2 );
-	expect( f.transport ).toHaveBeenCalledOnce();
+	// The refused proofless probe, then the one dispatched turn.
+	expect( f.transport ).toHaveBeenCalledTimes( 2 );
 	expect( document.querySelector( 'textarea' ) ).toHaveValue( question );
 	expect( vi.getTimerCount() ).toBe( 0 );
 } );
@@ -163,7 +178,7 @@ test( 'human interaction can use 110 seconds before the unchanged response windo
 	await vi.waitFor( () => expect( f.render ).toHaveBeenCalledOnce() );
 	await vi.advanceTimersByTimeAsync( 90_001 );
 	expect( f.outcome() ).toBeUndefined();
-	expect( f.transport ).not.toHaveBeenCalled();
+	expect( f.transport ).toHaveBeenCalledTimes( 1 );
 	expect( document.querySelector( '[role="status"]' ) ).toHaveTextContent(
 		'No request has been sent in this attempt. Please complete the verification.'
 	);
@@ -172,7 +187,7 @@ test( 'human interaction can use 110 seconds before the unchanged response windo
 	expect( f.outcome() ).toMatchObject( {
 		blocks: [ { type: 'text', text: 'Answer' } ],
 	} );
-	expect( f.transport ).toHaveBeenCalledOnce();
+	expect( f.transport ).toHaveBeenCalledTimes( 2 );
 	expect( vi.getTimerCount() ).toBe( 0 );
 } );
 
@@ -200,7 +215,8 @@ test( 'a repeated provider failure after the native retry interval restores inpu
 	expect( f.outcome() ).toEqual( new Error( 'verification_widget_300030' ) );
 	expect( f.remove ).toHaveBeenCalledOnce();
 	expect( f.validation ).toHaveBeenCalledOnce();
-	expect( f.transport ).not.toHaveBeenCalled();
+	// Only the refused proofless probe left; the turn itself never did.
+	expect( f.transport ).toHaveBeenCalledTimes( 1 );
 	expect( document.querySelector( 'textarea' ) ).toHaveValue( question );
 	// The mounted Genie surface owns this failure: the adapter collapses its
 	// slot and the shell's own banner is the one thing the customer reads,
@@ -252,7 +268,7 @@ test( 'cancelling the real pending widget restores the editable draft and a late
 	late( 'synthetic-late-proof' );
 	await vi.advanceTimersByTimeAsync( 0 );
 	expect( f.outcome() ).toEqual( new Error( 'verification_cancelled' ) );
-	expect( f.transport ).not.toHaveBeenCalled();
+	expect( f.transport ).toHaveBeenCalledTimes( 1 );
 	expect( document.querySelector( 'textarea' ) ).toHaveValue( question );
 	expect( vi.getTimerCount() ).toBe( 0 );
 } );

@@ -315,7 +315,7 @@ ci-native groups name:
         (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter "$filter")
     }
     run_inquiry() {
-        (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter 'PublicControllerTest|PublicLedgerTest|PublicVerificationTest|PublicProofTest|PublicAdmissionOwnersTest|BusinessPolicyTest|BusinessAdmissionTest')
+        (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter 'PublicControllerTest|PublicLedgerTest|PublicVerificationTest|PublicProofTest|PublicTrustTest|PublicAdmissionOwnersTest|BusinessPolicyTest|BusinessAdmissionTest')
         (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter InquiryStatusRestTest)
         (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter ReadSolutionRestTest)
         just --justfile "$root/justfile" page-cache-chain "$name"
@@ -438,6 +438,26 @@ serve name *options:
 [positional-arguments]
 wp name *args:
     PHP={{ php }} {{ linker_local }} wp "$@"
+
+# Turnstile acceptance on a LOCAL instance (`just up <name>` first): Cloudflare's
+# official always-pass dummy pair plus enforce mode, so the full browser chain
+# (widget → protection/verify → proof → genie turn → session trust) runs locally
+# with no real challenge and no real keys. Production refuses these key families
+# (Protection\Configuration::test_keys), so this can never weaken live; real-
+# question acceptance on production goes through the service-level channel
+# (x-linker-service-token + 64-hex x-linker-resource-subject on the VPS loopback).
+# Re-runnable; leaves the settings in place for the instance's own lifetime.
+[positional-arguments]
+turnstile-test name:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    just --justfile "{{ justfile_directory() }}" wp "$1" config set LINKER_PUBLIC_PROTECTION_MODE enforce --type=constant --add --quiet
+    just --justfile "{{ justfile_directory() }}" wp "$1" config set LINKER_TURNSTILE_SITE_KEY 1x00000000000000000000000000AA --type=constant --add --quiet
+    just --justfile "{{ justfile_directory() }}" wp "$1" config set LINKER_TURNSTILE_SECRET_KEY 1x0000000000000000000000000000000AA --type=constant --add --quiet
+    test "$(just --justfile "{{ justfile_directory() }}" wp "$1" config get LINKER_PUBLIC_PROTECTION_MODE --type=constant)" = enforce
+    test "$(just --justfile "{{ justfile_directory() }}" wp "$1" config get LINKER_TURNSTILE_SITE_KEY --type=constant)" = 1x00000000000000000000000000AA
+    test "$(just --justfile "{{ justfile_directory() }}" wp "$1" config get LINKER_TURNSTILE_SECRET_KEY --type=constant)" = 1x0000000000000000000000000000000AA
+    echo "turnstile-test: dummy pair + enforce active on '$1' (local only)"
 
 # The mock ERP (ticket #69, docs/specs/69-stock.md): sets a fresh push key on
 # the instance, picks two stock-managed products with SKUs, and drives the

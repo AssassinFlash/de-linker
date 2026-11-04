@@ -988,7 +988,17 @@ test( 'the real hero keeps a pending check distinct from a dispatched message an
 		} );
 	} );
 	window.linkerPublicProtection = { proof, reset: vi.fn() };
-	const transport = vi.fn< typeof fetch >();
+	// The proofless trust probe leaves first and is refused by admission;
+	// only the challenge that follows can dispatch the hero's question.
+	const transport = vi.fn< typeof fetch >(
+		async () =>
+			new Response(
+				JSON.stringify( { code: 'linker_admission_proof' } ),
+				{
+					status: 400,
+				}
+			)
+	);
 	const native = new HeroSession(
 		SESSION_CONFIG,
 		async () => ( { messages: [], turn: null } ),
@@ -1017,7 +1027,7 @@ test( 'the real hero keeps a pending check distinct from a dispatched message an
 				'No request has been sent in this attempt. Please complete the verification.'
 			)
 		).toBeVisible();
-		expect( transport ).not.toHaveBeenCalled();
+		expect( transport ).toHaveBeenCalledTimes( 1 );
 		expect(
 			screen.queryByText( 'Genie is thinking…' )
 		).not.toBeInTheDocument();
@@ -1053,7 +1063,7 @@ test( 'the real hero keeps a pending check distinct from a dispatched message an
 		expect(
 			screen.queryByText( 'Genie did not answer. Please try again.' )
 		).not.toBeInTheDocument();
-		expect( transport ).not.toHaveBeenCalled();
+		expect( transport ).toHaveBeenCalledTimes( 1 );
 		expect( slot.hidden ).toBe( true );
 		expect( slot.children ).toHaveLength( 0 );
 	} finally {
