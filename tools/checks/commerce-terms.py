@@ -43,9 +43,15 @@ Only copy that reaches a customer is read, and only as copy:
 Compiled bundles (`build/`, `dist/`) are not scanned: they are generated from
 these sources, so a hit there is either a duplicate of one found here or stale.
 Tests, `vendor/`, `node_modules/` and `languages/` (read separately as
-catalogs) are not customer surfaces either. `mu-plugins/` is absent on purpose:
-those files are deploy, guard and error-logging infrastructure whose output is
-wp-admin and log lines, not customer copy.
+catalogs) are not customer surfaces either.
+
+`mu-plugins/` is absent, and the reason is narrower than "no copy there": the
+four gettext strings in it are one REST refusal ("Sorry, you are not allowed to
+do that.") repeated four times, shown to a blocked API caller. Including the
+directory would cost four extractions to watch one sentence, and that sentence
+would be baselined the moment it needed a word this gate lists. If a customer
+sentence ever appears there, this comment is the place that says why it was
+missed — and the fix is to add the root, not to add an exemption.
 
 Failure policy — a ratchet
 --------------------------

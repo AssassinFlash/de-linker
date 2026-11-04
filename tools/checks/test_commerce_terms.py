@@ -205,6 +205,50 @@ class CatalogTests(unittest.TestCase):
         self.assertNotIn("Alte Kasse", msgstrs)
 
 
+class ScanCoverageTests(unittest.TestCase):
+    """What the gate reads, pinned so a root cannot shrink silently."""
+
+    def test_mu_plugins_holds_one_refusal_and_no_listed_word(self):
+        """The docstring's reason for excluding the root must stay true.
+
+        The exclusion is safe *because* nothing there is customer copy. If a
+        string with a listed word appears, this fails and the root has to be
+        added rather than the comment rewritten.
+        """
+        root = CHECKS.parents[1] / "mu-plugins"
+        if not root.is_dir():
+            self.skipTest("mu-plugins is not in this checkout")
+        found = []
+        for path in sorted(root.glob("*.php")):
+            found.extend(
+                value
+                for value, _line in commerce.gettext_strings(
+                    path.read_text(encoding="utf-8"), php=True
+                )
+            )
+        listed = [v for v in found if commerce.matched_terms(v, patterns())]
+        self.assertEqual(listed, [], "add mu-plugins/ to CODE_ROOTS")
+        self.assertEqual(set(found), {"Sorry, you are not allowed to do that."})
+
+    def test_every_customer_surface_root_is_reachable(self):
+        root = CHECKS.parents[1]
+        for relative in commerce.CODE_ROOTS:
+            self.assertTrue((root / relative).is_dir(), relative)
+        # The email and Proforma templates are PHP under the plugin, so the
+        # code scan already reaches them; this pins that they stay inside it.
+        templates = root / "plugins/linker-commerce/templates"
+        accounted = {
+            str(path.relative_to(root))
+            for path in commerce.source_paths(root, commerce.CODE_ROOTS, commerce.CODE_SUFFIXES)
+        }
+        missing = [
+            str(path.relative_to(root))
+            for path in templates.rglob("*.php")
+            if str(path.relative_to(root)) not in accounted
+        ]
+        self.assertEqual(missing, [])
+
+
 class RatchetTests(unittest.TestCase):
     def baseline(self, rows):
         return {
