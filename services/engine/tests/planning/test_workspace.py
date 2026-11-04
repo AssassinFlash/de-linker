@@ -15,6 +15,7 @@ from linker_engine.planning.errors import (
     Conflict,
     EvaluationRevisionChanged,
     InvalidInput,
+    LeaseLost,
     NotFound,
     ProjectInputContractRequired,
     VersionUnavailable,
@@ -470,3 +471,61 @@ def test_future_database_is_not_downgraded(tmp_path: Path) -> None:
         Workspace(tmp_path)
     with sqlite3.connect(path) as connection:
         assert connection.execute("PRAGMA user_version").fetchone()[0] == 999
+
+
+
+def test_delete_is_idempotent_and_preserves_a_shared_input_blob(
+    workspace: Workspace, owner: Actor
+) -> None:
+    first = workspace.create(owner, "First", {"load": 1}, key="first")
+    second = workspace.create(owner, "Second", {"load": 1}, key="second")
+    assert first.input_sha256 == second.input_sha256
+    expected = {"project_id": first.id, "revision": 1, "deleted": True}
+    assert workspace.delete(owner, first.id, 1, key="delete-first") == expected
+    assert workspace.delete(owner, first.id, 1, key="delete-first") == expected
+    assert [project.id for project in workspace.projects(owner)] == [second.id]
+    with pytest.raises(NotFound):
+        workspace.get(owner, first.id)
+    assert workspace.get(owner, second.id).inputs == {"load": 1}
+    assert workspace.blobs.object(second.input_sha256) == {"load": 1}
+
+
+
+def test_delete_refuses_a_project_with_a_handoff(
+    workspace: Workspace, owner: Actor, context: Context
+) -> None:
+    project = workspace.create(owner, "Inquiry project", {}, key="new")
+    run = workspace.evaluate(owner, project.id, 1, context, key="run", max_attempts=2)
+    with workspace.database.transaction() as connection:
+        connection.execute(
+            "INSERT INTO handoffs "
+            "(id, project_id, run_id, revision, candidate_id, snapshot_sha256, created_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+            ("handoff", project.id, run.id, 1, "candidate", "a" * 64, 100.0),
+        )
+    with pytest.raises(Conflict, match="handoff"):
+        workspace.delete(owner, project.id, 1, key="delete")
+    assert workspace.get(owner, project.id).revision == 1
+    assert workspace.run(owner, run.id).state == "queued"
+
+
+
+def test_delete_cancels_active_work_and_removes_project_history(
+    workspace: Workspace, owner: Actor, context: Context
+) -> None:
+    project = workspace.create(owner, "Active project", {}, key="new")
+    run = workspace.evaluate(owner, project.id, 1, context, key="run", max_attempts=2)
+    jobs = Jobs(workspace)
+    lease = jobs.claim("worker-a", kinds=("evaluate",), lease_seconds=30)
+    assert lease is not None
+    assert workspace.delete(owner, project.id, 1, key="delete") == {
+        "project_id": project.id,
+        "revision": 1,
+        "deleted": True,
+    }
+    with pytest.raises(LeaseLost):
+        jobs.complete(lease, {"value": "late"})
+    assert workspace.projects(owner) == []
+    assert workspace.blobs.read(context.assets["weather"]) == b"frozen-fixture-weather"
+    with workspace.database.read() as connection:
+        assert connection.execute("PRAGMA foreign_key_check").fetchall() == []
