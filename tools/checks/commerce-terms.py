@@ -252,10 +252,28 @@ def normalise(text: str) -> str:
 
 
 def term_pattern(term: str) -> re.Pattern[str]:
-    """A wordlist term as a regex; a trailing `*` widens it to a prefix."""
+    """A wordlist term as a regex; a trailing `*` widens it to a prefix.
+
+    German writes its compounds closed, with the head last: the shipping word
+    is the second element in "Lagerversand", "Paketversand" and
+    "Expressversand". A pattern anchored only at the start sees none of them,
+    and the list has carried "Versand*" since its first version while the
+    German home said "Lagerversand" three times. The same shape reaches
+    "Nachbestellung", "Kundenbestellung", "Teilzahlung", "Vorauszahlung".
+
+    So the four heads below drop the leading anchor and match anywhere inside a
+    word. Not a general rule: doing it for "Kasse" would match "Kasserolle",
+    "Kassette" and "Kassierer", different words that start with the same
+    letters. The heads were chosen by trying them against the shipped copy —
+    every string the looser form newly matches is a real compound of the term.
+    """
     stem = term.rstrip("*")
     trailing = "" if term.endswith("*") else rf"(?!{_WORD})"
-    return re.compile(rf"(?<!{_WORD}){re.escape(stem)}{trailing}", re.IGNORECASE)
+    leading = "" if term in COMPOUND_HEADS else rf"(?<!{_WORD})"
+    return re.compile(rf"{leading}{re.escape(stem)}{trailing}", re.IGNORECASE)
+
+
+COMPOUND_HEADS = ("Versand*", "Bestell*", "Zahlung*", "Warenkorb*")
 
 
 def load_terms(path: Path = WORDS_PATH) -> list[str]:

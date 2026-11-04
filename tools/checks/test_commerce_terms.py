@@ -60,6 +60,26 @@ class WordlistTests(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 commerce.load_terms(Path(directory) / "absent.txt")
 
+    def test_the_logistics_words_past_the_spec_list_are_named(self):
+        """AGENTS.md §1 bans 发货 and 采购, not only 运费.
+
+        The first version of the list carried the spec's own words and missed
+        "dispatch", so the German home said "Lagerversand" while its English
+        twin said "warehouse dispatch" and only the German was caught. These
+        two are the words that gap proved necessary; dropping either from the
+        list must fail here, not on a live page.
+        """
+        terms = set(commerce.load_terms())
+        self.assertIn("dispatch*", terms)
+        self.assertIn("purchase*", terms)
+        # The German side of the same class: Versand* already covers
+        # "Lagerversand" and "versandt".
+        self.assertIn("Versand*", terms)
+        self.assertEqual(
+            commerce.matched_terms("Stock dispatch from Germany", patterns()), ["dispatch*"]
+        )
+        self.assertEqual(commerce.matched_terms("Lagerversand", patterns()), ["Versand*"])
+
 
 class MatchingTests(unittest.TestCase):
     def test_whole_word_boundaries_hold(self):
@@ -73,6 +93,42 @@ class MatchingTests(unittest.TestCase):
         self.assertEqual(commerce.matched_terms("Bestellungen", patterns()), ["Bestell*"])
         self.assertEqual(commerce.matched_terms("Versandkosten", patterns()), ["Versand*"])
         self.assertEqual(commerce.matched_terms("Zahlungsbedingungen", patterns()), ["Zahlung*"])
+
+    def test_german_compounds_match_with_the_word_last(self):
+        """German closes its compounds, so the head is the last element.
+
+        The list carried "Versand*" from its first version and still missed
+        "Lagerversand", which the German home page says three times: the
+        leading word boundary only allowed the word at the start of a word.
+        """
+        cases = {
+            "Lagerversand": ["Versand*"],
+            "Paketversand": ["Versand*"],
+            "Expressversand": ["Versand*"],
+            "Nachbestellung": ["Bestell*"],
+            "Kundenbestellung": ["Bestell*"],
+            "Teilzahlung": ["Zahlung*"],
+            "Vorauszahlung": ["Zahlung*"],
+        }
+        for text, expected in cases.items():
+            with self.subTest(text=text):
+                self.assertEqual(commerce.matched_terms(text, patterns()), expected)
+
+    def test_the_compound_rule_does_not_reach_unrelated_words(self):
+        """Only the four heads are loosened; "Kasse*" keeps its start anchor."""
+        for text in ("Sort the rows", "Zurück", "Bestand", "Kassierer"):
+            with self.subTest(text=text):
+                self.assertEqual(commerce.matched_terms(text, patterns()), [])
+
+    def test_kasse_prefix_is_recorded_as_a_latent_false_positive(self):
+        """`Kasse*` also matches "Kassette" and "Kasserolle".
+
+        Recorded rather than fixed: loosening the term would start missing
+        "Kassenbuch" and "Kassensystem", and neither spelling occurs in the
+        tree or on the live pages. A future string that uses one of them
+        reaches the baseline path, where a human reads the reason.
+        """
+        self.assertEqual(commerce.matched_terms("Kassette", patterns()), ["Kasse*"])
 
     def test_case_is_ignored(self):
         self.assertEqual(commerce.matched_terms("CHECKOUT", patterns()), ["checkout*"])

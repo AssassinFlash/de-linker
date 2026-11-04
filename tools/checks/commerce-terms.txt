@@ -18,6 +18,19 @@ order*
 checkout*
 payment*
 shipping*
+# "dispatch" was missing from the first version of this list, and that gap is
+# visible on the live site: the German home said "Lagerversand" while its
+# English twin said "warehouse dispatch", and the German commercial-storage
+# stage read "04 · Versand" against an English "04 · Dispatch". Only the German
+# side was caught, because only the German side had a listed word. AGENTS.md §1
+# rules out 发货 (dispatch) in the same sentence as payment and purchasing.
+# "dispatch" is also the Planner's word for energy dispatch ("an optimal
+# dispatch schedule", a calculation, not a delivery), so the four such strings
+# are baselined with that reason rather than rewritten.
+dispatch*
+# AGENTS.md §1 rules out 采购 (purchasing) too. No string in the tree uses the
+# word today; it is listed so the first one that does is caught.
+purchase*
 cart
 carts
 basket*
@@ -46,3 +59,21 @@ Zahlung*
 #     2026-10-09); it is the document the site actually issues.
 #   - "Lieferung"/"delivery": physical delivery exists after the inquiry; only
 #     the shipping/store copy is banned.
+#
+# Measured and left out, with the reason each one is not a wordlist problem:
+#   - "shop": the scanner reads every gettext literal, and three strings use the
+#     word where it is the right word for someone else's vocabulary — a
+#     WooCommerce settings description ("the store address under General",
+#     whose German admin screen says "Shop-Adresse") and a plugin docstring that
+#     describes Polylang's behaviour. Adding "shop" would baseline those and
+#     teach the next reader that shop vocabulary is tolerated. The real gap is
+#     that the scanner cannot tell wp-admin copy from customer copy; naming a
+#     word would hide that, not fix it.
+#   - "return*": 33 strings, every one of them "returns the version of …", a
+#     value coming back from a function. The commerce sense ("returns") is not
+#     separable by word boundary, and the one place it matters is below.
+#   - "refund*", "Auftrag*": each has exactly one customer-facing or
+#     admin-facing hit, recorded in the sweep section of
+#     docs/acceptance/2026-11-04/905/copy-review.md as needing a decision above
+#     this gate's authority (a footer link to a live returns page, and
+#     WooCommerce's own order vocabulary in wp-admin).

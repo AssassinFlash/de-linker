@@ -64,8 +64,10 @@ the *sequence* sense rather than the commerce sense.
 
 Ten hits in each language. Three separate defects: the pre-inquiry phrasing
 (`before you order`), the post-inquiry stage naming (`Quotes · Orders ·
-Warranty`, `STAGE 04 · ORDER FULFILLMENT`, `after the order`), and two shipping
-lines (`ready for dispatch`, `Versand aus dem Lager`).
+Warranty`, `STAGE 04 · ORDER FULFILLMENT`, `after the order`), and four
+logistics lines (`ready for dispatch`, `Versand aus dem Lager`, and — found only
+after the wordlist gained `dispatch*` in this batch's sweep — `warehouse
+dispatch` twice in the section copy).
 
 | # | EN before | EN after |
 |---|---|---|
@@ -74,11 +76,16 @@ lines (`ready for dispatch`, `Versand aus dem Lager`).
 | 3 | Check inverter, battery and meter combinations against the compatibility lists before you order | Check inverter, battery and meter combinations against the compatibility lists before your inquiry |
 | 4 | Match inverter, battery and accessories on Linker before you order | Match inverter, battery and accessories on Linker before your inquiry |
 | 5 | STAGE 04 · ORDER FULFILLMENT | STAGE 04 · INQUIRY TO DELIVERY |
-| 6 | We prepare your equipment in Germany, with the product documents and grid certificates requested for your order. | We prepare your equipment in Germany, with the product documents and grid certificates requested with your inquiry. |
-| 7 | Commercial invoice and order confirmation | Commercial invoice and Proforma confirmation |
-| 8 | Datasheets and manuals, plus the unit certificates requested for your order | Datasheets and manuals, plus the unit certificates requested with your inquiry |
-| 9 | Confirm the list and order the system through Linker | Confirm the list and send the inquiry for the system through Linker |
-| 10 | Linker still answers after the order — documents, questions and warranty coordination | Linker still answers after the inquiry — documents, questions and warranty coordination |
+| 6 | Your equipment, ready for dispatch. | Your equipment, prepared and documented. |
+| 7 | We prepare your equipment in Germany, with the product documents and grid certificates requested for your order. | We prepare your equipment in Germany, with the product documents and grid certificates requested with your inquiry. |
+| 8 | Commercial invoice and order confirmation | Commercial invoice and Proforma confirmation |
+| 9 | Datasheets and manuals, plus the unit certificates requested for your order | Datasheets and manuals, plus the unit certificates requested with your inquiry |
+| 10 | Confirm the list and order the system through Linker | Confirm the list and send the inquiry for the system through Linker |
+| 11 | Linker still answers after the order — documents, questions and warranty coordination | Linker still answers after the inquiry — documents, questions and warranty coordination |
+| 12 | Fulfillment · Stock dispatch · Certificates · Invoice | Inquiry handling · Stock in Germany · Certificates · Invoice |
+| 13 | 10 kW hybrid package · German warehouse dispatch | 10 kW hybrid package · Warehouse in Germany |
+| 14 | We handle project quotes, warehouse dispatch, and warranty coordination directly through our team in Germany. | We handle project quotes, stock in Germany, and warranty coordination through our team in Germany. |
+| 15 | We support trade partners at every stage, from sizing in the Solution Configurator to warehouse dispatch and warranty. | We support trade partners at every stage, from sizing in the Solution Configurator to delivery and warranty. |
 
 | # | DE before | DE after |
 |---|---|---|
@@ -86,49 +93,143 @@ lines (`ready for dispatch`, `Versand aus dem Lager`).
 | 2 | Angebote · Bestellungen · Garantie | Angebote · Anfragen · Garantie |
 | 3 | Prüfen Sie Kombinationen aus Wechselrichter, Batteriespeicher und Zähler vor der Bestellung anhand der Kompatibilitätslisten | Prüfen Sie Kombinationen aus Wechselrichter, Batteriespeicher und Zähler vor Ihrer Anfrage anhand der Kompatibilitätslisten |
 | 4 | Stimmen Sie Wechselrichter, Batteriespeicher und Zubehör auf Linker ab, bevor Sie bestellen | Stimmen Sie Wechselrichter, Batteriespeicher und Zubehör auf Linker ab, bevor Sie Ihre Anfrage senden |
-| 5 | Ihre Geräte, bereit für den Versand. | Ihre Geräte, abholbereit im Lager. |
+| 5 | Ihre Geräte, bereit für den Versand. | Ihre Geräte, vorbereitet und dokumentiert. |
 | 6 | Wir bereiten Ihre Geräte in Deutschland vor, mit den Produktunterlagen und den für Ihre Bestellung angeforderten Netzanschlusszertifikaten. | Wir bereiten Ihre Geräte in Deutschland vor, mit den Produktunterlagen und den mit Ihrer Anfrage angeforderten Netzanschlusszertifikaten. |
 | 7 | Datenblätter und Handbücher sowie die für Ihre Bestellung angeforderten Einheitenzertifikate | Datenblätter und Handbücher sowie die mit Ihrer Anfrage angeforderten Einheitenzertifikate |
 | 8 | Bestätigen Sie die Liste und bestellen Sie das System über Linker | Bestätigen Sie die Liste und senden Sie die Anfrage für das System über Linker |
 | 9 | Linker antwortet auch nach der Bestellung — Dokumente, Fragen und Garantiekoordination | Linker antwortet auch nach der Anfrage — Dokumente, Fragen und Garantiekoordination |
 | 10 | 10-kW-Hybridpaket · Versand aus dem Lager in Deutschland | 10-kW-Hybridpaket · Lager in Deutschland |
+| 11 | PHASE 04 · AUFTRAGSABWICKLUNG | PHASE 04 · VON DER ANFRAGE ZUR LIEFERUNG |
+| 12 | Auftragsabwicklung · Lagerversand · Zertifikate · Rechnung | Anfrageabwicklung · Lagerbestand in Deutschland · Zertifikate · Rechnung |
+| 13 | Unser Team in Deutschland kümmert sich um Ihre Projektangebote, den Lagerversand und die Koordination von Garantiefällen. | Unser Team in Deutschland kümmert sich um Ihre Projektangebote, den Lagerbestand und die Koordination von Garantiefällen. |
+| 14 | Wir unterstützen Handelspartner in jeder Phase, von der Auslegung im Lösungskonfigurator bis zum Lagerversand und zur Garantie. | Wir unterstützen Handelspartner in jeder Phase, von der Auslegung im Lösungskonfigurator bis zur Lieferung und zur Garantie. |
 
 Notes on the choices. #5 EN `ORDER FULFILLMENT` names a warehouse process the
 site does not run; `INQUIRY TO DELIVERY` names the range Linker actually covers
 (catalogue rule: stating the range is allowed, narrating the buyer's future is
-not). #5 DE `abholbereit im Lager` states the same fact as the English
-"prepared in Germany" without the shipping word; `Versand` there described goods
-leaving a warehouse that the sentence had just said are being *prepared*.
-#7 EN `Proforma confirmation`: the site issues a Proforma and no order
+not). #7 EN `Proforma confirmation`: the site issues a Proforma and no order
 confirmation, so the second half of the pair was naming a document that does not
 exist. #10 DE keeps no `Versand` because the German had invented a shipping
 attribute on a package badge.
+
+### Correction to row #5 DE (main-line review)
+
+The first version of this table turned `Ihre Geräte, bereit für den Versand.`
+into `Ihre Geräte, abholbereit im Lager.` and justified it as "the same fact as
+the English *prepared in Germany*". That justification was wrong twice, and
+main-line stopped it:
+
+1. **It cited the wrong twin.** The English twin of this line is not the
+   paragraph underneath it; it is the sentence in the same slot:
+   **`Your equipment, ready for dispatch.`** The paragraph below ("We prepare
+   your equipment in Germany …") is the section's body, not its headline.
+2. **It invented a promise.** `abholbereit` asserts *ready for pickup* — a
+   collection offer. The English says `ready for dispatch`: goods prepared and
+   ready to leave. Collection is a different commercial offer, and under the
+   owner's rulings fulfilment is agreed offline per Proforma, with no Incoterms
+   stated online. So `abholbereit im Lager` promised a pickup the site does not
+   make, replacing one wrong word with a wrong promise. The correction traded a
+   vocabulary defect for a factual one — the failure mode the batch exists to
+   remove.
+
+Both twins carry the same defect, and it is the same defect: `dispatch` and
+`Versand` name the logistics step. Corrected as a pair, in the same slot, each
+written natively:
+
+| | before | after |
+|---|---|---|
+| EN | Your equipment, ready for dispatch. | Your equipment, prepared and documented. |
+| DE | Ihre Geräte, bereit für den Versand. | Ihre Geräte, vorbereitet und dokumentiert. |
+
+Both name the fact the section's body then supports — the goods are prepared in
+Germany and carry the product documents and certificates. Neither claims a
+shipment, a pickup or a date. `dokumentiert` is the word the German body already
+uses for the same work, so the headline and the paragraph now say one thing.
+
+The stage title beside it is corrected too, because it had the same defect one
+line up:
+
+| | before | after |
+|---|---|---|
+| EN | STAGE 04 · ORDER FULFILLMENT | STAGE 04 · INQUIRY TO DELIVERY |
+| DE | PHASE 04 · AUFTRAGSABWICKLUNG | PHASE 04 · VON DER ANFRAGE ZUR LIEFERUNG |
+
+And the badge line under the package, whose German had added a shipping
+attribute the English did not:
+
+| | before | after |
+|---|---|---|
+| EN | Fulfillment · Stock dispatch · Certificates · Invoice | Inquiry handling · Stock in Germany · Certificates · Invoice |
+| DE | Auftragsabwicklung · Lagerversand · Zertifikate · Rechnung | Anfrageabwicklung · Lagerbestand in Deutschland · Zertifikate · Rechnung |
+
+`Lagerversand` was the compound the checker could not see until this batch's
+sweep (see §11); the English `Stock dispatch` was invisible to it because
+`dispatch` was not in the wordlist. Both were live on the home page.
 
 ---
 
 ## 3. Page 6921 — Gewerblicher Speicher / Commercial storage
 
-Five German hits and two English. The page has a `Versand` stage in its
-four-step rail, which the English twin does not have.
+Five German hits and two English. The page's process rail runs
+`01 · Load data → 02 · Configuration → 03 · Quotation → 04 · … → 05 · After-sales`,
+and stage 04 is the one this batch touches.
 
 | # | EN before | EN after |
 |---|---|---|
 | 1 | Order · Documents · Warranty | Inquiry · Documents · Warranty |
 | 2 | Keep the product conversation connected after the order through Linker | Keep the product conversation connected after the inquiry through Linker |
+| 3 | 04 · Dispatch | 04 · Delivery |
+| 4 | Shipped from Germany to the site. Delivery date confirmed with the quotation. | Delivered from Germany to the site. The delivery date is confirmed with the quotation. |
 
 | # | DE before | DE after |
 |---|---|---|
 | 1 | Versand | Lieferung |
 | 2 | Bestellung · Dokumente · Garantie | Anfrage · Dokumente · Garantie |
 | 3 | 04 · Versand | 04 · Lieferung |
-| 4 | Versand aus Deutschland zum Standort. Liefertermin wird mit dem Angebot bestätigt. | Lieferung aus Deutschland zum Standort. Der Liefertermin wird mit dem Angebot bestätigt. |
+| 4 | Versand aus Deutschland zum Standort. Liefertermin wird mit dem Angebot bestätigt. | Aus Deutschland zum Standort geliefert. Der Liefertermin wird mit dem Angebot bestätigt. |
 | 5 | Halten Sie das Produktgespräch nach der Bestellung über Linker aufrecht | Halten Sie das Produktgespräch nach der Anfrage über Linker aufrecht |
 
 `Lieferung` is the word for physical delivery, which is real and is what the
-step describes; `Versand` was the shipping-process word the wordlist bans.
-Note that the German twin keeps a stage the English twin does not show — a
-separate parity question, out of this batch's scope, recorded here rather than
-silently matched.
+step describes; `Versand` and `dispatch` were the shipping-process words the
+wordlist bans. The English twin's sentence changed too: `Shipped from Germany`
+was the same defect on the other side, and correcting only the German would
+have left the pair saying different things.
+
+### Correction: the parity claim in the first version
+
+The first version of this document said the German page "keeps a stage the
+English twin does not show". **That was wrong, and the cause of the error is
+worth recording**, because it is the same root cause as the defect above.
+
+Both languages have the same five stages. Read from the live pages:
+
+```text
+EN  01 · Load data   02 · Configuration   03 · Quotation   04 · Dispatch      05 · After-sales
+DE  01 · Lastdaten   02 · Konfiguration   03 · Angebot     04 · Versand       05 · After-Sales
+```
+
+There was never a missing stage. What the first pass compared was the **hit
+counts** — five German hits against two English — and inferred an asymmetry in
+the content from an asymmetry in the scan. The asymmetry was in the **wordlist**:
+it listed `Versand*` and did not list `dispatch`. So the German stage title was
+caught and the English one was invisible, and the conclusion drawn from that
+difference was that a stage was missing.
+
+Root cause, stated once: *a detection gap was read as a content gap.* The
+comparison should have been made against the two pages, not against the two lists
+of findings. Two consequences follow, and both are fixed in this batch rather
+than noted:
+
+1. **The wordlist gained `dispatch*`** (§11). With it, the English side of every
+   twin on this page is caught, and the counts are 4 EN / 5 DE — the remaining
+   difference is the German sentence carrying one extra clause.
+2. **The German compounds are now matched** (§11). `Lagerversand` on the home
+   page had been invisible to the gate from the beginning.
+
+With those two closed, the pair is verified symmetric on this page: same five
+stages, same words in each slot, each language written natively. Nothing in this
+section needs a production content write — it is page copy, and it is delivered
+here for main-line to publish.
 
 ---
 
@@ -351,11 +452,159 @@ page; it is recorded in §4(c) above.
 
 ## 10. What the checker still reports, and why
 
-After the code fixes in this batch, `just commerce-terms` reports 24 baselined
-hits across 9 files, all of them `order` in the sequence sense (`Order by rows`,
-`Reverse order`, `in either order`, `time order`, `in request order`). None is a
-shop noun. Each carries its reason in `tools/checks/commerce-terms-baseline.json`.
+After the code fixes in this batch, `just commerce-terms` reports 28 baselined
+hits across 9 files: the 24 `order` sequence senses (`Order by rows`, `Reverse
+order`, `in either order`, `time order`, `in request order`) plus 4 energy
+`dispatch` strings. None is a shop noun or a shipment. Each carries its reason in
+`tools/checks/commerce-terms-baseline.json`.
 
 The live database has not been scanned: that is the deploy smoke
 (`commerce-terms.py --wp-cli`), and it runs from main-line, not from this
 branch. The page strings in this document are the input it will check against.
+
+---
+
+## 11. Proactive sweep: what the gate could not see
+
+Written after the first review round. Each finding is stated with its root
+cause, because a finding without one is not a finding: the useful part is which
+assumption was wrong, not which string was dirty.
+
+### 11.1 The wordlist was missing the English half of a class it named
+
+**Finding.** `dispatch` was absent from `commerce-terms.txt` while `Versand*`
+was present. The live English home page says `warehouse dispatch` twice,
+`Stock dispatch` once and `ready for dispatch` once; the live German pages say
+the same thing in German. Every English string was invisible to the gate and
+every German one was caught.
+
+**Root cause.** The list was transcribed from the two documents that state it —
+spec 11:191 names `order/checkout/payment/shipping/Versand/Kasse/Bezahlen/
+Warenkorb`, AGENTS §3 names `catalogue/article/basket/cart` — and neither
+document names the English dispatch word. The list was faithful to its sources
+and still incomplete relative to the ruling those sources implement. AGENTS §1
+rules out dispatch (发货) and purchasing (采购) as part of the same chain; the
+spec's list stopped one synonym short of that.
+
+**Damage it caused.** The German commercial-storage stage read `04 · Versand`
+against an English `04 · Dispatch`. With only the German caught, the first
+version of this document concluded the German page had "a stage the English twin
+does not show". That conclusion was wrong (§3), and the wrong conclusion came
+from reading hit *counts* as if they were page *content*.
+
+**Fixed at the root.** `dispatch*` and `purchase*` are now in the list. The four
+`dispatch` strings in the tree are the Planner's energy-dispatch calculation
+("an optimal dispatch schedule"), not shipments, so they are baselined with that
+reason; a shop use of the word now fails. Regression test:
+`test_the_logistics_words_past_the_spec_list_are_named` fails if either term is
+removed.
+
+### 11.2 German compounds were invisible: `Versand*` could not see `Lagerversand`
+
+**Finding.** The live German home page says `Lagerversand` **three times**
+(alongside `Auftragsabwicklung`, `Lagerversand`, `Zertifikate`, `Rechnung` in a
+badge line and twice in section copy). The gate reported nothing. The list has
+carried `Versand*` since its first version.
+
+**Root cause.** The matcher anchored every term at a word start
+(`(?<![^\W_])Versand`). English compounds are open or hyphenated, so a leading
+anchor is correct for English. German closes its compounds and puts the head
+last, so `Lager|versand`, `Paket|versand`, `Express|versand` never matched. The
+same shape hides `Nachbestellung`, `Kundenbestellung`, `Teilzahlung`,
+`Vorauszahlung`, `Ratenzahlung`. This was a defect in the *matcher*, and no
+amount of correctness in the wordlist would have fixed it — which is why the
+spec's own list never caught these either.
+
+**Fixed at the root.** The four heads that take the compound form
+(`Versand*`, `Bestell*`, `Zahlung*`, `Warenkorb*`) now match anywhere inside a
+word. It is deliberately not a general rule: loosening `Kasse*` would match
+`Kasserolle`, `Kassette` and `Kassierer`. The heads were chosen by trying them
+against the shipped copy — every newly matched string is a genuine compound of
+its term. The German stage-04 text on page 6921 is now caught by the compound
+form, confirming it end to end.
+
+**Recorded, not fixed.** `Kasse*` still matches `Kassette` and `Kasserolle`.
+Loosening the term would start missing `Kassenbuch` and `Kassensystem`, and
+neither spelling occurs in the tree or on the live pages, so the fix would cost
+more detection than it bought. Pinned as a known limit by
+`test_kasse_prefix_is_recorded_as_a_latent_false_positive`, so a future writer
+sees the trade rather than rediscovering it.
+
+### 11.3 "Refund & Returns" in the site footer, linking to a live page
+
+**Finding.** The footer — on every page, in both languages — carries
+`Refund & Returns` → `/refund-returns/` and `Rückgabe & Erstattung` →
+`/de/rueckgabe-erstattung/`. Both target pages return HTTP 200.
+
+**Root cause.** The footer was built as part of the shop's site map, before the
+single-link ruling. A returns policy is a shop artefact: with no online purchase
+there is nothing to return through the site, and the legal position is governed
+by the terms of sale, which are offline. The pages themselves are live content,
+so deleting the link in the footer template would leave two orphaned pages in
+the database.
+
+**Not fixed here, reported with the reason.** This needs two decisions above
+this gate's authority: whether a returns page stays at all (the terms of sale
+already cover the contractual position), and whether the two pages should be
+unpublished or repurposed. Changing the footer alone would hide a page that
+still exists. Removed from this batch's scope so it is not half-done; it is not
+covered by the wordlist, because `refund*` would also catch nothing else and
+`return*` cannot separate "returns a value" (33 strings) from "returns".
+
+### 11.4 `shop` appears where the right word is someone else's vocabulary
+
+**Finding.** Three strings use `shop`: WooCommerce's own settings description
+("the store address under General", whose German admin screen says
+`Shop-Adresse`) and a plugin docstring describing Polylang's behaviour ("the
+German shop on the English products").
+
+**Root cause.** The scanner reads every gettext literal and cannot tell wp-admin
+copy from customer copy. It has the same limitation for the `order`/`payment`
+words it already baselines, which is why the baseline exists. Adding `shop` to
+the wordlist would baseline these three and, more importantly, would teach the
+next reader that shop vocabulary is tolerated in customer copy — the opposite of
+what the gate is for.
+
+**Reported, not wordlisted.** The real gap is surface classification, not
+vocabulary: a wp-admin description is not customer copy, and the gate would be
+sharper if it knew that. That is a design change to the scanner, not a word to
+add, and it is named here rather than hidden behind a baseline entry.
+
+### 11.5 `Auftrag` is WooCommerce's order vocabulary inside wp-admin
+
+**Finding.** `Gemäß den Einstellungen werden für diesen Auftrag keine
+Berechnungen aufbewahrt` and five similar strings (saved-order, order manifest,
+checksums for source and order).
+
+**Root cause.** These are WooCommerce's own German admin terms for a saved
+record, in admin screens this plugin does not own the vocabulary of. Renaming
+them would make the plugin disagree with the admin UI around it.
+
+**Reported, not fixed.** Same class as 11.4 and the same root cause: admin
+surface, not customer copy. Recorded so the next reader does not re-open it as a
+new finding.
+
+### 11.6 The ratchet's own blind spots, checked
+
+Three failure modes were tested rather than assumed, and all hold:
+
+- **A page with no hits is not a stale entry.** Fixed in the first review round
+  (`f4d9f20b9`): the two scans now compare only their own entries.
+- **A row the smoke cannot read fails instead of counting clean.** Covered by
+  `test_an_unreadable_row_fails_instead_of_counting_as_clean`.
+- **A reflow is not a new string.** Covered by
+  `test_reflow_does_not_read_as_a_new_string`; the baseline key is the
+  whitespace-collapsed string.
+
+One gap is now named rather than tested: **the repository scan cannot see a
+string that exists only in the database.** That is by design — the live scan
+covers it — but it means a page edited in production after the last deploy can
+carry a banned word that no repository check will report. The deploy smoke is
+the only fence for that, which is why `--wp-cli` exists and why main-line runs it.
+
+### 11.7 What the sweep explicitly did not touch
+
+Other batches' files: the engine, Genie, the Planner and the registry belong to
+agents running in parallel. The Planner's own strings were read only to
+establish that `dispatch` there means energy dispatch, and the four findings in
+11.1 are recorded as baseline reasons, not as edits.

@@ -103,6 +103,18 @@
     ],
     "plugins/linker-tools/languages/linker-tools-de_DE_formal.po": [
       {
+        "term": "dispatch*",
+        "string": "Import and export limits apply once at the shared AC metering point. In each interval, charging or discharging is shared in proportion to each unit's available power within its declared power and energy limits. The rule uses no forecast, does not request grid charging and does not reproduce a manufacturer EMS or an optimal dispatch schedule.",
+        "count": 1,
+        "justification": "energy dispatch: the Planner's calculation of when a converter charges or discharges, not a shipment"
+      },
+      {
+        "term": "dispatch*",
+        "string": "In each interval, each converter supplies its own DC auxiliary demand and its allocated share of AC demand before charging from local DC PV. AC demand is shared in proportion to each unit’s available power. Charging from the AC bus must be enabled and supported by the equipment documentation. It uses remaining AC surplus; grid charging is requested only when separately permitted and within the remaining import limit. This time-step calculation uses no forecast and does not reproduce a manufacturer EMS or an optimal dispatch schedule.",
+        "count": 1,
+        "justification": "energy dispatch: the Planner's calculation of when a converter charges or discharges, not a shipment"
+      },
+      {
         "term": "order*",
         "string": "Choose modules and review their order to match your planned wiring. Enter the MPPT and inverter input for each string.",
         "count": 1,
@@ -161,6 +173,20 @@
         "string": "The first %d selected modules will be saved in this order.",
         "count": 1,
         "justification": "the order modules are saved in"
+      }
+    ],
+    "apps/planner/src/components/energy/PlantEnergyForm.tsx": [
+      {
+        "term": "dispatch*",
+        "string": "Import and export limits apply once at the shared AC metering point. In each interval, charging or discharging is shared in proportion to each unit's available power within its declared power and energy limits. The rule uses no forecast, does not request grid charging and does not reproduce a manufacturer EMS or an optimal dispatch schedule.",
+        "count": 1,
+        "justification": "energy dispatch: the Planner's calculation of when a converter charges or discharges, not a shipment"
+      },
+      {
+        "term": "dispatch*",
+        "string": "In each interval, each converter supplies its own DC auxiliary demand and its allocated share of AC demand before charging from local DC PV. AC demand is shared in proportion to each unit’s available power. Charging from the AC bus must be enabled and supported by the equipment documentation. It uses remaining AC surplus; grid charging is requested only when separately permitted and within the remaining import limit. This time-step calculation uses no forecast and does not reproduce a manufacturer EMS or an optimal dispatch schedule.",
+        "count": 1,
+        "justification": "energy dispatch: the Planner's calculation of when a converter charges or discharges, not a shipment"
       }
     ]
   }
