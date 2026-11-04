@@ -148,6 +148,33 @@ starts. No proof means no model request; a late proof cannot dispatch an aborted
 turn. Required policies, hostname/action binding, signed proof, native operation
 UUIDs, ledgers, quotas and actual provider/model budgets are unchanged.
 
+### Session-bound genie trust and challenge-on-demand, 2026-11-04
+
+The every-300-seconds re-challenge of an ongoing conversation was the real
+customer's friction, not the attack's (the 2026-10-22 incident was floods of
+fresh identities, and identity quotas bound those regardless). For the genie
+action only, one successfully read verified proof grants a server-side trust
+row for the same identity binding the proof binds: further genie turns of that
+identity are admitted without a fresh proof for twelve hours — half the form
+stamp's 24-hour nonce lifetime, one challenge per working day. The row is
+private (`linker_commerce_trust_genie.<binding-hash>.<window-bucket>`), never
+a client flag, revocable at once, and purged by the next grant once two window
+buckets old. "No proof means no model request" above is thereby superseded for
+genie while the trust holds; every other action, and every untrusted identity,
+keeps the exact refusal above. Business proofs remain single-use.
+
+The client matches the server: a genie turn with a current cached proof sends
+it; without one the turn goes out first and only the specific
+`linker_admission_proof` refusal runs the challenge and retries the same
+operation UUID once. The proofless probe is not the turn's dispatch: the
+90-second response deadline and the cancellation boundary start on the final
+transport use (`linkerFinalDispatch` on the transport init), so an on-demand
+challenge keeps the full 165-second preparation window and stays withdrawable.
+A trusted session's single admitted call still leaves as a probe — the client
+cannot know before the server answers — so it runs under the preparation
+window and an abort behaves like any ambiguous in-flight loss the journal
+already owns.
+
 Native contact/inquiry recovery is server-owned. Only a restored original UUID
 with an unknown/pending result gets the recovery marker; that page neither warms
 nor waits for a new challenge. Business still validates the actual identity and
