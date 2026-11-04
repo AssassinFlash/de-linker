@@ -166,6 +166,16 @@ def country_rule_csv(
         return None
     inputs = cast(Object, review["inputs"])
     sources = {str(item["id"]): item for item in cast(list[Object], review["sources"])}
+    grid_sources = (
+        cast(list[Object], value.get("rule_sources", []))
+        if isinstance(value, dict)
+        else []
+    )
+    grid_hashes = "; ".join(
+        f"{item['id']}:{item['raw_sha256']}"
+        for item in grid_sources
+        if item.get("raw_sha256")
+    )
     output = io.StringIO(newline="")
     writer = csv.writer(output, lineterminator="\n")
     # Human-readable headers retain stable IDs for downstream processing.
@@ -219,6 +229,11 @@ def country_rule_csv(
         ("source_effective_from", "Effective from", "Gültig ab"),
         ("evidence_snapshot_date", "Source reviewed", "Quelle geprüft am"),
         ("source_text_sha256", "Source text SHA-256", "SHA-256 des Quellentextes"),
+        (
+            "grid_source_hashes",
+            "Grid source text SHA-256",
+            "SHA-256 der Netzanschlussquellen",
+        ),
     ]
     writer.writerow(
         f"{de if locale == 'de' else en} [{key}]" for key, en, de in columns
@@ -268,6 +283,7 @@ def country_rule_csv(
                 origin.get("effective_from"),
                 origin["evidence_snapshot_date"],
                 origin["text_sha256"],
+                grid_hashes,
             ]
         )
     return output.getvalue().encode("utf-8-sig")
@@ -341,6 +357,7 @@ def grid_connection_sections(value: Json, locale: str) -> list[ReportSection]:
                         source["clause"],
                         f"{text('grid_source_read', locale)} {source['evidence_snapshot_date']}",
                         source["source_url"],
+                        source.get("raw_sha256"),
                     )
                     if item
                 ),

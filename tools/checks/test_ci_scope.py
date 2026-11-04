@@ -322,6 +322,7 @@ class ScopeTest(unittest.TestCase):
             "apps/planner/src/data/readProtocol.ts",
             "apps/planner/package-lock.json",
             "apps/planner/bin/echarts-types.mjs",
+            "apps/planner/src/components/CountryRuleForm.tsx",
         ):
             for status in ("A", "M", "D"):
                 with self.subTest(path=path, status=status):
@@ -331,7 +332,7 @@ class ScopeTest(unittest.TestCase):
                         ci_scope.selected_modules(changes, "base", "head"),
                         ["planner", "engine"],
                     )
-        # Component and standalone frontend tests are not Engine inputs.
+        # Other components and standalone frontend tests are not Engine inputs.
         self.assertEqual(
             self.classify(("M", "apps/planner/src/components/ReportView.tsx")),
             ["planner"],

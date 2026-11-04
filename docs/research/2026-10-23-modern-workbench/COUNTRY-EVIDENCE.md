@@ -372,3 +372,20 @@ Apify 检索记录 GimfClfA2AJhH0U9J、2aOchEnlB1M465Jpf、dDUwRF2Cm5Xka3166；�
 已实际打开[GoodWe 手册的第 279 页镜像](https://www.manualslib.com/manual/4398258/Goodwe-Gw50k-Et-L-G10.html?page=279)。页中同表列出 GW75K、GW80K、GW99.99K、GW100K 的 ET-G10 型号，最大输出故障电流峰值及时长一行标为 406 A / 2.3 µs。63.5 A / 20 ms 出现在独立的浪涌电流行。该页未给出试验故障类型、位置及并网或备用工况。本站托管的 307 页 V1.2 手册同页是故障排查，不引用其页码支持这些数值。
 
 在 [GoodWe 中国的资料入口](https://www.goodwe.com/Cn/Skippower/downloadFile?id=426&mid=60) 和[另一份公开英文 PDF 入口](https://www.alternergy.co.uk/web/content/75438/GoodWe%20Commercial%20Smart%20Inverter%20Manual%20ET75-ET100kW%20-%2003%2002%202026.pdf?download=false)定位到型号与数字。此次抓取没有取得可核版次的 PDF 原件。镜像页支持继续按表头追查；现有数据不足以计算持续短路电流、保护选择性或现场分断能力。没有据此修改产品额定值或保护算法。
+
+## 12. 2026-11-04 当前原文读回与日期边界
+
+经 Apify `website-content-crawler` run `khr33972PtTaoFkM9`（dataset `dYGUw723iMvBLWpJO`，build 0.3.102）重新读取实现实际引用的四个官方页面，均 HTTP 200。下表哈希均为采集器 `text` 字段的 UTF-8 字节哈希，不是官方签名。
+
+| 原文 | 实际读取时间 UTC | 正文提取 SHA-256 | 本次确认 |
+| --- | --- | --- | --- |
+| 德国 EEG §9 | 2026-11-04 15:26:15 | `dfbff2f705291e19c119bcbefec5ed046917044e20a8c20d43e993000df3958f` | 与 2026-11-01 的正文提取相同。 |
+| 法国 Article 35 | 2026-11-04 15:27:44 | `4d35445b56b2d705e6afb81e93a4beec10f896ffcd3f14b1e69feda61794dfb3` | 与 2026-11-01 相同，页面仍标明自 2020-06-26 生效。 |
+| 荷兰 Systeemcode 2026 | 2026-11-04 15:26:45 | `41c61e47556c3415fc2072745f38bc2f7ae9a6e82a2ad6aa9f981828ebd7edf1` | 官方页标明 `Geldend van 01-10-2026 t/m heden`，读取日为 2026-11-04；实现采用的 0.8 kW、1/50/60 MW 和 LFSM-U 边界均在当前正文。 |
+| Enedis 全部自消费 | 2026-11-04 15:26:18 | `3741f1e39b855240554fc7348cd130d08f8b186e2e3a38dd831b2c708b4ff673` | 与 2026-11-01 相同；申报、Consuel/荣誉声明及 CACSI 条件保持原文范围。 |
+
+荷兰汇编的采集文本含随读取日变化的 `Geraadpleegd op` 字段；此前数据集当前不可读，因此不据旧哈希作全文不变结论。新哈希只标识本次提取，所用规则条款已在当前正文逐项确认。
+
+规则评价恢复以 `effective_from` 和 `evidence_snapshot_date` 为两侧边界；2026-11-04 之后的日期保持 `outside_version`，不能继承此次读取。Enedis 页面没有自己的生效日期声明，只评价实际核查日，不借用另一份法规的生效日。此次更新不证明任何项目或设备的适用性、过渡条件或 DSO 许可，未改变既有未证事项。
+
+同一批复核 EnWG §19 与 VDE FNN 中压适用范围：Apify run `WahJWHCMNdyvH66IH`（dataset `z1SaTt3LSJS8rrGIl`）于 2026-11-04 16:56 UTC 取得两个官方页面 HTTP 200。采集器 `text` 的 SHA-256 分别为 `7dbf22b9f82a3bf380d25975e4d9fe9c68fa37c9feb4ee7972e3272f91f0b208` 与 `4aea379ed9f11476d915b5f9baacad618b39209df9acd02c78c612418fe528c6`。这只更新来源身份和读取记录，不把项目声明转为 DSO 许可。

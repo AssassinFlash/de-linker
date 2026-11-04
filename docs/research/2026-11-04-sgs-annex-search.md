@@ -9,10 +9,10 @@
 
 | 目标 | 结论 |
 | --- | --- |
-| 1. SGS Annex `250008RECO14-CER`（164 页，Rev.0 2026-01-30） | **公开渠道不存在，判定升级为"证实不公开发布"**：GoodWe 全球下载体系（en/de/tr/pl 四站全量枚举 + kr/br/jp/vn 端点抽样）无任何 Annex/Anhang/Prüfbericht 条目；全球已知的全部 4 份第三方副本（BayWa、Memodo、teutschtech、本站在托管件）经 sha256 逐一比对**全部是同一份 1 页封面**；Google/Bing/Yandex/DuckDuckGo 四个索引均无 164 页件；Wayback 对该证书 URL 从无快照。 |
-| 2. ET 75–100kW 定量运行包络（降额曲线） | **未公开取得**：数据表 V2.1（本轮哈希复核即当前版）无降额表；全部 6 份公开并网证书（G99、CEI 0-16+BAT、EN 50549-1/2、NC RfG、PPDS×2）均为 1–7 页摘要证书，只引用未公开的 TÜV 测试报告（CN25T74X 001、CN25Z3G2 001、CN25VGH8 002）。新核实事实：证书封面载明已验证的 DIgSILENT PowerFactory 2024 仿真模型（含 MD5），该模型即定量 P/Q/包络载体，但同样不公开。 |
+| 1. SGS Annex `250008RECO14-CER`（164 页，Rev.0 2026-01-30） | **公开副本未取得**：GoodWe 全球下载体系（en/de/tr/pl 四站全量枚举 + kr/br/jp/vn 端点抽样）未发现 Annex/Anhang/Prüfbericht 条目；已核第三方副本均为同一 1 页封面。SGS 官方目录的实际交互搜索受人机验证限制，不能把未检索到等同于已证明未公开。 |
+| 2. ET 75–100kW 定量运行包络（降额曲线） | **公开副本未取得**：数据表 V2.1 与全部 6 份公开并网证书均只提供摘要或定性说明，没有定量降额表。封面载明 DIgSILENT PowerFactory 2024 仿真模型及 MD5，但我们并不持有该模型或包络数据，不能用于工程放行。 |
 
-两个目标指向同一堵墙：**164 页 Annex 与定量包络只存在于 SGS/GoodWe 的应索取渠道**，而本项目纪律禁止代理发函索取。
+两个目标都仍属外部证据缺口，不得写成“已找到”或“已证明不存在”，更不能由局部资料推导工程放行。
 
 ## 0. 本轮新发现的技术事实（对后续票据有用）
 
@@ -109,33 +109,26 @@ Actor 与 run（全部 SUCCEEDED，资源已回收，见 §7）：
 - 全球目录 `sgs.com/en/certified-clients-and-products/sgs-certified-components-and-products`：表单含 `cf-turnstile-response`（前三批已实测，`docs/acceptance/2026-10-31/548/installation-facts-apply.md` §SGS 各节）——**人机验证墙，本轮未触碰、未尝试绕过**（业主令：绕行其他来源，不穿墙）。
 - 检索各 SGS 国家站是否存在非门禁目录：Google/Bing/Yandex site: 查询未发现任何可匿名查询的 SGS 证书库镜像。SGS "-CER" 证书族（含西班牙 RD 系列）均未见任何 SGS 公开 PDF 直链。
 
-## 7. 结论与剩余渠道
+## 7. 结论与证据边界
 
-**目标 1（164 页 Annex）与目标 2（定量包络）的公开渠道已穷尽**，且本轮把第一轮的"未找到"升级为带完整证据链的"**证实不公开发布**"：
+本轮在厂商目录、第三方副本、搜索索引和网页存档中没有取得 164 页 Annex 或定量包络。**这些结果证明“公开副本未取得”，不证明 Annex 不存在，也不证明它只对厂商渠道存在。**“证实不公开发布”是超过证据范围的旧结论，现予纠正。
 
-1. 厂商侧：全球下载体系全量枚举（en 88 项、de/tr/pl 各 83 项零差集）+ 跨目录搜索 `annex`/`Prüfbericht` = 0；
-2. 副本侧：全球已知 4 处副本 sha256 全等（同一 1 页封面）；
-3. 索引侧：Google/Bing/Yandex/DDG 四索引对证书号与 Anhang 关键词组合均无 164 页件；
-4. 存档侧：Wayback 对证书 URL 零快照（对照组证明可收录性）；
-5. 同族对照：5 份 SGS "-CER" 证书 + GT 122 页 Anhang 自述，全部只发封面——发布惯例一致；
-6. 定量包络的替代载体（DIgSILENT 仿真模型，封面 MD5 `D0271364D1E5A49F96D5F558D1299C78`）亦为应索取件。
+2026-11-05 又直接核查了 SGS 目录自身的实现，补上了此前只凭页面含有 Turnstile 字段就停止的接口证据：
 
-**无法使用的剩余渠道及原因**（非"没找到"，是"不可用"）：
+1. 页面明确提供 `certificateNo` 字段，正式搜索接口为 `POST /api/certified-components-and-products/search`，详情接口为 `GET /api/certified-components-and-products/details?certno=...`。
+2. 以 `250008RECO14-CER` 输入真实页面并搜索，实际触发 Cloudflare 人机验证，没有伪造 token 或继续绕过。
+3. 详情接口对空 `sourceSystem`、直接尝试的 `SGS`、`CER` 以及只给证书号四种请求均返回以 `-` 填充的占位对象。它们不是“证书不存在”的响应，也不能据此推定没有附件。
+4. 对已索引详情 URL 的 `sourceSystem` 反查没有返回样例，故不再继续无依据枚举系统标识。
 
-| 渠道 | 不可用原因 |
-| --- | --- |
-| SGS 全球/波兰证书目录交互查询 | Cloudflare Turnstile 人机验证墙；本项目纪律禁止处理/绕过验证码（业主令确认绕行而非穿墙） |
-| 向 SGS / GoodWe 索取 Annex 或仿真模型 | 业主绝对禁令：任何形式的厂商邮件/索取（包括代拟）；只能由业主人工发起 |
-| device.report 全文浏览 | Cloudflare 人机验证墙（已用搜索引擎快照旁证其无目标件） |
-| IA Wayback 宽域枚举 | IA 服务当日降级（Temporarily Offline）；精确 URL 查询已全部完成，宽域枚举的边际价值仅剩"发现从未被索引的 URL"，与逐变体精确查询结论一致 |
-| senetic PIM 全量枚举 | 站点+CDN Cloudflare 403；Google 索引旁证其 GoodWe VDE4110 件只有 UT 系列 |
+因此，当前可交付结论是：**厂商与公开副本渠道未提供 Annex；SGS 官方交互查询受人机验证限制；公开详情接口在未取得正确系统标识时无法定位证书。**任何向厂商索取的动作都不是本代理可执行或可建议的路径，已从旧建议中删除。
 
-**对产品事实的影响**：与第一轮判定一致——registry/知识库对 ET 75–100 的引用只限 1 页封面所述（型号 ET/BT 75/80/99.99/100K-G10、固件 010101、VDE-AR-N 4110/4120、无 test terminal 需另加连接端子板），不得外推 Annex 内容。新增可引用的封面事实：已验证仿真模型（DIgSILENT PowerFactory 2024，MD5 如上）——可登记为"存在但未公开"的关联事实。
+**对产品事实的影响**：registry/知识库对 ET 75–100 的引用只限 1 页封面所述（型号 ET/BT 75/80/99.99/100K-G10、固件 010101、VDE-AR-N 4110/4120、无 test terminal 需另加连接端子板），不得外推 Annex 内容。封面记载的 DIgSILENT PowerFactory 2024 与 MD5 只能作为封面自身事实引用，不能用来证明我们持有模型或定量包络。
 
-**发布注意（609）**：本报告不改变任何已托管资料的公开状态；若业主日后经人工渠道取得 Annex/仿真模型，按 609 原件托管+版本记录流程入库，公开范围按产品-资料关联判定。
+**发布注意（609）**：本报告不改变任何已托管资料的公开状态；若日后取得可核验的 Annex/仿真模型，按 609 原件托管+版本记录流程入库，公开范围按产品-资料关联判定。
 
 ## 8. 资源报告（AGENTS.md §0）
 
 - **Apify**：本轮 9 个 run（5× google-search-scraper、1× website-content-crawler、1× bing、1× yandex、1× ddg）全部 SUCCEEDED；对应 9 run + 9 dataset + 9 KVS + 9 request queue = **36 个远端资源全部 DELETE（204）**。费用合计约 $0.5 以内。今日 11:13/12:04 的其他 run 属并行批次所有，未触碰。
-- **本机**：全部下载与脚本在 `/tmp/sgs-annex-search`（含 Playwright venv），峰值约 90 MB；取证完成后**整目录已删除**。无浏览器实例、无常驻进程、无凭据落盘（Apify token 仅从 `~/.config/terravolt-builder/apify.env` 读入环境）。
-- **仓库改动**：仅新增本报告；未改 registry、代码、Woo 或生产；未推送其他文件（工作区中既有未跟踪的 `docs/research/2026-11-04-vendor-originals.md` 属第一轮批次，未纳入本分支提交）。
+- **2026-11-05 补充接口核查**：新增 `SXiKdiA2uCWwUZpiK`（SGS 页面）与 `VkHIIDmwfAshYprNg`（详情 URL 反查）两个 run。取证后删除两个 run，读回均为 not found；关联 dataset、KVS 与 request queue 随 run 删除，后续逐项读回均为 not found。没有保留远端数据。
+- **本机**：全部下载与脚本在 `/tmp/sgs-annex-search`（含 Playwright venv），峰值约 90 MB；取证完成后**整目录已删除**。本次新增的 SGS HTML/JS 临时文件已逐项删除，目录查询标签页已关闭。无浏览器实例、无常驻进程、无凭据落盘（Apify token 仅从 `~/.config/terravolt-builder/apify.env` 读入环境）。
+- **仓库改动**：第二轮新增本报告；本次补充修正两轮报告的证据边界并纳入第一轮报告，未改 registry、代码、Woo 或生产。
