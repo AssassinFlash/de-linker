@@ -67,6 +67,7 @@ async function workspaceFixture(t, mode, configureDom = () => {}) {
 		gate = null,
 		nextSession = session,
 		bootstraps = 0,
+		probes = 0,
 		reads = 0,
 		admittedScope = session.query_scope;
 	const store = {
@@ -100,9 +101,15 @@ async function workspaceFixture(t, mode, configureDom = () => {}) {
 		},
 		async bootstrap() {
 			bootstraps++;
-			const value = gate ? await gate.promise : nextSession;
+			if (gate) await gate.promise;
+			const value = nextSession;
 			admittedScope = value.query_scope;
 			return value;
+		},
+		async probeScope() {
+			probes++;
+			if (gate) await gate.promise;
+			return nextSession.query_scope;
 		},
 		isCurrentScope(scope) {
 			return scope === admittedScope;
@@ -157,15 +164,16 @@ async function workspaceFixture(t, mode, configureDom = () => {}) {
 		commits,
 		reads: () => reads,
 		boots: () => bootstraps,
+		probes: () => probes,
 		store,
 		root,
 		fixture,
 		async recheck(event = "focus") {
-			const before = bootstraps;
+			const before = probes;
 			await act(async () => window.dispatchEvent(new window.Event(event)));
 			await until(
 				() =>
-					bootstraps > before &&
+					probes > before &&
 					!document.querySelector(".lp-project").parentElement.hidden,
 			);
 		},
@@ -344,34 +352,36 @@ test("Journal workspaces show one task while retaining real input nodes, values 
 	);
 });
 
-test("failed storage and failed identity refresh preserve hidden edits until same owner returns", async (t) => {
+test("failed storage and a failed revalidation keep the open workspace editable behind a retryable notice", async (t) => {
 	const app = await workspaceFixture(t, "unavailable");
 	await enter(document.querySelector("textarea"), "UNSAVED SYNTHETIC NOTE");
 	await until(() =>
 		document.body.textContent.includes("Browser recovery is unavailable"),
 	);
 	const gate = app.startCheck();
+	const seen = app.probes();
 	await act(async () => window.dispatchEvent(new window.Event("focus")));
+	await until(() => app.probes() > seen);
 	const wrapper = document.querySelector(".lp-project").parentElement;
-	assert.equal(wrapper.hidden, true);
-	assert.equal(wrapper.hasAttribute("inert"), true);
+	// Stale-while-revalidate: the confirmed workspace stays visible and
+	// interactive while the probe is in flight.
+	assert.equal(wrapper.hidden, false);
+	assert.equal(wrapper.hasAttribute("inert"), false);
 	assert.equal(
 		document.querySelector("textarea").value,
 		"UNSAVED SYNTHETIC NOTE",
 	);
 	await act(async () => gate.reject(new Error("synthetic_offline")));
 	await until(() =>
-		document.body.textContent.includes("Your workspace could not be opened"),
+		document.body.textContent.includes(
+			"Your session could not be rechecked. Your edits are preserved.",
+		),
 	);
-	assert.equal(wrapper.hidden, true);
-	const retry = app.startCheck();
-	await act(async () =>
-		[...document.querySelectorAll("button")]
-			.find((button) => button.textContent === "Try again")
-			.click(),
+	assert.equal(wrapper.hidden, false);
+	assert.equal(wrapper.hasAttribute("inert"), false);
+	assert.ok(
+		!document.body.textContent.includes("Your workspace could not be opened"),
 	);
-	await act(async () => retry.resolve(session));
-	await until(() => !wrapper.hidden);
 	assert.equal(
 		document.querySelector("textarea").value,
 		"UNSAVED SYNTHETIC NOTE",
@@ -379,19 +389,39 @@ test("failed storage and failed identity refresh preserve hidden edits until sam
 	assert.ok(
 		document.body.textContent.includes("Browser recovery is unavailable"),
 	);
+	const retry = app.startCheck();
+	await act(async () =>
+		[...document.querySelectorAll("button")]
+			.find((button) => button.textContent === "Try again")
+			.click(),
+	);
+	await act(async () => retry.resolve());
+	await until(
+		() =>
+			!document.body.textContent.includes(
+				"Your session could not be rechecked",
+			),
+	);
+	assert.equal(wrapper.hidden, false);
+	assert.equal(
+		document.querySelector("textarea").value,
+		"UNSAVED SYNTHETIC NOTE",
+	);
 });
 
 test("a confirmed different identity removes the former editor and does not grant its project", async (t) => {
 	const app = await workspaceFixture(t, "available");
 	await enter(document.querySelector("textarea"), "PRIVATE SYNTHETIC DRAFT");
 	const gate = app.startCheck();
+	const seen = app.probes();
 	await act(async () => window.dispatchEvent(new window.Event("focus")));
-	assert.equal(
-		document.querySelector(".lp-project").parentElement.hidden,
-		true,
-	);
+	await until(() => app.probes() > seen);
+	const wrapper = document.querySelector(".lp-project").parentElement;
+	// The gate appears only after the probe confirms the change, never while
+	// the same-identity workspace is merely being rechecked.
+	assert.equal(wrapper.hidden, false);
 	app.changeIdentity();
-	await act(async () => gate.resolve(app.nextSession()));
+	await act(async () => gate.resolve());
 	await until(() =>
 		document.body.textContent.includes(
 			"This project could not be opened in the current session",
@@ -399,6 +429,117 @@ test("a confirmed different identity removes the former editor and does not gran
 	);
 	assert.equal(document.querySelector("textarea"), null);
 	assert.ok(!document.body.textContent.includes("PRIVATE SYNTHETIC DRAFT"));
+	assert.equal(wrapper.hidden, false);
+});
+
+test("same-scope revalidation causes zero disruption", async (t) => {
+	const app = await workspaceFixture(t, "available");
+	await enter(document.querySelector("textarea"), "WORK IN PROGRESS");
+	const wrapper = document.querySelector(".lp-project").parentElement;
+	const scroller = document.querySelector(".lp-project");
+	scroller.scrollTop = 240;
+	const textarea = document.querySelector("textarea");
+	const gate = app.startCheck();
+	const seen = app.probes();
+	Object.defineProperty(document, "visibilityState", {
+		value: "visible",
+		configurable: true,
+	});
+	try {
+		// focus and visibilitychange both arrive on one tab switch; they must
+		// coalesce into a single probe.
+		await act(async () => {
+			window.dispatchEvent(new window.Event("focus"));
+			document.dispatchEvent(new window.Event("visibilitychange"));
+		});
+		await until(() => app.probes() > seen);
+		assert.equal(wrapper.hidden, false);
+		assert.equal(wrapper.hasAttribute("inert"), false);
+		// The workspace stays interactive while the revalidation is in flight.
+		await enter(textarea, "STILL EDITABLE");
+		assert.equal(textarea.value, "STILL EDITABLE");
+		await act(async () => gate.resolve());
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 5));
+		});
+		assert.equal(app.probes() - seen, 1);
+		// No remount, no flicker, no scroll reset, no status chrome.
+		assert.ok(document.querySelector("textarea") === textarea);
+		assert.equal(scroller.scrollTop, 240);
+		assert.equal(wrapper.hidden, false);
+		assert.ok(!document.body.textContent.includes("Opening your workspace"));
+		assert.ok(
+			!document.body.textContent.includes(
+				"Your session could not be rechecked",
+			),
+		);
+		assert.ok(
+			!document.body.textContent.includes("Your workspace could not be opened"),
+		);
+	} finally {
+		delete document.visibilityState;
+	}
+});
+
+test("a confirmed scope change removes content with zero residue", async (t) => {
+	const fixture = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const { SessionBoundary } =
+		await import("../src/components/SessionBoundary.tsx");
+	const { useQueryClient } = await import("@tanstack/react-query");
+	const oldSession = { ...session, kind: "user" };
+	const newSession = { ...oldSession, query_scope: "7".repeat(64) };
+	let nextSession = oldSession,
+		cache = null,
+		renderedScope = null;
+	const client = {
+		invalidate() {},
+		async bootstrap() {
+			return nextSession;
+		},
+		async probeScope() {
+			return nextSession.query_scope;
+		},
+	};
+	function Track(props) {
+		cache = useQueryClient();
+		renderedScope = props.session.query_scope;
+		return React.createElement(
+			"output",
+			null,
+			"OWNER " + props.session.query_scope.slice(0, 4),
+		);
+	}
+	const root = createRoot(fixture.element);
+	t.after(() => fixture.dispose(root));
+	await act(async () =>
+		root.render(
+			React.createElement(SessionBoundary, { client }, (value) =>
+				React.createElement(Track, {
+					key: value.query_scope,
+					session: value,
+				}),
+			),
+		),
+	);
+	await until(() => renderedScope === oldSession.query_scope);
+	cache.setQueryData([oldSession.query_scope, "secret"], "PRIVATE DATA");
+	nextSession = newSession;
+	await act(async () => window.dispatchEvent(new window.Event("focus")));
+	await until(() => renderedScope === newSession.query_scope);
+	const wrapper = fixture.element.querySelector("output").parentElement;
+	assert.equal(wrapper.hidden, false);
+	assert.equal(wrapper.hasAttribute("inert"), false);
+	assert.equal(
+		cache.getQueryData([oldSession.query_scope, "secret"]),
+		undefined,
+	);
+	assert.ok(!document.body.textContent.includes("PRIVATE DATA"));
+	assert.ok(
+		document.body.textContent.includes(
+			"OWNER " + newSession.query_scope.slice(0, 4),
+		),
+	);
 });
 
 test("the actual project bar is observed after asynchronous draft opening and on resize", async (t) => {
@@ -627,6 +768,9 @@ test("a former identity's delayed creation cannot dispatch or restore cache and 
 					admittedScope = nextSession.query_scope;
 					return nextSession;
 				},
+				async probeScope() {
+					return nextSession.query_scope;
+				},
 				isCurrentScope(scope) {
 					return scope === admittedScope;
 				},
@@ -755,6 +899,11 @@ test("native confirmation fences pending creation, revision and navigation befor
 				nonceUrl: location.origin + "/nonce",
 				fetch: async (url) => {
 					if (String(url).endsWith("/nonce")) return new Response("abcdefghij");
+					if (String(url).endsWith("/scope"))
+						return response({
+							schema_version: 1,
+							query_scope: nextSession.query_scope,
+						});
 					if (String(url).endsWith("/bootstrap")) return response(nextSession);
 					if (String(url).endsWith("/recovery/scopes"))
 						return response({ schema_version: 1, scopes: [], next: null });

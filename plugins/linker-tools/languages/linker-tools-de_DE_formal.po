@@ -2362,6 +2362,14 @@ msgstr ""
 msgid "Your selection is sent to Genie."
 msgstr "Ihre Auswahl wird an Genie gesendet."
 
+#: build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/SessionBoundary.tsx
+msgid ""
+"Your session could not be rechecked. Your edits are preserved."
+msgstr ""
+"Ihre Sitzung konnte nicht erneut geprüft werden. Ihre Änderungen bleiben "
+"erhalten."
+
 #: build/genie.js build/hero.js
 msgid ""
 "Your solution draft changed. Check the lines and send the inquiry again."

@@ -2688,6 +2688,171 @@ def test_search_enumerates_documented_counts_and_keeps_budget_exhaustion_visible
     assert weighted["candidates"] == [] and weighted["work_used"] <= 400
 
 
+def test_search_enumerates_cited_parallel_stacks_and_keeps_missing_facts_visible(
+    feed: FixtureObject, workspace: Workspace
+) -> None:
+    basis = {
+        "products": [p for p in feed["products"] if p["id"] in [4107, 2090, 2092]],
+        "compatibility": feed["compatibility"],
+    }
+    demand: FixtureObject = {
+        "equipment_requirements": {
+            "schema_version": 1,
+            "grid_phase": 3,
+            "operating_mode": "grid_connected",
+            "pv_dc_kw": 10,
+            "required_usable_kwh": 15,
+            "required_discharge_ac_kw": 5,
+        }
+    }
+    store = EquipmentCandidateStore(workspace)
+
+    # Without a cited stacks_parallel_max fact the battery stays single-stack;
+    # the missing fact is a reported gap, never an invented parallel maximum.
+    single = json_object(
+        search_equipment(
+            demand, basis, EquipmentSearchLimits(work_budget=100), store, lambda: None
+        )
+    )
+    assert [
+        (row["selection"]["parallel_stacks"], row["selection"]["modules_per_stack"])
+        for row in single["candidates"]
+    ] == [(1, count) for count in (2, 3, 4, 5)]
+    assert single["coverage"]["gaps"]["stacks_parallel_max_missing"] == 1
+
+    stacked = copy.deepcopy(feed)
+    battery = next(p for p in stacked["products"] if p["id"] == 2090)
+    battery["figures"]["stacks_parallel_max"] = {
+        "value": "2",
+        "unit": None,
+        "citation": copy.deepcopy(
+            battery["figures"]["modules_per_stack_max"]["citation"]
+        ),
+    }
+    stacked = publication_feed(stacked, stacked["compatibility"])
+    stacked_basis = {
+        "products": [p for p in stacked["products"] if p["id"] in [4107, 2090, 2092]],
+        "compatibility": stacked["compatibility"],
+    }
+    multi = json_object(
+        search_equipment(
+            demand,
+            stacked_basis,
+            EquipmentSearchLimits(work_budget=100),
+            store,
+            lambda: None,
+        )
+    )
+    # Stacks ascend in the outer loop, documented counts stay inner, so
+    # single-stack coverage is spent first when the budget runs out.
+    assert [
+        (row["selection"]["parallel_stacks"], row["selection"]["modules_per_stack"])
+        for row in multi["candidates"]
+    ] == [(stacks, count) for stacks in (1, 2) for count in (2, 3, 4, 5)]
+    assert multi["completion"] == "exhausted_supported_domain"
+    assert "stacks_parallel_max_missing" not in multi["coverage"]["gaps"]
+    # The pair contract itself decides the accessory basis: BC2-HV1 is a
+    # per-system component, so a second stack does not double its quantity.
+    two_stack = json_object(
+        workspace.blobs.object(multi["candidates"][4]["assessment_sha256"])
+    )
+    bc2 = next(
+        line
+        for line in two_stack["provisional_bill_of_materials"]
+        if line["product_id"] == 2092
+    )
+    assert bc2["quantity"] == 1 and bc2["basis"] == "manufacturer_required_system"
+    partial = json_object(
+        search_equipment(
+            demand,
+            stacked_basis,
+            EquipmentSearchLimits(work_budget=4),
+            store,
+            lambda: None,
+        )
+    )
+    assert partial["completion"] == "budget_exhausted"
+    assert [row["selection"]["parallel_stacks"] for row in partial["candidates"]] == [
+        1,
+        1,
+        1,
+    ]
+
+
+def test_column_limit_condition_binds_count_only_not_stack_count(
+    feed: FixtureObject,
+) -> None:
+    basis = copy.deepcopy(feed)
+    battery = next(p for p in basis["products"] if p["id"] == 2090)
+    battery["figures"]["modules_per_stack_max"]["value"] = "6"
+    battery["figures"]["stacks_parallel_max"] = {
+        "value": "2",
+        "unit": None,
+        "citation": copy.deepcopy(
+            battery["figures"]["modules_per_stack_max"]["citation"]
+        ),
+    }
+    for pair in basis["compatibility"]["pairs"]:
+        if any(
+            accessory.get("model") == "^BC2-HV1$"
+            for accessory in pair.get("accessories", [])
+        ):
+            # The manufacturer condition constrains one column's battery count;
+            # stack legality is decided by the cited parallel_stacks fact. The
+            # control module is ordered once per stack, as the contract states.
+            pair.pop("modules", None)
+            pair["accessories"] = [
+                {**accessory, "per": "stack"} for accessory in pair["accessories"]
+            ]
+            pair["conditions"] = [
+                {
+                    "en": "The user manual limits one column to six batteries and names a battery expansion kit for higher capacity or a lower column (p. 79).",
+                    "de": "Das Benutzerhandbuch begrenzt eine Säule auf sechs Batterien und nennt ein Batterie-Erweiterungsset für mehr Kapazität oder eine niedrigere Säule (S. 79).",
+                }
+            ]
+    basis = publication_feed(basis, basis["compatibility"])
+    revisions = {
+        str(p["id"]): p["product_revision"]
+        for p in basis["products"]
+        if p["id"] in (4107, 2090, 2092)
+    }
+
+    def selection(count: int, stacks: int) -> FixtureObject:
+        return {
+            "equipment_selection": {
+                "schema_version": 1,
+                "inverter_product_id": 4107,
+                "battery_product_id": 2090,
+                "modules_per_stack": count,
+                "parallel_stacks": stacks,
+                "accessory_product_ids": [2092],
+                "grid_phase": 3,
+                "operating_mode": "grid_connected",
+                "pv_dc_kw": 10,
+                "required_usable_kwh": 10,
+                "required_discharge_ac_kw": 5,
+                "product_revisions": revisions,
+            }
+        }
+
+    six_two = json_object(assess_equipment(selection(6, 2), basis))
+    checks = {check["id"]: check for check in six_two["checks"]}
+    assert checks["manufacturer_pair"]["status"] == "satisfied"
+    assert checks["parallel_stacks"]["status"] == "satisfied"
+    assert checks["modules_per_stack"]["status"] == "satisfied"
+    bc2 = next(
+        line
+        for line in six_two["provisional_bill_of_materials"]
+        if line["product_id"] == 2092
+    )
+    assert bc2["quantity"] == 2 and bc2["basis"] == "manufacturer_required_stack"
+    seven_one = json_object(assess_equipment(selection(7, 1), basis))
+    pair_check = next(
+        check for check in seven_one["checks"] if check["id"] == "manufacturer_pair"
+    )
+    assert pair_check["status"] == "violated"
+
+
 def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
     feed: FixtureObject, engine: Engine, monkeypatch: pytest.MonkeyPatch
 ) -> None:

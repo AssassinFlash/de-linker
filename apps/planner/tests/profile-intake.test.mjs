@@ -278,6 +278,8 @@ async function rig(
 			const path = new URL(url).pathname;
 			calls.push(path);
 			if (path === "/nonce") return new Response("abcdefghij");
+			if (path.endsWith("/scope"))
+				return json({ schema_version: 1, query_scope: owner.query_scope });
 			if (path.endsWith("/bootstrap")) {
 				if (focusGate && cleanupStarted) await focusGate.promise;
 				return json(owner);
@@ -908,7 +910,7 @@ test("an interactive result is revealed once; background reads and interval pagi
 	assert.equal(document.activeElement, elsewhere);
 });
 
-test("same-identity verification consumes deferred completion before history can replay it", async (t) => {
+test("same-scope revalidation does not fence a deferred completion", async (t) => {
 	const gate = deferred();
 	const fixture = await rig(t, {
 		bodies: [command()],
@@ -919,12 +921,15 @@ test("same-identity verification consumes deferred completion before history can
 	await act(async () => button("Check or retry this import").click());
 	await until(() => button("Use this profile in the open draft"));
 	await act(async () => button("Use this profile in the open draft").click());
-	await until(
-		() =>
-			button("Import interval data") && !fixture.client.isCurrentScope(scope),
-	);
-	await act(async () => gate.resolve());
-	await until(() => fixture.client.isCurrentScope(scope));
+	// The focus dispatched inside the read's continuation runs one light
+	// probe; admission is never dropped, so the completion is not deferred
+	// behind a re-verification and no bootstrap is replayed.
+	await until(() => button("Import interval data"));
+	assert.equal(fixture.client.isCurrentScope(scope), true);
+	const bootstraps = fixture.calls.filter((path) =>
+		path.endsWith("/bootstrap"),
+	).length;
+	assert.ok(bootstraps >= 1);
 	assert.ok(
 		document.activeElement.textContent.startsWith(
 			"The profile is selected in the open draft.",
@@ -933,6 +938,7 @@ test("same-identity verification consumes deferred completion before history can
 	button("Undo").focus();
 	await act(async () => button("Undo").click());
 	assert.equal(document.activeElement, button("Undo"));
+	await act(async () => gate.resolve());
 });
 
 test("native withdrawal between render and effects prevents cached-result and error focus", async (t) => {
