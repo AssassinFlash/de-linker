@@ -66,6 +66,12 @@ WP-CLI, read-only, for the deploy smoke. It shares the wordlist, the prose
 extractor and the baseline (keyed `db:<post_type>:<slug>`), so a page added in
 the database cannot introduce vocabulary the repository gate would reject.
 
+It reads content through a bulk listing, and per row through
+`wp post get <id> --field=post_content` when the listing omits the column. A
+build that silently dropped the content would otherwise report a clean site
+for copy that is not clean, which is the one failure mode a smoke must not
+have: an unreadable row raises instead of counting as clean.
+
 The four legal pages (privacy policy, terms of sale and their German twins)
 are exempt from failing: real legal text is protected copy (owner ruling
 2026-10-25), and a statute or a translated standard names things this gate
@@ -408,10 +414,31 @@ def repo_hits(root: Path, terms: list[str]) -> list[Hit]:
     return hits
 
 
-def live_documents(wp: str) -> list[tuple[str, str, str]]:
-    """(post type, slug, content) of the published pages and posts, read-only."""
+def wp_run(wp: str, *args: str) -> str:
+    """Run one read-only WP-CLI command and return its stdout."""
     result = subprocess.run(
-        [
+        [wp, *args], check=False, capture_output=True, text=True
+    )
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"wp {' '.join(args[:2])} failed: {result.stderr.strip()}"
+        )
+    return result.stdout
+
+
+def live_documents(wp: str) -> list[tuple[str, str, str]]:
+    """(post type, slug, content) of the published pages and posts, read-only.
+
+    The bulk listing asks for `post_content` among its fields. Whether a given
+    WP-CLI build honours that for this column is not something this gate should
+    depend on — a build that silently drops the field would report a clean site
+    for copy that is not clean. Any row that comes back without the key is
+    fetched with `wp post get <id> --field=post_content`, which is the
+    documented, unambiguous path. A row whose content cannot be read raises
+    rather than counting as clean.
+    """
+    rows = json.loads(
+        wp_run(
             wp,
             "post",
             "list",
@@ -420,25 +447,32 @@ def live_documents(wp: str) -> list[tuple[str, str, str]]:
             "--fields=ID,post_name,post_type,post_content",
             "--format=json",
             "--posts_per_page=-1",
-        ],
-        check=False,
-        capture_output=True,
-        text=True,
+        )
+        or "[]"
     )
-    if result.returncode != 0:
-        raise RuntimeError(f"wp post list failed: {result.stderr.strip()}")
-    rows = json.loads(result.stdout or "[]")
     if not isinstance(rows, list):
         raise RuntimeError("wp post list did not return a list")
-    return [
-        (
-            str(row.get("post_type", "")),
-            str(row.get("post_name", "")),
-            str(row.get("post_content", "")),
+    documents: list[tuple[str, str, str]] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        if "post_content" in row:
+            content = str(row.get("post_content") or "")
+        else:
+            identifier = row.get("ID")
+            if identifier is None:
+                raise RuntimeError("wp post list returned a row without ID")
+            content = wp_run(
+                wp, "post", "get", str(identifier), "--field=post_content"
+            ).rstrip("\n")
+        documents.append(
+            (
+                str(row.get("post_type", "")),
+                str(row.get("post_name", "")),
+                content,
+            )
         )
-        for row in rows
-        if isinstance(row, dict)
-    ]
+    return documents
 
 
 def live_hits(documents: list[tuple[str, str, str]], terms: list[str]) -> list[Hit]:

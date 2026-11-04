@@ -806,7 +806,7 @@ test.each( [
 		expect(
 			await screen.findByText(
 				germanPage
-					? 'Der Status Ihrer Anfrage konnte nicht bestätigt werden. Bitte prüfen Sie ihn vor einem erneuten Versand.'
+					? 'Der Status Ihrer Anfrage konnte nicht bestätigt werden. Bitte prüfen Sie ihn vor einem erneuten Absenden.'
 					: 'The request status could not be confirmed. Please check before sending it again.'
 			)
 		).toBeInTheDocument();

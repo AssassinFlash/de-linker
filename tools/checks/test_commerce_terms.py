@@ -340,14 +340,49 @@ class LiveDatabaseTests(unittest.TestCase):
         self.assertTrue(all(commerce.is_legal(hit) for hit in hits))
 
     def test_the_wp_cli_invocation_is_read_only(self):
-        """No write verb may appear in the command the smoke runs."""
+        """No write verb may appear in the commands the smoke runs."""
         source = (CHECKS / "commerce-terms.py").read_text(encoding="utf-8")
-        start = source.index("def live_documents")
+        start = source.index("def wp_run")
         end = source.index("def live_hits")
         body = source[start:end]
-        self.assertIn('"post",\n            "list"', body)
-        for verb in ("update", "delete", "create", "edit"):
+        self.assertIn('"post",\n            "list",', body)
+        for verb in ("update", "delete", "create", "edit", "meta", "option"):
             self.assertNotIn(f'"{verb}"', body)
+
+    def test_a_row_without_the_content_field_is_fetched_individually(self):
+        """A build that drops the column must not be read as a clean site."""
+        with tempfile.TemporaryDirectory() as directory:
+            wp = Path(directory) / "wp"
+            wp.write_text(
+                "#!/bin/sh\n"
+                "case \"$2\" in\n"
+                "  list) echo '[{\"ID\":\"7\",\"post_name\":\"capability\",\"post_type\":\"page\"}]' ;;\n"
+                "  get) echo '<p>Before you order</p>' ;;\n"
+                "esac\n",
+                encoding="utf-8",
+            )
+            wp.chmod(0o755)
+            documents = commerce.live_documents(str(wp))
+        self.assertEqual(documents, [("page", "capability", "<p>Before you order</p>")])
+        self.assertEqual(
+            [hit.term for hit in commerce.live_hits(documents, commerce.load_terms())],
+            ["order*"],
+        )
+
+    def test_an_unreadable_row_fails_instead_of_counting_as_clean(self):
+        with tempfile.TemporaryDirectory() as directory:
+            wp = Path(directory) / "wp"
+            wp.write_text(
+                "#!/bin/sh\n"
+                "case \"$2\" in\n"
+                "  list) echo '[{\"post_name\":\"x\",\"post_type\":\"page\"}]' ;;\n"
+                "  get) exit 1 ;;\n"
+                "esac\n",
+                encoding="utf-8",
+            )
+            wp.chmod(0o755)
+            with self.assertRaises(RuntimeError):
+                commerce.live_documents(str(wp))
 
 
 if __name__ == "__main__":
