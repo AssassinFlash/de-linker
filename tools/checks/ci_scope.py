@@ -161,6 +161,8 @@ ENGINE_PLANNER_INPUTS = (
     "apps/planner/src/domain/",
     "apps/planner/src/data/",
     "apps/planner/src/contracts/",
+    # The engine country-rule tests pin this component's per-basis source dates.
+    "apps/planner/src/components/CountryRuleForm.tsx",
     "apps/planner/tests/fixtures/",
     "apps/planner/package.json",
     "apps/planner/package-lock.json",

@@ -1156,8 +1156,10 @@ reading dates, exact source text hashes, conditions and gaps are recorded in
 `docs/research/2026-10-23-modern-workbench/COUNTRY-EVIDENCE.md`. With the other
 required inputs present, a reading is evaluated only when `effective_from <=
 rule_date <= evidence_snapshot_date`; earlier or later dates return
-`outside_version`, while absent inputs still return `missing_inputs`. The rule
-date selects a source reading and does not change a project connection date;
+`outside_version`, while absent inputs still return `missing_inputs`. For DE,
+`power_kw` is required only when `de_before_control_test` is not false; after
+that stage, an outside-version date does not invent a missing-power error.
+The rule date selects a source reading and does not change a project connection date;
 the editor offers each basis's most recently verified source date directly.
 A date inside that range produces only a conditional reading of the retained
 source, not proof of the text that historically governed a project. Any result

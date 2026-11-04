@@ -354,6 +354,19 @@ def test_missing_inputs_precede_an_outside_version_date(country: str) -> None:
     assert {
         str(check["outcome"]) for check in cast(list[Object], review["checks"])
     } == {"missing_inputs"}
+    if country == "DE":
+        after_test = review_country_rules(
+            "DE",
+            rule_input(
+                "de_pv_installed",
+                rule_date="2030-01-01",
+                de_before_control_test=False,
+            ),
+        )
+        assert outcomes(after_test) == {
+            "de_eeg_control": "outside_version",
+            "de_eeg_export": "outside_version",
+        }
 
 
 def test_ui_checked_dates_match_the_current_engine_sources() -> None:
