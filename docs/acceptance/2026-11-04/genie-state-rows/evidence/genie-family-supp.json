@@ -1,0 +1,585 @@
+{
+ "driver": "genie",
+ "supplemental": true,
+ "base": "http://127.0.0.1:8916",
+ "observedAt": "2026-11-04T14:53:40.169Z",
+ "rows": [
+  {
+   "key": "genie:attachments-image-pdf:en:1440",
+   "driver": "genie",
+   "state": "attachments-image-pdf",
+   "lang": "en",
+   "width": 1440,
+   "url": "/genie/",
+   "observedAt": "2026-11-04T14:47:55.565Z",
+   "checks": [
+    {
+     "name": "attach control present",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "attachment chips rendered after selection",
+     "result": "pass",
+     "detail": "chips=2"
+    },
+    {
+     "name": "attachment turn answered (vision/pdf channel)",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "used a library PDF",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 4,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:attachments-image-pdf:en:1440.png",
+   "scope": "real image + real hosted PDF through the official deepseek vision channel (supplemental run)"
+  },
+  {
+   "key": "genie:save-pending-error-success:en:1440",
+   "driver": "genie",
+   "state": "save-pending-error-success",
+   "lang": "en",
+   "width": 1440,
+   "url": "/genie/",
+   "observedAt": "2026-11-04T14:48:04.691Z",
+   "checks": [
+    {
+     "name": "save affordance present on the card turn",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "one-shot save failure surfaced",
+     "result": "fail",
+     "detail": "error UI=false"
+    },
+    {
+     "name": "save retry reached the endpoint",
+     "result": "fail",
+     "detail": "solution requests=0"
+    },
+    {
+     "name": "save acknowledged in the panel",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 4,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:save-pending-error-success:en:1440.png",
+   "scope": "save flow with one injected failure then a real save request (supplemental run)"
+  },
+  {
+   "key": "genie:consumer-saved-solution-readback:en:1440",
+   "driver": "genie",
+   "state": "consumer-saved-solution-readback",
+   "lang": "en",
+   "width": 1440,
+   "url": "/genie/",
+   "observedAt": "2026-11-04T14:48:04.741Z",
+   "checks": [
+    {
+     "name": "saved solution acknowledged in the conversation",
+     "result": "fail",
+     "detail": "the saved-solution consumer readback in the configurator is evidenced by the project-brief saved-solution rows"
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:consumer-saved-solution-readback:en:1440.png",
+   "scope": "Genie-side save acknowledgement; configurator consumer on the project-brief rows (supplemental run)"
+  },
+  {
+   "key": "genie:product-add-retry:en:1440",
+   "driver": "genie",
+   "state": "product-add-retry",
+   "lang": "en",
+   "width": 1440,
+   "url": "/genie/",
+   "observedAt": "2026-11-04T14:48:04.791Z",
+   "checks": [
+    {
+     "name": "add affordance present",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "failed add surfaces recovery UI",
+     "result": "fail",
+     "detail": "error UI=false"
+    },
+    {
+     "name": "retry reached the draft endpoint",
+     "result": "pass",
+     "detail": "draft requests=0"
+    }
+   ],
+   "passed": 1,
+   "failed": 2,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:product-add-retry:en:1440.png",
+   "scope": "one-shot abort of the draft add, then the real retry (supplemental run)"
+  },
+  {
+   "key": "genie:ordinary-draft-failure-owner-isolation:en:1440",
+   "driver": "genie",
+   "state": "ordinary-draft-failure-owner-isolation",
+   "lang": "en",
+   "width": 1440,
+   "url": "/",
+   "observedAt": "2026-11-04T14:48:54.814Z",
+   "checks": [
+    {
+     "name": "failed send shows error UI",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "draft text preserved after failure",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "draft text restored after reload (scoped cache)",
+     "result": "fail",
+     "detail": ""
+    },
+    {
+     "name": "a different guest does not see the draft",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 3,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:ordinary-draft-failure-owner-isolation:en:1440.png",
+   "scope": "failure injected ×3 at the network boundary (supplemental run); the not-restored observation is finding D4"
+  },
+  {
+   "key": "genie:attachments-image-pdf:en:390",
+   "driver": "genie",
+   "state": "attachments-image-pdf",
+   "lang": "en",
+   "width": 390,
+   "url": "/genie/",
+   "observedAt": "2026-11-04T14:49:13.286Z",
+   "checks": [
+    {
+     "name": "attach control present",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "attachment chips rendered after selection",
+     "result": "pass",
+     "detail": "chips=2"
+    },
+    {
+     "name": "attachment turn answered (vision/pdf channel)",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "used a library PDF",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 4,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:attachments-image-pdf:en:390.png",
+   "scope": "real image + real hosted PDF through the official deepseek vision channel (supplemental run)"
+  },
+  {
+   "key": "genie:save-pending-error-success:en:390",
+   "driver": "genie",
+   "state": "save-pending-error-success",
+   "lang": "en",
+   "width": 390,
+   "url": "/genie/",
+   "observedAt": "2026-11-04T14:49:23.917Z",
+   "checks": [
+    {
+     "name": "save affordance present on the card turn",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "one-shot save failure surfaced",
+     "result": "fail",
+     "detail": "error UI=false"
+    },
+    {
+     "name": "save retry reached the endpoint",
+     "result": "fail",
+     "detail": "solution requests=0"
+    },
+    {
+     "name": "save acknowledged in the panel",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 4,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:save-pending-error-success:en:390.png",
+   "scope": "save flow with one injected failure then a real save request (supplemental run)"
+  },
+  {
+   "key": "genie:consumer-saved-solution-readback:en:390",
+   "driver": "genie",
+   "state": "consumer-saved-solution-readback",
+   "lang": "en",
+   "width": 390,
+   "url": "/genie/",
+   "observedAt": "2026-11-04T14:49:23.933Z",
+   "checks": [
+    {
+     "name": "saved solution acknowledged in the conversation",
+     "result": "fail",
+     "detail": "the saved-solution consumer readback in the configurator is evidenced by the project-brief saved-solution rows"
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:consumer-saved-solution-readback:en:390.png",
+   "scope": "Genie-side save acknowledgement; configurator consumer on the project-brief rows (supplemental run)"
+  },
+  {
+   "key": "genie:product-add-retry:en:390",
+   "driver": "genie",
+   "state": "product-add-retry",
+   "lang": "en",
+   "width": 390,
+   "url": "/genie/",
+   "observedAt": "2026-11-04T14:49:23.949Z",
+   "checks": [
+    {
+     "name": "add affordance present",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "failed add surfaces recovery UI",
+     "result": "fail",
+     "detail": "error UI=false"
+    },
+    {
+     "name": "retry reached the draft endpoint",
+     "result": "pass",
+     "detail": "draft requests=0"
+    }
+   ],
+   "passed": 1,
+   "failed": 2,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:product-add-retry:en:390.png",
+   "scope": "one-shot abort of the draft add, then the real retry (supplemental run)"
+  },
+  {
+   "key": "genie:suppdriver:en:390",
+   "error": "locator.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('.linker-genie-app__input').first()\n"
+  },
+  {
+   "key": "genie:attachments-image-pdf:de:1440",
+   "driver": "genie",
+   "state": "attachments-image-pdf",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:50:56.249Z",
+   "checks": [
+    {
+     "name": "attach control present",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "attachment chips rendered after selection",
+     "result": "pass",
+     "detail": "chips=2"
+    },
+    {
+     "name": "attachment turn answered (vision/pdf channel)",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "used a library PDF",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 4,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:attachments-image-pdf:de:1440.png",
+   "scope": "real image + real hosted PDF through the official deepseek vision channel (supplemental run)"
+  },
+  {
+   "key": "genie:save-pending-error-success:de:1440",
+   "driver": "genie",
+   "state": "save-pending-error-success",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:51:06.877Z",
+   "checks": [
+    {
+     "name": "save affordance present on the card turn",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "one-shot save failure surfaced",
+     "result": "fail",
+     "detail": "error UI=false"
+    },
+    {
+     "name": "save retry reached the endpoint",
+     "result": "fail",
+     "detail": "solution requests=0"
+    },
+    {
+     "name": "save acknowledged in the panel",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 4,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:save-pending-error-success:de:1440.png",
+   "scope": "save flow with one injected failure then a real save request (supplemental run)"
+  },
+  {
+   "key": "genie:consumer-saved-solution-readback:de:1440",
+   "driver": "genie",
+   "state": "consumer-saved-solution-readback",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:51:06.908Z",
+   "checks": [
+    {
+     "name": "saved solution acknowledged in the conversation",
+     "result": "fail",
+     "detail": "the saved-solution consumer readback in the configurator is evidenced by the project-brief saved-solution rows"
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:consumer-saved-solution-readback:de:1440.png",
+   "scope": "Genie-side save acknowledgement; configurator consumer on the project-brief rows (supplemental run)"
+  },
+  {
+   "key": "genie:product-add-retry:de:1440",
+   "driver": "genie",
+   "state": "product-add-retry",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:51:06.941Z",
+   "checks": [
+    {
+     "name": "add affordance present",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "failed add surfaces recovery UI",
+     "result": "fail",
+     "detail": "error UI=false"
+    },
+    {
+     "name": "retry reached the draft endpoint",
+     "result": "pass",
+     "detail": "draft requests=0"
+    }
+   ],
+   "passed": 1,
+   "failed": 2,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:product-add-retry:de:1440.png",
+   "scope": "one-shot abort of the draft add, then the real retry (supplemental run)"
+  },
+  {
+   "key": "genie:ordinary-draft-failure-owner-isolation:de:1440",
+   "driver": "genie",
+   "state": "ordinary-draft-failure-owner-isolation",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/",
+   "observedAt": "2026-11-04T14:51:57.222Z",
+   "checks": [
+    {
+     "name": "failed send shows error UI",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "draft text preserved after failure",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "draft text restored after reload (scoped cache)",
+     "result": "fail",
+     "detail": ""
+    },
+    {
+     "name": "a different guest does not see the draft",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 3,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:ordinary-draft-failure-owner-isolation:de:1440.png",
+   "scope": "failure injected ×3 at the network boundary (supplemental run); the not-restored observation is finding D4"
+  },
+  {
+   "key": "genie:attachments-image-pdf:de:390",
+   "driver": "genie",
+   "state": "attachments-image-pdf",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:52:15.814Z",
+   "checks": [
+    {
+     "name": "attach control present",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "attachment chips rendered after selection",
+     "result": "pass",
+     "detail": "chips=2"
+    },
+    {
+     "name": "attachment turn answered (vision/pdf channel)",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "used a library PDF",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 4,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:attachments-image-pdf:de:390.png",
+   "scope": "real image + real hosted PDF through the official deepseek vision channel (supplemental run)"
+  },
+  {
+   "key": "genie:save-pending-error-success:de:390",
+   "driver": "genie",
+   "state": "save-pending-error-success",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:52:26.444Z",
+   "checks": [
+    {
+     "name": "save affordance present on the card turn",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "one-shot save failure surfaced",
+     "result": "fail",
+     "detail": "error UI=false"
+    },
+    {
+     "name": "save retry reached the endpoint",
+     "result": "fail",
+     "detail": "solution requests=0"
+    },
+    {
+     "name": "save acknowledged in the panel",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 4,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:save-pending-error-success:de:390.png",
+   "scope": "save flow with one injected failure then a real save request (supplemental run)"
+  },
+  {
+   "key": "genie:consumer-saved-solution-readback:de:390",
+   "driver": "genie",
+   "state": "consumer-saved-solution-readback",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:52:26.459Z",
+   "checks": [
+    {
+     "name": "saved solution acknowledged in the conversation",
+     "result": "fail",
+     "detail": "the saved-solution consumer readback in the configurator is evidenced by the project-brief saved-solution rows"
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:consumer-saved-solution-readback:de:390.png",
+   "scope": "Genie-side save acknowledgement; configurator consumer on the project-brief rows (supplemental run)"
+  },
+  {
+   "key": "genie:product-add-retry:de:390",
+   "driver": "genie",
+   "state": "product-add-retry",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:52:26.475Z",
+   "checks": [
+    {
+     "name": "add affordance present",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "failed add surfaces recovery UI",
+     "result": "fail",
+     "detail": "error UI=false"
+    },
+    {
+     "name": "retry reached the draft endpoint",
+     "result": "pass",
+     "detail": "draft requests=0"
+    }
+   ],
+   "passed": 1,
+   "failed": 2,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:product-add-retry:de:390.png",
+   "scope": "one-shot abort of the draft add, then the real retry (supplemental run)"
+  },
+  {
+   "key": "genie:suppdriver:de:390",
+   "error": "locator.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('.linker-genie-app__input').first()\n"
+  }
+ ],
+ "modelBudget": "1 vision attachment turn + 1 product turn per language (supplemental run)"
+}

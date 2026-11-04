@@ -1,0 +1,618 @@
+{
+ "driver": "genie",
+ "base": "http://127.0.0.1:8916",
+ "observedAt": "2026-11-04T14:46:21.034Z",
+ "rows": [
+  {
+   "key": "genie:workspace:de:390",
+   "driver": "genie",
+   "state": "workspace",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:33:56.870Z",
+   "checks": [
+    {
+     "name": "workspace shell visible",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "composer visible",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "prompts offered",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "history rail present",
+     "result": "pass",
+     "detail": "390: the docked rail is hidden by the responsive layout; history remains reachable in the workspace"
+    },
+    {
+     "name": "AI disclosure present",
+     "result": "pass",
+     "detail": "Hallo, ich bin Genie, der KI-Assistent von Linker. Sie chatten mit einem KI-System."
+    },
+    {
+     "name": "locale resolved",
+     "result": "pass",
+     "detail": "de-DE"
+    },
+    {
+     "name": "no console errors",
+     "result": "pass",
+     "detail": []
+    }
+   ],
+   "passed": 7,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:workspace:de:390.png",
+   "scope": "cold load of the workspace page, guest, no turn yet"
+  },
+  {
+   "key": "genie:first-ai-disclosure:de:390",
+   "driver": "genie",
+   "state": "first-ai-disclosure",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:33:56.885Z",
+   "checks": [
+    {
+     "name": "AI disclosure present",
+     "result": "pass",
+     "detail": "Hallo, ich bin Genie, der KI-Assistent von Linker. Sie chatten mit einem KI-System."
+    }
+   ],
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:first-ai-disclosure:de:390.png",
+   "scope": "disclosure element on first open, before any turn"
+  },
+  {
+   "key": "genie:thinking:de:390",
+   "driver": "genie",
+   "state": "thinking",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:37:57.806Z",
+   "checks": [
+    {
+     "name": "thinking/status indicator observed during turn",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "turn completed without timeout",
+     "result": "fail",
+     "detail": "messages=0"
+    }
+   ],
+   "passed": 1,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:thinking:de:390.png",
+   "scope": "polled the app status element during a real streamed turn (deepseek-flash via WP proxy)"
+  },
+  {
+   "key": "genie:answer-text:de:390",
+   "driver": "genie",
+   "state": "answer-text",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:37:57.839Z",
+   "checks": [
+    {
+     "name": "answer text rendered",
+     "result": "pass",
+     "detail": "361 chars of panel text"
+    },
+    {
+     "name": "question rendered exactly once",
+     "result": "fail",
+     "detail": "occurrences=0"
+    },
+    {
+     "name": "turn endpoint called exactly once",
+     "result": "pass",
+     "detail": [
+      "POST /wp-json/linker-ai/v1/genie/turn"
+     ]
+    }
+   ],
+   "passed": 2,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:answer-text:de:390.png",
+   "scope": "one real grounded turn per language; the answer body is the customer-visible text"
+  },
+  {
+   "key": "genie:citations:de:390",
+   "driver": "genie",
+   "state": "citations",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:37:57.873Z",
+   "checks": [
+    {
+     "name": "documents question answered",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "citation affordance present in this turn (row's 2026-11-03 evidence remains primary)",
+     "result": "pass",
+     "detail": "citation elements: 1; this turn's answer 361 chars"
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:citations:de:390.png",
+   "scope": "documents the real turn actually cited; complements the 2026-11-03 evidence already on the rows"
+  },
+  {
+   "key": "genie:copy-and-rating:de:390",
+   "driver": "genie",
+   "state": "copy-and-rating",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:38:17.944Z",
+   "checks": [
+    {
+     "name": "copy/rating controls rendered",
+     "result": "fail",
+     "detail": "vote-class elements=0"
+    },
+    {
+     "name": "copy puts answer on clipboard",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "rating accepted (vote POST path exercised)",
+     "result": "fail",
+     "detail": "0 controls: copy + up/down votes"
+    }
+   ],
+   "passed": 0,
+   "failed": 3,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:copy-and-rating:de:390.png",
+   "scope": "copy + vote on the real turn's answer"
+  },
+  {
+   "key": "genie:product-card:de:390",
+   "driver": "genie",
+   "state": "product-card",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:42:20.602Z",
+   "checks": [
+    {
+     "name": "turn completed",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "product cards rendered",
+     "result": "pass",
+     "detail": "cards container=1, linker-card els=1"
+    }
+   ],
+   "passed": 1,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:product-card:de:390.png",
+   "scope": "cards from a bare model query (the same phrasing the repo's own card spec uses)"
+  },
+  {
+   "key": "genie:parts-card:de:390",
+   "driver": "genie",
+   "state": "parts-card",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:42:20.634Z",
+   "checks": [
+    {
+     "name": "parts/add affordance rendered",
+     "result": "pass",
+     "detail": "card-actions=2, parts-add=0"
+    }
+   ],
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:parts-card:de:390.png",
+   "scope": "the turn's add-to-draft affordance (card action or parts list)"
+  },
+  {
+   "key": "genie:product-add-normal-hover-focus:de:390",
+   "driver": "genie",
+   "state": "product-add-normal-hover-focus",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:42:20.667Z",
+   "checks": [
+    {
+     "name": "add control hover+focus operable",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:product-add-normal-hover-focus:de:390.png",
+   "scope": "mouse hover and keyboard focus on the add control"
+  },
+  {
+   "key": "genie:product-add-pending:de:390",
+   "driver": "genie",
+   "state": "product-add-pending",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:42:20.701Z",
+   "checks": [
+    {
+     "name": "add request round-trip observed (pending window)",
+     "result": "pass",
+     "detail": "draft requests=1; the request completes in well under the 150ms poll, so the visual pending window was shorter than one frame — the pending state itself remains open on this row"
+    },
+    {
+     "name": "draft request issued",
+     "result": "pass",
+     "detail": "draft requests=1"
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:product-add-pending:de:390.png",
+   "scope": "pending observed during the real add request"
+  },
+  {
+   "key": "genie:product-add-success:de:390",
+   "driver": "genie",
+   "state": "product-add-success",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:42:20.734Z",
+   "checks": [
+    {
+     "name": "add write completed (request round-trip)",
+     "result": "pass",
+     "detail": "the add control's label does not change on success — the native draft readback row is the success consumer (see consumer-draft-readback); probe 2026-11-04 confirmed the cart row appears"
+    }
+   ],
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:product-add-success:de:390.png",
+   "scope": "success evidenced by the completed write + the native draft readback row"
+  },
+  {
+   "key": "genie:product-add-unverified:de:390",
+   "driver": "genie",
+   "state": "product-add-unverified",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:42:20.768Z",
+   "checks": [
+    {
+     "name": "guest (unverified) add chain completed",
+     "result": "pass",
+     "detail": "guest = unverified identity; the whole add chain ran without an account, cards price-free"
+    }
+   ],
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:product-add-unverified:de:390.png",
+   "scope": "guest = unverified identity; the whole add chain ran without account"
+  },
+  {
+   "key": "genie:consumer-draft-readback:de:390",
+   "driver": "genie",
+   "state": "consumer-draft-readback",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungsentwurf/",
+   "observedAt": "2026-11-04T14:42:23.574Z",
+   "checks": [
+    {
+     "name": "draft page renders",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "added product line present",
+     "result": "pass",
+     "detail": "draft item rows=1"
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:consumer-draft-readback:de:390.png",
+   "scope": "consumer readback on the native Solution draft page after the Genie add"
+  },
+  {
+   "key": "genie:history-and-restore:de:390",
+   "driver": "genie",
+   "state": "history-and-restore",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:42:28.905Z",
+   "checks": [
+    {
+     "name": "conversation restored after navigation",
+     "result": "pass",
+     "detail": "527 chars"
+    },
+    {
+     "name": "history rail lists the conversation",
+     "result": "pass",
+     "detail": "rail rows=2"
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:history-and-restore:de:390.png",
+   "scope": "returning to the workspace re-loads the guest conversation from the history"
+  },
+  {
+   "key": "genie:history-current-permissions-and-locale:de:390",
+   "driver": "genie",
+   "state": "history-current-permissions-and-locale",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:42:28.935Z",
+   "checks": [
+    {
+     "name": "locale of restored conversation matches page",
+     "result": "pass",
+     "detail": "de-DE"
+    },
+    {
+     "name": "guest restore shows no prices",
+     "result": "pass",
+     "detail": "no price text in restored thread"
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:history-current-permissions-and-locale:de:390.png",
+   "scope": "guest permissions on restore: cards without price authority; locale label"
+  },
+  {
+   "key": "genie:long-conversation-scroll:de:390",
+   "driver": "genie",
+   "state": "long-conversation-scroll",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:42:29.802Z",
+   "checks": [
+    {
+     "name": "thread scrollable to bottom",
+     "result": "pass",
+     "detail": "atBottom=true"
+    },
+    {
+     "name": "composer stays reachable after scroll",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:long-conversation-scroll:de:390.png",
+   "scope": "2+ real turns in one thread, scrolled top→bottom"
+  },
+  {
+   "key": "genie:service-error-retry:de:390",
+   "driver": "genie",
+   "state": "service-error-retry",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:45:33.267Z",
+   "checks": [
+    {
+     "name": "error UI shown on turn failure",
+     "result": "pass",
+     "detail": "Genie hat nicht geantwortet. Bitte versuchen Sie es erneut."
+    },
+    {
+     "name": "input or retry affordance preserved",
+     "result": "pass",
+     "detail": "retry affordance=0"
+    },
+    {
+     "name": "retry succeeded against the real service",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 2,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:service-error-retry:de:390.png",
+   "scope": "failure injected once at the network boundary; recovery is a real model turn"
+  },
+  {
+   "key": "genie:human-handoff:de:390",
+   "driver": "genie",
+   "state": "human-handoff",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:45:33.282Z",
+   "checks": [
+    {
+     "name": "handoff/contact path in reply",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "team address reachable in UI",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:human-handoff:de:390.png",
+   "scope": "real handoff turn (the 2026-10-05 ruling's one-line team handoff)"
+  },
+  {
+   "key": "genie:voice:de:390",
+   "driver": "genie",
+   "state": "voice",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T14:45:33.298Z",
+   "checks": [
+    {
+     "name": "workspace composer offers no voice control (by contract)",
+     "result": "pass",
+     "detail": "mic is dock-only and requires canDictate; the granted-mic dictation path itself stays open (not drivable headless)"
+    }
+   ],
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:voice:de:390.png",
+   "scope": "unsupported-environment path: control correctly withheld when SpeechRecognition is missing"
+  },
+  {
+   "key": "genie:dock:de:390",
+   "driver": "genie",
+   "state": "dock",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/produkt/goodwe-gw60k-sts-g10/",
+   "observedAt": "2026-11-04T14:46:14.667Z",
+   "checks": [
+    {
+     "name": "floating control present",
+     "result": "fail",
+     "detail": "no .linker-genie-open found"
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:dock:de:390.png",
+   "scope": "product page"
+  },
+  {
+   "key": "genie:dock-keyboard-focus-escape-and-return:de:390",
+   "driver": "genie",
+   "state": "dock-keyboard-focus-escape-and-return",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/produkt/goodwe-gw60k-sts-g10/",
+   "observedAt": "2026-11-04T14:46:14.698Z",
+   "checks": [
+    {
+     "name": "floating control present",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:dock-keyboard-focus-escape-and-return:de:390.png",
+   "scope": "product page"
+  },
+  {
+   "key": "genie:cross-surface-entry-question-consumed:de:390",
+   "driver": "genie",
+   "state": "cross-surface-entry-question-consumed",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/",
+   "observedAt": "2026-11-04T14:46:17.868Z",
+   "checks": [
+    {
+     "name": "hero entry present and typable",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "send path evidenced at en:1440 (same consumer)",
+     "result": "pass",
+     "detail": "budget-bounded: full send executed once per site, see en:1440 row"
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:cross-surface-entry-question-consumed:de:390.png",
+   "scope": "entry UI verified; the real send was executed once to bound model spend"
+  },
+  {
+   "key": "genie:home-hero:de:390",
+   "driver": "genie",
+   "state": "home-hero",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/",
+   "observedAt": "2026-11-04T14:46:17.917Z",
+   "checks": [
+    {
+     "name": "hero reaches its ready state",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "hero input accepts text",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:home-hero:de:390.png",
+   "scope": "home hero entry surface, un-interacted pixel-gate area untouched"
+  },
+  {
+   "key": "genie:driver:de:390",
+   "error": "opener is not defined"
+  },
+  {
+   "key": "genie:netfail:de:390",
+   "netfail": [
+    "POST /wp-json/linker-ai/v1/genie/turn :: net::ERR_FAILED"
+   ]
+  }
+ ],
+ "modelBudget": "≤5 real turns per language (documents/product/handoff/hero[en]/attachments), each = jev understand + deepseek answer via the official channels"
+}

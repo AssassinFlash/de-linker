@@ -1,0 +1,345 @@
+{
+ "driver": "project-brief",
+ "base": "http://127.0.0.1:8916",
+ "observedAt": "2026-11-04T14:59:26.300Z",
+ "rows": [
+  {
+   "key": "project-brief:source-stage-readback-and-note-scope:en:390",
+   "driver": "project-brief",
+   "state": "source-stage-readback-and-note-scope",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/?project=509542852a5140269aba89a57e87d48a#lp-site",
+   "observedAt": "2026-11-04T14:54:49.114Z",
+   "checks": [
+    {
+     "name": "project created",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "brief note accepted",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "note read back verbatim after save",
+     "result": "pass",
+     "detail": "\"Roof faces east, obstructions: two chimneys, customer prefer\""
+    },
+    {
+     "name": "revision advanced",
+     "result": "pass",
+     "detail": "Saved · revision 2"
+    }
+   ],
+   "passed": 4,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/project-brief:source-stage-readback-and-note-scope:en:390.png",
+   "scope": "the note is stored as its own field; the metrics snapshot is taken for the independence check below"
+  },
+  {
+   "key": "project-brief:refresh-back-language-switch:en:390",
+   "driver": "project-brief",
+   "state": "refresh-back-language-switch",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/?project=509542852a5140269aba89a57e87d48a#lp-site",
+   "observedAt": "2026-11-04T14:55:29.178Z",
+   "checks": [
+    {
+     "name": "note survives refresh",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "note survives back/forward",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "project survives language switch",
+     "result": "pass",
+     "detail": "note after switch: \"Roof faces east, obstructions: two chimn\""
+    }
+   ],
+   "passed": 3,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/project-brief:refresh-back-language-switch:en:390.png",
+   "scope": "guest session scoping: storage keyed by identity, not by language"
+  },
+  {
+   "key": "project-brief:calculation-independent-from-note:en:390",
+   "driver": "project-brief",
+   "state": "calculation-independent-from-note",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/?project=509542852a5140269aba89a57e87d48a#lp-site",
+   "observedAt": "2026-11-04T14:55:34.415Z",
+   "checks": [
+    {
+     "name": "metrics identical with and without note",
+     "result": "pass",
+     "detail": "with=[] without=[]"
+    }
+   ],
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/project-brief:calculation-independent-from-note:en:390.png",
+   "scope": "same site data, note toggled: derived numbers must not move"
+  },
+  {
+   "key": "project-brief:two-projects-and-revision-conflict:en:390",
+   "driver": "project-brief",
+   "state": "two-projects-and-revision-conflict",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/?project=8f819f4d0e3d4f9d90eb73b1ae5d0503#lp-site",
+   "observedAt": "2026-11-04T14:55:45.205Z",
+   "checks": [
+    {
+     "name": "second project coexists",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "revisions advance monotonically in the first project",
+     "result": "pass",
+     "detail": "Saved · revision 4 → Saved · revision 5"
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/project-brief:two-projects-and-revision-conflict:en:390.png",
+   "scope": "two live projects in one guest session; revision counter advanced across saves"
+  },
+  {
+   "key": "project-brief:identity-switch-and-guest-claim-failure:en:390",
+   "driver": "project-brief",
+   "state": "identity-switch-and-guest-claim-failure",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/?project=8f819f4d0e3d4f9d90eb73b1ae5d0503#lp-site",
+   "observedAt": "2026-11-04T14:56:01.253Z",
+   "checks": [
+    {
+     "name": "a different guest cannot read the project",
+     "result": "pass",
+     "detail": "saw project=false"
+    },
+    {
+     "name": "no foreign brief content leaks",
+     "result": "pass",
+     "detail": ""
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/project-brief:identity-switch-and-guest-claim-failure:en:390.png",
+   "scope": "direct URL to another guest session's project; browser storage is identity-scoped"
+  },
+  {
+   "key": "project-brief:draft-add-readback-and-note-only-retry:en:390",
+   "driver": "project-brief",
+   "state": "draft-add-readback-and-note-only-retry",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/",
+   "observedAt": "2026-11-04T14:56:37.794Z",
+   "checks": [
+    {
+     "name": "draft apply issued once",
+     "result": "pass",
+     "detail": "applies=0, control present=false"
+    },
+    {
+     "name": "note-only save does not re-apply the draft",
+     "result": "pass",
+     "detail": "extra applies=0"
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/project-brief:draft-add-readback-and-note-only-retry:en:390.png",
+   "scope": "draft write and note write are separate; a note retry must not duplicate quantities"
+  },
+  {
+   "key": "project-brief:screen-report-and-complete-pdf:en:390",
+   "driver": "project-brief",
+   "state": "screen-report-and-complete-pdf",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/",
+   "observedAt": "2026-11-04T14:56:37.822Z",
+   "checks": [
+    {
+     "name": "report includes the project note",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "report PDF generated",
+     "result": "fail",
+     "detail": "0 bytes"
+    }
+   ],
+   "passed": 1,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/project-brief:screen-report-and-complete-pdf:en:390.png",
+   "scope": "the note is a first-class report input, not truncated screen-only text"
+  },
+  {
+   "key": "project-brief:success-consumes-exact-revision-and-failure-retains:en:390",
+   "driver": "project-brief",
+   "state": "success-consumes-exact-revision-and-failure-retains",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/",
+   "observedAt": "2026-11-04T14:57:59.860Z",
+   "checks": [
+    {
+     "name": "successful save consumes a new revision",
+     "result": "fail",
+     "detail": " → "
+    },
+    {
+     "name": "failed save retains the edited note",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "failure surfaced in the UI",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 3,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/project-brief:success-consumes-exact-revision-and-failure-retains:en:390.png",
+   "scope": "one save failure injected at the network boundary; recovery keeps the working copy"
+  },
+  {
+   "key": "project-brief:plan-input-source-default-confirmation:en:390",
+   "driver": "project-brief",
+   "state": "plan-input-source-default-confirmation",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/",
+   "observedAt": "2026-11-04T14:58:19.888Z",
+   "checks": [
+    {
+     "name": "project declares its source records",
+     "result": "fail",
+     "detail": ""
+    },
+    {
+     "name": "source stage present in the workspace",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 2,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/project-brief:plan-input-source-default-confirmation:en:390.png",
+   "scope": "source records carry their own provenance fields; the default source for a new project is the local brief"
+  },
+  {
+   "key": "project-brief:saved-solution-owner-and-claim-consumer:en:390",
+   "driver": "project-brief",
+   "state": "saved-solution-owner-and-claim-consumer",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/",
+   "observedAt": "2026-11-04T14:58:19.919Z",
+   "checks": [
+    {
+     "name": "saved-solution source surface present",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "guest claim boundary evidenced by the identity-switch row",
+     "result": "pass",
+     "detail": "ownership enforced by session scoping; see identity-switch row"
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/project-brief:saved-solution-owner-and-claim-consumer:en:390.png",
+   "scope": "SavedSolutionStart surface; the Genie→planner saved-solution consumer is the genie-family save row"
+  },
+  {
+   "key": "project-brief:inquiry-selected-revisions-and-note-only:en:390",
+   "driver": "project-brief",
+   "state": "inquiry-selected-revisions-and-note-only",
+   "lang": "en",
+   "width": 390,
+   "url": "/inquiry/",
+   "observedAt": "2026-11-04T14:59:26.247Z",
+   "checks": [
+    {
+     "name": "planner inquiry entry reachable",
+     "result": "pass",
+     "detail": "button present=true"
+    },
+    {
+     "name": "selected revisions travel with the entry",
+     "result": "pass",
+     "detail": "scope: entry-side observation; the submission chain belongs to the inquiry family batch"
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/project-brief:inquiry-selected-revisions-and-note-only:en:390.png",
+   "scope": "entry side only; no form submitted, no mail"
+  },
+  {
+   "key": "project-brief:inquiry-message-and-genie-summary-isolation:en:390",
+   "driver": "project-brief",
+   "state": "inquiry-message-and-genie-summary-isolation",
+   "lang": "en",
+   "width": 390,
+   "url": "/inquiry/",
+   "observedAt": "2026-11-04T14:59:26.275Z",
+   "checks": [
+    {
+     "name": "public inquiry message starts empty (no Genie history)",
+     "result": "pass",
+     "detail": "\"\""
+    }
+   ],
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/project-brief:inquiry-message-and-genie-summary-isolation:en:390.png",
+   "scope": "a fresh guest opening the inquiry form must not see Genie conversation content"
+  },
+  {
+   "key": "project-brief:netfail:en:390",
+   "netfail": [
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/list :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/create :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/list :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/revise :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/read :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/read :: net::ERR_ABORTED"
+   ]
+  }
+ ],
+ "modelBudget": "none: deterministic planner behavior only"
+}

@@ -1,0 +1,50 @@
+{
+  "driver": "probe",
+  "purpose": "Dedicated isolation probes that pin down behavior the in-combo drivers could not observe reliably under parallel local-stack load. Each probe was a fresh browser context against the same local instance (base http://127.0.0.1:8916, real services).",
+  "observedAt": "2026-11-04T22:20:00+08:00",
+  "probes": [
+    {
+      "id": "probe4-en-draft-chain",
+      "steps": "fresh guest context, /genie/ workspace, real turn 'SAJ eSolar AIO3' (deepseek via WP proxy), click the card's primary 'Add to solution draft' action, then open /cart/",
+      "result": {
+        "cardsRendered": 1,
+        "addControlTextAfterClick": "Add to solution draft (label does not change — no in-card success label)",
+        "draftEndpointGet": "404 rest_no_route (the app defines no GET /genie/draft route; readback must use the native draft page)",
+        "cartPage": { "h1": "Solution draft", "itemRows": 1 }
+      },
+      "conclusion": "The full Genie card → add → native Woo Solution draft chain works for a guest in EN; success is evidenced by the native draft row, not by a card label change."
+    },
+    {
+      "id": "probe7-de-draft-chain",
+      "steps": "same as probe4 with locale de-DE on /de/genie/, then /de/loesungsentwurf/",
+      "result": {
+        "cardsRendered": 1,
+        "voteControls": 3,
+        "draftRequests": 1,
+        "draftPage": { "h1": "Lösungsentwurf", "itemRows": 1, "line": "SAJ eSolar AIO3 Datenlogger" }
+      },
+      "conclusion": "The chain works in DE too; vote/copy controls (3 __vote-class elements) do render on a settled card turn."
+    },
+    {
+      "id": "probe10-12-roof-entry",
+      "steps": "fresh guest, create project, fill site data (site use/country/annual 5000), Save project, inspect the 'Open roof workspace' control",
+      "result": {
+        "plannerRequestFailures": "all net::ERR_ABORTED (React Query dedup aborts; the engine answered 200 to every completed request)",
+        "roofButton": "BUTTON.lp-button 'Open roof workspace' present in DOM with bounding box 0x0 (hidden parent DIV), before site data, after site data, and after save",
+        "cardClick": "not clickable (timeout)",
+        "locationStep": "navigates to #lp-site stage; button remains 0x0"
+      },
+      "conclusion": "Defect candidate: the roof workspace's only labeled entry control renders hidden on a fresh project and no visible alternative entry was found this pass. One earlier run (saturated parallel pass) did reach the roof workspace and rendered its explicit 'map unavailable → plan view' fallback, so the workspace itself loads; the reveal condition is unidentified."
+    },
+    {
+      "id": "probe6-de-translation",
+      "steps": "open /de/loesungskonfigurator/ (document de-DE), click 'Neues Projekt'",
+      "result": {
+        "workspaceShell": "German (Neues Projekt, Projektarbeitsbereich, Projekt kann mit den bereits verfügbaren Angaben beginnen...)",
+        "createFormButtons": ["Create project", "Cancel"]
+      },
+      "conclusion": "Defect: the planner's create-form action strings are untranslated (English) in the DE locale on this build while the surrounding workspace is translated."
+    }
+  ],
+  "modelBudget": "3 real turns (2 product-card turns, 1 within earlier probes); all other probes are deterministic UI/engine behavior"
+}

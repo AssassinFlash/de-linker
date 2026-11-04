@@ -1,0 +1,268 @@
+{
+ "driver": "marketing-genie-entry",
+ "base": "http://127.0.0.1:8916",
+ "observedAt": "2026-11-04T15:05:17.590Z",
+ "rows": [
+  {
+   "key": "marketing-genie-entry:cold-warm-boot-failure-retry:en:390",
+   "driver": "marketing-genie-entry",
+   "state": "cold-warm-boot-failure-retry",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution/residential-storage/",
+   "observedAt": "2026-11-04T15:00:27.211Z",
+   "checks": [
+    {
+     "name": "entry editor present",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "send control present and enabled",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/marketing-genie-entry:cold-warm-boot-failure-retry:en:390.png",
+   "scope": "cold boot: fresh identity, first load of the entry page"
+  },
+  {
+   "key": "marketing-genie-entry:cold-warm-boot-failure-retry:en:390",
+   "driver": "marketing-genie-entry",
+   "state": "cold-warm-boot-failure-retry",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution/residential-storage/",
+   "observedAt": "2026-11-04T15:00:36.662Z",
+   "checks": [
+    {
+     "name": "warm boot rebinds the editor",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "bundle failure observed",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "reload recovers the entry binding",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 3,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/marketing-genie-entry:cold-warm-boot-failure-retry:en:390.png",
+   "scope": "one-shot abort of build/marketing.js at the network boundary; recovery via reload is the page's own path"
+  },
+  {
+   "key": "marketing-genie-entry:ime-enter-shift-enter:en:390",
+   "driver": "marketing-genie-entry",
+   "state": "ime-enter-shift-enter",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution/residential-storage/",
+   "observedAt": "2026-11-04T15:00:38.183Z",
+   "checks": [
+    {
+     "name": "composing Enter did not submit",
+     "result": "pass",
+     "detail": "turns=0, value=\"IME\n\""
+    },
+    {
+     "name": "Shift+Enter stays in editing (newline, no submit)",
+     "result": "pass",
+     "detail": "\"IME\\n\""
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/marketing-genie-entry:ime-enter-shift-enter:en:390.png",
+   "scope": "synthetic composition keydown with isComposing=true + keyCode 229 on the real editor"
+  },
+  {
+   "key": "marketing-genie-entry:suggestion-prefill-edit-send:en:390",
+   "driver": "marketing-genie-entry",
+   "state": "suggestion-prefill-edit-send",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution/residential-storage/",
+   "observedAt": "2026-11-04T15:01:11.951Z",
+   "checks": [
+    {
+     "name": "suggestion surface present (peek chips or mode buttons)",
+     "result": "pass",
+     "detail": "peek chips=2, mode buttons=2"
+    },
+    {
+     "name": "chip prefills the dock editor",
+     "result": "fail",
+     "detail": "peek chip did not prefill"
+    },
+    {
+     "name": "prefilled text is editable",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "edited suggestion sends one turn",
+     "result": "pass",
+     "detail": "real send executed at en:1440 when chips present, to bound the model budget"
+    }
+   ],
+   "passed": 2,
+   "failed": 2,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/marketing-genie-entry:suggestion-prefill-edit-send:en:390.png",
+   "scope": "chip → prefill → edit; send at en:1440"
+  },
+  {
+   "key": "marketing-genie-entry:voice-text-denied-unsupported-stop:en:390",
+   "driver": "marketing-genie-entry",
+   "state": "voice-text-denied-unsupported-stop",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution/residential-storage/",
+   "observedAt": "2026-11-04T15:01:13.540Z",
+   "checks": [
+    {
+     "name": "voice mode entry present",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "voice-unsupported path leaves text intact",
+     "result": "pass",
+     "detail": ""
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/marketing-genie-entry:voice-text-denied-unsupported-stop:en:390.png",
+   "scope": "headless Chromium has no SpeechRecognition: the unsupported path; granted-mic speech stays open"
+  },
+  {
+   "key": "marketing-genie-entry:attachment-text-cancel-refuse-recover:en:390",
+   "driver": "marketing-genie-entry",
+   "state": "attachment-text-cancel-refuse-recover",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution/residential-storage/",
+   "observedAt": "2026-11-04T15:01:19.623Z",
+   "checks": [
+    {
+     "name": "attachment affordance present",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "cancel keeps the typed text",
+     "result": "pass",
+     "detail": "text state after cancel recorded"
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/marketing-genie-entry:attachment-text-cancel-refuse-recover:en:390.png",
+   "scope": "cancel/refuse path: no upload completed, no turn fired; full attachment send is evidenced by the genie-family driver"
+  },
+  {
+   "key": "marketing-genie-entry:close-refresh-back-scoped-recovery:en:390",
+   "driver": "marketing-genie-entry",
+   "state": "close-refresh-back-scoped-recovery",
+   "lang": "en",
+   "width": 390,
+   "url": "about:blank",
+   "observedAt": "2026-11-04T15:01:37.026Z",
+   "checks": [
+    {
+     "name": "failed entry text restored verbatim after refresh",
+     "result": "fail",
+     "detail": "\"\""
+    },
+    {
+     "name": "draft stays reachable after back navigation",
+     "result": "pass",
+     "detail": "\"\""
+    }
+   ],
+   "passed": 1,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/marketing-genie-entry:close-refresh-back-scoped-recovery:en:390.png",
+   "scope": "recovery record created by a failed delivery (one-shot abort); restore is editing-only, no model call"
+  },
+  {
+   "key": "marketing-genie-entry:typed-question-consumed-once:en:390",
+   "driver": "marketing-genie-entry",
+   "state": "typed-question-consumed-once",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution/residential-storage/",
+   "observedAt": "2026-11-04T15:05:17.524Z",
+   "checks": [
+    {
+     "name": "question became exactly one user message",
+     "result": "pass",
+     "detail": "occurrences=1"
+    },
+    {
+     "name": "exactly one turn fired (incl. double-submit)",
+     "result": "fail",
+     "detail": "turn posts=0"
+    },
+    {
+     "name": "answer rendered in the dock",
+     "result": "pass",
+     "detail": "370 chars"
+    }
+   ],
+   "passed": 2,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/marketing-genie-entry:typed-question-consumed-once:en:390.png",
+   "scope": "real consumed turn through the residential entry; double-submit during the busy turn counted"
+  },
+  {
+   "key": "marketing-genie-entry:existing-busy-draft-conflict-and-dedup:en:390",
+   "driver": "marketing-genie-entry",
+   "state": "existing-busy-draft-conflict-and-dedup",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution/residential-storage/",
+   "observedAt": "2026-11-04T15:05:17.553Z",
+   "checks": [
+    {
+     "name": "second submit during a busy turn deduplicated",
+     "result": "fail",
+     "detail": "turn posts=0, aria-busy=null"
+    },
+    {
+     "name": "field clears only after acceptance",
+     "result": "pass",
+     "detail": "field value after send: \"\""
+    }
+   ],
+   "passed": 1,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/marketing-genie-entry:existing-busy-draft-conflict-and-dedup:en:390.png",
+   "scope": "busy-turn dedup observed on the same real turn"
+  },
+  {
+   "key": "marketing-genie-entry:netfail:en:390",
+   "netfail": [
+    "GET /wp-content/plugins/linker-tools/build/marketing.js?ver=cb0a50535286efe97b93 :: net::ERR_FAILED"
+   ]
+  }
+ ],
+ "modelBudget": "consumption send once per combo (4) + suggestion send at en:1440 (1); recovery/IME/voice/attachment-cancel paths are model-free by contract"
+}

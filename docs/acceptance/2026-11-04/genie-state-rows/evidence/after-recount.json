@@ -1,0 +1,29 @@
+{
+  "after": {
+    "partially-verified": 690,
+    "not-applicable": 2,
+    "pending": 316,
+    "pass": 20,
+    "passed": 16
+  },
+  "familyStatuses": {
+    "genie": {
+      "partially-verified": 120,
+      "pending": 4
+    },
+    "marketing-genie-entry": {
+      "partially-verified": 32
+    },
+    "configurator": {
+      "partially-verified": 60
+    },
+    "roof": {
+      "partially-verified": 44
+    },
+    "project-brief": {
+      "partially-verified": 48
+    }
+  },
+  "updatedRows": 292,
+  "matchedKeys": 292
+}

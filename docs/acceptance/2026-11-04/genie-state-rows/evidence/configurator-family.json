@@ -1,0 +1,1543 @@
+{
+ "driver": "configurator",
+ "base": "http://127.0.0.1:8916",
+ "observedAt": "2026-11-04T14:34:28.931Z",
+ "rows": [
+  {
+   "key": "configurator:initial-input:en:1440",
+   "driver": "configurator",
+   "state": "initial-input",
+   "lang": "en",
+   "width": 1440,
+   "url": "/solution-configurator/",
+   "observedAt": "2026-11-04T14:31:42.652Z",
+   "checks": [
+    {
+     "name": "projects entry renders",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "guest session labelled",
+     "result": "pass",
+     "detail": "Guest workspace"
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:initial-input:en:1440.png",
+   "scope": "local snapshot instance; first load of the configurator entry"
+  },
+  {
+   "key": "configurator:validation:en:1440",
+   "driver": "configurator",
+   "state": "validation",
+   "lang": "en",
+   "width": 1440,
+   "url": "/solution-configurator/",
+   "observedAt": "2026-11-04T14:31:43.765Z",
+   "checks": [
+    {
+     "name": "empty project name refused",
+     "result": "pass",
+     "detail": "create gated"
+    }
+   ],
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:validation:en:1440.png",
+   "scope": "empty-name submit attempt"
+  },
+  {
+   "key": "configurator:native-choice-controls:en:1440",
+   "driver": "configurator",
+   "state": "native-choice-controls",
+   "lang": "en",
+   "width": 1440,
+   "url": "/solution-configurator/?project=f92b00e41f724dd4b83a850a5029228d#lp-site",
+   "observedAt": "2026-11-04T14:31:46.913Z",
+   "checks": [
+    {
+     "name": "brief uses native select controls",
+     "result": "pass",
+     "detail": "selects=5"
+    },
+    {
+     "name": "site-use choice applied",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:native-choice-controls:en:1440.png",
+   "scope": "site use + planned system are native selects per design"
+  },
+  {
+   "key": "configurator:initial-input:en:1440",
+   "driver": "configurator",
+   "state": "initial-input",
+   "lang": "en",
+   "width": 1440,
+   "url": "/solution-configurator/?project=f92b00e41f724dd4b83a850a5029228d#lp-site",
+   "observedAt": "2026-11-04T14:31:50.827Z",
+   "checks": [
+    {
+     "name": "project created with brief form",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "site data save bumps revision",
+     "result": "pass",
+     "detail": "before=\"Unsaved changes\" after=\"Saved · revision 2\""
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:initial-input:en:1440.png",
+   "scope": "create + first save: the revision counter is the contract's save receipt"
+  },
+  {
+   "key": "configurator:calculation-pending:en:1440",
+   "driver": "configurator",
+   "state": "calculation-pending",
+   "lang": "en",
+   "width": 1440,
+   "url": "/solution-configurator/?project=f92b00e41f724dd4b83a850a5029228d#lp-site",
+   "observedAt": "2026-11-04T14:31:51.243Z",
+   "checks": [
+    {
+     "name": "calculation trigger present",
+     "result": "fail",
+     "detail": "no run control found in this stage"
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:calculation-pending:en:1440.png",
+   "scope": "project stage"
+  },
+  {
+   "key": "configurator:compatible-result:en:1440",
+   "driver": "configurator",
+   "state": "compatible-result",
+   "lang": "en",
+   "width": 1440,
+   "url": "/solution-configurator/?project=f92b00e41f724dd4b83a850a5029228d#lp-site",
+   "observedAt": "2026-11-04T14:31:51.276Z",
+   "checks": [
+    {
+     "name": "calculation trigger present",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:compatible-result:en:1440.png",
+   "scope": "project stage"
+  },
+  {
+   "key": "configurator:incompatible-result:en:1440",
+   "driver": "configurator",
+   "state": "incompatible-result",
+   "lang": "en",
+   "width": 1440,
+   "url": "/solution-configurator/?project=f92b00e41f724dd4b83a850a5029228d#lp-site",
+   "observedAt": "2026-11-04T14:31:51.310Z",
+   "checks": [
+    {
+     "name": "calculation trigger present",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:incompatible-result:en:1440.png",
+   "scope": "project stage"
+  },
+  {
+   "key": "configurator:calculation-error:en:1440",
+   "driver": "configurator",
+   "state": "calculation-error",
+   "lang": "en",
+   "width": 1440,
+   "url": "/solution-configurator/?project=f92b00e41f724dd4b83a850a5029228d#lp-site",
+   "observedAt": "2026-11-04T14:31:51.344Z",
+   "checks": [
+    {
+     "name": "run failure surfaces an error state",
+     "result": "pass",
+     "detail": "one-shot abort; screenshot holds the error state"
+    }
+   ],
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:calculation-error:en:1440.png",
+   "scope": "failure injected once at the network boundary on a runs RPC"
+  },
+  {
+   "key": "configurator:whole-parts-add:en:1440",
+   "driver": "configurator",
+   "state": "whole-parts-add",
+   "lang": "en",
+   "width": 1440,
+   "url": "/solution-configurator/?project=f92b00e41f724dd4b83a850a5029228d#lp-site",
+   "observedAt": "2026-11-04T14:31:51.376Z",
+   "checks": [
+    {
+     "name": "add-to-draft control present",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "draft apply request issued",
+     "result": "fail",
+     "detail": []
+    }
+   ],
+   "passed": 0,
+   "failed": 2,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:whole-parts-add:en:1440.png",
+   "scope": "whole-solution add through the real draft/apply RPC"
+  },
+  {
+   "key": "configurator:draft-readback:en:1440",
+   "driver": "configurator",
+   "state": "draft-readback",
+   "lang": "en",
+   "width": 1440,
+   "url": "/cart/",
+   "observedAt": "2026-11-04T14:31:54.206Z",
+   "checks": [
+    {
+     "name": "draft page reachable",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "added lines present",
+     "result": "fail",
+     "detail": "item rows=0"
+    }
+   ],
+   "passed": 1,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:draft-readback:en:1440.png",
+   "scope": "native Woo draft after the configurator add"
+  },
+  {
+   "key": "configurator:report:en:1440",
+   "driver": "configurator",
+   "state": "report",
+   "lang": "en",
+   "width": 1440,
+   "url": "/solution-configurator/",
+   "observedAt": "2026-11-04T14:31:57.690Z",
+   "checks": [
+    {
+     "name": "report screen reachable",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:report:en:1440.png",
+   "scope": "report stage of the project"
+  },
+  {
+   "key": "configurator:report-screen-pdf-content-and-current-revision:en:1440",
+   "driver": "configurator",
+   "state": "report-screen-pdf-content-and-current-revision",
+   "lang": "en",
+   "width": 1440,
+   "url": "/solution-configurator/",
+   "observedAt": "2026-11-04T14:31:57.723Z",
+   "checks": [
+    {
+     "name": "report renders with a revision label",
+     "result": "fail",
+     "detail": ""
+    },
+    {
+     "name": "PDF downloaded with content",
+     "result": "fail",
+     "detail": "0 bytes"
+    }
+   ],
+   "passed": 0,
+   "failed": 2,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:report-screen-pdf-content-and-current-revision:en:1440.png",
+   "scope": "PDF from the real report run; revision is the save-state counter"
+  },
+  {
+   "key": "configurator:download-pdf:en:1440",
+   "driver": "configurator",
+   "state": "download-pdf",
+   "lang": "en",
+   "width": 1440,
+   "url": "/solution-configurator/",
+   "observedAt": "2026-11-04T14:31:57.758Z",
+   "checks": [
+    {
+     "name": "PDF is a real file",
+     "result": "fail",
+     "detail": "0 bytes"
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:download-pdf:en:1440.png",
+   "scope": "downloaded artifact kept at /tmp during the run"
+  },
+  {
+   "key": "configurator:logo-upload:en:1440",
+   "driver": "configurator",
+   "state": "logo-upload",
+   "lang": "en",
+   "width": 1440,
+   "url": "/solution-configurator/",
+   "observedAt": "2026-11-04T14:31:57.789Z",
+   "checks": [
+    {
+     "name": "logo upload affordance present",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "logo file accepted",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 2,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:logo-upload:en:1440.png",
+   "scope": "branding upload in the report options"
+  },
+  {
+   "key": "configurator:roof-optional-entry:en:1440",
+   "driver": "configurator",
+   "state": "roof-optional-entry",
+   "lang": "en",
+   "width": 1440,
+   "url": "/solution-configurator/",
+   "observedAt": "2026-11-04T14:32:05.862Z",
+   "checks": [
+    {
+     "name": "roof is an optional stage (empty-state copy present)",
+     "result": "fail",
+     "detail": ""
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:roof-optional-entry:en:1440.png",
+   "scope": "the project proceeds without a roof; the roof workspace is an optional stage"
+  },
+  {
+   "key": "configurator:restart:en:1440",
+   "driver": "configurator",
+   "state": "restart",
+   "lang": "en",
+   "width": 1440,
+   "url": "/solution-configurator/",
+   "observedAt": "2026-11-04T14:32:05.908Z",
+   "checks": [
+    {
+     "name": "leaving to projects preserves saved work",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:restart:en:1440.png",
+   "scope": "breadcrumb navigation back to the projects list"
+  },
+  {
+   "key": "configurator:netfail:en:1440",
+   "netfail": [
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/list :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/create :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/list :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/revise :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/list :: net::ERR_ABORTED"
+   ]
+  },
+  {
+   "key": "configurator:initial-input:en:390",
+   "driver": "configurator",
+   "state": "initial-input",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/",
+   "observedAt": "2026-11-04T14:32:10.440Z",
+   "checks": [
+    {
+     "name": "projects entry renders",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "guest session labelled",
+     "result": "pass",
+     "detail": "Guest workspace"
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:initial-input:en:390.png",
+   "scope": "local snapshot instance; first load of the configurator entry"
+  },
+  {
+   "key": "configurator:validation:en:390",
+   "driver": "configurator",
+   "state": "validation",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/",
+   "observedAt": "2026-11-04T14:32:11.534Z",
+   "checks": [
+    {
+     "name": "empty project name refused",
+     "result": "pass",
+     "detail": "create gated"
+    }
+   ],
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:validation:en:390.png",
+   "scope": "empty-name submit attempt"
+  },
+  {
+   "key": "configurator:native-choice-controls:en:390",
+   "driver": "configurator",
+   "state": "native-choice-controls",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/?project=44b852ca729e40ff8427ea2369faf8a0#lp-site",
+   "observedAt": "2026-11-04T14:32:14.635Z",
+   "checks": [
+    {
+     "name": "brief uses native select controls",
+     "result": "pass",
+     "detail": "selects=5"
+    },
+    {
+     "name": "site-use choice applied",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:native-choice-controls:en:390.png",
+   "scope": "site use + planned system are native selects per design"
+  },
+  {
+   "key": "configurator:initial-input:en:390",
+   "driver": "configurator",
+   "state": "initial-input",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/?project=44b852ca729e40ff8427ea2369faf8a0#lp-site",
+   "observedAt": "2026-11-04T14:32:18.517Z",
+   "checks": [
+    {
+     "name": "project created with brief form",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "site data save bumps revision",
+     "result": "pass",
+     "detail": "before=\"Unsaved changes\" after=\"Saved · revision 2\""
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:initial-input:en:390.png",
+   "scope": "create + first save: the revision counter is the contract's save receipt"
+  },
+  {
+   "key": "configurator:calculation-pending:en:390",
+   "driver": "configurator",
+   "state": "calculation-pending",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/?project=44b852ca729e40ff8427ea2369faf8a0#lp-site",
+   "observedAt": "2026-11-04T14:32:18.917Z",
+   "checks": [
+    {
+     "name": "calculation trigger present",
+     "result": "fail",
+     "detail": "no run control found in this stage"
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:calculation-pending:en:390.png",
+   "scope": "project stage"
+  },
+  {
+   "key": "configurator:compatible-result:en:390",
+   "driver": "configurator",
+   "state": "compatible-result",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/?project=44b852ca729e40ff8427ea2369faf8a0#lp-site",
+   "observedAt": "2026-11-04T14:32:18.950Z",
+   "checks": [
+    {
+     "name": "calculation trigger present",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:compatible-result:en:390.png",
+   "scope": "project stage"
+  },
+  {
+   "key": "configurator:incompatible-result:en:390",
+   "driver": "configurator",
+   "state": "incompatible-result",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/?project=44b852ca729e40ff8427ea2369faf8a0#lp-site",
+   "observedAt": "2026-11-04T14:32:18.984Z",
+   "checks": [
+    {
+     "name": "calculation trigger present",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:incompatible-result:en:390.png",
+   "scope": "project stage"
+  },
+  {
+   "key": "configurator:calculation-error:en:390",
+   "driver": "configurator",
+   "state": "calculation-error",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/?project=44b852ca729e40ff8427ea2369faf8a0#lp-site",
+   "observedAt": "2026-11-04T14:32:19.017Z",
+   "checks": [
+    {
+     "name": "run failure surfaces an error state",
+     "result": "pass",
+     "detail": "one-shot abort; screenshot holds the error state"
+    }
+   ],
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:calculation-error:en:390.png",
+   "scope": "failure injected once at the network boundary on a runs RPC"
+  },
+  {
+   "key": "configurator:whole-parts-add:en:390",
+   "driver": "configurator",
+   "state": "whole-parts-add",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/?project=44b852ca729e40ff8427ea2369faf8a0#lp-site",
+   "observedAt": "2026-11-04T14:32:19.050Z",
+   "checks": [
+    {
+     "name": "add-to-draft control present",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "draft apply request issued",
+     "result": "fail",
+     "detail": []
+    }
+   ],
+   "passed": 0,
+   "failed": 2,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:whole-parts-add:en:390.png",
+   "scope": "whole-solution add through the real draft/apply RPC"
+  },
+  {
+   "key": "configurator:draft-readback:en:390",
+   "driver": "configurator",
+   "state": "draft-readback",
+   "lang": "en",
+   "width": 390,
+   "url": "/cart/",
+   "observedAt": "2026-11-04T14:32:21.847Z",
+   "checks": [
+    {
+     "name": "draft page reachable",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "added lines present",
+     "result": "fail",
+     "detail": "item rows=0"
+    }
+   ],
+   "passed": 1,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:draft-readback:en:390.png",
+   "scope": "native Woo draft after the configurator add"
+  },
+  {
+   "key": "configurator:report:en:390",
+   "driver": "configurator",
+   "state": "report",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/",
+   "observedAt": "2026-11-04T14:32:25.283Z",
+   "checks": [
+    {
+     "name": "report screen reachable",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:report:en:390.png",
+   "scope": "report stage of the project"
+  },
+  {
+   "key": "configurator:report-screen-pdf-content-and-current-revision:en:390",
+   "driver": "configurator",
+   "state": "report-screen-pdf-content-and-current-revision",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/",
+   "observedAt": "2026-11-04T14:32:25.316Z",
+   "checks": [
+    {
+     "name": "report renders with a revision label",
+     "result": "fail",
+     "detail": ""
+    },
+    {
+     "name": "PDF downloaded with content",
+     "result": "fail",
+     "detail": "0 bytes"
+    }
+   ],
+   "passed": 0,
+   "failed": 2,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:report-screen-pdf-content-and-current-revision:en:390.png",
+   "scope": "PDF from the real report run; revision is the save-state counter"
+  },
+  {
+   "key": "configurator:download-pdf:en:390",
+   "driver": "configurator",
+   "state": "download-pdf",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/",
+   "observedAt": "2026-11-04T14:32:25.350Z",
+   "checks": [
+    {
+     "name": "PDF is a real file",
+     "result": "fail",
+     "detail": "0 bytes"
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:download-pdf:en:390.png",
+   "scope": "downloaded artifact kept at /tmp during the run"
+  },
+  {
+   "key": "configurator:logo-upload:en:390",
+   "driver": "configurator",
+   "state": "logo-upload",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/",
+   "observedAt": "2026-11-04T14:32:25.383Z",
+   "checks": [
+    {
+     "name": "logo upload affordance present",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "logo file accepted",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 2,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:logo-upload:en:390.png",
+   "scope": "branding upload in the report options"
+  },
+  {
+   "key": "configurator:roof-optional-entry:en:390",
+   "driver": "configurator",
+   "state": "roof-optional-entry",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/",
+   "observedAt": "2026-11-04T14:32:33.399Z",
+   "checks": [
+    {
+     "name": "roof is an optional stage (empty-state copy present)",
+     "result": "fail",
+     "detail": ""
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:roof-optional-entry:en:390.png",
+   "scope": "the project proceeds without a roof; the roof workspace is an optional stage"
+  },
+  {
+   "key": "configurator:restart:en:390",
+   "driver": "configurator",
+   "state": "restart",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/",
+   "observedAt": "2026-11-04T14:32:33.433Z",
+   "checks": [
+    {
+     "name": "leaving to projects preserves saved work",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:restart:en:390.png",
+   "scope": "breadcrumb navigation back to the projects list"
+  },
+  {
+   "key": "configurator:netfail:en:390",
+   "netfail": [
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/list :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/create :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/list :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/revise :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/list :: net::ERR_ABORTED"
+   ]
+  },
+  {
+   "key": "configurator:initial-input:de:1440",
+   "driver": "configurator",
+   "state": "initial-input",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/loesungskonfigurator/",
+   "observedAt": "2026-11-04T14:32:37.948Z",
+   "checks": [
+    {
+     "name": "projects entry renders",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "guest session labelled",
+     "result": "pass",
+     "detail": "Gastarbeitsbereich"
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:initial-input:de:1440.png",
+   "scope": "local snapshot instance; first load of the configurator entry"
+  },
+  {
+   "key": "configurator:validation:de:1440",
+   "driver": "configurator",
+   "state": "validation",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/loesungskonfigurator/",
+   "observedAt": "2026-11-04T14:32:39.014Z",
+   "checks": [
+    {
+     "name": "empty project name refused",
+     "result": "pass",
+     "detail": "create gated"
+    }
+   ],
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:validation:de:1440.png",
+   "scope": "empty-name submit attempt"
+  },
+  {
+   "key": "configurator:native-choice-controls:de:1440",
+   "driver": "configurator",
+   "state": "native-choice-controls",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/loesungskonfigurator/?project=7fc941526e9c456fbfe9908901001675#lp-site",
+   "observedAt": "2026-11-04T14:33:12.182Z",
+   "checks": [
+    {
+     "name": "brief uses native select controls",
+     "result": "pass",
+     "detail": "selects=5"
+    },
+    {
+     "name": "site-use choice applied",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:native-choice-controls:de:1440.png",
+   "scope": "site use + planned system are native selects per design"
+  },
+  {
+   "key": "configurator:initial-input:de:1440",
+   "driver": "configurator",
+   "state": "initial-input",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/loesungskonfigurator/?project=7fc941526e9c456fbfe9908901001675#lp-site",
+   "observedAt": "2026-11-04T14:33:16.086Z",
+   "checks": [
+    {
+     "name": "project created with brief form",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "site data save bumps revision",
+     "result": "pass",
+     "detail": "before=\"Unsaved changes\" after=\"Saved · revision 2\""
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:initial-input:de:1440.png",
+   "scope": "create + first save: the revision counter is the contract's save receipt"
+  },
+  {
+   "key": "configurator:calculation-pending:de:1440",
+   "driver": "configurator",
+   "state": "calculation-pending",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/loesungskonfigurator/?project=7fc941526e9c456fbfe9908901001675#lp-site",
+   "observedAt": "2026-11-04T14:33:16.494Z",
+   "checks": [
+    {
+     "name": "calculation trigger present",
+     "result": "fail",
+     "detail": "no run control found in this stage"
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:calculation-pending:de:1440.png",
+   "scope": "project stage"
+  },
+  {
+   "key": "configurator:compatible-result:de:1440",
+   "driver": "configurator",
+   "state": "compatible-result",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/loesungskonfigurator/?project=7fc941526e9c456fbfe9908901001675#lp-site",
+   "observedAt": "2026-11-04T14:33:16.528Z",
+   "checks": [
+    {
+     "name": "calculation trigger present",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:compatible-result:de:1440.png",
+   "scope": "project stage"
+  },
+  {
+   "key": "configurator:incompatible-result:de:1440",
+   "driver": "configurator",
+   "state": "incompatible-result",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/loesungskonfigurator/?project=7fc941526e9c456fbfe9908901001675#lp-site",
+   "observedAt": "2026-11-04T14:33:16.560Z",
+   "checks": [
+    {
+     "name": "calculation trigger present",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:incompatible-result:de:1440.png",
+   "scope": "project stage"
+  },
+  {
+   "key": "configurator:calculation-error:de:1440",
+   "driver": "configurator",
+   "state": "calculation-error",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/loesungskonfigurator/?project=7fc941526e9c456fbfe9908901001675#lp-site",
+   "observedAt": "2026-11-04T14:33:16.593Z",
+   "checks": [
+    {
+     "name": "run failure surfaces an error state",
+     "result": "pass",
+     "detail": "one-shot abort; screenshot holds the error state"
+    }
+   ],
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:calculation-error:de:1440.png",
+   "scope": "failure injected once at the network boundary on a runs RPC"
+  },
+  {
+   "key": "configurator:whole-parts-add:de:1440",
+   "driver": "configurator",
+   "state": "whole-parts-add",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/loesungskonfigurator/?project=7fc941526e9c456fbfe9908901001675#lp-site",
+   "observedAt": "2026-11-04T14:33:16.627Z",
+   "checks": [
+    {
+     "name": "add-to-draft control present",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "draft apply request issued",
+     "result": "fail",
+     "detail": []
+    }
+   ],
+   "passed": 0,
+   "failed": 2,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:whole-parts-add:de:1440.png",
+   "scope": "whole-solution add through the real draft/apply RPC"
+  },
+  {
+   "key": "configurator:draft-readback:de:1440",
+   "driver": "configurator",
+   "state": "draft-readback",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/loesungsentwurf/",
+   "observedAt": "2026-11-04T14:33:19.488Z",
+   "checks": [
+    {
+     "name": "draft page reachable",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "added lines present",
+     "result": "fail",
+     "detail": "item rows=0"
+    }
+   ],
+   "passed": 1,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:draft-readback:de:1440.png",
+   "scope": "native Woo draft after the configurator add"
+  },
+  {
+   "key": "configurator:report:de:1440",
+   "driver": "configurator",
+   "state": "report",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/loesungskonfigurator/",
+   "observedAt": "2026-11-04T14:33:23.034Z",
+   "checks": [
+    {
+     "name": "report screen reachable",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:report:de:1440.png",
+   "scope": "report stage of the project"
+  },
+  {
+   "key": "configurator:report-screen-pdf-content-and-current-revision:de:1440",
+   "driver": "configurator",
+   "state": "report-screen-pdf-content-and-current-revision",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/loesungskonfigurator/",
+   "observedAt": "2026-11-04T14:33:23.080Z",
+   "checks": [
+    {
+     "name": "report renders with a revision label",
+     "result": "fail",
+     "detail": ""
+    },
+    {
+     "name": "PDF downloaded with content",
+     "result": "fail",
+     "detail": "0 bytes"
+    }
+   ],
+   "passed": 0,
+   "failed": 2,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:report-screen-pdf-content-and-current-revision:de:1440.png",
+   "scope": "PDF from the real report run; revision is the save-state counter"
+  },
+  {
+   "key": "configurator:download-pdf:de:1440",
+   "driver": "configurator",
+   "state": "download-pdf",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/loesungskonfigurator/",
+   "observedAt": "2026-11-04T14:33:23.111Z",
+   "checks": [
+    {
+     "name": "PDF is a real file",
+     "result": "fail",
+     "detail": "0 bytes"
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:download-pdf:de:1440.png",
+   "scope": "downloaded artifact kept at /tmp during the run"
+  },
+  {
+   "key": "configurator:logo-upload:de:1440",
+   "driver": "configurator",
+   "state": "logo-upload",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/loesungskonfigurator/",
+   "observedAt": "2026-11-04T14:33:23.145Z",
+   "checks": [
+    {
+     "name": "logo upload affordance present",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "logo file accepted",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 2,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:logo-upload:de:1440.png",
+   "scope": "branding upload in the report options"
+  },
+  {
+   "key": "configurator:roof-optional-entry:de:1440",
+   "driver": "configurator",
+   "state": "roof-optional-entry",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/loesungskonfigurator/",
+   "observedAt": "2026-11-04T14:33:31.177Z",
+   "checks": [
+    {
+     "name": "roof is an optional stage (empty-state copy present)",
+     "result": "fail",
+     "detail": ""
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:roof-optional-entry:de:1440.png",
+   "scope": "the project proceeds without a roof; the roof workspace is an optional stage"
+  },
+  {
+   "key": "configurator:restart:de:1440",
+   "driver": "configurator",
+   "state": "restart",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/loesungskonfigurator/",
+   "observedAt": "2026-11-04T14:33:31.210Z",
+   "checks": [
+    {
+     "name": "leaving to projects preserves saved work",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:restart:de:1440.png",
+   "scope": "breadcrumb navigation back to the projects list"
+  },
+  {
+   "key": "configurator:netfail:de:1440",
+   "netfail": [
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/list :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/create :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/list :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/revise :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/list :: net::ERR_ABORTED"
+   ]
+  },
+  {
+   "key": "configurator:initial-input:de:390",
+   "driver": "configurator",
+   "state": "initial-input",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/",
+   "observedAt": "2026-11-04T14:33:35.729Z",
+   "checks": [
+    {
+     "name": "projects entry renders",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "guest session labelled",
+     "result": "pass",
+     "detail": "Gastarbeitsbereich"
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:initial-input:de:390.png",
+   "scope": "local snapshot instance; first load of the configurator entry"
+  },
+  {
+   "key": "configurator:validation:de:390",
+   "driver": "configurator",
+   "state": "validation",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/",
+   "observedAt": "2026-11-04T14:33:36.829Z",
+   "checks": [
+    {
+     "name": "empty project name refused",
+     "result": "pass",
+     "detail": "create gated"
+    }
+   ],
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:validation:de:390.png",
+   "scope": "empty-name submit attempt"
+  },
+  {
+   "key": "configurator:native-choice-controls:de:390",
+   "driver": "configurator",
+   "state": "native-choice-controls",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/?project=28c8208690494cb8ac47fa389f57f460#lp-site",
+   "observedAt": "2026-11-04T14:34:09.977Z",
+   "checks": [
+    {
+     "name": "brief uses native select controls",
+     "result": "pass",
+     "detail": "selects=5"
+    },
+    {
+     "name": "site-use choice applied",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:native-choice-controls:de:390.png",
+   "scope": "site use + planned system are native selects per design"
+  },
+  {
+   "key": "configurator:initial-input:de:390",
+   "driver": "configurator",
+   "state": "initial-input",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/?project=28c8208690494cb8ac47fa389f57f460#lp-site",
+   "observedAt": "2026-11-04T14:34:13.878Z",
+   "checks": [
+    {
+     "name": "project created with brief form",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "site data save bumps revision",
+     "result": "pass",
+     "detail": "before=\"Unsaved changes\" after=\"Saved · revision 2\""
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:initial-input:de:390.png",
+   "scope": "create + first save: the revision counter is the contract's save receipt"
+  },
+  {
+   "key": "configurator:calculation-pending:de:390",
+   "driver": "configurator",
+   "state": "calculation-pending",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/?project=28c8208690494cb8ac47fa389f57f460#lp-site",
+   "observedAt": "2026-11-04T14:34:14.274Z",
+   "checks": [
+    {
+     "name": "calculation trigger present",
+     "result": "fail",
+     "detail": "no run control found in this stage"
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:calculation-pending:de:390.png",
+   "scope": "project stage"
+  },
+  {
+   "key": "configurator:compatible-result:de:390",
+   "driver": "configurator",
+   "state": "compatible-result",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/?project=28c8208690494cb8ac47fa389f57f460#lp-site",
+   "observedAt": "2026-11-04T14:34:14.308Z",
+   "checks": [
+    {
+     "name": "calculation trigger present",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:compatible-result:de:390.png",
+   "scope": "project stage"
+  },
+  {
+   "key": "configurator:incompatible-result:de:390",
+   "driver": "configurator",
+   "state": "incompatible-result",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/?project=28c8208690494cb8ac47fa389f57f460#lp-site",
+   "observedAt": "2026-11-04T14:34:14.340Z",
+   "checks": [
+    {
+     "name": "calculation trigger present",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:incompatible-result:de:390.png",
+   "scope": "project stage"
+  },
+  {
+   "key": "configurator:calculation-error:de:390",
+   "driver": "configurator",
+   "state": "calculation-error",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/?project=28c8208690494cb8ac47fa389f57f460#lp-site",
+   "observedAt": "2026-11-04T14:34:14.374Z",
+   "checks": [
+    {
+     "name": "run failure surfaces an error state",
+     "result": "pass",
+     "detail": "one-shot abort; screenshot holds the error state"
+    }
+   ],
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:calculation-error:de:390.png",
+   "scope": "failure injected once at the network boundary on a runs RPC"
+  },
+  {
+   "key": "configurator:whole-parts-add:de:390",
+   "driver": "configurator",
+   "state": "whole-parts-add",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/?project=28c8208690494cb8ac47fa389f57f460#lp-site",
+   "observedAt": "2026-11-04T14:34:14.407Z",
+   "checks": [
+    {
+     "name": "add-to-draft control present",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "draft apply request issued",
+     "result": "fail",
+     "detail": []
+    }
+   ],
+   "passed": 0,
+   "failed": 2,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:whole-parts-add:de:390.png",
+   "scope": "whole-solution add through the real draft/apply RPC"
+  },
+  {
+   "key": "configurator:draft-readback:de:390",
+   "driver": "configurator",
+   "state": "draft-readback",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungsentwurf/",
+   "observedAt": "2026-11-04T14:34:17.232Z",
+   "checks": [
+    {
+     "name": "draft page reachable",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "added lines present",
+     "result": "fail",
+     "detail": "item rows=0"
+    }
+   ],
+   "passed": 1,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:draft-readback:de:390.png",
+   "scope": "native Woo draft after the configurator add"
+  },
+  {
+   "key": "configurator:report:de:390",
+   "driver": "configurator",
+   "state": "report",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/",
+   "observedAt": "2026-11-04T14:34:20.761Z",
+   "checks": [
+    {
+     "name": "report screen reachable",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:report:de:390.png",
+   "scope": "report stage of the project"
+  },
+  {
+   "key": "configurator:report-screen-pdf-content-and-current-revision:de:390",
+   "driver": "configurator",
+   "state": "report-screen-pdf-content-and-current-revision",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/",
+   "observedAt": "2026-11-04T14:34:20.794Z",
+   "checks": [
+    {
+     "name": "report renders with a revision label",
+     "result": "fail",
+     "detail": ""
+    },
+    {
+     "name": "PDF downloaded with content",
+     "result": "fail",
+     "detail": "0 bytes"
+    }
+   ],
+   "passed": 0,
+   "failed": 2,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:report-screen-pdf-content-and-current-revision:de:390.png",
+   "scope": "PDF from the real report run; revision is the save-state counter"
+  },
+  {
+   "key": "configurator:download-pdf:de:390",
+   "driver": "configurator",
+   "state": "download-pdf",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/",
+   "observedAt": "2026-11-04T14:34:20.827Z",
+   "checks": [
+    {
+     "name": "PDF is a real file",
+     "result": "fail",
+     "detail": "0 bytes"
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:download-pdf:de:390.png",
+   "scope": "downloaded artifact kept at /tmp during the run"
+  },
+  {
+   "key": "configurator:logo-upload:de:390",
+   "driver": "configurator",
+   "state": "logo-upload",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/",
+   "observedAt": "2026-11-04T14:34:20.861Z",
+   "checks": [
+    {
+     "name": "logo upload affordance present",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "logo file accepted",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 2,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:logo-upload:de:390.png",
+   "scope": "branding upload in the report options"
+  },
+  {
+   "key": "configurator:roof-optional-entry:de:390",
+   "driver": "configurator",
+   "state": "roof-optional-entry",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/",
+   "observedAt": "2026-11-04T14:34:28.874Z",
+   "checks": [
+    {
+     "name": "roof is an optional stage (empty-state copy present)",
+     "result": "fail",
+     "detail": ""
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:roof-optional-entry:de:390.png",
+   "scope": "the project proceeds without a roof; the roof workspace is an optional stage"
+  },
+  {
+   "key": "configurator:restart:de:390",
+   "driver": "configurator",
+   "state": "restart",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/",
+   "observedAt": "2026-11-04T14:34:28.910Z",
+   "checks": [
+    {
+     "name": "leaving to projects preserves saved work",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:restart:de:390.png",
+   "scope": "breadcrumb navigation back to the projects list"
+  },
+  {
+   "key": "configurator:netfail:de:390",
+   "netfail": [
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/list :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/create :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/list :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/revise :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/list :: net::ERR_ABORTED"
+   ]
+  }
+ ]
+}
