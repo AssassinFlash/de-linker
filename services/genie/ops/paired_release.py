@@ -84,6 +84,37 @@ def identity(source: Path) -> dict[str, str]:
     }
 
 
+def application_health() -> None:
+    """Require the running application, not only an active systemd unit."""
+    subprocess.run(
+        ["curl", "--fail", "--silent", "--show-error", "http://127.0.0.1:8902/health"],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=10,
+    )
+
+
+def check_import(source: Path) -> None:
+    """Import the exact release package before allowing a service switch."""
+    subprocess.run(
+        [
+            str(source / ".venv/bin/python"),
+            "-c",
+            "import linker_genie, linker_genie.app, pathlib, sys; "
+            "expected = pathlib.Path(sys.argv[1]).resolve(); "
+            "actual = pathlib.Path(linker_genie.__file__).resolve(); "
+            "assert actual == expected, (actual, expected)",
+            str(source / "src/linker_genie/__init__.py"),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=10,
+        env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
+    )
+
+
 def remote(request: dict[str, Any]) -> dict[str, Any]:
     """Stdlib-only VPS operation; current is changed only under selector CAS."""
     root = Path(request["runtime_root"])
@@ -132,6 +163,7 @@ def remote(request: dict[str, Any]) -> dict[str, Any]:
         target = candidate if request["action"] == "activate" else previous
         if live == target and request["action"] == "activate":
             return {"current": live, "pids": running(root, live), **measured}
+        check_import(root / target)
         # The prepared unit definitions must continue to execute the selector,
         # not an old absolute release or an unrelated service.
         for unit in UNITS:
@@ -162,7 +194,9 @@ def remote(request: dict[str, Any]) -> dict[str, Any]:
             )
         if identity(root / candidate) != measured:
             raise RuntimeError("prepared source changed during runtime selection")
-        return {"current": selected(), "pids": running(root, target), **measured}
+        pids = running(root, target)
+        application_health()
+        return {"current": selected(), "pids": pids, **measured}
 
 
 class Runtime:

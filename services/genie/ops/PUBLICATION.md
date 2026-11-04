@@ -146,8 +146,13 @@ the installed launch definition/executable and pause its idle schedule under the
 existing worker lock before executing this operator. No concurrent publication
 owner may switch the runtime/index during the window. The API and judge unit
 ExecStart must use `/opt/linker-genie/current/.venv/bin/`; actual post-start PIDs
-must have the selected release as cwd. Resolve a different unit layout before
-publishing, rather than weakening this check.
+must have the selected release as cwd. Before stopping the old pair, the
+candidate interpreter must import `linker_genie` and `linker_genie.app` from the
+candidate's own `src`, never from another release. After startup, both units must
+be active and the application must answer `GET http://127.0.0.1:8902/health`
+successfully; an import or health failure refuses activation and invokes the
+existing restore path. Resolve a different unit layout before publishing, rather
+than weakening these checks.
 
 For a guarded source-only publication, pass the same verified current runtime
 as `--candidate` and `--previous` to `paired_release.main(arguments, guard=guard)`.
