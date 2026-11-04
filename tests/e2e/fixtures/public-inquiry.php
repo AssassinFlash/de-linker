@@ -48,6 +48,11 @@ require_once __DIR__ . '/public-inquiry-assessment.php';
 			if ( 'capped' === ( $args[2] ?? '' ) ) {
 				for ( $i = 0; $i < 10; ++$i ) {
 					( new \Linker\Commerce\Inquiry\ReceiptLimit() )->take();
+					// Enforce mode caps receipts through the ledger-backed
+					// ReceiptBudget site day, not the legacy option counter.
+					// A distinct target each time fills the shared site
+					// allowance without tripping a per-target cap first.
+					\Linker\Commerce\Protection\ReceiptBudget::take( "cap-fixture-{$i}@example.test", "cap-fixture-{$i}" );
 				}
 			}
 			PublicInquiryAssessment::install();
@@ -58,54 +63,61 @@ require_once __DIR__ . '/public-inquiry-assessment.php';
 		echo wp_json_encode( array( 'product' => $product->get_id() ) );
 		return;
 	}
-	$orders = $fixture->orders();
-	$jobs   = $fixture->jobs();
-	if ( 'read' === $mode ) {
-		$store = new \Linker\Commerce\Mail\JobStore();
-		$seen  = array_fill_keys( $jobs, true );
-		foreach ( $owned_jobs( $orders ) as $job_id ) {
-			if ( isset( $seen[ $job_id ] ) || null === $store->load( $job_id ) ) {
-				continue;
+	if ( 'cleanup' === $mode ) {
+		// No fixture installed is itself clean, and reading the records of an
+		// absent state would refuse; re-running cleanup must stay safe.
+		if ( false !== get_option( 'linker_246_round2_browser' ) ) {
+			$orders = $fixture->orders();
+			try {
+				foreach ( $owned_jobs( $orders ) as $job_id ) {
+					if ( 'linker_mail_job' === get_post_type( $job_id ) ) {
+						wp_delete_post( $job_id, true );
+					}
+				}
+				$fixture->cleanup();
+			} finally {
+				PublicInquiryAssessment::remove();
 			}
-			$jobs[]          = $job_id;
-			$seen[ $job_id ] = true;
+		} else {
+			PublicInquiryAssessment::remove();
 		}
-		echo wp_json_encode(
-			array(
-				'orders' => array_map(
-					static fn ( $order ) => array(
-						'status'        => $order->get_status(),
-						'customer'      => $order->get_customer_id(),
-						'source'        => $order->get_meta( '_linker_inquiry_source' ),
-						'skipped'       => $order->get_meta( '_linker_receipt_skipped' ),
-						'items'         => count( $order->get_items() ),
-						'authorization' => ( static function ( int $id ): array {
-							$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $id );
-							return is_array( $state ) ? array(
-								'status'    => $state['status'] ?? null,
-								'team_only' => $state['team_only'] ?? false,
-								'jobs'      => array_keys( $state['jobs'] ?? array() ),
-							) : array();
-						} )( $order->get_id() ),
-					),
-					$orders
-				),
-				'mail'   => array_map( static fn ( $id ) => json_decode( get_post_meta( $id, '_linker_mail_message', true ), true ), $jobs ),
-			)
-		);
 		return;
 	}
-	if ( 'cleanup' !== $mode ) {
+	$orders = $fixture->orders();
+	$jobs   = $fixture->jobs();
+	if ( 'read' !== $mode ) {
 		throw new RuntimeException( 'Unknown fixture mode.' );
 	}
-	try {
-		foreach ( $owned_jobs( $orders ) as $job_id ) {
-			if ( 'linker_mail_job' === get_post_type( $job_id ) ) {
-				wp_delete_post( $job_id, true );
-			}
+	$store = new \Linker\Commerce\Mail\JobStore();
+	$seen  = array_fill_keys( $jobs, true );
+	foreach ( $owned_jobs( $orders ) as $job_id ) {
+		if ( isset( $seen[ $job_id ] ) || null === $store->load( $job_id ) ) {
+			continue;
 		}
-		$fixture->cleanup();
-	} finally {
-		PublicInquiryAssessment::remove();
+		$jobs[]          = $job_id;
+		$seen[ $job_id ] = true;
 	}
+	echo wp_json_encode(
+		array(
+			'orders' => array_map(
+				static fn( $order ) => array(
+					'status'        => $order->get_status(),
+					'customer'      => $order->get_customer_id(),
+					'source'        => $order->get_meta( '_linker_inquiry_source' ),
+					'skipped'       => $order->get_meta( '_linker_receipt_skipped' ),
+					'items'         => count( $order->get_items() ),
+					'authorization' => ( static function ( int $id ): array {
+						$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $id );
+						return is_array( $state ) ? array(
+							'status'    => $state['status'] ?? null,
+							'team_only' => $state['team_only'] ?? false,
+							'jobs'      => array_keys( $state['jobs'] ?? array() ),
+						) : array();
+					} )( $order->get_id() ),
+				),
+				$orders
+			),
+			'mail'   => array_map( static fn( $id ) => json_decode( get_post_meta( $id, '_linker_mail_message', true ), true ), $jobs ),
+		)
+	);
 } )( $args );

@@ -156,8 +156,8 @@ function linker_local_mailer( string $directory ) {
 }
 
 /**
- * Lets WordPress's HTTP API reach 127.0.0.1 only; anything else is refused and
- * written to the isolation log.
+ * Lets WordPress's HTTP API reach 127.0.0.1 and the exact Turnstile verification
+ * endpoint used by the local dummy-key chain; anything else is refused and logged.
  *
  * @param false|array<string, mixed>|WP_Error $response Answer from an earlier filter, false to send.
  * @param array<string, mixed>                $args     Request arguments.
@@ -165,11 +165,23 @@ function linker_local_mailer( string $directory ) {
  * @return false|array<string, mixed>|WP_Error
  */
 function linker_local_filter_http( $response, array $args, string $url ) {
-	if ( false !== $response || linker_local_is_local( $url ) ) {
+	if ( false !== $response || linker_local_is_local( $url ) || linker_local_is_turnstile_verification( $url ) ) {
 		return $response;
 	}
 	linker_local_log_blocked( isset( $args['method'] ) && is_string( $args['method'] ) ? $args['method'] : 'GET', $url );
 	return new WP_Error( 'linker_local_blocked', sprintf( 'Blocked by the local isolation: %s', $url ) );
+}
+
+/**
+ * Whether a URL is Cloudflare's exact server-side verification endpoint.
+ *
+ * @param string $url URL.
+ * @return bool
+ */
+function linker_local_is_turnstile_verification( string $url ): bool {
+	return 'https' === wp_parse_url( $url, PHP_URL_SCHEME )
+		&& 'challenges.cloudflare.com' === wp_parse_url( $url, PHP_URL_HOST )
+		&& '/turnstile/v0/siteverify' === wp_parse_url( $url, PHP_URL_PATH );
 }
 
 /**

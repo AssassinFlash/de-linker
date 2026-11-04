@@ -153,4 +153,39 @@ final class PublicVerificationTest extends IntegrationTestCase {
 		$this->assertSame( 'network', $result->reason );
 		$this->assertStringNotContainsString( 'synthetic secret', (string) wp_json_encode( $result ) );
 	}
+
+	/**
+	 * Cloudflare's official testing keys report no action field; the exact
+	 * local browser chain (widget → verify → proof) depends on that shape.
+	 */
+	public function test_testing_keys_accept_the_official_testing_response_without_action(): void {
+		$http = static fn () => array(
+			'response' => array( 'code' => 200 ),
+			'body'     => '{"success":true,"hostname":"example.test"}',
+		);
+		add_filter( 'pre_http_request', $http );
+		try {
+			$result = ( new Turnstile( $this->configuration() ) )->verify( 'synthetic-token', 'draft_write', wp_generate_uuid4() );
+		} finally {
+			remove_filter( 'pre_http_request', $http );
+		}
+		$this->assertSame( 'valid', $result->status );
+	}
+
+	/** Real production keys still require the action to be reported and equal. */
+	public function test_real_keys_reject_a_missing_action(): void {
+		$real = new Configuration( 'enforce', '0x4AAAAAAAfakesitekey000000', '0x4AAAAAAAfakesecret0000000000000', 'example.test' );
+		$http = static fn () => array(
+			'response' => array( 'code' => 200 ),
+			'body'     => '{"success":true,"hostname":"example.test"}',
+		);
+		add_filter( 'pre_http_request', $http );
+		try {
+			$result = ( new Turnstile( $real ) )->verify( 'synthetic-token', 'draft_write', wp_generate_uuid4() );
+		} finally {
+			remove_filter( 'pre_http_request', $http );
+		}
+		$this->assertSame( 'invalid', $result->status );
+		$this->assertSame( 'action', $result->reason );
+	}
 }

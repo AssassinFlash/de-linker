@@ -127,6 +127,11 @@ final class BrowserFixture {
 	private function clear_limits(): void {
 		global $wpdb;
 		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( 'linker_commerce_limit_' ) . '%' ) );
+		// Every full-chain browser test consumes real verification and
+		// admission allowances (shared per connection on a local instance);
+		// without this reset one suite exhausts its own hourly quota.
+		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name = %s", \Linker\Commerce\Protection\Ledger::OPTION ) );
+		wp_cache_delete( \Linker\Commerce\Protection\Ledger::OPTION, 'options' );
 	}
 
 	/**
@@ -136,6 +141,11 @@ final class BrowserFixture {
 	 */
 	public function cleanup( bool $delete_customer = false ): void {
 		global $wpdb;
+		if ( ! is_array( get_option( $this->key ) ) ) {
+			// Nothing installed is itself clean: re-running cleanup (after a
+			// failed setup or a killed job) must not wedge the next run.
+			return;
+		}
 		$state = $this->state();
 		foreach ( $this->orders() as $order ) {
 			$order->delete( true );

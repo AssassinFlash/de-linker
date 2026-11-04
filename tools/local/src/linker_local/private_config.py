@@ -6,24 +6,35 @@ import fcntl
 import json
 import os
 import tempfile
+import time
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 
 from .processes import ProcessError
 
+# Sequential operator commands hand the lock over in well under a second; an
+# instant refusal turned those routine handoffs (for example a browser suite's
+# fixture calls) into spurious failures. True contention still refuses.
+LOCK_WAIT_SECONDS = 5.0
+
 
 @contextmanager
 def lifecycle_lock(path: Path) -> Iterator[None]:
     path.parent.mkdir(parents=True, exist_ok=True)
     descriptor = os.open(path, os.O_CREAT | os.O_RDWR, 0o600)
+    deadline = time.monotonic() + LOCK_WAIT_SECONDS
     try:
-        try:
-            fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError as error:
-            raise ProcessError(
-                "this instance's services are already being managed"
-            ) from error
+        while True:
+            try:
+                fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                break
+            except BlockingIOError as error:
+                if time.monotonic() >= deadline:
+                    raise ProcessError(
+                        "this instance's services are already being managed"
+                    ) from error
+                time.sleep(0.1)
         yield
     finally:
         os.close(descriptor)

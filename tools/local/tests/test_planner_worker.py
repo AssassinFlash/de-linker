@@ -5,10 +5,11 @@ import os
 import sqlite3
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 import pytest
-
+from linker_local import private_config
 from linker_local.instance import Instance
 from linker_local.planner_worker import PlannerWorker
 from linker_local.private_config import lifecycle_lock, publish_once
@@ -185,7 +186,9 @@ def test_pending_tasks_without_a_live_executor_refuse_restart(
 
 def test_lifecycle_lock_refuses_a_second_manager_and_then_releases(
     tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    monkeypatch.setattr(private_config, "LOCK_WAIT_SECONDS", 0.2)
     lock = tmp_path / "run/services.lock"
     with lifecycle_lock(lock):
         with pytest.raises(ProcessError, match="already"):
@@ -193,6 +196,31 @@ def test_lifecycle_lock_refuses_a_second_manager_and_then_releases(
                 pytest.fail("second lifecycle manager acquired the lock")
     with lifecycle_lock(lock):
         pass
+
+
+def test_lifecycle_lock_waits_for_a_finishing_manager(tmp_path: Path) -> None:
+    lock = tmp_path / "run/services.lock"
+    src = Path(__file__).parents[1] / "src"
+    holder = subprocess.Popen(
+        [
+            sys.executable,
+            "-c",
+            "import sys, time\n"
+            f"sys.path.insert(0, {str(src)!r})\n"
+            "from pathlib import Path\n"
+            "from linker_local.private_config import lifecycle_lock\n"
+            f"with lifecycle_lock(Path({str(lock)!r})):\n"
+            "    time.sleep(1.0)\n",
+        ],
+    )
+    try:
+        time.sleep(0.3)
+        started = time.monotonic()
+        with lifecycle_lock(lock):
+            pass
+        assert time.monotonic() - started >= 0.2
+    finally:
+        assert holder.wait() == 0
 
 
 def test_local_queue_empty_does_not_pass_unresolved_remote_work(

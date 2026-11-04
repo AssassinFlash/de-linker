@@ -66,7 +66,9 @@ final class Turnstile {
 		if ( ! is_string( $body['hostname'] ?? null ) || strtolower( $body['hostname'] ) !== strtolower( $this->configuration->hostname ) ) {
 			return new Verification( 'invalid', 'hostname' );
 		}
-		if ( ( $body['action'] ?? null ) !== $action ) {
+		if ( ( $body['action'] ?? null ) !== $action && ( isset( $body['action'] ) || ! $this->configuration->test_keys() ) ) {
+			// Cloudflare's official testing keys report no action at all; a
+			// reported action stays exactly bound, with or without test keys.
 			return new Verification( 'invalid', 'action' );
 		}
 		return new Verification( 'valid', 'verified' );
