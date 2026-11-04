@@ -1805,7 +1805,8 @@ def _header_cell_spans(
         span
         for span in _header_label_spans(cell, spans)
         if box[0] <= (span["bbox"][0] + span["bbox"][2]) / 2 <= box[2]
-        and min(box[1], box[3]) <= (span["bbox"][1] + span["bbox"][3]) / 2
+        and min(box[1], box[3])
+        <= (span["bbox"][1] + span["bbox"][3]) / 2
         <= max(box[1], box[3])
         and _span_stays_in_cell(span, box)
     ]

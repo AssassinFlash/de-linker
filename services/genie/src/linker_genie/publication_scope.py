@@ -375,19 +375,15 @@ def _authorize_core(
         ):
             return []
     if scope is not None and (
-        scope.get("basis") == "table_single_model"
-        or "single_model_projection" in scope
+        scope.get("basis") == "table_single_model" or "single_model_projection" in scope
     ):
-        if (
-            products is None
-            or not valid_single_model_projection(
-                scope,
-                product_ids,
-                products,
-                sha=sha,
-                chunk_id=chunk_id,
-                text=text,
-            )
+        if products is None or not valid_single_model_projection(
+            scope,
+            product_ids,
+            products,
+            sha=sha,
+            chunk_id=chunk_id,
+            text=text,
         ):
             return []
     if scope is not None and (
@@ -591,9 +587,7 @@ def table_header(
         excluded_labels = columns["excluded_labels"]
         if (
             not isinstance(excluded_labels, list)
-            or any(
-                not isinstance(label, str) or not label for label in excluded_labels
-            )
+            or any(not isinstance(label, str) or not label for label in excluded_labels)
             or set(excluded_labels) & set(labels)
         ):
             return None

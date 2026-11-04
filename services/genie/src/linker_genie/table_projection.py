@@ -933,9 +933,7 @@ def row_cells_single(cells: Sequence[SourceCell], row: int) -> tuple[str, str] |
         or not value["text"].strip()
         # A trailing separator is a cut-off list, not a complete rating.
         or value["text"].rstrip().endswith("/")
-        or re.match(
-            r"^\((?:integrated|optional)\)(?:\s*;|\s*$)", value["text"], re.I
-        )
+        or re.match(r"^\((?:integrated|optional)\)(?:\s*;|\s*$)", value["text"], re.I)
         is not None
         or any("|" in cell["text"] or "\n" in cell["text"] for cell in [label, value])
         or len(re.findall(r"\[[^\]]+\]", label["text"])) > 1
@@ -2271,14 +2269,11 @@ def valid_single_model_projection(
     ):
         return False
     own = value["model"]
-    if (
-        not model_pattern(own).search(declaration["text"])
-        or any(
-            str(product.get("model", "")).casefold() != own.casefold()
-            and model_pattern(str(product.get("model", ""))).search(declaration["text"])
-            for product in products.values()
-            if product.get("model")
-        )
+    if not model_pattern(own).search(declaration["text"]) or any(
+        str(product.get("model", "")).casefold() != own.casefold()
+        and model_pattern(str(product.get("model", ""))).search(declaration["text"])
+        for product in products.values()
+        if product.get("model")
     ):
         return False
     rendered = render_single_model(cells, value["source_rows"], own)

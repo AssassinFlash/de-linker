@@ -593,6 +593,7 @@ def _accessory_heading(
             return False
     return True
 
+
 # "This function is available only on battery systems that support cloud
 # board communication" (GoodWe BAT-C manual p.61) restricts a capability,
 # not which models the spec tables cover.
@@ -1151,9 +1152,7 @@ def _single_model_units(
             and model_pattern(other).search(
                 "".join(
                     chunk.text
-                    for chunk in (
-                        by_id.get(cid) for cid in first.preceding_text
-                    )
+                    for chunk in (by_id.get(cid) for cid in first.preceding_text)
                     if chunk is not None
                     and chunk.doc_sha256 == sha
                     and chunk.kind == "text"

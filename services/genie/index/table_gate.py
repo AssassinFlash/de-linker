@@ -44,6 +44,7 @@ def table_groups(chunks: Iterable[Chunk]) -> dict[tuple[str, str], list[Chunk]]:
 
 
 def authorized_tables(
+    chunk_products: Mapping[str, Sequence[int]],
     chunk_scopes: Mapping[str, Mapping[str, Any]],
 ) -> set[tuple[str, str]]:
     """Tables proven by a projection stored under its own derived chunk id.
@@ -51,12 +52,15 @@ def authorized_tables(
     A projection's native fragments keep no product rows of their own, so the
     table it proves is reachable only through the scope's recorded source
     identity (#900 decision note: table grants must be judged per (document,
-    source_table), never by a native chunk's own product rows alone). Native
-    fragments that carry scope directly are judged by their own chunk id.
+    source_table), never by a native chunk's own product rows alone). A
+    projection only covers its table while its derived chunk itself carries a
+    product grant in `chunk_products` — at store level that mapping contains
+    exactly the chunks that passed authorization, so a proof rejected there
+    can never silently cover a bare table.
     """
     authorized: set[tuple[str, str]] = set()
-    for scope in chunk_scopes.values():
-        if not isinstance(scope, dict):
+    for cid, scope in chunk_scopes.items():
+        if not isinstance(scope, dict) or cid not in chunk_products:
             continue
         for key in (
             "table_projection",
@@ -126,7 +130,7 @@ def audit(
     doc_types: Mapping[str, str],
 ) -> TableAudit:
     """Judge every table group of the corpus against its doc_type standard."""
-    authorized = authorized_tables(chunk_scopes)
+    authorized = authorized_tables(chunk_products, chunk_scopes)
     bare: set[tuple[str, str]] = set()
     coverage: dict[str, dict[str, int]] = {}
     for (sha, table), fragments in table_groups(chunks).items():

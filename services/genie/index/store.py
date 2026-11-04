@@ -260,6 +260,7 @@ def export(directory: Path, path: Path) -> None:
             for pid in d["product_ids"]
             if pid in revisions
         ]
+        authorized: dict[str, list[int]] = {}
         for cid, ids in proof.get("chunk_products", {}).items():
             chunk = chunks_by_id.get(cid)
             if chunk is not None and ids and is_passage(chunk.text):
@@ -290,6 +291,8 @@ def export(directory: Path, path: Path) -> None:
                     external_axis_anchors=axis_anchors,
                     require_table_anchor=True,
                 )
+                if supported:
+                    authorized[cid] = [item["product_id"] for item in supported]
                 for item in supported:
                     covered.setdefault(item["product_id"], set()).add(
                         item["document_id"]
@@ -306,14 +309,17 @@ def export(directory: Path, path: Path) -> None:
         # Per-table gate (#900): a document whose parameter tables carry no scope
         # at all must not read as prepared because one marketing passage filled
         # its (product, document) pair. Standards are per doc_type; see
-        # index.table_gate. The PHP receipt gate must learn this reason before a
-        # build reporting it can be acknowledged.
-        document_types = {d.sha256: d.doc_type for d in corpus.read_documents(directory)}
+        # index.table_gate. Only chunks that passed this store's own
+        # authorization count as table scope, so a proof that fails here can
+        # never silently cover a bare table.
+        document_types = {
+            d.sha256: d.doc_type for d in corpus.read_documents(directory)
+        }
         bare_documents = {
             sha
             for sha, _table in table_audit(
                 chunks_by_id.values(),
-                proof.get("chunk_products", {}),
+                authorized,
                 proof.get("chunk_scopes", {}),
                 document_types,
             ).bare

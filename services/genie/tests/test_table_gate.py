@@ -59,7 +59,12 @@ def _table_chunk(sha: str, table: str, rows: int, text: str) -> Chunk:
 
 
 PARAMETER_TEXT = "\n".join(
-    ["| Battery Data | Model |", "| Nominal Energy (kWh) | 261 |", "| Weight (kg) | 900 |", "| IP Rating | IP65 |"]
+    [
+        "| Battery Data | Model |",
+        "| Nominal Energy (kWh) | 261 |",
+        "| Weight (kg) | 900 |",
+        "| IP Rating | IP65 |",
+    ]
 )
 
 
@@ -102,10 +107,14 @@ def test_audit_marks_bare_parameter_tables_and_accepts_authorized_ones() -> None
             },
         }
     }
-    result = audit([datasheet], {}, scopes, {"d1" * 32: "datasheet"})
-    assert not result.bare
-    assert result.coverage["datasheet"]["tables"] == 1
-    assert result.coverage["datasheet"]["with_scope"] == 1
+    covered = audit([datasheet], {"derived": [1954]}, scopes, {"d1" * 32: "datasheet"})
+    assert not covered.bare
+    assert covered.coverage["datasheet"]["tables"] == 1
+    assert covered.coverage["datasheet"]["with_scope"] == 1
+    # The same projection whose derived chunk carries no product grant does
+    # not cover the table (store-level authorization refused it).
+    refused = audit([datasheet], {}, scopes, {"d1" * 32: "datasheet"})
+    assert refused.bare == {("d1" * 32, "docling:p2:#/tables/0")}
     bare = audit([datasheet], {}, {}, {"d1" * 32: "datasheet"})
     assert bare.bare == {("d1" * 32, "docling:p2:#/tables/0")}
     assert bare.coverage["datasheet"]["bare_parameter_tables"] == 1

@@ -240,7 +240,9 @@ def test_german_pack_row_inside_a_fragment_is_isolated_per_source_row() -> None:
         1955: {"model": "GW112.6-BAT-AC-G10"},
     }
     scope = {"table_columns": own, "source_chunk_ids": ["batc-text", "batc-kept"]}
-    assert table_header(scope, [1954, 1955], products, chunk_id="batc-kept", text=kept.text)
+    assert table_header(
+        scope, [1954, 1955], products, chunk_id="batc-kept", text=kept.text
+    )
 
 
 def test_non_pack_unknown_row_still_refuses_the_whole_table() -> None:
@@ -294,7 +296,10 @@ def test_saj_header_cell_recovers_from_the_sibling_ink_band() -> None:
         span("HS3-5-12K-T2-W/G-P2", 210.0, 27.4, 32.0, 20),
         span("HS3-5-12K-T2-W/G-P5", 510.0, 27.4, 32.0, 40),
     ]
-    matches = {0: _header_cell_spans(cells[0], spans), 1: _header_cell_spans(cells[1], spans)}
+    matches = {
+        0: _header_cell_spans(cells[0], spans),
+        1: _header_cell_spans(cells[1], spans),
+    }
     assert _header_cell_spans(cells[2], spans) == []
     corrections = _recover_shifted_header_spans(cells, {**matches, 2: []}, spans)
     assert corrections[2] == (500.0, 27.4, 600.0, 89.7)
@@ -372,7 +377,9 @@ def _heading_chunk(heading: str, page: int = 94) -> Chunk:
 
 def test_capacity_heading_on_any_page_is_a_rating_cover() -> None:
     statuses = {"gw125/261-esa-lcn-g10": "published"}
-    contexts = _author_contexts([_heading_chunk("ESA Series 125kW/261kWh")], _contexts_snapshot(), statuses)
+    contexts = _author_contexts(
+        [_heading_chunk("ESA Series 125kW/261kWh")], _contexts_snapshot(), statuses
+    )
     (boundary,) = next(iter(contexts.values()))
     assert boundary["rating_cover"] is True
 

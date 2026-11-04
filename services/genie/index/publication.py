@@ -135,9 +135,7 @@ def _blocking_line(
     """A native row carrying a model reference that cannot inherit the axis."""
     if any(pattern.search(line) for pattern in patterns.values()):
         return True
-    contained = {
-        label for label, pattern in patterns.items() if pattern.search(line)
-    }
+    contained = {label for label, pattern in patterns.items() if pattern.search(line)}
     return _unknown_models(line, contained, shapes, families=families)
 
 
@@ -250,9 +248,7 @@ def _table_columns(
         if len(axis_labels) < 2:
             continue
         ordered = list(
-            dict.fromkeys(
-                label for _, label, _ in written if label in axis_labels
-            )
+            dict.fromkeys(label for _, label, _ in written if label in axis_labels)
         )
         ids = [labels_to_ids[label] for label in ordered]
         if any(

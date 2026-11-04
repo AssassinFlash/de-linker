@@ -240,7 +240,9 @@ def test_unknown_code_in_preceding_prose_denies_only_itself(mention: str) -> Non
     naming no column of this table must not veto the published labels.
     """
     source = pages(HCA)
-    target = next(i for i, block in enumerate(source[1].blocks) if block.kind == "table")
+    target = next(
+        i for i, block in enumerate(source[1].blocks) if block.kind == "table"
+    )
     source[1].blocks.insert(target, Block("text", text=mention))
     selected = chunks(source=source)
     proof = scope_proofs(selected, manifest(), authority(manifest()))
