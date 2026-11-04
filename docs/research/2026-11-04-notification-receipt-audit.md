@@ -104,3 +104,5 @@
 ---
 
 *资源报告：本审计未在生产创建/删除任何文件，未启动任何进程；SSH 会话即开即用即断，本机未新增临时文件；无待回收资源。*
+
+**补遗（2026-11-05）**：contact/VAT 两类的生产端到端证据与当日收口见 `docs/acceptance/2026-11-04/notification-contact-vat/README.md`（VAT 场景完成：unverified→none 真实触发、1 封 tester 投递、job 8599；contact 场景：#8535 即 contact 门既有端到端证据，当日自动化环境 Turnstile 不放行已按原始证据收口，未关防护）。
