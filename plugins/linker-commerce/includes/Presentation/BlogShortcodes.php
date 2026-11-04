@@ -225,7 +225,7 @@ final class BlogShortcodes {
 		$html     .= '</div>';
 		$html     .= '<h3 class="tv-blog-single-related-card-title">' . esc_html( JournalTitles::label( $post ) ) . '</h3>';
 		$html     .= '<div class="tv-blog-single-related-excerpt">' . esc_html( get_the_excerpt( $post ) ) . '</div>';
-		$html     .= '<span class="tv-blog-single-related-arrow">' . esc_html__( 'Read article', 'linker-commerce' );
+		$html     .= '<span class="tv-blog-single-related-arrow">' . esc_html__( 'Read the post', 'linker-commerce' );
 		$html     .= '<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">';
 		$html     .= '<path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />';
 		$html     .= '</svg></span>';

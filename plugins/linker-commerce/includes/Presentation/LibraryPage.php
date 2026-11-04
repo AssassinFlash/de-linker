@@ -242,7 +242,7 @@ final class LibraryPage {
 	public function rail( $atts = array() ): string {
 		unset( $atts );
 		$model = $this->model();
-		$trade = (string) __( 'Before you order', 'linker-commerce' );
+		$trade = (string) __( 'Before your inquiry', 'linker-commerce' );
 		$faq   = (string) __( 'Product answers', 'linker-commerce' );
 		$docs  = (string) __( 'Brands', 'linker-commerce' );
 
@@ -282,7 +282,7 @@ final class LibraryPage {
 	public function chips( $atts = array() ): string {
 		unset( $atts );
 		$model       = $this->model();
-		$trade       = (string) __( 'Before you order', 'linker-commerce' );
+		$trade       = (string) __( 'Before your inquiry', 'linker-commerce' );
 		$faq         = (string) __( 'Product answers', 'linker-commerce' );
 		$trade_chips = '';
 		foreach ( $model['trade'] as $category ) {
@@ -331,7 +331,7 @@ final class LibraryPage {
 			}
 			$cards .= $this->card( $category['id'], 'trade', $category['name'], $category['count'], '', $rows, '' );
 		}
-		$out = $this->zone( self::ZONE_TRADE, (string) __( 'Before you order', 'linker-commerce' ), $cards );
+		$out = $this->zone( self::ZONE_TRADE, (string) __( 'Before your inquiry', 'linker-commerce' ), $cards );
 
 		$cards = '';
 		foreach ( $model['brands'] as $brand ) {

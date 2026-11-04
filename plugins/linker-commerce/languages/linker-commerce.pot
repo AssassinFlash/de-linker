@@ -884,8 +884,8 @@ msgstr ""
 msgid "Discuss a project"
 msgstr ""
 
-#: includes/Contact/Form.php:243
-msgid "Support for an order"
+#: includes/Contact/Form.php:251
+msgid "Support after delivery"
 msgstr ""
 
 #: includes/Contact/Form.php:244
@@ -2199,7 +2199,7 @@ msgstr ""
 
 #: includes/Inquiry/ProformaGateway.php:68
 msgid ""
-"Sends the inquiry without payment. Staff issue the Proforma invoice from the "
+"Sends the inquiry free of charge. Staff issue the Proforma invoice from the "
 "inquiry. Always on: it is the only way to send an inquiry."
 msgstr ""
 
@@ -2488,8 +2488,8 @@ msgstr ""
 msgid "Share on %s"
 msgstr ""
 
-#: includes/Presentation/BlogShortcodes.php:212
-msgid "Read article"
+#: includes/Presentation/BlogShortcodes.php:228
+msgid "Read the post"
 msgstr ""
 
 #. translators: %d: maximum number of products in a comparison.
@@ -2571,10 +2571,10 @@ msgstr ""
 msgid "%d on file"
 msgstr ""
 
-#: includes/Presentation/LibraryPage.php:230
-#: includes/Presentation/LibraryPage.php:270
-#: includes/Presentation/LibraryPage.php:319
-msgid "Before you order"
+#: includes/Presentation/LibraryPage.php:245
+#: includes/Presentation/LibraryPage.php:285
+#: includes/Presentation/LibraryPage.php:334
+msgid "Before your inquiry"
 msgstr ""
 
 #: includes/Presentation/LibraryPage.php:231
@@ -3694,7 +3694,7 @@ msgid "What was searched for."
 msgstr ""
 
 #: includes/Products/ProductSearchController.php:156
-msgid "The hits, in shop order."
+msgid "The matching products, as the product range lists them."
 msgstr ""
 
 #: includes/Products/ProductSearchController.php:166

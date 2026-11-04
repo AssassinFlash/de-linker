@@ -108,7 +108,7 @@ de-linker.com：Linker Technology GmbH 的 B2B 光伏储能询盘网站，WordPr
 
 业主 2026-10-23 明确授权：[统一产品与资料发布第二阶段](https://github.com/AssassinFlash/de-linker/issues/607) 全部由 Codex 执行，覆盖本轮 Genie、知识库及其他修复的既有分工要求；网站模型通道不变。
 
-产品、产品分类；不说目录（catalogue）、文章（article）、篮子（basket/cart）。
+产品、产品分类；客户可见文案的禁用语与德语屈折形以 [commerce-terms.txt](tools/checks/commerce-terms.txt) 为唯一权威（`just commerce-terms` 执行，棘轮：存量逐条带理由，新增即失败）；本文不再另列词表。
 客户的工作清单：Solution draft / Lösungsentwurf。方案内的清单：Bill of materials / Stückliste。
 询盘四状态：Inquiry received / Anfrage eingegangen · Proforma invoice issued / Proformarechnung ausgestellt · Completed / Abgeschlossen · Cancelled / Storniert。
 德语用 Sie 体（locale `de_DE_formal`）；禁止 "不是…而是…"、三连排比等 AI 句式；英德永远同步交付。

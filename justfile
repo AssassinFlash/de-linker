@@ -34,11 +34,11 @@ default:
     @just --list --list-submodules
 
 # Lint and static analysis of every chain, and the build/ manifest.
-check: php-check js-check e2e-check py-check pull::check cutover::check german-copy internal-home-urls i18n-coverage i18n-validity build::check
+check: php-check js-check e2e-check py-check pull::check cutover::check german-copy internal-home-urls i18n-coverage i18n-validity commerce-terms build::check
 
 # CI's strict commerce scope reuses a proven unchanged base. This recipe keeps
 # the entire commerce source/unit surface, rather than selecting assertions.
-commerce-check: german-copy internal-home-urls i18n-coverage i18n-validity
+commerce-check: german-copy internal-home-urls i18n-coverage i18n-validity commerce-terms
     #!/usr/bin/env bash
     set -euo pipefail
     python3 -m unittest discover -s "{{ justfile_directory() }}/tools/checks" -p "test_ci_*.py"
@@ -83,6 +83,7 @@ ci-content:
     just --justfile "{{ justfile() }}" internal-home-urls
     just --justfile "{{ justfile() }}" i18n-coverage
     just --justfile "{{ justfile() }}" i18n-validity
+    just --justfile "{{ justfile() }}" commerce-terms
 
 # Reproduce the affected CI lanes locally before a push. Runtime changes also
 # run the complete native set against the reusable `ci_preflight` instance.
@@ -808,6 +809,16 @@ i18n-commerce name:
 i18n-tools:
     {{ php }} "$(command -v wp)" i18n make-json "{{ justfile_directory() }}/plugins/linker-tools/languages/linker-tools-de_DE_formal.po" --no-purge
     msgfmt --check "{{ justfile_directory() }}/plugins/linker-tools/languages/linker-tools-de_DE_formal.po" -o "{{ justfile_directory() }}/plugins/linker-tools/languages/linker-tools-de_DE_formal.mo"
+
+# Customer-visible copy never describes a shop: one wordlist
+# (tools/checks/commerce-terms.txt, the single authority AGENTS.md §3 and
+# docs/specs/11-commerce.md point at) over gettext literals, LiveCanvas
+# prose and catalogs. Existing hits are recorded with a reason; new ones
+# fail (tools/checks/commerce-terms.py).
+[group('check')]
+commerce-terms:
+    python3 -m unittest discover -s "{{ justfile_directory() }}/tools/checks" -p test_commerce_terms.py
+    python3 "{{ justfile_directory() }}/tools/checks/commerce-terms.py"
 
 # Every catalog compiles: msgfmt --check over each plugin's .po and .pot
 # (tools/checks/i18n-validity.py). The coverage gate above reads the German

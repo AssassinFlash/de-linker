@@ -71,7 +71,7 @@ for ( const [ name, catalog ] of [
 				'linker-tools'
 			)
 		).toBe(
-			'Der Status Ihrer Anfrage konnte nicht bestätigt werden. Bitte prüfen Sie ihn vor einem erneuten Versand.'
+			'Der Status Ihrer Anfrage konnte nicht bestätigt werden. Bitte prüfen Sie ihn vor einem erneuten Absenden.'
 		);
 		expect( __( 'Saved in this browser for now.', 'linker-tools' ) ).toBe(
 			'Vorerst in diesem Browser gespeichert.'

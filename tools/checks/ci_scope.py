@@ -92,9 +92,22 @@ CONTROL_INPUTS = (
     "tools/checks/ci_engine_tests.py",
     "tools/checks/test_ci_scope.py",
     "tools/checks/test_ci_preflight.py",
+    # A source scanner and its data change which files a content proof reads,
+    # so no earlier proof survives a change to them.
+    "tools/checks/i18n_sources.py",
+    "tools/checks/commerce-terms.py",
+    "tools/checks/commerce-terms.txt",
+    "tools/checks/commerce-terms-baseline.json",
     ".gitattributes",
     ".gitmodules",
     ".editorconfig",
+)
+
+# Scanner tests `just ci-content` runs. Their changes select the content lane
+# rather than the unprovable-everything fallback above.
+CONTENT_TESTS = (
+    "tools/checks/test_i18n_sources.py",
+    "tools/checks/test_commerce_terms.py",
 )
 
 # Docs are inputs only where a current check actually opens them. Reports and
@@ -278,9 +291,9 @@ def selected_modules(changes, base="", head=""):
             continue
         if path in CONTROL_INPUTS or path.startswith(".github/"):
             return None
-        # ci-content runs this test through the i18n-coverage recipe. Changes
-        # to the extractor itself can change which source files a proof reads.
-        if path == "tools/checks/test_i18n_sources.py":
+        # ci-content runs these scanner tests through its recipes. Changes to a
+        # test can change which source files a proof reads.
+        if path in CONTENT_TESTS:
             selected.add("content")
             continue
         test_owner = plugin_js_test_owner(path)

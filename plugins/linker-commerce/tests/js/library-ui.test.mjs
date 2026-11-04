@@ -80,10 +80,10 @@ function page(rows) {
     <a href="#linker-library-docs-chint" data-library-spy-link>Chint <span class="linker-library-n">3</span></a>
    </nav></div></aside>
    <div class="linker-library-main">
-    <nav class="linker-library-chips"><div class="linker-library-chips-scroll" data-library-nav="faq"><a class="linker-library-chip" href="#linker-library-zone-trade" data-library-spy-link data-library-zone="linker-library-zone-trade">Before you order</a></div><div class="linker-library-chips-scroll" data-library-nav="documents"><a class="linker-library-chip" href="#linker-library-docs-chint" data-library-spy-link>Chint <span class="linker-library-n">3</span></a></div></nav>
+    <nav class="linker-library-chips"><div class="linker-library-chips-scroll" data-library-nav="faq"><a class="linker-library-chip" href="#linker-library-zone-trade" data-library-spy-link data-library-zone="linker-library-zone-trade">Before your inquiry</a></div><div class="linker-library-chips-scroll" data-library-nav="documents"><a class="linker-library-chip" href="#linker-library-docs-chint" data-library-spy-link>Chint <span class="linker-library-n">3</span></a></div></nav>
     <div class="linker-library-panel" id="linker-library-panel-faq" data-library-panel="faq">
      <section class="linker-library-zone" id="linker-library-zone-trade" data-library-spy data-library-zone="linker-library-zone-trade">
-      <h2 class="linker-library-zone-title">Before you order</h2><div class="linker-library-stack">
+      <h2 class="linker-library-zone-title">Before your inquiry</h2><div class="linker-library-stack">
       <article class="linker-library-card" id="linker-library-trade-0" data-library-card data-library-kind="trade" data-library-spy data-library-zone="linker-library-zone-trade">
        <header class="linker-library-card-head"><h3 class="linker-library-card-title">Ordering</h3><span class="linker-library-n" data-library-card-count>2</span></header>
        <div class="linker-library-rows">${rows.trade}</div>

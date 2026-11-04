@@ -1,6 +1,6 @@
 <?php
 /**
- * The trade rules of /faq-download/ ("Before you order").
+ * The trade rules of /faq-download/ ("Before your inquiry").
  *
  * @package Linker\Commerce
  */
