@@ -47,13 +47,19 @@ final class WebsiteTest extends TestCase {
 
 	/**
 	 * Only an http(s) address with a dotted host is a website the team can open.
+	 * Multi-label hosts are real company sites; a single-label host is not a
+	 * public address, so it stays refused like the other garbage.
 	 */
 	public function test_valid_requires_a_dotted_http_host(): void {
 		$this->assertTrue( Website::valid( 'example.com' ) );
+		$this->assertTrue( Website::valid( 'www.example.com' ) );
+		$this->assertTrue( Website::valid( 'company.jimdosite.com' ) );
 		$this->assertTrue( Website::valid( 'https://sub.example.co.uk/path?q=1' ) );
 		$this->assertFalse( Website::valid( 'not a site' ) );
 		$this->assertFalse( Website::valid( 'ftp://example.com' ) );
 		$this->assertFalse( Website::valid( 'https://example' ) );
+		$this->assertFalse( Website::valid( 'localhost' ) );
+		$this->assertFalse( Website::valid( 'example.c' ) );
 		$this->assertFalse( Website::valid( 'https://user:pass@example.com' ) );
 		$this->assertFalse( Website::valid( '' ) );
 	}
