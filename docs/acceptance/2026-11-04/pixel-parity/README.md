@@ -66,35 +66,63 @@ capturing, so layout and decode happen at the captured size.
 `batch2` residual: `solution` 1440 (629), `product_saj_ats1_t63_a` 1440 (629),
 `solution` 390 (600), `product_saj_ats1_t63_a` 390 (210).
 
-All four are **bistable per browser instance and stable within an instance**:
+All four sit on anti-aliased edges of translucent or blurred footer/table
+surfaces, and all four are **bistable per browser instance while stable within
+an instance**:
 
-- live↔live at 1440 across all 12 scenarios: 0 differences (3 runs).
-- local↔local at 390 `/de/`: 0 differences (2 runs).
-- The same case flips: `/solution/` 390 gave 0, 600, 0 across three independent
-  cross-host runs, and 600 every time in `batch1` + `batch2`.
+- Same-host controls are clean: live↔live across all 12 scenarios at 1440 gave 0
+  differences (3 runs); local↔local at 390 `/de/` gave 0 (2 runs).
+- The same case flips between instances: `/solution/` 390 gave 0, 600, 0 across
+  three independent cross-host runs, and 600 in `batch1`, `batch2` and
+  `repeat-1`. `product_saj_ats1_t63_a` 1440 gave 0 in one probe and 629 in
+  `batch2` and `repeat-1`.
 - The regions are compositor features, not content:
   - `/solution/` 390 — five 1px hairlines, x 18–138, exactly
     `border-bottom: 1px solid rgb(209,217,206)` of the five
     `position: sticky; left: 0` first-column cells of `.lk-twin-table`. Their
-    layout height is 79.875px, so each border lands on a fractional y and snaps
-    either side per instance. Computed styles and geometry are byte-equal on
-    both hosts (33 paint-relevant properties compared, all identical).
+    layout height is 79.875px, so each border falls on a fractional y and snaps
+    either side per instance. Computed styles and geometry are equal on both
+    hosts (33 paint-relevant properties compared, all identical).
   - 629-px regions at 1440 — inside `.footer-console`, which carries
-    `backdrop-filter: blur(28px) saturate(1.25)`. Same bistability.
+    `backdrop-filter: blur(28px) saturate(1.25)`; the differing columns sit on
+    the card's rounded right edge.
+  - 210-px region at 390 — `.footer-panel-count`, a 27×27 `border-radius: 50%`
+    badge with `background: rgba(255,255,255,.396)` over the footer's blurred
+    gradient; the differing rows are its anti-aliased edge.
 - Feature toggles move the artifact without touching content: removing
   `backdrop-filter` makes `/solution/` 390 reach 0; removing `position: sticky`
-  also makes it 0; the removal of either changes which instance beats align.
+  also makes it 0.
 - A no-resize capture would avoid it entirely, but Chromium crashes rendering at
-  the full-document viewport height (7048px) on this machine, which is why the
-  harness must grow the viewport after load.
+  the full-document viewport height (7048px) on this machine (`Target page,
+  context or browser has been closed` from every attempt to load at that size),
+  which is why the harness must grow the viewport after load.
 
 Not fixed here because both available levers are owner decisions, not harness
 internals:
 
-1. Fix the subpixel layout (remove the fractional 0.875px cell height and the
-   footer blur) so every instance snaps the same way. Product change.
-2. Declare the two regions as ruled changes. Requires the change ledger and the
+1. Fix the subpixel layout — remove the fractional 0.875px cell height, and the
+   footer blur/translucent rounded surfaces — so every instance snaps the same
+   way. This changes rendered output, so it needs the owner's sign-off as a
+   ruled change rather than a quiet branch.
+2. Declare the regions as ruled changes. Requires the change ledger and the
    owner's sign-off; masking is not permitted otherwise.
+
+## Same-host control
+
+Because the residual is cross-instance noise, the discriminating measurement is
+a same-host control pair, which needs no new code — the tool already accepts two
+bases:
+
+```sh
+# control: same host on both sides; any difference here is capture noise
+node tests/visual/pixel-parity.mjs <outdir> https://de-linker.com https://de-linker.com \
+  --widths 1440,390 --direct \
+  --scenarios docs/acceptance/2026-11-04/pixel-parity/scenarios.json
+```
+
+A cross-host difference that also appears in the control pair is not
+attributable to the products; a pixel that is stable in the control pair and
+differs across hosts is.
 
 ## Reproduce
 
