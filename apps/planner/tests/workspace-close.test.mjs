@@ -3,7 +3,7 @@ import test from "node:test";
 import React, { act } from "react";
 import { setupDom, until, enter, deferred } from "./dom-fixture.mjs";
 
-test("a deferred close refused during same-scope verification remains retryable", async (t) => {
+test("a deferred close completes across a same-scope revalidation without being refused", async (t) => {
 	const fixture = setupDom();
 	const { createRoot } = await import("react-dom/client");
 	const { SessionBoundary } =
@@ -43,7 +43,8 @@ test("a deferred close refused during same-scope verification remains retryable"
 	let closing = false,
 		writing = false,
 		verifying = false,
-		bootstraps = 0;
+		bootstraps = 0,
+		probes = 0;
 	const response = (value) =>
 		new Response(JSON.stringify(value), {
 			headers: { "Content-Type": "application/json" },
@@ -54,6 +55,14 @@ test("a deferred close refused during same-scope verification remains retryable"
 		nonceUrl: location.origin + "/nonce",
 		fetch: async (url) => {
 			if (String(url).endsWith("/nonce")) return new Response("abcdefghij");
+			if (String(url).endsWith("/scope")) {
+				probes++;
+				if (verifying) await bootstrapGate.promise;
+				return response({
+					schema_version: 1,
+					query_scope: session.query_scope,
+				});
+			}
 			if (String(url).endsWith("/bootstrap")) {
 				bootstraps++;
 				if (verifying) await bootstrapGate.promise;
@@ -122,26 +131,25 @@ test("a deferred close refused during same-scope verification remains retryable"
 	await act(async () => projects().click());
 	await until(() => writing);
 	verifying = true;
-	const before = bootstraps;
+	const before = probes;
 	await act(async () => window.dispatchEvent(new window.Event("focus")));
-	await until(() => bootstraps > before);
-	assert.equal(client.isCurrentScope(session.query_scope), false);
+	await until(() => probes > before);
+	// One light probe runs; the confirmed workspace keeps its admission and
+	// visibility, so the pending close is never refused by the revalidation.
+	assert.equal(
+		document.querySelector(".lp-project").parentElement.hidden,
+		false,
+	);
+	assert.equal(client.isCurrentScope(session.query_scope), true);
+	assert.equal(bootstraps, 1);
 	await act(async () => flushGate.resolve());
 	await act(async () => bootstrapGate.resolve());
 	await until(
 		() =>
 			client.isCurrentScope(session.query_scope) &&
-			!document.querySelector(".lp-project").parentElement.hidden,
+			document.querySelector(".lp-workspace") &&
+			!document.querySelector(".lp-project"),
 	);
-	assert.equal(projects().disabled, false);
-	assert.equal(
-		document.querySelector("textarea").value,
-		"SYNTHETIC UNSAVED NOTE",
-	);
-	assert.equal(location.search, "?project=" + project.id);
-	closing = false;
-	await act(async () => projects().click());
-	await until(() => document.querySelector(".lp-workspace"));
-	assert.equal(location.search, "");
 	assert.ok(document.body.textContent.includes("Your projects"));
+	assert.equal(location.search, "");
 });
