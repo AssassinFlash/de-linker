@@ -97,7 +97,10 @@
    "sku": "DLK-GOODWE-GW60BATDG20",
    "figures": {
     "stacks_parallel_max": {
-     "expect": null,
+     "expect": {
+      "value": "12",
+      "unit": "units"
+     },
      "set": {
       "value": "3",
       "unit": "expansion groups",
@@ -122,7 +125,10 @@
    "sku": "DLK-GOODWE-GW90BATDG20",
    "figures": {
     "stacks_parallel_max": {
-     "expect": null,
+     "expect": {
+      "value": "12",
+      "unit": "units"
+     },
      "set": {
       "value": "3",
       "unit": "expansion groups",
@@ -147,7 +153,10 @@
    "sku": "DLK-GOODWE-GW51BATDG20",
    "figures": {
     "stacks_parallel_max": {
-     "expect": null,
+     "expect": {
+      "value": "12",
+      "unit": "units"
+     },
      "set": {
       "value": "3",
       "unit": "expansion groups",
@@ -172,7 +181,10 @@
    "sku": "DLK-GOODWE-GW83BATDG20",
    "figures": {
     "stacks_parallel_max": {
-     "expect": null,
+     "expect": {
+      "value": "12",
+      "unit": "units"
+     },
      "set": {
       "value": "3",
       "unit": "expansion groups",
