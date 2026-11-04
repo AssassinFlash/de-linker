@@ -207,8 +207,9 @@ def test_prune_bounds_a_managed_production_root(tmp_path: Path) -> None:
     assert (root / "current").resolve() == (root / versions[-1]).resolve()
     assert (root / "index" / ".activation.json").read_text() == "{}"
     assert (root / "state" / "work.sqlite").read_text() == "state"
-    assert f"removed={versions[0]},{versions[1]},{versions[2]},{versions[3]},{versions[4]}" in (
-        result.stdout
+    assert (
+        f"removed={versions[0]},{versions[1]},{versions[2]},{versions[3]},{versions[4]}"
+        in (result.stdout)
     )
     assert f"releases={versions[-3]},{versions[-2]},{versions[-1]}" in result.stdout
 
