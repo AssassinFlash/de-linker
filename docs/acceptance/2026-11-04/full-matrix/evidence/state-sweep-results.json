@@ -1,0 +1,4046 @@
+[
+  {
+    "key": "global-navigation:mobile-menu-open:en:1440",
+    "stateKey": "global-navigation:mobile-menu-open",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "desktop nav applicability at 1440",
+        "result": "observe",
+        "observed": "desktop dropdown aria-expanded=true; mobile-menu state not applicable at 1440"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/global-navigation:mobile-menu-open:en:1440.png",
+    "scope": "Applicability probe: mobile menu branch does not exist at 1440",
+    "observedAt": "2026-11-04T11:42:08.445Z"
+  },
+  {
+    "key": "global-navigation:keyboard-traversal:en:1440",
+    "stateKey": "global-navigation:keyboard-traversal",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "Tab traversal moves focus",
+        "result": "pass",
+        "observed": "/ PRODUCTS\n\nStorage products from author > Home Storage\nHome batteries from GoodWe  > Commercial Storage\nCommercial storage fr > All-in-One Systems > Battery Systems > Inverters > EMS & Monitoring > EV Chargers"
+      },
+      {
+        "name": "focus ring inspectable",
+        "result": "observe",
+        "observed": "focus element present"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Automated Tab traversal on home; full visible-ring judgement per control is manual-visual",
+    "observedAt": "2026-11-04T11:42:08.463Z"
+  },
+  {
+    "key": "global-navigation:search-open:en:1440",
+    "stateKey": "global-navigation:search-open",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/?post_type=post&s=",
+    "checks": [
+      {
+        "name": "search control opens input",
+        "result": "pass",
+        "observed": "visible=true"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/global-navigation:search-open:en:1440.png",
+    "scope": "Header search open state at rest",
+    "observedAt": "2026-11-04T11:42:10.304Z"
+  },
+  {
+    "key": "global-navigation:search-results:en:1440",
+    "stateKey": "global-navigation:search-results",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/?post_type=post&s=SAJ",
+    "checks": [
+      {
+        "name": "search results page reached",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/?post_type=post&s=SAJ"
+      },
+      {
+        "name": "results present",
+        "result": "observe",
+        "observed": "h1=SAJ product-links=0"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Header search submission with a known brand term; result set recorded for language",
+    "observedAt": "2026-11-04T11:42:11.205Z"
+  },
+  {
+    "key": "global-navigation:language-switch-current-route:en:1440",
+    "stateKey": "global-navigation:language-switch-current-route",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/blog/",
+    "checks": [
+      {
+        "name": "switch target href",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/de/blog/"
+      },
+      {
+        "name": "document lang after switch",
+        "result": "pass",
+        "observed": "de-DE"
+      },
+      {
+        "name": "landed on translated route",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/de/blog/"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "One-click language switch from blog index; destination route and document language",
+    "observedAt": "2026-11-04T11:42:13.055Z"
+  },
+  {
+    "key": "global-navigation:language-switch-query-filter-pagination:en:1440",
+    "stateKey": "global-navigation:language-switch-query-filter-pagination",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/",
+    "checks": [
+      {
+        "name": "url before switch",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/product-category/commercial-storage/"
+      },
+      {
+        "name": "url after switch",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/"
+      },
+      {
+        "name": "document lang",
+        "result": "pass",
+        "observed": "de-DE"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Language switch from paginated category archive; retention/reset of page state recorded, per-entry expectation applied at review",
+    "observedAt": "2026-11-04T11:42:15.920Z"
+  },
+  {
+    "key": "global-navigation:language-switch-account-endpoint-and-fragment:en:1440",
+    "stateKey": "global-navigation:language-switch-account-endpoint-and-fragment",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/orders/",
+    "checks": [
+      {
+        "name": "guest deep account endpoint lands on auth",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/my-account/orders/"
+      },
+      {
+        "name": "document lang",
+        "result": "observe",
+        "observed": "en-US"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Guest arrival on account endpoint; redirect target and locale recorded. No credentials used.",
+    "observedAt": "2026-11-04T11:42:17.328Z"
+  },
+  {
+    "key": "global-navigation:floating-widgets-no-obstruction:en:1440",
+    "stateKey": "global-navigation:floating-widgets-no-obstruction",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/product/saj-ats1-t63-a/",
+    "checks": [
+      {
+        "name": "floating widget does not cover other content at its center",
+        "result": "fail",
+        "observed": "{\"chip\":\"linker-compare-chip fixed bottom-24 left-5 z-40 inline-flex items-center gap-2 r\",\"topmost\":\"DIV\"}"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "Geometric probe: fixed compare chip / consent revisit button at scroll position; not a full-page overlap sweep",
+    "observedAt": "2026-11-04T11:42:19.299Z"
+  },
+  {
+    "key": "product-archive:default:en:1440",
+    "stateKey": "product-archive:default",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/product-category/commercial-storage/",
+    "checks": [
+      {
+        "name": "archive renders product entries",
+        "result": "pass",
+        "observed": "candidate product elements=28"
+      },
+      {
+        "name": "filter affordances present",
+        "result": "observe",
+        "observed": "filter controls=1"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Guest archive default view at rest",
+    "observedAt": "2026-11-04T11:42:20.657Z"
+  },
+  {
+    "key": "product-archive:category-brand-filters:en:1440",
+    "stateKey": "product-archive:category-brand-filters",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/product-category/commercial-storage/",
+    "checks": [
+      {
+        "name": "filter affordance",
+        "result": "fail",
+        "observed": "no layered-nav/facet link matched"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "No facet UI matched by selector set",
+    "observedAt": "2026-11-04T11:42:20.657Z"
+  },
+  {
+    "key": "product-archive:sort:en:1440",
+    "stateKey": "product-archive:sort",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/product-category/commercial-storage/?orderby=price",
+    "checks": [
+      {
+        "name": "orderby=price applied",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/product-category/commercial-storage/?orderby=price"
+      },
+      {
+        "name": "price order ascending",
+        "result": "observe",
+        "observed": "prices="
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Native orderby query sort; guest price visibility depends on gate (price gate states are separate rows)",
+    "observedAt": "2026-11-04T11:42:22.452Z"
+  },
+  {
+    "key": "product-archive:pagination:en:1440",
+    "stateKey": "product-archive:pagination",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/product-category/commercial-storage/",
+    "checks": [
+      {
+        "name": "pagination control",
+        "result": "fail",
+        "observed": "no page-2 link on chosen category"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "Chosen category lacks pagination",
+    "observedAt": "2026-11-04T11:42:23.684Z"
+  },
+  {
+    "key": "product-archive:filtered-pagination-count-consistency:en:1440",
+    "stateKey": "product-archive:filtered-pagination-count-consistency",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/product-category/commercial-storage/",
+    "checks": [
+      {
+        "name": "pagination control",
+        "result": "fail",
+        "observed": "no page-2 link"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "Depends on pagination",
+    "observedAt": "2026-11-04T11:42:23.684Z"
+  },
+  {
+    "key": "product-archive:pagination-out-of-range:en:1440",
+    "stateKey": "product-archive:pagination-out-of-range",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/product-category/commercial-storage/page/999/",
+    "checks": [
+      {
+        "name": "out-of-range page behavior",
+        "result": "observe",
+        "observed": "null"
+      },
+      {
+        "name": "h1 on out-of-range",
+        "result": "observe",
+        "observed": "This page does not exist."
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Out-of-range page/999 request; WordPress convention redirects to archive root — recorded, verdict at review",
+    "observedAt": "2026-11-04T11:42:25.046Z"
+  },
+  {
+    "key": "product-archive:compare-selection:en:1440",
+    "stateKey": "product-archive:compare-selection",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/product-category/commercial-storage/",
+    "checks": [
+      {
+        "name": "compare control on card",
+        "result": "pass",
+        "observed": "compare button present"
+      },
+      {
+        "name": "compare chip appears",
+        "result": "pass",
+        "observed": "chip=true"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "One product added to compare from archive",
+    "observedAt": "2026-11-04T11:42:26.961Z"
+  },
+  {
+    "key": "product-archive:add-to-draft:en:1440",
+    "stateKey": "product-archive:add-to-draft",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/product-category/commercial-storage/",
+    "checks": [
+      {
+        "name": "archive add link",
+        "result": "fail",
+        "observed": "no add-to-cart link on archive"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "No loop add link",
+    "observedAt": "2026-11-04T11:42:28.155Z"
+  },
+  {
+    "key": "product-archive:loading-error:en:1440",
+    "stateKey": "product-archive:loading-error",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/product-category/commercial-storage/",
+    "checks": [
+      {
+        "name": "page with aborted ajax still renders content",
+        "result": "observe",
+        "observed": "Cell chemistry"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Aborted admin-ajax/wc-ajax on reload; resilience/error surfacing recorded. Engine-level network failure not simulated.",
+    "observedAt": "2026-11-04T11:42:30.591Z"
+  },
+  {
+    "key": "comparison:empty:en:1440",
+    "stateKey": "comparison:empty",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/compare-products/",
+    "checks": [
+      {
+        "name": "empty state visible on fresh session",
+        "result": "pass",
+        "observed": "empty=true"
+      },
+      {
+        "name": "h1",
+        "result": "observe",
+        "observed": "Compare products"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/comparison:empty:en:1440.png",
+    "scope": "Fresh visitor compare page empty state",
+    "observedAt": "2026-11-04T11:42:31.791Z"
+  },
+  {
+    "key": "comparison:*:en:1440",
+    "status": "error",
+    "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('button[class*=\\'compare\\'], a[class*=\\'compare\\'], [data-compare]').first()\n    - locator resolved to <a hidden=\"\" id=\"compare-chip\" data-compare-chip=\"\" data-compare-max=\"4\" data-compare-count-value=\"0\" href=\"http://127.0.0.1:8904/compare-products/\" data-compare-page=\"http://127.0.0.1:8904/compare-products/\" class=\"linker-compare-chip fixed bottom-24 left-5 z-40 inline-flex items-center gap-2 rounded-full bg-[#15352f] p",
+    "observedAt": "2026-11-04T11:43:02.887Z"
+  },
+  {
+    "key": "content:*:en:1440",
+    "status": "error",
+    "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('details, [data-bs-toggle=\\'collapse\\'], .accordion-button').first()\n    - locator resolved to <details class=\"tv-mobile-navigation\">…</details>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying clic",
+    "observedAt": "2026-11-04T11:43:34.498Z"
+  },
+  {
+    "key": "document-library:switch-tabs-and-keyboard:en:1440",
+    "stateKey": "document-library:switch-tabs-and-keyboard",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/faq-download/?tab=documents",
+    "checks": [
+      {
+        "name": "both tabs present",
+        "result": "pass",
+        "observed": "faq+documents tabs"
+      },
+      {
+        "name": "documents tab activates panel",
+        "result": "pass",
+        "observed": "panel visible=true"
+      },
+      {
+        "name": "keyboard reaches tab",
+        "result": "observe",
+        "observed": "A"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/document-library:switch-tabs-and-keyboard:en:1440.png",
+    "scope": "FAQ/Documents tab switch + Tab-key probe",
+    "observedAt": "2026-11-04T11:43:37.769Z"
+  },
+  {
+    "key": "document-library:document-open-file-and-anchor:en:1440",
+    "stateKey": "document-library:document-open-file-and-anchor",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/faq-download/?tab=documents",
+    "checks": [
+      {
+        "name": "document link resolves",
+        "result": "pass",
+        "observed": "status=200 bytes=524172 type=application/pdf"
+      },
+      {
+        "name": "href",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/wp-content/uploads/2026/10/GW_BAT-C-208-261kWh_Datasheet_EMEA-DE_V1.1.pdf"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/document-library:document-open-file-and-anchor:en:1440.png",
+    "scope": "First library document fetched; content-type and non-empty bytes",
+    "observedAt": "2026-11-04T11:43:38.090Z"
+  },
+  {
+    "key": "document-library:search-results-and-live-count:en:1440",
+    "stateKey": "document-library:search-results-and-live-count",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/faq-download/?q=GMK&tab=documents",
+    "checks": [
+      {
+        "name": "live count text",
+        "result": "pass",
+        "observed": "9 results"
+      },
+      {
+        "name": "result rows for known term",
+        "result": "fail",
+        "observed": "visible result rows=0"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/document-library:search-results-and-live-count:en:1440.png",
+    "scope": "FAQ search with a known product term",
+    "observedAt": "2026-11-04T11:43:39.014Z"
+  },
+  {
+    "key": "document-library:search-empty-and-clear:en:1440",
+    "stateKey": "document-library:search-empty-and-clear",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/faq-download/?tab=documents",
+    "checks": [
+      {
+        "name": "empty-result message",
+        "result": "fail",
+        "observed": "none"
+      },
+      {
+        "name": "clear restores list",
+        "result": "observe",
+        "observed": "rows after clear=0"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/document-library:search-empty-and-clear:en:1440.png",
+    "scope": "No-match query + clear",
+    "observedAt": "2026-11-04T11:43:40.460Z"
+  },
+  {
+    "key": "document-library:suggestions-keyboard-selection-and-escape:en:1440",
+    "stateKey": "document-library:suggestions-keyboard-selection-and-escape",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/faq-download/?tab=documents",
+    "checks": [
+      {
+        "name": "keyboard interaction did not error",
+        "result": "pass",
+        "observed": "ArrowDown+Escape applied to focused search"
+      },
+      {
+        "name": "suggestion listbox presence",
+        "result": "observe",
+        "observed": "1"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/document-library:suggestions-keyboard-selection-and-escape:en:1440.png",
+    "scope": "Keyboard probe on search input; listbox structure recorded",
+    "observedAt": "2026-11-04T11:43:40.561Z"
+  },
+  {
+    "key": "document-library:rail-and-mobile-chips:en:1440",
+    "stateKey": "document-library:rail-and-mobile-chips",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/faq-download/?tab=documents",
+    "checks": [
+      {
+        "name": "category navigation affordances",
+        "result": "pass",
+        "observed": "rail/chip elements=56"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/document-library:rail-and-mobile-chips:en:1440.png",
+    "scope": "Category rail/chips presence at width",
+    "observedAt": "2026-11-04T11:43:42.312Z"
+  },
+  {
+    "key": "document-library:filtered-results-language-switch:en:1440",
+    "stateKey": "document-library:filtered-results-language-switch",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/",
+    "checks": [
+      {
+        "name": "switch from library page",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/de/faq-dokumente/"
+      },
+      {
+        "name": "document lang",
+        "result": "observe",
+        "observed": "de-DE"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Language switch from library page; query/tab retention recorded",
+    "observedAt": "2026-11-04T11:43:45.543Z"
+  },
+  {
+    "key": "dynamic-routes:404-unknown-route-and-locale:en:1440",
+    "stateKey": "dynamic-routes:404-unknown-route-and-locale",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/_full-matrix-missing-route/",
+    "checks": [
+      {
+        "name": "404 template rendered",
+        "result": "pass",
+        "observed": "title=Page not found | Linker"
+      },
+      {
+        "name": "document lang",
+        "result": "observe",
+        "observed": "en-US"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Unknown-route 404 with locale",
+    "observedAt": "2026-11-04T11:43:46.565Z"
+  },
+  {
+    "key": "dynamic-routes:retired-alias-redirect-and-language:en:1440",
+    "stateKey": "dynamic-routes:retired-alias-redirect-and-language",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "alias probes",
+        "result": "observe",
+        "observed": "[{\"probe\":\"/feed/\",\"status\":200,\"url\":\"http://127.0.0.1:8904/feed/\"},{\"probe\":\"/?paged=2\",\"status\":200,\"url\":\"http://127.0.0.1:8904/page/2/\"},{\"probe\":\"/shop/\",\"status\":200,\"url\":\"http://127.0.0.1:8904/products/\"}]"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Feed/paged/shop alias probes with redirect chain; recorded for review against current slug map",
+    "observedAt": "2026-11-04T11:43:48.131Z"
+  },
+  {
+    "key": "dynamic-routes:public-archive-discovery-and-applicability:en:1440",
+    "stateKey": "dynamic-routes:public-archive-discovery-and-applicability",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "author/date/tag probes",
+        "result": "observe",
+        "observed": "[{\"probe\":\"/author/admin/\",\"status\":404,\"url\":\"http://127.0.0.1:8904/author/admin/\"},{\"probe\":\"/2026/\",\"status\":200,\"url\":\"http://127.0.0.1:8904/\"},{\"probe\":\"/tag/storage/\",\"status\":404,\"url\":\"http://127.0.0.1:8904/tag/storage/\"}]"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Author/date/tag archive applicability probes (no invented archives)",
+    "observedAt": "2026-11-04T11:43:48.760Z"
+  },
+  {
+    "key": "dynamic-routes:account-direct-endpoint-and-refresh:en:1440",
+    "stateKey": "dynamic-routes:account-direct-endpoint-and-refresh",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/orders/",
+    "checks": [
+      {
+        "name": "guest /orders/ destination",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/my-account/orders/"
+      },
+      {
+        "name": "login form present",
+        "result": "observe",
+        "observed": "login form probe"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Guest deep-link to account endpoint; no credentials used",
+    "observedAt": "2026-11-04T11:43:50.106Z"
+  },
+  {
+    "key": "dynamic-routes:inquiry-detail-and-received-key:en:1440",
+    "stateKey": "dynamic-routes:inquiry-detail-and-received-key",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/proforma-request/order-received/?key=fullmatrix_bogus",
+    "checks": [
+      {
+        "name": "bogus order-received key behavior",
+        "result": "observe",
+        "observed": "url=http://127.0.0.1:8904/proforma-request/order-received/?key=fullmatrix_bogus h1=This page does not exist."
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Bogus confirmation key; valid-key state requires a real local inquiry (remainder)",
+    "observedAt": "2026-11-04T11:43:51.237Z"
+  },
+  {
+    "key": "dynamic-routes:password-reset-token-states:en:1440",
+    "stateKey": "dynamic-routes:password-reset-token-states",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/lost-password/?rp_key=fullmatrix_invalid&login=fullmatrix_nobody",
+    "checks": [
+      {
+        "name": "invalid reset key landing",
+        "result": "observe",
+        "observed": "url=http://127.0.0.1:8904/my-account/lost-password/?rp_key=fullmatrix_invalid&login=fullmatrix_nobody notice="
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Invalid reset key params on lost-password endpoint; no mail involved",
+    "observedAt": "2026-11-04T11:44:22.264Z"
+  },
+  {
+    "key": "files-and-feedback:404:en:1440",
+    "stateKey": "files-and-feedback:404",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "missing upload file",
+        "result": "fail",
+        "observed": "status=410"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "Missing file URL returns 404",
+    "observedAt": "2026-11-04T11:44:22.469Z"
+  },
+  {
+    "key": "files-and-feedback:invalid-route:en:1440",
+    "stateKey": "files-and-feedback:invalid-route",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "invalid REST route",
+        "result": "observe",
+        "observed": "status=404"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Invalid REST route response recorded",
+    "observedAt": "2026-11-04T11:44:22.469Z"
+  },
+  {
+    "key": "files-and-feedback:public-document-auth:en:1440",
+    "stateKey": "files-and-feedback:public-document-auth",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "guest document endpoint probe 1",
+        "result": "observe",
+        "observed": "status=404"
+      },
+      {
+        "name": "guest document endpoint probe 2",
+        "result": "observe",
+        "observed": "status=200"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Guest access probes against document endpoints; authorized-access states need fixtures (remainder)",
+    "observedAt": "2026-11-04T11:44:22.930Z"
+  },
+  {
+    "key": "files-and-feedback:reduced-motion:en:1440",
+    "stateKey": "files-and-feedback:reduced-motion",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "reduced-motion emulation renders content",
+        "result": "pass",
+        "observed": "{\"h1\":true,\"visibleText\":\"Linking Value. Serving You.\",\"color\":\"rgb(255, 255, 255)\",\"bg\":\"rgba(0, 0, 0, 0)\"}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "reduced-motion media emulation; layout integrity at rest",
+    "observedAt": "2026-11-04T11:44:24.812Z"
+  },
+  {
+    "key": "files-and-feedback:keyboard-focus-visible:en:1440",
+    "stateKey": "files-and-feedback:keyboard-focus-visible",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "focused element shows a focus style",
+        "result": "pass",
+        "observed": "{\"tag\":\"A\",\"outline\":\"solid\",\"boxShadow\":false,\"borderWidth\":\"0px\"}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "First Tab focus indicator probe",
+    "observedAt": "2026-11-04T11:44:24.812Z"
+  },
+  {
+    "key": "files-and-feedback:no-js-readable-fallback:en:1440",
+    "stateKey": "files-and-feedback:no-js-readable-fallback",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/blog/",
+    "checks": [
+      {
+        "name": "server HTML carries readable content without JS",
+        "result": "pass",
+        "observed": "h1-in-html=true"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Raw server HTML inspection; JS-disabled browsing not fully emulated",
+    "observedAt": "2026-11-04T11:44:25.020Z"
+  },
+  {
+    "key": "files-and-feedback:slow-network-loading:en:1440",
+    "stateKey": "files-and-feedback:slow-network-loading",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/contact/",
+    "checks": [
+      {
+        "name": "page completes on throttled network",
+        "result": "fail",
+        "observed": "elapsed=60003ms h1="
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "3G-ish throttled load; slow-tail media completion not asserted",
+    "observedAt": "2026-11-04T11:45:55.189Z"
+  },
+  {
+    "key": "files-and-feedback:actual-file-manifest-open-and-content:en:1440",
+    "stateKey": "files-and-feedback:actual-file-manifest-open-and-content",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/faq-download/",
+    "checks": [
+      {
+        "name": "sampled documents all resolve with bytes",
+        "result": "pass",
+        "observed": "[\"200/524172\",\"200/532308\",\"200/531133\",\"200/682009\"]"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "First 4 library documents fetched; full dedup manifest is remainder",
+    "observedAt": "2026-11-04T11:45:58.421Z"
+  },
+  {
+    "key": "files-and-feedback:file-url-and-source-language-consumer:en:1440",
+    "stateKey": "files-and-feedback:file-url-and-source-language-consumer",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/faq-download/",
+    "checks": [
+      {
+        "name": "document hrefs and link text language",
+        "result": "observe",
+        "observed": "[\"loads/2026/10/GW_BAT-C-208-261kWh_Datasheet_EMEA-DE_V1.1.pdf\",\"ontent/uploads/2026/07/delinker-goodwe_batc208-datasheet.pdf\",\"/uploads/2026/09/GW_BAT-C-208-261_Datasheet_EMEA-EN_V1.1.pdf\",\"ploads/2026/10/GW_BAT-C-60-112kWh_Datasheet_EMEA-DE_V1.1.pdf\"]"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Document URL/original-language pairing recorded for review; per-file language assertion needs manifest metadata",
+    "observedAt": "2026-11-04T11:45:58.421Z"
+  },
+  {
+    "key": "product:faq-accordion:en:1440",
+    "stateKey": "product:faq-accordion",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/product/saj-ats1-t63-a/",
+    "checks": [
+      {
+        "name": "PDP FAQ disclosure toggles",
+        "result": "pass",
+        "observed": "open="
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/product:faq-accordion:en:1440.png",
+    "scope": "First PDP FAQ disclosure",
+    "observedAt": "2026-11-04T11:46:00.179Z"
+  },
+  {
+    "key": "product:related-products:en:1440",
+    "stateKey": "product:related-products",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/product/saj-ats1-t63-a/",
+    "checks": [
+      {
+        "name": "related products present",
+        "result": "fail",
+        "observed": "related links=0"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/product:related-products:en:1440.png",
+    "scope": "Related products section presence",
+    "observedAt": "2026-11-04T11:46:00.225Z"
+  },
+  {
+    "key": "product:documents-and-pdf:en:1440",
+    "stateKey": "product:documents-and-pdf",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/product/saj-ats1-t63-a/",
+    "checks": [
+      {
+        "name": "PDP PDF link resolves",
+        "result": "pass",
+        "observed": "status=200 bytes=275500"
+      },
+      {
+        "name": "href",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/wp-content/uploads/2026/10/SAJ_ATS1_Datasheet_EN-BEU.pdf"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/product:documents-and-pdf:en:1440.png",
+    "scope": "First PDP document PDF fetched",
+    "observedAt": "2026-11-04T11:46:00.339Z"
+  },
+  {
+    "key": "product:*:en:1440",
+    "status": "error",
+    "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('button[class*=\\'compare\\'], a[class*=\\'compare\\'], [data-compare]').first()\n    - locator resolved to <a hidden=\"\" id=\"compare-chip\" data-compare-chip=\"\" data-compare-max=\"4\" data-compare-count-value=\"0\" href=\"http://127.0.0.1:8904/compare-products/\" data-compare-page=\"http://127.0.0.1:8904/compare-products/\" class=\"linker-compare-chip fixed bottom-24 left-5 z-40 inline-flex items-center gap-2 rounded-full bg-[#15352f] p",
+    "observedAt": "2026-11-04T11:46:30.285Z"
+  },
+  {
+    "key": "global-navigation:cookie-choice-and-reopen:en:1440",
+    "stateKey": "global-navigation:cookie-choice-and-reopen",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "banner shown on first visit",
+        "result": "pass",
+        "observed": "shown=true"
+      },
+      {
+        "name": "reject choice applied",
+        "result": "pass",
+        "observed": "rejected"
+      },
+      {
+        "name": "reopen via revisit button",
+        "result": "fail",
+        "observed": "reopened=false"
+      }
+    ],
+    "passed": 2,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "Fresh-context cookie banner: shown, reject, reopen",
+    "observedAt": "2026-11-04T11:46:32.361Z"
+  },
+  {
+    "key": "global-navigation:mobile-menu-open:en:390",
+    "stateKey": "global-navigation:mobile-menu-open",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "menu trigger present",
+        "result": "fail",
+        "observed": "no menu trigger selector matched"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "390 burger or 1440 nav dropdown trigger not found by selector set",
+    "observedAt": "2026-11-04T11:46:33.782Z"
+  },
+  {
+    "key": "global-navigation:search-open:en:390",
+    "stateKey": "global-navigation:search-open",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/?post_type=post&s=",
+    "checks": [
+      {
+        "name": "search control opens input",
+        "result": "pass",
+        "observed": "visible=true"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/global-navigation:search-open:en:390.png",
+    "scope": "Header search open state at rest",
+    "observedAt": "2026-11-04T11:46:35.563Z"
+  },
+  {
+    "key": "global-navigation:search-results:en:390",
+    "stateKey": "global-navigation:search-results",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/?post_type=post&s=SAJ",
+    "checks": [
+      {
+        "name": "search results page reached",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/?post_type=post&s=SAJ"
+      },
+      {
+        "name": "results present",
+        "result": "observe",
+        "observed": "h1=SAJ product-links=0"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Header search submission with a known brand term; result set recorded for language",
+    "observedAt": "2026-11-04T11:46:36.510Z"
+  },
+  {
+    "key": "global-navigation:*:en:390",
+    "status": "error",
+    "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('a.lnk-lang-half:not(.is-active)').first()\n    - locator resolved to <a lang=\"de\" hreflang=\"de\" title=\"Deutsch\" data-lnk-flang=\"de\" class=\"lnk-lang-half\" data-linker-language-choice=\"de\" href=\"http://127.0.0.1:8904/de/blog/\">DE</a>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for eleme",
+    "observedAt": "2026-11-04T11:47:07.544Z"
+  },
+  {
+    "key": "product-archive:default:en:390",
+    "stateKey": "product-archive:default",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/product-category/commercial-storage/",
+    "checks": [
+      {
+        "name": "archive renders product entries",
+        "result": "pass",
+        "observed": "candidate product elements=28"
+      },
+      {
+        "name": "filter affordances present",
+        "result": "observe",
+        "observed": "filter controls=1"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Guest archive default view at rest",
+    "observedAt": "2026-11-04T11:47:08.913Z"
+  },
+  {
+    "key": "product-archive:category-brand-filters:en:390",
+    "stateKey": "product-archive:category-brand-filters",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/product-category/commercial-storage/",
+    "checks": [
+      {
+        "name": "filter affordance",
+        "result": "fail",
+        "observed": "no layered-nav/facet link matched"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "No facet UI matched by selector set",
+    "observedAt": "2026-11-04T11:47:08.913Z"
+  },
+  {
+    "key": "product-archive:sort:en:390",
+    "stateKey": "product-archive:sort",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/product-category/commercial-storage/?orderby=price",
+    "checks": [
+      {
+        "name": "orderby=price applied",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/product-category/commercial-storage/?orderby=price"
+      },
+      {
+        "name": "price order ascending",
+        "result": "observe",
+        "observed": "prices="
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Native orderby query sort; guest price visibility depends on gate (price gate states are separate rows)",
+    "observedAt": "2026-11-04T11:47:10.631Z"
+  },
+  {
+    "key": "product-archive:pagination:en:390",
+    "stateKey": "product-archive:pagination",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/product-category/commercial-storage/",
+    "checks": [
+      {
+        "name": "pagination control",
+        "result": "fail",
+        "observed": "no page-2 link on chosen category"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "Chosen category lacks pagination",
+    "observedAt": "2026-11-04T11:47:11.853Z"
+  },
+  {
+    "key": "product-archive:filtered-pagination-count-consistency:en:390",
+    "stateKey": "product-archive:filtered-pagination-count-consistency",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/product-category/commercial-storage/",
+    "checks": [
+      {
+        "name": "pagination control",
+        "result": "fail",
+        "observed": "no page-2 link"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "Depends on pagination",
+    "observedAt": "2026-11-04T11:47:11.853Z"
+  },
+  {
+    "key": "product-archive:pagination-out-of-range:en:390",
+    "stateKey": "product-archive:pagination-out-of-range",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/product-category/commercial-storage/page/999/",
+    "checks": [
+      {
+        "name": "out-of-range page behavior",
+        "result": "observe",
+        "observed": "null"
+      },
+      {
+        "name": "h1 on out-of-range",
+        "result": "observe",
+        "observed": "This page does not exist."
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Out-of-range page/999 request; WordPress convention redirects to archive root — recorded, verdict at review",
+    "observedAt": "2026-11-04T11:47:13.278Z"
+  },
+  {
+    "key": "product-archive:compare-selection:en:390",
+    "stateKey": "product-archive:compare-selection",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/product-category/commercial-storage/",
+    "checks": [
+      {
+        "name": "compare control on card",
+        "result": "pass",
+        "observed": "compare button present"
+      },
+      {
+        "name": "compare chip appears",
+        "result": "pass",
+        "observed": "chip=true"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "One product added to compare from archive",
+    "observedAt": "2026-11-04T11:47:15.221Z"
+  },
+  {
+    "key": "product-archive:add-to-draft:en:390",
+    "stateKey": "product-archive:add-to-draft",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/product-category/commercial-storage/",
+    "checks": [
+      {
+        "name": "archive add link",
+        "result": "fail",
+        "observed": "no add-to-cart link on archive"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "No loop add link",
+    "observedAt": "2026-11-04T11:47:16.448Z"
+  },
+  {
+    "key": "product-archive:loading-error:en:390",
+    "stateKey": "product-archive:loading-error",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/product-category/commercial-storage/",
+    "checks": [
+      {
+        "name": "page with aborted ajax still renders content",
+        "result": "observe",
+        "observed": "Cell chemistry"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Aborted admin-ajax/wc-ajax on reload; resilience/error surfacing recorded. Engine-level network failure not simulated.",
+    "observedAt": "2026-11-04T11:47:18.910Z"
+  },
+  {
+    "key": "comparison:empty:en:390",
+    "stateKey": "comparison:empty",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/compare-products/",
+    "checks": [
+      {
+        "name": "empty state visible on fresh session",
+        "result": "pass",
+        "observed": "empty=true"
+      },
+      {
+        "name": "h1",
+        "result": "observe",
+        "observed": "Compare products"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/comparison:empty:en:390.png",
+    "scope": "Fresh visitor compare page empty state",
+    "observedAt": "2026-11-04T11:47:20.071Z"
+  },
+  {
+    "key": "comparison:*:en:390",
+    "status": "error",
+    "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('button[class*=\\'compare\\'], a[class*=\\'compare\\'], [data-compare]').first()\n    - locator resolved to <a hidden=\"\" id=\"compare-chip\" data-compare-chip=\"\" data-compare-max=\"4\" data-compare-count-value=\"0\" href=\"http://127.0.0.1:8904/compare-products/\" data-compare-page=\"http://127.0.0.1:8904/compare-products/\" class=\"linker-compare-chip fixed bottom-24 left-5 z-40 inline-flex items-center gap-2 rounded-full bg-[#15352f] p",
+    "observedAt": "2026-11-04T11:47:51.214Z"
+  },
+  {
+    "key": "content:accordion:en:390",
+    "stateKey": "content:accordion",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "disclosure toggles",
+        "result": "pass",
+        "observed": "open null->"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/content:accordion:en:390.png",
+    "scope": "First accordion/details control toggled",
+    "observedAt": "2026-11-04T11:47:53.273Z"
+  },
+  {
+    "key": "content:section-navigation:en:390",
+    "stateKey": "content:section-navigation",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "same-page anchor links",
+        "result": "observe",
+        "observed": "anchors=[object Promise]"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/content:section-navigation:en:390.png",
+    "scope": "Anchor navigation affordances counted; smooth-scroll/target reachability per anchor in page-sweep evidence",
+    "observedAt": "2026-11-04T11:47:53.301Z"
+  },
+  {
+    "key": "content:cta-destination:en:390",
+    "stateKey": "content:cta-destination",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "first CTA href resolves",
+        "result": "pass",
+        "observed": "href=/solution-configurator/?step=roof status=200"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "First CTA destination fetched headlessly",
+    "observedAt": "2026-11-04T11:47:53.569Z"
+  },
+  {
+    "key": "content:embedded-media:en:390",
+    "stateKey": "content:embedded-media",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "media presence",
+        "result": "pass",
+        "observed": "iframes/video=0 imgs=16"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Embedded media presence; load completeness is in page-sweep image checks",
+    "observedAt": "2026-11-04T11:47:53.569Z"
+  },
+  {
+    "key": "content:long-german-text:en:390",
+    "stateKey": "content:long-german-text",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/loesungskonfigurator/",
+    "checks": [
+      {
+        "name": "no horizontal overflow",
+        "result": "pass",
+        "observed": "overflow=false"
+      },
+      {
+        "name": "long compound words sampled",
+        "result": "observe",
+        "observed": "Produkteignung·Wechselrichter-Kompatibilität·Projektunterstützung"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "German long-word typography overflow probe on a long DE page",
+    "observedAt": "2026-11-04T11:47:55.001Z"
+  },
+  {
+    "key": "content:forms-and-validation:en:390",
+    "stateKey": "content:forms-and-validation",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/contact/",
+    "checks": [
+      {
+        "name": "required fields present",
+        "result": "pass",
+        "observed": "required=4"
+      },
+      {
+        "name": "client-side validation on empty submit",
+        "result": "pass",
+        "observed": "navigated=false; browser-flagged: message,name,email,consent"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Empty-submit client-side validation only; NO form submission performed (write scope)",
+    "observedAt": "2026-11-04T11:47:56.569Z"
+  },
+  {
+    "key": "document-library:switch-tabs-and-keyboard:en:390",
+    "stateKey": "document-library:switch-tabs-and-keyboard",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/faq-download/?tab=documents",
+    "checks": [
+      {
+        "name": "both tabs present",
+        "result": "pass",
+        "observed": "faq+documents tabs"
+      },
+      {
+        "name": "documents tab activates panel",
+        "result": "pass",
+        "observed": "panel visible=true"
+      },
+      {
+        "name": "keyboard reaches tab",
+        "result": "observe",
+        "observed": "A"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/document-library:switch-tabs-and-keyboard:en:390.png",
+    "scope": "FAQ/Documents tab switch + Tab-key probe",
+    "observedAt": "2026-11-04T11:47:59.758Z"
+  },
+  {
+    "key": "document-library:document-open-file-and-anchor:en:390",
+    "stateKey": "document-library:document-open-file-and-anchor",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/faq-download/?tab=documents",
+    "checks": [
+      {
+        "name": "document link resolves",
+        "result": "pass",
+        "observed": "status=200 bytes=524172 type=application/pdf"
+      },
+      {
+        "name": "href",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/wp-content/uploads/2026/10/GW_BAT-C-208-261kWh_Datasheet_EMEA-DE_V1.1.pdf"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/document-library:document-open-file-and-anchor:en:390.png",
+    "scope": "First library document fetched; content-type and non-empty bytes",
+    "observedAt": "2026-11-04T11:48:00.000Z"
+  },
+  {
+    "key": "document-library:search-results-and-live-count:en:390",
+    "stateKey": "document-library:search-results-and-live-count",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/faq-download/?q=GMK&tab=documents",
+    "checks": [
+      {
+        "name": "live count text",
+        "result": "pass",
+        "observed": "9 results"
+      },
+      {
+        "name": "result rows for known term",
+        "result": "fail",
+        "observed": "visible result rows=0"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/document-library:search-results-and-live-count:en:390.png",
+    "scope": "FAQ search with a known product term",
+    "observedAt": "2026-11-04T11:48:00.948Z"
+  },
+  {
+    "key": "document-library:search-empty-and-clear:en:390",
+    "stateKey": "document-library:search-empty-and-clear",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/faq-download/?tab=documents",
+    "checks": [
+      {
+        "name": "empty-result message",
+        "result": "fail",
+        "observed": "none"
+      },
+      {
+        "name": "clear restores list",
+        "result": "observe",
+        "observed": "rows after clear=0"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/document-library:search-empty-and-clear:en:390.png",
+    "scope": "No-match query + clear",
+    "observedAt": "2026-11-04T11:48:02.455Z"
+  },
+  {
+    "key": "document-library:suggestions-keyboard-selection-and-escape:en:390",
+    "stateKey": "document-library:suggestions-keyboard-selection-and-escape",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/faq-download/?tab=documents",
+    "checks": [
+      {
+        "name": "keyboard interaction did not error",
+        "result": "pass",
+        "observed": "ArrowDown+Escape applied to focused search"
+      },
+      {
+        "name": "suggestion listbox presence",
+        "result": "observe",
+        "observed": "1"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/document-library:suggestions-keyboard-selection-and-escape:en:390.png",
+    "scope": "Keyboard probe on search input; listbox structure recorded",
+    "observedAt": "2026-11-04T11:48:04.274Z"
+  },
+  {
+    "key": "document-library:rail-and-mobile-chips:en:390",
+    "stateKey": "document-library:rail-and-mobile-chips",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/faq-download/?tab=documents",
+    "checks": [
+      {
+        "name": "category navigation affordances",
+        "result": "pass",
+        "observed": "rail/chip elements=56"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/document-library:rail-and-mobile-chips:en:390.png",
+    "scope": "Category rail/chips presence at width",
+    "observedAt": "2026-11-04T11:48:04.323Z"
+  },
+  {
+    "key": "document-library:*:en:390",
+    "status": "error",
+    "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('a.lnk-lang-half:not(.is-active)').first()\n    - locator resolved to <a lang=\"de\" hreflang=\"de\" title=\"Deutsch\" data-lnk-flang=\"de\" class=\"lnk-lang-half\" data-linker-language-choice=\"de\" href=\"http://127.0.0.1:8904/de/faq-dokumente/\">DE</a>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 × waiting ",
+    "observedAt": "2026-11-04T11:48:34.771Z"
+  },
+  {
+    "key": "dynamic-routes:404-unknown-route-and-locale:en:390",
+    "stateKey": "dynamic-routes:404-unknown-route-and-locale",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/_full-matrix-missing-route/",
+    "checks": [
+      {
+        "name": "404 template rendered",
+        "result": "pass",
+        "observed": "title=Page not found | Linker"
+      },
+      {
+        "name": "document lang",
+        "result": "observe",
+        "observed": "en-US"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Unknown-route 404 with locale",
+    "observedAt": "2026-11-04T11:48:35.868Z"
+  },
+  {
+    "key": "dynamic-routes:retired-alias-redirect-and-language:en:390",
+    "stateKey": "dynamic-routes:retired-alias-redirect-and-language",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "alias probes",
+        "result": "observe",
+        "observed": "[{\"probe\":\"/feed/\",\"status\":200,\"url\":\"http://127.0.0.1:8904/feed/\"},{\"probe\":\"/?paged=2\",\"status\":200,\"url\":\"http://127.0.0.1:8904/page/2/\"},{\"probe\":\"/shop/\",\"status\":200,\"url\":\"http://127.0.0.1:8904/products/\"}]"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Feed/paged/shop alias probes with redirect chain; recorded for review against current slug map",
+    "observedAt": "2026-11-04T11:48:37.184Z"
+  },
+  {
+    "key": "dynamic-routes:public-archive-discovery-and-applicability:en:390",
+    "stateKey": "dynamic-routes:public-archive-discovery-and-applicability",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "author/date/tag probes",
+        "result": "observe",
+        "observed": "[{\"probe\":\"/author/admin/\",\"status\":404,\"url\":\"http://127.0.0.1:8904/author/admin/\"},{\"probe\":\"/2026/\",\"status\":200,\"url\":\"http://127.0.0.1:8904/\"},{\"probe\":\"/tag/storage/\",\"status\":404,\"url\":\"http://127.0.0.1:8904/tag/storage/\"}]"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Author/date/tag archive applicability probes (no invented archives)",
+    "observedAt": "2026-11-04T11:48:37.933Z"
+  },
+  {
+    "key": "dynamic-routes:account-direct-endpoint-and-refresh:en:390",
+    "stateKey": "dynamic-routes:account-direct-endpoint-and-refresh",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/my-account/orders/",
+    "checks": [
+      {
+        "name": "guest /orders/ destination",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/my-account/orders/"
+      },
+      {
+        "name": "login form present",
+        "result": "observe",
+        "observed": "login form probe"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Guest deep-link to account endpoint; no credentials used",
+    "observedAt": "2026-11-04T11:48:39.244Z"
+  },
+  {
+    "key": "dynamic-routes:inquiry-detail-and-received-key:en:390",
+    "stateKey": "dynamic-routes:inquiry-detail-and-received-key",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/proforma-request/order-received/?key=fullmatrix_bogus",
+    "checks": [
+      {
+        "name": "bogus order-received key behavior",
+        "result": "observe",
+        "observed": "url=http://127.0.0.1:8904/proforma-request/order-received/?key=fullmatrix_bogus h1=This page does not exist."
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Bogus confirmation key; valid-key state requires a real local inquiry (remainder)",
+    "observedAt": "2026-11-04T11:48:40.353Z"
+  },
+  {
+    "key": "dynamic-routes:password-reset-token-states:en:390",
+    "stateKey": "dynamic-routes:password-reset-token-states",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/my-account/lost-password/?rp_key=fullmatrix_invalid&login=fullmatrix_nobody",
+    "checks": [
+      {
+        "name": "invalid reset key landing",
+        "result": "observe",
+        "observed": "url=http://127.0.0.1:8904/my-account/lost-password/?rp_key=fullmatrix_invalid&login=fullmatrix_nobody notice="
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Invalid reset key params on lost-password endpoint; no mail involved",
+    "observedAt": "2026-11-04T11:49:11.397Z"
+  },
+  {
+    "key": "files-and-feedback:404:en:390",
+    "stateKey": "files-and-feedback:404",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "missing upload file",
+        "result": "fail",
+        "observed": "status=410"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "Missing file URL returns 404",
+    "observedAt": "2026-11-04T11:49:11.683Z"
+  },
+  {
+    "key": "files-and-feedback:invalid-route:en:390",
+    "stateKey": "files-and-feedback:invalid-route",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "invalid REST route",
+        "result": "observe",
+        "observed": "status=404"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Invalid REST route response recorded",
+    "observedAt": "2026-11-04T11:49:11.683Z"
+  },
+  {
+    "key": "files-and-feedback:public-document-auth:en:390",
+    "stateKey": "files-and-feedback:public-document-auth",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "guest document endpoint probe 1",
+        "result": "observe",
+        "observed": "status=404"
+      },
+      {
+        "name": "guest document endpoint probe 2",
+        "result": "observe",
+        "observed": "status=200"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Guest access probes against document endpoints; authorized-access states need fixtures (remainder)",
+    "observedAt": "2026-11-04T11:49:12.205Z"
+  },
+  {
+    "key": "files-and-feedback:reduced-motion:en:390",
+    "stateKey": "files-and-feedback:reduced-motion",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "reduced-motion emulation renders content",
+        "result": "pass",
+        "observed": "{\"h1\":true,\"visibleText\":\"Linking Value. Serving You.\",\"color\":\"rgb(255, 255, 255)\",\"bg\":\"rgba(0, 0, 0, 0)\"}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "reduced-motion media emulation; layout integrity at rest",
+    "observedAt": "2026-11-04T11:49:13.927Z"
+  },
+  {
+    "key": "files-and-feedback:keyboard-focus-visible:en:390",
+    "stateKey": "files-and-feedback:keyboard-focus-visible",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "focused element shows a focus style",
+        "result": "pass",
+        "observed": "{\"tag\":\"A\",\"outline\":\"solid\",\"boxShadow\":false,\"borderWidth\":\"0px\"}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "First Tab focus indicator probe",
+    "observedAt": "2026-11-04T11:49:13.928Z"
+  },
+  {
+    "key": "files-and-feedback:no-js-readable-fallback:en:390",
+    "stateKey": "files-and-feedback:no-js-readable-fallback",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/blog/",
+    "checks": [
+      {
+        "name": "server HTML carries readable content without JS",
+        "result": "pass",
+        "observed": "h1-in-html=true"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Raw server HTML inspection; JS-disabled browsing not fully emulated",
+    "observedAt": "2026-11-04T11:49:14.220Z"
+  },
+  {
+    "key": "files-and-feedback:slow-network-loading:en:390",
+    "stateKey": "files-and-feedback:slow-network-loading",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/contact/",
+    "checks": [
+      {
+        "name": "page completes on throttled network",
+        "result": "fail",
+        "observed": "elapsed=60002ms h1="
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "3G-ish throttled load; slow-tail media completion not asserted",
+    "observedAt": "2026-11-04T11:50:44.364Z"
+  },
+  {
+    "key": "files-and-feedback:actual-file-manifest-open-and-content:en:390",
+    "stateKey": "files-and-feedback:actual-file-manifest-open-and-content",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/faq-download/",
+    "checks": [
+      {
+        "name": "sampled documents all resolve with bytes",
+        "result": "pass",
+        "observed": "[\"200/524172\",\"200/532308\",\"200/531133\",\"200/682009\"]"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "First 4 library documents fetched; full dedup manifest is remainder",
+    "observedAt": "2026-11-04T11:50:47.652Z"
+  },
+  {
+    "key": "files-and-feedback:file-url-and-source-language-consumer:en:390",
+    "stateKey": "files-and-feedback:file-url-and-source-language-consumer",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/faq-download/",
+    "checks": [
+      {
+        "name": "document hrefs and link text language",
+        "result": "observe",
+        "observed": "[\"loads/2026/10/GW_BAT-C-208-261kWh_Datasheet_EMEA-DE_V1.1.pdf\",\"ontent/uploads/2026/07/delinker-goodwe_batc208-datasheet.pdf\",\"/uploads/2026/09/GW_BAT-C-208-261_Datasheet_EMEA-EN_V1.1.pdf\",\"ploads/2026/10/GW_BAT-C-60-112kWh_Datasheet_EMEA-DE_V1.1.pdf\"]"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Document URL/original-language pairing recorded for review; per-file language assertion needs manifest metadata",
+    "observedAt": "2026-11-04T11:50:47.652Z"
+  },
+  {
+    "key": "product:faq-accordion:en:390",
+    "stateKey": "product:faq-accordion",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/product/saj-ats1-t63-a/",
+    "checks": [
+      {
+        "name": "PDP FAQ disclosure toggles",
+        "result": "pass",
+        "observed": "open="
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/product:faq-accordion:en:390.png",
+    "scope": "First PDP FAQ disclosure",
+    "observedAt": "2026-11-04T11:50:49.348Z"
+  },
+  {
+    "key": "product:related-products:en:390",
+    "stateKey": "product:related-products",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/product/saj-ats1-t63-a/",
+    "checks": [
+      {
+        "name": "related products present",
+        "result": "fail",
+        "observed": "related links=0"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/product:related-products:en:390.png",
+    "scope": "Related products section presence",
+    "observedAt": "2026-11-04T11:50:49.378Z"
+  },
+  {
+    "key": "product:documents-and-pdf:en:390",
+    "stateKey": "product:documents-and-pdf",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/product/saj-ats1-t63-a/",
+    "checks": [
+      {
+        "name": "PDP PDF link resolves",
+        "result": "pass",
+        "observed": "status=200 bytes=275500"
+      },
+      {
+        "name": "href",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/wp-content/uploads/2026/10/SAJ_ATS1_Datasheet_EN-BEU.pdf"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/product:documents-and-pdf:en:390.png",
+    "scope": "First PDP document PDF fetched",
+    "observedAt": "2026-11-04T11:50:49.546Z"
+  },
+  {
+    "key": "product:*:en:390",
+    "status": "error",
+    "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('button[class*=\\'compare\\'], a[class*=\\'compare\\'], [data-compare]').first()\n    - locator resolved to <a hidden=\"\" id=\"compare-chip\" data-compare-chip=\"\" data-compare-max=\"4\" data-compare-count-value=\"0\" href=\"http://127.0.0.1:8904/compare-products/\" data-compare-page=\"http://127.0.0.1:8904/compare-products/\" class=\"linker-compare-chip fixed bottom-24 left-5 z-40 inline-flex items-center gap-2 rounded-full bg-[#15352f] p",
+    "observedAt": "2026-11-04T11:51:19.516Z"
+  },
+  {
+    "key": "global-navigation:cookie-choice-and-reopen:en:390",
+    "stateKey": "global-navigation:cookie-choice-and-reopen",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "banner shown on first visit",
+        "result": "pass",
+        "observed": "shown=true"
+      },
+      {
+        "name": "reject choice applied",
+        "result": "pass",
+        "observed": "rejected"
+      },
+      {
+        "name": "reopen via revisit button",
+        "result": "fail",
+        "observed": "reopened=false"
+      }
+    ],
+    "passed": 2,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "Fresh-context cookie banner: shown, reject, reopen",
+    "observedAt": "2026-11-04T11:51:21.582Z"
+  },
+  {
+    "key": "global-navigation:mobile-menu-open:de:1440",
+    "stateKey": "global-navigation:mobile-menu-open",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/",
+    "checks": [
+      {
+        "name": "desktop nav applicability at 1440",
+        "result": "observe",
+        "observed": "desktop dropdown aria-expanded=true; mobile-menu state not applicable at 1440"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/global-navigation:mobile-menu-open:de:1440.png",
+    "scope": "Applicability probe: mobile menu branch does not exist at 1440",
+    "observedAt": "2026-11-04T11:51:23.533Z"
+  },
+  {
+    "key": "global-navigation:keyboard-traversal:de:1440",
+    "stateKey": "global-navigation:keyboard-traversal",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/",
+    "checks": [
+      {
+        "name": "Tab traversal moves focus",
+        "result": "pass",
+        "observed": "/ PRODUKTE\n\nSpeicherprodukte von autoris > Heimspeicher\nHeimspeicher-Batterien von  > Gewerbespeicher\nGewerbespeicher von Good > All-in-One-Systeme > Batteriesysteme > Wechselrichter > EMS & Monitoring > Ladestationen"
+      },
+      {
+        "name": "focus ring inspectable",
+        "result": "observe",
+        "observed": "focus element present"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Automated Tab traversal on home; full visible-ring judgement per control is manual-visual",
+    "observedAt": "2026-11-04T11:51:23.538Z"
+  },
+  {
+    "key": "global-navigation:search-open:de:1440",
+    "stateKey": "global-navigation:search-open",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/blog/",
+    "checks": [
+      {
+        "name": "search trigger",
+        "result": "fail",
+        "observed": "no header search trigger matched"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "Selector set found no trigger",
+    "observedAt": "2026-11-04T11:51:24.591Z"
+  },
+  {
+    "key": "global-navigation:search-results:de:1440",
+    "stateKey": "global-navigation:search-results",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/blog/",
+    "checks": [
+      {
+        "name": "search trigger",
+        "result": "fail",
+        "observed": "no trigger; not reachable"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "Depends on search trigger",
+    "observedAt": "2026-11-04T11:51:24.591Z"
+  },
+  {
+    "key": "global-navigation:language-switch-current-route:de:1440",
+    "stateKey": "global-navigation:language-switch-current-route",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/blog/",
+    "checks": [
+      {
+        "name": "switch target href",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/blog/"
+      },
+      {
+        "name": "document lang after switch",
+        "result": "pass",
+        "observed": "en-US"
+      },
+      {
+        "name": "landed on translated route",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/blog/"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "One-click language switch from blog index; destination route and document language",
+    "observedAt": "2026-11-04T11:51:26.535Z"
+  },
+  {
+    "key": "global-navigation:language-switch-query-filter-pagination:de:1440",
+    "stateKey": "global-navigation:language-switch-query-filter-pagination",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/product-category/commercial-storage/",
+    "checks": [
+      {
+        "name": "url before switch",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/"
+      },
+      {
+        "name": "url after switch",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/product-category/commercial-storage/"
+      },
+      {
+        "name": "document lang",
+        "result": "pass",
+        "observed": "en-US"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Language switch from paginated category archive; retention/reset of page state recorded, per-entry expectation applied at review",
+    "observedAt": "2026-11-04T11:51:29.473Z"
+  },
+  {
+    "key": "global-navigation:language-switch-account-endpoint-and-fragment:de:1440",
+    "stateKey": "global-navigation:language-switch-account-endpoint-and-fragment",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/mein-konto/orders/",
+    "checks": [
+      {
+        "name": "guest deep account endpoint lands on auth",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/de/mein-konto/orders/"
+      },
+      {
+        "name": "document lang",
+        "result": "observe",
+        "observed": "de-DE"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Guest arrival on account endpoint; redirect target and locale recorded. No credentials used.",
+    "observedAt": "2026-11-04T11:51:30.917Z"
+  },
+  {
+    "key": "global-navigation:floating-widgets-no-obstruction:de:1440",
+    "stateKey": "global-navigation:floating-widgets-no-obstruction",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkt/goodwe-gw60k-sts-g10/",
+    "checks": [
+      {
+        "name": "floating widget does not cover other content at its center",
+        "result": "fail",
+        "observed": "{\"chip\":\"linker-compare-chip fixed bottom-24 left-5 z-40 inline-flex items-center gap-2 r\",\"topmost\":\"DIV\"}"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "Geometric probe: fixed compare chip / consent revisit button at scroll position; not a full-page overlap sweep",
+    "observedAt": "2026-11-04T11:51:32.908Z"
+  },
+  {
+    "key": "product-archive:default:de:1440",
+    "stateKey": "product-archive:default",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/",
+    "checks": [
+      {
+        "name": "archive renders product entries",
+        "result": "pass",
+        "observed": "candidate product elements=7"
+      },
+      {
+        "name": "filter affordances present",
+        "result": "observe",
+        "observed": "filter controls=1"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Guest archive default view at rest",
+    "observedAt": "2026-11-04T11:51:34.343Z"
+  },
+  {
+    "key": "product-archive:category-brand-filters:de:1440",
+    "stateKey": "product-archive:category-brand-filters",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/",
+    "checks": [
+      {
+        "name": "filter affordance",
+        "result": "fail",
+        "observed": "no layered-nav/facet link matched"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "No facet UI matched by selector set",
+    "observedAt": "2026-11-04T11:51:34.344Z"
+  },
+  {
+    "key": "product-archive:sort:de:1440",
+    "stateKey": "product-archive:sort",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/?orderby=price",
+    "checks": [
+      {
+        "name": "orderby=price applied",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/?orderby=price"
+      },
+      {
+        "name": "price order ascending",
+        "result": "observe",
+        "observed": "prices="
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Native orderby query sort; guest price visibility depends on gate (price gate states are separate rows)",
+    "observedAt": "2026-11-04T11:51:36.247Z"
+  },
+  {
+    "key": "product-archive:pagination:de:1440",
+    "stateKey": "product-archive:pagination",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/",
+    "checks": [
+      {
+        "name": "pagination control",
+        "result": "fail",
+        "observed": "no page-2 link on chosen category"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "Chosen category lacks pagination",
+    "observedAt": "2026-11-04T11:51:37.522Z"
+  },
+  {
+    "key": "product-archive:filtered-pagination-count-consistency:de:1440",
+    "stateKey": "product-archive:filtered-pagination-count-consistency",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/",
+    "checks": [
+      {
+        "name": "pagination control",
+        "result": "fail",
+        "observed": "no page-2 link"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "Depends on pagination",
+    "observedAt": "2026-11-04T11:51:37.522Z"
+  },
+  {
+    "key": "product-archive:pagination-out-of-range:de:1440",
+    "stateKey": "product-archive:pagination-out-of-range",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/seite/999/",
+    "checks": [
+      {
+        "name": "out-of-range page behavior",
+        "result": "observe",
+        "observed": "null"
+      },
+      {
+        "name": "h1 on out-of-range",
+        "result": "observe",
+        "observed": "Diese Seite existiert nicht."
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Out-of-range page/999 request; WordPress convention redirects to archive root — recorded, verdict at review",
+    "observedAt": "2026-11-04T11:51:39.006Z"
+  },
+  {
+    "key": "product-archive:compare-selection:de:1440",
+    "stateKey": "product-archive:compare-selection",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/",
+    "checks": [
+      {
+        "name": "compare control on card",
+        "result": "pass",
+        "observed": "compare button present"
+      },
+      {
+        "name": "compare chip appears",
+        "result": "pass",
+        "observed": "chip=true"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "One product added to compare from archive",
+    "observedAt": "2026-11-04T11:51:41.064Z"
+  },
+  {
+    "key": "product-archive:add-to-draft:de:1440",
+    "stateKey": "product-archive:add-to-draft",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/",
+    "checks": [
+      {
+        "name": "archive add link",
+        "result": "fail",
+        "observed": "no add-to-cart link on archive"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "No loop add link",
+    "observedAt": "2026-11-04T11:51:42.316Z"
+  },
+  {
+    "key": "product-archive:loading-error:de:1440",
+    "stateKey": "product-archive:loading-error",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/",
+    "checks": [
+      {
+        "name": "page with aborted ajax still renders content",
+        "result": "pass",
+        "observed": "none"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Aborted admin-ajax/wc-ajax on reload; resilience/error surfacing recorded. Engine-level network failure not simulated.",
+    "observedAt": "2026-11-04T11:51:44.934Z"
+  },
+  {
+    "key": "comparison:empty:de:1440",
+    "stateKey": "comparison:empty",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkte-vergleichen/",
+    "checks": [
+      {
+        "name": "empty state visible on fresh session",
+        "result": "pass",
+        "observed": "empty=true"
+      },
+      {
+        "name": "h1",
+        "result": "observe",
+        "observed": "Produkte vergleichen"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/comparison:empty:de:1440.png",
+    "scope": "Fresh visitor compare page empty state",
+    "observedAt": "2026-11-04T11:51:46.163Z"
+  },
+  {
+    "key": "comparison:*:de:1440",
+    "status": "error",
+    "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('button[class*=\\'compare\\'], a[class*=\\'compare\\'], [data-compare]').first()\n    - locator resolved to <a hidden=\"\" id=\"compare-chip\" data-compare-chip=\"\" data-compare-max=\"4\" data-compare-count-value=\"0\" href=\"http://127.0.0.1:8904/de/produkte-vergleichen/\" data-compare-page=\"http://127.0.0.1:8904/de/produkte-vergleichen/\" class=\"linker-compare-chip fixed bottom-24 left-5 z-40 inline-flex items-center gap-2 rounded-full ",
+    "observedAt": "2026-11-04T11:52:17.265Z"
+  },
+  {
+    "key": "content:*:de:1440",
+    "status": "error",
+    "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('details, [data-bs-toggle=\\'collapse\\'], .accordion-button').first()\n    - locator resolved to <details class=\"tv-mobile-navigation\">…</details>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying clic",
+    "observedAt": "2026-11-04T11:52:48.347Z"
+  },
+  {
+    "key": "document-library:switch-tabs-and-keyboard:de:1440",
+    "stateKey": "document-library:switch-tabs-and-keyboard",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/?tab=documents",
+    "checks": [
+      {
+        "name": "both tabs present",
+        "result": "pass",
+        "observed": "faq+documents tabs"
+      },
+      {
+        "name": "documents tab activates panel",
+        "result": "pass",
+        "observed": "panel visible=true"
+      },
+      {
+        "name": "keyboard reaches tab",
+        "result": "observe",
+        "observed": "A"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/document-library:switch-tabs-and-keyboard:de:1440.png",
+    "scope": "FAQ/Documents tab switch + Tab-key probe",
+    "observedAt": "2026-11-04T11:52:51.811Z"
+  },
+  {
+    "key": "document-library:document-open-file-and-anchor:de:1440",
+    "stateKey": "document-library:document-open-file-and-anchor",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/?tab=documents",
+    "checks": [
+      {
+        "name": "document link resolves",
+        "result": "pass",
+        "observed": "status=200 bytes=524172 type=application/pdf"
+      },
+      {
+        "name": "href",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/wp-content/uploads/2026/10/GW_BAT-C-208-261kWh_Datasheet_EMEA-DE_V1.1.pdf"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/document-library:document-open-file-and-anchor:de:1440.png",
+    "scope": "First library document fetched; content-type and non-empty bytes",
+    "observedAt": "2026-11-04T11:52:52.094Z"
+  },
+  {
+    "key": "document-library:search-results-and-live-count:de:1440",
+    "stateKey": "document-library:search-results-and-live-count",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/?q=GMK&tab=documents",
+    "checks": [
+      {
+        "name": "live count text",
+        "result": "pass",
+        "observed": "9 Ergebnisse"
+      },
+      {
+        "name": "result rows for known term",
+        "result": "fail",
+        "observed": "visible result rows=0"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/document-library:search-results-and-live-count:de:1440.png",
+    "scope": "FAQ search with a known product term",
+    "observedAt": "2026-11-04T11:52:53.134Z"
+  },
+  {
+    "key": "document-library:search-empty-and-clear:de:1440",
+    "stateKey": "document-library:search-empty-and-clear",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/?tab=documents",
+    "checks": [
+      {
+        "name": "empty-result message",
+        "result": "fail",
+        "observed": "none"
+      },
+      {
+        "name": "clear restores list",
+        "result": "observe",
+        "observed": "rows after clear=0"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/document-library:search-empty-and-clear:de:1440.png",
+    "scope": "No-match query + clear",
+    "observedAt": "2026-11-04T11:52:54.552Z"
+  },
+  {
+    "key": "document-library:suggestions-keyboard-selection-and-escape:de:1440",
+    "stateKey": "document-library:suggestions-keyboard-selection-and-escape",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/?tab=documents",
+    "checks": [
+      {
+        "name": "keyboard interaction did not error",
+        "result": "pass",
+        "observed": "ArrowDown+Escape applied to focused search"
+      },
+      {
+        "name": "suggestion listbox presence",
+        "result": "observe",
+        "observed": "1"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/document-library:suggestions-keyboard-selection-and-escape:de:1440.png",
+    "scope": "Keyboard probe on search input; listbox structure recorded",
+    "observedAt": "2026-11-04T11:52:56.566Z"
+  },
+  {
+    "key": "document-library:rail-and-mobile-chips:de:1440",
+    "stateKey": "document-library:rail-and-mobile-chips",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/?tab=documents",
+    "checks": [
+      {
+        "name": "category navigation affordances",
+        "result": "pass",
+        "observed": "rail/chip elements=56"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/document-library:rail-and-mobile-chips:de:1440.png",
+    "scope": "Category rail/chips presence at width",
+    "observedAt": "2026-11-04T11:52:56.752Z"
+  },
+  {
+    "key": "document-library:filtered-results-language-switch:de:1440",
+    "stateKey": "document-library:filtered-results-language-switch",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/faq-download/",
+    "checks": [
+      {
+        "name": "switch from library page",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/faq-download/"
+      },
+      {
+        "name": "document lang",
+        "result": "observe",
+        "observed": "en-US"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Language switch from library page; query/tab retention recorded",
+    "observedAt": "2026-11-04T11:52:59.693Z"
+  },
+  {
+    "key": "dynamic-routes:404-unknown-route-and-locale:de:1440",
+    "stateKey": "dynamic-routes:404-unknown-route-and-locale",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/_full-matrix-missing-route/",
+    "checks": [
+      {
+        "name": "404 template rendered",
+        "result": "pass",
+        "observed": "title=Seite nicht gefunden | Linker"
+      },
+      {
+        "name": "document lang",
+        "result": "observe",
+        "observed": "de-DE"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Unknown-route 404 with locale",
+    "observedAt": "2026-11-04T11:53:00.752Z"
+  },
+  {
+    "key": "dynamic-routes:retired-alias-redirect-and-language:de:1440",
+    "stateKey": "dynamic-routes:retired-alias-redirect-and-language",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "alias probes",
+        "result": "observe",
+        "observed": "[{\"probe\":\"/de/feed/\",\"status\":200,\"url\":\"http://127.0.0.1:8904/de/feed/\"},{\"probe\":\"/de/?paged=2\",\"status\":\"error\"},{\"probe\":\"/de/shop/\",\"status\":200,\"url\":\"http://127.0.0.1:8904/de/produkte/\"}]"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Feed/paged/shop alias probes with redirect chain; recorded for review against current slug map",
+    "observedAt": "2026-11-04T11:53:02.514Z"
+  },
+  {
+    "key": "dynamic-routes:public-archive-discovery-and-applicability:de:1440",
+    "stateKey": "dynamic-routes:public-archive-discovery-and-applicability",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "author/date/tag probes",
+        "result": "observe",
+        "observed": "[{\"probe\":\"/de/author/admin/\",\"status\":404,\"url\":\"http://127.0.0.1:8904/de/author/admin/\"},{\"probe\":\"/de/2026/\",\"status\":200,\"url\":\"http://127.0.0.1:8904/\"},{\"probe\":\"/de/tag/speicher/\",\"status\":404,\"url\":\"http://127.0.0.1:8904/de/tag/speicher/\"}]"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Author/date/tag archive applicability probes (no invented archives)",
+    "observedAt": "2026-11-04T11:53:03.252Z"
+  },
+  {
+    "key": "dynamic-routes:account-direct-endpoint-and-refresh:de:1440",
+    "stateKey": "dynamic-routes:account-direct-endpoint-and-refresh",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/mein-konto/orders/",
+    "checks": [
+      {
+        "name": "guest /orders/ destination",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/de/mein-konto/orders/"
+      },
+      {
+        "name": "login form present",
+        "result": "observe",
+        "observed": "login form probe"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Guest deep-link to account endpoint; no credentials used",
+    "observedAt": "2026-11-04T11:53:04.587Z"
+  },
+  {
+    "key": "dynamic-routes:inquiry-detail-and-received-key:de:1440",
+    "stateKey": "dynamic-routes:inquiry-detail-and-received-key",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/proforma-request/bestellung-erhalten/?key=fullmatrix_bogus",
+    "checks": [
+      {
+        "name": "bogus order-received key behavior",
+        "result": "observe",
+        "observed": "url=http://127.0.0.1:8904/proforma-request/bestellung-erhalten/?key=fullmatrix_bogus h1=This page does not exist."
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Bogus confirmation key; valid-key state requires a real local inquiry (remainder)",
+    "observedAt": "2026-11-04T11:53:05.608Z"
+  },
+  {
+    "key": "dynamic-routes:password-reset-token-states:de:1440",
+    "stateKey": "dynamic-routes:password-reset-token-states",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/mein-konto/passwort-zuruecksetzen/?rp_key=fullmatrix_invalid&login=fullmatrix_nobody",
+    "checks": [
+      {
+        "name": "invalid reset key landing",
+        "result": "observe",
+        "observed": "url=http://127.0.0.1:8904/de/mein-konto/passwort-zuruecksetzen/?rp_key=fullmatrix_invalid&login=fullmatrix_nobody notice="
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Invalid reset key params on lost-password endpoint; no mail involved",
+    "observedAt": "2026-11-04T11:53:36.633Z"
+  },
+  {
+    "key": "files-and-feedback:404:de:1440",
+    "stateKey": "files-and-feedback:404",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "missing upload file",
+        "result": "fail",
+        "observed": "status=410"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "Missing file URL returns 404",
+    "observedAt": "2026-11-04T11:53:36.838Z"
+  },
+  {
+    "key": "files-and-feedback:invalid-route:de:1440",
+    "stateKey": "files-and-feedback:invalid-route",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "invalid REST route",
+        "result": "observe",
+        "observed": "status=404"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Invalid REST route response recorded",
+    "observedAt": "2026-11-04T11:53:36.838Z"
+  },
+  {
+    "key": "files-and-feedback:public-document-auth:de:1440",
+    "stateKey": "files-and-feedback:public-document-auth",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "guest document endpoint probe 1",
+        "result": "observe",
+        "observed": "status=404"
+      },
+      {
+        "name": "guest document endpoint probe 2",
+        "result": "observe",
+        "observed": "status=200"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Guest access probes against document endpoints; authorized-access states need fixtures (remainder)",
+    "observedAt": "2026-11-04T11:53:37.304Z"
+  },
+  {
+    "key": "files-and-feedback:reduced-motion:de:1440",
+    "stateKey": "files-and-feedback:reduced-motion",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/",
+    "checks": [
+      {
+        "name": "reduced-motion emulation renders content",
+        "result": "pass",
+        "observed": "{\"h1\":true,\"visibleText\":\"Wert verbinden. Für Sie da.\",\"color\":\"rgb(255, 255, 255)\",\"bg\":\"rgba(0, 0, 0, 0)\"}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "reduced-motion media emulation; layout integrity at rest",
+    "observedAt": "2026-11-04T11:53:39.026Z"
+  },
+  {
+    "key": "files-and-feedback:keyboard-focus-visible:de:1440",
+    "stateKey": "files-and-feedback:keyboard-focus-visible",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/",
+    "checks": [
+      {
+        "name": "focused element shows a focus style",
+        "result": "pass",
+        "observed": "{\"tag\":\"A\",\"outline\":\"solid\",\"boxShadow\":false,\"borderWidth\":\"0px\"}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "First Tab focus indicator probe",
+    "observedAt": "2026-11-04T11:53:39.026Z"
+  },
+  {
+    "key": "files-and-feedback:no-js-readable-fallback:de:1440",
+    "stateKey": "files-and-feedback:no-js-readable-fallback",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/blog/",
+    "checks": [
+      {
+        "name": "server HTML carries readable content without JS",
+        "result": "pass",
+        "observed": "h1-in-html=true"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Raw server HTML inspection; JS-disabled browsing not fully emulated",
+    "observedAt": "2026-11-04T11:53:39.314Z"
+  },
+  {
+    "key": "files-and-feedback:slow-network-loading:de:1440",
+    "stateKey": "files-and-feedback:slow-network-loading",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/kontakt/",
+    "checks": [
+      {
+        "name": "page completes on throttled network",
+        "result": "fail",
+        "observed": "elapsed=60003ms h1="
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "3G-ish throttled load; slow-tail media completion not asserted",
+    "observedAt": "2026-11-04T11:55:09.438Z"
+  },
+  {
+    "key": "files-and-feedback:actual-file-manifest-open-and-content:de:1440",
+    "stateKey": "files-and-feedback:actual-file-manifest-open-and-content",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/",
+    "checks": [
+      {
+        "name": "sampled documents all resolve with bytes",
+        "result": "pass",
+        "observed": "[\"200/524172\",\"200/532308\",\"200/531133\",\"200/682009\"]"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "First 4 library documents fetched; full dedup manifest is remainder",
+    "observedAt": "2026-11-04T11:55:12.572Z"
+  },
+  {
+    "key": "files-and-feedback:file-url-and-source-language-consumer:de:1440",
+    "stateKey": "files-and-feedback:file-url-and-source-language-consumer",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/",
+    "checks": [
+      {
+        "name": "document hrefs and link text language",
+        "result": "observe",
+        "observed": "[\"loads/2026/10/GW_BAT-C-208-261kWh_Datasheet_EMEA-DE_V1.1.pdf\",\"ontent/uploads/2026/07/delinker-goodwe_batc208-datasheet.pdf\",\"/uploads/2026/09/GW_BAT-C-208-261_Datasheet_EMEA-EN_V1.1.pdf\",\"ploads/2026/10/GW_BAT-C-60-112kWh_Datasheet_EMEA-DE_V1.1.pdf\"]"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Document URL/original-language pairing recorded for review; per-file language assertion needs manifest metadata",
+    "observedAt": "2026-11-04T11:55:12.572Z"
+  },
+  {
+    "key": "product:faq-accordion:de:1440",
+    "stateKey": "product:faq-accordion",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkt/goodwe-gw60k-sts-g10/",
+    "checks": [
+      {
+        "name": "PDP FAQ disclosure toggles",
+        "result": "pass",
+        "observed": "open="
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/product:faq-accordion:de:1440.png",
+    "scope": "First PDP FAQ disclosure",
+    "observedAt": "2026-11-04T11:55:14.289Z"
+  },
+  {
+    "key": "product:related-products:de:1440",
+    "stateKey": "product:related-products",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkt/goodwe-gw60k-sts-g10/",
+    "checks": [
+      {
+        "name": "related products present",
+        "result": "fail",
+        "observed": "related links=0"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/product:related-products:de:1440.png",
+    "scope": "Related products section presence",
+    "observedAt": "2026-11-04T11:55:14.329Z"
+  },
+  {
+    "key": "product:documents-and-pdf:de:1440",
+    "stateKey": "product:documents-and-pdf",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkt/goodwe-gw60k-sts-g10/",
+    "checks": [
+      {
+        "name": "PDP PDF link resolves",
+        "result": "pass",
+        "observed": "status=200 bytes=496335"
+      },
+      {
+        "name": "href",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/product:documents-and-pdf:de:1440.png",
+    "scope": "First PDP document PDF fetched",
+    "observedAt": "2026-11-04T11:55:14.472Z"
+  },
+  {
+    "key": "product:*:de:1440",
+    "status": "error",
+    "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('button[class*=\\'compare\\'], a[class*=\\'compare\\'], [data-compare]').first()\n    - locator resolved to <a hidden=\"\" id=\"compare-chip\" data-compare-chip=\"\" data-compare-max=\"4\" data-compare-count-value=\"0\" href=\"http://127.0.0.1:8904/de/produkte-vergleichen/\" data-compare-page=\"http://127.0.0.1:8904/de/produkte-vergleichen/\" class=\"linker-compare-chip fixed bottom-24 left-5 z-40 inline-flex items-center gap-2 rounded-full ",
+    "observedAt": "2026-11-04T11:55:44.440Z"
+  },
+  {
+    "key": "global-navigation:cookie-choice-and-reopen:de:1440",
+    "stateKey": "global-navigation:cookie-choice-and-reopen",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/",
+    "checks": [
+      {
+        "name": "banner shown on first visit",
+        "result": "pass",
+        "observed": "shown=true"
+      },
+      {
+        "name": "reject choice applied",
+        "result": "pass",
+        "observed": "rejected"
+      },
+      {
+        "name": "reopen via revisit button",
+        "result": "fail",
+        "observed": "reopened=false"
+      }
+    ],
+    "passed": 2,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "Fresh-context cookie banner: shown, reject, reopen",
+    "observedAt": "2026-11-04T11:55:46.588Z"
+  },
+  {
+    "key": "global-navigation:mobile-menu-open:de:390",
+    "stateKey": "global-navigation:mobile-menu-open",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/",
+    "checks": [
+      {
+        "name": "menu trigger present",
+        "result": "fail",
+        "observed": "no menu trigger selector matched"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "390 burger or 1440 nav dropdown trigger not found by selector set",
+    "observedAt": "2026-11-04T11:55:48.164Z"
+  },
+  {
+    "key": "global-navigation:search-open:de:390",
+    "stateKey": "global-navigation:search-open",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/blog/",
+    "checks": [
+      {
+        "name": "search trigger",
+        "result": "fail",
+        "observed": "no header search trigger matched"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "Selector set found no trigger",
+    "observedAt": "2026-11-04T11:55:49.209Z"
+  },
+  {
+    "key": "global-navigation:search-results:de:390",
+    "stateKey": "global-navigation:search-results",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/blog/",
+    "checks": [
+      {
+        "name": "search trigger",
+        "result": "fail",
+        "observed": "no trigger; not reachable"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "Depends on search trigger",
+    "observedAt": "2026-11-04T11:55:49.209Z"
+  },
+  {
+    "key": "global-navigation:*:de:390",
+    "status": "error",
+    "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('a.lnk-lang-half:not(.is-active)').first()\n    - locator resolved to <a lang=\"en\" hreflang=\"en\" title=\"English\" data-lnk-flang=\"en\" class=\"lnk-lang-half\" data-linker-language-choice=\"en\" href=\"http://127.0.0.1:8904/blog/\">EN</a>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element ",
+    "observedAt": "2026-11-04T11:56:20.282Z"
+  },
+  {
+    "key": "product-archive:default:de:390",
+    "stateKey": "product-archive:default",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/",
+    "checks": [
+      {
+        "name": "archive renders product entries",
+        "result": "pass",
+        "observed": "candidate product elements=7"
+      },
+      {
+        "name": "filter affordances present",
+        "result": "observe",
+        "observed": "filter controls=1"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Guest archive default view at rest",
+    "observedAt": "2026-11-04T11:56:21.746Z"
+  },
+  {
+    "key": "product-archive:category-brand-filters:de:390",
+    "stateKey": "product-archive:category-brand-filters",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/",
+    "checks": [
+      {
+        "name": "filter affordance",
+        "result": "fail",
+        "observed": "no layered-nav/facet link matched"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "No facet UI matched by selector set",
+    "observedAt": "2026-11-04T11:56:21.746Z"
+  },
+  {
+    "key": "product-archive:sort:de:390",
+    "stateKey": "product-archive:sort",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/?orderby=price",
+    "checks": [
+      {
+        "name": "orderby=price applied",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/?orderby=price"
+      },
+      {
+        "name": "price order ascending",
+        "result": "observe",
+        "observed": "prices="
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Native orderby query sort; guest price visibility depends on gate (price gate states are separate rows)",
+    "observedAt": "2026-11-04T11:56:23.564Z"
+  },
+  {
+    "key": "product-archive:pagination:de:390",
+    "stateKey": "product-archive:pagination",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/",
+    "checks": [
+      {
+        "name": "pagination control",
+        "result": "fail",
+        "observed": "no page-2 link on chosen category"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "Chosen category lacks pagination",
+    "observedAt": "2026-11-04T11:56:24.872Z"
+  },
+  {
+    "key": "product-archive:filtered-pagination-count-consistency:de:390",
+    "stateKey": "product-archive:filtered-pagination-count-consistency",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/",
+    "checks": [
+      {
+        "name": "pagination control",
+        "result": "fail",
+        "observed": "no page-2 link"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "Depends on pagination",
+    "observedAt": "2026-11-04T11:56:24.872Z"
+  },
+  {
+    "key": "product-archive:pagination-out-of-range:de:390",
+    "stateKey": "product-archive:pagination-out-of-range",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/seite/999/",
+    "checks": [
+      {
+        "name": "out-of-range page behavior",
+        "result": "observe",
+        "observed": "null"
+      },
+      {
+        "name": "h1 on out-of-range",
+        "result": "observe",
+        "observed": "Diese Seite existiert nicht."
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Out-of-range page/999 request; WordPress convention redirects to archive root — recorded, verdict at review",
+    "observedAt": "2026-11-04T11:56:26.314Z"
+  },
+  {
+    "key": "product-archive:compare-selection:de:390",
+    "stateKey": "product-archive:compare-selection",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/",
+    "checks": [
+      {
+        "name": "compare control on card",
+        "result": "pass",
+        "observed": "compare button present"
+      },
+      {
+        "name": "compare chip appears",
+        "result": "pass",
+        "observed": "chip=true"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "One product added to compare from archive",
+    "observedAt": "2026-11-04T11:56:28.278Z"
+  },
+  {
+    "key": "product-archive:add-to-draft:de:390",
+    "stateKey": "product-archive:add-to-draft",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/",
+    "checks": [
+      {
+        "name": "archive add link",
+        "result": "fail",
+        "observed": "no add-to-cart link on archive"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "No loop add link",
+    "observedAt": "2026-11-04T11:56:29.503Z"
+  },
+  {
+    "key": "product-archive:loading-error:de:390",
+    "stateKey": "product-archive:loading-error",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/",
+    "checks": [
+      {
+        "name": "page with aborted ajax still renders content",
+        "result": "pass",
+        "observed": "none"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Aborted admin-ajax/wc-ajax on reload; resilience/error surfacing recorded. Engine-level network failure not simulated.",
+    "observedAt": "2026-11-04T11:56:31.987Z"
+  },
+  {
+    "key": "comparison:empty:de:390",
+    "stateKey": "comparison:empty",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkte-vergleichen/",
+    "checks": [
+      {
+        "name": "empty state visible on fresh session",
+        "result": "pass",
+        "observed": "empty=true"
+      },
+      {
+        "name": "h1",
+        "result": "observe",
+        "observed": "Produkte vergleichen"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/comparison:empty:de:390.png",
+    "scope": "Fresh visitor compare page empty state",
+    "observedAt": "2026-11-04T11:56:33.036Z"
+  },
+  {
+    "key": "comparison:*:de:390",
+    "status": "error",
+    "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('button[class*=\\'compare\\'], a[class*=\\'compare\\'], [data-compare]').first()\n    - locator resolved to <a hidden=\"\" id=\"compare-chip\" data-compare-chip=\"\" data-compare-max=\"4\" data-compare-count-value=\"0\" href=\"http://127.0.0.1:8904/de/produkte-vergleichen/\" data-compare-page=\"http://127.0.0.1:8904/de/produkte-vergleichen/\" class=\"linker-compare-chip fixed bottom-24 left-5 z-40 inline-flex items-center gap-2 rounded-full ",
+    "observedAt": "2026-11-04T11:57:04.098Z"
+  },
+  {
+    "key": "content:accordion:de:390",
+    "stateKey": "content:accordion",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/loesungen/",
+    "checks": [
+      {
+        "name": "disclosure toggles",
+        "result": "pass",
+        "observed": "open null->"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/content:accordion:de:390.png",
+    "scope": "First accordion/details control toggled",
+    "observedAt": "2026-11-04T11:57:05.589Z"
+  },
+  {
+    "key": "content:section-navigation:de:390",
+    "stateKey": "content:section-navigation",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/loesungen/",
+    "checks": [
+      {
+        "name": "same-page anchor links",
+        "result": "observe",
+        "observed": "anchors=[object Promise]"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/content:section-navigation:de:390.png",
+    "scope": "Anchor navigation affordances counted; smooth-scroll/target reachability per anchor in page-sweep evidence",
+    "observedAt": "2026-11-04T11:57:05.640Z"
+  },
+  {
+    "key": "content:cta-destination:de:390",
+    "stateKey": "content:cta-destination",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/loesungen/",
+    "checks": [
+      {
+        "name": "first CTA href resolves",
+        "result": "pass",
+        "observed": "href=/de/ status=200"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "First CTA destination fetched headlessly",
+    "observedAt": "2026-11-04T11:57:05.954Z"
+  },
+  {
+    "key": "content:embedded-media:de:390",
+    "stateKey": "content:embedded-media",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/loesungen/",
+    "checks": [
+      {
+        "name": "media presence",
+        "result": "pass",
+        "observed": "iframes/video=0 imgs=5"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Embedded media presence; load completeness is in page-sweep image checks",
+    "observedAt": "2026-11-04T11:57:05.954Z"
+  },
+  {
+    "key": "content:long-german-text:de:390",
+    "stateKey": "content:long-german-text",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/loesungskonfigurator/",
+    "checks": [
+      {
+        "name": "no horizontal overflow",
+        "result": "pass",
+        "observed": "overflow=false"
+      },
+      {
+        "name": "long compound words sampled",
+        "result": "observe",
+        "observed": "Produkteignung·Wechselrichter-Kompatibilität·Projektunterstützung"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "German long-word typography overflow probe on a long DE page",
+    "observedAt": "2026-11-04T11:57:07.371Z"
+  },
+  {
+    "key": "content:forms-and-validation:de:390",
+    "stateKey": "content:forms-and-validation",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/kontakt/",
+    "checks": [
+      {
+        "name": "required fields present",
+        "result": "pass",
+        "observed": "required=4"
+      },
+      {
+        "name": "client-side validation on empty submit",
+        "result": "pass",
+        "observed": "navigated=false; browser-flagged: message,name,email,consent"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Empty-submit client-side validation only; NO form submission performed (write scope)",
+    "observedAt": "2026-11-04T11:57:08.854Z"
+  },
+  {
+    "key": "document-library:switch-tabs-and-keyboard:de:390",
+    "stateKey": "document-library:switch-tabs-and-keyboard",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/?tab=documents",
+    "checks": [
+      {
+        "name": "both tabs present",
+        "result": "pass",
+        "observed": "faq+documents tabs"
+      },
+      {
+        "name": "documents tab activates panel",
+        "result": "pass",
+        "observed": "panel visible=true"
+      },
+      {
+        "name": "keyboard reaches tab",
+        "result": "observe",
+        "observed": "A"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/document-library:switch-tabs-and-keyboard:de:390.png",
+    "scope": "FAQ/Documents tab switch + Tab-key probe",
+    "observedAt": "2026-11-04T11:57:12.171Z"
+  },
+  {
+    "key": "document-library:document-open-file-and-anchor:de:390",
+    "stateKey": "document-library:document-open-file-and-anchor",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/?tab=documents",
+    "checks": [
+      {
+        "name": "document link resolves",
+        "result": "pass",
+        "observed": "status=200 bytes=524172 type=application/pdf"
+      },
+      {
+        "name": "href",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/wp-content/uploads/2026/10/GW_BAT-C-208-261kWh_Datasheet_EMEA-DE_V1.1.pdf"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/document-library:document-open-file-and-anchor:de:390.png",
+    "scope": "First library document fetched; content-type and non-empty bytes",
+    "observedAt": "2026-11-04T11:57:12.376Z"
+  },
+  {
+    "key": "document-library:search-results-and-live-count:de:390",
+    "stateKey": "document-library:search-results-and-live-count",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/?q=GMK&tab=documents",
+    "checks": [
+      {
+        "name": "live count text",
+        "result": "pass",
+        "observed": "9 Ergebnisse"
+      },
+      {
+        "name": "result rows for known term",
+        "result": "fail",
+        "observed": "visible result rows=0"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/document-library:search-results-and-live-count:de:390.png",
+    "scope": "FAQ search with a known product term",
+    "observedAt": "2026-11-04T11:57:13.270Z"
+  },
+  {
+    "key": "document-library:search-empty-and-clear:de:390",
+    "stateKey": "document-library:search-empty-and-clear",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/?tab=documents",
+    "checks": [
+      {
+        "name": "empty-result message",
+        "result": "fail",
+        "observed": "none"
+      },
+      {
+        "name": "clear restores list",
+        "result": "observe",
+        "observed": "rows after clear=0"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/document-library:search-empty-and-clear:de:390.png",
+    "scope": "No-match query + clear",
+    "observedAt": "2026-11-04T11:57:14.754Z"
+  },
+  {
+    "key": "document-library:suggestions-keyboard-selection-and-escape:de:390",
+    "stateKey": "document-library:suggestions-keyboard-selection-and-escape",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/?tab=documents",
+    "checks": [
+      {
+        "name": "keyboard interaction did not error",
+        "result": "pass",
+        "observed": "ArrowDown+Escape applied to focused search"
+      },
+      {
+        "name": "suggestion listbox presence",
+        "result": "observe",
+        "observed": "1"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/document-library:suggestions-keyboard-selection-and-escape:de:390.png",
+    "scope": "Keyboard probe on search input; listbox structure recorded",
+    "observedAt": "2026-11-04T11:57:14.803Z"
+  },
+  {
+    "key": "document-library:rail-and-mobile-chips:de:390",
+    "stateKey": "document-library:rail-and-mobile-chips",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/?tab=documents",
+    "checks": [
+      {
+        "name": "category navigation affordances",
+        "result": "pass",
+        "observed": "rail/chip elements=56"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/document-library:rail-and-mobile-chips:de:390.png",
+    "scope": "Category rail/chips presence at width",
+    "observedAt": "2026-11-04T11:57:16.725Z"
+  },
+  {
+    "key": "document-library:*:de:390",
+    "status": "error",
+    "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('a.lnk-lang-half:not(.is-active)').first()\n    - locator resolved to <a lang=\"en\" hreflang=\"en\" title=\"English\" data-lnk-flang=\"en\" class=\"lnk-lang-half\" data-linker-language-choice=\"en\" href=\"http://127.0.0.1:8904/faq-download/\">EN</a>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for ",
+    "observedAt": "2026-11-04T11:57:47.223Z"
+  },
+  {
+    "key": "dynamic-routes:404-unknown-route-and-locale:de:390",
+    "stateKey": "dynamic-routes:404-unknown-route-and-locale",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/_full-matrix-missing-route/",
+    "checks": [
+      {
+        "name": "404 template rendered",
+        "result": "pass",
+        "observed": "title=Seite nicht gefunden | Linker"
+      },
+      {
+        "name": "document lang",
+        "result": "observe",
+        "observed": "de-DE"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Unknown-route 404 with locale",
+    "observedAt": "2026-11-04T11:57:48.387Z"
+  },
+  {
+    "key": "dynamic-routes:retired-alias-redirect-and-language:de:390",
+    "stateKey": "dynamic-routes:retired-alias-redirect-and-language",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "alias probes",
+        "result": "observe",
+        "observed": "[{\"probe\":\"/de/feed/\",\"status\":200,\"url\":\"http://127.0.0.1:8904/de/feed/\"},{\"probe\":\"/de/?paged=2\",\"status\":\"error\"},{\"probe\":\"/de/shop/\",\"status\":200,\"url\":\"http://127.0.0.1:8904/de/produkte/\"}]"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Feed/paged/shop alias probes with redirect chain; recorded for review against current slug map",
+    "observedAt": "2026-11-04T11:57:49.906Z"
+  },
+  {
+    "key": "dynamic-routes:public-archive-discovery-and-applicability:de:390",
+    "stateKey": "dynamic-routes:public-archive-discovery-and-applicability",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "author/date/tag probes",
+        "result": "observe",
+        "observed": "[{\"probe\":\"/de/author/admin/\",\"status\":404,\"url\":\"http://127.0.0.1:8904/de/author/admin/\"},{\"probe\":\"/de/2026/\",\"status\":200,\"url\":\"http://127.0.0.1:8904/\"},{\"probe\":\"/de/tag/speicher/\",\"status\":404,\"url\":\"http://127.0.0.1:8904/de/tag/speicher/\"}]"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Author/date/tag archive applicability probes (no invented archives)",
+    "observedAt": "2026-11-04T11:57:50.606Z"
+  },
+  {
+    "key": "dynamic-routes:account-direct-endpoint-and-refresh:de:390",
+    "stateKey": "dynamic-routes:account-direct-endpoint-and-refresh",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/mein-konto/orders/",
+    "checks": [
+      {
+        "name": "guest /orders/ destination",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/de/mein-konto/orders/"
+      },
+      {
+        "name": "login form present",
+        "result": "observe",
+        "observed": "login form probe"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Guest deep-link to account endpoint; no credentials used",
+    "observedAt": "2026-11-04T11:57:51.911Z"
+  },
+  {
+    "key": "dynamic-routes:inquiry-detail-and-received-key:de:390",
+    "stateKey": "dynamic-routes:inquiry-detail-and-received-key",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/proforma-request/bestellung-erhalten/?key=fullmatrix_bogus",
+    "checks": [
+      {
+        "name": "bogus order-received key behavior",
+        "result": "observe",
+        "observed": "url=http://127.0.0.1:8904/proforma-request/bestellung-erhalten/?key=fullmatrix_bogus h1=This page does not exist."
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Bogus confirmation key; valid-key state requires a real local inquiry (remainder)",
+    "observedAt": "2026-11-04T11:57:52.907Z"
+  },
+  {
+    "key": "dynamic-routes:password-reset-token-states:de:390",
+    "stateKey": "dynamic-routes:password-reset-token-states",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/mein-konto/passwort-zuruecksetzen/?rp_key=fullmatrix_invalid&login=fullmatrix_nobody",
+    "checks": [
+      {
+        "name": "invalid reset key landing",
+        "result": "observe",
+        "observed": "url=http://127.0.0.1:8904/de/mein-konto/passwort-zuruecksetzen/?rp_key=fullmatrix_invalid&login=fullmatrix_nobody notice="
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Invalid reset key params on lost-password endpoint; no mail involved",
+    "observedAt": "2026-11-04T11:58:23.905Z"
+  },
+  {
+    "key": "files-and-feedback:404:de:390",
+    "stateKey": "files-and-feedback:404",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "missing upload file",
+        "result": "fail",
+        "observed": "status=410"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "Missing file URL returns 404",
+    "observedAt": "2026-11-04T11:58:24.105Z"
+  },
+  {
+    "key": "files-and-feedback:invalid-route:de:390",
+    "stateKey": "files-and-feedback:invalid-route",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "invalid REST route",
+        "result": "observe",
+        "observed": "status=404"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Invalid REST route response recorded",
+    "observedAt": "2026-11-04T11:58:24.105Z"
+  },
+  {
+    "key": "files-and-feedback:public-document-auth:de:390",
+    "stateKey": "files-and-feedback:public-document-auth",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "guest document endpoint probe 1",
+        "result": "observe",
+        "observed": "status=404"
+      },
+      {
+        "name": "guest document endpoint probe 2",
+        "result": "observe",
+        "observed": "status=200"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Guest access probes against document endpoints; authorized-access states need fixtures (remainder)",
+    "observedAt": "2026-11-04T11:58:24.559Z"
+  },
+  {
+    "key": "files-and-feedback:reduced-motion:de:390",
+    "stateKey": "files-and-feedback:reduced-motion",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/",
+    "checks": [
+      {
+        "name": "reduced-motion emulation renders content",
+        "result": "pass",
+        "observed": "{\"h1\":true,\"visibleText\":\"Wert verbinden. Für Sie da.\",\"color\":\"rgb(255, 255, 255)\",\"bg\":\"rgba(0, 0, 0, 0)\"}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "reduced-motion media emulation; layout integrity at rest",
+    "observedAt": "2026-11-04T11:58:26.298Z"
+  },
+  {
+    "key": "files-and-feedback:keyboard-focus-visible:de:390",
+    "stateKey": "files-and-feedback:keyboard-focus-visible",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/",
+    "checks": [
+      {
+        "name": "focused element shows a focus style",
+        "result": "pass",
+        "observed": "{\"tag\":\"A\",\"outline\":\"solid\",\"boxShadow\":false,\"borderWidth\":\"0px\"}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "First Tab focus indicator probe",
+    "observedAt": "2026-11-04T11:58:26.298Z"
+  },
+  {
+    "key": "files-and-feedback:no-js-readable-fallback:de:390",
+    "stateKey": "files-and-feedback:no-js-readable-fallback",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/blog/",
+    "checks": [
+      {
+        "name": "server HTML carries readable content without JS",
+        "result": "pass",
+        "observed": "h1-in-html=true"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Raw server HTML inspection; JS-disabled browsing not fully emulated",
+    "observedAt": "2026-11-04T11:58:26.549Z"
+  },
+  {
+    "key": "files-and-feedback:slow-network-loading:de:390",
+    "stateKey": "files-and-feedback:slow-network-loading",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/kontakt/",
+    "checks": [
+      {
+        "name": "page completes on throttled network",
+        "result": "fail",
+        "observed": "elapsed=60001ms h1="
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "3G-ish throttled load; slow-tail media completion not asserted",
+    "observedAt": "2026-11-04T11:59:56.686Z"
+  },
+  {
+    "key": "files-and-feedback:actual-file-manifest-open-and-content:de:390",
+    "stateKey": "files-and-feedback:actual-file-manifest-open-and-content",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/",
+    "checks": [
+      {
+        "name": "sampled documents all resolve with bytes",
+        "result": "pass",
+        "observed": "[\"200/524172\",\"200/532308\",\"200/531133\",\"200/682009\"]"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "First 4 library documents fetched; full dedup manifest is remainder",
+    "observedAt": "2026-11-04T11:59:59.973Z"
+  },
+  {
+    "key": "files-and-feedback:file-url-and-source-language-consumer:de:390",
+    "stateKey": "files-and-feedback:file-url-and-source-language-consumer",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/",
+    "checks": [
+      {
+        "name": "document hrefs and link text language",
+        "result": "observe",
+        "observed": "[\"loads/2026/10/GW_BAT-C-208-261kWh_Datasheet_EMEA-DE_V1.1.pdf\",\"ontent/uploads/2026/07/delinker-goodwe_batc208-datasheet.pdf\",\"/uploads/2026/09/GW_BAT-C-208-261_Datasheet_EMEA-EN_V1.1.pdf\",\"ploads/2026/10/GW_BAT-C-60-112kWh_Datasheet_EMEA-DE_V1.1.pdf\"]"
+      }
+    ],
+    "passed": 0,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Document URL/original-language pairing recorded for review; per-file language assertion needs manifest metadata",
+    "observedAt": "2026-11-04T11:59:59.973Z"
+  },
+  {
+    "key": "product:faq-accordion:de:390",
+    "stateKey": "product:faq-accordion",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkt/goodwe-gw60k-sts-g10/",
+    "checks": [
+      {
+        "name": "PDP FAQ disclosure toggles",
+        "result": "pass",
+        "observed": "open="
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/product:faq-accordion:de:390.png",
+    "scope": "First PDP FAQ disclosure",
+    "observedAt": "2026-11-04T12:00:01.623Z"
+  },
+  {
+    "key": "product:related-products:de:390",
+    "stateKey": "product:related-products",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkt/goodwe-gw60k-sts-g10/",
+    "checks": [
+      {
+        "name": "related products present",
+        "result": "fail",
+        "observed": "related links=0"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/product:related-products:de:390.png",
+    "scope": "Related products section presence",
+    "observedAt": "2026-11-04T12:00:01.654Z"
+  },
+  {
+    "key": "product:documents-and-pdf:de:390",
+    "stateKey": "product:documents-and-pdf",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkt/goodwe-gw60k-sts-g10/",
+    "checks": [
+      {
+        "name": "PDP PDF link resolves",
+        "result": "pass",
+        "observed": "status=200 bytes=496335"
+      },
+      {
+        "name": "href",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep/screenshots/product:documents-and-pdf:de:390.png",
+    "scope": "First PDP document PDF fetched",
+    "observedAt": "2026-11-04T12:00:01.820Z"
+  },
+  {
+    "key": "product:*:de:390",
+    "status": "error",
+    "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('button[class*=\\'compare\\'], a[class*=\\'compare\\'], [data-compare]').first()\n    - locator resolved to <a hidden=\"\" id=\"compare-chip\" data-compare-chip=\"\" data-compare-max=\"4\" data-compare-count-value=\"0\" href=\"http://127.0.0.1:8904/de/produkte-vergleichen/\" data-compare-page=\"http://127.0.0.1:8904/de/produkte-vergleichen/\" class=\"linker-compare-chip fixed bottom-24 left-5 z-40 inline-flex items-center gap-2 rounded-full ",
+    "observedAt": "2026-11-04T12:00:31.798Z"
+  },
+  {
+    "key": "global-navigation:cookie-choice-and-reopen:de:390",
+    "stateKey": "global-navigation:cookie-choice-and-reopen",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/",
+    "checks": [
+      {
+        "name": "banner shown on first visit",
+        "result": "pass",
+        "observed": "shown=true"
+      },
+      {
+        "name": "reject choice applied",
+        "result": "pass",
+        "observed": "rejected"
+      },
+      {
+        "name": "reopen via revisit button",
+        "result": "fail",
+        "observed": "reopened=false"
+      }
+    ],
+    "passed": 2,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "Fresh-context cookie banner: shown, reject, reopen",
+    "observedAt": "2026-11-04T12:00:33.889Z"
+  }
+]

@@ -1,0 +1,274 @@
+[
+  {
+    "key": "content:accordion:de:1440",
+    "stateKey": "content:accordion",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/loesung/",
+    "checks": [
+      {
+        "name": "disclosure toggles on /de/loesung/",
+        "result": "observe",
+        "observed": "open null->null"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass3-de-content/screenshots/pass3-content:accordion:de:1440.png",
+    "scope": "DE disclosure on the real DE twin page 6871 (pass1 used an invented 404 URL; quarantined)",
+    "observedAt": "2026-11-04T12:16:05.894Z",
+    "pass": 3
+  },
+  {
+    "key": "content:section-navigation:de:1440",
+    "stateKey": "content:section-navigation",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/loesung/",
+    "checks": [
+      {
+        "name": "same-page anchors",
+        "result": "pass",
+        "observed": "anchors=1"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass3-de-content/screenshots/pass3-content:section-navigation:de:1440.png",
+    "scope": "DE anchor navigation count",
+    "observedAt": "2026-11-04T12:16:06.045Z",
+    "pass": 3
+  },
+  {
+    "key": "content:cta-destination:de:1440",
+    "stateKey": "content:cta-destination",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/loesung/",
+    "checks": [
+      {
+        "name": "first CTA resolves",
+        "result": "pass",
+        "observed": "href=#arenas status=200"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass3-de-content/screenshots/pass3-content:cta-destination:de:1440.png",
+    "scope": "DE CTA destination fetch",
+    "observedAt": "2026-11-04T12:16:06.566Z",
+    "pass": 3
+  },
+  {
+    "key": "content:embedded-media:de:1440",
+    "stateKey": "content:embedded-media",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/loesung/",
+    "checks": [
+      {
+        "name": "media present",
+        "result": "pass",
+        "observed": "iframe/video=0 imgs=8"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass3-de-content/screenshots/pass3-content:embedded-media:de:1440.png",
+    "scope": "DE media presence",
+    "observedAt": "2026-11-04T12:16:06.707Z",
+    "pass": 3
+  },
+  {
+    "key": "content:long-german-text:de:1440",
+    "stateKey": "content:long-german-text",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/loesung/",
+    "checks": [
+      {
+        "name": "no horizontal overflow",
+        "result": "pass",
+        "observed": "overflow=false"
+      },
+      {
+        "name": "long compounds sampled",
+        "result": "observe",
+        "observed": "Container-Batteriespeicher | Produkteignung·Wechselrichter-Kompatibilität·Projektunterstützung"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass3-de-content/screenshots/pass3-content:long-german-text:de:1440.png",
+    "scope": "DE long-word typography on real DE page",
+    "observedAt": "2026-11-04T12:16:06.839Z",
+    "pass": 3
+  },
+  {
+    "key": "content:forms-and-validation:de:1440",
+    "stateKey": "content:forms-and-validation",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/kontakt/",
+    "checks": [
+      {
+        "name": "required fields",
+        "result": "pass",
+        "observed": "required=4"
+      },
+      {
+        "name": "empty submit blocked client-side",
+        "result": "pass",
+        "observed": "navigated=false; invalid=message,name,email,consent"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass3-de-content/screenshots/pass3-content:forms-and-validation:de:1440.png",
+    "scope": "DE contact form client-side validation only; NO submission",
+    "observedAt": "2026-11-04T12:16:08.618Z",
+    "pass": 3
+  },
+  {
+    "key": "content:accordion:de:390",
+    "stateKey": "content:accordion",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/loesung/",
+    "checks": [
+      {
+        "name": "disclosure toggles on /de/loesung/",
+        "result": "pass",
+        "observed": "open null->"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass3-de-content/screenshots/pass3-content:accordion:de:390.png",
+    "scope": "DE disclosure on the real DE twin page 6871 (pass1 used an invented 404 URL; quarantined)",
+    "observedAt": "2026-11-04T12:16:10.282Z",
+    "pass": 3
+  },
+  {
+    "key": "content:section-navigation:de:390",
+    "stateKey": "content:section-navigation",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/loesung/",
+    "checks": [
+      {
+        "name": "same-page anchors",
+        "result": "pass",
+        "observed": "anchors=1"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass3-de-content/screenshots/pass3-content:section-navigation:de:390.png",
+    "scope": "DE anchor navigation count",
+    "observedAt": "2026-11-04T12:16:10.310Z",
+    "pass": 3
+  },
+  {
+    "key": "content:cta-destination:de:390",
+    "stateKey": "content:cta-destination",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/loesung/",
+    "checks": [
+      {
+        "name": "first CTA resolves",
+        "result": "pass",
+        "observed": "href=#arenas status=200"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass3-de-content/screenshots/pass3-content:cta-destination:de:390.png",
+    "scope": "DE CTA destination fetch",
+    "observedAt": "2026-11-04T12:16:10.741Z",
+    "pass": 3
+  },
+  {
+    "key": "content:embedded-media:de:390",
+    "stateKey": "content:embedded-media",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/loesung/",
+    "checks": [
+      {
+        "name": "media present",
+        "result": "pass",
+        "observed": "iframe/video=0 imgs=8"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass3-de-content/screenshots/pass3-content:embedded-media:de:390.png",
+    "scope": "DE media presence",
+    "observedAt": "2026-11-04T12:16:10.774Z",
+    "pass": 3
+  },
+  {
+    "key": "content:long-german-text:de:390",
+    "stateKey": "content:long-german-text",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/loesung/",
+    "checks": [
+      {
+        "name": "no horizontal overflow",
+        "result": "pass",
+        "observed": "overflow=false"
+      },
+      {
+        "name": "long compounds sampled",
+        "result": "observe",
+        "observed": "Container-Batteriespeicher | Produkteignung·Wechselrichter-Kompatibilität·Projektunterstützung"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass3-de-content/screenshots/pass3-content:long-german-text:de:390.png",
+    "scope": "DE long-word typography on real DE page",
+    "observedAt": "2026-11-04T12:16:10.807Z",
+    "pass": 3
+  },
+  {
+    "key": "content:forms-and-validation:de:390",
+    "stateKey": "content:forms-and-validation",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/kontakt/",
+    "checks": [
+      {
+        "name": "required fields",
+        "result": "pass",
+        "observed": "required=4"
+      },
+      {
+        "name": "empty submit blocked client-side",
+        "result": "pass",
+        "observed": "navigated=false; invalid=message,name,email,consent"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass3-de-content/screenshots/pass3-content:forms-and-validation:de:390.png",
+    "scope": "DE contact form client-side validation only; NO submission",
+    "observedAt": "2026-11-04T12:16:12.425Z",
+    "pass": 3
+  }
+]

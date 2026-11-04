@@ -1,0 +1,1083 @@
+[
+  {
+    "id": 6969,
+    "kind": "lc_dynamic_template",
+    "slug": "linker-faq",
+    "title": "FAQ & documents",
+    "lang": "en",
+    "marker": {
+      "kind": "id",
+      "value": "linker-faq-page"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/faq-download/",
+        "localUrl": "http://127.0.0.1:8904/faq-download/",
+        "lang": "en",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "linker-faq-page"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:43:57.101Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 6970,
+    "kind": "lc_dynamic_template",
+    "slug": "linker-faq-de",
+    "title": "FAQ & Dokumente",
+    "lang": "en",
+    "marker": {
+      "kind": "id",
+      "value": "linker-faq-page"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/faq-dokumente/",
+        "localUrl": "http://127.0.0.1:8904/de/faq-dokumente/",
+        "lang": "de",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "linker-faq-page"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:43:59.656Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 6971,
+    "kind": "lc_dynamic_template",
+    "slug": "linker-advisor",
+    "title": "Genie",
+    "lang": "en",
+    "marker": {
+      "kind": "class",
+      "value": "linker-genie-workspace"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/genie/",
+        "localUrl": "http://127.0.0.1:8904/genie/",
+        "lang": "en",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "class",
+          "value": "linker-genie-workspace"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:02.194Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 6972,
+    "kind": "lc_dynamic_template",
+    "slug": "linker-advisor-de",
+    "title": "Genie",
+    "lang": "en",
+    "marker": {
+      "kind": "class",
+      "value": "linker-genie-workspace"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/genie/",
+        "localUrl": "http://127.0.0.1:8904/de/genie/",
+        "lang": "de",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "class",
+          "value": "linker-genie-workspace"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:03.286Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 6973,
+    "kind": "lc_dynamic_template",
+    "slug": "linker-configurator",
+    "title": "Solution Configurator",
+    "lang": "en",
+    "marker": {
+      "kind": "class",
+      "value": "linker-configurator-page"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/solution-configurator/",
+        "localUrl": "http://127.0.0.1:8904/solution-configurator/",
+        "lang": "en",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "class",
+          "value": "linker-configurator-page"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:04.423Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 6974,
+    "kind": "lc_dynamic_template",
+    "slug": "linker-configurator-de",
+    "title": "Lösungskonfigurator",
+    "lang": "en",
+    "marker": {
+      "kind": "class",
+      "value": "linker-configurator-page"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/loesungskonfigurator/",
+        "localUrl": "http://127.0.0.1:8904/de/loesungskonfigurator/",
+        "lang": "de",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "class",
+          "value": "linker-configurator-page"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:05.532Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 6961,
+    "kind": "lc_dynamic_template",
+    "slug": "shop-page",
+    "title": "Shop page",
+    "lang": "en",
+    "marker": {
+      "kind": "id",
+      "value": "linker-products"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/products/",
+        "localUrl": "http://127.0.0.1:8904/products/",
+        "lang": "en",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "linker-products"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:06.701Z"
+      },
+      {
+        "url": "https://de-linker.com/de/produkte/",
+        "localUrl": "http://127.0.0.1:8904/de/produkte/",
+        "lang": "de",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "linker-products"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:07.465Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 6962,
+    "kind": "lc_dynamic_template",
+    "slug": "solution-draft",
+    "title": "Solution draft",
+    "lang": "en",
+    "marker": {
+      "kind": "id",
+      "value": "tv-storefront-cart"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/cart/",
+        "localUrl": "http://127.0.0.1:8904/cart/",
+        "lang": "en",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-storefront-cart"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:09.272Z"
+      },
+      {
+        "url": "https://de-linker.com/de/loesungsentwurf/",
+        "localUrl": "http://127.0.0.1:8904/de/loesungsentwurf/",
+        "lang": "de",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-storefront-cart"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:09.491Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 6963,
+    "kind": "lc_dynamic_template",
+    "slug": "proforma-request",
+    "title": "Proforma request",
+    "lang": "en",
+    "marker": {
+      "kind": "id",
+      "value": "tv-woo-b2b-checkout"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/proforma-request/",
+        "localUrl": "http://127.0.0.1:8904/proforma-request/",
+        "lang": "en",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-woo-b2b-checkout"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:10.561Z"
+      },
+      {
+        "url": "https://de-linker.com/de/proforma-anfrage/",
+        "localUrl": "http://127.0.0.1:8904/de/proforma-anfrage/",
+        "lang": "de",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-woo-b2b-checkout"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:10.750Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 6964,
+    "kind": "lc_dynamic_template",
+    "slug": "account",
+    "title": "Account",
+    "lang": "en",
+    "marker": {
+      "kind": "id",
+      "value": "container-content-account"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/my-account/",
+        "localUrl": "http://127.0.0.1:8904/my-account/",
+        "lang": "en",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "container-content-account"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:11.843Z"
+      },
+      {
+        "url": "https://de-linker.com/de/mein-konto/",
+        "localUrl": "http://127.0.0.1:8904/de/mein-konto/",
+        "lang": "de",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "container-content-account"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:12.079Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 6967,
+    "kind": "lc_dynamic_template",
+    "slug": "linker-compare",
+    "title": "Compare products",
+    "lang": "en",
+    "marker": {
+      "kind": "id",
+      "value": "container-content-compare"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/compare-products/",
+        "localUrl": "http://127.0.0.1:8904/compare-products/",
+        "lang": "en",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "container-content-compare"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:13.152Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 6968,
+    "kind": "lc_dynamic_template",
+    "slug": "linker-compare-de",
+    "title": "Produkte vergleichen",
+    "lang": "en",
+    "marker": {
+      "kind": "id",
+      "value": "container-content-compare"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/produkte-vergleichen/",
+        "localUrl": "http://127.0.0.1:8904/de/produkte-vergleichen/",
+        "lang": "de",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "container-content-compare"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:14.355Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 940,
+    "kind": "lc_dynamic_template",
+    "slug": "template-for-404",
+    "title": "Template for 404",
+    "lang": "en",
+    "marker": {
+      "kind": "id",
+      "value": "tv-404-v1"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/_coverage-review-missing-route/",
+        "localUrl": "http://127.0.0.1:8904/_coverage-review-missing-route/",
+        "lang": "en",
+        "httpStatus": 404,
+        "expectedStatus": 404,
+        "marker": {
+          "kind": "id",
+          "value": "tv-404-v1"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:15.490Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 6861,
+    "kind": "lc_dynamic_template",
+    "slug": "vorlage-fur-404",
+    "title": "Vorlage für 404",
+    "lang": "de",
+    "marker": {
+      "kind": "id",
+      "value": "tv-404-v1"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/_coverage-review-missing-route/",
+        "localUrl": "http://127.0.0.1:8904/de/_coverage-review-missing-route/",
+        "lang": "de",
+        "httpStatus": 404,
+        "expectedStatus": 404,
+        "marker": {
+          "kind": "id",
+          "value": "tv-404-v1"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:16.640Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 619,
+    "kind": "lc_dynamic_template",
+    "slug": "template-for-search",
+    "title": "Blog search results",
+    "lang": "en",
+    "marker": {
+      "kind": "id",
+      "value": "tv-blog-search-v1"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/?s=SAJ",
+        "localUrl": "http://127.0.0.1:8904/?s=SAJ",
+        "lang": "en",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-blog-search-v1"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:17.753Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 6875,
+    "kind": "lc_dynamic_template",
+    "slug": "vorlage-fur-die-suche",
+    "title": "Vorlage für die Suche",
+    "lang": "de",
+    "marker": {
+      "kind": "id",
+      "value": "tv-blog-search-v1"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/?s=SAJ",
+        "localUrl": "http://127.0.0.1:8904/de/?s=SAJ",
+        "lang": "de",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-blog-search-v1"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:18.941Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 613,
+    "kind": "lc_dynamic_template",
+    "slug": "template-for-single-post",
+    "title": "Blog single post",
+    "lang": "en",
+    "marker": {
+      "kind": "id",
+      "value": "tv-blog-single-v1"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/hybrid-inverter-vs-ac-coupled-storage/",
+        "localUrl": "http://127.0.0.1:8904/hybrid-inverter-vs-ac-coupled-storage/",
+        "lang": "en",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-blog-single-v1"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:20.195Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 6877,
+    "kind": "lc_dynamic_template",
+    "slug": "vorlage-fur-einzelnen-beitrag",
+    "title": "Vorlage für einzelnen Beitrag",
+    "lang": "de",
+    "marker": {
+      "kind": "id",
+      "value": "tv-blog-single-v1"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/hybridwechselrichter-vs-ac-speicher/",
+        "localUrl": "http://127.0.0.1:8904/de/hybridwechselrichter-vs-ac-speicher/",
+        "lang": "de",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-blog-single-v1"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:21.347Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 607,
+    "kind": "lc_dynamic_template",
+    "slug": "template-for-archive-for-tax-category",
+    "title": "Blog category archive",
+    "lang": "en",
+    "marker": {
+      "kind": "id",
+      "value": "tv-blog-category-v1"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/category/applications-blog/",
+        "localUrl": "http://127.0.0.1:8904/category/applications-blog/",
+        "lang": "en",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-blog-category-v1"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:22.540Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 6879,
+    "kind": "lc_dynamic_template",
+    "slug": "vorlage-fur-archiv-der-steuerkategorie",
+    "title": "Vorlage für Archiv der Steuerkategorie",
+    "lang": "de",
+    "marker": {
+      "kind": "id",
+      "value": "tv-blog-category-v1"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/kategorie/anwendungen/",
+        "localUrl": "http://127.0.0.1:8904/de/kategorie/anwendungen/",
+        "lang": "de",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-blog-category-v1"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:24.016Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 574,
+    "kind": "lc_dynamic_template",
+    "slug": "template-for-blog-posts-index",
+    "title": "Blog posts index",
+    "lang": "en",
+    "marker": {
+      "kind": "id",
+      "value": "tv-blog-index-v1"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/blog/",
+        "localUrl": "http://127.0.0.1:8904/blog/",
+        "lang": "en",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-blog-index-v1"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:25.406Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 6881,
+    "kind": "lc_dynamic_template",
+    "slug": "vorlage-fur-blog-beitragsindex",
+    "title": "Vorlage für Blog-Beitragsindex",
+    "lang": "de",
+    "marker": {
+      "kind": "id",
+      "value": "tv-blog-index-v1"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/blog/",
+        "localUrl": "http://127.0.0.1:8904/de/blog/",
+        "lang": "de",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-blog-index-v1"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:26.496Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 234,
+    "kind": "lc_dynamic_template",
+    "slug": "template-for-single-product",
+    "title": "Single product",
+    "lang": "en",
+    "marker": {
+      "kind": "id",
+      "value": "tv-storefront-pdp"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/product/saj-ats1-t63-a/",
+        "localUrl": "http://127.0.0.1:8904/product/saj-ats1-t63-a/",
+        "lang": "en",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-storefront-pdp"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:27.640Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 6903,
+    "kind": "lc_dynamic_template",
+    "slug": "vorlage-fur-einzelnes-produkt",
+    "title": "Vorlage für einzelnes Produkt",
+    "lang": "de",
+    "marker": {
+      "kind": "id",
+      "value": "tv-storefront-pdp"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/produkt/goodwe-gw60k-sts-g10/",
+        "localUrl": "http://127.0.0.1:8904/de/produkt/goodwe-gw60k-sts-g10/",
+        "lang": "de",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-storefront-pdp"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:29.133Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 231,
+    "kind": "lc_dynamic_template",
+    "slug": "template-for-archive-for-post-type-product",
+    "title": "Product archive",
+    "lang": "en",
+    "marker": {
+      "kind": "id",
+      "value": "linker-products"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/product-category/accessories/",
+        "localUrl": "http://127.0.0.1:8904/product-category/accessories/",
+        "lang": "en",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "linker-products"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:30.511Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 6905,
+    "kind": "lc_dynamic_template",
+    "slug": "vorlage-fur-archiv-fur-beitragstyp-produkt",
+    "title": "Vorlage für Archiv für Beitragstyp Produkt",
+    "lang": "de",
+    "marker": {
+      "kind": "id",
+      "value": "linker-products"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/batteriesysteme/",
+        "localUrl": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/batteriesysteme/",
+        "lang": "de",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "linker-products"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:31.836Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 30,
+    "kind": "lc_partial",
+    "slug": "global-javascript-code",
+    "title": "Global JavaScript Code",
+    "lang": "en",
+    "marker": {
+      "kind": "empty",
+      "value": null
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/",
+        "localUrl": "http://127.0.0.1:8904/",
+        "lang": "en",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "empty",
+          "value": null
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:33.140Z"
+      },
+      {
+        "url": "https://de-linker.com/de/",
+        "localUrl": "http://127.0.0.1:8904/de/",
+        "lang": "de",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "empty",
+          "value": null
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:33.497Z"
+      }
+    ],
+    "binding": "empty-content-local-and-production",
+    "evidenceScope": "Template post_content is empty (len=0) on the local snapshot AND on production (read-only wp db query 2026-11-04). No code or markup renders from it; 'binding' here records the empty fact, not a render proof. Execution/behavior contract unsatisfiable while content is empty."
+  },
+  {
+    "id": 17,
+    "kind": "lc_partial",
+    "slug": "header",
+    "title": "Header",
+    "lang": "en",
+    "marker": {
+      "kind": "id",
+      "value": "tv-header-v2"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/",
+        "localUrl": "http://127.0.0.1:8904/",
+        "lang": "en",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-header-v2"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:34.681Z"
+      },
+      {
+        "url": "https://de-linker.com/cart/",
+        "localUrl": "http://127.0.0.1:8904/cart/",
+        "lang": "en",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-header-v2"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:35.006Z"
+      },
+      {
+        "url": "https://de-linker.com/privacy-policy/",
+        "localUrl": "http://127.0.0.1:8904/privacy-policy/",
+        "lang": "en",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-header-v2"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:35.151Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 18,
+    "kind": "lc_partial",
+    "slug": "footer",
+    "title": "Footer",
+    "lang": "en",
+    "marker": {
+      "kind": "id",
+      "value": "tv-footer-v2"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/",
+        "localUrl": "http://127.0.0.1:8904/",
+        "lang": "en",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-footer-v2"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:36.222Z"
+      },
+      {
+        "url": "https://de-linker.com/cart/",
+        "localUrl": "http://127.0.0.1:8904/cart/",
+        "lang": "en",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-footer-v2"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:36.572Z"
+      },
+      {
+        "url": "https://de-linker.com/privacy-policy/",
+        "localUrl": "http://127.0.0.1:8904/privacy-policy/",
+        "lang": "en",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-footer-v2"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:36.707Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 6909,
+    "kind": "lc_partial",
+    "slug": "kopfzeile",
+    "title": "Kopfzeile",
+    "lang": "de",
+    "marker": {
+      "kind": "id",
+      "value": "tv-header-v2"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/",
+        "localUrl": "http://127.0.0.1:8904/de/",
+        "lang": "de",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-header-v2"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:37.752Z"
+      },
+      {
+        "url": "https://de-linker.com/de/loesungsentwurf/",
+        "localUrl": "http://127.0.0.1:8904/de/loesungsentwurf/",
+        "lang": "de",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-header-v2"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:38.098Z"
+      },
+      {
+        "url": "https://de-linker.com/de/datenschutz/",
+        "localUrl": "http://127.0.0.1:8904/de/datenschutz/",
+        "lang": "de",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-header-v2"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:38.249Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  },
+  {
+    "id": 6911,
+    "kind": "lc_partial",
+    "slug": "fuszeile",
+    "title": "Fußzeile",
+    "lang": "de",
+    "marker": {
+      "kind": "id",
+      "value": "tv-footer-v2"
+    },
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/",
+        "localUrl": "http://127.0.0.1:8904/de/",
+        "lang": "de",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-footer-v2"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:39.322Z"
+      },
+      {
+        "url": "https://de-linker.com/de/loesungsentwurf/",
+        "localUrl": "http://127.0.0.1:8904/de/loesungsentwurf/",
+        "lang": "de",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-footer-v2"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:39.695Z"
+      },
+      {
+        "url": "https://de-linker.com/de/datenschutz/",
+        "localUrl": "http://127.0.0.1:8904/de/datenschutz/",
+        "lang": "de",
+        "httpStatus": 200,
+        "expectedStatus": null,
+        "marker": {
+          "kind": "id",
+          "value": "tv-footer-v2"
+        },
+        "markerFound": true,
+        "error": null,
+        "observedAt": "2026-11-04T11:44:39.847Z"
+      }
+    ],
+    "binding": "bound-local-snapshot",
+    "evidenceScope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+  }
+]

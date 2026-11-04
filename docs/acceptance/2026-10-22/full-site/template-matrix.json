@@ -5,10 +5,22 @@
     "title": "FAQ & documents",
     "lang": "en",
     "sha256": "f9d1c42ea4a0f8828a6f23767a43f6ecfe1ed07b8595c844ae1e52530f7fec10",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/faq-download/",
+        "localUrl": "http://127.0.0.1:8904/faq-download/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -59,7 +71,8 @@
         "scope": "Existing staff session: native EN→DE→EN with GW10K-EHA-G20, documents tab and manual type retained; the resulting EN/DE views were read at 1440 and 390, then Clear removed q while retaining tab/type. These are two language actions plus four viewport readbacks, not four independent switch actions; anonymous permissions and whole-page acceptance remain open.",
         "binding_boundary": "Actual named library pages were exercised; this does not independently prove template assignment or close overall template status."
       }
-    }
+    },
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_dynamic_template",
@@ -67,10 +80,22 @@
     "title": "FAQ & Dokumente",
     "lang": "en",
     "sha256": "b1d82f2328cafd8fe7698fc42cf76c0cfd55301b839c8d73653e13073a0d6a4d",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/faq-dokumente/",
+        "localUrl": "http://127.0.0.1:8904/de/faq-dokumente/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -122,7 +147,8 @@
         "scope": "Existing staff session: native EN→DE→EN with GW10K-EHA-G20, documents tab and manual type retained; the resulting EN/DE views were read at 1440 and 390, then Clear removed q while retaining tab/type. These are two language actions plus four viewport readbacks, not four independent switch actions; anonymous permissions and whole-page acceptance remain open.",
         "binding_boundary": "Actual named library pages were exercised; this does not independently prove template assignment or close overall template status."
       }
-    }
+    },
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_dynamic_template",
@@ -130,11 +156,22 @@
     "title": "Genie",
     "lang": "en",
     "sha256": "07af703cb97defb8b657d4fce909dc27bfb71298308321ea3ed434f4d8d6cc91",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/genie/",
+        "localUrl": "http://127.0.0.1:8904/genie/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-genie-recovery.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-genie-recovery.json",
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
     ],
     "findings": [],
     "assignment_baseline": {
@@ -199,7 +236,8 @@
         "route": "https://de-linker.com/genie/",
         "template_attribution_boundary": "Named candidate-route workspace consumer only. This CSS fault/retry evidence does not independently prove literal numericLCtemplate assignment or all template states; baseline IDs, template overallstatus, rendered_routes and assignments unchanged."
       }
-    }
+    },
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_dynamic_template",
@@ -207,11 +245,22 @@
     "title": "Genie",
     "lang": "en",
     "sha256": "07af703cb97defb8b657d4fce909dc27bfb71298308321ea3ed434f4d8d6cc91",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/genie/",
+        "localUrl": "http://127.0.0.1:8904/de/genie/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-genie-recovery.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-genie-recovery.json",
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
     ],
     "findings": [],
     "assignment_baseline": {
@@ -278,7 +327,8 @@
         "route": "https://de-linker.com/de/genie/",
         "template_attribution_boundary": "Named candidate-route workspace consumer only. This CSS fault/retry evidence does not independently prove literal numericLCtemplate assignment or all template states; baseline IDs, template overallstatus, rendered_routes and assignments unchanged."
       }
-    }
+    },
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_dynamic_template",
@@ -286,10 +336,22 @@
     "title": "Solution Configurator",
     "lang": "en",
     "sha256": "d1d98433d21093a3096b40306170507d32b6bcc2a66952c501ccc3396b5ec141",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/solution-configurator/",
+        "localUrl": "http://127.0.0.1:8904/solution-configurator/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -324,7 +386,8 @@
       "provenance"
     ],
     "coverage_contract": "coverage-contract.md",
-    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use."
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_dynamic_template",
@@ -332,10 +395,22 @@
     "title": "Lösungskonfigurator",
     "lang": "en",
     "sha256": "d1d98433d21093a3096b40306170507d32b6bcc2a66952c501ccc3396b5ec141",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/loesungskonfigurator/",
+        "localUrl": "http://127.0.0.1:8904/de/loesungskonfigurator/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -371,7 +446,8 @@
       "provenance"
     ],
     "coverage_contract": "coverage-contract.md",
-    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use."
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_dynamic_template",
@@ -379,10 +455,31 @@
     "title": "Shop page",
     "lang": "en",
     "sha256": "4d9854644ed3c2208dde57f7fe6ad66fa54bf9933fe6d95eb27abdd092a74b5b",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/products/",
+        "localUrl": "http://127.0.0.1:8904/products/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/de/produkte/",
+        "localUrl": "http://127.0.0.1:8904/de/produkte/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -433,7 +530,8 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json",
         "scope": "Unchanged LC template protected in native release; named product-empty/recovery shortcode/template path consumers only. Does not establish all template bindings/states."
       }
-    }
+    },
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_dynamic_template",
@@ -441,15 +539,35 @@
     "title": "Solution draft",
     "lang": "en",
     "sha256": "e24d4358f583077161de55b7a0b0c82ed74e0244fc169d4108a8ae0ba0def3e6",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/cart/",
+        "localUrl": "http://127.0.0.1:8904/cart/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/de/loesungsentwurf/",
+        "localUrl": "http://127.0.0.1:8904/de/loesungsentwurf/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
     "evidence": [
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-online-en1440.png",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-online-de1440.png",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-online-de390.png",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-online-en390.png"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-online-en390.png",
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
     ],
     "findings": [],
     "assignment_baseline": {
@@ -512,7 +630,8 @@
         ],
         "scope": "Shared Solution draft initial guest-empty action spacing accepted locally and online in all four views. Template markup and native behavior unchanged. This does not establish whole-template acceptance, populated states, last-item Remove/zero, Undo, or other unique draft transitions; existing status and binding/state lists retained."
       }
-    }
+    },
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_dynamic_template",
@@ -520,11 +639,31 @@
     "title": "Proforma request",
     "lang": "en",
     "sha256": "6ba4be52970f04b17970efb31ad00dc20f3dc2bbd1bdaa3d23dbf4d886ac34cf",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/proforma-request/",
+        "localUrl": "http://127.0.0.1:8904/proforma-request/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/de/proforma-anfrage/",
+        "localUrl": "http://127.0.0.1:8904/de/proforma-anfrage/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
     ],
     "findings": [],
     "assignment_baseline": {
@@ -898,7 +1037,8 @@
         "overall_acceptance_boundary": "Named Notes/style delta only; retain existing overall status and unverified template binding, inquiry send/success, owner/guest/receipt contents and production keyed-page visual gates.",
         "template_scope": "Shared checkout/native Woo family for EN/DE; no new selected-ID/binding or whole-template acceptance."
       }
-    }
+    },
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_dynamic_template",
@@ -906,10 +1046,31 @@
     "title": "Account",
     "lang": "en",
     "sha256": "6ff7873f87bfc33a20253ca5223eaedbab74d43f0b80fc7dad55b3a83e80a9a7",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/my-account/",
+        "localUrl": "http://127.0.0.1:8904/my-account/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/de/mein-konto/",
+        "localUrl": "http://127.0.0.1:8904/de/mein-konto/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -963,7 +1124,8 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json",
         "scope": "Unchanged LC template protected in native release; named product-empty/recovery shortcode/template path consumers only. Does not establish all template bindings/states."
       }
-    }
+    },
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_dynamic_template",
@@ -971,10 +1133,22 @@
     "title": "Compare products",
     "lang": "en",
     "sha256": "0f8355269d0f5120a4d7d42137001b2c2dafd6228b26e5dec05b770d10176076",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/compare-products/",
+        "localUrl": "http://127.0.0.1:8904/compare-products/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -1020,7 +1194,8 @@
         "delivery_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/comparison-integrity-browser.json",
         "scope": "Named EN comparison route, actual 1440/390 grouped and sparse power rows for products 1832 and 6530 read correctly; mobile scroll evidenced. The entry is associated with the candidate template only: template binding, other states and overall template status remain pending."
       }
-    }
+    },
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_dynamic_template",
@@ -1028,10 +1203,22 @@
     "title": "Produkte vergleichen",
     "lang": "en",
     "sha256": "69a8e0f2302984a9673c69b1fef9ae1b4058d3e8540dcfcc0435e74e54c4ca32",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/produkte-vergleichen/",
+        "localUrl": "http://127.0.0.1:8904/de/produkte-vergleichen/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -1078,7 +1265,8 @@
         "delivery_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/comparison-integrity-browser.json",
         "scope": "Named DE comparison route, actual 1440/390 grouped and sparse power rows for products 1832 and 6530 read correctly; mobile scroll evidenced. The entry is associated with the candidate template only: template binding, other states and overall template status remain pending."
       }
-    }
+    },
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_dynamic_template",
@@ -1086,10 +1274,22 @@
     "title": "Template for 404",
     "lang": "en",
     "sha256": "2bc5956df04e195a386a16ee24e3b2793413699c6c97f6d7b2b2453119e1149d",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/_coverage-review-missing-route/",
+        "localUrl": "http://127.0.0.1:8904/_coverage-review-missing-route/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 404,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -1124,7 +1324,8 @@
       "provenance"
     ],
     "coverage_contract": "coverage-contract.md",
-    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use."
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_dynamic_template",
@@ -1132,10 +1333,22 @@
     "title": "Vorlage für 404",
     "lang": "de",
     "sha256": "1fbec46ac6f24b8bc4b2bd9ff3b6495c551ecb23a86bace71bda88e2ed168398",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/_coverage-review-missing-route/",
+        "localUrl": "http://127.0.0.1:8904/de/_coverage-review-missing-route/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 404,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -1170,7 +1383,8 @@
       "provenance"
     ],
     "coverage_contract": "coverage-contract.md",
-    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use."
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_dynamic_template",
@@ -1178,11 +1392,22 @@
     "title": "Blog search results",
     "lang": "en",
     "sha256": "8a8170434531cbe463558f078137feb841df7f9b36fb4a349b8cd4494d20940d",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/?s=SAJ",
+        "localUrl": "http://127.0.0.1:8904/?s=SAJ",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
     ],
     "findings": [],
     "assignment_baseline": {
@@ -1274,7 +1499,8 @@
         "consumer_evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/746-blog-online-browser.json",
         "scope": "Current after PR 746: search LC body read back exactly; staff 390 bilingual journal search and language-switch cases observed, earlier 1440 proof reused. No whole-template visual or binding closure."
       }
-    }
+    },
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_dynamic_template",
@@ -1282,11 +1508,22 @@
     "title": "Vorlage für die Suche",
     "lang": "de",
     "sha256": "ce230ffe9b8ec62d6f565b6c111db7cbe5d4352a7c823d14598715801586f591",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/?s=SAJ",
+        "localUrl": "http://127.0.0.1:8904/de/?s=SAJ",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
     ],
     "findings": [],
     "assignment_baseline": {
@@ -1378,7 +1615,8 @@
         "consumer_evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/746-blog-online-browser.json",
         "scope": "Current after PR 746: search LC body read back exactly; staff 390 bilingual journal search and language-switch cases observed, earlier 1440 proof reused. No whole-template visual or binding closure."
       }
-    }
+    },
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_dynamic_template",
@@ -1401,11 +1639,21 @@
         "lang": "en",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json",
         "scope": "649 controls only"
+      },
+      {
+        "url": "https://de-linker.com/hybrid-inverter-vs-ac-coupled-storage/",
+        "localUrl": "http://127.0.0.1:8904/hybrid-inverter-vs-ac-coupled-storage/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
       }
     ],
     "applicable_states": [],
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json",
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
     ],
     "findings": [],
     "assignment_baseline": {
@@ -1479,11 +1727,21 @@
         "lang": "de",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json",
         "scope": "649 controls only"
+      },
+      {
+        "url": "https://de-linker.com/de/hybridwechselrichter-vs-ac-speicher/",
+        "localUrl": "http://127.0.0.1:8904/de/hybridwechselrichter-vs-ac-speicher/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
       }
     ],
     "applicable_states": [],
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json",
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
     ],
     "findings": [],
     "assignment_baseline": {
@@ -1542,11 +1800,22 @@
     "title": "Blog category archive",
     "lang": "en",
     "sha256": "f8d2fd7e85d2e4a720601697d0df7a4934a9126e23aaa57957231c4061fb2460",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/category/applications-blog/",
+        "localUrl": "http://127.0.0.1:8904/category/applications-blog/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
     ],
     "findings": [],
     "assignment_baseline": {
@@ -1591,7 +1860,8 @@
         "scope": "Native LC screen_reader_text parameter, published body readback; shared numeric/hidden rule proved in site search, current one-page EN blog and EN/DE category checked. Does not close all template bindings or required families.",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
       }
-    }
+    },
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_dynamic_template",
@@ -1599,11 +1869,22 @@
     "title": "Vorlage für Archiv der Steuerkategorie",
     "lang": "de",
     "sha256": "43aff298cce307024df69f491efae66aec124a7d33876ae463c43cfd512e5314",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/kategorie/anwendungen/",
+        "localUrl": "http://127.0.0.1:8904/de/kategorie/anwendungen/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
     ],
     "findings": [],
     "assignment_baseline": {
@@ -1648,7 +1929,8 @@
         "scope": "Native LC screen_reader_text parameter, published body readback; shared numeric/hidden rule proved in site search, current one-page EN blog and EN/DE category checked. Does not close all template bindings or required families.",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
       }
-    }
+    },
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_dynamic_template",
@@ -1656,11 +1938,22 @@
     "title": "Blog posts index",
     "lang": "en",
     "sha256": "42dde3ad317a1ce5d7486f7fefd88093cc11a59abab4e418d2baf05338e34dfc",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/blog/",
+        "localUrl": "http://127.0.0.1:8904/blog/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
     ],
     "findings": [],
     "assignment_baseline": {
@@ -1705,7 +1998,8 @@
         "scope": "Native LC screen_reader_text parameter, published body readback; shared numeric/hidden rule proved in site search, current one-page EN blog and EN/DE category checked. Does not close all template bindings or required families.",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
       }
-    }
+    },
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_dynamic_template",
@@ -1713,11 +2007,22 @@
     "title": "Vorlage für Blog-Beitragsindex",
     "lang": "de",
     "sha256": "cb237b5c97363742238ae448f0860a0f7468ab5eadb9ea93a4fbe991932d5939",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/blog/",
+        "localUrl": "http://127.0.0.1:8904/de/blog/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
     ],
     "findings": [],
     "assignment_baseline": {
@@ -1762,7 +2067,8 @@
         "scope": "Native LC screen_reader_text parameter, published body readback; shared numeric/hidden rule proved in site search, current one-page EN blog and EN/DE category checked. Does not close all template bindings or required families.",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
       }
-    }
+    },
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_dynamic_template",
@@ -1770,10 +2076,22 @@
     "title": "Single product",
     "lang": "en",
     "sha256": "a6f090b41d435cb9052543d600aa5b3378ce02170f5093f467c7f622db4719c2",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/product/saj-ats1-t63-a/",
+        "localUrl": "http://127.0.0.1:8904/product/saj-ats1-t63-a/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -1808,7 +2126,8 @@
       "provenance"
     ],
     "coverage_contract": "coverage-contract.md",
-    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use."
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_dynamic_template",
@@ -1816,10 +2135,22 @@
     "title": "Vorlage für einzelnes Produkt",
     "lang": "de",
     "sha256": "e12c8970c0f470068eef9c5b354d74908f4854bb4f204ec18cb4c55dc9978f98",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/produkt/goodwe-gw60k-sts-g10/",
+        "localUrl": "http://127.0.0.1:8904/de/produkt/goodwe-gw60k-sts-g10/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -1854,7 +2185,8 @@
       "provenance"
     ],
     "coverage_contract": "coverage-contract.md",
-    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use."
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_dynamic_template",
@@ -1862,10 +2194,22 @@
     "title": "Product archive",
     "lang": "en",
     "sha256": "4d9854644ed3c2208dde57f7fe6ad66fa54bf9933fe6d95eb27abdd092a74b5b",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/product-category/accessories/",
+        "localUrl": "http://127.0.0.1:8904/product-category/accessories/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -1949,7 +2293,8 @@
         "overall_template_status_unchanged": true,
         "new_tests_http_or_ui_actions": false
       }
-    }
+    },
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_dynamic_template",
@@ -1957,10 +2302,22 @@
     "title": "Vorlage für Archiv für Beitragstyp Produkt",
     "lang": "de",
     "sha256": "857843c916e4fd0b0c06ae741189141ac5fa1d9d8789fdb3d88db4214d0e8ba8",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/batteriesysteme/",
+        "localUrl": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/batteriesysteme/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -2044,7 +2401,8 @@
         "overall_template_status_unchanged": true,
         "new_tests_http_or_ui_actions": false
       }
-    }
+    },
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_partial",
@@ -2053,10 +2411,37 @@
     "lang": "en",
     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "status": "pending",
-    "rendered_routes": [],
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/",
+        "localUrl": "http://127.0.0.1:8904/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Template post_content is empty (len=0) on the local snapshot AND on production (read-only wp db query 2026-11-04). No code or markup renders from it; 'binding' here records the empty fact, not a render proof. Execution/behavior contract unsatisfiable while content is empty."
+      },
+      {
+        "url": "https://de-linker.com/de/",
+        "localUrl": "http://127.0.0.1:8904/de/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Template post_content is empty (len=0) on the local snapshot AND on production (read-only wp db query 2026-11-04). No code or markup renders from it; 'binding' here records the empty fact, not a render proof. Execution/behavior contract unsatisfiable while content is empty."
+      }
+    ],
     "applicable_states": [],
-    "evidence": [],
-    "findings": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
+    ],
+    "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "finding": "Template post_content is empty (len=0) on the local snapshot and on production (read-only query). The coverage contract's execution+consumer proof cannot be satisfied; populate, retire the template, or obtain an owner ruling before any not-applicable claim."
+      }
+    ],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
       "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
@@ -2112,10 +2497,40 @@
     "title": "Header",
     "lang": "en",
     "sha256": "1ec44224f94e0535cb114a8571a02812710b6d7bf16eeb1fc315ce09a9e1f4e3",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/",
+        "localUrl": "http://127.0.0.1:8904/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/cart/",
+        "localUrl": "http://127.0.0.1:8904/cart/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/privacy-policy/",
+        "localUrl": "http://127.0.0.1:8904/privacy-policy/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -2172,7 +2587,8 @@
         "scope": "Actual staff Chrome: EN/DE 1440 desktop five groups and EN/DE 390 mobile five groups expanded/closed; EN desktop Products had Tab to first card and Escape back to trigger, mobile Escape closed menu and returned focus in both languages. Four EN desktop non-product groups, all five EN mobile groups and four DE mobile non-product groups have collected link lists; EN desktop Products and DE mobile Products were directly opened but not every link was captured. Does not prove every destination, guest identity, touchscreen or whole-template parity.",
         "binding_boundary": "Observed shared header on real production pages; does not independently close all template assignments, roles or routes."
       }
-    }
+    },
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_partial",
@@ -2180,10 +2596,40 @@
     "title": "Footer",
     "lang": "en",
     "sha256": "baddb86fa90ab09a4ce5035d3cff84ccbfa29f82f05624fca2fa2f36717fd110",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/",
+        "localUrl": "http://127.0.0.1:8904/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/cart/",
+        "localUrl": "http://127.0.0.1:8904/cart/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/privacy-policy/",
+        "localUrl": "http://127.0.0.1:8904/privacy-policy/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -2232,7 +2678,8 @@
       "provenance"
     ],
     "coverage_contract": "coverage-contract.md",
-    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use."
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_partial",
@@ -2240,10 +2687,40 @@
     "title": "Kopfzeile",
     "lang": "de",
     "sha256": "daf8d1a6372ba7df23ef429fb9bf44432119ac9930c9aa21d8ed4d3f0f235415",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/",
+        "localUrl": "http://127.0.0.1:8904/de/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/de/loesungsentwurf/",
+        "localUrl": "http://127.0.0.1:8904/de/loesungsentwurf/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/de/datenschutz/",
+        "localUrl": "http://127.0.0.1:8904/de/datenschutz/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -2300,7 +2777,8 @@
         "scope": "Actual staff Chrome: EN/DE 1440 desktop five groups and EN/DE 390 mobile five groups expanded/closed; EN desktop Products had Tab to first card and Escape back to trigger, mobile Escape closed menu and returned focus in both languages. Four EN desktop non-product groups, all five EN mobile groups and four DE mobile non-product groups have collected link lists; EN desktop Products and DE mobile Products were directly opened but not every link was captured. Does not prove every destination, guest identity, touchscreen or whole-template parity.",
         "binding_boundary": "Observed shared header on real production pages; does not independently close all template assignments, roles or routes."
       }
-    }
+    },
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   },
   {
     "kind": "lc_partial",
@@ -2308,10 +2786,40 @@
     "title": "Fußzeile",
     "lang": "de",
     "sha256": "c84e4ba2824651ddff96ed5ab987cdb40b95e63c4757d5bc682d1f254053070c",
-    "status": "pending",
-    "rendered_routes": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/",
+        "localUrl": "http://127.0.0.1:8904/de/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/de/loesungsentwurf/",
+        "localUrl": "http://127.0.0.1:8904/de/loesungsentwurf/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/de/datenschutz/",
+        "localUrl": "http://127.0.0.1:8904/de/datenschutz/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      }
+    ],
     "applicable_states": [],
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -2360,6 +2868,7 @@
       "provenance"
     ],
     "coverage_contract": "coverage-contract.md",
-    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use."
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "binding_scope": "2026-11-04 local-snapshot marker binding on candidate routes; production-identity and state families remain open"
   }
 ]

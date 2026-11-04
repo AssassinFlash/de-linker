@@ -1,0 +1,1518 @@
+[
+  {
+    "key": "global-navigation:mobile-menu-open:en:1440",
+    "stateKey": "global-navigation:mobile-menu-open",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "nav trigger toggles panel",
+        "result": "pass",
+        "observed": "aria-expanded false->true"
+      },
+      {
+        "name": "panel/mega content opens",
+        "result": "pass",
+        "observed": "panel visible=true"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-global-navigation:mobile-menu-open:en:1440.png",
+    "scope": "tv-nav-link trigger toggles the nav group at this width; 390 shows the same accordion semantics as 1440 (recorded for both, applicability judged per branch)",
+    "observedAt": "2026-11-04T12:02:13.300Z",
+    "pass": 2
+  },
+  {
+    "key": "global-navigation:overlay-dismiss-focus-return:en:1440",
+    "stateKey": "global-navigation:overlay-dismiss-focus-return",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "Escape collapses panel",
+        "result": "pass",
+        "observed": "aria-expanded after Esc"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-global-navigation:overlay-dismiss-focus-return:en:1440.png",
+    "scope": "Escape dismiss of nav panel",
+    "observedAt": "2026-11-04T12:02:13.812Z",
+    "pass": 2
+  },
+  {
+    "key": "global-navigation:language-switch-current-route:en:1440",
+    "stateKey": "global-navigation:language-switch-current-route",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/blog/",
+    "checks": [
+      {
+        "name": "document lang after switch",
+        "result": "pass",
+        "observed": "de-DE"
+      },
+      {
+        "name": "translated route",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/de/blog/"
+      },
+      {
+        "name": "target href",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/de/blog/"
+      }
+    ],
+    "passed": 3,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-global-navigation:language-switch-current-route:en:1440.png",
+    "scope": "Language switch via the width-visible toggle group",
+    "observedAt": "2026-11-04T12:02:15.935Z",
+    "pass": 2
+  },
+  {
+    "key": "archiveFilters:*:en:1440",
+    "status": "error",
+    "error": "locator.click: Timeout 8000ms exceeded.\nCall log:\n  - waiting for locator('#product-filter-open')\n    - locator resolved to <button type=\"button\" aria-expanded=\"false\" id=\"product-filter-open\" aria-controls=\"sidebar-filters\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 2",
+    "observedAt": "2026-11-04T12:02:25.294Z",
+    "pass": 2
+  },
+  {
+    "key": "product-archive:pagination:en:1440",
+    "stateKey": "product-archive:pagination",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/products/?product-page=2",
+    "checks": [
+      {
+        "name": "page 2 reached with entries",
+        "result": "pass",
+        "observed": "url=http://127.0.0.1:8904/products/?product-page=2 cards=72->72"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-product-archive:pagination:en:1440.png",
+    "scope": "Native tv-woo-pagination next click",
+    "observedAt": "2026-11-04T12:02:29.292Z",
+    "pass": 2
+  },
+  {
+    "key": "product-archive:pagination-out-of-range:en:1440",
+    "stateKey": "product-archive:pagination-out-of-range",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/products/?product-page=2",
+    "checks": [
+      {
+        "name": "out-of-range request",
+        "result": "observe",
+        "observed": "probed=/products/ status=200 final=http://127.0.0.1:8904/products/"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-product-archive:pagination-out-of-range:en:1440.png",
+    "scope": "Out-of-range archive page request; WP redirect convention recorded",
+    "observedAt": "2026-11-04T12:02:30.181Z",
+    "pass": 2
+  },
+  {
+    "key": "product-archive:filtered-pagination-count-consistency:en:1440",
+    "stateKey": "product-archive:filtered-pagination-count-consistency",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/products/?product-page=2",
+    "checks": [
+      {
+        "name": "pagination context recorded",
+        "result": "observe",
+        "observed": "page2=http://127.0.0.1:8904/products/?product-page=2"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-product-archive:filtered-pagination-count-consistency:en:1440.png",
+    "scope": "Full filtered-pagination consistency needs the filter+page chain; recorded as follow-up context",
+    "observedAt": "2026-11-04T12:02:30.242Z",
+    "pass": 2
+  },
+  {
+    "key": "product-archive:add-to-draft:en:1440",
+    "stateKey": "product-archive:add-to-draft",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/products/",
+    "checks": [
+      {
+        "name": "archive loop add affordance",
+        "result": "observe",
+        "observed": "add controls in loop=0; the site's add path is the PDP CTA (/proforma-request/?add-to-cart=…), inquiry-native-entry contract owns that chain"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-product-archive:add-to-draft:en:1440.png",
+    "scope": "Archive loop has no direct add control by design (PDP owns add); applicability judged per inquiry-native-entry contract",
+    "observedAt": "2026-11-04T12:02:31.960Z",
+    "pass": 2
+  },
+  {
+    "key": "document-library:search-results-and-live-count:en:1440",
+    "stateKey": "document-library:search-results-and-live-count",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/faq-download/?q=GMK",
+    "checks": [
+      {
+        "name": "combobox reacts",
+        "result": "pass",
+        "observed": "{\"expanded\":\"true\",\"suggestions\":9,\"count\":\"9 results\",\"visibleItems\":202}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-document-library:search-results-and-live-count:en:1440.png",
+    "scope": "FAQ search via #linker-library-q combobox; suggestion listbox + count",
+    "observedAt": "2026-11-04T12:02:35.871Z",
+    "pass": 2
+  },
+  {
+    "key": "document-library:search-empty-and-clear:en:1440",
+    "stateKey": "document-library:search-empty-and-clear",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/faq-download/",
+    "checks": [
+      {
+        "name": "no-match feedback",
+        "result": "fail",
+        "observed": "no empty message text found"
+      },
+      {
+        "name": "clear restores items",
+        "result": "pass",
+        "observed": "items after clear=202"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-document-library:search-empty-and-clear:en:1440.png",
+    "scope": "No-match + clear via the real combobox",
+    "observedAt": "2026-11-04T12:02:37.923Z",
+    "pass": 2
+  },
+  {
+    "key": "document-library:suggestions-keyboard-selection-and-escape:en:1440",
+    "stateKey": "document-library:suggestions-keyboard-selection-and-escape",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/faq-download/",
+    "checks": [
+      {
+        "name": "ArrowDown+Escape on combobox",
+        "result": "pass",
+        "observed": "aria-expanded now=false"
+      },
+      {
+        "name": "suggestion listbox existed",
+        "result": "pass",
+        "observed": "suggestions=9"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-document-library:suggestions-keyboard-selection-and-escape:en:1440.png",
+    "scope": "Keyboard interaction with #linker-library-suggest listbox",
+    "observedAt": "2026-11-04T12:02:38.000Z",
+    "pass": 2
+  },
+  {
+    "key": "product:compare:en:1440",
+    "stateKey": "product:compare",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/product/saj-ats1-t63-a/",
+    "checks": [
+      {
+        "name": "compare button toggles pressed",
+        "result": "pass",
+        "observed": "aria-pressed=true"
+      },
+      {
+        "name": "chip appears",
+        "result": "pass",
+        "observed": "chip visible=true"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-product:compare:en:1440.png",
+    "scope": "PDP compare selection with real control",
+    "observedAt": "2026-11-04T12:02:40.127Z",
+    "pass": 2
+  },
+  {
+    "key": "comparison:multiple-products:en:1440",
+    "stateKey": "comparison:multiple-products",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/compare-products/",
+    "checks": [
+      {
+        "name": "compare page renders selection",
+        "result": "observe",
+        "observed": "table elements=0"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-comparison:multiple-products:en:1440.png",
+    "scope": "Compare page with the one selected product",
+    "observedAt": "2026-11-04T12:02:41.889Z",
+    "pass": 2
+  },
+  {
+    "key": "comparison:remove-product:en:1440",
+    "stateKey": "comparison:remove-product",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/compare-products/",
+    "checks": [
+      {
+        "name": "remove control",
+        "result": "fail",
+        "observed": "no remove control on compare page"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-comparison:remove-product:en:1440.png",
+    "scope": "Compare page remove",
+    "observedAt": "2026-11-04T12:02:41.953Z",
+    "pass": 2
+  },
+  {
+    "key": "content:accordion:en:1440",
+    "stateKey": "content:accordion",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/faq-download/",
+    "checks": [
+      {
+        "name": "FAQ disclosure toggles via summary",
+        "result": "pass",
+        "observed": "open null->"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-content:accordion:en:1440.png",
+    "scope": "Real FAQ details/summary disclosure",
+    "observedAt": "2026-11-04T12:02:44.917Z",
+    "pass": 2
+  },
+  {
+    "key": "global-navigation:floating-widgets-no-obstruction:en:1440",
+    "stateKey": "global-navigation:floating-widgets-no-obstruction",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/product/saj-ats1-t63-a/",
+    "checks": [
+      {
+        "name": "visible floating chip receives its own clicks",
+        "result": "fail",
+        "observed": "{\"chip\":\"visible\",\"box\":{\"x\":20,\"y\":700,\"w\":130,\"h\":48},\"topAtCenter\":\"SPAN.linker-compare-chip-label\"}"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-global-navigation:floating-widgets-no-obstruction:en:1440.png",
+    "scope": "Compare chip while visible (after selection); elementFromPoint at center",
+    "observedAt": "2026-11-04T12:02:46.880Z",
+    "pass": 2
+  },
+  {
+    "key": "files-and-feedback:slow-network-loading:en:1440",
+    "stateKey": "files-and-feedback:slow-network-loading",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/contact/",
+    "checks": [
+      {
+        "name": "throttled load completes",
+        "result": "fail",
+        "observed": "elapsed=45000ms h1="
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-files-and-feedback:slow-network-loading:en:1440.png",
+    "scope": "Standalone throttled load (no concurrent sweeps)",
+    "observedAt": "2026-11-04T12:03:32.243Z",
+    "pass": 2
+  },
+  {
+    "key": "global-navigation:cookie-choice-and-reopen:en:1440",
+    "stateKey": "global-navigation:cookie-choice-and-reopen",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "revisit control present",
+        "result": "pass",
+        "observed": "revisit=true"
+      },
+      {
+        "name": "banner reopens",
+        "result": "fail",
+        "observed": "reopened=false"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-global-navigation:cookie-choice-and-reopen:en:1440.png",
+    "scope": "Cookie banner reopen path via visible revisit control",
+    "observedAt": "2026-11-04T12:03:35.237Z",
+    "pass": 2
+  },
+  {
+    "key": "menuOpen:*:en:390",
+    "status": "error",
+    "error": "locator.click: Timeout 8000ms exceeded.\nCall log:\n  - waiting for locator('button.tv-nav-link').first()\n    - locator resolved to <button class=\"tv-nav-link\" aria-haspopup=\"true\" aria-expanded=\"false\" aria-controls=\"linker-menu-products\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n  ",
+    "observedAt": "2026-11-04T12:03:44.571Z",
+    "pass": 2
+  },
+  {
+    "key": "global-navigation:language-switch-current-route:en:390",
+    "stateKey": "global-navigation:language-switch-current-route",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/blog/",
+    "checks": [
+      {
+        "name": "document lang after switch",
+        "result": "pass",
+        "observed": "de-DE"
+      },
+      {
+        "name": "translated route",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/de/blog/"
+      },
+      {
+        "name": "target href",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/de/blog/"
+      }
+    ],
+    "passed": 3,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-global-navigation:language-switch-current-route:en:390.png",
+    "scope": "Language switch via the width-visible toggle group",
+    "observedAt": "2026-11-04T12:03:46.734Z",
+    "pass": 2
+  },
+  {
+    "key": "archiveFilters:*:en:390",
+    "status": "error",
+    "error": "locator.click: Timeout 8000ms exceeded.\nCall log:\n  - waiting for locator('#product-filter-apply')\n    - locator resolved to <button type=\"button\" id=\"product-filter-apply\">Show products</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be vi",
+    "observedAt": "2026-11-04T12:03:57.115Z",
+    "pass": 2
+  },
+  {
+    "key": "product-archive:pagination:en:390",
+    "stateKey": "product-archive:pagination",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/products/?product-page=2",
+    "checks": [
+      {
+        "name": "page 2 reached with entries",
+        "result": "pass",
+        "observed": "url=http://127.0.0.1:8904/products/?product-page=2 cards=72->72"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-product-archive:pagination:en:390.png",
+    "scope": "Native tv-woo-pagination next click",
+    "observedAt": "2026-11-04T12:04:01.294Z",
+    "pass": 2
+  },
+  {
+    "key": "product-archive:pagination-out-of-range:en:390",
+    "stateKey": "product-archive:pagination-out-of-range",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/products/?product-page=2",
+    "checks": [
+      {
+        "name": "out-of-range request",
+        "result": "observe",
+        "observed": "probed=/products/ status=200 final=http://127.0.0.1:8904/products/"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-product-archive:pagination-out-of-range:en:390.png",
+    "scope": "Out-of-range archive page request; WP redirect convention recorded",
+    "observedAt": "2026-11-04T12:04:02.193Z",
+    "pass": 2
+  },
+  {
+    "key": "product-archive:filtered-pagination-count-consistency:en:390",
+    "stateKey": "product-archive:filtered-pagination-count-consistency",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/products/?product-page=2",
+    "checks": [
+      {
+        "name": "pagination context recorded",
+        "result": "observe",
+        "observed": "page2=http://127.0.0.1:8904/products/?product-page=2"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-product-archive:filtered-pagination-count-consistency:en:390.png",
+    "scope": "Full filtered-pagination consistency needs the filter+page chain; recorded as follow-up context",
+    "observedAt": "2026-11-04T12:04:02.225Z",
+    "pass": 2
+  },
+  {
+    "key": "product-archive:add-to-draft:en:390",
+    "stateKey": "product-archive:add-to-draft",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/products/",
+    "checks": [
+      {
+        "name": "archive loop add affordance",
+        "result": "observe",
+        "observed": "add controls in loop=0; the site's add path is the PDP CTA (/proforma-request/?add-to-cart=…), inquiry-native-entry contract owns that chain"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-product-archive:add-to-draft:en:390.png",
+    "scope": "Archive loop has no direct add control by design (PDP owns add); applicability judged per inquiry-native-entry contract",
+    "observedAt": "2026-11-04T12:04:03.986Z",
+    "pass": 2
+  },
+  {
+    "key": "document-library:search-results-and-live-count:en:390",
+    "stateKey": "document-library:search-results-and-live-count",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/faq-download/?q=GMK",
+    "checks": [
+      {
+        "name": "combobox reacts",
+        "result": "pass",
+        "observed": "{\"expanded\":\"true\",\"suggestions\":9,\"count\":\"9 results\",\"visibleItems\":202}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-document-library:search-results-and-live-count:en:390.png",
+    "scope": "FAQ search via #linker-library-q combobox; suggestion listbox + count",
+    "observedAt": "2026-11-04T12:04:07.989Z",
+    "pass": 2
+  },
+  {
+    "key": "document-library:search-empty-and-clear:en:390",
+    "stateKey": "document-library:search-empty-and-clear",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/faq-download/",
+    "checks": [
+      {
+        "name": "no-match feedback",
+        "result": "fail",
+        "observed": "no empty message text found"
+      },
+      {
+        "name": "clear restores items",
+        "result": "pass",
+        "observed": "items after clear=202"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-document-library:search-empty-and-clear:en:390.png",
+    "scope": "No-match + clear via the real combobox",
+    "observedAt": "2026-11-04T12:04:10.039Z",
+    "pass": 2
+  },
+  {
+    "key": "document-library:suggestions-keyboard-selection-and-escape:en:390",
+    "stateKey": "document-library:suggestions-keyboard-selection-and-escape",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/faq-download/",
+    "checks": [
+      {
+        "name": "ArrowDown+Escape on combobox",
+        "result": "pass",
+        "observed": "aria-expanded now=false"
+      },
+      {
+        "name": "suggestion listbox existed",
+        "result": "pass",
+        "observed": "suggestions=9"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-document-library:suggestions-keyboard-selection-and-escape:en:390.png",
+    "scope": "Keyboard interaction with #linker-library-suggest listbox",
+    "observedAt": "2026-11-04T12:04:10.071Z",
+    "pass": 2
+  },
+  {
+    "key": "product:compare:en:390",
+    "stateKey": "product:compare",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/product/saj-ats1-t63-a/",
+    "checks": [
+      {
+        "name": "compare button toggles pressed",
+        "result": "pass",
+        "observed": "aria-pressed=true"
+      },
+      {
+        "name": "chip appears",
+        "result": "pass",
+        "observed": "chip visible=true"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-product:compare:en:390.png",
+    "scope": "PDP compare selection with real control",
+    "observedAt": "2026-11-04T12:04:12.183Z",
+    "pass": 2
+  },
+  {
+    "key": "comparison:multiple-products:en:390",
+    "stateKey": "comparison:multiple-products",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/compare-products/",
+    "checks": [
+      {
+        "name": "compare page renders selection",
+        "result": "observe",
+        "observed": "table elements=0"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-comparison:multiple-products:en:390.png",
+    "scope": "Compare page with the one selected product",
+    "observedAt": "2026-11-04T12:04:13.888Z",
+    "pass": 2
+  },
+  {
+    "key": "comparison:remove-product:en:390",
+    "stateKey": "comparison:remove-product",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/compare-products/",
+    "checks": [
+      {
+        "name": "remove control",
+        "result": "fail",
+        "observed": "no remove control on compare page"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-comparison:remove-product:en:390.png",
+    "scope": "Compare page remove",
+    "observedAt": "2026-11-04T12:04:13.920Z",
+    "pass": 2
+  },
+  {
+    "key": "content:accordion:en:390",
+    "stateKey": "content:accordion",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/faq-download/",
+    "checks": [
+      {
+        "name": "FAQ disclosure toggles via summary",
+        "result": "pass",
+        "observed": "open null->"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-content:accordion:en:390.png",
+    "scope": "Real FAQ details/summary disclosure",
+    "observedAt": "2026-11-04T12:04:16.963Z",
+    "pass": 2
+  },
+  {
+    "key": "global-navigation:floating-widgets-no-obstruction:en:390",
+    "stateKey": "global-navigation:floating-widgets-no-obstruction",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/product/saj-ats1-t63-a/",
+    "checks": [
+      {
+        "name": "visible floating chip receives its own clicks",
+        "result": "fail",
+        "observed": "{\"chip\":\"visible\",\"box\":{\"x\":0,\"y\":81,\"w\":390,\"h\":52},\"topAtCenter\":\"SPAN.linker-compare-chip-label\"}"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-global-navigation:floating-widgets-no-obstruction:en:390.png",
+    "scope": "Compare chip while visible (after selection); elementFromPoint at center",
+    "observedAt": "2026-11-04T12:04:18.973Z",
+    "pass": 2
+  },
+  {
+    "key": "files-and-feedback:slow-network-loading:en:390",
+    "stateKey": "files-and-feedback:slow-network-loading",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/contact/",
+    "checks": [
+      {
+        "name": "throttled load completes",
+        "result": "fail",
+        "observed": "elapsed=45001ms h1="
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-files-and-feedback:slow-network-loading:en:390.png",
+    "scope": "Standalone throttled load (no concurrent sweeps)",
+    "observedAt": "2026-11-04T12:05:04.311Z",
+    "pass": 2
+  },
+  {
+    "key": "global-navigation:cookie-choice-and-reopen:en:390",
+    "stateKey": "global-navigation:cookie-choice-and-reopen",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "revisit control present",
+        "result": "pass",
+        "observed": "revisit=true"
+      },
+      {
+        "name": "banner reopens",
+        "result": "fail",
+        "observed": "reopened=false"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-global-navigation:cookie-choice-and-reopen:en:390.png",
+    "scope": "Cookie banner reopen path via visible revisit control",
+    "observedAt": "2026-11-04T12:05:07.315Z",
+    "pass": 2
+  },
+  {
+    "key": "global-navigation:mobile-menu-open:de:1440",
+    "stateKey": "global-navigation:mobile-menu-open",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/",
+    "checks": [
+      {
+        "name": "nav trigger toggles panel",
+        "result": "pass",
+        "observed": "aria-expanded false->true"
+      },
+      {
+        "name": "panel/mega content opens",
+        "result": "pass",
+        "observed": "panel visible=true"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-global-navigation:mobile-menu-open:de:1440.png",
+    "scope": "tv-nav-link trigger toggles the nav group at this width; 390 shows the same accordion semantics as 1440 (recorded for both, applicability judged per branch)",
+    "observedAt": "2026-11-04T12:05:09.397Z",
+    "pass": 2
+  },
+  {
+    "key": "global-navigation:overlay-dismiss-focus-return:de:1440",
+    "stateKey": "global-navigation:overlay-dismiss-focus-return",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/",
+    "checks": [
+      {
+        "name": "Escape collapses panel",
+        "result": "pass",
+        "observed": "aria-expanded after Esc"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-global-navigation:overlay-dismiss-focus-return:de:1440.png",
+    "scope": "Escape dismiss of nav panel",
+    "observedAt": "2026-11-04T12:05:09.898Z",
+    "pass": 2
+  },
+  {
+    "key": "global-navigation:language-switch-current-route:de:1440",
+    "stateKey": "global-navigation:language-switch-current-route",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/blog/",
+    "checks": [
+      {
+        "name": "document lang after switch",
+        "result": "pass",
+        "observed": "en-US"
+      },
+      {
+        "name": "translated route",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/blog/"
+      },
+      {
+        "name": "target href",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/blog/"
+      }
+    ],
+    "passed": 3,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-global-navigation:language-switch-current-route:de:1440.png",
+    "scope": "Language switch via the width-visible toggle group",
+    "observedAt": "2026-11-04T12:05:11.897Z",
+    "pass": 2
+  },
+  {
+    "key": "archiveFilters:*:de:1440",
+    "status": "error",
+    "error": "locator.click: Timeout 8000ms exceeded.\nCall log:\n  - waiting for locator('#product-filter-open')\n    - locator resolved to <button type=\"button\" aria-expanded=\"false\" id=\"product-filter-open\" aria-controls=\"sidebar-filters\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 2",
+    "observedAt": "2026-11-04T12:05:21.295Z",
+    "pass": 2
+  },
+  {
+    "key": "product-archive:pagination:de:1440",
+    "stateKey": "product-archive:pagination",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkte/?product-page=2",
+    "checks": [
+      {
+        "name": "page 2 reached with entries",
+        "result": "fail",
+        "observed": "url=http://127.0.0.1:8904/de/produkte/?product-page=2 cards=0->0"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-product-archive:pagination:de:1440.png",
+    "scope": "Native tv-woo-pagination next click",
+    "observedAt": "2026-11-04T12:05:25.800Z",
+    "pass": 2
+  },
+  {
+    "key": "product-archive:pagination-out-of-range:de:1440",
+    "stateKey": "product-archive:pagination-out-of-range",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkte/?product-page=2",
+    "checks": [
+      {
+        "name": "out-of-range request",
+        "result": "observe",
+        "observed": "probed=/de/produkte/ status=200 final=http://127.0.0.1:8904/de/produkte/"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-product-archive:pagination-out-of-range:de:1440.png",
+    "scope": "Out-of-range archive page request; WP redirect convention recorded",
+    "observedAt": "2026-11-04T12:05:26.682Z",
+    "pass": 2
+  },
+  {
+    "key": "product-archive:filtered-pagination-count-consistency:de:1440",
+    "stateKey": "product-archive:filtered-pagination-count-consistency",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkte/?product-page=2",
+    "checks": [
+      {
+        "name": "pagination context recorded",
+        "result": "observe",
+        "observed": "page2=http://127.0.0.1:8904/de/produkte/?product-page=2"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-product-archive:filtered-pagination-count-consistency:de:1440.png",
+    "scope": "Full filtered-pagination consistency needs the filter+page chain; recorded as follow-up context",
+    "observedAt": "2026-11-04T12:05:26.715Z",
+    "pass": 2
+  },
+  {
+    "key": "product-archive:add-to-draft:de:1440",
+    "stateKey": "product-archive:add-to-draft",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkte/",
+    "checks": [
+      {
+        "name": "archive loop add affordance",
+        "result": "observe",
+        "observed": "add controls in loop=0; the site's add path is the PDP CTA (/proforma-request/?add-to-cart=…), inquiry-native-entry contract owns that chain"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-product-archive:add-to-draft:de:1440.png",
+    "scope": "Archive loop has no direct add control by design (PDP owns add); applicability judged per inquiry-native-entry contract",
+    "observedAt": "2026-11-04T12:05:28.453Z",
+    "pass": 2
+  },
+  {
+    "key": "document-library:search-results-and-live-count:de:1440",
+    "stateKey": "document-library:search-results-and-live-count",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/?q=GMK",
+    "checks": [
+      {
+        "name": "combobox reacts",
+        "result": "pass",
+        "observed": "{\"expanded\":\"true\",\"suggestions\":9,\"count\":\"9 Ergebnisse\",\"visibleItems\":202}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-document-library:search-results-and-live-count:de:1440.png",
+    "scope": "FAQ search via #linker-library-q combobox; suggestion listbox + count",
+    "observedAt": "2026-11-04T12:05:32.689Z",
+    "pass": 2
+  },
+  {
+    "key": "document-library:search-empty-and-clear:de:1440",
+    "stateKey": "document-library:search-empty-and-clear",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/",
+    "checks": [
+      {
+        "name": "no-match feedback",
+        "result": "fail",
+        "observed": "no empty message text found"
+      },
+      {
+        "name": "clear restores items",
+        "result": "pass",
+        "observed": "items after clear=202"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-document-library:search-empty-and-clear:de:1440.png",
+    "scope": "No-match + clear via the real combobox",
+    "observedAt": "2026-11-04T12:05:34.709Z",
+    "pass": 2
+  },
+  {
+    "key": "document-library:suggestions-keyboard-selection-and-escape:de:1440",
+    "stateKey": "document-library:suggestions-keyboard-selection-and-escape",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/",
+    "checks": [
+      {
+        "name": "ArrowDown+Escape on combobox",
+        "result": "pass",
+        "observed": "aria-expanded now=false"
+      },
+      {
+        "name": "suggestion listbox existed",
+        "result": "pass",
+        "observed": "suggestions=9"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-document-library:suggestions-keyboard-selection-and-escape:de:1440.png",
+    "scope": "Keyboard interaction with #linker-library-suggest listbox",
+    "observedAt": "2026-11-04T12:05:34.779Z",
+    "pass": 2
+  },
+  {
+    "key": "product:compare:de:1440",
+    "stateKey": "product:compare",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkt/goodwe-gw60k-sts-g10/",
+    "checks": [
+      {
+        "name": "compare button toggles pressed",
+        "result": "pass",
+        "observed": "aria-pressed=true"
+      },
+      {
+        "name": "chip appears",
+        "result": "pass",
+        "observed": "chip visible=true"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-product:compare:de:1440.png",
+    "scope": "PDP compare selection with real control",
+    "observedAt": "2026-11-04T12:05:36.719Z",
+    "pass": 2
+  },
+  {
+    "key": "comparison:multiple-products:de:1440",
+    "stateKey": "comparison:multiple-products",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkte-vergleichen/",
+    "checks": [
+      {
+        "name": "compare page renders selection",
+        "result": "observe",
+        "observed": "table elements=0"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-comparison:multiple-products:de:1440.png",
+    "scope": "Compare page with the one selected product",
+    "observedAt": "2026-11-04T12:05:38.460Z",
+    "pass": 2
+  },
+  {
+    "key": "comparison:remove-product:de:1440",
+    "stateKey": "comparison:remove-product",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkte-vergleichen/",
+    "checks": [
+      {
+        "name": "remove control",
+        "result": "fail",
+        "observed": "no remove control on compare page"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-comparison:remove-product:de:1440.png",
+    "scope": "Compare page remove",
+    "observedAt": "2026-11-04T12:05:38.510Z",
+    "pass": 2
+  },
+  {
+    "key": "content:accordion:de:1440",
+    "stateKey": "content:accordion",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/",
+    "checks": [
+      {
+        "name": "FAQ disclosure toggles via summary",
+        "result": "pass",
+        "observed": "open null->"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-content:accordion:de:1440.png",
+    "scope": "Real FAQ details/summary disclosure",
+    "observedAt": "2026-11-04T12:05:41.785Z",
+    "pass": 2
+  },
+  {
+    "key": "global-navigation:floating-widgets-no-obstruction:de:1440",
+    "stateKey": "global-navigation:floating-widgets-no-obstruction",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkt/goodwe-gw60k-sts-g10/",
+    "checks": [
+      {
+        "name": "visible floating chip receives its own clicks",
+        "result": "fail",
+        "observed": "{\"chip\":\"visible\",\"box\":{\"x\":20,\"y\":700,\"w\":150,\"h\":48},\"topAtCenter\":\"SPAN.linker-compare-chip-label\"}"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-global-navigation:floating-widgets-no-obstruction:de:1440.png",
+    "scope": "Compare chip while visible (after selection); elementFromPoint at center",
+    "observedAt": "2026-11-04T12:05:43.640Z",
+    "pass": 2
+  },
+  {
+    "key": "files-and-feedback:slow-network-loading:de:1440",
+    "stateKey": "files-and-feedback:slow-network-loading",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/kontakt/",
+    "checks": [
+      {
+        "name": "throttled load completes",
+        "result": "fail",
+        "observed": "elapsed=45001ms h1="
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-files-and-feedback:slow-network-loading:de:1440.png",
+    "scope": "Standalone throttled load (no concurrent sweeps)",
+    "observedAt": "2026-11-04T12:06:28.990Z",
+    "pass": 2
+  },
+  {
+    "key": "global-navigation:cookie-choice-and-reopen:de:1440",
+    "stateKey": "global-navigation:cookie-choice-and-reopen",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/",
+    "checks": [
+      {
+        "name": "revisit control present",
+        "result": "pass",
+        "observed": "revisit=true"
+      },
+      {
+        "name": "banner reopens",
+        "result": "fail",
+        "observed": "reopened=false"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-global-navigation:cookie-choice-and-reopen:de:1440.png",
+    "scope": "Cookie banner reopen path via visible revisit control",
+    "observedAt": "2026-11-04T12:06:32.120Z",
+    "pass": 2
+  },
+  {
+    "key": "menuOpen:*:de:390",
+    "status": "error",
+    "error": "locator.click: Timeout 8000ms exceeded.\nCall log:\n  - waiting for locator('button.tv-nav-link').first()\n    - locator resolved to <button class=\"tv-nav-link\" aria-haspopup=\"true\" aria-expanded=\"false\" aria-controls=\"linker-menu-products\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n  ",
+    "observedAt": "2026-11-04T12:06:41.582Z",
+    "pass": 2
+  },
+  {
+    "key": "global-navigation:language-switch-current-route:de:390",
+    "stateKey": "global-navigation:language-switch-current-route",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/blog/",
+    "checks": [
+      {
+        "name": "document lang after switch",
+        "result": "pass",
+        "observed": "en-US"
+      },
+      {
+        "name": "translated route",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/blog/"
+      },
+      {
+        "name": "target href",
+        "result": "observe",
+        "observed": "http://127.0.0.1:8904/blog/"
+      }
+    ],
+    "passed": 3,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-global-navigation:language-switch-current-route:de:390.png",
+    "scope": "Language switch via the width-visible toggle group",
+    "observedAt": "2026-11-04T12:06:43.361Z",
+    "pass": 2
+  },
+  {
+    "key": "archiveFilters:*:de:390",
+    "status": "error",
+    "error": "locator.click: Timeout 8000ms exceeded.\nCall log:\n  - waiting for locator('#product-filter-apply')\n    - locator resolved to <button type=\"button\" id=\"product-filter-apply\">Produkte anzeigen</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to b",
+    "observedAt": "2026-11-04T12:06:53.705Z",
+    "pass": 2
+  },
+  {
+    "key": "product-archive:pagination:de:390",
+    "stateKey": "product-archive:pagination",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkte/?product-page=2",
+    "checks": [
+      {
+        "name": "page 2 reached with entries",
+        "result": "fail",
+        "observed": "url=http://127.0.0.1:8904/de/produkte/?product-page=2 cards=0->0"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-product-archive:pagination:de:390.png",
+    "scope": "Native tv-woo-pagination next click",
+    "observedAt": "2026-11-04T12:06:58.183Z",
+    "pass": 2
+  },
+  {
+    "key": "product-archive:pagination-out-of-range:de:390",
+    "stateKey": "product-archive:pagination-out-of-range",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkte/?product-page=2",
+    "checks": [
+      {
+        "name": "out-of-range request",
+        "result": "observe",
+        "observed": "probed=/de/produkte/ status=200 final=http://127.0.0.1:8904/de/produkte/"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-product-archive:pagination-out-of-range:de:390.png",
+    "scope": "Out-of-range archive page request; WP redirect convention recorded",
+    "observedAt": "2026-11-04T12:06:59.265Z",
+    "pass": 2
+  },
+  {
+    "key": "product-archive:filtered-pagination-count-consistency:de:390",
+    "stateKey": "product-archive:filtered-pagination-count-consistency",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkte/?product-page=2",
+    "checks": [
+      {
+        "name": "pagination context recorded",
+        "result": "observe",
+        "observed": "page2=http://127.0.0.1:8904/de/produkte/?product-page=2"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-product-archive:filtered-pagination-count-consistency:de:390.png",
+    "scope": "Full filtered-pagination consistency needs the filter+page chain; recorded as follow-up context",
+    "observedAt": "2026-11-04T12:06:59.298Z",
+    "pass": 2
+  },
+  {
+    "key": "product-archive:add-to-draft:de:390",
+    "stateKey": "product-archive:add-to-draft",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkte/",
+    "checks": [
+      {
+        "name": "archive loop add affordance",
+        "result": "observe",
+        "observed": "add controls in loop=0; the site's add path is the PDP CTA (/proforma-request/?add-to-cart=…), inquiry-native-entry contract owns that chain"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-product-archive:add-to-draft:de:390.png",
+    "scope": "Archive loop has no direct add control by design (PDP owns add); applicability judged per inquiry-native-entry contract",
+    "observedAt": "2026-11-04T12:07:01.183Z",
+    "pass": 2
+  },
+  {
+    "key": "document-library:search-results-and-live-count:de:390",
+    "stateKey": "document-library:search-results-and-live-count",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/?q=GMK",
+    "checks": [
+      {
+        "name": "combobox reacts",
+        "result": "pass",
+        "observed": "{\"expanded\":\"true\",\"suggestions\":9,\"count\":\"9 Ergebnisse\",\"visibleItems\":202}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-document-library:search-results-and-live-count:de:390.png",
+    "scope": "FAQ search via #linker-library-q combobox; suggestion listbox + count",
+    "observedAt": "2026-11-04T12:07:05.212Z",
+    "pass": 2
+  },
+  {
+    "key": "document-library:search-empty-and-clear:de:390",
+    "stateKey": "document-library:search-empty-and-clear",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/",
+    "checks": [
+      {
+        "name": "no-match feedback",
+        "result": "fail",
+        "observed": "no empty message text found"
+      },
+      {
+        "name": "clear restores items",
+        "result": "pass",
+        "observed": "items after clear=202"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-document-library:search-empty-and-clear:de:390.png",
+    "scope": "No-match + clear via the real combobox",
+    "observedAt": "2026-11-04T12:07:07.267Z",
+    "pass": 2
+  },
+  {
+    "key": "document-library:suggestions-keyboard-selection-and-escape:de:390",
+    "stateKey": "document-library:suggestions-keyboard-selection-and-escape",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/",
+    "checks": [
+      {
+        "name": "ArrowDown+Escape on combobox",
+        "result": "pass",
+        "observed": "aria-expanded now=false"
+      },
+      {
+        "name": "suggestion listbox existed",
+        "result": "pass",
+        "observed": "suggestions=9"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-document-library:suggestions-keyboard-selection-and-escape:de:390.png",
+    "scope": "Keyboard interaction with #linker-library-suggest listbox",
+    "observedAt": "2026-11-04T12:07:07.309Z",
+    "pass": 2
+  },
+  {
+    "key": "product:compare:de:390",
+    "stateKey": "product:compare",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkt/goodwe-gw60k-sts-g10/",
+    "checks": [
+      {
+        "name": "compare button toggles pressed",
+        "result": "pass",
+        "observed": "aria-pressed=true"
+      },
+      {
+        "name": "chip appears",
+        "result": "pass",
+        "observed": "chip visible=true"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-product:compare:de:390.png",
+    "scope": "PDP compare selection with real control",
+    "observedAt": "2026-11-04T12:07:09.395Z",
+    "pass": 2
+  },
+  {
+    "key": "comparison:multiple-products:de:390",
+    "stateKey": "comparison:multiple-products",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkte-vergleichen/",
+    "checks": [
+      {
+        "name": "compare page renders selection",
+        "result": "observe",
+        "observed": "table elements=0"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-comparison:multiple-products:de:390.png",
+    "scope": "Compare page with the one selected product",
+    "observedAt": "2026-11-04T12:07:11.049Z",
+    "pass": 2
+  },
+  {
+    "key": "comparison:remove-product:de:390",
+    "stateKey": "comparison:remove-product",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkte-vergleichen/",
+    "checks": [
+      {
+        "name": "remove control",
+        "result": "fail",
+        "observed": "no remove control on compare page"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-comparison:remove-product:de:390.png",
+    "scope": "Compare page remove",
+    "observedAt": "2026-11-04T12:07:11.082Z",
+    "pass": 2
+  },
+  {
+    "key": "content:accordion:de:390",
+    "stateKey": "content:accordion",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/",
+    "checks": [
+      {
+        "name": "FAQ disclosure toggles via summary",
+        "result": "pass",
+        "observed": "open null->"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-content:accordion:de:390.png",
+    "scope": "Real FAQ details/summary disclosure",
+    "observedAt": "2026-11-04T12:07:14.113Z",
+    "pass": 2
+  },
+  {
+    "key": "global-navigation:floating-widgets-no-obstruction:de:390",
+    "stateKey": "global-navigation:floating-widgets-no-obstruction",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkt/goodwe-gw60k-sts-g10/",
+    "checks": [
+      {
+        "name": "visible floating chip receives its own clicks",
+        "result": "fail",
+        "observed": "{\"chip\":\"visible\",\"box\":{\"x\":0,\"y\":81,\"w\":390,\"h\":52},\"topAtCenter\":\"SPAN.linker-compare-chip-label\"}"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-global-navigation:floating-widgets-no-obstruction:de:390.png",
+    "scope": "Compare chip while visible (after selection); elementFromPoint at center",
+    "observedAt": "2026-11-04T12:07:16.212Z",
+    "pass": 2
+  },
+  {
+    "key": "files-and-feedback:slow-network-loading:de:390",
+    "stateKey": "files-and-feedback:slow-network-loading",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/kontakt/",
+    "checks": [
+      {
+        "name": "throttled load completes",
+        "result": "fail",
+        "observed": "elapsed=45000ms h1="
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-files-and-feedback:slow-network-loading:de:390.png",
+    "scope": "Standalone throttled load (no concurrent sweeps)",
+    "observedAt": "2026-11-04T12:08:01.513Z",
+    "pass": 2
+  },
+  {
+    "key": "global-navigation:cookie-choice-and-reopen:de:390",
+    "stateKey": "global-navigation:cookie-choice-and-reopen",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/",
+    "checks": [
+      {
+        "name": "revisit control present",
+        "result": "pass",
+        "observed": "revisit=true"
+      },
+      {
+        "name": "banner reopens",
+        "result": "fail",
+        "observed": "reopened=false"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass2/screenshots/pass2-global-navigation:cookie-choice-and-reopen:de:390.png",
+    "scope": "Cookie banner reopen path via visible revisit control",
+    "observedAt": "2026-11-04T12:08:04.423Z",
+    "pass": 2
+  }
+]
