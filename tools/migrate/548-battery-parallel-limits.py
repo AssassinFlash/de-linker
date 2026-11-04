@@ -86,8 +86,24 @@ def load_plan(path: Path = PLAN) -> dict[str, Any]:
             raise MigrationError(f"Plan product {key} names an unreviewed field.")
         for field, change in figures.items():
             patch = _object(change, f"Plan product {key} {field}")
-            if set(patch) != {"expect", "set", "source"} or patch["expect"] is not None:
-                raise MigrationError(f"Plan product {key} {field} was already written.")
+            if set(patch) != {"expect", "set", "source"}:
+                raise MigrationError(
+                    f"Plan product {key} {field} has an unknown shape."
+                )
+            # expect=null is a first write; an expect object is a CAS against the
+            # exact currently stored value/unit (the PHP apply refuses on drift).
+            if patch["expect"] is not None:
+                expected = _object(
+                    patch["expect"], f"Plan product {key} {field} expect"
+                )
+                if set(expected) != {"value", "unit"}:
+                    raise MigrationError(
+                        f"Plan product {key} {field} expect is invalid."
+                    )
+                if not str(expected["value"]).isdigit() or not expected["unit"].strip():
+                    raise MigrationError(
+                        f"Plan product {key} {field} expect needs the stored count and unit."
+                    )
             values = _object(patch["set"], f"Plan product {key} {field} set")
             if set(values) != SET_KEYS:
                 raise MigrationError(

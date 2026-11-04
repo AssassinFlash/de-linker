@@ -59,7 +59,11 @@ def test_the_reviewed_plan_pins_every_limit_to_one_document_page() -> None:
         change = row["figures"]["stacks_parallel_max"]
         source = change["source"]
         citation = change["set"]["citation"]
-        assert change["expect"] is None
+        if key in {"3611", "3612", "6519", "6520"}:
+            # CAS replacement of the superseded 12-unit value (wrong axis, #910).
+            assert change["expect"] == {"value": "12", "unit": "units"}, key
+        else:
+            assert change["expect"] is None, key
         assert source["page"] == citation["page"]
         assert citation["url"].startswith("https://de-linker.com/wp-content/uploads/")
         assert source["quote"].strip(), key
