@@ -555,8 +555,9 @@ covered by the wordlist, because `refund*` would also catch nothing else and
 
 **Finding.** Three strings use `shop`: WooCommerce's own settings description
 ("the store address under General", whose German admin screen says
-`Shop-Adresse`) and a plugin docstring describing Polylang's behaviour ("the
-German shop on the English products").
+`Shop-Adresse`) and the linker-i18n plugin header shown in the plugins list
+("Polylang companion for de-linker.com: … and the German shop on the English
+products").
 
 **Root cause.** The scanner reads every gettext literal and cannot tell wp-admin
 copy from customer copy. It has the same limitation for the `order`/`payment`
