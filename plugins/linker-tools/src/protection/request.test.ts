@@ -56,6 +56,9 @@ test( 'reads never create proof/model work; selecting history uses a write scope
 test( 'an ambiguous retry retains UUID; a successful explicit action gets a new UUID', async () => {
 	const complete = vi.fn( () => true );
 	window.linkerPublicProtection!.complete = complete;
+	// The attempt already holds a verified proof: on the wire this is the
+	// turn's one dispatch, not a trust probe.
+	window.linkerPublicProtection!.ready = vi.fn( () => 'synthetic-proof' );
 	const seen: string[] = [];
 	let calls = 0;
 	const fetcher = vi.fn< typeof fetch >( async ( input, init ) => {
@@ -166,11 +169,19 @@ test.each( [ 400, 409, 429, 502, 503 ] )(
 	}
 );
 
-test( 'a failed proof performs no resource request and leaves the composer untouched', async () => {
+test( 'a failed on-demand challenge leaves the composer untouched after the refused probe', async () => {
 	window.linkerPublicProtection!.proof = vi.fn( async () => {
 		throw new Error( 'verification_expired' );
 	} );
-	const fetcher = vi.fn< typeof fetch >();
+	const fetcher = vi.fn< typeof fetch >(
+		async () =>
+			new Response(
+				JSON.stringify( { code: 'linker_admission_proof' } ),
+				{
+					status: 400,
+				}
+			)
+	);
 	await expect(
 		resourceFetch(
 			fetcher,
@@ -178,7 +189,8 @@ test( 'a failed proof performs no resource request and leaves the composer untou
 			{ method: 'POST', body: '{}' }
 		)
 	).rejects.toThrow( 'verification_expired' );
-	expect( fetcher ).not.toHaveBeenCalled();
+	// The proofless probe went out and was refused; the turn itself never did.
+	expect( fetcher ).toHaveBeenCalledTimes( 1 );
 	expect( document.querySelector( 'textarea' )?.value ).toBe(
 		'Keep this project question'
 	);
@@ -364,12 +376,20 @@ test.each( [ 'enforce', 'observe', 'off' ] )(
 	}
 );
 
-test( 'failed verification never creates a live send witness', async () => {
+test( 'a failed on-demand challenge keeps the probe witness for the retry', async () => {
 	window.linkerPublicProtection!.proof = vi.fn( async () => {
 		throw new Error( 'proof unavailable' );
 	} );
 	const sent = vi.fn();
-	const fetcher = vi.fn< typeof fetch >();
+	const fetcher = vi.fn< typeof fetch >(
+		async () =>
+			new Response(
+				JSON.stringify( { code: 'linker_admission_proof' } ),
+				{
+					status: 400,
+				}
+			)
+	);
 	await expect(
 		resourceFetch(
 			fetcher,
@@ -378,8 +398,10 @@ test( 'failed verification never creates a live send witness', async () => {
 			sent
 		)
 	).rejects.toThrow( 'proof unavailable' );
-	expect( sent ).not.toHaveBeenCalled();
-	expect( fetcher ).not.toHaveBeenCalled();
+	// The refused probe already carried the operation UUID — the retry after
+	// a later manual send reuses it, so the witness exists exactly once.
+	expect( sent ).toHaveBeenCalledTimes( 1 );
+	expect( fetcher ).toHaveBeenCalledTimes( 1 );
 } );
 
 test( 'signed Genie product-list writes retain the native draft and save admission scopes', () => {
@@ -435,7 +457,13 @@ test( 'an explicit Hero slot owns its challenge despite an older focused dock fo
 	} );
 	window.linkerPublicProtection = { proof, reset: vi.fn() };
 	await resourceFetch(
-		async () => new Response( '{}' ),
+		async () =>
+			new Response(
+				JSON.stringify( { code: 'linker_admission_proof' } ),
+				{
+					status: 400,
+				}
+			),
 		'https://site.test/wp-json/linker-ai/v1/genie/turn',
 		{ method: 'POST', body: '{}' },
 		undefined,
@@ -550,4 +578,104 @@ test( 'a successful non-genie write removes its own status node', async () => {
 	expect(
 		document.querySelectorAll( '[data-linker-resource-verification]' )
 	).toHaveLength( 0 );
+} );
+
+test( 'a genie turn without a current proof probes first and challenges only on the admission refusal', async () => {
+	window.linkerPublicProtection!.proof = vi.fn( async () => 'fresh-proof' );
+	const seen: { proof: string | null; final: boolean | undefined }[] = [];
+	const transport = vi.fn< typeof fetch >( async ( _input, init ) => {
+		seen.push( {
+			proof: new Headers( init?.headers ).get( 'X-Linker-Proof' ),
+			final: ( init as { linkerFinalDispatch?: boolean } )
+				.linkerFinalDispatch,
+		} );
+		if ( seen.length === 1 ) {
+			return new Response(
+				JSON.stringify( { code: 'linker_admission_proof' } ),
+				{ status: 400 }
+			);
+		}
+		return new Response( '{}' );
+	} );
+	const ids: string[] = [];
+	const response = await resourceFetch(
+		async ( input, init ) => {
+			ids.push(
+				new Headers( ( init as RequestInit ).headers ).get(
+					'X-Linker-Operation'
+				) ?? ''
+			);
+			return transport( input, init );
+		},
+		'https://site.test/wp-json/linker-ai/v1/genie/turn',
+		{ method: 'POST', body: '{}' }
+	);
+	expect( response.ok ).toBe( true );
+	// The retry is the same operation.
+	expect( ids[ 0 ] ).toBe( ids[ 1 ] );
+	expect( transport ).toHaveBeenCalledTimes( 2 );
+	expect( seen[ 0 ] ).toEqual( { proof: null, final: false } );
+	expect( seen[ 1 ] ).toEqual( { proof: 'fresh-proof', final: true } );
+} );
+
+test( 'a trusted genie session sends one transport call with no challenge', async () => {
+	const proof = vi.fn( async () => 'fresh-proof' );
+	window.linkerPublicProtection!.proof = proof;
+	const transport = vi.fn< typeof fetch >( async ( _input, init ) => {
+		// The client cannot know it is trusted before the server answers, so
+		// the single admitted call still leaves as a probe; the journal's
+		// ambiguous-loss semantics already own exactly this shape.
+		expect(
+			( init as { linkerFinalDispatch?: boolean } ).linkerFinalDispatch
+		).toBe( false );
+		return new Response( '{}' );
+	} );
+	await resourceFetch(
+		transport,
+		'https://site.test/wp-json/linker-ai/v1/genie/turn',
+		{ method: 'POST', body: '{}' }
+	);
+	expect( proof ).not.toHaveBeenCalled();
+	expect( transport ).toHaveBeenCalledOnce();
+} );
+
+test( 'a different genie 400 is answered, not challenged', async () => {
+	const proof = vi.fn( async () => 'fresh-proof' );
+	window.linkerPublicProtection!.proof = proof;
+	const transport = vi.fn< typeof fetch >(
+		async () =>
+			new Response( JSON.stringify( { code: 'rest_invalid_param' } ), {
+				status: 400,
+			} )
+	);
+	const response = await resourceFetch(
+		transport,
+		'https://site.test/wp-json/linker-ai/v1/genie/turn',
+		{ method: 'POST', body: '{}' }
+	);
+	expect( response.status ).toBe( 400 );
+	expect( proof ).not.toHaveBeenCalled();
+	expect( transport ).toHaveBeenCalledOnce();
+} );
+
+test( 'a cached proof rides along without a challenge', async () => {
+	const cached = 'cached-proof';
+	window.linkerPublicProtection!.ready = vi.fn( ( action, container ) =>
+		'genie' === action && container.isConnected ? cached : ''
+	);
+	const proof = vi.fn( async () => 'fresh-proof' );
+	window.linkerPublicProtection!.proof = proof;
+	const transport = vi.fn< typeof fetch >( async ( _input, init ) => {
+		expect( new Headers( init?.headers ).get( 'X-Linker-Proof' ) ).toBe(
+			cached
+		);
+		return new Response( '{}' );
+	} );
+	await resourceFetch(
+		transport,
+		'https://site.test/wp-json/linker-ai/v1/genie/turn',
+		{ method: 'POST', body: '{}' }
+	);
+	expect( proof ).not.toHaveBeenCalled();
+	expect( transport ).toHaveBeenCalledOnce();
 } );

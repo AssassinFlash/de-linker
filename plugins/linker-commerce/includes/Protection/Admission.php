@@ -18,8 +18,9 @@ final class Admission {
 	 *
 	 * @param Configuration $configuration Shared private configuration.
 	 * @param Ledger|null   $ledger Shared native journal.
+	 * @param Trust|null    $trust Session-bound challenge trust; the default when omitted.
 	 */
-	public function __construct( private readonly Configuration $configuration, private readonly ?Ledger $ledger = null ) {}
+	public function __construct( private readonly Configuration $configuration, private readonly ?Ledger $ledger = null, private readonly ?Trust $trust = null ) {}
 
 	/**
 	 * Preserve a completed retry before requiring a fresh challenge; do no work twice.
@@ -73,9 +74,24 @@ final class Admission {
 		if ( 'linker_admission_unknown_receipt' !== $old->get_error_code() ) {
 			return self::failure( 'unavailable', 503 );
 		}
-		$checked = $verification ? ( new Proof() )->read( $proof, 'verified', $action, $identity ) : null;
-		if ( $verification && null === $checked ) {
-			return self::failure( 'proof', 400 );
+		$checked = null;
+		if ( $verification ) {
+			$checked = ( new Proof() )->read( $proof, 'verified', $action, $identity );
+		}
+		if ( null !== $checked ) {
+			if ( 'genie' === $action ) {
+				// A solved human challenge admits the genie turns of this
+				// identity for a bounded window (Trust); every other action
+				// keeps its own per-operation proof, and business proofs
+				// stay single-use.
+				( $this->trust ?? new Trust() )->grant( 'genie', $identity );
+			}
+		} elseif ( $verification ) {
+			if ( 'genie' !== $action || ! ( $this->trust ?? new Trust() )->admitted( 'genie', $identity ) ) {
+				return self::failure( 'proof', 400 );
+			}
+			// Trusted for the genie action: the turn proceeds without a
+			// fresh proof, and its permit carries none to consume.
 		}
 		$receipt = $ledger->reserve( $id, $fingerprint, $limits, $lease, $carry, $action, $identity->binding(), array_values( array_unique( array_merge( $identity->owners(), $owners ) ) ) );
 		if ( is_wp_error( $receipt ) ) {

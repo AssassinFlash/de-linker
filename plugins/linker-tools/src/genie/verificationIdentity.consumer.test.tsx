@@ -173,8 +173,21 @@ test.each( [
 					);
 				}
 				if ( path.endsWith( '/genie/turn' ) ) {
-					if ( ! opened ) {
-						return new Response( '', { status: 503 } );
+					// Challenge on demand: a proofless probe of an untrusted
+					// identity is refused by admission (and starts the
+					// challenge); the proxy-outage window still answers 503.
+					if (
+						! new Headers( init?.headers ).get( 'X-Linker-Proof' )
+					) {
+						if ( ! opened ) {
+							return new Response( '', { status: 503 } );
+						}
+						return new Response(
+							JSON.stringify( {
+								code: 'linker_admission_proof',
+							} ),
+							{ status: 400 }
+						);
 					}
 					sentBodies.push( String( init?.body ) );
 					return turn();
@@ -376,6 +389,14 @@ async function fixture() {
 				);
 			}
 			if ( path.endsWith( '/genie/turn' ) ) {
+				// The proofless probe of an untrusted identity is refused by
+				// admission; only the challenged retry reaches the transport.
+				if ( ! new Headers( init?.headers ).get( 'X-Linker-Proof' ) ) {
+					return new Response(
+						JSON.stringify( { code: 'linker_admission_proof' } ),
+						{ status: 400 }
+					);
+				}
 				return turnTransport( url, init );
 			}
 			throw new Error(

@@ -449,7 +449,10 @@ test( 'the actual verification adapter exposes saved-report recovery without dis
 	};
 	const transport = vi.fn< typeof fetch >();
 	vi.mocked( sendTurn ).mockImplementationOnce( ( request ) =>
-		actual.sendTurn( { ...request, fetcher: transport } )
+		actual.sendTurn( {
+			...request,
+			fetcher: onDemandTransport( transport ),
+		} )
 	);
 	try {
 		await renderOwned( <App config={ config() } /> );
@@ -3887,7 +3890,10 @@ test( 'the real Genie composer labels a pending proof as unsent and restores its
 	window.linkerPublicProtection = { proof, reset: vi.fn() };
 	const transport = vi.fn< typeof fetch >();
 	vi.mocked( sendTurn ).mockImplementationOnce( ( request ) =>
-		actual.sendTurn( { ...request, fetcher: transport } )
+		actual.sendTurn( {
+			...request,
+			fetcher: onDemandTransport( transport ),
+		} )
 	);
 	try {
 		await renderOwned( <App config={ config() } /> );
@@ -3974,7 +3980,10 @@ test( 'a cached proof immediately dispatches through the real adapter and change
 			} )
 	);
 	vi.mocked( sendTurn ).mockImplementationOnce( ( request ) =>
-		actual.sendTurn( { ...request, fetcher: transport } )
+		actual.sendTurn( {
+			...request,
+			fetcher: onDemandTransport( transport ),
+		} )
 	);
 	try {
 		await renderOwned( <App config={ config() } /> );
@@ -4008,6 +4017,22 @@ test( 'a cached proof immediately dispatches through the real adapter and change
 	}
 } );
 
+/**
+ * Challenge on demand: the proofless trust probe of an untrusted identity is
+ * refused by admission here; only a proof-carrying attempt reaches the test's
+ * own transport, so its call counts keep meaning "the dispatched turn".
+ * @param fetcher
+ */
+function onDemandTransport( fetcher: typeof fetch ): typeof fetch {
+	return async ( input, init ) =>
+		new Headers( init?.headers ).get( 'X-Linker-Proof' )
+			? fetcher( input, init )
+			: new Response(
+					JSON.stringify( { code: 'linker_admission_proof' } ),
+					{ status: 400 }
+				);
+}
+
 async function protectedComposer(
 	proof: NonNullable< Window[ 'linkerPublicProtection' ] >[ 'proof' ],
 	fetcher: typeof fetch,
@@ -4026,7 +4051,7 @@ async function protectedComposer(
 	const cancel = vi.fn( () => true );
 	window.linkerPublicProtection = { proof, cancel, reset: vi.fn() };
 	vi.mocked( sendTurn ).mockImplementation( ( request ) =>
-		actual.sendTurn( { ...request, fetcher } )
+		actual.sendTurn( { ...request, fetcher: onDemandTransport( fetcher ) } )
 	);
 	await renderOwned( <App config={ { ...config(), surface } } /> );
 	if ( surface === 'helper' ) {

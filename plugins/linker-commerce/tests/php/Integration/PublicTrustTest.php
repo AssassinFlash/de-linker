@@ -1,0 +1,230 @@
+<?php
+/**
+ * Real admission of a trusted genie session.
+ *
+ * @package Linker\Commerce
+ */
+
+declare( strict_types = 1 );
+
+namespace Linker\Commerce\Tests\Integration;
+
+use Linker\Commerce\Protection\Admission;
+use Linker\Commerce\Protection\Allowance;
+use Linker\Commerce\Protection\Configuration;
+use Linker\Commerce\Protection\Identity;
+use Linker\Commerce\Protection\Proof;
+use Linker\Commerce\Protection\Trust;
+use WP_Error;
+
+/**
+ * One solved challenge admits the genie turns of that identity for the
+ * window; nothing else changes: new identities and business actions keep
+ * their proofs.
+ *
+ * @coversNothing
+ */
+final class PublicTrustTest extends IntegrationTestCase {
+
+	/**
+	 * Official public always-pass dummy keys, as the local fixture configuration.
+	 */
+	private const SITE_KEY = '1x00000000000000000000AA';
+	private const SECRET   = '1x0000000000000000000000000000000AA';
+
+	/**
+	 * The synthetic cookies this test used, each with a fresh random key so
+	 * no earlier test in the lane can have granted trust for them.
+	 *
+	 * @var list<string>
+	 */
+	private array $cookies = array();
+
+	/**
+	 * The runner's original cookie, restored afterwards.
+	 *
+	 * @var string|null
+	 */
+	private ?string $previous_cookie = null;
+
+	/**
+	 * Sets the runner to a guest on one fresh synthetic browser identity.
+	 */
+	protected function setUp(): void {
+		parent::setUp();
+		$this->as_user( 0 );
+		$this->previous_cookie = isset( $_COOKIE[ Identity::COOKIE ] ) && is_string( $_COOKIE[ Identity::COOKIE ] ) ? $_COOKIE[ Identity::COOKIE ] : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Exact runner value retained for restoration.
+		$this->become();
+		$this->later(
+			function (): void {
+				if ( null === $this->previous_cookie ) {
+					unset( $_COOKIE[ Identity::COOKIE ] );
+				} else {
+					$_COOKIE[ Identity::COOKIE ] = $this->previous_cookie;
+				}
+			}
+		);
+	}
+
+	/**
+	 * Removes every identity this test used, and its trust rows.
+	 */
+	protected function tearDown(): void {
+		foreach ( $this->cookies as $key ) {
+			$_COOKIE[ Identity::COOKIE ] = $key; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Exact synthetic fixture value, never a live credential.
+			$identity                    = Identity::current();
+			if ( $identity instanceof Identity ) {
+				( new Trust() )->revoke( 'genie', $identity );
+			}
+		}
+		parent::tearDown();
+	}
+
+	/**
+	 * Switches the current request to a fresh, previously unused guest
+	 * identity (a lane-sibling can never have trusted it).
+	 */
+	private function become(): void {
+		$key                         = bin2hex( random_bytes( 16 ) );
+		$this->cookies[]             = $key;
+		$_COOKIE[ Identity::COOKIE ] = $key; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Exact synthetic fixture value, never a live credential.
+	}
+
+	/**
+	 * One reserve on the admission under test, with a proof or without one.
+	 *
+	 * @param string $proof Verified proof, '' for a proofless attempt.
+	 * @param string $action Server action scope.
+	 * @return array<string,mixed>|WP_Error The permit or the refusal.
+	 */
+	private function reserve( string $proof = '', string $action = 'genie' ): array|WP_Error {
+		$identity = Identity::current();
+		$this->assertInstanceOf( Identity::class, $identity );
+		return $this->admission()->reserve(
+			$action,
+			$proof,
+			wp_generate_uuid4(),
+			array(
+				'messages' => array(
+					array(
+						'role'    => 'user',
+						'content' => 'Which inverter?',
+					),
+				),
+			),
+			array( new Allowance( $action . '_trust_test', $identity->browser, 5, HOUR_IN_SECONDS ) ),
+			90,
+			'genie_contact' === $action
+		);
+	}
+
+	/**
+	 * A fresh identity must pass the challenge; one solved challenge admits
+	 * its further turns without a proof until the window ends.
+	 */
+	public function test_one_solved_challenge_admits_the_sessions_genie_turns(): void {
+		$refusal = $this->refused();
+		$this->assertSame( 'linker_admission_proof', $refusal->get_error_code() );
+
+		$identity = Identity::current();
+		$this->assertInstanceOf( Identity::class, $identity );
+		$proof = ( new Proof() )->issue( 'verified', 'genie', $identity, wp_generate_uuid4() );
+
+		$verified = $this->reserve( $proof );
+		if ( $verified instanceof WP_Error ) {
+			$this->fail( $verified->get_error_message() );
+		}
+		$this->assertTrue( ( new Trust() )->admitted( 'genie', $identity ) );
+		$this->admission()->cancel( $verified );
+
+		$trusted = $this->reserve();
+		if ( $trusted instanceof WP_Error ) {
+			$this->fail( 'A trusted genie session sends its turn without a fresh proof: ' . $trusted->get_error_message() );
+		}
+		$this->assertSame( array(), $trusted['proof'], 'A trusted turn carries no proof to consume.' );
+		$this->admission()->cancel( $trusted );
+	}
+
+	/**
+	 * The window ends and the challenge returns; revocation ends it at once.
+	 */
+	public function test_expired_trust_re_challenges_and_revocation_ends_it_at_once(): void {
+		$identity = Identity::current();
+		$this->assertInstanceOf( Identity::class, $identity );
+		( new Trust() )->grant( 'genie', $identity );
+
+		$later   = time() + Trust::WINDOW + 1;
+		$expired = new Trust(
+			static function () use ( $later ): int {
+				return $later;
+			}
+		);
+		$this->assertFalse( $expired->admitted( 'genie', $identity ), 'Past the window the challenge returns.' );
+
+		( new Trust() )->revoke( 'genie', $identity );
+		$this->assertSame(
+			'linker_admission_proof',
+			$this->refused()->get_error_code()
+		);
+	}
+
+	/**
+	 * A different identity is not trusted by this session's challenge.
+	 */
+	public function test_a_new_identity_is_still_challenged(): void {
+		$identity = Identity::current();
+		$this->assertInstanceOf( Identity::class, $identity );
+		( new Trust() )->grant( 'genie', $identity );
+
+		$this->become();
+
+		$other = Identity::current();
+		$this->assertInstanceOf( Identity::class, $other );
+		$this->assertFalse( ( new Trust() )->admitted( 'genie', $other ), 'Trust never crosses identities.' );
+
+		$this->assertSame(
+			'linker_admission_proof',
+			$this->refused()->get_error_code()
+		);
+	}
+
+	/**
+	 * Business actions keep their single-use proofs: genie trust never
+	 * admits one, and its proof is still required. The consumed-once replay
+	 * refusal itself is pinned by PublicControllerTest
+	 * (linker_admission_proof_reused); this test adds only the trust delta.
+	 */
+	public function test_business_actions_keep_their_single_use_proofs(): void {
+		$identity = Identity::current();
+		$this->assertInstanceOf( Identity::class, $identity );
+		( new Trust() )->grant( 'genie', $identity );
+
+		$refused = $this->reserve( '', 'genie_contact' );
+		$this->assertInstanceOf( WP_Error::class, $refused );
+		$this->assertSame( 'linker_admission_proof', $refused->get_error_code(), 'Genie trust never admits a business action.' );
+
+		$proof = ( new Proof() )->issue( 'verified', 'genie_contact', $identity, wp_generate_uuid4() );
+		$first = $this->reserve( $proof, 'genie_contact' );
+		$this->assertNotInstanceOf( WP_Error::class, $first, 'The MAC-valid proof reserves its permit.' );
+		$validated = $this->admission()->validate( $first );
+		$this->assertInstanceOf( WP_Error::class, $validated, 'A proof that never ran a challenge is refused at the ledger check.' );
+		$this->assertSame( 409, $validated->get_error_data()['status'], 'Refused as an unconsumable proof (409), not as an absent one (400).' );
+		$this->admission()->cancel( $first );
+	}
+
+	/**
+	 * One enforce-mode admission on the fixture configuration.
+	 */
+	private function admission(): Admission {
+		return new Admission( new Configuration( 'enforce', self::SITE_KEY, self::SECRET, 'example.test' ) );
+	}
+
+	/**
+	 * A proofless genie reserve, asserted to be the admission refusal.
+	 */
+	private function refused(): WP_Error {
+		$result = $this->reserve();
+		$this->assertInstanceOf( WP_Error::class, $result );
+		return $result;
+	}
+}

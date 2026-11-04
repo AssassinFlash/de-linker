@@ -86,7 +86,7 @@ export function useVerificationStage( waiting: boolean ) {
 						throw new Error( 'verification_cancelled' );
 					}
 				},
-				onDispatch: () => {
+				onDispatch: ( final: boolean ) => {
 					if (
 						active.current !== attempt ||
 						attempt.controller.signal.aborted ||
@@ -94,8 +94,10 @@ export function useVerificationStage( waiting: boolean ) {
 					) {
 						throw new Error( 'verification_cancelled' );
 					}
-					attempt.dispatched = true;
-					setPending( false );
+					if ( final ) {
+						attempt.dispatched = true;
+						setPending( false );
+					}
 				},
 			};
 		},

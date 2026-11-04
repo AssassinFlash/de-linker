@@ -434,16 +434,22 @@ export interface TurnVerification {
 	/** Aborted when the visitor withdraws the attempt before dispatch. */
 	signal: AbortSignal;
 	/**
-	 * Whether the shared client actually runs a challenge for this attempt.
-	 * False in a deployment whose protection is off or only observing: the
-	 * context still owns cancellation and the draft guard, but there is no
-	 * challenge window to wait for.
+	 * Whether a challenge can run for this attempt: true only in enforce
+	 * mode. A trusted genie session may complete its turn without any
+	 * challenge (session trust admits it), so this bounds the preparation
+	 * window, it does not promise a widget.
 	 */
 	challenge: boolean;
 	/** Runs after the proof is ready and before the request leaves. */
 	beforeDispatch?: () => Promise< void >;
-	/** Called once, immediately before the transport is used. */
-	onDispatch: () => void;
+	/**
+	 * Called immediately before each transport use, with whether this use is
+	 * the turn's final dispatch: true when it carries the settled proof, or
+	 * when no challenge can run at all. The genie action's proofless first
+	 * attempt (admission decides trust on demand) is not final — a challenge
+	 * may still follow it. The calls are idempotent.
+	 */
+	onDispatch: ( final: boolean ) => void;
 }
 
 /**
@@ -509,13 +515,30 @@ export async function sendTurn( request: TurnRequest ): Promise< Turn > {
 		.then( () =>
 			resourceFetch(
 				async ( ...args ) => {
-					// resourceFetch calls its transport only after proof is ready.
-					// A late proof must never dispatch an already timed-out turn.
+					// resourceFetch dispatches its transport once a proof is
+					// ready — or, for the genie action, when the attempt is
+					// admitted without one. A late proof must never dispatch
+					// an already timed-out turn.
 					controller.signal.throwIfAborted();
 					await request.verification?.beforeDispatch?.();
 					controller.signal.throwIfAborted();
-					request.verification?.onDispatch();
-					restartDeadline();
+					// The transport init carries `linkerFinalDispatch`: true
+					// on the one attempt that really carries the turn, false
+					// on the genie action's proofless trust probe (refused by
+					// admission before any work). The final dispatch starts
+					// the response window and moves the surface past
+					// cancellation; a probe keeps the preparation window so a
+					// challenge that follows it cannot be cut by the response
+					// deadline, and the visitor can still withdraw.
+					const final =
+						(
+							args[ 1 ] as
+								{ linkerFinalDispatch?: boolean } | undefined
+						 )?.linkerFinalDispatch !== false;
+					request.verification?.onDispatch( final );
+					if ( final ) {
+						restartDeadline();
+					}
 					return fetcher( ...args );
 				},
 				turnUrl,
