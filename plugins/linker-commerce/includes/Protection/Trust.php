@@ -134,6 +134,26 @@ final class Trust {
 	}
 
 	/**
+	 * Withdraws the trust of every identity at once (tests, staff decision).
+	 *
+	 * @param string $action Trusted action scope (genie).
+	 */
+	public static function purge( string $action ): void {
+		global $wpdb;
+		$prefix = $wpdb->esc_like( self::PREFIX . $action . '.' ) . '%';
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery -- an explicit withdrawal, not a cached read path; the cache entries go with the rows.
+		$rows = $wpdb->get_col(
+			$wpdb->prepare( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s", $prefix )
+		);
+		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $prefix ) );
+		// phpcs:enable
+		foreach ( $rows as $name ) {
+			wp_cache_delete( $name, 'options' );
+		}
+		wp_cache_delete( 'notoptions', 'options' );
+	}
+
+	/**
 	 * One row's option name: prefix, action, identity hash, window bucket.
 	 *
 	 * @param string   $action Trusted action scope (genie).

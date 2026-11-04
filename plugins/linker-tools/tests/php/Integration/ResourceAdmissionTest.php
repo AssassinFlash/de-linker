@@ -15,6 +15,7 @@ use Linker\Commerce\Protection\Allowance;
 use Linker\Commerce\Protection\Identity;
 use Linker\Commerce\Protection\Ledger;
 use Linker\Commerce\Protection\Proof;
+use Linker\Commerce\Protection\Trust;
 use Linker\Tools\Genie\Attachments;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Proxy;
@@ -73,8 +74,9 @@ final class ResourceAdmissionTest extends TestCase {
 	private string $running_version = '';
 
 
-	/** Isolate the journal and official dummy configuration. */
+	/** Isolate the journal, the session trust and official dummy configuration. */
 	protected function setUp(): void {
+		$this->drop_session_trust();
 		$this->running_version = hash( 'sha256', 'synthetic-running-engine-a' );
 		$this->live_version    = function ( mixed $old, array $args, string $url ): mixed {
 			if ( ! str_ends_with( $url, '/resource/version' ) ) {
@@ -103,6 +105,7 @@ final class ResourceAdmissionTest extends TestCase {
 
 	/** Restore the local fixture without touching real service settings. */
 	protected function tearDown(): void {
+		$this->drop_session_trust();
 		remove_filter( 'pre_http_request', $this->live_version, -1 );
 		delete_option( Ledger::OPTION );
 		if ( false !== $this->old ) {
@@ -125,6 +128,15 @@ final class ResourceAdmissionTest extends TestCase {
 		) as $id ) {
 			wp_delete_post( (int) $id, true );
 		}
+	}
+
+	/**
+	 * Drops every genie session-trust row: a verified genie proof inside one
+	 * case grants trust for this fixture's shared identity, and a later case
+	 * that asserts bad proofs are refused must not meet a trusted session.
+	 */
+	private function drop_session_trust(): void {
+		\Linker\Commerce\Protection\Trust::purge( 'genie' );
 	}
 
 	/**
@@ -198,6 +210,12 @@ final class ResourceAdmissionTest extends TestCase {
 		$this->assertInstanceOf( WP_Error::class, $resources->dispatch( null, $request, '', $handler ) );
 		$request->set_header( 'X-Linker-Proof', $this->proof( 'genie', false ) );
 		$this->assertInstanceOf( WP_Error::class, $resources->dispatch( null, $request, '', $handler ) );
+		// A MAC-valid proof is one our verify endpoint minted after a genuine
+		// challenge, so its read grants the session trust even when the
+		// ledger parent is missing (the permit is still refused below at
+		// validate). Drop it: the next bad-proof shape must meet a session
+		// that is not trusted.
+		$this->drop_session_trust();
 		$request->set_header( 'X-Linker-Operation', wp_generate_uuid4() );
 		$identity = Identity::current();
 		$this->assertInstanceOf( Identity::class, $identity );
