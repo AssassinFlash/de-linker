@@ -1,0 +1,223 @@
+{
+  "pageFindings": [
+    {
+      "key": "https://de-linker.com/refund-returns/@390",
+      "url": "https://de-linker.com/refund-returns/",
+      "signals": [
+        "real horizontal overflow: scrollWidth=467 vs clientWidth=390 — on this local snapshot the known cause is the CookieYes hidden preference markup (DEFECTS.md F4); production measured clean"
+      ]
+    },
+    {
+      "key": "https://de-linker.com/privacy-policy/@390",
+      "url": "https://de-linker.com/privacy-policy/",
+      "signals": [
+        "real horizontal overflow: scrollWidth=528 vs clientWidth=390 — on this local snapshot the known cause is the CookieYes hidden preference markup (DEFECTS.md F4); production measured clean"
+      ]
+    },
+    {
+      "key": "https://de-linker.com/solution-configurator/@1440",
+      "url": "https://de-linker.com/solution-configurator/",
+      "signals": [
+        "basic check failed (no visible h1 at read)"
+      ]
+    },
+    {
+      "key": "https://de-linker.com/solution-configurator/@390",
+      "url": "https://de-linker.com/solution-configurator/",
+      "signals": [
+        "basic check failed (no visible h1 at read)"
+      ]
+    }
+  ],
+  "stateFindings": [
+    {
+      "key": "global-navigation:mobile-menu-open:en:390",
+      "failed": [
+        "nav trigger toggles: clicked=false aria-expanded false->false"
+      ]
+    },
+    {
+      "key": "global-navigation:mobile-menu-open:de:390",
+      "failed": [
+        "nav trigger toggles: clicked=false aria-expanded false->false"
+      ]
+    },
+    {
+      "key": "global-navigation:search-open:de:1440",
+      "failed": [
+        "search trigger: no header search trigger matched"
+      ]
+    },
+    {
+      "key": "global-navigation:search-open:de:390",
+      "failed": [
+        "search trigger: no header search trigger matched"
+      ]
+    },
+    {
+      "key": "global-navigation:search-results:de:1440",
+      "failed": [
+        "search trigger: no trigger; not reachable"
+      ]
+    },
+    {
+      "key": "global-navigation:search-results:de:390",
+      "failed": [
+        "search trigger: no trigger; not reachable"
+      ]
+    },
+    {
+      "key": "global-navigation:cookie-choice-and-reopen:en:1440",
+      "failed": [
+        "revisit control found: []",
+        "banner reopens: reopened=false"
+      ]
+    },
+    {
+      "key": "global-navigation:cookie-choice-and-reopen:en:390",
+      "failed": [
+        "banner reopens: reopened=false"
+      ]
+    },
+    {
+      "key": "global-navigation:cookie-choice-and-reopen:de:1440",
+      "failed": [
+        "revisit control found: []",
+        "banner reopens: reopened=false"
+      ]
+    },
+    {
+      "key": "global-navigation:cookie-choice-and-reopen:de:390",
+      "failed": [
+        "banner reopens: reopened=false"
+      ]
+    },
+    {
+      "key": "product:related-products:en:1440",
+      "failed": [
+        "related products present: related links=0"
+      ]
+    },
+    {
+      "key": "product:related-products:en:390",
+      "failed": [
+        "related products present: related links=0"
+      ]
+    },
+    {
+      "key": "product:related-products:de:1440",
+      "failed": [
+        "related products present: related links=0"
+      ]
+    },
+    {
+      "key": "product:related-products:de:390",
+      "failed": [
+        "related products present: related links=0"
+      ]
+    },
+    {
+      "key": "comparison:remove-product:en:1440",
+      "failed": [
+        "remove control present: []"
+      ]
+    },
+    {
+      "key": "comparison:remove-product:en:390",
+      "failed": [
+        "remove control present: []"
+      ]
+    },
+    {
+      "key": "comparison:remove-product:de:1440",
+      "failed": [
+        "remove control present: []"
+      ]
+    },
+    {
+      "key": "comparison:remove-product:de:390",
+      "failed": [
+        "remove control present: []"
+      ]
+    },
+    {
+      "key": "files-and-feedback:404:en:1440",
+      "failed": [
+        "missing upload file: status=410"
+      ]
+    },
+    {
+      "key": "files-and-feedback:404:en:390",
+      "failed": [
+        "missing upload file: status=410"
+      ]
+    },
+    {
+      "key": "files-and-feedback:404:de:1440",
+      "failed": [
+        "missing upload file: status=410"
+      ]
+    },
+    {
+      "key": "files-and-feedback:404:de:390",
+      "failed": [
+        "missing upload file: status=410"
+      ]
+    },
+    {
+      "key": "files-and-feedback:slow-network-loading:en:1440",
+      "failed": [
+        "throttled load completes: elapsed=60001ms h1="
+      ]
+    },
+    {
+      "key": "files-and-feedback:slow-network-loading:en:390",
+      "failed": [
+        "throttled load completes: elapsed=45001ms h1="
+      ]
+    },
+    {
+      "key": "files-and-feedback:slow-network-loading:de:1440",
+      "failed": [
+        "throttled load completes: elapsed=45001ms h1="
+      ]
+    },
+    {
+      "key": "files-and-feedback:slow-network-loading:de:390",
+      "failed": [
+        "throttled load completes: elapsed=45000ms h1="
+      ]
+    },
+    {
+      "key": "document-library:search-empty-and-clear:en:1440",
+      "failed": [
+        "clear restores items: items=0"
+      ]
+    },
+    {
+      "key": "document-library:search-empty-and-clear:en:390",
+      "failed": [
+        "clear restores items: items=0"
+      ]
+    },
+    {
+      "key": "document-library:search-empty-and-clear:de:1440",
+      "failed": [
+        "clear restores items: items=0"
+      ]
+    },
+    {
+      "key": "document-library:search-empty-and-clear:de:390",
+      "failed": [
+        "clear restores items: items=0"
+      ]
+    }
+  ],
+  "templateFindings": [
+    {
+      "id": 30,
+      "title": "Global JavaScript Code",
+      "finding": "empty post_content on production; execution contract unsatisfiable"
+    }
+  ]
+}

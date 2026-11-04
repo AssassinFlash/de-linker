@@ -1,0 +1,847 @@
+[
+  {
+    "key": "global-navigation:mobile-menu-open:en:1440",
+    "stateKey": "global-navigation:mobile-menu-open",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "nav trigger toggles",
+        "result": "pass",
+        "observed": "clicked=true aria-expanded false->true"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-global-navigation:mobile-menu-open:en:1440.png",
+    "scope": "tv-nav-link trigger with scroll-into-view; branch applicability judged per width at review",
+    "observedAt": "2026-11-04T12:15:23.198Z",
+    "pass": 4
+  },
+  {
+    "key": "global-navigation:language-switch-current-route:en:1440",
+    "stateKey": "global-navigation:language-switch-current-route",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/blog/",
+    "checks": [
+      {
+        "name": "document lang after switch",
+        "result": "pass",
+        "observed": "de-DE"
+      },
+      {
+        "name": "translated route",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/de/blog/"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-global-navigation:language-switch-current-route:en:1440.png",
+    "scope": "Language switch through the width-visible toggle",
+    "observedAt": "2026-11-04T12:15:25.334Z",
+    "pass": 4
+  },
+  {
+    "key": "product-archive:category-brand-filters:en:1440",
+    "stateKey": "product-archive:category-brand-filters",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/product-category/commercial-storage/?brand=goodwe",
+    "checks": [
+      {
+        "name": "filter drawer opens",
+        "result": "pass",
+        "observed": "drawer=true"
+      },
+      {
+        "name": "option applied",
+        "result": "pass",
+        "observed": "applied=true"
+      },
+      {
+        "name": "filtered cards",
+        "result": "observe",
+        "observed": "cards=12"
+      }
+    ],
+    "passed": 3,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-product-archive:category-brand-filters:en:1440.png",
+    "scope": "Real filter drawer: open/option/apply with scroll-into-view",
+    "observedAt": "2026-11-04T12:17:08.951Z",
+    "pass": 4
+  },
+  {
+    "key": "product-archive:pagination:en:1440",
+    "stateKey": "product-archive:pagination",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/products/?product-page=2",
+    "checks": [
+      {
+        "name": "page 2 reached with entries",
+        "result": "pass",
+        "observed": "url=http://127.0.0.1:8904/products/?product-page=2 cards=72"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-product-archive:pagination:en:1440.png",
+    "scope": "Shop archive pagination with locale-correct product path",
+    "observedAt": "2026-11-04T12:17:13.039Z",
+    "pass": 4
+  },
+  {
+    "key": "document-library:search-results-and-live-count:en:1440",
+    "stateKey": "document-library:search-results-and-live-count",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/faq-download/?q=GMK",
+    "checks": [
+      {
+        "name": "live count present",
+        "result": "pass",
+        "observed": "{\"count\":\"9 results\",\"ledgerHits\":0,\"suggest\":9}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-document-library:search-results-and-live-count:en:1440.png",
+    "scope": "FAQ search results + live count element",
+    "observedAt": "2026-11-04T12:17:16.958Z",
+    "pass": 4
+  },
+  {
+    "key": "document-library:search-empty-and-clear:en:1440",
+    "stateKey": "document-library:search-empty-and-clear",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/faq-download/",
+    "checks": [
+      {
+        "name": "no-match empty element",
+        "result": "pass",
+        "observed": "{\"visible\":true,\"text\":\"Nothing on file matches that search.\\n\\nAsk Genie\"}"
+      },
+      {
+        "name": "clear restores items",
+        "result": "fail",
+        "observed": "items=0"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-document-library:search-empty-and-clear:en:1440.png",
+    "scope": "No-match state = .linker-library-empty element (label text is page-config localized)",
+    "observedAt": "2026-11-04T12:17:18.801Z",
+    "pass": 4
+  },
+  {
+    "key": "global-navigation:floating-widgets-no-obstruction:en:1440",
+    "stateKey": "global-navigation:floating-widgets-no-obstruction",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/product/saj-ats1-t63-a/",
+    "checks": [
+      {
+        "name": "visible chip reachable at center",
+        "result": "pass",
+        "observed": "{\"w\":130,\"h\":48,\"topAtCenter\":\"self\"}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-global-navigation:floating-widgets-no-obstruction:en:1440.png",
+    "scope": "Compare chip center hit-test while visible",
+    "observedAt": "2026-11-04T12:17:20.950Z",
+    "pass": 4
+  },
+  {
+    "key": "comparison:remove-product:en:1440",
+    "stateKey": "comparison:remove-product",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/compare-products/",
+    "checks": [
+      {
+        "name": "remove control present",
+        "result": "fail",
+        "observed": "[]"
+      },
+      {
+        "name": "rows after remove",
+        "result": "observe",
+        "observed": "rows=null"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-comparison:remove-product:en:1440.png",
+    "scope": "Compare page remove control with real selection",
+    "observedAt": "2026-11-04T12:17:22.592Z",
+    "pass": 4
+  },
+  {
+    "key": "global-navigation:mobile-menu-open:en:390",
+    "stateKey": "global-navigation:mobile-menu-open",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "nav trigger toggles",
+        "result": "fail",
+        "observed": "clicked=false aria-expanded false->false"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-global-navigation:mobile-menu-open:en:390.png",
+    "scope": "tv-nav-link trigger with scroll-into-view; branch applicability judged per width at review",
+    "observedAt": "2026-11-04T12:18:14.584Z",
+    "pass": 4
+  },
+  {
+    "key": "global-navigation:language-switch-current-route:en:390",
+    "stateKey": "global-navigation:language-switch-current-route",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/blog/",
+    "checks": [
+      {
+        "name": "document lang after switch",
+        "result": "pass",
+        "observed": "de-DE"
+      },
+      {
+        "name": "translated route",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/de/blog/"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-global-navigation:language-switch-current-route:en:390.png",
+    "scope": "Language switch through the width-visible toggle",
+    "observedAt": "2026-11-04T12:18:16.755Z",
+    "pass": 4
+  },
+  {
+    "key": "product-archive:category-brand-filters:en:390",
+    "stateKey": "product-archive:category-brand-filters",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/product-category/commercial-storage/?brand=goodwe",
+    "checks": [
+      {
+        "name": "filter drawer opens",
+        "result": "pass",
+        "observed": "drawer=true"
+      },
+      {
+        "name": "option applied",
+        "result": "pass",
+        "observed": "applied=true"
+      },
+      {
+        "name": "filtered cards",
+        "result": "observe",
+        "observed": "cards=12"
+      }
+    ],
+    "passed": 3,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-product-archive:category-brand-filters:en:390.png",
+    "scope": "Real filter drawer: open/option/apply with scroll-into-view",
+    "observedAt": "2026-11-04T12:18:40.397Z",
+    "pass": 4
+  },
+  {
+    "key": "product-archive:pagination:en:390",
+    "stateKey": "product-archive:pagination",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/products/?product-page=2",
+    "checks": [
+      {
+        "name": "page 2 reached with entries",
+        "result": "pass",
+        "observed": "url=http://127.0.0.1:8904/products/?product-page=2 cards=72"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-product-archive:pagination:en:390.png",
+    "scope": "Shop archive pagination with locale-correct product path",
+    "observedAt": "2026-11-04T12:18:44.487Z",
+    "pass": 4
+  },
+  {
+    "key": "document-library:search-results-and-live-count:en:390",
+    "stateKey": "document-library:search-results-and-live-count",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/faq-download/?q=GMK",
+    "checks": [
+      {
+        "name": "live count present",
+        "result": "pass",
+        "observed": "{\"count\":\"9 results\",\"ledgerHits\":0,\"suggest\":9}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-document-library:search-results-and-live-count:en:390.png",
+    "scope": "FAQ search results + live count element",
+    "observedAt": "2026-11-04T12:18:48.329Z",
+    "pass": 4
+  },
+  {
+    "key": "document-library:search-empty-and-clear:en:390",
+    "stateKey": "document-library:search-empty-and-clear",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/faq-download/",
+    "checks": [
+      {
+        "name": "no-match empty element",
+        "result": "pass",
+        "observed": "{\"visible\":true,\"text\":\"Nothing on file matches that search.\\n\\nAsk Genie\"}"
+      },
+      {
+        "name": "clear restores items",
+        "result": "fail",
+        "observed": "items=0"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-document-library:search-empty-and-clear:en:390.png",
+    "scope": "No-match state = .linker-library-empty element (label text is page-config localized)",
+    "observedAt": "2026-11-04T12:18:50.135Z",
+    "pass": 4
+  },
+  {
+    "key": "global-navigation:floating-widgets-no-obstruction:en:390",
+    "stateKey": "global-navigation:floating-widgets-no-obstruction",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/product/saj-ats1-t63-a/",
+    "checks": [
+      {
+        "name": "visible chip reachable at center",
+        "result": "pass",
+        "observed": "{\"w\":390,\"h\":52,\"topAtCenter\":\"self\"}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-global-navigation:floating-widgets-no-obstruction:en:390.png",
+    "scope": "Compare chip center hit-test while visible",
+    "observedAt": "2026-11-04T12:18:52.239Z",
+    "pass": 4
+  },
+  {
+    "key": "comparison:remove-product:en:390",
+    "stateKey": "comparison:remove-product",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/compare-products/",
+    "checks": [
+      {
+        "name": "remove control present",
+        "result": "fail",
+        "observed": "[]"
+      },
+      {
+        "name": "rows after remove",
+        "result": "observe",
+        "observed": "rows=null"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-comparison:remove-product:en:390.png",
+    "scope": "Compare page remove control with real selection",
+    "observedAt": "2026-11-04T12:18:53.847Z",
+    "pass": 4
+  },
+  {
+    "key": "global-navigation:mobile-menu-open:de:1440",
+    "stateKey": "global-navigation:mobile-menu-open",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/",
+    "checks": [
+      {
+        "name": "nav trigger toggles",
+        "result": "pass",
+        "observed": "clicked=true aria-expanded false->true"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-global-navigation:mobile-menu-open:de:1440.png",
+    "scope": "tv-nav-link trigger with scroll-into-view; branch applicability judged per width at review",
+    "observedAt": "2026-11-04T12:18:56.100Z",
+    "pass": 4
+  },
+  {
+    "key": "global-navigation:language-switch-current-route:de:1440",
+    "stateKey": "global-navigation:language-switch-current-route",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/blog/",
+    "checks": [
+      {
+        "name": "document lang after switch",
+        "result": "pass",
+        "observed": "en-US"
+      },
+      {
+        "name": "translated route",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/blog/"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-global-navigation:language-switch-current-route:de:1440.png",
+    "scope": "Language switch through the width-visible toggle",
+    "observedAt": "2026-11-04T12:18:58.169Z",
+    "pass": 4
+  },
+  {
+    "key": "product-archive:category-brand-filters:de:1440",
+    "stateKey": "product-archive:category-brand-filters",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/?brand=goodwe",
+    "checks": [
+      {
+        "name": "filter drawer opens",
+        "result": "pass",
+        "observed": "drawer=true"
+      },
+      {
+        "name": "option applied",
+        "result": "pass",
+        "observed": "applied=true"
+      },
+      {
+        "name": "filtered cards",
+        "result": "observe",
+        "observed": "cards=12"
+      }
+    ],
+    "passed": 3,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-product-archive:category-brand-filters:de:1440.png",
+    "scope": "Real filter drawer: open/option/apply with scroll-into-view",
+    "observedAt": "2026-11-04T12:20:41.845Z",
+    "pass": 4
+  },
+  {
+    "key": "product-archive:pagination:de:1440",
+    "stateKey": "product-archive:pagination",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkte/?product-page=2",
+    "checks": [
+      {
+        "name": "page 2 reached with entries",
+        "result": "pass",
+        "observed": "url=http://127.0.0.1:8904/de/produkte/?product-page=2 cards=72"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-product-archive:pagination:de:1440.png",
+    "scope": "Shop archive pagination with locale-correct product path",
+    "observedAt": "2026-11-04T12:20:46.529Z",
+    "pass": 4
+  },
+  {
+    "key": "document-library:search-results-and-live-count:de:1440",
+    "stateKey": "document-library:search-results-and-live-count",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/?q=GMK",
+    "checks": [
+      {
+        "name": "live count present",
+        "result": "pass",
+        "observed": "{\"count\":\"9 Ergebnisse\",\"ledgerHits\":0,\"suggest\":9}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-document-library:search-results-and-live-count:de:1440.png",
+    "scope": "FAQ search results + live count element",
+    "observedAt": "2026-11-04T12:20:50.625Z",
+    "pass": 4
+  },
+  {
+    "key": "document-library:search-empty-and-clear:de:1440",
+    "stateKey": "document-library:search-empty-and-clear",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/",
+    "checks": [
+      {
+        "name": "no-match empty element",
+        "result": "pass",
+        "observed": "{\"visible\":true,\"text\":\"Zu dieser Suche liegt nichts vor.\\n\\nGenie fragen\"}"
+      },
+      {
+        "name": "clear restores items",
+        "result": "fail",
+        "observed": "items=0"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-document-library:search-empty-and-clear:de:1440.png",
+    "scope": "No-match state = .linker-library-empty element (label text is page-config localized)",
+    "observedAt": "2026-11-04T12:20:52.474Z",
+    "pass": 4
+  },
+  {
+    "key": "global-navigation:floating-widgets-no-obstruction:de:1440",
+    "stateKey": "global-navigation:floating-widgets-no-obstruction",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkt/goodwe-gw60k-sts-g10/",
+    "checks": [
+      {
+        "name": "visible chip reachable at center",
+        "result": "pass",
+        "observed": "{\"w\":150,\"h\":48,\"topAtCenter\":\"self\"}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-global-navigation:floating-widgets-no-obstruction:de:1440.png",
+    "scope": "Compare chip center hit-test while visible",
+    "observedAt": "2026-11-04T12:20:54.591Z",
+    "pass": 4
+  },
+  {
+    "key": "comparison:remove-product:de:1440",
+    "stateKey": "comparison:remove-product",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/produkte-vergleichen/",
+    "checks": [
+      {
+        "name": "remove control present",
+        "result": "fail",
+        "observed": "[]"
+      },
+      {
+        "name": "rows after remove",
+        "result": "observe",
+        "observed": "rows=null"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-comparison:remove-product:de:1440.png",
+    "scope": "Compare page remove control with real selection",
+    "observedAt": "2026-11-04T12:20:56.256Z",
+    "pass": 4
+  },
+  {
+    "key": "global-navigation:mobile-menu-open:de:390",
+    "stateKey": "global-navigation:mobile-menu-open",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/",
+    "checks": [
+      {
+        "name": "nav trigger toggles",
+        "result": "fail",
+        "observed": "clicked=false aria-expanded false->false"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-global-navigation:mobile-menu-open:de:390.png",
+    "scope": "tv-nav-link trigger with scroll-into-view; branch applicability judged per width at review",
+    "observedAt": "2026-11-04T12:21:48.326Z",
+    "pass": 4
+  },
+  {
+    "key": "global-navigation:language-switch-current-route:de:390",
+    "stateKey": "global-navigation:language-switch-current-route",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/blog/",
+    "checks": [
+      {
+        "name": "document lang after switch",
+        "result": "pass",
+        "observed": "en-US"
+      },
+      {
+        "name": "translated route",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/blog/"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-global-navigation:language-switch-current-route:de:390.png",
+    "scope": "Language switch through the width-visible toggle",
+    "observedAt": "2026-11-04T12:21:50.374Z",
+    "pass": 4
+  },
+  {
+    "key": "product-archive:category-brand-filters:de:390",
+    "stateKey": "product-archive:category-brand-filters",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/?brand=goodwe",
+    "checks": [
+      {
+        "name": "filter drawer opens",
+        "result": "pass",
+        "observed": "drawer=true"
+      },
+      {
+        "name": "option applied",
+        "result": "pass",
+        "observed": "applied=true"
+      },
+      {
+        "name": "filtered cards",
+        "result": "observe",
+        "observed": "cards=12"
+      }
+    ],
+    "passed": 3,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-product-archive:category-brand-filters:de:390.png",
+    "scope": "Real filter drawer: open/option/apply with scroll-into-view",
+    "observedAt": "2026-11-04T12:22:14.151Z",
+    "pass": 4
+  },
+  {
+    "key": "product-archive:pagination:de:390",
+    "stateKey": "product-archive:pagination",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkte/?product-page=2",
+    "checks": [
+      {
+        "name": "page 2 reached with entries",
+        "result": "pass",
+        "observed": "url=http://127.0.0.1:8904/de/produkte/?product-page=2 cards=72"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-product-archive:pagination:de:390.png",
+    "scope": "Shop archive pagination with locale-correct product path",
+    "observedAt": "2026-11-04T12:22:18.862Z",
+    "pass": 4
+  },
+  {
+    "key": "document-library:search-results-and-live-count:de:390",
+    "stateKey": "document-library:search-results-and-live-count",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/?q=GMK",
+    "checks": [
+      {
+        "name": "live count present",
+        "result": "pass",
+        "observed": "{\"count\":\"9 Ergebnisse\",\"ledgerHits\":0,\"suggest\":9}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-document-library:search-results-and-live-count:de:390.png",
+    "scope": "FAQ search results + live count element",
+    "observedAt": "2026-11-04T12:22:22.790Z",
+    "pass": 4
+  },
+  {
+    "key": "document-library:search-empty-and-clear:de:390",
+    "stateKey": "document-library:search-empty-and-clear",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/faq-dokumente/",
+    "checks": [
+      {
+        "name": "no-match empty element",
+        "result": "pass",
+        "observed": "{\"visible\":true,\"text\":\"Zu dieser Suche liegt nichts vor.\\n\\nGenie fragen\"}"
+      },
+      {
+        "name": "clear restores items",
+        "result": "fail",
+        "observed": "items=0"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-document-library:search-empty-and-clear:de:390.png",
+    "scope": "No-match state = .linker-library-empty element (label text is page-config localized)",
+    "observedAt": "2026-11-04T12:22:24.605Z",
+    "pass": 4
+  },
+  {
+    "key": "global-navigation:floating-widgets-no-obstruction:de:390",
+    "stateKey": "global-navigation:floating-widgets-no-obstruction",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkt/goodwe-gw60k-sts-g10/",
+    "checks": [
+      {
+        "name": "visible chip reachable at center",
+        "result": "pass",
+        "observed": "{\"w\":390,\"h\":52,\"topAtCenter\":\"self\"}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-global-navigation:floating-widgets-no-obstruction:de:390.png",
+    "scope": "Compare chip center hit-test while visible",
+    "observedAt": "2026-11-04T12:22:26.671Z",
+    "pass": 4
+  },
+  {
+    "key": "comparison:remove-product:de:390",
+    "stateKey": "comparison:remove-product",
+    "lang": "de",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/de/produkte-vergleichen/",
+    "checks": [
+      {
+        "name": "remove control present",
+        "result": "fail",
+        "observed": "[]"
+      },
+      {
+        "name": "rows after remove",
+        "result": "observe",
+        "observed": "rows=null"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-comparison:remove-product:de:390.png",
+    "scope": "Compare page remove control with real selection",
+    "observedAt": "2026-11-04T12:22:28.245Z",
+    "pass": 4
+  },
+  {
+    "key": "files-and-feedback:slow-network-loading:en:1440",
+    "stateKey": "files-and-feedback:slow-network-loading",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/contact/",
+    "checks": [
+      {
+        "name": "throttled load completes",
+        "result": "fail",
+        "observed": "elapsed=60001ms h1="
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-files-and-feedback:slow-network-loading:en:1440.png",
+    "scope": "Standalone throttled load after background load removed",
+    "observedAt": "2026-11-04T12:23:28.691Z",
+    "pass": 4
+  },
+  {
+    "key": "global-navigation:cookie-choice-and-reopen:en:1440",
+    "stateKey": "global-navigation:cookie-choice-and-reopen",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "revisit control found",
+        "result": "fail",
+        "observed": "[]"
+      },
+      {
+        "name": "banner reopens",
+        "result": "fail",
+        "observed": "reopened=false"
+      }
+    ],
+    "passed": 0,
+    "failed": 2,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-global-navigation:cookie-choice-and-reopen:en:1440.png",
+    "scope": "Cookie banner reopen path",
+    "observedAt": "2026-11-04T12:23:32.828Z",
+    "pass": 4
+  },
+  {
+    "key": "global-navigation:cookie-choice-and-reopen:de:1440",
+    "stateKey": "global-navigation:cookie-choice-and-reopen",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/de/",
+    "checks": [
+      {
+        "name": "revisit control found",
+        "result": "fail",
+        "observed": "[]"
+      },
+      {
+        "name": "banner reopens",
+        "result": "fail",
+        "observed": "reopened=false"
+      }
+    ],
+    "passed": 0,
+    "failed": 2,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/state-sweep-pass4/screenshots/pass4-global-navigation:cookie-choice-and-reopen:de:1440.png",
+    "scope": "Cookie banner reopen path",
+    "observedAt": "2026-11-04T12:23:37.006Z",
+    "pass": 4
+  }
+]

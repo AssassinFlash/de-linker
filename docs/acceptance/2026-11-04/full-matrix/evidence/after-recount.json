@@ -1,0 +1,49 @@
+{
+  "after": {
+    "page": {
+      "rows": 708,
+      "interaction": {
+        "partially-verified": 300,
+        "pending": 324,
+        "not-applicable": 84
+      },
+      "visual_review": {
+        "partially-verified": 382,
+        "partial-with-finding": 5,
+        "not-applicable": 84,
+        "pending": 237
+      },
+      "render": {
+        "verified-basic-local-and-production": 17,
+        "verified-basic-local": 31,
+        "preliminary-pass": 460,
+        "pass": 40,
+        "verified-basic-production": 72,
+        "not-applicable": 84,
+        "pending": 4
+      }
+    },
+    "state": {
+      "rows": 1044,
+      "status": {
+        "partially-verified": 418,
+        "not-applicable": 2,
+        "pending": 588,
+        "pass": 20,
+        "passed": 16
+      }
+    },
+    "template": {
+      "rows": 31,
+      "status": {
+        "partially-verified": 30,
+        "pending": 1
+      }
+    },
+    "updated": {
+      "page": 235,
+      "state": 201,
+      "template": 31
+    }
+  }
+}

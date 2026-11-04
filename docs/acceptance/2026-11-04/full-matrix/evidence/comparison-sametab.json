@@ -1,0 +1,23 @@
+{
+  "scope": "Same-tab compare verification correcting pass1/2/4 cross-tab captures. The compare selection lives in the browser tab (page copy: 'Your selection stays in this browser tab') and the chip link carries the product IDs in the compare URL; a bare /compare-products/ navigation is legitimately empty.",
+  "base": "http://127.0.0.1:8904",
+  "observedAt": "2026-11-04T14:00:00+00:00",
+  "runs": [
+    {
+      "lang": "en",
+      "pdp": "/product/saj-ats1-t63-a/",
+      "compareUrl": "http://127.0.0.1:8904/compare-products/",
+      "afterSelectViaChipHref": { "columns": 1, "tableRows": 35, "empty": false },
+      "afterRemoveClick": { "columns": 0, "empty": true }
+    },
+    {
+      "lang": "de",
+      "pdp": "/de/produkt/goodwe-gw60k-sts-g10/",
+      "compareUrl": "http://127.0.0.1:8904/de/produkte-vergleichen/",
+      "afterSelectViaChipHref": { "columns": 1, "tableRows": 18, "empty": false },
+      "afterRemoveClick": { "columns": 0, "empty": true }
+    }
+  ],
+  "conclusion": "comparison:empty, one/multiple-product rendering and remove-product work as designed EN+DE at 1440. The pass1/2/4 'no remove control' failures were harness artifacts (new tab / bare URL without IDs), not defects.",
+  "evidenceScope": "Anonymous local production-snapshot observation; no submissions, mail or model calls."
+}
