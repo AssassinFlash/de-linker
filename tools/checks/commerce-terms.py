@@ -527,9 +527,17 @@ def load_baseline(path: Path = BASELINE_PATH) -> dict[tuple[str, str, str], dict
 
 
 def apply_baseline(
-    hits: list[Hit], baseline: dict[tuple[str, str, str], dict]
+    hits: list[Hit], baseline: dict[tuple[str, str, str], dict], *, live: bool
 ) -> tuple[list[str], int]:
-    """The findings, and how many hits the baseline already covers."""
+    """The findings, and how many hits the baseline already covers.
+
+    Only the baseline entries belonging to the surface that was scanned take
+    part. The repository scan reports file paths and the live scan reports
+    `db:<post_type>:<slug>`, so the two sets are disjoint; comparing one
+    against the other's entries would report every entry as stale and fail a
+    clean site's own deploy smoke.
+    """
+    scoped = {key: entry for key, entry in baseline.items() if key[0].startswith("db:") == live}
     counts: dict[tuple[str, str, str], list[Hit]] = {}
     for hit in hits:
         counts.setdefault(hit.key, []).append(hit)
@@ -537,7 +545,7 @@ def apply_baseline(
     covered = 0
     for key in sorted(counts):
         rows = counts[key]
-        entry = baseline.get(key)
+        entry = scoped.get(key)
         if entry is None:
             first = rows[0]
             findings.append(
@@ -551,7 +559,7 @@ def apply_baseline(
                 f"grew from {entry['count']} to {len(rows)} {key[1]!r} in "
                 f"{key[0]}: {excerpt(key[2], key[1])}"
             )
-    for key in sorted(set(baseline) - set(counts)):
+    for key in sorted(set(scoped) - set(counts)):
         findings.append(
             f"stale baseline entry {key[1]!r} in {key[0]}: {key[2][:60]!r} is gone"
         )
@@ -590,7 +598,9 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     legal = [hit for hit in hits if is_legal(hit)]
-    findings, covered = apply_baseline([hit for hit in hits if not is_legal(hit)], baseline)
+    findings, covered = apply_baseline(
+        [hit for hit in hits if not is_legal(hit)], baseline, live=args.wp_cli
+    )
 
     for finding in findings:
         print(finding)

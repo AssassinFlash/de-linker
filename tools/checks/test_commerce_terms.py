@@ -161,7 +161,7 @@ class RatchetTests(unittest.TestCase):
 
     def test_an_unbaselined_hit_fails(self):
         findings, covered = commerce.apply_baseline(
-            [self.hit("a.php", "order*", "Order now")], {}
+            [self.hit("a.php", "order*", "Order now")], {}, live=False
         )
         self.assertEqual(covered, 0)
         self.assertEqual(len(findings), 1)
@@ -170,7 +170,7 @@ class RatchetTests(unittest.TestCase):
     def test_a_baselined_hit_passes(self):
         baseline = self.baseline([("a.php", "order*", "Order now", 1)])
         findings, covered = commerce.apply_baseline(
-            [self.hit("a.php", "order*", "Order now")], baseline
+            [self.hit("a.php", "order*", "Order now")], baseline, live=False
         )
         self.assertEqual(findings, [])
         self.assertEqual(covered, 1)
@@ -180,6 +180,7 @@ class RatchetTests(unittest.TestCase):
         findings, _covered = commerce.apply_baseline(
             [self.hit("a.php", "order*", "Order now", 1), self.hit("a.php", "order*", "Order now", 9)],
             baseline,
+            live=False,
         )
         self.assertEqual(len(findings), 1)
         self.assertIn("grew from 1 to 2", findings[0])
@@ -187,7 +188,7 @@ class RatchetTests(unittest.TestCase):
     def test_a_rewritten_string_leaves_the_entry_stale(self):
         baseline = self.baseline([("a.php", "order*", "Order now", 1)])
         findings, covered = commerce.apply_baseline(
-            [self.hit("a.php", "order*", "Start your inquiry")], baseline
+            [self.hit("a.php", "order*", "Start your inquiry")], baseline, live=False
         )
         self.assertEqual(covered, 0)
         self.assertTrue(any("stale baseline entry" in finding for finding in findings))
@@ -196,9 +197,31 @@ class RatchetTests(unittest.TestCase):
     def test_reflow_does_not_read_as_a_new_string(self):
         baseline = self.baseline([("a.php", "order*", "Order now, pay later", 1)])
         findings, _covered = commerce.apply_baseline(
-            [self.hit("a.php", "order*", "Order now,\n   pay later")], baseline
+            [self.hit("a.php", "order*", "Order now,\n   pay later")], baseline, live=False
         )
         self.assertEqual(findings, [])
+
+    def test_a_repository_entry_is_not_stale_during_the_live_smoke(self):
+        """The two scans cover disjoint sources; neither may stale the other's."""
+        baseline = self.baseline([("a.php", "order*", "Order now", 1)])
+        # A clean live site: no hits at all, and no db: entries to compare.
+        findings, covered = commerce.apply_baseline([], baseline, live=True)
+        self.assertEqual(findings, [])
+        self.assertEqual(covered, 0)
+
+    def test_a_live_entry_is_not_stale_during_the_repository_scan(self):
+        baseline = self.baseline([("db:page:home", "order*", "Order now", 1)])
+        findings, _covered = commerce.apply_baseline([], baseline, live=False)
+        self.assertEqual(findings, [])
+
+    def test_a_stale_live_entry_still_fails_the_smoke(self):
+        baseline = self.baseline([("db:page:home", "order*", "Order now", 1)])
+        findings, _covered = commerce.apply_baseline(
+            [commerce.Hit("db", "db:page:other", 1, "Clean copy", "order*")],
+            baseline,
+            live=True,
+        )
+        self.assertTrue(any("stale baseline entry" in finding for finding in findings))
 
     def test_an_exemption_without_a_reason_fails_the_whole_run(self):
         with tempfile.TemporaryDirectory() as directory:
