@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Digest;
 
 use Linker\Commerce\Inquiry\Statuses;
+use Linker\Commerce\Mail\NotificationHold;
 use Linker\Commerce\Protection\BusinessDisposition;
 use WC_Order;
 
@@ -75,11 +76,28 @@ final class InquiriesAwaitingProforma implements Block {
 		$entries = array();
 		foreach ( is_array( $orders ) ? $orders : array() as $order ) {
 			$created = $order->get_date_created();
-			if ( null !== $created && $this->timestamp() - $created->getTimestamp() > self::WINDOW && ! $this->processed( $order ) ) {
+			if ( null !== $created && $this->timestamp() - $created->getTimestamp() > self::WINDOW && ! $this->processed( $order ) && ! $this->held( $order ) ) {
 				$entries[] = $this->entry( $order, $created->getTimestamp() );
 			}
 		}
 		return $entries;
+	}
+
+	/**
+	 * A quarantined inquiry waits for a staff decision, not for a Proforma
+	 * invoice (docs/research/2026-11-04-notification-receipt-audit.md §4): the
+	 * digest lists actionable work only, so an order under any incident-hold
+	 * marker leaves the block. Unreadable hold evidence keeps the inquiry
+	 * visible, like unreadable disposition evidence.
+	 *
+	 * @param WC_Order $order Native inquiry candidate.
+	 */
+	private function held( WC_Order $order ): bool {
+		try {
+			return NotificationHold::held( $order );
+		} catch ( \Throwable $error ) {
+			return false;
+		}
 	}
 
 	/**

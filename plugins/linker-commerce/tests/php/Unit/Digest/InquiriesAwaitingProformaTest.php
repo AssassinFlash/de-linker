@@ -11,7 +11,9 @@ namespace Linker\Commerce\Tests\Unit\Digest;
 
 use Linker\Commerce\Digest\Format;
 use Linker\Commerce\Digest\InquiriesAwaitingProforma;
+use Linker\Commerce\Inquiry\Assessment\Queue;
 use Linker\Commerce\Inquiry\Statuses;
+use Linker\Commerce\Mail\NotificationHold;
 use Linker\Commerce\Protection\BusinessDisposition;
 use Linker\Commerce\Tests\TestCase;
 use Mockery;
@@ -93,7 +95,47 @@ final class InquiriesAwaitingProformaTest extends TestCase {
 
 	/** Unreadable disposition evidence cannot remove an otherwise visible inquiry. */
 	public function test_unreadable_disposition_evidence_remains_visible(): void {
-		$order = $this->order( self::NOW - 26 * 3600, true );
+		$order = $this->order( self::NOW - 26 * 3600, array(), BusinessDisposition::META );
+		WP_Mock::userFunction( 'wc_get_orders', array( 'return' => array( $order ) ) );
+
+		$this->assertCount( 1, ( new InquiriesAwaitingProforma( self::NOW ) )->entries() );
+	}
+
+	/**
+	 * Quarantined inquiries are held for a staff decision, not pending Proforma
+	 * work (docs/research/2026-11-04-notification-receipt-audit.md §4): the
+	 * incident-hold marker and the assessment hold marker both leave the block,
+	 * while an ordinary day-old inquiry still counts.
+	 */
+	public function test_held_inquiries_are_excluded_and_ordinary_ones_count(): void {
+		WP_Mock::userFunction(
+			'wc_get_orders',
+			array(
+				'return' => array(
+					self::order( self::NOW - 26 * 3600 ),
+					self::order(
+						self::NOW - 40 * 3600,
+						array(
+							NotificationHold::META => array(
+								'incident' => 'public-inquiry-campaign-20261022',
+								'reason'   => 'confirmed_campaign_notification_hold',
+							),
+						)
+					),
+					self::order( self::NOW - 30 * 3600, array( Queue::PENDING => 'held' ) ),
+				),
+			)
+		);
+
+		$entries = ( new InquiriesAwaitingProforma( self::NOW ) )->entries();
+
+		$this->assertCount( 1, $entries );
+		$this->assertSame( 'Inquiry #20 – Solarbau GmbH', $entries[0]['label'] );
+	}
+
+	/** Unreadable hold evidence cannot remove an otherwise visible inquiry. */
+	public function test_unreadable_hold_evidence_remains_visible(): void {
+		$order = $this->order( self::NOW - 26 * 3600, array(), NotificationHold::META );
 		WP_Mock::userFunction( 'wc_get_orders', array( 'return' => array( $order ) ) );
 
 		$this->assertCount( 1, ( new InquiriesAwaitingProforma( self::NOW ) )->entries() );
@@ -121,10 +163,11 @@ final class InquiriesAwaitingProformaTest extends TestCase {
 	/**
 	 * A received inquiry.
 	 *
-	 * @param int  $created Unix time of creation.
-	 * @param bool $unreadable Native disposition read fails.
+	 * @param int                  $created   Unix time of creation.
+	 * @param array<string, mixed> $meta      Order meta by key, over the readable defaults.
+	 * @param string|null          $throw_for Meta key whose native read fails.
 	 */
-	private static function order( int $created, bool $unreadable = false ): WC_Order {
+	private static function order( int $created, array $meta = array(), ?string $throw_for = null ): WC_Order {
 		$moment = Mockery::mock( WC_DateTime::class );
 		$moment->allows( 'getTimestamp' )->andReturn( $created );
 		$order = Mockery::mock( WC_Order::class );
@@ -132,12 +175,23 @@ final class InquiriesAwaitingProformaTest extends TestCase {
 		$order->allows( 'get_billing_company' )->andReturn( 'Solarbau GmbH' );
 		$order->allows( 'get_edit_order_url' )->andReturn( '/wp-admin/admin.php?page=wc-orders&id=20&action=edit' );
 		$order->allows( 'get_date_created' )->andReturn( $moment );
-		$meta = $order->allows( 'get_meta' )->with( BusinessDisposition::META );
-		if ( $unreadable ) {
-			$meta->andThrow( new \RuntimeException( 'synthetic_unreadable_disposition' ) );
-		} else {
-			$meta->andReturn( '' );
-		}
+		$values = array_merge(
+			array(
+				BusinessDisposition::META => '',
+				Queue::META               => array(),
+				Queue::PENDING            => '',
+				NotificationHold::META    => '',
+			),
+			$meta
+		);
+		$order->allows( 'get_meta' )->andReturnUsing(
+			static function ( string $key ) use ( $values, $throw_for ) {
+				if ( $key === $throw_for ) {
+					throw new \RuntimeException( 'synthetic_unreadable_meta' );
+				}
+				return $values[ $key ] ?? '';
+			}
+		);
 		return $order;
 	}
 }
