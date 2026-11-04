@@ -75,7 +75,7 @@ inventory-baseline中39条term记录的lang=false，去掉5组同URL品牌别名
 
 普通自主输入的失败缓存也须独立验证，不能只使用营销entry夹具。由实际文字、语音或image/PDF prepare生成失败记录，覆盖A换B、退出为新guest、200空历史和403历史、同页身份变化、reload与跨surface恢复；回显文字/文件名和最终运输均须核验归属。初始scope等待、暂时不可用、准备附件中、新输入出现及恢复完成的每个异步出口，都不得覆盖另一个owner或让旧稿失去可达的恢复路径。未带可证明owner的旧v1记录不得自动绑给当前身份；未知旧内容的隔离、保留及迁移须单独评审。具体已确认的本地消费者缺陷与修复前提见genie-failure-isolation-discovery.md，诊断通过不代表风险已修复。
 
-私有文件验证实际响应与可读内容：当前DocumentDownload合同为访客/非owner 403，pending/restricted owner的Proforma 404且无PDF bytes，approved owner与staff的授权路径另验；缺失文件也404。不从“有下载按钮”推断权限正确。
+私有文件验证实际响应与可读内容：当前DocumentDownload合同为访客/非owner 403，pending/restricted owner的Proforma 404且无PDF bytes，approved owner与staff的授权路径另验；账户DocumentDownload缺失文件404。uploads下技术PDF走DocumentAccess发布门（spec 609）：撤下、版本不符与不可解析一律410 Gone——发布语义的撤下信号，不区分“从未存在”，不为探测提供存在性oracle；404只属于账户文档路径与未挂rewrite的非PDF上传。不从“有下载按钮”推断权限正确。
 
 <a id="files-print"></a>
 ## files-print：真实文件与打印

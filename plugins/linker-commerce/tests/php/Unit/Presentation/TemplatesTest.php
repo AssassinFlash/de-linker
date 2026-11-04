@@ -78,6 +78,14 @@ final class TemplatesTest extends TestCase {
 		$this->assertStringContainsString( '[linker_pdp_tools]', $single );
 		$this->assertStringContainsString( '[lc_if condition="linker_commerce_pdp_has_pairings"]', $single );
 		$this->assertStringNotContainsString( '[linker_pdp_buy]', $single );
+		// The native related-products section (2026-11-04 matrix F1): both
+		// language faces carry Woo's own related loop, so the heading and its
+		// translation are Woo's, not template words.
+		$this->assertStringContainsString( 'pdp-related', $single );
+		$this->assertStringContainsString( '[lc_wc_related]', $single );
+		$single_de = (string) file_get_contents( $paths['is_single_product__de'] );
+		$this->assertStringContainsString( 'pdp-related', $single_de );
+		$this->assertStringContainsString( '[lc_wc_related]', $single_de );
 		$this->assertStringContainsString( '[linker_products_families]', (string) file_get_contents( $paths['is_shop_page'] ) );
 		$this->assertStringContainsString( 'id="tv-storefront-pdp"', (string) file_get_contents( $paths['is_single_product'] ) );
 		$this->assertStringContainsString( 'id="linker-products"', (string) file_get_contents( $paths['is_shop_page'] ) );
