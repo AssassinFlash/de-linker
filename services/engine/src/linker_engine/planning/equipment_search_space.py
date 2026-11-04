@@ -54,6 +54,11 @@ class EquipmentSearchSpace:
             pid = source_battery["canonical_product_id"]
             if self.evidence.sales_unit(pid) in {"battery_module", "battery_system"}:
                 self.included.append(source_battery)
+                stacks_max = self.evidence.scalar(pid, "stacks_parallel_max", "count")
+                if stacks_max is None or stacks_max < 1 or stacks_max != int(stacks_max):
+                    # Single stack is the documented default, not an invented
+                    # parallel maximum. The gap keeps the missing fact visible.
+                    self.gaps["stacks_parallel_max_missing"] += 1
             else:
                 self.gaps["sales_unit_evidence_missing"] += 1
                 self.excluded_products.append(
@@ -136,6 +141,23 @@ class EquipmentSearchSpace:
                     else:
                         self.gaps["configuration_count_not_established"] += 1
 
+                stacks_max = (
+                    self.evidence.scalar(battery_id, "stacks_parallel_max", "count")
+                    if battery_id is not None
+                    else None
+                )
+                # Only a cited parallel-stack maximum widens the domain; stacks
+                # ascend in the outer loop so single-stack coverage is spent
+                # first when the budget runs out.
+                stacks_domain: range = (
+                    range(1, int(stacks_max) + 1)
+                    if battery_id is not None
+                    and stacks_max is not None
+                    and stacks_max >= 1
+                    and stacks_max == int(stacks_max)
+                    else range(1, 2)
+                )
+
                 accessories = list(pair.accessories) if pair else []
                 for kind in (
                     "meter",
@@ -164,37 +186,40 @@ class EquipmentSearchSpace:
                     ]
                     if len(matches) == 1:
                         accessory_ids.add(matches[0]["canonical_product_id"])
-                for count in counts:
-                    if not self.available():
+                for stacks in stacks_domain:
+                    if self.exhausted:
                         break
-                    identities = {converter_id, *accessory_ids}
-                    if battery_id is not None:
-                        identities.add(battery_id)
-                    # The supported template has one external battery assembly.
-                    # No undocumented parallel count is invented to satisfy demand.
-                    selection = EquipmentSelection(
-                        **requirements.model_dump(),
-                        inverter_product_id=converter_id,
-                        battery_product_id=battery_id,
-                        modules_per_stack=count,
-                        parallel_stacks=1 if battery else None,
-                        accessory_product_ids=sorted(accessory_ids),
-                        product_revisions={
-                            str(pid): self.evidence.products[pid]["product_revision"]
-                            for pid in identities
-                        },
-                    )
-                    value = cast(Object, selection.model_dump(mode="json"))
-                    identity = digest(encode(value))
-                    if identity in seen:
-                        continue
-                    seen.add(identity)
-                    assessment = assess_equipment(
-                        {**inputs, "equipment_selection": value},
-                        self.basis,
-                        evidence=self.evidence,
-                    )
-                    yield value, assessment
+                    for count in counts:
+                        if not self.available():
+                            break
+                        identities = {converter_id, *accessory_ids}
+                        if battery_id is not None:
+                            identities.add(battery_id)
+                        selection = EquipmentSelection(
+                            **requirements.model_dump(),
+                            inverter_product_id=converter_id,
+                            battery_product_id=battery_id,
+                            modules_per_stack=count,
+                            parallel_stacks=stacks if battery else None,
+                            accessory_product_ids=sorted(accessory_ids),
+                            product_revisions={
+                                str(pid): self.evidence.products[pid][
+                                    "product_revision"
+                                ]
+                                for pid in identities
+                            },
+                        )
+                        value = cast(Object, selection.model_dump(mode="json"))
+                        identity = digest(encode(value))
+                        if identity in seen:
+                            continue
+                        seen.add(identity)
+                        assessment = assess_equipment(
+                            {**inputs, "equipment_selection": value},
+                            self.basis,
+                            evidence=self.evidence,
+                        )
+                        yield value, assessment
 
     def result(self, candidates: list[Json], coverage: Object) -> Object:
         return {
