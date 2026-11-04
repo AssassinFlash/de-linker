@@ -316,6 +316,60 @@ def test_enedis_scope_requires_explicit_operator_and_complete_self_use() -> None
             operator="Enedis",
         )
     ) == {"fr_generation_type": "missing_inputs"}
+    dated = review_country_rules(
+        "FR",
+        rule_input(
+            "fr_generation_pmax",
+            rule_date="2020-06-26",
+            power_kw=10,
+            connection_voltage_kv=0.4,
+            fr_enedis_full_self_consumption=True,
+        ),
+        operator="Enedis",
+    )
+    assert outcomes(dated) == {
+        "fr_generation_type": "type_a",
+        "fr_enedis_declaration": "outside_version",
+        "fr_enedis_certification": "outside_version",
+    }
+
+
+@pytest.mark.parametrize("country", ["DE", "FR", "NL"])
+def test_missing_inputs_precede_an_outside_version_date(country: str) -> None:
+    basis = {
+        "DE": "de_pv_installed",
+        "FR": "fr_generation_pmax",
+        "NL": "nl_storage_max_active",
+    }[country]
+    review = review_country_rules(
+        country,
+        rule_input(
+            basis,
+            rule_date="2030-01-01",
+            connection_voltage_kv=0.4,
+            de_before_control_test=True,
+        ),
+    )
+    assert review is not None
+    assert {
+        str(check["outcome"]) for check in cast(list[Object], review["checks"])
+    } == {"missing_inputs"}
+
+
+def test_ui_checked_dates_match_the_current_engine_sources() -> None:
+    form = (
+        Path(__file__).resolve().parents[4]
+        / "apps/planner/src/components/CountryRuleForm.tsx"
+    ).read_text()
+    for basis, country in {
+        "de_pv_installed": "DE",
+        "fr_generation_pmax": "FR",
+        "nl_storage_max_active": "NL",
+    }.items():
+        review = review_country_rules(country, rule_input(basis))
+        assert review is not None
+        source = cast(list[Object], review["sources"])[0]
+        assert f'{basis}: "{source["evidence_snapshot_date"]}"' in form
 
 
 def test_invalid_or_approval_bearing_rule_input_is_rejected() -> None:

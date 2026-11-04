@@ -13,6 +13,7 @@ const countries: Record<RuleBasis, string> = {
 	nl_storage_max_active: "NL",
 	de_pv_installed: "DE",
 };
+// Source-reading dates: docs/research/2026-10-23-modern-workbench/COUNTRY-EVIDENCE.md.
 const CHECKED_SOURCE_DATES: Record<RuleBasis, string> = {
 	fr_generation_pmax: "2026-11-04",
 	nl_storage_max_active: "2026-11-04",
@@ -139,16 +140,25 @@ export function CountryRuleForm({
 					<p>
 						{value.basis === "fr_generation_pmax"
 							? sprintf(
-									__("Source version: 26 June 2020, checked %s.", "linker-tools"),
+									__(
+										"Source version: 26 June 2020, checked %s.",
+										"linker-tools",
+									),
 									checkedSourceDate(value.basis, locale),
 								)
 							: value.basis === "nl_storage_max_active"
 								? sprintf(
-										__("Source version: 1 October 2026, checked %s.", "linker-tools"),
+										__(
+											"Source version: 1 October 2026, checked %s.",
+											"linker-tools",
+										),
 										checkedSourceDate(value.basis, locale),
 									)
 								: sprintf(
-										__("German source text checked %s; earlier transition rules are not established here.", "linker-tools"),
+										__(
+											"German source text checked %s; earlier transition rules are not established here.",
+											"linker-tools",
+										),
 										checkedSourceDate(value.basis, locale),
 									)}
 					</p>

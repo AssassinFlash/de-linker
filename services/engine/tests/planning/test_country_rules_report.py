@@ -215,6 +215,14 @@ def test_saved_rules_reach_all_consumers_and_remain_frozen(
     )
     assert all(row["scope"] == text("country_rule_scope", locale) for row in rows)
     assert all(date_condition in row["scope"] for row in rows)
+    if country == "DE":
+        assert all(
+            "7dbf22b9f82a3bf380d25975e4d9fe9c68fa37c9feb4ee7972e3272f91f0b208"
+            in row["grid_source_hashes"]
+            and "4aea379ed9f11476d915b5f9baacad618b39209df9acd02c78c612418fe528c6"
+            in row["grid_source_hashes"]
+            for row in rows
+        )
     assert "PRIVATE" not in csv_bytes.decode("utf-8-sig")
     assert exported["id"] != attachments["bill_of_materials_csv"]["id"]
     material_bytes = assets.content(

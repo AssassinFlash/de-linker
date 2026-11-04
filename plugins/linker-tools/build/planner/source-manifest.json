@@ -6,7 +6,7 @@
     "package-lock.json": "b7dfba3a390af38c615b5fac091075ebfb849ae9e55caaa87ac9fca041e6fcdf",
     "package.json": "59b8d46279052f711cf9a6616a1a7c3111b746fbe475ff5922d68fad3b236844",
     "src/components/BriefForm.tsx": "551166576e7b305969e53b2775655cded328fc942a04db6cf45173640732c831",
-    "src/components/CountryRuleForm.tsx": "0278877b6d69647a2a395dcd6edb08e5cb50023de03e420dc8758ecb501009c6",
+    "src/components/CountryRuleForm.tsx": "6bc826366e4470ff43c575a48f10c608947f1e8f984a7a6a26bd75bfe3bb8314",
     "src/components/CreditText.tsx": "a2e029484473c16a10bc0ed04a88907d04e382d738f920666eee94c5210f1acb",
     "src/components/GridConnectionForm.tsx": "f8c0e4baf0c7f3dabe44842138c611d2391312ea8d7ca5bbd3f8eb841fe59214",
     "src/components/Icon.tsx": "5fb1a5cf6f923cf912566766de791230d74d2525a77bbf8f6e88b25844159620",

@@ -248,17 +248,18 @@ def review_country_rules(
             )
             if absent
         ]
+        if facts.de_before_control_test is not False and p is None:
+            missing.append("power_kw")
         control = export = "missing_inputs" if missing else "outside_version"
         control_missing = list(missing)
         export_missing = list(missing)
-        if not missing and in_version:
+        if not missing and not in_version:
+            control = export = "outside_version"
+        elif not missing:
             if facts.de_before_control_test is False:
                 control = export = "not_this_phase"
-            elif p is None:
-                control = export = "missing_inputs"
-                control_missing.append("power_kw")
-                export_missing.append("power_kw")
             else:
+                assert p is not None
                 control = (
                     "fetch_and_reduce"
                     if p >= 100
