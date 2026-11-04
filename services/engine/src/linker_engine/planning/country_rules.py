@@ -192,8 +192,7 @@ def review_country_rules(
                 "missing_inputs"
                 if missing_date
                 else "outside_version"
-                if facts.rule_date is None
-                or not enedis_floor <= facts.rule_date <= enedis_through
+                if not enedis_floor <= facts.rule_date <= enedis_through
                 else "enedis_declare_cacsi"
             )
             enedis_missing = ["rule_date"] if missing_date else []

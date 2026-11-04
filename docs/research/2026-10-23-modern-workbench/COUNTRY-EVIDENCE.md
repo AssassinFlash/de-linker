@@ -384,4 +384,6 @@ Apify 检索记录 GimfClfA2AJhH0U9J、2aOchEnlB1M465Jpf、dDUwRF2Cm5Xka3166；�
 | 荷兰 Systeemcode 2026 | 2026-11-04 15:26:45 | `41c61e47556c3415fc2072745f38bc2f7ae9a6e82a2ad6aa9f981828ebd7edf1` | 官方页标明 `Geldend van 01-10-2026 t/m heden`，读取日为 2026-11-04；实现采用的 0.8 kW、1/50/60 MW 和 LFSM-U 边界均在当前正文。 |
 | Enedis 全部自消费 | 2026-11-04 15:26:18 | `3741f1e39b855240554fc7348cd130d08f8b186e2e3a38dd831b2c708b4ff673` | 与 2026-11-01 相同；申报、Consuel/荣誉声明及 CACSI 条件保持原文范围。 |
 
+荷兰汇编的采集文本含随读取日变化的 `Geraadpleegd op` 字段；此前数据集当前不可读，因此不据旧哈希作全文不变结论。新哈希只标识本次提取，所用规则条款已在当前正文逐项确认。
+
 规则评价恢复以 `effective_from` 和 `evidence_snapshot_date` 为两侧边界；2026-11-04 之后的日期保持 `outside_version`，不能继承此次读取。此次更新不证明任何项目或设备的适用性、过渡条件或 DSO 许可，未改变既有未证事项。

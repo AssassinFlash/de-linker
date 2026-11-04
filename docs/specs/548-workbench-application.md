@@ -1153,11 +1153,14 @@ declared maximum deliverable active power and its separately bounded LFSM-U
 statism; and the specified German EEG §9(2) pre-test controls and export
 condition for declared aggregated solar installed power. Their source versions,
 reading dates, exact source text hashes, conditions and gaps are recorded in
-`docs/research/2026-10-23-modern-workbench/COUNTRY-EVIDENCE.md`. A date outside
-the source version observed is not evaluated. The rule date selects a source
+`docs/research/2026-10-23-modern-workbench/COUNTRY-EVIDENCE.md`. A reading is
+evaluated only when `effective_from <= rule_date <= evidence_snapshot_date`;
+earlier or later dates return `outside_version`. The rule date selects a source
 reading and does not change a project connection date; the editor offers the
-most recently verified source date directly. Any result still requires a
-separate review of applicability at the project date and at the current date.
+most recently verified source date directly. A date inside that range produces
+only a conditional reading of the retained source, not proof of the text that
+historically governed a project. Any result still requires a separate review of
+applicability at the project date and at the current date.
 A French project explicitly
 declared as Enedis and total PV self-consumption without grid injection also
 receives the operator's sourced declaration and CACSI information; no operator

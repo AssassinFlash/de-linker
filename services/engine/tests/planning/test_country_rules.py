@@ -227,7 +227,11 @@ def test_missing_inputs_versions_and_unrelated_countries_do_not_infer() -> None:
             "FR",
             "fr_generation_pmax",
             "2020-06-25",
-            {"power_kw": 10, "connection_voltage_kv": 0.4},
+            {
+                "power_kw": 10,
+                "connection_voltage_kv": 0.4,
+                "fr_enedis_full_self_consumption": True,
+            },
         ),
         (
             "FR",
