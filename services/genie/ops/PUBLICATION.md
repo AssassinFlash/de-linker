@@ -273,5 +273,8 @@ launcher installer, restore the normal schedule and observe one actual natural
 poll. Read actual runtime/source/index/recipe/serving/epoch and Woo ready receipt;
 retain the semantic-gap state. Then retire the task stage/journal and superseded
 source/runtime within current+previous and index KEEP3, protecting the shared
-1418 interpreter and actual references. Publication is not complete until this
+1418 interpreter and actual references. Runtime retirement is
+`ops/release.sh prune` (the staged copy on the VPS) after the selector switch: it
+keeps the current release, its rollback target and one spare, and never touches
+`index`, `state` or `ops`. Publication is not complete until this
 readback and resource cleanup are recorded by the release owner.

@@ -160,3 +160,91 @@ def test_shared_release_refuses_a_managed_pair_before_copy_or_selection(
             assert (root / "current").resolve() == old
             assert (old / "original").read_text() == "preserve"
         assert len([p for p in root.iterdir() if p.name.startswith("2026")]) == 1
+
+
+def _managed_root(root: Path, versions: list[str], current: str) -> None:
+    for name in versions:
+        release = root / name
+        release.mkdir(parents=True)
+        (release / "app").write_text(name)
+    (root / "index").mkdir()
+    (root / "index" / ".activation.json").write_text("{}")
+    (root / "state").mkdir()
+    (root / "state" / "work.sqlite").write_text("state")
+    (root / "current").symlink_to(current)
+
+
+def _release_names(root: Path) -> list[str]:
+    return sorted(
+        path.name
+        for path in root.iterdir()
+        if path.name.startswith("2026") and not path.is_symlink()
+    )
+
+
+def test_prune_bounds_a_managed_production_root(tmp_path: Path) -> None:
+    """The paired flow never runs publish, so retention needs its own entry.
+
+    The layout mirrors the audited production root: eight `-<sha>` releases,
+    current on the newest, persistent index and state directories.
+    """
+    versions = [
+        "20261102T090944139352Z-b10202da",
+        "20261102T184000000000Z-b43f1e99",
+        "20261103T120800000000Z-5ca0b6a8c",
+        "20261103T130000000000Z-6b04acaea",
+        "20261103T142000000000Z-5a5b21d6c",
+        "20261104T075945874165Z-abd3b26a",
+        "20261104T084415175869Z-c8160ead",
+        "20261104T094242259491Z-8c9e6d80",
+    ]
+    root = tmp_path / "releases"
+    _managed_root(root, versions, versions[-1])
+
+    result = _run(root, "prune")
+
+    assert _release_names(root) == versions[-3:]
+    assert (root / "current").resolve() == (root / versions[-1]).resolve()
+    assert (root / "index" / ".activation.json").read_text() == "{}"
+    assert (root / "state" / "work.sqlite").read_text() == "state"
+    assert (
+        f"removed={versions[0]},{versions[1]},{versions[2]},{versions[3]},{versions[4]}"
+        in (result.stdout)
+    )
+    assert f"releases={versions[-3]},{versions[-2]},{versions[-1]}" in result.stdout
+
+
+def test_prune_keeps_the_rollback_target_when_current_is_not_newest(
+    tmp_path: Path,
+) -> None:
+    versions = [
+        "20261101T000000000000Z-11111111",
+        "20261102T000000000000Z-22222222",
+        "20261103T000000000000Z-33333333",
+        "20261104T000000000000Z-44444444",
+        "20261105T000000000000Z-55555555",
+    ]
+    root = tmp_path / "releases"
+    current = versions[2]
+    _managed_root(root, versions, current)
+
+    _run(root, "prune")
+
+    # current and its rollback target survive; the oldest and one newer
+    # superseded release are removed.
+    assert _release_names(root) == [versions[1], current, versions[4]]
+    assert (root / "current").resolve() == (root / current).resolve()
+
+
+def test_prune_is_a_noop_within_the_bound(tmp_path: Path) -> None:
+    versions = [
+        "20261101T000000000000Z-11111111",
+        "20261102T000000000000Z-22222222",
+    ]
+    root = tmp_path / "releases"
+    _managed_root(root, versions, versions[-1])
+
+    result = _run(root, "prune")
+
+    assert _release_names(root) == versions
+    assert "removed=\n" in result.stdout

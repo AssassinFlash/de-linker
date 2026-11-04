@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Publish, roll back or report a Genie service release.
+# Publish, roll back, bound or report a Genie service release.
 # Layout (docs/specs/13-genie.md): $ROOT/<version>/ and current -> version.
 # Default root is /opt/linker-genie on the VPS. Bash 3.2 (macOS) compatible.
 set -euo pipefail
@@ -8,7 +8,7 @@ ROOT="${GENIE_RELEASE_ROOT:-/opt/linker-genie}"
 KEEP="${GENIE_RELEASE_KEEP:-3}"
 
 usage() {
-    echo "usage: $0 publish <source-dir> | rollback | status" >&2
+    echo "usage: $0 publish <source-dir> | rollback | prune | status" >&2
     exit 2
 }
 
@@ -37,6 +37,21 @@ current() {
     fi
 }
 
+rollback_target() {
+    # The release a rollback returns to: the newest release older than the
+    # selected current. Retention must never delete it.
+    local live previous="" v
+    live="$(current)"
+    [[ -n "$live" ]] || return 0
+    while IFS= read -r v; do
+        if [[ "$v" == "$live" ]]; then
+            break
+        fi
+        previous="$v"
+    done < <(list_versions)
+    echo "$previous"
+}
+
 switch() {
     local version="$1"
     local tmp
@@ -52,6 +67,39 @@ import sys
 tmp, dest = sys.argv[1], sys.argv[2]
 os.replace(tmp, dest)
 PY
+}
+
+reap() {
+    # One retention rule for publish and prune: keep the KEEP newest releases
+    # — the selected current, its rollback target and one spare. Managed
+    # paired releases carry a `-<sha>` suffix; persistent ops/state/index
+    # directories never count as releases. Sets REAPED to the removed names.
+    local live previous v extra
+    REAPED=""
+    live="$(current)"
+    previous="$(rollback_target)"
+    extra=0
+    while IFS= read -r v; do
+        extra=$((extra + 1))
+    done < <(list_versions)
+    extra=$((extra - KEEP))
+    if (( extra <= 0 )); then
+        return 0
+    fi
+    while IFS= read -r v; do
+        if (( extra <= 0 )); then
+            break
+        fi
+        if [[ "$v" != "$live" && "$v" != "$previous" ]]; then
+            rm -rf "$ROOT/${v:?}"
+            if [[ -z "$REAPED" ]]; then
+                REAPED="$v"
+            else
+                REAPED="$REAPED,$v"
+            fi
+            extra=$((extra - 1))
+        fi
+    done < <(list_versions)
 }
 
 managed() {
@@ -74,7 +122,7 @@ publish() (
         echo "Engine uses legacy_release.py prepare/activate, never the shared publisher" >&2
         exit 1
     fi
-    local version dest live extra stage
+    local version dest stage
     version="$(python3 -c 'from datetime import datetime, timezone; print(datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ"))')"
     dest="$ROOT/$version"
     mkdir -p "$ROOT"
@@ -87,41 +135,28 @@ publish() (
     cp -a "$source"/. "$stage/"
     mv "$stage" "$dest"
     switch "$version"
-    live="$(current)"
-    extra=0
-    while IFS= read -r v; do
-        extra=$((extra + 1))
-    done < <(list_versions)
-    extra=$((extra - KEEP))
-    if (( extra > 0 )); then
-        while IFS= read -r v; do
-            if (( extra <= 0 )); then
-                break
-            fi
-            if [[ "$v" != "$live" ]]; then
-                rm -rf "$ROOT/$v"
-                extra=$((extra - 1))
-            fi
-        done < <(list_versions)
-    fi
+    reap
     echo "current=$(current)"
 )
 
 rollback() {
     refuse_managed
-    local live previous="" v
+    local live previous
     live="$(current)"
     [[ -n "$live" ]] || { echo "no current release" >&2; exit 1; }
-    while IFS= read -r v; do
-        if [[ "$v" == "$live" ]]; then
-            break
-        fi
-        previous="$v"
-    done < <(list_versions)
+    previous="$(rollback_target)"
     [[ -n "$previous" ]] || { echo "no older release" >&2; exit 1; }
     switch "$previous"
     echo "current=$(current)"
 }
+
+prune() (
+    # The managed paired flow never runs publish, so its retention needs its
+    # own entry point. Prune only ever removes release directories.
+    reap
+    echo "removed=${REAPED:-}"
+    status
+)
 
 status() {
     local names=""
@@ -145,6 +180,9 @@ case "$1" in
         ;;
     rollback)
         rollback
+        ;;
+    prune)
+        prune
         ;;
     status)
         status
