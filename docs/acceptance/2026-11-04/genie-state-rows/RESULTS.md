@@ -107,6 +107,68 @@ evidence.
    one for the same row, this batch's findings are rewritten per row, and the
    roof shards are folded in.
 
+## The two missing 390 captures, and what re-running them found
+
+`genie:attachments-image-pdf:en:390` and `de:390` cited screenshots that never
+existed in either location. Two separate causes, both real:
+
+1. **The recorder could not tell a failed capture from a good one.**
+   `Recorder.record` wrapped `page.screenshot()` in `try { … } catch {}` and
+   wrote the path regardless, so a row could pass while pointing at nothing.
+   It now requires a non-empty file, records `screenshotError` instead of a
+   path, and a row that names no capture is visibly a row without one.
+2. **A PDF attachment was never readable.** PDF pages are read by
+   deepseek-flash and the answer is parsed as one JSON object; the model
+   sometimes closes the object and keeps writing, and `json.loads` refused the
+   whole page as "Extra data: line 1 column 1618". The page counted as
+   unreadable, so **every** datasheet was answered with "I could not verify a
+   current product for this file." — which is what the old 1440 rows' "pass"
+   screenshots actually show. `vision._json_object` now takes the object the
+   answer starts with; text that is not JSON at all is still an error.
+3. **The publication gate withheld every document by shape.** The gate blocked
+   a reading when `r.model or r.kind in {"nameplate", "document"}`; a PDF
+   reading never carries a model (`_pdf_reading` sets none), so every PDF was
+   withheld even when its transcription was perfect. The gate now blocks by
+   what a reading actually claims: an unpublished model, or a **nameplate**
+   whose model could not be read. A datasheet is a transcription, not a claim
+   about a device.
+
+Tests: `services/genie` 2981 passed, 1 skipped, 199 deselected, 6 xfailed.
+`test_a_document_without_a_model_is_read_not_withheld` fails on the old rule
+and passes on the new one; the nameplate-without-model and unpublished-model
+cases still assert the gate holds.
+
+Re-run (one real turn per combo, the nameplate sample whose model SAJ
+H2-10K-T3 is in this instance's manifest, plus the H2 user manual this
+instance serves at HTTP 200):
+
+| Row | Result | Turn |
+| --- | --- | --- |
+| `genie:attachments-image-pdf:en:390` | 5/5 pass | `route=nameplate`, 805 chars, `turn_id=105` |
+| `genie:attachments-image-pdf:de:390` | 5/5 pass | `route=nameplate`, 1046 chars, `turn_id=106` |
+
+Both captures were opened and read: each shows the attachment strip with the
+PDF name, the answer naming SAJ H2-10K-T3 with its printed ratings, and the
+390 composer. Committed sizes: `genie:attachments-image-pdf:en:390.png`
+49,476 bytes and `genie:attachments-image-pdf:de:390.png` 52,025 bytes
+(both 390×844).
+
+## Screenshot citation audit (all rows)
+
+| Citation kind | Rows |
+| --- | ---: |
+| resolves to a committed capture in this record | 94 |
+| resolves by basename in `~/de-linker-data/genie-state-rows-20261104/screenshots/` | 172 |
+| **does not resolve — declared `screenshotMissing`, no path cited** | 28 |
+| recorded without a page (the 1440 twins of `mobile-gestures`) | 2 |
+
+The 28 are this batch's earlier shards that captured nothing:
+`marketing-genie-entry` at 390 (4 states × 2 languages) and `project-brief` in
+German (10 states × 2 widths). They keep
+their checks and their status; they cite no image, and their evidence is the
+receipt alone. Re-recording them is a separate round — the same recorder fix
+now makes a future miss visible instead of silent.
+
 ## Defects and observations that remain (not hidden)
 
 - **D1 — DE create-form untranslated** (product, i18n). On

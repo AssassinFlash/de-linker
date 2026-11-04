@@ -25873,7 +25873,8 @@
     "environment": null,
     "url": null,
     "evidence": [
-      "docs/acceptance/2026-11-04/genie-state-rows/evidence/genie-family-supp.json"
+      "docs/acceptance/2026-11-04/genie-state-rows/evidence/genie-family-supp.json",
+      "docs/acceptance/2026-11-04/genie-state-rows/evidence/genie-attachments-round3-en-390.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -25886,8 +25887,8 @@
     "verified_checks": {},
     "engine_pass_evidence": {
       "date": "2026-11-04",
-      "source": "docs/acceptance/2026-11-04/genie-state-rows/evidence/genie-family-supp.json",
-      "scope": "real image + real hosted PDF through the official deepseek vision channel (supplemental run)",
+      "source": "docs/acceptance/2026-11-04/genie-state-rows/evidence/genie-attachments-round3-en-390.json",
+      "scope": "a real product photo (nameplate-probe.png) and a PDF this instance hosts (SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf) uploaded through the dock's own picker, then one real question about them on the official deepseek-flash vision/PDF channel",
       "checks": [
         {
           "name": "attach control present",
@@ -25895,22 +25896,27 @@
           "detail": null
         },
         {
-          "name": "attachment chips rendered after selection",
+          "name": "the photo and the hosted PDF become two attachment chips",
           "result": "pass",
           "detail": "chips=2"
         },
         {
-          "name": "attachment turn answered (vision/pdf channel)",
+          "name": "the attachment turn is answered (2xx + turn_id + text)",
           "result": "pass",
-          "detail": null
+          "detail": "HTTP 200 · turn_id=107 · route=nameplate · 1020 chars"
         },
         {
-          "name": "used a library PDF",
+          "name": "the answer is about the attached material",
           "result": "pass",
-          "detail": null
+          "detail": "G Genie The nameplate Your photo shows the nameplate of an SAJ H2-10K-T3, marked on the label as a hybrid inverter. The "
+        },
+        {
+          "name": "the hosted PDF is a real file",
+          "result": "pass",
+          "detail": "9553 KB · SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
         }
       ],
-      "screenshot": "genie:attachments-image-pdf:en:390.png",
+      "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:attachments-image-pdf:en:390.png",
       "model_channel": "deepseek-flash official via the local genie service (real turn)"
     }
   },
@@ -25975,7 +25981,8 @@
     "environment": null,
     "url": null,
     "evidence": [
-      "docs/acceptance/2026-11-04/genie-state-rows/evidence/genie-family-supp.json"
+      "docs/acceptance/2026-11-04/genie-state-rows/evidence/genie-family-supp.json",
+      "docs/acceptance/2026-11-04/genie-state-rows/evidence/genie-attachments-round3-de-390.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -25988,8 +25995,8 @@
     "verified_checks": {},
     "engine_pass_evidence": {
       "date": "2026-11-04",
-      "source": "docs/acceptance/2026-11-04/genie-state-rows/evidence/genie-family-supp.json",
-      "scope": "real image + real hosted PDF through the official deepseek vision channel (supplemental run)",
+      "source": "docs/acceptance/2026-11-04/genie-state-rows/evidence/genie-attachments-round3-de-390.json",
+      "scope": "a real product photo (nameplate-probe.png) and a PDF this instance hosts (SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf) uploaded through the dock's own picker, then one real question about them on the official deepseek-flash vision/PDF channel",
       "checks": [
         {
           "name": "attach control present",
@@ -25997,22 +26004,27 @@
           "detail": null
         },
         {
-          "name": "attachment chips rendered after selection",
+          "name": "the photo and the hosted PDF become two attachment chips",
           "result": "pass",
           "detail": "chips=2"
         },
         {
-          "name": "attachment turn answered (vision/pdf channel)",
+          "name": "the attachment turn is answered (2xx + turn_id + text)",
           "result": "pass",
-          "detail": null
+          "detail": "HTTP 200 · turn_id=108 · route=nameplate · 937 chars"
         },
         {
-          "name": "used a library PDF",
+          "name": "the answer is about the attached material",
           "result": "pass",
-          "detail": null
+          "detail": "G Genie Typenschild Ihr Foto zeigt das Typenschild eines SAJ-Hybrid-Wechselrichters, Modell H2-10K-T3. Aufgedruckt sind "
+        },
+        {
+          "name": "the hosted PDF is a real file",
+          "result": "pass",
+          "detail": "9553 KB · SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
         }
       ],
-      "screenshot": "genie:attachments-image-pdf:de:390.png",
+      "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:attachments-image-pdf:de:390.png",
       "model_channel": "deepseek-flash official via the local genie service (real turn)"
     }
   },
@@ -35197,7 +35209,8 @@
           "detail": "370 chars"
         }
       ],
-      "screenshot": "marketing-genie-entry:typed-question-consumed-once:en:390.png",
+      "screenshot": null,
+      "screenshotMissing": "marketing-genie-entry:typed-question-consumed-once:en:390.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -35313,7 +35326,8 @@
           "detail": "392 chars"
         }
       ],
-      "screenshot": "marketing-genie-entry:typed-question-consumed-once:de:390.png",
+      "screenshot": null,
+      "screenshotMissing": "marketing-genie-entry:typed-question-consumed-once:de:390.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -35995,7 +36009,8 @@
           "detail": "text state after cancel recorded"
         }
       ],
-      "screenshot": "marketing-genie-entry:attachment-text-cancel-refuse-recover:en:390.png",
+      "screenshot": null,
+      "screenshotMissing": "marketing-genie-entry:attachment-text-cancel-refuse-recover:en:390.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -36077,7 +36092,8 @@
           "detail": "text state after cancel recorded"
         }
       ],
-      "screenshot": "marketing-genie-entry:attachment-text-cancel-refuse-recover:de:390.png",
+      "screenshot": null,
+      "screenshotMissing": "marketing-genie-entry:attachment-text-cancel-refuse-recover:de:390.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -36347,7 +36363,8 @@
           "detail": "field value after send: \"\""
         }
       ],
-      "screenshot": "marketing-genie-entry:existing-busy-draft-conflict-and-dedup:en:390.png",
+      "screenshot": null,
+      "screenshotMissing": "marketing-genie-entry:existing-busy-draft-conflict-and-dedup:en:390.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -36453,7 +36470,8 @@
           "detail": "field value after send: \"\""
         }
       ],
-      "screenshot": "marketing-genie-entry:existing-busy-draft-conflict-and-dedup:de:390.png",
+      "screenshot": null,
+      "screenshotMissing": "marketing-genie-entry:existing-busy-draft-conflict-and-dedup:de:390.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -36559,7 +36577,8 @@
           "detail": "\"\""
         }
       ],
-      "screenshot": "marketing-genie-entry:close-refresh-back-scoped-recovery:en:390.png",
+      "screenshot": null,
+      "screenshotMissing": "marketing-genie-entry:close-refresh-back-scoped-recovery:en:390.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -36665,7 +36684,8 @@
           "detail": "\"\""
         }
       ],
-      "screenshot": "marketing-genie-entry:close-refresh-back-scoped-recovery:de:390.png",
+      "screenshot": null,
+      "screenshotMissing": "marketing-genie-entry:close-refresh-back-scoped-recovery:de:390.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -37054,7 +37074,8 @@
           "detail": null
         }
       ],
-      "screenshot": "project-brief:plan-input-source-default-confirmation:de:1440.png",
+      "screenshot": null,
+      "screenshotMissing": "project-brief:plan-input-source-default-confirmation:de:1440.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -37113,7 +37134,8 @@
           "detail": null
         }
       ],
-      "screenshot": "project-brief:plan-input-source-default-confirmation:de:390.png",
+      "screenshot": null,
+      "screenshotMissing": "project-brief:plan-input-source-default-confirmation:de:390.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -37434,7 +37456,8 @@
           "detail": ""
         }
       ],
-      "screenshot": "project-brief:identity-switch-and-guest-claim-failure:de:1440.png",
+      "screenshot": null,
+      "screenshotMissing": "project-brief:identity-switch-and-guest-claim-failure:de:1440.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -37477,7 +37500,8 @@
           "detail": ""
         }
       ],
-      "screenshot": "project-brief:identity-switch-and-guest-claim-failure:de:390.png",
+      "screenshot": null,
+      "screenshotMissing": "project-brief:identity-switch-and-guest-claim-failure:de:390.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -37591,7 +37615,8 @@
           "detail": "with=[] without=[]"
         }
       ],
-      "screenshot": "project-brief:calculation-independent-from-note:de:1440.png",
+      "screenshot": null,
+      "screenshotMissing": "project-brief:calculation-independent-from-note:de:1440.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -37629,7 +37654,8 @@
           "detail": "with=[] without=[]"
         }
       ],
-      "screenshot": "project-brief:calculation-independent-from-note:de:390.png",
+      "screenshot": null,
+      "screenshotMissing": "project-brief:calculation-independent-from-note:de:390.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -37758,7 +37784,8 @@
           "detail": "ownership enforced by session scoping; see identity-switch row"
         }
       ],
-      "screenshot": "project-brief:saved-solution-owner-and-claim-consumer:de:1440.png",
+      "screenshot": null,
+      "screenshotMissing": "project-brief:saved-solution-owner-and-claim-consumer:de:1440.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -37801,7 +37828,8 @@
           "detail": "ownership enforced by session scoping; see identity-switch row"
         }
       ],
-      "screenshot": "project-brief:saved-solution-owner-and-claim-consumer:de:390.png",
+      "screenshot": null,
+      "screenshotMissing": "project-brief:saved-solution-owner-and-claim-consumer:de:390.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -37966,7 +37994,8 @@
           "detail": "0 bytes"
         }
       ],
-      "screenshot": "project-brief:screen-report-and-complete-pdf:de:1440.png",
+      "screenshot": null,
+      "screenshotMissing": "project-brief:screen-report-and-complete-pdf:de:1440.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -38021,7 +38050,8 @@
           "detail": "0 bytes"
         }
       ],
-      "screenshot": "project-brief:screen-report-and-complete-pdf:de:390.png",
+      "screenshot": null,
+      "screenshotMissing": "project-brief:screen-report-and-complete-pdf:de:390.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -38150,7 +38180,8 @@
           "detail": "extra applies=0"
         }
       ],
-      "screenshot": "project-brief:draft-add-readback-and-note-only-retry:de:1440.png",
+      "screenshot": null,
+      "screenshotMissing": "project-brief:draft-add-readback-and-note-only-retry:de:1440.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -38193,7 +38224,8 @@
           "detail": "extra applies=0"
         }
       ],
-      "screenshot": "project-brief:draft-add-readback-and-note-only-retry:de:390.png",
+      "screenshot": null,
+      "screenshotMissing": "project-brief:draft-add-readback-and-note-only-retry:de:390.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -38322,7 +38354,8 @@
           "detail": "Saved · revision 4 → Saved · revision 5"
         }
       ],
-      "screenshot": "project-brief:two-projects-and-revision-conflict:de:1440.png",
+      "screenshot": null,
+      "screenshotMissing": "project-brief:two-projects-and-revision-conflict:de:1440.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -38365,7 +38398,8 @@
           "detail": "Saved · revision 4 → Saved · revision 5"
         }
       ],
-      "screenshot": "project-brief:two-projects-and-revision-conflict:de:390.png",
+      "screenshot": null,
+      "screenshotMissing": "project-brief:two-projects-and-revision-conflict:de:390.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -38494,7 +38528,8 @@
           "detail": "scope: entry-side observation; the submission chain belongs to the inquiry family batch"
         }
       ],
-      "screenshot": "project-brief:inquiry-selected-revisions-and-note-only:de:1440.png",
+      "screenshot": null,
+      "screenshotMissing": "project-brief:inquiry-selected-revisions-and-note-only:de:1440.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -38537,7 +38572,8 @@
           "detail": "scope: entry-side observation; the submission chain belongs to the inquiry family batch"
         }
       ],
-      "screenshot": "project-brief:inquiry-selected-revisions-and-note-only:de:390.png",
+      "screenshot": null,
+      "screenshotMissing": "project-brief:inquiry-selected-revisions-and-note-only:de:390.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -38651,7 +38687,8 @@
           "detail": "\"\""
         }
       ],
-      "screenshot": "project-brief:inquiry-message-and-genie-summary-isolation:de:1440.png",
+      "screenshot": null,
+      "screenshotMissing": "project-brief:inquiry-message-and-genie-summary-isolation:de:1440.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -38689,7 +38726,8 @@
           "detail": "\"\""
         }
       ],
-      "screenshot": "project-brief:inquiry-message-and-genie-summary-isolation:de:390.png",
+      "screenshot": null,
+      "screenshotMissing": "project-brief:inquiry-message-and-genie-summary-isolation:de:390.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -38893,7 +38931,8 @@
           "detail": null
         }
       ],
-      "screenshot": "project-brief:success-consumes-exact-revision-and-failure-retains:de:1440.png",
+      "screenshot": null,
+      "screenshotMissing": "project-brief:success-consumes-exact-revision-and-failure-retains:de:1440.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },
@@ -38961,7 +39000,8 @@
           "detail": null
         }
       ],
-      "screenshot": "project-brief:success-consumes-exact-revision-and-failure-retains:de:390.png",
+      "screenshot": null,
+      "screenshotMissing": "project-brief:success-consumes-exact-revision-and-failure-retains:de:390.png",
       "model_channel": "no model call (deterministic UI/engine behavior)"
     }
   },

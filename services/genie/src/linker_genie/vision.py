@@ -69,6 +69,25 @@ class VisionChannelError(VisionError):
     """The image was not sent: its address is not the official DeepSeek API."""
 
 
+def _json_object(content: str) -> dict[str, Any]:
+    """The JSON object an answer starts with, or JSONDecodeError.
+
+    `response_format: json_object` is a request, not a guarantee: the model
+    sometimes closes the object and keeps writing (observed 2026-11-04: a PDF
+    page read answered 1618 characters of valid JSON followed by more text).
+    `json.loads` refuses that as "Extra data" and the whole page was then
+    reported unreadable, which turned a readable datasheet into "I could not
+    verify a current product for this file." The answer's object is the first
+    value; trailing content is ignored the way a reader would. Text that is
+    not JSON at all still raises: an answer that is not an object is no read.
+    """
+    value: Any
+    value, _ = json.JSONDecoder().raw_decode(content)
+    if not isinstance(value, dict):
+        raise json.JSONDecodeError("the answer is not a JSON object", content, 0)
+    return value
+
+
 # AGENTS.md §5, model routing: the Genie channel is deepseek-flash on the official
 # api.deepseek.com only. A customer's image goes nowhere else, whatever
 # GENIE_BASE_URL or DEEPSEEK_BASE_URL say (review round 1 of PR #309, item 7).
@@ -151,7 +170,7 @@ class Vision:
                     "text": content,
                     "truncated": choice.get("finish_reason") == "length",
                 }
-            answer = json.loads(content)
+            answer = _json_object(content)
         except (KeyError, IndexError, TypeError, json.JSONDecodeError) as error:
             log.error("genie vision: unreadable answer from deepseek-flash: %s", error)
             raise VisionError(f"unreadable answer: {error}") from error

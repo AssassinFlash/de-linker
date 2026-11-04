@@ -374,6 +374,72 @@ def test_a_pasted_parts_list_is_the_services_own_turn(vocabulary: Vocabulary) ->
     assert prepared.log["parts"]["uncertain"] == 1
 
 
+class FakePublication:
+    """Woo's publication permission, as the understander asks for it."""
+
+    def __init__(self, statuses: dict[str, str]) -> None:
+        self.statuses = statuses
+        self.asked: list[list[str]] = []
+
+    def identify(self, models: Sequence[str]) -> dict[str, str]:
+        self.asked.append(list(models))
+        return {m.casefold(): self.statuses.get(m, "not_found") for m in models}
+
+    def identify_text(self, text: str) -> dict[str, str]:
+        return {}
+
+
+def _reading_of(kind: str, model: str | None = None, text: str = "printed text"):
+    from linker_genie.schema import AttachmentReading
+
+    return AttachmentReading(id="att1", name="file", kind=kind, model=model, text=text)
+
+
+def test_a_document_without_a_model_is_read_not_withheld() -> None:
+    """A datasheet has no model of its own; gating its shape withheld every PDF.
+
+    `_pdf_reading` never sets a model, so `kind == "document"` made every
+    datasheet answer "I could not verify a current product for this file."
+    The reading is put where the gate reads it (a stored reading), so this test
+    fails on the old `kind in {"nameplate", "document"}` rule.
+    """
+    understander = Understander(lambda: None, None, publication=FakePublication({}))
+    request = _request("What does the attached datasheet say?").model_copy(
+        update={
+            "readings": [_reading_of("document", model=None, text="H2 manual text")]
+        }
+    )
+    prepared = understander.prepare(request, _abilities([]))
+    assert prepared.log.get("publication") != "upload_identification_only"
+
+
+def test_a_nameplate_whose_model_could_not_be_read_stays_withheld() -> None:
+    """A nameplate exists to name a device; one without a model is unverified."""
+    understander = Understander(lambda: None, None, publication=FakePublication({}))
+    request = _request("Which device is this?")
+    prepared = understander.prepare(request, _abilities([]))
+    prepared = understander.prepare(
+        request.model_copy(update={"readings": [_reading_of("nameplate", model=None)]}),
+        _abilities([]),
+    )
+    assert prepared.route.name == "scripted"
+    assert prepared.log.get("publication") == "upload_identification_only"
+
+
+def test_an_unpublished_model_is_withheld() -> None:
+    understander = Understander(
+        lambda: None,
+        None,
+        publication=FakePublication({"SAJ H2-10K-T3": "unavailable"}),
+    )
+    request = _request("Tell me about SAJ H2-10K-T3").model_copy(
+        update={"readings": [_reading_of("nameplate", model="SAJ H2-10K-T3")]}
+    )
+    prepared = understander.prepare(request, _abilities([]))
+    assert prepared.route.name == "scripted"
+    assert prepared.log.get("publication") == "upload_identification_only"
+
+
 def test_a_csv_attachment_becomes_a_parts_turn(vocabulary: Vocabulary) -> None:
     """#251: the CSV rides #236's channel, is read in-process, and its rows match."""
     import base64

@@ -21,6 +21,7 @@ const SOURCES = [
 	["genie", "genie-family-supp.json"],
 	["genie", "genie-family-fix.json"],
 	["genie", "genie-states-round3.json"],
+	["genie", "genie-attachments-round3.json"],
 	["marketing-genie-entry", "marketing-entry-family.json"],
 	["configurator", "configurator-family.json"],
 	["roof", "roof-family.json"],
@@ -34,11 +35,13 @@ const evidenceDir = path.join(here, "evidence");
 // combo-scoped shards from parallel runs are folded in with the same family
 for (const f of fs.readdirSync(evidenceDir)) {
 	const m = f.match(
-		/^(genie-family|marketing-entry-family|project-brief-family|roof-family|genie-states-round3)(-fix)?-(en|de)-(1440|390)\.json$/
+		/^(genie-family|marketing-entry-family|project-brief-family|roof-family|genie-states-round3|genie-attachments-round3)(-fix)?-(en|de)-(1440|390)\.json$/
 	);
 	if (m)
 		SOURCES.push([
-			m[1] === "genie-family" || m[1] === "genie-states-round3"
+			m[1] === "genie-family" ||
+			m[1] === "genie-states-round3" ||
+			m[1] === "genie-attachments-round3"
 				? "genie"
 				: m[1] === "marketing-entry-family"
 					? "marketing-genie-entry"
@@ -105,18 +108,34 @@ for (const row of states) {
 	// PNGs); their file exists by basename in the owner's data directory, which
 	// RESULTS.md names. A basename keeps a machine-specific absolute path out of
 	// the committed matrix.
+	//
+	// A capture that does not exist anywhere is not evidence and is not cited:
+	// the row keeps its checks and loses the path, and `screenshotMissing` says
+	// which capture is absent so it can be re-recorded. 28 rows from the earlier
+	// shards are in this position (marketing-genie-entry 390, project-brief DE).
+	const DATA_DIR = path.join(
+		process.env.HOME ?? "",
+		"de-linker-data/genie-state-rows-20261104/screenshots"
+	);
 	const committed = result.screenshot && fs.existsSync(path.join(repo, result.screenshot));
+	const byBasename =
+		result.screenshot && fs.existsSync(path.join(DATA_DIR, path.basename(result.screenshot)));
 	const shot = result.screenshot
 		? committed
 			? result.screenshot
-			: path.basename(result.screenshot)
+			: byBasename
+				? path.basename(result.screenshot)
+				: null
 		: null;
+	const screenshotMissing =
+		result.screenshot && !committed && !byBasename ? path.basename(result.screenshot) : null;
 	const entry = {
 		date: PASS_DATE,
 		source: result.evidenceFile,
 		scope: result.scope,
 		checks: result.checks,
 		screenshot: shot,
+		...(screenshotMissing ? { screenshotMissing } : {}),
 		model_channel: result.scope?.includes("deepseek") ? "deepseek-flash official via the local genie service (real turn)" : "no model call (deterministic UI/engine behavior)",
 	};
 	if (row.status === "pending") {

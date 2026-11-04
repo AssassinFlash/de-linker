@@ -119,13 +119,22 @@ export class Recorder {
 		const key = `${this.driver}:${state}:${this.combo.lang}:${this.combo.width}`;
 		const stem = key.replace(/[^a-zA-Z0-9_.:-]/g, "_");
 		let screenshot = null;
+		let screenshotError = null;
 		if (page) {
 			const shot = path.join(HERE, "screenshots", `${stem}.png`);
 			try {
 				await page.screenshot({ path: shot });
+				// A capture that produced no bytes is not a capture. The previous
+				// rounds kept the path anyway, which is how two rows came to cite
+				// screenshots that never existed.
+				const stat = fs.statSync(shot);
+				if (!stat.size) throw new Error(`empty file (${stat.size} bytes)`);
 				screenshot = `docs/acceptance/2026-11-04/genie-state-rows/screenshots/${stem}.png`;
 				this.shots++;
-			} catch {}
+			} catch (error) {
+				screenshotError = String(error?.message ?? error).slice(0, 160);
+				console.log(`no screenshot for ${key}: ${screenshotError}`);
+			}
 		}
 		const failed = checks.filter((c) => c.result === "fail");
 		const passed = checks.filter((c) => c.result === "pass");
@@ -136,7 +145,9 @@ export class Recorder {
 			observedAt: new Date().toISOString(),
 			checks, passed: passed.length, failed: failed.length,
 			status: failed.length ? "fail" : "observed",
-			screenshot, scope, ...extra,
+			screenshot,
+			...(screenshotError ? { screenshotError } : {}),
+			scope, ...extra,
 		});
 		console.log(
 			`${failed.length ? "FAIL" : "ok  "} ${key} (${passed.length} pass/${failed.length} fail)`

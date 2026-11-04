@@ -192,6 +192,13 @@ class Understander:
         if self._publication is not None:
             # Stored attachment readings are historical too. Recheck their supplied
             # model before adding any text or ratings to this turn's facts.
+            #
+            # A reading is gated by the model it carries, never by its shape: a
+            # document (a datasheet, manual, drawing) is a transcription and has
+            # no model of its own — `_pdf_reading` never sets one — so gating
+            # `kind == "document"` withheld every PDF a customer sent, whatever it
+            # was. A nameplate is different: it exists to name a device, so one
+            # whose model could not be read is unverified and stays gated.
             readings = [*request.readings, *fresh]
             statuses = self._publication.identify(
                 [r.model for r in readings if r.model]
@@ -199,8 +206,8 @@ class Understander:
             blocked = [
                 r
                 for r in readings
-                if (r.model or r.kind in {"nameplate", "document"})
-                and (not r.model or statuses.get(r.model.casefold()) != "published")
+                if (r.model and statuses.get(r.model.casefold()) != "published")
+                or (not r.model and r.kind == "nameplate")
             ]
             if blocked:
                 from linker_genie.publication_copy import upload_unavailable

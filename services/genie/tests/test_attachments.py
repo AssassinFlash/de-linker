@@ -336,6 +336,31 @@ def test_a_5xx_is_tried_once_more() -> None:
     assert sleeps == [0.25]
 
 
+def test_trailing_text_after_the_object_is_ignored() -> None:
+    """A JSON object followed by more prose is still the answer it starts with.
+
+    Observed 2026-11-04 on a PDF page: 1618 characters of valid JSON and then
+    more text. `json.loads` called that "Extra data", the page was reported
+    unreadable, and a readable datasheet produced "I could not verify a current
+    product for this file."
+    """
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "choices": [
+                    {"message": {"content": '{"brand": "SAJ", "model": "H2-10K-T3"}\nNote: page 2'}}
+                ]
+            },
+        )
+
+    assert _vision(handle)(b"jpeg", Instruction("read it")) == {
+        "brand": "SAJ",
+        "model": "H2-10K-T3",
+    }
+
+
 def test_an_answer_that_is_not_json_is_an_error() -> None:
     def handle(request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, json={"choices": [{"message": {"content": "hm"}}]})

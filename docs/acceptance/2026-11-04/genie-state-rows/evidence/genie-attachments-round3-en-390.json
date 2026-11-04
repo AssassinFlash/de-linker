@@ -1,0 +1,50 @@
+{
+ "driver": "genie",
+ "fixRound": 3,
+ "base": "http://127.0.0.1:8904",
+ "observedAt": "2026-11-04T20:46:14.766Z",
+ "rows": [
+  {
+   "key": "genie:attachments-image-pdf:en:390",
+   "driver": "genie",
+   "state": "attachments-image-pdf",
+   "lang": "en",
+   "width": 390,
+   "url": "/genie/",
+   "observedAt": "2026-11-04T20:46:14.740Z",
+   "checks": [
+    {
+     "name": "attach control present",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "the photo and the hosted PDF become two attachment chips",
+     "result": "pass",
+     "detail": "chips=2"
+    },
+    {
+     "name": "the attachment turn is answered (2xx + turn_id + text)",
+     "result": "pass",
+     "detail": "HTTP 200 · turn_id=107 · route=nameplate · 1020 chars"
+    },
+    {
+     "name": "the answer is about the attached material",
+     "result": "pass",
+     "detail": "G Genie The nameplate Your photo shows the nameplate of an SAJ H2-10K-T3, marked on the label as a hybrid inverter. The "
+    },
+    {
+     "name": "the hosted PDF is a real file",
+     "result": "pass",
+     "detail": "9553 KB · SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+    }
+   ],
+   "passed": 5,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:attachments-image-pdf:en:390.png",
+   "scope": "a real product photo (nameplate-probe.png) and a PDF this instance hosts (SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf) uploaded through the dock's own picker, then one real question about them on the official deepseek-flash vision/PDF channel"
+  }
+ ],
+ "modelBudget": "1 real vision/PDF turn per combo; the photo and the PDF are the repo's own and the instance's own hosted file"
+}
