@@ -132,7 +132,9 @@ responseStatus: null
 - 每种条件**串行**发请求（除标注并发的批次），用 `curl -w '%{http_code} %{time_total}'` 记录状态码与总耗时。
 - 冷 mint 条件每个请求使用**新的 tab UUID 且不带 cookie**，强制走服务端 `claimed_browser_key()` 的完整冷启动路径；温态条件使用首个响应 `Set-Cookie` 下发的 `linker_genie_browser` 值。
 - 并发批次用后台子 shell 同时发起，各自独立 tab UUID（模拟不同访客），或同一 tab（模拟命名锁争用）。
-- 全部为只读：端点的 `read()` 只计算并返回 HMAC scope，写入的只有 `linker_genie_browser` cookie 与 5 秒期的 claim option（既有行为，非本次引入）。没有改任何生产数据、配置或代码。
+- 端点语义上是只读的：`EntryContext::read()`（`includes/Genie/EntryContext.php:57-62`）只计算并返回 HMAC scope，无模型调用、无会话创建、无业务数据写入。
+- **但冷 mint 确有服务端副作用，必须记录：** 无 cookie 的请求会走 `Conversations::claimed_browser_key()`，`publish_browser_claim()` 用 `add_option` 写一条 `linker_genie_browser_claim_<hash>`（`BROWSER_CLAIM_SECONDS = 5` 过期）。正常访客在下次带 cookie 的请求里由 `close_browser_claim()` 删除；**本次采样只发不带 cookie 的请求，所以这些行没有走那条回收路径**。仓库里也没有 cron/定时清理——`grep` `delete|cron|clean|purge` 只命中 `close_browser_claim` 那一处，过期值靠 `read_browser_claim()` 的时间判断失效，但**行本身不会自删**。
+- 采样结束后在生产核到 164 条残留，全部已过期（样本 `until`=1793758122，当时 `time()`=1793758518；过期约 6.6 分钟）。已把这 164 行完整导出为本地恢复点，按 §5「先备份、后读回」删除 `until < UNIX_TIMESTAMP()` 的行，读回计数为 0。站点 WP 版本与错误日志复查正常，无新增条目。
 - 分位用 nearest-rank 法（`ceil(q·n)` 取序位），与样本量小的事实一致地保守。
 
 #### 实测结果
@@ -333,12 +335,13 @@ type Load<T> =
 
 本报告是研究交付，**没有改任何代码**。以下事项明确没有做完：
 
-1. **第 1 次 30 路并发的 8 个 HTTP 500 未定位。** 无响应体、服务端 `~/error_log` 无对应条目。第 2 次同条件全 200。属待查风险，不是结论。
-2. **没有真实浏览器会话的测量。** 本次用 curl 无 nonce、无 cookie 的直连。真实浏览器首请求（含导航、nonce 获取、资源竞争）应当更慢，本报告的 p95 是**下界**。
-3. **#563 的生产读回状态未知。** 那份验收文档自己写着 *"Production deployment and browser readback remain required before this fix is complete."* 本次没有核实它是否已部署读回。
-4. **`BROWSER_CLAIM_SECONDS` 改成 20 秒后的副作用未评估。** 窗长变长意味着「同一 tab 的无 cookie 请求」在一个更长的时间窗内共享同一 browser key；这对匿名访客的身份收敛是更宽松的语义，但会改变「cookie 未落地」这段窗口的长度。本报告只指出「必须成组修改」这条硬约束，没有做行为影响分析。
-5. **`/wp-json/` p50 = 4.53 s 的根因未查。** 这是 Hostinger 上 WordPress 冷启动的真实成本，影响所有 REST 端点。本报告只用它做对照，没有深入。
-6. **`Solution.tsx:161` 的 `return null`** 是「未决即空白」，已记录但判定不在本票范围。
+1. **缺少对过期 claim option 的自清理机制。** 采样顺带证实：`linker_genie_browser_claim_*` 只有在访客下次带着 cookie 再来时才会被 `close_browser_claim()` 删除，没有任何按时间回收的路径。任何不返回的访客（关标签页、换设备、纯爬虫）都会留下永久行。本次已把采样产生的 164 条过期行手动清掉并读回为 0，但**这是数据清理，不是修复**——机制缺口仍在，且不属于 #901 三处根因，需另开。
+2. **第 1 次 30 路并发的 8 个 HTTP 500 未定位。** 无响应体、服务端 `~/error_log` 无对应条目。第 2 次同条件全 200。属待查风险，不是结论。
+3. **没有真实浏览器会话的测量。** 本次用 curl 无 nonce、无 cookie 的直连。真实浏览器首请求（含导航、nonce 获取、资源竞争）应当更慢，本报告的 p95 是**下界**。
+4. **#563 的生产读回状态未知。** 那份验收文档自己写着 *"Production deployment and browser readback remain required before this fix is complete."* 本次没有核实它是否已部署读回。
+5. **`BROWSER_CLAIM_SECONDS` 改成 20 秒后的副作用未评估。** 窗长变长意味着「同一 tab 的无 cookie 请求」在一个更长的时间窗内共享同一 browser key；这对匿名访客的身份收敛是更宽松的语义，但会改变「cookie 未落地」这段窗口的长度。本报告只指出「必须成组修改」这条硬约束，没有做行为影响分析。
+6. **`/wp-json/` p50 = 4.53 s 的根因未查。** 这是 Hostinger 上 WordPress 冷启动的真实成本，影响所有 REST 端点。本报告只用它做对照，没有深入。
+7. **`Solution.tsx:161` 的 `return null`** 是「未决即空白」，已记录但判定不在本票范围。
 
 ## 7. 报告用到的证据位置
 
