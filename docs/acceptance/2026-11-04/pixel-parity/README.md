@@ -28,6 +28,12 @@ machine, `--direct` (no proxy). Raw evidence:
 | `cart` | 0 → 0 | 0 → 0 |
 | `de_loesungsentwurf` | 0 → 0 | 0 → 0 |
 
+**Totals: 24 cases, 17 clean → 20 clean.** Four failures were resolved
+(`de_produkt_goodwe_gw60k_sts_g10` at both widths, `de_loesung` 390,
+`hybrid_inverter_vs_ac_coupled_storage` 390) and one appeared
+(`solution` 1440, 0 → 629) because the corrected procedure exposed the
+bistable footer edge described in §3; that same region is 0 in `repeat-2`.
+
 ## Root causes
 
 ### 1. Woo shuffles related products on every request (fixed in the harness)
@@ -73,7 +79,8 @@ surfaces, and all four are **bistable per browser instance while stable within
 an instance**:
 
 - Same-host controls are clean: live↔live across all 12 scenarios at 1440 gave 0
-  differences (3 runs); local↔local at 390 `/de/` gave 0 (2 runs).
+  differences (2 complete runs; a third was interrupted); local↔local at 390
+  `/de/` gave 0 (2 runs).
 - The same case flips between instances while staying internally stable. Across
   four runs of the same four cases, each case moved between runs and each run
   was self-consistent:
