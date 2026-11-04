@@ -1,56 +1,74 @@
 [
   {
     "name": "home",
-    "path": "/"
+    "path": "/",
+    "pinImageSizes": true
   },
   {
     "name": "de",
-    "path": "/de/"
+    "path": "/de/",
+    "pinImageSizes": true
   },
   {
     "name": "products",
-    "path": "/products/"
+    "path": "/products/",
+    "pinImageSizes": true
   },
   {
     "name": "de_produkte",
-    "path": "/de/produkte/"
+    "path": "/de/produkte/",
+    "pinImageSizes": true
   },
   {
     "name": "product_saj_ats1_t63_a",
     "path": "/product/saj-ats1-t63-a/",
     "sortChildren": [
-      { "selector": ".pdp-related ul.products", "key": ".woocommerce-loop-product__title" }
-    ]
+      {
+        "selector": ".pdp-related ul.products",
+        "key": ".woocommerce-loop-product__title"
+      }
+    ],
+    "pinImageSizes": true
   },
   {
     "name": "de_produkt_goodwe_gw60k_sts_g10",
     "path": "/de/produkt/goodwe-gw60k-sts-g10/",
     "sortChildren": [
-      { "selector": ".pdp-related ul.products", "key": ".woocommerce-loop-product__title" }
-    ]
+      {
+        "selector": ".pdp-related ul.products",
+        "key": ".woocommerce-loop-product__title"
+      }
+    ],
+    "pinImageSizes": true
   },
   {
     "name": "solution",
-    "path": "/solution/"
+    "path": "/solution/",
+    "pinImageSizes": true
   },
   {
     "name": "de_loesung",
-    "path": "/de/loesung/"
+    "path": "/de/loesung/",
+    "pinImageSizes": true
   },
   {
     "name": "hybrid_inverter_vs_ac_coupled_storage",
-    "path": "/hybrid-inverter-vs-ac-coupled-storage/"
+    "path": "/hybrid-inverter-vs-ac-coupled-storage/",
+    "pinImageSizes": true
   },
   {
     "name": "de_hybridwechselrichter_vs_ac_speicher",
-    "path": "/de/hybridwechselrichter-vs-ac-speicher/"
+    "path": "/de/hybridwechselrichter-vs-ac-speicher/",
+    "pinImageSizes": true
   },
   {
     "name": "cart",
-    "path": "/cart/"
+    "path": "/cart/",
+    "pinImageSizes": true
   },
   {
     "name": "de_loesungsentwurf",
-    "path": "/de/loesungsentwurf/"
+    "path": "/de/loesungsentwurf/",
+    "pinImageSizes": true
   }
 ]

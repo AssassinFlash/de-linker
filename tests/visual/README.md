@@ -31,26 +31,31 @@ python3 -m unittest discover -s tests/visual -p 'test_*.py'
 ```
 
 Capture conditions preserve the already measured procedure: software raster and
-sRGB to avoid GPU dithering, disabled motion/caret, full-height layout before
-decoding visible images, and loaded fonts. Native lazy loading and responsive
-image selection remain unchanged; hidden lazy menu images are not awaited.
+sRGB to avoid GPU dithering, disabled motion/caret, decoded images and fonts, and
+native lazy loading; hidden lazy menu images are not awaited.
+
+The capture never resizes the layout viewport. It stays at the requested width
+and the established 900px height, the page is scrolled through once at that size
+so native lazy images enter it, and the full page is then taken with a CDP
+`Page.captureScreenshot` clip of the document rectangle (`captureBeyondViewport`).
+`fullPage: true` is deliberately not used: Playwright implements it by resizing
+the viewport, which re-lays-out the document and re-rasterizes images that were
+already decoded at the shorter height. Measured before this change, that
+re-raster differed by up to 10 levels per channel on the same page served by a
+different host while the image bytes, the `naturalWidth`/`naturalHeight`, and
+canvas hashes drawn both at natural size and at box size were identical.
+
+The scroll sweep must scroll instantly. The site sets `scroll-behavior: smooth`
+on the root element, so a plain `window.scrollTo(0, y)` starts an animation the
+next call interrupts; the sweep then never reaches the lower sections, their
+lazy images keep an empty `currentSrc`, and `img.decode()` on them never
+settles — the capture hangs (measured: five images still without a source).
 
 Two inputs are normalized before the capture, because both are
 non-deterministic on the live site itself and would otherwise turn a
-measurement artifact into a reported defect. Both are recorded in
-`capture.json`:
+measurement artifact into a reported defect. Both are opt-in per scenario and
+recorded in `capture.json`:
 
-- **Page reload at the final viewport.** After the first load measures the
-  document height, the page is reloaded at that height, so layout and every
-  image decode happen at the size that is actually captured. Expanding the
-  viewport after a 900px layout re-scales images whose decode had already
-  started, and that second raster depends on how far decoding had progressed
-  when the resize landed. Measured on `/product/saj-ats1-t63-a/`: 85,021
-  differing pixels (max 5, mean 1.09, no shift) over the FAQ image while the
-  image bytes, the `naturalWidth`/`naturalHeight`, and canvas hashes drawn both
-  at natural size and at box size were identical on both hosts. Scenarios with
-  `actions` keep their single load, because replaying a click after a reload
-  would toggle state twice.
 - **Declared child sorting** (`sortChildren: [{selector, key}]`). Woo calls
   `shuffle()` in `wc_get_related_products()` behind the filterable
   `woocommerce_product_related_posts_shuffle` (default true), so the related
@@ -60,10 +65,20 @@ measurement artifact into a reported defect. Both are recorded in
   key text on both sides before the screenshot, and `compare.py` requires the
   resulting item sets to be equal, so a different card set still fails. This is
   not a mask: every pixel of every card is compared, only the order is fixed.
+- **Declared image-size pinning** (`pinImageSizes: true`). An `img[srcset]`
+  without `sizes` makes the browser assume `100vw`. For an image painted far
+  narrower, the chosen candidate then depends on request timing: on
+  `/product/saj-ats1-t63-a/` at 390 the live host settled on the 600w file and
+  the local host on the 1280w one from identical markup, and because those two
+  files carry different intrinsic ratios the painted box differed by 0.25px and
+  every element below it shifted. Pinning each such image to the width it
+  actually paints at, before its request is made, makes both sides fetch and
+  render the same candidate. The pins are recorded per side, and every pixel is
+  still compared.
 
 `docs/acceptance/2026-11-04/pixel-parity/scenarios.json` holds the current
-full-matrix scenario list (12 routes × 1440/390), including the two PDP routes'
-`sortChildren` declarations.
+full-matrix scenario list (12 routes × 1440/390), including the PDP routes'
+`sortChildren` declaration and the matrix-wide `pinImageSizes`.
 
 For filled drafts, `capture.json` also records the selected cart image URL and
 natural size for each side. The preview card is dismissed only in
@@ -73,18 +88,21 @@ acceptance artefacts stay in their ticket directories; new runs call this tool.
 For a disclosure or another state, use `--scenarios <json>` instead of
 `--paths`. Each scenario contains a unique `name`, `path`, optional `widths`,
 ordered `actions` (`click`, `fill: [selector, value]`, `press: [selector, key]`,
-or `visit: "/relative/path"`), optional `sortChildren`, and
-`ruledRegions: [{name, selector, padding?}]`. Selectors may match repeated
-components; each matching rectangle is recorded separately, using the union of
-the live and local bounds. A new component may be absent on live; it must exist
-locally. Padding is an explicit part of the ruled region, for example the
-existing shadow of an expanded account menu, and needs ledger evidence.
+or `visit: "/relative/path"`), optional `sortChildren`, optional
+`pinImageSizes`, and `ruledRegions: [{name, selector, padding?}]`. Selectors may
+match repeated components; each matching rectangle is recorded separately, using
+the union of the live and local bounds. A new component may be absent on live;
+it must exist locally. Padding is an explicit part of the ruled region, for
+example the existing shadow of an expanded account menu, and needs ledger
+evidence.
 
 `--baseline` captures the local before images only (and reuses existing before
 images). It does not compare or change the site. Normal capture keeps full raw
 images and exact raw pixel counts. The comparator additionally reports
 `outside_ruled_different_pixels`; any nonzero value fails. Different image sizes
-are recorded as failures and are never cropped, padded or aligned away.
+are recorded as failures and are never cropped, padded or aligned away. Every
+`results.json` row carries the case stem, the route and the viewport width so a
+reading can be traced to its scenario without cross-referencing indices.
 
 `--direct` disables the system proxy only in the disposable capture browser,
 for machines whose HTTPS proxy intermittently refuses CONNECT tunnels. It does

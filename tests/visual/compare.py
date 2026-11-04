@@ -33,7 +33,9 @@ for case in manifest["cases"]:
             sort_mismatches[selector] = {"live": live_sets, "local": local_sets}
     if live.size != local.size:
         print(f"{stem}: size mismatch {live.size} / {local.size}", file=sys.stderr)
-        results.append({"case": stem, "dimension_match": False,
+        results.append({"case": stem, "stem": case["stem"],
+                        "path": case["path"], "viewport_width": case["width"],
+                        "dimension_match": False,
                         "live_size": live.size, "local_size": local.size,
                         "ruled_change": False})
         failed = True
@@ -60,6 +62,9 @@ for case in manifest["cases"]:
     outside_count = sum(outside.histogram()[1:])
     ruled_change = count > 0 and outside_count == 0
     row = {
+        "case": stem,
+        "stem": case["stem"],
+        "path": case["path"],
         "language": case["language"],
         "viewport_width": case["width"],
         "image_size": live.size,

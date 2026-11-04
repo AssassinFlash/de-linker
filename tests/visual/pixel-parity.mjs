@@ -69,6 +69,7 @@ for (const width of widths) {
 		const ruledRegions = new Map();
 		const imageSources = {};
 		const sortRecords = {};
+		const imageSizePins = {};
 		for (const [base, label] of values.baseline
 			? [[localBase, "before"]]
 			: [
@@ -95,14 +96,36 @@ for (const width of widths) {
 					reducedMotion: "reduce",
 					deviceScaleFactor: 1,
 				});
-				await context.addInitScript(() => {
+				await context.addInitScript((pinImageSizes) => {
 					// Exercise the page at rest during the full-page scroll, without
 					// the preview card's 8s dwell. Only this disposable browser stores it.
 					localStorage.setItem(
 						"linker-genie-peek-dismissed-until",
 						String(Date.now() + 30 * 86400000),
 					);
-				});
+					if (!pinImageSizes) return;
+					// `srcset` without `sizes` assumes 100vw, so an image displayed
+					// far narrower has its candidate picked from a guess that turned
+					// out to depend on request timing: the live host settled on the
+					// 600w file and the local host on the 1280w one for identical
+					// markup, and those files carry different intrinsic ratios,
+					// which moved the layout by 0.25px. Pin each such image to the
+					// width it actually paints at, before its request is made.
+					const pin = () => {
+						for (const element of document.querySelectorAll(
+							"img[srcset]:not([sizes]), source[srcset]:not([sizes])",
+						)) {
+							const box =
+								element.tagName === "SOURCE"
+									? element.parentElement?.getBoundingClientRect()
+									: element.getBoundingClientRect();
+							if (!box || box.width < 1) continue;
+							element.setAttribute("sizes", `${Math.round(box.width)}px`);
+						}
+					};
+					document.addEventListener("DOMContentLoaded", pin);
+					window.addEventListener("load", pin);
+				}, Boolean(scenario.pinImageSizes));
 				page = await context.newPage();
 				// The existing snapshot capture budget also covers live lazy media.
 				await page.goto(base + route, {
@@ -127,72 +150,58 @@ for (const width of widths) {
 					content:
 						"*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}",
 				});
-				// Every painted pixel is captured at the final full-page viewport,
-				// so layout and image decode must both happen at that size.
-				// Expanding the viewport after the page had already laid out at
-				// 900px re-scaled images whose decode had started at the shorter
-				// height. The re-scaled raster then differs by up to 10 levels per
-				// channel on a page served over the network while matching exactly
-				// for the same page served locally, even though the bytes, the
-				// natural size, and canvas hashes drawn at natural and at box size
-				// are identical on both hosts. Re-entering the document at the
-				// final viewport removes that ambiguity without touching pixels,
-				// tolerances, masks or the products' own markup. Scenarios with
-				// interactions keep their single load: replaying clicks against a
-				// reload would submit or toggle state twice.
-				if (!(scenario.actions ?? []).length) {
-					const initial = await page.evaluate(
-						() => document.documentElement.scrollHeight,
+				// The layout viewport stays at the requested width and the
+				// established 900px height for the whole capture; the full page
+				// is taken with a CDP clip below. Growing the viewport instead
+				// re-lays-out the document, and images whose decode started at the
+				// shorter height are re-rasterized for the taller one, which made
+				// the same page produce different pixels per host even with
+				// identical image bytes and identical canvas hashes at natural and
+				// at box size.
+				//
+				// The sweep must be instant. The site sets scroll-behavior: smooth
+				// on the root element, so a plain scrollTo starts an animation that
+				// the next call interrupts; the sweep then never reaches the lower
+				// sections, their native lazy images keep an empty currentSrc, and
+				// img.decode() on them never settles (measured: five images still
+				// without a source after a smooth sweep, and the capture hung).
+				const sweep = async (step, pause) =>
+					page.evaluate(
+						async ([stepSize, wait]) => {
+							for (
+								let y = 0;
+								y < document.documentElement.scrollHeight;
+								y += stepSize
+							) {
+								window.scrollTo({ top: y, behavior: "instant" });
+								await new Promise((resolve) => setTimeout(resolve, wait));
+							}
+							window.scrollTo({ top: 0, behavior: "instant" });
+						},
+						[step, pause],
 					);
-					await page.setViewportSize({ width, height: initial });
-					await page.reload({ waitUntil: "networkidle", timeout: 120000 });
-					await page.addStyleTag({
-						content:
-							"*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}",
+				const decodeImages = () =>
+					page.evaluate(async () => {
+						await Promise.all(
+							[...document.images]
+								.filter(
+									(img) =>
+										img.getClientRects().length > 0 &&
+										getComputedStyle(img).visibility !== "hidden" &&
+										img.currentSrc,
+								)
+								.map((img) => img.decode().catch(() => {})),
+						);
 					});
-				}
-				await page.evaluate(async () => {
-					// Overlapping 600px scroll steps with 120ms drive the native
-					// lazy-load observers at the settled viewport size.
-					for (let y = 0; y < document.body.scrollHeight; y += 600) {
-						window.scrollTo(0, y);
-						await new Promise((resolve) => setTimeout(resolve, 120));
-					}
-					window.scrollTo(0, 0);
-				});
-				// Loading the images above can change the document height; settle it
-				// once more before the capture so nothing is re-scaled afterwards.
-				for (const attempt of [0, 1]) {
-					const full = await page.evaluate(
-						() => document.documentElement.scrollHeight,
-					);
-					await page.setViewportSize({ width, height: full });
-					await page.waitForLoadState("networkidle");
-					await page.waitForTimeout(200);
-					if (attempt === 1) break;
-				}
-				await page.evaluate(async () => {
-					await Promise.all(
-						[...document.images]
-							.filter(
-								(img) =>
-									img.getClientRects().length > 0 &&
-									getComputedStyle(img).visibility !== "hidden",
-							)
-							.map((img) => img.decode().catch(() => {})),
-					);
-				});
+				await sweep(600, 120);
+				await decodeImages();
 				await page.waitForLoadState("networkidle");
+				// Loading the lazy images above can make the document taller;
+				// sweep again so the new bottom is observed too. The viewport
+				// is still not resized.
+				await sweep(600, 60);
+				await decodeImages();
 				await page.evaluate(async () => {
-					await Promise.all(
-						[...document.images]
-							.filter(
-								(img) =>
-									img.getClientRects().length > 0 &&
-									getComputedStyle(img).visibility !== "hidden",
-							)
-							.map((img) => img.decode().catch(() => {})),
-					);
 					await document.fonts.ready;
 				});
 				// Existing capture setup settles fonts/layout for 800ms after decode.
@@ -228,6 +237,15 @@ for (const width of widths) {
 				}
 				if (Object.keys(sorted).length) await page.waitForTimeout(200);
 				sortRecords[label] = sorted;
+				// Which srcset candidate each side actually paints, recorded so a
+				// reading shows the pinned sizes took effect. Not a mask.
+				imageSizePins[label] = await page.evaluate(() =>
+					[...document.querySelectorAll("img[srcset][sizes]")].map((img) => ({
+						src: new URL(img.currentSrc || img.src).pathname,
+						sizes: img.getAttribute("sizes"),
+						natural: [img.naturalWidth, img.naturalHeight],
+					})),
+				);
 				imageSources[label] = await page
 					.locator(".woocommerce-cart-form img")
 					.evaluateAll((images) =>
@@ -288,10 +306,36 @@ for (const width of widths) {
 					}
 				}
 				const name = `${stem}-${width}-${label}.png`;
-				await page.screenshot({
-					path: path.join(out, name),
-					fullPage: true,
-				});
+				// CDP paints the whole document without resizing the layout
+				// viewport, so every element keeps the size it had while the page
+				// was laid out. fullPage:true is deliberately not used: Playwright
+				// implements it by resizing the viewport, which is the re-layout
+				// this capture must avoid.
+				const shotSize = await page.evaluate(() => ({
+					width: document.documentElement.scrollWidth,
+					height: document.documentElement.scrollHeight,
+				}));
+				const session = await page.context().newCDPSession(page);
+				try {
+					const shot = await session.send("Page.captureScreenshot", {
+						format: "png",
+						fromSurface: true,
+						captureBeyondViewport: true,
+						clip: {
+							x: 0,
+							y: 0,
+							width: shotSize.width,
+							height: shotSize.height,
+							scale: 1,
+						},
+					});
+					fs.writeFileSync(
+						path.join(out, name),
+						Buffer.from(shot.data, "base64"),
+					);
+				} finally {
+					await session.detach();
+				}
 				console.log(name);
 			} finally {
 				try {
@@ -323,6 +367,7 @@ for (const width of widths) {
 			ruledRegions: [...ruledRegions.values()],
 			imageSources,
 			sortRecords,
+			imageSizePins,
 		});
 	}
 }
