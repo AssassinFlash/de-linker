@@ -966,8 +966,8 @@
         {
           "index": 0,
           "category": "Order contents",
-          "question_en": "Which CT version is included in this GMK330 order?",
-          "question_de": "Welche Stromwandlerversion enthält diese GMK330-Bestellung?"
+          "question_en": "Which CT version is included with this GMK330?",
+          "question_de": "Welche Stromwandlerversion ist mit dieser GMK330 enthalten?"
         },
         {
           "index": 1,
@@ -1503,8 +1503,8 @@
         {
           "index": 0,
           "category": "Project specification",
-          "question_en": "What should be checked before ordering GW22K-HCA-20?",
-          "question_de": "Was ist vor der Bestellung von GW22K-HCA-20 zu prüfen?"
+          "question_en": "What should be checked before requesting a GW22K-HCA-20?",
+          "question_de": "Was ist vor der Anfrage für GW22K-HCA-20 zu prüfen?"
         },
         {
           "index": 1,

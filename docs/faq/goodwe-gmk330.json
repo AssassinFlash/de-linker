@@ -6,9 +6,9 @@
   "model": "GMK330",
   "items": [
     {
-      "question": "Which CT version is included in this GMK330 order?",
+      "question": "Which CT version is included with this GMK330?",
       "answer": "The GMK330 ships with 3 current transformers. The datasheet lists 120A CTs included, and the current transformer ratio is 120A:40mA; the previous 200A:50mA version is phased out after June 2026.",
-      "question_de": "Welche Stromwandlerversion ist in dieser GMK330-Bestellung enthalten?",
+      "question_de": "Welche Stromwandlerversion ist mit dieser GMK330 enthalten?",
       "answer_de": "Der GMK330 wird mit 3 Stromwandlern geliefert. Im Datenblatt sind 120-A-Stromwandler enthalten, und das Stromwandlerverhältnis beträgt 120 A:40 mA; die frühere Version mit 200 A:50 mA wird nach Juni 2026 auslaufen.",
       "citation": {
         "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_GMK330_Datasheet_EMEA-EN_V1.0.pdf",

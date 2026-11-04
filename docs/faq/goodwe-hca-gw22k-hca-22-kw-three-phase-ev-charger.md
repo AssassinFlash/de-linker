@@ -5,16 +5,16 @@
 - sku: `DLK-GOODWE-GW22KHCA20`
 - model: GW22K-HCA-20
 
-## 1. What should be checked before ordering GW22K-HCA-20?
+## 1. What should be checked before requesting a GW22K-HCA-20?
 
 **Status:** pass
 **Review:** pass
 
-**EN Q:** What should be checked before ordering GW22K-HCA-20?
+**EN Q:** What should be checked before requesting a GW22K-HCA-20?
 
 Before ordering, check that the charging pile model is correct. If there is any discrepancy, do not open the packaging and contact your dealer.
 
-**DE Q:** Was ist vor der Bestellung von GW22K-HCA-20 zu prüfen?
+**DE Q:** Was ist vor der Anfrage für GW22K-HCA-20 zu prüfen?
 
 Prüfen Sie vor der Bestellung, ob das Modell der Ladestation korrekt ist. Bei Abweichungen öffnen Sie die Verpackung nicht und kontaktieren Sie Ihren Händler.
 

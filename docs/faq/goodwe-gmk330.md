@@ -5,16 +5,16 @@
 - sku: `DLK-GOODWE-GMK330`
 - model: GMK330
 
-## 1. Which CT version is included in this GMK330 order?
+## 1. Which CT version is included with this GMK330?
 
 **Status:** pass
 **Review:** pass
 
-**EN Q:** Which CT version is included in this GMK330 order?
+**EN Q:** Which CT version is included with this GMK330?
 
 The GMK330 ships with 3 current transformers. The datasheet lists 120A CTs included, and the current transformer ratio is 120A:40mA; the previous 200A:50mA version is phased out after June 2026.
 
-**DE Q:** Welche Stromwandlerversion ist in dieser GMK330-Bestellung enthalten?
+**DE Q:** Welche Stromwandlerversion ist mit dieser GMK330 enthalten?
 
 Der GMK330 wird mit 3 Stromwandlern geliefert. Im Datenblatt sind 120-A-Stromwandler enthalten, und das Stromwandlerverhältnis beträgt 120 A:40 mA; die frühere Version mit 200 A:50 mA wird nach Juni 2026 auslaufen.
 
