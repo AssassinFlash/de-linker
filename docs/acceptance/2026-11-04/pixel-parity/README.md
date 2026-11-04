@@ -10,7 +10,8 @@ machine, `--direct` (no proxy). Raw evidence:
   flips between runs (see §3). `repeat-1/` was aborted by a browser crash
   during its last route; its 14 recorded PNGs matched `batch2` exactly and were
   deleted after being measured.
-- `control-live-390/` — live against live on both sides, all 12 routes at 390.
+- `control-live-390/` — live against live on both sides at 390 (9 of 12 routes;
+  the run stopped when the HTTPS proxy refused a tunnel on the tenth).
 - `control-pdp1440-{1,2}/` — live against live on both sides, PDP at 1440,
   two independent runs.
 
