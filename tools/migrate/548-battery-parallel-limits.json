@@ -17,14 +17,6 @@
    ]
   },
   {
-   "document_id": "doc-595423f7b5faeafeeb9e81ff2c54f75dcdb99fc0546e063bc86f02258f6fb1fe",
-   "blob_sha256": "31e69160217850be491a5b7ab31dae2bbf17ec33723c0368a1aec4d751c04ab9",
-   "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Lynx-D-G2_Datasheet_EU-EN_V1.1.pdf",
-   "pages": [
-    1
-   ]
-  },
-  {
    "document_id": "doc-4a29f4d37aa9bf978721029ac126b5bed045a5141b1b7d1439f0d85e63efc9f8",
    "blob_sha256": "0adfb3d5e6df42e6dd465c0f6170a7c21fd82452acd64e00956fbd9aba099e43",
    "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_User-Manual-EN_V1.6.pdf",
@@ -38,6 +30,14 @@
    "url": "https://de-linker.com/wp-content/uploads/2026/09/OPTIMUSL260-OMNI_20240926105739A032.pdf",
    "pages": [
     2
+   ]
+  },
+  {
+   "document_id": "doc-a7cfa5ad5c55cfba8128f3992a05ac5cb86138460b1e9dcbea4fd833142abdf7",
+   "blob_sha256": "67a7f715ca9db734edba1b4f15b50d1a29c866b172ffd1909759e0abc66c8d2a",
+   "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+   "pages": [
+    48
    ]
   }
  ],
@@ -99,20 +99,20 @@
     "stacks_parallel_max": {
      "expect": null,
      "set": {
-      "value": "12",
-      "unit": "units",
+      "value": "3",
+      "unit": "expansion groups",
       "citation": {
-       "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Lynx-D-G2_Datasheet_EU-EN_V1.1.pdf",
-       "page": 1
+       "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+       "page": 48
       }
      },
      "source": {
-      "document_id": "doc-595423f7b5faeafeeb9e81ff2c54f75dcdb99fc0546e063bc86f02258f6fb1fe",
-      "blob_sha256": "31e69160217850be491a5b7ab31dae2bbf17ec33723c0368a1aec4d751c04ab9",
-      "document_revision": "2977d5d0acddc95aca69569fa9d8ee285d4a881be8c15d4d4f1c9c0b28a6a3ee",
-      "page": 1,
-      "quote": "supporting up to 12 units in parallel and multi- cluster expansion.",
-      "basis": "GoodWe Lynx D G2 datasheet (EN, EMEA V1.1) p.1 states up to 12 units in parallel with multi-cluster expansion."
+      "document_id": "doc-a7cfa5ad5c55cfba8128f3992a05ac5cb86138460b1e9dcbea4fd833142abdf7",
+      "blob_sha256": "67a7f715ca9db734edba1b4f15b50d1a29c866b172ffd1909759e0abc66c8d2a",
+      "document_revision": "50f227b4ca819bc905bda317c96e5b0cfbab936e282dd03c04a0372498ddc695",
+      "page": 48,
+      "quote": "Number of Expansion Groups: ≤3 groups. Total number of batteries: ≤12pcs.",
+      "basis": "GoodWe ESA 5-30 kW user manual (EN V1.5) section 2.2.1 System Overall configuration (PDF p.48, printed p.47) limits every mounting method to at most 3 expansion groups; the note on PDF p.49 prints 'expansion groups × stacks per group ≤ total system battery count', and datasheet p.3 prints system scalability of 12 pcs with footnote *4 capping a single column at 6 parallel units. The group count is the parallel-cluster axis; the 12-unit figure is the total-module axis and is carried by modules_per_system_max."
      }
     }
    }
@@ -124,20 +124,20 @@
     "stacks_parallel_max": {
      "expect": null,
      "set": {
-      "value": "12",
-      "unit": "units",
+      "value": "3",
+      "unit": "expansion groups",
       "citation": {
-       "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Lynx-D-G2_Datasheet_EU-EN_V1.1.pdf",
-       "page": 1
+       "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+       "page": 48
       }
      },
      "source": {
-      "document_id": "doc-595423f7b5faeafeeb9e81ff2c54f75dcdb99fc0546e063bc86f02258f6fb1fe",
-      "blob_sha256": "31e69160217850be491a5b7ab31dae2bbf17ec33723c0368a1aec4d751c04ab9",
-      "document_revision": "2977d5d0acddc95aca69569fa9d8ee285d4a881be8c15d4d4f1c9c0b28a6a3ee",
-      "page": 1,
-      "quote": "supporting up to 12 units in parallel and multi- cluster expansion.",
-      "basis": "GoodWe Lynx D G2 datasheet (EN, EMEA V1.1) p.1 states up to 12 units in parallel with multi-cluster expansion."
+      "document_id": "doc-a7cfa5ad5c55cfba8128f3992a05ac5cb86138460b1e9dcbea4fd833142abdf7",
+      "blob_sha256": "67a7f715ca9db734edba1b4f15b50d1a29c866b172ffd1909759e0abc66c8d2a",
+      "document_revision": "50f227b4ca819bc905bda317c96e5b0cfbab936e282dd03c04a0372498ddc695",
+      "page": 48,
+      "quote": "Number of Expansion Groups: ≤3 groups. Total number of batteries: ≤12pcs.",
+      "basis": "GoodWe ESA 5-30 kW user manual (EN V1.5) section 2.2.1 System Overall configuration (PDF p.48, printed p.47) limits every mounting method to at most 3 expansion groups; the note on PDF p.49 prints 'expansion groups × stacks per group ≤ total system battery count', and datasheet p.3 prints system scalability of 12 pcs with footnote *4 capping a single column at 6 parallel units. The group count is the parallel-cluster axis; the 12-unit figure is the total-module axis and is carried by modules_per_system_max."
      }
     }
    }
@@ -149,20 +149,20 @@
     "stacks_parallel_max": {
      "expect": null,
      "set": {
-      "value": "12",
-      "unit": "units",
+      "value": "3",
+      "unit": "expansion groups",
       "citation": {
-       "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Lynx-D-G2_Datasheet_EU-EN_V1.1.pdf",
-       "page": 1
+       "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+       "page": 48
       }
      },
      "source": {
-      "document_id": "doc-595423f7b5faeafeeb9e81ff2c54f75dcdb99fc0546e063bc86f02258f6fb1fe",
-      "blob_sha256": "31e69160217850be491a5b7ab31dae2bbf17ec33723c0368a1aec4d751c04ab9",
-      "document_revision": "2977d5d0acddc95aca69569fa9d8ee285d4a881be8c15d4d4f1c9c0b28a6a3ee",
-      "page": 1,
-      "quote": "supporting up to 12 units in parallel and multi- cluster expansion.",
-      "basis": "GoodWe Lynx D G2 datasheet (EN, EMEA V1.1) p.1 states up to 12 units in parallel with multi-cluster expansion."
+      "document_id": "doc-a7cfa5ad5c55cfba8128f3992a05ac5cb86138460b1e9dcbea4fd833142abdf7",
+      "blob_sha256": "67a7f715ca9db734edba1b4f15b50d1a29c866b172ffd1909759e0abc66c8d2a",
+      "document_revision": "50f227b4ca819bc905bda317c96e5b0cfbab936e282dd03c04a0372498ddc695",
+      "page": 48,
+      "quote": "Number of Expansion Groups: ≤3 groups. Total number of batteries: ≤12pcs.",
+      "basis": "GoodWe ESA 5-30 kW user manual (EN V1.5) section 2.2.1 System Overall configuration (PDF p.48, printed p.47) limits every mounting method to at most 3 expansion groups; the note on PDF p.49 prints 'expansion groups × stacks per group ≤ total system battery count', and datasheet p.3 prints system scalability of 12 pcs with footnote *4 capping a single column at 6 parallel units. The group count is the parallel-cluster axis; the 12-unit figure is the total-module axis and is carried by modules_per_system_max."
      }
     }
    }
@@ -174,20 +174,20 @@
     "stacks_parallel_max": {
      "expect": null,
      "set": {
-      "value": "12",
-      "unit": "units",
+      "value": "3",
+      "unit": "expansion groups",
       "citation": {
-       "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Lynx-D-G2_Datasheet_EU-EN_V1.1.pdf",
-       "page": 1
+       "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+       "page": 48
       }
      },
      "source": {
-      "document_id": "doc-595423f7b5faeafeeb9e81ff2c54f75dcdb99fc0546e063bc86f02258f6fb1fe",
-      "blob_sha256": "31e69160217850be491a5b7ab31dae2bbf17ec33723c0368a1aec4d751c04ab9",
-      "document_revision": "2977d5d0acddc95aca69569fa9d8ee285d4a881be8c15d4d4f1c9c0b28a6a3ee",
-      "page": 1,
-      "quote": "supporting up to 12 units in parallel and multi- cluster expansion.",
-      "basis": "GoodWe Lynx D G2 datasheet (EN, EMEA V1.1) p.1 states up to 12 units in parallel with multi-cluster expansion."
+      "document_id": "doc-a7cfa5ad5c55cfba8128f3992a05ac5cb86138460b1e9dcbea4fd833142abdf7",
+      "blob_sha256": "67a7f715ca9db734edba1b4f15b50d1a29c866b172ffd1909759e0abc66c8d2a",
+      "document_revision": "50f227b4ca819bc905bda317c96e5b0cfbab936e282dd03c04a0372498ddc695",
+      "page": 48,
+      "quote": "Number of Expansion Groups: ≤3 groups. Total number of batteries: ≤12pcs.",
+      "basis": "GoodWe ESA 5-30 kW user manual (EN V1.5) section 2.2.1 System Overall configuration (PDF p.48, printed p.47) limits every mounting method to at most 3 expansion groups; the note on PDF p.49 prints 'expansion groups × stacks per group ≤ total system battery count', and datasheet p.3 prints system scalability of 12 pcs with footnote *4 capping a single column at 6 parallel units. The group count is the parallel-cluster axis; the 12-unit figure is the total-module axis and is carried by modules_per_system_max."
      }
     }
    }
@@ -241,6 +241,56 @@
      }
     }
    }
+  },
+  "6521": {
+   "model": "GW5.1-BAT-D-G21",
+   "sku": "DLK-GOODWE-GW51BATDG21",
+   "figures": {
+    "stacks_parallel_max": {
+     "expect": null,
+     "set": {
+      "value": "3",
+      "unit": "expansion groups",
+      "citation": {
+       "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+       "page": 48
+      }
+     },
+     "source": {
+      "document_id": "doc-a7cfa5ad5c55cfba8128f3992a05ac5cb86138460b1e9dcbea4fd833142abdf7",
+      "blob_sha256": "67a7f715ca9db734edba1b4f15b50d1a29c866b172ffd1909759e0abc66c8d2a",
+      "document_revision": "50f227b4ca819bc905bda317c96e5b0cfbab936e282dd03c04a0372498ddc695",
+      "page": 48,
+      "quote": "Number of Expansion Groups: ≤3 groups. Total number of batteries: ≤12pcs.",
+      "basis": "GoodWe ESA 5-30 kW user manual (EN V1.5) section 2.2.1 System Overall configuration (PDF p.48, printed p.47) limits every mounting method to at most 3 expansion groups; the note on PDF p.49 prints 'expansion groups × stacks per group ≤ total system battery count', and datasheet p.3 prints system scalability of 12 pcs with footnote *4 capping a single column at 6 parallel units. The group count is the parallel-cluster axis; the 12-unit figure is the total-module axis and is carried by modules_per_system_max."
+     }
+    }
+   }
+  },
+  "6522": {
+   "model": "GW8.3-BAT-D-G21",
+   "sku": "DLK-GOODWE-GW83BATDG21",
+   "figures": {
+    "stacks_parallel_max": {
+     "expect": null,
+     "set": {
+      "value": "3",
+      "unit": "expansion groups",
+      "citation": {
+       "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+       "page": 48
+      }
+     },
+     "source": {
+      "document_id": "doc-a7cfa5ad5c55cfba8128f3992a05ac5cb86138460b1e9dcbea4fd833142abdf7",
+      "blob_sha256": "67a7f715ca9db734edba1b4f15b50d1a29c866b172ffd1909759e0abc66c8d2a",
+      "document_revision": "50f227b4ca819bc905bda317c96e5b0cfbab936e282dd03c04a0372498ddc695",
+      "page": 48,
+      "quote": "Number of Expansion Groups: ≤3 groups. Total number of batteries: ≤12pcs.",
+      "basis": "GoodWe ESA 5-30 kW user manual (EN V1.5) section 2.2.1 System Overall configuration (PDF p.48, printed p.47) limits every mounting method to at most 3 expansion groups; the note on PDF p.49 prints 'expansion groups × stacks per group ≤ total system battery count', and datasheet p.3 prints system scalability of 12 pcs with footnote *4 capping a single column at 6 parallel units. The group count is the parallel-cluster axis; the 12-unit figure is the total-module axis and is carried by modules_per_system_max."
+     }
+    }
+   }
   }
  },
  "unbound": {
@@ -250,7 +300,6 @@
   "SAJ CB2 x CH2 (four CB2 per CH2)": "The CB2 manuals (user manual p.8) limit four CB2 systems per CH2 inverter. That is systems per inverter, which no maintained figure expresses; recording it as stacks_parallel_max would misstate it.",
   "GoodWe BAT-C 92.1/102.4/112.6 (four per cluster)": "The ET 50-100 kW manual (EN V1.3) p.12 states four parallel units. Product 1955 (GW112.6-BAT-AC-G10) already carries stacks_parallel_max = 4 from the BAT-C 60-112 datasheet p.1.",
   "GoodWe ET 50-100 kW (15 inverters in parallel)": "ET 50-100 kW manual (EN V1.3) p.11 states a maximum of 15 inverters in parallel. compatibility.schema.json documents max_units as \"the most inverters one controller coordinates\", so storing a system limit there would mislabel it; it stays a documented gap.",
-  "GoodWe Lynx D G2 G21 variants (6521/6522)": "The 12-unit parallel statement lives in the Lynx D G2 datasheet (EU-EN V1.1), which is associated with 3611/3612/6519/6520 only. 6521/6522 carry the IEC 62619 certificate, which prints no parallel limit, so no figure is written for them.",
   "GoodWe BAT-C 261.2 kWh": "The BAT-C 208.9-261.2 manual limits the 208.9 kWh product explicitly; it prints no separate cluster limit for the 261.2 kWh model."
  }
 }

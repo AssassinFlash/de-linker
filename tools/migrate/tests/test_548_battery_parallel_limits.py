@@ -17,14 +17,16 @@ PLAN = HERE.parent / "548-battery-parallel-limits.json"
 EXCERPTS = HERE.parent / "548-page-excerpts.json"
 
 EXPECTED = {
-    "1956": ("GW208.9-BAT-LC-G10", "4"),
-    "1957": ("GW208.9-BAT-LCD-G10", "4"),
-    "3611": ("GW6.0-BAT-D-G20", "12"),
-    "3612": ("GW9.0-BAT-D-G20", "12"),
-    "6519": ("GW5.1-BAT-D-G20", "12"),
-    "6520": ("GW8.3-BAT-D-G20", "12"),
-    "6321": ("GW125/261-ESA-LCN-G10", "8"),
-    "2003": ("L260-OMNI", "6"),
+    "1956": ("GW208.9-BAT-LC-G10", "4", "units"),
+    "1957": ("GW208.9-BAT-LCD-G10", "4", "units"),
+    "3611": ("GW6.0-BAT-D-G20", "3", "expansion groups"),
+    "3612": ("GW9.0-BAT-D-G20", "3", "expansion groups"),
+    "6519": ("GW5.1-BAT-D-G20", "3", "expansion groups"),
+    "6520": ("GW8.3-BAT-D-G20", "3", "expansion groups"),
+    "6521": ("GW5.1-BAT-D-G21", "3", "expansion groups"),
+    "6522": ("GW8.3-BAT-D-G21", "3", "expansion groups"),
+    "6321": ("GW125/261-ESA-LCN-G10", "8", "units"),
+    "2003": ("L260-OMNI", "6", "units"),
 }
 # Products whose own associated documents print no parallel-cluster limit stay out.
 NOT_WRITTEN = ("1954", "1955", "1958", "2409", "2093")
@@ -46,7 +48,11 @@ def test_the_reviewed_plan_pins_every_limit_to_one_document_page() -> None:
     plan = json.loads(PLAN.read_text())
     assert plan["kind"] == "battery_parallel_limits_v1"
     assert {
-        key: (row["model"], row["figures"]["stacks_parallel_max"]["set"]["value"])
+        key: (
+            row["model"],
+            row["figures"]["stacks_parallel_max"]["set"]["value"],
+            row["figures"]["stacks_parallel_max"]["set"]["unit"],
+        )
         for key, row in plan["products"].items()
     } == EXPECTED
     for key, row in plan["products"].items():
@@ -54,7 +60,6 @@ def test_the_reviewed_plan_pins_every_limit_to_one_document_page() -> None:
         source = change["source"]
         citation = change["set"]["citation"]
         assert change["expect"] is None
-        assert change["set"]["unit"] == "units"
         assert source["page"] == citation["page"]
         assert citation["url"].startswith("https://de-linker.com/wp-content/uploads/")
         assert source["quote"].strip(), key
@@ -99,7 +104,8 @@ def test_no_limit_is_invented_for_a_product_without_its_own_statement() -> None:
     assert "CH2" in joined
     assert "HS3" in joined
     assert "BAT-S" in joined
-    assert "6521" in joined
+    # 6521/6522 moved from unbound into products: the ESA user manual V1.5 is
+    # mounted on them and prints the 3-expansion-group limit for the family.
 
 
 def test_the_engine_reads_the_same_figure_key() -> None:

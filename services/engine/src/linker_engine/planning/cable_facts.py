@@ -80,8 +80,6 @@ class CableFacts(Document):
             self.reference_current_ratings
         ):
             raise ValueError("cable reference-current IDs must be distinct")
-        if self.reference_current_ratings and self.construction != "single_conductor":
-            raise ValueError("reference-current table requires a single conductor")
         if self.construction == "single_conductor" and self.core_count != 1:
             raise ValueError("a single conductor has one core")
         return self

@@ -173,7 +173,7 @@ final class EngineeringReferenceTest extends TestCase {
 		$this->assertSame( 'single_in_air', $rating['laying'] );
 		$this->assertSame( $doc['document_revision'], $rating['source']['document_revision'] );
 		$this->assertArrayHasKey( 'url', $rating['source'] );
-		foreach ( array( 'source', 'current', 'duplicate', 'unknown_condition', 'multicore' ) as $damage ) {
+		foreach ( array( 'source', 'current', 'duplicate', 'unknown_condition', 'identity' ) as $damage ) {
 			$invalid = $with_rating;
 			if ( 'source' === $damage ) {
 				$invalid['reference_current_ratings'][0]['source']['blob_sha256'] = str_repeat( '0', 64 );
@@ -184,12 +184,20 @@ final class EngineeringReferenceTest extends TestCase {
 			} elseif ( 'unknown_condition' === $damage ) {
 				$invalid['reference_current_ratings'][0]['laying'] = 'unknown';
 			} else {
-				$invalid['construction'] = 'multicore_cable';
-				$invalid['core_count']   = 2;
+				$invalid['core_count'] = 2;
 			}
 			$this->current_faq_meta[ \Linker\Commerce\Products\Publication\CableFacts::META_KEY ] = $invalid;
 			$this->assertSame( array(), EngineeringFeed::feed()['overlay'], $damage );
 		}
+		// A multicore cable may carry a cited reference-current table; only the
+		// engine's single-conductor comparison method decides whether to use it.
+		$multicore                 = $with_rating;
+		$multicore['construction'] = 'multicore_cable';
+		$multicore['core_count']   = 5;
+		$this->current_faq_meta[ \Linker\Commerce\Products\Publication\CableFacts::META_KEY ] = $multicore;
+		$projected = EngineeringFeed::feed()['overlay'][0]['cable_facts'];
+		$this->assertSame( 'multicore_cable', $projected['construction'] );
+		$this->assertSame( 70, $projected['reference_current_ratings'][0]['current_a'] );
 		$this->current_faq_meta[ \Linker\Commerce\Products\Publication\CableFacts::META_KEY ]                                      = $facts;
 		$this->current_faq_meta[ \Linker\Commerce\Products\Publication\CableFacts::META_KEY ]['parameter_sets'][0]['frequency_hz'] = 50;
 		$this->assertSame( array(), EngineeringFeed::feed()['overlay'] );

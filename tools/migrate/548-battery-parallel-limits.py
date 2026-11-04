@@ -93,9 +93,13 @@ def load_plan(path: Path = PLAN) -> dict[str, Any]:
                 raise MigrationError(
                     f"Plan product {key} {field} has an unknown shape."
                 )
-            if values["unit"] != "units" or not str(values["value"]).isdigit():
+            if (
+                not isinstance(values["unit"], str)
+                or not values["unit"].strip()
+                or not str(values["value"]).isdigit()
+            ):
                 raise MigrationError(
-                    f"Plan product {key} {field} needs a whole unit count."
+                    f"Plan product {key} {field} needs a whole count and a unit."
                 )
             citation = _object(
                 values["citation"], f"Plan product {key} {field} citation"
