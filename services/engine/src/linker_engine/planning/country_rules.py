@@ -89,10 +89,8 @@ _ENEDIS_SOURCE: Object = {
     "source_url": "https://www.enedis.fr/autoconsommer-la-totalite-de-lenergie-produite-par-vos-panneaux",
     "edition": None,
     "clause": "Déclarer mon installation, CACSI",
-    # The Arrêté du 9 juin 2020 this Enedis declaration process executes
-    # entered into force on 26 June 2020 (published JORF n°0156 du 25 juin
-    # 2020); the declaration reading starts from that date.
-    "effective_from": "2020-06-26",
+    # This page has no effective-date statement; only the dated reading itself.
+    "effective_from": None,
     "evidence_snapshot_date": "2026-11-04",
     "text_sha256": "3741f1e39b855240554fc7348cd130d08f8b186e2e3a38dd831b2c708b4ff673",
 }
@@ -186,13 +184,12 @@ def review_country_rules(
             and operator.strip().casefold() == "enedis"
         ):
             sources.append(dict(_ENEDIS_SOURCE))
-            enedis_floor = cast(str, _ENEDIS_SOURCE["effective_from"])
             enedis_through = cast(str, _ENEDIS_SOURCE["evidence_snapshot_date"])
             enedis_outcome = (
                 "missing_inputs"
                 if missing_date
                 else "outside_version"
-                if not enedis_floor <= facts.rule_date <= enedis_through
+                if facts.rule_date != enedis_through
                 else "enedis_declare_cacsi"
             )
             enedis_missing = ["rule_date"] if missing_date else []

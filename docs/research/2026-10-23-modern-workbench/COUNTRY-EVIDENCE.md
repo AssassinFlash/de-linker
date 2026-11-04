@@ -386,4 +386,6 @@ Apify 检索记录 GimfClfA2AJhH0U9J、2aOchEnlB1M465Jpf、dDUwRF2Cm5Xka3166；�
 
 荷兰汇编的采集文本含随读取日变化的 `Geraadpleegd op` 字段；此前数据集当前不可读，因此不据旧哈希作全文不变结论。新哈希只标识本次提取，所用规则条款已在当前正文逐项确认。
 
-规则评价恢复以 `effective_from` 和 `evidence_snapshot_date` 为两侧边界；2026-11-04 之后的日期保持 `outside_version`，不能继承此次读取。此次更新不证明任何项目或设备的适用性、过渡条件或 DSO 许可，未改变既有未证事项。
+规则评价恢复以 `effective_from` 和 `evidence_snapshot_date` 为两侧边界；2026-11-04 之后的日期保持 `outside_version`，不能继承此次读取。Enedis 页面没有自己的生效日期声明，只评价实际核查日，不借用另一份法规的生效日。此次更新不证明任何项目或设备的适用性、过渡条件或 DSO 许可，未改变既有未证事项。
+
+同一批复核 EnWG §19 与 VDE FNN 中压适用范围：Apify run `WahJWHCMNdyvH66IH`（dataset `z1SaTt3LSJS8rrGIl`）于 2026-11-04 16:56 UTC 取得两个官方页面 HTTP 200。采集器 `text` 的 SHA-256 分别为 `7dbf22b9f82a3bf380d25975e4d9fe9c68fa37c9feb4ee7972e3272f91f0b208` 与 `4aea379ed9f11476d915b5f9baacad618b39209df9acd02c78c612418fe528c6`。这只更新来源身份和读取记录，不把项目声明转为 DSO 许可。
