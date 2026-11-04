@@ -109,8 +109,8 @@ function containerFor(
 	action: string,
 	ownedSlot?: () => HTMLElement | null
 ): HTMLElement {
-	const slot = action === 'genie' ? ownedSlot?.() : undefined;
-	if ( action === 'genie' && ownedSlot && ! slot?.isConnected ) {
+	const slot = ownedSlot?.();
+	if ( ownedSlot && ! slot?.isConnected ) {
 		throw new Error( 'verification_cancelled' );
 	}
 	const visible = ( element: Element ) => element.getClientRects().length > 0;
@@ -168,12 +168,23 @@ function containerFor(
 			);
 		} else if ( state === 'ready' ) {
 			status.textContent = '';
-		} else if ( slot && action === 'genie' ) {
-			// The actual App/Hero failure owner restores its editor and shows
-			// the localized banner. Do not leave a second detached status.
-			status.remove();
-			container.remove();
-			slot.hidden = slot.children.length === 0;
+		} else if ( 'failed' === state || 'expired' === state ) {
+			// A terminal proof state. The failure owner above the transport —
+			// the App/Hero banner, the configurator's own error — is what
+			// speaks; this transport node has nothing left to say. Every
+			// action cleans up its own container, with or without a slot
+			// (#901: only genie ever did, so every other action left a
+			// second role="status" in the DOM after a failed proof).
+			if ( containers.get( action ) === container ) {
+				const ownerSlot = container.closest< HTMLElement >(
+					'[data-linker-resource-verification-slot]'
+				);
+				status.remove();
+				container.remove();
+				if ( ownerSlot ) {
+					ownerSlot.hidden = ownerSlot.children.length === 0;
+				}
+			}
 		} else {
 			status.textContent = __(
 				'Verification could not be completed. No request has been sent in this attempt. Please try again.',
@@ -205,7 +216,7 @@ function containerFor(
  * @param input
  * @param init
  * @param onOperation Receives the actual enforced operation just before sending.
- * @param ownedSlot   Explicit Genie owner. Other resources keep their native form/main placement.
+ * @param ownedSlot   Explicit slot-owning caller (Genie's send). Other resources keep their native form/main placement; their cleanup is owned by their own attempt, not by a slot.
  */
 export async function resourceFetch(
 	fetcher: typeof fetch,
@@ -323,16 +334,13 @@ export async function resourceFetch(
 				) {
 					return response;
 				}
-				const status = container && statuses.get( container );
-				if ( status ) {
-					status.textContent = '';
-				}
-				const slot = container?.closest< HTMLElement >(
+				const status = statuses.get( container );
+				const slot = container.closest< HTMLElement >(
 					'[data-linker-resource-verification-slot]'
 				);
+				status?.remove();
+				container.remove();
 				if ( slot ) {
-					status?.remove();
-					container?.remove();
 					slot.hidden = slot.children.length === 0;
 				}
 			}

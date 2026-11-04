@@ -22,7 +22,8 @@ test( 'the native auxiliary request is bounded and coalesces only pending guest 
 	expect( first ).toBe( second );
 	expect( fetcher ).toHaveBeenCalledTimes( 1 );
 	const rejected = first.catch( ( error: Error ) => error );
-	await vi.advanceTimersByTimeAsync( 5000 );
+	// #901: the auxiliary identity budget is the 20-second native-read budget.
+	await vi.advanceTimersByTimeAsync( 20_000 );
 	expect( ( ( await rejected ) as Error ).message ).toBe( 'aborted' );
 	vi.stubGlobal(
 		'fetch',

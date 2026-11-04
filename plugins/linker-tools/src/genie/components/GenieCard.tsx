@@ -38,6 +38,21 @@ export function priceLine(
 	return { text: price.text, kind: price.reason ? 'note' : 'net' };
 }
 
+/**
+ * The card's own content load, separate from the card-action feedback
+ * (`CardState`): pending is not loaded-empty is not failed (#901). The same
+ * shape as draftContext's phase and RoofStep's Status union. The state is
+ * keyed by the requested product id: a re-render that re-runs the effect
+ * keeps the loaded card on screen instead of flashing back to pending, the
+ * way the former single `StoreProduct | null` did. `loading` carries no live
+ * region: a live region would announce the wait, and only a true failure is
+ * announced (`role="alert"`).
+ */
+type Load =
+	| { id: number; phase: 'loading' }
+	| { id: number; phase: 'ready'; product: StoreProduct }
+	| { id: number; phase: 'failed' };
+
 export function GenieCard( {
 	productId,
 	restUrl,
@@ -57,7 +72,10 @@ export function GenieCard( {
 	onAdd: ( productId: number ) => void;
 	onSave: ( productId: number, title: string ) => void;
 } ) {
-	const [ product, setProduct ] = useState< StoreProduct | null >( null );
+	const [ load, setLoad ] = useState< Load >( {
+		id: productId,
+		phase: 'loading',
+	} );
 	const [ model, setModel ] = useState( '' );
 
 	useEffect( () => {
@@ -65,29 +83,46 @@ export function GenieCard( {
 		store
 			.products( [ productId ], locale as 'en' | 'de' )
 			.then( ( [ first ] ) => {
-				if ( alive && first ) {
-					setProduct( first );
+				if ( ! alive ) {
+					return;
+				}
+				setLoad(
+					first
+						? { id: productId, phase: 'ready', product: first }
+						: { id: productId, phase: 'failed' }
+				);
+			} )
+			.catch( () => {
+				if ( alive ) {
+					setLoad( { id: productId, phase: 'failed' } );
 				}
 			} );
-		productModel( restUrl, productId, locale as 'en' | 'de' ).then(
-			( name ) => {
+		productModel( restUrl, productId, locale as 'en' | 'de' )
+			.then( ( name ) => {
 				if ( alive ) {
 					setModel( name );
 				}
-			}
-		);
+			} )
+			.catch( () => {
+				// The model line is optional decoration; a failed read just
+				// leaves it empty, the card still renders.
+			} );
 		return () => {
 			alive = false;
 		};
 	}, [ productId, restUrl, store, locale ] );
 
-	if ( ! product ) {
+	if ( load.id !== productId || 'loading' === load.phase ) {
+		return null;
+	}
+	if ( 'failed' === load.phase ) {
 		return (
-			<p className="linker-genie-app__missing">
+			<p className="linker-genie-app__missing" role="alert">
 				{ __( 'Genie could not load this product.', 'linker-tools' ) }
 			</p>
 		);
 	}
+	const product = load.product;
 	const modelText = model
 		? `${ __( 'Model', 'linker-tools' ) } ${ model }`
 		: '';

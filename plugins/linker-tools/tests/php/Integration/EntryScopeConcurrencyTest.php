@@ -243,9 +243,12 @@ final class EntryScopeConcurrencyTest extends TestCase {
 	}
 
 	/**
-	 * A real REST request must return before the browser's five-second budget
-	 * when another process holds the cold mint. Its fallback publishes a claim,
-	 * and a second cookieless request must reuse that scope.
+	 * A real REST request must return before the browser's twenty-second
+	 * budget when another process holds the cold mint. Its fallback publishes
+	 * a claim, and a second cookieless request must reuse that scope. The
+	 * elapsed bounds track the 3-second lock wait (#906): below it the read
+	 * bypassed the held lock, far above it the headroom under the 20-second
+	 * client budget (#901) is gone.
 	 */
 	public function test_lock_contention_leaves_client_budget_headroom(): void {
 		$root  = (string) getenv( 'LINKER_WP_ROOT' );
@@ -289,6 +292,7 @@ final class EntryScopeConcurrencyTest extends TestCase {
 					'headers' => array(
 						'Content-Type' => 'application/json',
 						'X-WP-Nonce'   => wp_create_nonce( 'wp_rest' ),
+						'Origin'       => home_url(),
 					),
 					'body'    => $body,
 				)
@@ -296,8 +300,8 @@ final class EntryScopeConcurrencyTest extends TestCase {
 			$elapsed  = microtime( true ) - $started;
 			$this->assertFalse( is_wp_error( $response ), is_wp_error( $response ) ? $response->get_error_message() : '' );
 			$this->assertSame( 200, wp_remote_retrieve_response_code( $response ) );
-			$this->assertGreaterThanOrEqual( 0.75, $elapsed, 'entry_scope bypassed the held named lock' );
-			$this->assertLessThan( 2.0, $elapsed, 'entry_scope waited at the five-second client boundary' );
+			$this->assertGreaterThanOrEqual( 2.5, $elapsed, 'entry_scope bypassed the held named lock' );
+			$this->assertLessThan( 6.0, $elapsed, 'entry_scope left no headroom under the 20-second client budget' );
 			$data = json_decode( (string) wp_remote_retrieve_body( $response ), true );
 			$this->assertIsArray( $data, (string) wp_remote_retrieve_body( $response ) );
 			$claim = get_option( $this->claim_name( self::LOCKED_TAB ), false );
@@ -316,6 +320,7 @@ final class EntryScopeConcurrencyTest extends TestCase {
 					'headers' => array(
 						'Content-Type' => 'application/json',
 						'X-WP-Nonce'   => wp_create_nonce( 'wp_rest' ),
+						'Origin'       => home_url(),
 					),
 					'body'    => $second_body,
 				)

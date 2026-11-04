@@ -98,3 +98,12 @@ test( 'persisted tab ID is read back and reused without exposing tokens', async 
 		body: JSON.stringify( { tab: 'existing-tab' } ),
 	} );
 } );
+
+test( 'the entry-context budget is the 20-second native-read budget, not the retired five', async () => {
+	// #901: 5000 was inherited from a product-metadata deadline that was
+	// itself raised to 20 s (0a5a224c9); production put 30-way-concurrent
+	// entry-context at p95 5.003 s. Any change ships with
+	// Conversations::BROWSER_CLAIM_SECONDS in the same batch.
+	const { CONTEXT_BUDGET_MS } = await import( './nativeScope' );
+	expect( CONTEXT_BUDGET_MS ).toBe( 20_000 );
+} );

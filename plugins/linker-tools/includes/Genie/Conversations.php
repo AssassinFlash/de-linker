@@ -65,25 +65,34 @@ class Conversations {
 	 * Seconds a cookieless sibling may adopt the key minted for this tab.
 	 *
 	 * The client can send the second entry-context before it has stored
-	 * this response's Set-Cookie. Five seconds is that client's auxiliary
-	 * identity budget (nativeScope.ts CONTEXT_BUDGET_MS). The window also
-	 * ends when any request presents the browser cookie: that epoch is
-	 * established, and a later cookieless request on this tab is a new
-	 * guest. A request that already has a browser cookie never reads this
-	 * claim.
+	 * this response's Set-Cookie. The window is the client's auxiliary
+	 * identity budget (nativeScope.ts CONTEXT_BUDGET_MS): 20 seconds,
+	 * changed with that budget in one batch (#901, #906). The old 5 was
+	 * inherited from a product-metadata deadline that was itself raised to
+	 * 20 seconds two days later (0a5a224c9), and production sampling put
+	 * 30-way-concurrent entry-context at p95 5.003 s — at the threshold
+	 * (docs/research/2026-11-04-genie-premature-failure.md §2.3). The
+	 * window also ends when any request presents the browser cookie: that
+	 * epoch is established, and a later cookieless request on this tab is
+	 * a new guest. A request that already has a browser cookie never reads
+	 * this claim. A longer window only widens sibling deduplication; rows
+	 * no sibling closes are reclaimed hourly (BrowserClaim).
 	 */
-	private const BROWSER_CLAIM_SECONDS = 5;
+	private const BROWSER_CLAIM_SECONDS = 20;
 
 	/**
 	 * How long to wait for a concurrent cold mint to publish its claim.
 	 *
-	 * The client aborts entry-context at five seconds. Waiting the same five
-	 * seconds for the lock makes lock contention finish exactly at that client
-	 * deadline, so a delayed winner is reported as a Genie load failure. After
-	 * this shorter wait, the existing read/add-option fallback still converges
-	 * both requests on one key.
+	 * The loser of the lock waits this long for the winner's claim to
+	 * commit, then reads it back; only a read that still finds nothing
+	 * publishes without the lock. Three seconds stays well under the
+	 * client's 20-second budget (a delayed winner must not be reported as
+	 * a Genie load failure, the #563 lesson) and closes most of the
+	 * no-lock publish window that produced the overwritten-key race
+	 * (#906 §4.4). The old 1 was derived from a 5-second client deadline
+	 * that no longer exists (#901).
 	 */
-	private const BROWSER_CLAIM_LOCK_SECONDS = 1;
+	private const BROWSER_CLAIM_LOCK_SECONDS = 3;
 
 	/**
 	 * Title of a conversation that has not been named by its first message.
@@ -740,6 +749,12 @@ class Conversations {
 	 * A later cookieless request on the same tab is a new guest, not a
 	 * sibling of the mint. Without an option store there is no row to close.
 	 *
+	 * Existence, not expiry, decides: `read_browser_claim()` returns '' for
+	 * an expired row, and the previous expiry short-circuit kept expired
+	 * rows out of the only deletion path a returning tab has — the human
+	 * rhythm (a second request seconds later) leaked every row (#906).
+	 * Rows whose tab never returns are reclaimed hourly (BrowserClaim).
+	 *
 	 * @param string $tab Client tab identity.
 	 */
 	private function close_browser_claim( string $tab ): void {
@@ -747,7 +762,7 @@ class Conversations {
 			return;
 		}
 		$this->forget_browser_claim_cache( $tab );
-		if ( '' === $this->read_browser_claim( $tab ) ) {
+		if ( false === get_option( $this->browser_claim_option( $tab ), false ) ) {
 			return;
 		}
 		if ( ! $this->lock_browser_claim( $tab ) ) {
@@ -833,19 +848,37 @@ class Conversations {
 	}
 
 	/**
-	 * Publishes one key for this tab. A lost insert reads the key that won.
+	 * Publishes one key for this tab. The first writer wins.
+	 *
+	 * `add_option()` is INSERT … ON DUPLICATE KEY UPDATE: in the narrow
+	 * window where a losing mint's existence check has not seen the
+	 * winner's insert commit, its "add" would overwrite the winner's key,
+	 * leaving two responses with different keys (#906 §4.4). INSERT IGNORE
+	 * makes the loser fail instead, and the read-back below adopts the key
+	 * that won. The update_option() fallback only rewrites a row the
+	 * read-back cannot serve — one already expired or damaged, never a
+	 * live winner.
 	 *
 	 * @param string $tab Client tab identity.
 	 * @param string $key 32 hex characters.
 	 */
 	private function publish_browser_claim( string $tab, string $key ): string {
+		global $wpdb;
 		$name  = $this->browser_claim_option( $tab );
 		$value = array(
 			'key'   => $key,
 			'until' => time() + self::BROWSER_CLAIM_SECONDS,
 		);
 		$this->forget_browser_claim_cache( $tab );
-		if ( add_option( $name, $value, '', false ) ) {
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- first-writer-wins insert; the object cache is deliberately not consulted (see RateLimit).
+		$inserted = $wpdb->query(
+			$wpdb->prepare(
+				"INSERT IGNORE INTO {$wpdb->options} (option_name, option_value, autoload) VALUES (%s, %s, 'off')",
+				$name,
+				maybe_serialize( $value )
+			)
+		);
+		if ( 1 === $inserted ) {
 			return $key;
 		}
 		$this->forget_browser_claim_cache( $tab );

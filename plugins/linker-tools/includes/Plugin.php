@@ -17,6 +17,7 @@ use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
 use Linker\Tools\Genie\Hero;
 use Linker\Tools\Genie\InquiryRequest;
+use Linker\Tools\Genie\BrowserClaim;
 use Linker\Tools\Genie\InquirySummary;
 use Linker\Tools\Genie\PageCache;
 use Linker\Tools\Genie\PageIndexing;
@@ -44,6 +45,7 @@ final class Plugin {
 	 * @param Proxy                     $proxy         REST proxy to the Genie service.
 	 * @param Entries                   $entries       Chips, dock and disclosure.
 	 * @param Retention                 $retention     Deletes expired guest conversations.
+	 * @param BrowserClaim              $browser_claim Deletes expired browser-claim rows hourly (#906).
 	 * @param UserContext               $user_context  The customer-identity seam.
 	 * @param WindPress                 $windpress     Scan provider for the entries' Tailwind classes.
 	 * @param Mount                     $mount         The Solution Configurator's mount point.
@@ -70,6 +72,7 @@ final class Plugin {
 		private readonly Proxy $proxy,
 		private readonly Entries $entries,
 		private readonly Retention $retention,
+		private readonly BrowserClaim $browser_claim,
 		private readonly UserContext $user_context,
 		private readonly WindPress $windpress,
 		private readonly Mount $mount,
@@ -107,6 +110,7 @@ final class Plugin {
 		$this->site_chrome->register();
 		$this->entries->register();
 		$this->retention->register();
+		$this->browser_claim->register();
 		// Registered first in the bootstrap: `determine_current_user` must be
 		// listening before anything asks who is making the request.
 		$this->user_context->register();

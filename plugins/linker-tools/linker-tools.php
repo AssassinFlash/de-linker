@@ -20,6 +20,7 @@ namespace Linker\Tools;
 
 use Linker\Tools\Configurator\EngineProxy;
 use Linker\Tools\Configurator\Mount;
+use Linker\Tools\Genie\BrowserClaim;
 use Linker\Tools\Genie\ContactRequest;
 use Linker\Tools\Genie\ConversationMail;
 use Linker\Tools\Genie\Conversations;
@@ -72,6 +73,7 @@ $genie_preview = new Preview( $page_context ); // phpcs:ignore WordPress.NamingC
 	new Proxy( $conversations, null, $thread, null, $page_context, $mail ),
 	new Entries( __FILE__, $page_context, $genie_preview ),
 	new Retention( __FILE__ ),
+	new BrowserClaim( __FILE__ ),
 	new UserContext(),
 	new WindPress(),
 	new Mount(),

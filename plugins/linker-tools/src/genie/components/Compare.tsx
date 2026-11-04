@@ -28,11 +28,20 @@ export function Compare( {
 
 	useEffect( () => {
 		let alive = true;
-		store.products( products, locale as 'en' | 'de' ).then( ( found ) => {
-			if ( alive ) {
-				setRows( found );
-			}
-		} );
+		store
+			.products( products, locale as 'en' | 'de' )
+			.then( ( found ) => {
+				if ( alive ) {
+					setRows( found );
+				}
+			} )
+			.catch( () => {
+				// A refused Store API read keeps the table empty; the answer's
+				// own error surface tells the customer what failed.
+				if ( alive ) {
+					setRows( [] );
+				}
+			} );
 		return () => {
 			alive = false;
 		};

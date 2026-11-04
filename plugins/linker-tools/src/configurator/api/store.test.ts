@@ -212,3 +212,12 @@ test( 'Genie cards use their signed complete list without an engineering fallbac
 	expect( statuses.get( 7 ) ).toBe( 'added' );
 	expect( fetcher ).toHaveBeenCalledTimes( 2 );
 } );
+
+test( 'a refused product read rejects instead of passing an empty shelf', async () => {
+	const fetcher = vi
+		.fn< typeof fetch >()
+		.mockResolvedValue( new Response( 'forbidden', { status: 403 } ) );
+	await expect(
+		storeClient( '/wp-json/', fetcher ).products( [ 4107 ], 'en' )
+	).rejects.toThrow( 'products 403' );
+} );
