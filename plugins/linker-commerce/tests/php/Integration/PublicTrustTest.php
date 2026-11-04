@@ -33,41 +33,63 @@ final class PublicTrustTest extends IntegrationTestCase {
 	private const SECRET   = '1x0000000000000000000000000000000AA';
 
 	/**
-	 * Sets the runner to a guest with one fixed synthetic browser cookie.
+	 * The synthetic cookies this test used, each with a fresh random key so
+	 * no earlier test in the lane can have granted trust for them.
+	 *
+	 * @var list<string>
+	 */
+	private array $cookies = array();
+
+	/**
+	 * The runner's original cookie, restored afterwards.
+	 *
+	 * @var string|null
+	 */
+	private ?string $previous_cookie = null;
+
+	/**
+	 * Sets the runner to a guest on one fresh synthetic browser identity.
 	 */
 	protected function setUp(): void {
 		parent::setUp();
 		$this->as_user( 0 );
-		$old                         = $_COOKIE[ Identity::COOKIE ] ?? null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Exact runner value retained for restoration.
-		$_COOKIE[ Identity::COOKIE ] = str_repeat( 'a', 32 ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Exact synthetic fixture value, never a live credential.
+		$this->previous_cookie = isset( $_COOKIE[ Identity::COOKIE ] ) && is_string( $_COOKIE[ Identity::COOKIE ] ) ? $_COOKIE[ Identity::COOKIE ] : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Exact runner value retained for restoration.
+		$this->become();
 		$this->later(
-			static function () use ( $old ): void {
-				if ( null === $old ) {
+			function (): void {
+				if ( null === $this->previous_cookie ) {
 					unset( $_COOKIE[ Identity::COOKIE ] );
 				} else {
-					$_COOKIE[ Identity::COOKIE ] = $old;
+					$_COOKIE[ Identity::COOKIE ] = $this->previous_cookie;
 				}
 			}
 		);
 	}
 
 	/**
-	 * Removes this identity's trust rows after each test.
+	 * Removes every identity this test used, and its trust rows.
 	 */
 	protected function tearDown(): void {
-		$identity = Identity::current();
-		if ( $identity instanceof Identity ) {
-			( new Trust() )->revoke( 'genie', $identity );
+		foreach ( $this->cookies as $key ) {
+			$_COOKIE[ Identity::COOKIE ] = $key; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Exact synthetic fixture value, never a live credential.
+			$identity                    = Identity::current();
+			if ( $identity instanceof Identity ) {
+				( new Trust() )->revoke( 'genie', $identity );
+			}
 		}
 		parent::tearDown();
 	}
 
 	/**
-	 * One reserve on the admission under test, with a proof or without one.
-	 *
-	 * @param string $proof Verified proof, '' for a proofless attempt.
-	 * @return array<string,mixed>|WP_Error The permit or the refusal.
+	 * Switches the current request to a fresh, previously unused guest
+	 * identity (a lane-sibling can never have trusted it).
 	 */
+	private function become(): void {
+		$key                         = bin2hex( random_bytes( 16 ) );
+		$this->cookies[]             = $key;
+		$_COOKIE[ Identity::COOKIE ] = $key; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Exact synthetic fixture value, never a live credential.
+	}
+
 	/**
 	 * One reserve on the admission under test, with a proof or without one.
 	 *
@@ -154,13 +176,7 @@ final class PublicTrustTest extends IntegrationTestCase {
 		$this->assertInstanceOf( Identity::class, $identity );
 		( new Trust() )->grant( 'genie', $identity );
 
-		$old = $_COOKIE[ Identity::COOKIE ]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Exact synthetic fixture value retained for restoration.
-		$this->later(
-			static function () use ( $old ): void {
-				$_COOKIE[ Identity::COOKIE ] = $old;
-			}
-		);
-		$_COOKIE[ Identity::COOKIE ] = str_repeat( 'b', 32 ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Exact synthetic fixture value, never a live credential.
+		$this->become();
 
 		$other = Identity::current();
 		$this->assertInstanceOf( Identity::class, $other );
