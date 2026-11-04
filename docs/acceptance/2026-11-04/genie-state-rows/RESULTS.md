@@ -30,6 +30,13 @@ Target families — every row is now partially-verified, none pending:
 | marketing-genie-entry | 32 | 0 | 0 |
 | project-brief | 48 | 0 | 0 |
 
+Which rows are round-3 evidence: **94 rows carry a round-3 receipt**
+(`genie-family-fix*`, `genie-states-round3*`, `roof-family-<lang>-<width>`);
+the other **214 target-family rows keep their earlier receipt**, because the
+harness fix invalidated only the rows listed above and the instruction was to
+re-run the affected rows, not the whole batch. Both kinds are real sessions
+against this instance; none is inferred.
+
 The 312 remaining pending rows belong to the parallel pass's families
 (account 56, draft 48, inquiry 45, authentication 39, home 32,
 global-navigation 12, product 28, contact 24, comparison 10,
