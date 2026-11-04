@@ -38,12 +38,14 @@ The capture never resizes the layout viewport. It stays at the requested width
 and the established 900px height, the page is scrolled through once at that size
 so native lazy images enter it, and the full page is then taken with a CDP
 `Page.captureScreenshot` clip of the document rectangle (`captureBeyondViewport`).
-`fullPage: true` is deliberately not used: Playwright implements it by resizing
-the viewport, which re-lays-out the document and re-rasterizes images that were
-already decoded at the shorter height. Measured before this change, that
-re-raster differed by up to 10 levels per channel on the same page served by a
-different host while the image bytes, the `naturalWidth`/`naturalHeight`, and
-canvas hashes drawn both at natural size and at box size were identical.
+The installed Playwright already uses this engine path for `fullPage: true`; an
+explicit clip makes the rectangle and no-resize contract visible. The earlier
+error was the separate `setViewportSize` call before that screenshot, not
+`fullPage` itself. Measured before removing that call, re-rastering differed by
+up to 10 levels per channel while image bytes, intrinsic dimensions and canvas
+hashes at natural and box size were identical. After the sweep, every visible
+image must have a selected source and decode successfully; a missing source or
+decode failure is an explicit capture failure, never an empty-image pass.
 
 The scroll sweep must scroll instantly. The site sets `scroll-behavior: smooth`
 on the root element, so a plain `window.scrollTo(0, y)` starts an animation the

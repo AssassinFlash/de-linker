@@ -159,16 +159,19 @@ for (const width of widths) {
 					);
 				const decodeImages = () =>
 					page.evaluate(async () => {
-						await Promise.all(
-							[...document.images]
-								.filter(
-									(img) =>
-										img.getClientRects().length > 0 &&
-										getComputedStyle(img).visibility !== "hidden" &&
-										img.currentSrc,
-								)
-								.map((img) => img.decode().catch(() => {})),
+						const visible = [...document.images].filter(
+							(img) =>
+								img.getClientRects().length > 0 &&
+								getComputedStyle(img).visibility !== "hidden",
 						);
+						const missing = visible.filter((img) => !img.currentSrc);
+						if (missing.length)
+							throw new Error(
+								`visible images without a selected source: ${missing
+									.map((img) => img.src || img.alt || "<unnamed>")
+									.join(", ")}`,
+							);
+						await Promise.all(visible.map((img) => img.decode()));
 					});
 				await sweep(600, 120);
 				await decodeImages();
@@ -275,13 +278,18 @@ for (const width of widths) {
 				}
 				const name = `${stem}-${width}-${label}.png`;
 				// CDP paints the whole document without resizing the layout
-				// viewport, so every element keeps the size it had while the page
-				// was laid out. fullPage:true is deliberately not used: Playwright
-				// implements it by resizing the viewport, which is the re-layout
-				// this capture must avoid.
+				// viewport. The installed Playwright already uses this same engine
+				// path for fullPage; the old separate setViewportSize call was the
+				// re-layout trigger, not fullPage itself. Match its full-page bounds.
 				const shotSize = await page.evaluate(() => ({
-					width: document.documentElement.scrollWidth,
-					height: document.documentElement.scrollHeight,
+					width: Math.max(
+						document.body?.scrollWidth ?? 0,
+						document.documentElement.scrollWidth,
+					),
+					height: Math.max(
+						document.body?.scrollHeight ?? 0,
+						document.documentElement.scrollHeight,
+					),
 				}));
 				const session = await page.context().newCDPSession(page);
 				try {

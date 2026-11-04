@@ -13,7 +13,7 @@ tolerances. The command exited 0.
 
 **What batch3 proves, and what it does not.** batch3 was captured while the
 harness still carried the `pinImageSizes` compensation, i.e. before the product
-fix in §"Product fix" below. It therefore proves that the *capture mechanism* is
+fix in §"Product fix" below. It therefore proves that the _capture mechanism_ is
 now deterministic — CDP clip, fixed viewport, instant sweep, sorted related
 cards — and it says nothing about an uncompensated matrix. The compensation has
 since been deleted from the harness and from `scenarios.json`. A final
@@ -102,7 +102,13 @@ box size were identical on both hosts.
 
 Fixed by never resizing: the layout viewport stays at width × 900, and the whole
 document is taken with a CDP `Page.captureScreenshot` clip
-(`captureBeyondViewport: true`). `fullPage: true` is not used anywhere.
+(`captureBeyondViewport: true`). The installed Playwright already uses this same
+engine path for `fullPage: true`; the defect was the separate viewport expansion
+before calling it, not `fullPage` itself. An explicit clip keeps that resize out
+of the capture and makes the full-document rectangle explicit. Every visible
+image must have a selected source and decode successfully after the sweep;
+missing sources and decode failures abort the capture rather than pass as two
+identical blank images.
 
 **The same 85,021-pixel signature still appears in one situation, and it is not
 fixed.** With `pinImageSizes` removed, a live↔live control at 1440 reproduced it
@@ -174,7 +180,7 @@ capture rewrites page markup any more, so a red run now means a real difference.
   the residue: same-host controls reproduced the same pixel counts at the same
   rectangles, proving the residue was capture-side. Kept because they are what
   ruled out a product cause for the sticky border and footer blur.
-- `batch3/` — captured with the CDP clip *and* the `pinImageSizes` workaround.
+- `batch3/` — captured with the CDP clip _and_ the `pinImageSizes` workaround.
   24 of 24 at 0. Proves the capture mechanism, not an uncompensated matrix.
 
 ## Pending after deployment
