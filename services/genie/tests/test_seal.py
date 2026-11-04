@@ -1471,3 +1471,90 @@ def test_a_figure_after_a_decimal_stays_with_the_model_on_that_line() -> None:
     )
     failures = _grade("b25-en", sealed)
     assert failures == []
+
+
+def _stacking_facts() -> TurnFacts:
+    """Turn 732's shape (production 2026-11-04): a manual chunk with figures."""
+    gathered = TurnFacts()
+    gathered.product_ids = {6521}
+    gathered.qualified_ids = {6521}
+    text = (
+        "Bei der Bodenmontage ist eine Stapelung von maximal [n1=4] Batterien "
+        "von der Wand entfernt möglich; an der Wand ist eine Stapelung von "
+        "maximal [n2=6] Batterien möglich\n"
+        "GW5.1-BAT-D-G20, GW5.1-BAT-D-G21: maximal [n3=3] Stück\n"
+        "Bei gemischter Stapelung unterstützt das System maximal [n4=3] "
+        "Module pro Gruppe"
+    )
+    gathered.add(
+        Fact(
+            id="29bb252c549a-p103-2882a6eb.text", value=text, source="search-knowledge"
+        )
+    )
+    for number, value in (("1", "4"), ("2", "6"), ("3", "3"), ("4", "3")):
+        gathered.add(
+            Fact(
+                id=f"29bb252c549a-p103-2882a6eb.n{number}",
+                value=value,
+                source="search-knowledge",
+            )
+        )
+    gathered.knowledge_products["29bb252c549a-p103-2882a6eb"] = (6521,)
+    return gathered
+
+
+def test_a_cited_manual_chunk_keeps_its_stacking_figures() -> None:
+    """Turn 732: the question names no number, the cited manual chunk does."""
+    output = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(
+                text=(
+                    "The documents state:\n"
+                    "- Floor mounting, away from the wall: stacking of up to 6 batteries.\n"
+                    "- Floor mounting, at the wall: stacking of up to 4 batteries.\n"
+                    "- Bracket installation, same energy: up to 3 modules per stack.\n"
+                    "- Mixed stacking: up to 3 modules per group."
+                ),
+                refs=["29bb252c549a-p103-2882a6eb", "6521"],
+            ),
+            CardsBlock(product_ids=[6521]),
+        ],
+    )
+    sealed = seal(
+        output,
+        _stacking_facts(),
+        Route("model"),
+        "How many GW5.1-BAT-D-G21 battery modules can one GoodWe ESA "
+        "system take at most?",
+        "other",
+    )
+    text = _text(sealed)
+    assert "up to 6 batteries" in text
+    assert "up to 4 batteries" in text
+    assert "up to 3 modules per stack" in text
+    assert "up to 3 modules per group" in text
+
+
+def test_an_uncited_chunk_licenses_no_figure_on_a_strip_route() -> None:
+    """The citation boundary holds: no chunk ref, or another chunk, strips."""
+    for refs in (["6521"], ["67a7f715ca9d-p48-3f81ae7f", "6521"]):
+        output = TurnOutput(
+            language="en",
+            blocks=[
+                TextBlock(
+                    text="Floor mounting: stacking of up to 6 batteries.",
+                    refs=refs,
+                ),
+                CardsBlock(product_ids=[6521]),
+            ],
+        )
+        sealed = seal(
+            output,
+            _stacking_facts(),
+            Route("model"),
+            "How many GW5.1-BAT-D-G21 battery modules can one GoodWe ESA "
+            "system take at most?",
+            "other",
+        )
+        assert "6" not in _text(sealed).split()

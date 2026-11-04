@@ -1853,7 +1853,7 @@ def _seal_sources(
 def _seal_attachment_figures(
     output: TurnOutput, facts: TurnFacts, question: str
 ) -> TurnOutput:
-    """Keep only question numbers and each text block's cited reading figures.
+    """Keep question numbers and each text block's cited reading figures.
 
     The earlier grounding check still requires numeric placeholders and
     rejects unknown facts and attachment amounts. Planning figures use the
@@ -1862,6 +1862,11 @@ def _seal_attachment_figures(
     erase those hydrated figures simply because the question omitted them.
     A file ref licenses that file's figures; a figure ref licenses only that
     figure. Raw reading text and the filename are not numerical allowances.
+    A knowledge chunk the block cites licenses that chunk's own figure facts
+    the same way: grounding verified the placeholder against exactly these
+    facts before hydration (turn 732, production 2026-11-04: a stacking-count
+    answer on a model route lost every number because only attachment and
+    planning readings were licensed).
     """
     from linker_genie import ground as grounding
 
@@ -1874,16 +1879,20 @@ def _seal_attachment_figures(
                 match = re.fullmatch(
                     r"(att[1-9][0-9]{0,5}|planning)\.n[1-9][0-9]*", fact_id
                 )
-                if match is None or fact.source not in {
-                    "read-attachment",
-                    "read-planning-project",
-                }:
+                if match is not None:
+                    reading_id = match.group(1)
+                    reading = facts.facts.get(reading_id)
+                    if reading is None or reading.source != fact.source:
+                        continue
+                    if reading_id in block.refs or fact_id in block.refs:
+                        allowed.update(grounding.question_allowance(fact.value))
                     continue
-                reading_id = match.group(1)
-                reading = facts.facts.get(reading_id)
-                if reading is None or reading.source != fact.source:
-                    continue
-                if reading_id in block.refs or fact_id in block.refs:
+                cited_chunk = chunk_of(fact_id)
+                if (
+                    cited_chunk is not None
+                    and cited_chunk in block.refs
+                    and fact.source in grounding._DOCUMENT_SOURCES
+                ):
                     allowed.update(grounding.question_allowance(fact.value))
         sealed = grounding.strip_unlicensed_numbers(
             output.model_copy(update={"blocks": [block]}), allowed
