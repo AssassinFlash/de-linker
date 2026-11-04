@@ -246,9 +246,9 @@ final class TemplatesTest extends TestCase {
 
 		// The German files are the German faces, not the English ones re-used.
 		$this->assertStringContainsString( 'Weiterlesen', (string) file_get_contents( $paths['is_blog_posts_index__de'] ) );
-		$this->assertStringNotContainsString( 'Read article', (string) file_get_contents( $paths['is_blog_posts_index__de'] ) );
+		$this->assertStringNotContainsString( 'Read the post', (string) file_get_contents( $paths['is_blog_posts_index__de'] ) );
 		$this->assertStringContainsString( 'Alle Beiträge', (string) file_get_contents( $paths['is_archive_for_tax_category__de'] ) );
-		$this->assertStringNotContainsString( 'Read article', (string) file_get_contents( $paths['is_archive_for_tax_category__de'] ) );
+		$this->assertStringNotContainsString( 'Read the post', (string) file_get_contents( $paths['is_archive_for_tax_category__de'] ) );
 		$this->assertStringContainsString( 'Suche', (string) file_get_contents( $paths['is_search__de'] ) );
 		$this->assertStringNotContainsString( 'Search articles', (string) file_get_contents( $paths['is_search__de'] ) );
 

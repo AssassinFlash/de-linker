@@ -248,7 +248,7 @@ final class Form {
 			'offer'       => __( 'Price & availability', 'linker-commerce' ),
 			'document'    => __( 'Product documents', 'linker-commerce' ),
 			'project'     => __( 'Discuss a project', 'linker-commerce' ),
-			'support'     => __( 'Support for an order', 'linker-commerce' ),
+			'support'     => __( 'Support after delivery', 'linker-commerce' ),
 			'partnership' => __( 'Work with Linker', 'linker-commerce' ),
 			default       => __( 'A question', 'linker-commerce' ),
 		};

@@ -188,7 +188,7 @@ IBAN 为空时：订单页不显示 Issue Proforma，框内说明去 Settings �
 
 ## 验收
 - [ ] 本地：注册 → pending → 团队邮件 → 行内一键通过 → 看价 → 加入 Lösungsentwurf → 提交询盘 → 后台出 PI → 客户账户下载 PI，EN 与 DE 各一次；本地邮件捕获里每封信只有 tester 单地址（测试邮件开关开着），注册确认、公司提醒、审批邮件、询盘确认、PI 邮件的路由（收件人/Bcc）以 Outbox 队列数据断言（AGENTS.md 测试邮件纪律，2026-10-11）。
-- [ ] 全站可见文案无 order/checkout/payment/shipping/Versand/Kasse/Bezahlen/Warenkorb（引语除外）。
+- [ ] 全站可见文案符合 [commerce-terms.txt](../../tools/checks/commerce-terms.txt)（禁用语清单的唯一权威；`just commerce-terms` 以棘轮方式执行，豁免逐条带理由）。引语与法律正文按该检查器的法律页豁免处理。
 - [ ] PI 编号连续、PDF 含银行条款与 30 天有效期；未登录访问 PI 链接 403。
 - [ ] 重试队列测试：模拟 `wp_mail` 失败 3 次后成功，仅一封送达。
 - [ ] 审批（票据 73）：四状态 × Gating 行为矩阵、三动作 × 邮件断言、原因注入、存量迁移=全部 approved、可逆转换；EN/DE 渲染邮件截图归档。

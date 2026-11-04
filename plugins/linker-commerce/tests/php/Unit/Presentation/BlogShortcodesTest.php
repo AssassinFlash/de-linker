@@ -345,7 +345,7 @@ final class BlogShortcodesTest extends TestCase {
 		$this->assertStringContainsString( '<span aria-hidden="true">&middot;</span>', $html );
 		$this->assertStringContainsString( '<h3 class="tv-blog-single-related-card-title">What Installers Should Check</h3>', $html );
 		$this->assertStringContainsString( '<div class="tv-blog-single-related-excerpt">A pre-installation checklist.</div>', $html );
-		$this->assertStringContainsString( '<span class="tv-blog-single-related-arrow">Read article<svg', $html );
+		$this->assertStringContainsString( '<span class="tv-blog-single-related-arrow">Read the post<svg', $html );
 		$this->assertStringNotContainsString( 'style="', $html );
 	}
 

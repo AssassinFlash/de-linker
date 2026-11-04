@@ -1,0 +1,48 @@
+# Commerce vocabulary: the one wordlist the customer-visible copy is held to.
+#
+# This file is the single authority. docs/specs/11-commerce.md and AGENTS.md §3
+# point here instead of carrying their own copies of the list (issue #905): the
+# site has one link, product → inquiry (presented as a Proforma), and everything
+# after that happens offline (AGENTS.md §1). Copy must not describe a shop.
+#
+# Format: one term per line. `#` starts a comment. A trailing `*` matches the
+# stem as a prefix, so compounds and inflections match too ("Versand*" covers
+# Versand, Versandkosten, Versandart). Without `*` the term matches as a whole
+# word. Matching ignores case and uses word boundaries, the same semantics as
+# the shared German list (plugins/linker-i18n/data/banned-de.json).
+
+# English commerce nouns. Prefixes where the stem is unambiguous in this
+# domain; explicit forms where a prefix would collide with unrelated words
+# ("cart*" would match carton and cartridge, so the plural is its own line).
+order*
+checkout*
+payment*
+shipping*
+cart
+carts
+basket*
+catalogue*
+article
+articles
+
+# German. The spec's own words plus the inflections that carry the same
+# meaning: Bestell* = Bestellung, Bestellungen, bestellt, bestellbar,
+# Bestellnummer; Zahlung* = Zahlung, Zahlungen, Zahlungsziel,
+# Zahlungsbedingungen; Bezahl* = bezahlen, Bezahlung, Bezahlvorgang;
+# Warenkorb* = Warenkorb, Warenkorbs; Kasse* = Kasse, Kassen.
+Versand*
+Kasse*
+Bezahl*
+Warenkorb*
+Bestell*
+Zahlung*
+
+# Deliberately absent, each owned elsewhere:
+#   - German "Artikel" (the blog word) and "Katalog": tools/checks/german-copy.py
+#     owns them with documented allowances (the legal citation "Artikel 5", the
+#     SKU compound Artikelnummer, Katalognummer). A second owner here would need
+#     a second allowance list and the two would drift.
+#   - "Rechnung"/"invoice": the Proforma invoice is real (AGENTS.md §2,
+#     2026-10-09); it is the document the site actually issues.
+#   - "Lieferung"/"delivery": physical delivery exists after the inquiry; only
+#     the shipping/store copy is banned.
