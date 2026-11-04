@@ -2731,9 +2731,7 @@ def test_search_enumerates_cited_parallel_stacks_and_keeps_missing_facts_visible
     }
     stacked = publication_feed(stacked, stacked["compatibility"])
     stacked_basis = {
-        "products": [
-            p for p in stacked["products"] if p["id"] in [4107, 2090, 2092]
-        ],
+        "products": [p for p in stacked["products"] if p["id"] in [4107, 2090, 2092]],
         "compatibility": stacked["compatibility"],
     }
     multi = json_object(
@@ -2804,8 +2802,7 @@ def test_column_limit_condition_binds_count_only_not_stack_count(
             # control module is ordered once per stack, as the contract states.
             pair.pop("modules", None)
             pair["accessories"] = [
-                {**accessory, "per": "stack"}
-                for accessory in pair["accessories"]
+                {**accessory, "per": "stack"} for accessory in pair["accessories"]
             ]
             pair["conditions"] = [
                 {

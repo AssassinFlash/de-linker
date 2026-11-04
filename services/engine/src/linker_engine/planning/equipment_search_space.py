@@ -55,7 +55,11 @@ class EquipmentSearchSpace:
             if self.evidence.sales_unit(pid) in {"battery_module", "battery_system"}:
                 self.included.append(source_battery)
                 stacks_max = self.evidence.scalar(pid, "stacks_parallel_max", "count")
-                if stacks_max is None or stacks_max < 1 or stacks_max != int(stacks_max):
+                if (
+                    stacks_max is None
+                    or stacks_max < 1
+                    or stacks_max != int(stacks_max)
+                ):
                     # Single stack is the documented default, not an invented
                     # parallel maximum. The gap keeps the missing fact visible.
                     self.gaps["stacks_parallel_max_missing"] += 1
