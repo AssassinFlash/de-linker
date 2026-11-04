@@ -68,6 +68,7 @@ for (const width of widths) {
 		let headerHeight;
 		const ruledRegions = new Map();
 		const imageSources = {};
+		const sortRecords = {};
 		for (const [base, label] of values.baseline
 			? [[localBase, "before"]]
 			: [
@@ -126,23 +127,50 @@ for (const width of widths) {
 					content:
 						"*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}",
 				});
+				// Every painted pixel is captured at the final full-page viewport,
+				// so layout and image decode must both happen at that size.
+				// Expanding the viewport after the page had already laid out at
+				// 900px re-scaled images whose decode had started at the shorter
+				// height. The re-scaled raster then differs by up to 10 levels per
+				// channel on a page served over the network while matching exactly
+				// for the same page served locally, even though the bytes, the
+				// natural size, and canvas hashes drawn at natural and at box size
+				// are identical on both hosts. Re-entering the document at the
+				// final viewport removes that ambiguity without touching pixels,
+				// tolerances, masks or the products' own markup. Scenarios with
+				// interactions keep their single load: replaying clicks against a
+				// reload would submit or toggle state twice.
+				if (!(scenario.actions ?? []).length) {
+					const initial = await page.evaluate(
+						() => document.documentElement.scrollHeight,
+					);
+					await page.setViewportSize({ width, height: initial });
+					await page.reload({ waitUntil: "networkidle", timeout: 120000 });
+					await page.addStyleTag({
+						content:
+							"*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}",
+					});
+				}
 				await page.evaluate(async () => {
-					// Overlapping 600px scroll steps with 120ms for lazy-load observers
-					// are the established full-page capture procedure.
+					// Overlapping 600px scroll steps with 120ms drive the native
+					// lazy-load observers at the settled viewport size.
 					for (let y = 0; y < document.body.scrollHeight; y += 600) {
 						window.scrollTo(0, y);
 						await new Promise((resolve) => setTimeout(resolve, 120));
 					}
 					window.scrollTo(0, 0);
 				});
-				// Expand the viewport so native lazy images enter it, preserving
-				// loading="lazy": sizes="auto" depends on that eligibility. Switching
-				// to eager made live/local race between different srcset candidates.
-				const full = await page.evaluate(
-					() => document.documentElement.scrollHeight,
-				);
-				await page.setViewportSize({ width, height: full });
-				await page.waitForLoadState("networkidle");
+				// Loading the images above can change the document height; settle it
+				// once more before the capture so nothing is re-scaled afterwards.
+				for (const attempt of [0, 1]) {
+					const full = await page.evaluate(
+						() => document.documentElement.scrollHeight,
+					);
+					await page.setViewportSize({ width, height: full });
+					await page.waitForLoadState("networkidle");
+					await page.waitForTimeout(200);
+					if (attempt === 1) break;
+				}
 				await page.evaluate(async () => {
 					await Promise.all(
 						[...document.images]
@@ -169,6 +197,37 @@ for (const width of widths) {
 				});
 				// Existing capture setup settles fonts/layout for 800ms after decode.
 				await page.waitForTimeout(800);
+				// Woo shuffles related products on every request
+				// (wc_get_related_products() runs shuffle() behind the filterable
+				// woocommerce_product_related_posts_shuffle, default true), so two
+				// captures of the same page differ in card order on the live host
+				// itself. Sorting the rendered cards is a declared normalization of
+				// an input that is random by design, not a mask: every pixel is
+				// still compared, and both sides must render the same card set.
+				const sorted = {};
+				for (const rule of scenario.sortChildren ?? []) {
+					const record = await page.evaluate((spec) => {
+						const containers = [...document.querySelectorAll(spec.selector)];
+						if (!containers.length) return null;
+						return containers.map((container) => {
+							const key = (element) =>
+								(element.querySelector(spec.key)?.textContent ?? "").trim();
+							const observed = [...container.children].map(key);
+							[...container.children]
+								.sort((a, b) => key(a).localeCompare(key(b), "en"))
+								.forEach((child) => container.appendChild(child));
+							return {
+								observed,
+								sorted: [...container.children].map(key),
+							};
+						});
+					}, rule);
+					if (!record)
+						throw new Error(`missing sort container: ${rule.selector}`);
+					sorted[rule.selector] = record;
+				}
+				if (Object.keys(sorted).length) await page.waitForTimeout(200);
+				sortRecords[label] = sorted;
 				imageSources[label] = await page
 					.locator(".woocommerce-cart-form img")
 					.evaluateAll((images) =>
@@ -263,6 +322,7 @@ for (const width of widths) {
 			headerHeight,
 			ruledRegions: [...ruledRegions.values()],
 			imageSources,
+			sortRecords,
 		});
 	}
 }

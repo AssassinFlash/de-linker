@@ -18,6 +18,16 @@ for case in manifest["cases"]:
     stem = f"{case['stem']}-{case['width']}"
     live = Image.open(root / f"{stem}-live.png").convert("RGB")
     local = Image.open(root / f"{stem}-local.png").convert("RGB")
+    # A normalized container must hold the same items on both sides; sorting
+    # only removes the order Woo randomizes, it may not hide a different set.
+    sort_records = case.get("sortRecords") or {}
+    sort_mismatches = {}
+    for selector, per_side in sort_records.items():
+        live_sets = [sorted(entry["sorted"]) for entry in per_side.get("live", [])]
+        local_sets = [sorted(entry["sorted"]) for entry in per_side.get("local", [])]
+        if live_sets != local_sets:
+            sort_mismatches[selector] = {"live": live_sets, "local": local_sets}
+            failed = True
     if live.size != local.size:
         print(f"{stem}: size mismatch {live.size} / {local.size}", file=sys.stderr)
         results.append({"case": stem, "dimension_match": False,
@@ -56,10 +66,13 @@ for case in manifest["cases"]:
         "ruled_change": ruled_change,
         "ruled_regions": regions,
         "outside_ruled_different_pixels": 0 if ruled_change else outside_count,
+        "sorted_containers_match": not sort_mismatches,
     }
+    if sort_mismatches:
+        row["sorted_container_mismatches"] = sort_mismatches
     results.append(row)
     print(json.dumps(row))
-    failed |= count > 0 and not ruled_change
+    failed |= bool(sort_mismatches) or (count > 0 and not ruled_change)
     if count:
         Image.composite(
             Image.new("RGB", live.size, "red"),

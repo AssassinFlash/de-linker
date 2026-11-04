@@ -34,6 +34,37 @@ Capture conditions preserve the already measured procedure: software raster and
 sRGB to avoid GPU dithering, disabled motion/caret, full-height layout before
 decoding visible images, and loaded fonts. Native lazy loading and responsive
 image selection remain unchanged; hidden lazy menu images are not awaited.
+
+Two inputs are normalized before the capture, because both are
+non-deterministic on the live site itself and would otherwise turn a
+measurement artifact into a reported defect. Both are recorded in
+`capture.json`:
+
+- **Page reload at the final viewport.** After the first load measures the
+  document height, the page is reloaded at that height, so layout and every
+  image decode happen at the size that is actually captured. Expanding the
+  viewport after a 900px layout re-scales images whose decode had already
+  started, and that second raster depends on how far decoding had progressed
+  when the resize landed. Measured on `/product/saj-ats1-t63-a/`: 85,021
+  differing pixels (max 5, mean 1.09, no shift) over the FAQ image while the
+  image bytes, the `naturalWidth`/`naturalHeight`, and canvas hashes drawn both
+  at natural size and at box size were identical on both hosts. Scenarios with
+  `actions` keep their single load, because replaying a click after a reload
+  would toggle state twice.
+- **Declared child sorting** (`sortChildren: [{selector, key}]`). Woo calls
+  `shuffle()` in `wc_get_related_products()` behind the filterable
+  `woocommerce_product_related_posts_shuffle` (default true), so the related
+  products block renders in a different order on every request — verified by
+  requesting the live PDP six times with a cache-busting query: six different
+  orders, `cache-control: no-store`. Each declared container is sorted by its
+  key text on both sides before the screenshot, and `compare.py` requires the
+  resulting item sets to be equal, so a different card set still fails. This is
+  not a mask: every pixel of every card is compared, only the order is fixed.
+
+`docs/acceptance/2026-11-04/pixel-parity/scenarios.json` holds the current
+full-matrix scenario list (12 routes × 1440/390), including the two PDP routes'
+`sortChildren` declarations.
+
 For filled drafts, `capture.json` also records the selected cart image URL and
 natural size for each side. The preview card is dismissed only in
 each disposable browser context so the page is captured at rest. Historical
@@ -42,8 +73,8 @@ acceptance artefacts stay in their ticket directories; new runs call this tool.
 For a disclosure or another state, use `--scenarios <json>` instead of
 `--paths`. Each scenario contains a unique `name`, `path`, optional `widths`,
 ordered `actions` (`click`, `fill: [selector, value]`, `press: [selector, key]`,
-or `visit: "/relative/path"`),
-and `ruledRegions: [{name, selector, padding?}]`. Selectors may match repeated
+or `visit: "/relative/path"`), optional `sortChildren`, and
+`ruledRegions: [{name, selector, padding?}]`. Selectors may match repeated
 components; each matching rectangle is recorded separately, using the union of
 the live and local bounds. A new component may be absent on live; it must exist
 locally. Padding is an explicit part of the ruled region, for example the
