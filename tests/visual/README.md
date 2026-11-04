@@ -51,10 +51,9 @@ next call interrupts; the sweep then never reaches the lower sections, their
 lazy images keep an empty `currentSrc`, and `img.decode()` on them never
 settles — the capture hangs (measured: five images still without a source).
 
-Two inputs are normalized before the capture, because both are
-non-deterministic on the live site itself and would otherwise turn a
-measurement artifact into a reported defect. Both are opt-in per scenario and
-recorded in `capture.json`:
+One input is normalized before the capture, because it is non-deterministic on
+the live site itself and would otherwise turn a measurement artifact into a
+reported defect. It is opt-in per scenario and recorded in `capture.json`:
 
 - **Declared child sorting** (`sortChildren: [{selector, key}]`). Woo calls
   `shuffle()` in `wc_get_related_products()` behind the filterable
@@ -65,20 +64,15 @@ recorded in `capture.json`:
   key text on both sides before the screenshot, and `compare.py` requires the
   resulting item sets to be equal, so a different card set still fails. This is
   not a mask: every pixel of every card is compared, only the order is fixed.
-- **Declared image-size pinning** (`pinImageSizes: true`). An `img[srcset]`
-  without `sizes` makes the browser assume `100vw`. For an image painted far
-  narrower, the chosen candidate then depends on request timing: on
-  `/product/saj-ats1-t63-a/` at 390 the live host settled on the 600w file and
-  the local host on the 1280w one from identical markup, and because those two
-  files carry different intrinsic ratios the painted box differed by 0.25px and
-  every element below it shifted. Pinning each such image to the width it
-  actually paints at, before its request is made, makes both sides fetch and
-  render the same candidate. The pins are recorded per side, and every pixel is
-  still compared.
+
+Nothing else is normalized. Image candidate selection in particular is
+compared as the pages actually behave: the product pages emit `srcset` together
+with `sizes`, so the browser's choice follows the painted width rather than a
+`100vw` guess. The capture reads the markup as served and never rewrites it.
 
 `docs/acceptance/2026-11-04/pixel-parity/scenarios.json` holds the current
 full-matrix scenario list (12 routes × 1440/390), including the PDP routes'
-`sortChildren` declaration and the matrix-wide `pinImageSizes`.
+`sortChildren` declaration.
 
 For filled drafts, `capture.json` also records the selected cart image URL and
 natural size for each side. The preview card is dismissed only in
@@ -88,8 +82,8 @@ acceptance artefacts stay in their ticket directories; new runs call this tool.
 For a disclosure or another state, use `--scenarios <json>` instead of
 `--paths`. Each scenario contains a unique `name`, `path`, optional `widths`,
 ordered `actions` (`click`, `fill: [selector, value]`, `press: [selector, key]`,
-or `visit: "/relative/path"`), optional `sortChildren`, optional
-`pinImageSizes`, and `ruledRegions: [{name, selector, padding?}]`. Selectors may
+or `visit: "/relative/path"`), optional `sortChildren`, and
+`ruledRegions: [{name, selector, padding?}]`. Selectors may
 match repeated components; each matching rectangle is recorded separately, using
 the union of the live and local bounds. A new component may be absent on live;
 it must exist locally. Padding is an explicit part of the ruled region, for

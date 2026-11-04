@@ -1,23 +1,19 @@
 [
   {
     "name": "home",
-    "path": "/",
-    "pinImageSizes": true
+    "path": "/"
   },
   {
     "name": "de",
-    "path": "/de/",
-    "pinImageSizes": true
+    "path": "/de/"
   },
   {
     "name": "products",
-    "path": "/products/",
-    "pinImageSizes": true
+    "path": "/products/"
   },
   {
     "name": "de_produkte",
-    "path": "/de/produkte/",
-    "pinImageSizes": true
+    "path": "/de/produkte/"
   },
   {
     "name": "product_saj_ats1_t63_a",
@@ -27,8 +23,7 @@
         "selector": ".pdp-related ul.products",
         "key": ".woocommerce-loop-product__title"
       }
-    ],
-    "pinImageSizes": true
+    ]
   },
   {
     "name": "de_produkt_goodwe_gw60k_sts_g10",
@@ -38,37 +33,30 @@
         "selector": ".pdp-related ul.products",
         "key": ".woocommerce-loop-product__title"
       }
-    ],
-    "pinImageSizes": true
+    ]
   },
   {
     "name": "solution",
-    "path": "/solution/",
-    "pinImageSizes": true
+    "path": "/solution/"
   },
   {
     "name": "de_loesung",
-    "path": "/de/loesung/",
-    "pinImageSizes": true
+    "path": "/de/loesung/"
   },
   {
     "name": "hybrid_inverter_vs_ac_coupled_storage",
-    "path": "/hybrid-inverter-vs-ac-coupled-storage/",
-    "pinImageSizes": true
+    "path": "/hybrid-inverter-vs-ac-coupled-storage/"
   },
   {
     "name": "de_hybridwechselrichter_vs_ac_speicher",
-    "path": "/de/hybridwechselrichter-vs-ac-speicher/",
-    "pinImageSizes": true
+    "path": "/de/hybridwechselrichter-vs-ac-speicher/"
   },
   {
     "name": "cart",
-    "path": "/cart/",
-    "pinImageSizes": true
+    "path": "/cart/"
   },
   {
     "name": "de_loesungsentwurf",
-    "path": "/de/loesungsentwurf/",
-    "pinImageSizes": true
+    "path": "/de/loesungsentwurf/"
   }
 ]

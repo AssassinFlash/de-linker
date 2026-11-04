@@ -2197,8 +2197,10 @@ final class ProductShortcodes {
 	}
 
 	/**
-	 * An image tag with the live renderer's attribute set: class, src, srcset
-	 * and sizes, no width/height (the stylesheet sizes the box).
+	 * An image tag with the live renderer's attribute set: the attachment's
+	 * width/height, src, the caller's attributes, then srcset and sizes last.
+	 * `srcset => null` in the attributes suppresses the candidates, and sizes
+	 * goes with them — a lone sizes attribute selects nothing.
 	 *
 	 * @param int                        $image_id   The attachment.
 	 * @param string                     $size       Registered size name.
@@ -2237,9 +2239,17 @@ final class ProductShortcodes {
 			$html .= ' ' . $name . '="' . esc_attr( $value ) . '"';
 		}
 		// An explicit srcset (the thumbnails carry the live page's candidate)
-		// replaces the generated one; null left none to print.
+		// replaces the generated one; null left none to print. `sizes` belongs
+		// to the candidates: WordPress computes it per size and the browser
+		// picks a source from it, so omitting it makes the browser assume
+		// 100vw. That mismatch made the same 350px-wide picture resolve to the
+		// 600w file on one host and the 1280w file on another, whose ratios
+		// differ by 0.25px of painted height.
 		if ( \is_string( $srcset ) && '' !== $srcset ) {
 			$html .= ' srcset="' . esc_attr( $srcset ) . '"';
+			if ( \is_string( $sizes ) && '' !== $sizes ) {
+				$html .= ' sizes="' . esc_attr( $sizes ) . '"';
+			}
 		}
 		return $html . ' />';
 	}

@@ -75,6 +75,31 @@ final class ProductShortcodesTest extends TestCase {
 	private string $pdp_intro = '<p>The intro.</p>';
 
 	/**
+	 * The candidates wp_get_attachment_image_srcset() answers for the PDP
+	 * fixture. Empty is what a size without candidates answers, so the default
+	 * keeps every other test's markup unchanged.
+	 *
+	 * @var string
+	 */
+	private string $pdp_srcset = '';
+
+	/**
+	 * The sizes wp_get_attachment_image_sizes() answers for the PDP fixture;
+	 * `false` is the answer for a size WordPress cannot describe.
+	 *
+	 * @var string|false
+	 */
+	private string|false $pdp_sizes = '(max-width: 1024px) 100vw, 1024px';
+
+	/**
+	 * Whether esc_attr() escapes for real in this test; the default keeps the
+	 * pass-through the markup assertions were written against.
+	 *
+	 * @var bool
+	 */
+	private bool $escaping = false;
+
+	/**
 	 * The URL of an attachment in the fixture: it names the id, so a test can
 	 * tell which picture a shortcode printed.
 	 *
@@ -92,6 +117,15 @@ final class ProductShortcodesTest extends TestCase {
 		parent::setUp();
 		// English products: each answers for itself (CommerceState::is_rfq_only asks the language layer).
 		$this->english_products( array( 6530 => 6530 ) );
+		// Attributes go through esc_attr(). Most fixtures compare markup with
+		// the pass-through plain_text() installs, so that stays the default;
+		// a test that exercises escaping flips the flag, and this reader
+		// registers before plain_text() so it answers first.
+		WP_Mock::userFunction( 'esc_attr' )->andReturnUsing(
+			fn ( string $value ): string => $this->escaping
+				? htmlspecialchars( $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false )
+				: $value
+		);
 		$this->plain_text();
 		WP_Mock::userFunction(
 			'home_url',
@@ -1526,8 +1560,8 @@ final class ProductShortcodesTest extends TestCase {
 		WP_Mock::userFunction( 'wp_get_attachment_image_url', array( 'return' => fn ( int $id ): string => $this->pdp_image_url( $id ) ) );
 		WP_Mock::userFunction( 'wp_attachment_is_image', array( 'return' => true ) );
 		WP_Mock::userFunction( 'wp_get_attachment_image_src', array( 'return' => fn ( int $id ): array => array( $this->pdp_image_url( $id ), 1024, 768, false ) ) );
-		WP_Mock::userFunction( 'wp_get_attachment_image_srcset', array( 'return' => '' ) );
-		WP_Mock::userFunction( 'wp_get_attachment_image_sizes', array( 'return' => '(max-width: 1024px) 100vw, 1024px' ) );
+		WP_Mock::userFunction( 'wp_get_attachment_image_srcset', array( 'return' => fn (): string => $this->pdp_srcset ) );
+		WP_Mock::userFunction( 'wp_get_attachment_image_sizes', array( 'return' => fn (): string|false => $this->pdp_sizes ) );
 
 		// The selection facts' own stubs come after the pair above, so the
 		// readers registered here are the ones that answer.
@@ -1765,6 +1799,82 @@ final class ProductShortcodesTest extends TestCase {
 		// and the block stays one column.
 		$this->pdp_gallery = '';
 		$this->assertSame( '', $this->pdp( true )->pdp_faq_side() );
+	}
+
+	/**
+	 * A generated candidate set carries both attributes WordPress pairs: the
+	 * browser picks a source from srcset by measuring it against sizes, so a
+	 * candidates list without sizes makes it assume 100vw. On the product page
+	 * that assumption resolved the same 350px-wide picture to two different
+	 * files, whose ratios differ by 0.25px of painted height.
+	 */
+	public function test_generated_candidates_carry_sizes_with_them(): void {
+		unset( $GLOBALS['product'] );
+		$this->pdp_srcset = 'http://linker.test/uploads/image-6505-300x225.png 300w, http://linker.test/uploads/image-6505-1024x768.png 1024w';
+
+		$html = $this->pdp( true )->pdp_faq_side();
+
+		$this->assertStringContainsString(
+			'srcset="http://linker.test/uploads/image-6505-300x225.png 300w, http://linker.test/uploads/image-6505-1024x768.png 1024w"',
+			$html
+		);
+		$this->assertStringContainsString( ' sizes="(max-width: 1024px) 100vw, 1024px"', $html );
+		// sizes follows srcset inside the tag, before the close.
+		$this->assertMatchesRegularExpression( '/srcset="[^"]*" sizes="[^"]*" \/>/', $html );
+	}
+
+	/**
+	 * WordPress answers `false` when it cannot describe the size; a candidate
+	 * list is still printed but no empty sizes attribute follows it.
+	 */
+	public function test_a_candidate_set_without_a_computed_size_prints_no_sizes(): void {
+		unset( $GLOBALS['product'] );
+		$this->pdp_srcset = 'http://linker.test/uploads/image-6505-300x225.png 300w';
+		$this->pdp_sizes  = false;
+
+		$html = $this->pdp( true )->pdp_faq_side();
+
+		$this->assertStringContainsString( 'srcset="http://linker.test/uploads/image-6505-300x225.png 300w"', $html );
+		$this->assertStringNotContainsString( 'sizes=', $html );
+	}
+
+	/**
+	 * The gallery's main picture suppresses the candidates on purpose, so it
+	 * prints neither srcset nor sizes: a lone sizes attribute selects nothing
+	 * and would only describe candidates the tag does not carry.
+	 */
+	public function test_the_main_picture_prints_neither_srcset_nor_sizes(): void {
+		unset( $GLOBALS['product'] );
+		$this->pdp_srcset = 'http://linker.test/uploads/image-6503-300x225.png 300w';
+
+		$pair = $this->pdp( true )->pdp_gallery_pair();
+
+		// The main tag carries its src but neither candidate attribute.
+		$this->assertMatchesRegularExpression( '/<img[^>]*class="pdp-gallery-main"(?![^>]*\bsrcset=)[^>]*\/>/', $pair );
+		$this->assertMatchesRegularExpression( '/<img[^>]*class="pdp-gallery-main"(?![^>]*\bsizes=)[^>]*\/>/', $pair );
+		$this->assertStringContainsString( 'src="http://linker.test/uploads/image-6503.png"', $pair );
+
+		// The secondary picture keeps its generated candidates and sizes.
+		$this->assertMatchesRegularExpression( '/srcset="[^"]*" sizes="[^"]*" \/>/', $pair );
+	}
+
+	/**
+	 * The computed size goes through the same escaping as every other
+	 * attribute value, so a quote in the theme's sizes filter cannot leave the
+	 * attribute.
+	 */
+	public function test_the_computed_size_is_escaped_as_an_attribute(): void {
+		unset( $GLOBALS['product'] );
+		$this->escaping   = true;
+		$this->pdp_srcset = 'http://linker.test/uploads/image-6505-300x225.png 300w';
+		$this->pdp_sizes  = '(min-width: 60em) 33vw, 100vw" data-injected="1';
+
+		$html = $this->pdp( true )->pdp_faq_side();
+
+		$this->assertStringContainsString( ' sizes="(min-width: 60em) 33vw, 100vw&quot; data-injected=&quot;1"', $html );
+		// The quote that would have closed the attribute never reaches the markup.
+		$this->assertStringNotContainsString( '100vw" data-injected', $html );
+		$this->assertStringNotContainsString( 'data-injected="1"', $html );
 	}
 
 	/**

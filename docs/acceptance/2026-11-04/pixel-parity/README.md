@@ -11,6 +11,17 @@ capture.
 `sorted_containers_match: true` everywhere, no masks, no ruled regions, no
 tolerances. The command exited 0.
 
+**What batch3 proves, and what it does not.** batch3 was captured while the
+harness still carried the `pinImageSizes` compensation, i.e. before the product
+fix in §"Product fix" below. It therefore proves that the *capture mechanism* is
+now deterministic — CDP clip, fixed viewport, instant sweep, sorted related
+cards — and it says nothing about an uncompensated matrix. The compensation has
+since been deleted from the harness and from `scenarios.json`. A final
+uncompensated 24-case matrix can only be meaningful once the product fix is
+deployed to the live site: until then live still serves `srcset` without
+`sizes` while local serves them together, and a cross-host run would report
+that real difference. That run is pending deployment.
+
 ```
 home                                  1440  0   390  0
 de                                    1440  0   390  0
@@ -29,7 +40,7 @@ de_loesungsentwurf                    1440  0   390  0
 The count was re-derived twice from the raw PNGs with Pillow alone, without
 `compare.py`: 24 live/local pairs, 0 non-zero, 0 size mismatches.
 
-Reproduce:
+Reproduce (after deployment; the same command with no compensation):
 
 ```sh
 node tests/visual/pixel-parity.mjs <outdir> https://de-linker.com http://127.0.0.1:8916 \
@@ -70,9 +81,13 @@ on both). The two files carry different intrinsic ratios, so the painted box was
 shifted by 0.25px — 324 elements differed, and the document was 9977px tall on
 one side and 9976px on the other.
 
-Fixed by the declared `pinImageSizes` normalization: each such image is pinned to
-the width it actually paints at before its request is made, so both hosts fetch
-and render the same candidate. The pins are recorded per side in `capture.json`.
+First worked around in the harness with a `pinImageSizes` normalization (each
+such image pinned to the width it actually paints at before its request is
+made), which made the gate deterministic without touching the product. That
+workaround has since been deleted: the real cause was that the pages never
+emitted `sizes`, and it is fixed in the product now — see "Product fix" below.
+`batch3/` was captured while the workaround was still present, so it is evidence
+for the capture mechanism only.
 
 ### 3. Viewport expansion re-rasterized already-decoded images
 
@@ -89,6 +104,19 @@ Fixed by never resizing: the layout viewport stays at width × 900, and the whol
 document is taken with a CDP `Page.captureScreenshot` clip
 (`captureBeyondViewport: true`). `fullPage: true` is not used anywhere.
 
+**The same 85,021-pixel signature still appears in one situation, and it is not
+fixed.** With `pinImageSizes` removed, a live↔live control at 1440 reproduced it
+on the SAJ PDP: two runs of the same URL against the same host, one 0 and one
+85,021 at `[139,5032,510,5279]`, max 5 levels per channel, over the FAQ picture
+and nothing else — the two crops are visually identical. That region is an
+`<img>` painted far smaller than its file: the page serves `srcset` without
+`sizes` today, so the browser lands on the 1536px-wide original and downscales
+it, and the downscale rasterization is bistable in the renderer. It disappears
+once the product fix ships, because `sizes` then picks a file close to the
+painted width. It is recorded here rather than compensated in the harness: a
+same-host control that fails is capture-visible renderer behaviour, and the
+honest gate is the post-deployment run.
+
 ### 4. Woo shuffles related products on every request
 
 `wc_get_related_products()` calls `shuffle()` behind the filterable
@@ -101,30 +129,40 @@ Fixed by the declared `sortChildren` normalization: each declared container is
 sorted by card title on both sides, and `compare.py` requires the resulting item
 sets to be equal, so a different card set still fails.
 
-## Known product-side finding (not fixed here)
+## Product fix: `sizes` now ships with `srcset`
 
-`ProductShortcodes::image_tag()` computes
+`ProductShortcodes::image_tag()` computed
 `wp_get_attachment_image_sizes( $image_id, $size )` into `$sizes` and never
-prints it — the variable is assigned and unused, and no `sizes` attribute is
-ever emitted. Every PDP image built by that helper therefore carries
-`srcset` without `sizes`, which makes the browser assume `100vw`.
+printed it. Every PDP image built by that helper therefore carried `srcset`
+without `sizes`, which makes the browser assume `100vw`.
 
 Two consequences, both real for customers:
 
-- **Candidate choice is not tied to the painted width.** At 390 the SAJ feature
-  image paints at 350px but the browser sizes it as 390px and, on that basis,
+- **Candidate choice was not tied to the painted width.** At 390 the SAJ feature
+  image paints at 350px but the browser sized it as 390px and, on that basis,
   picked the 600w file on one host and the 1280w file on another from identical
-  markup. A customer can receive a needlessly large download.
-- **Layout is not identical between those two outcomes**, because the 600w and
+  markup. A customer could receive a needlessly large download.
+- **Layout was not identical between those two outcomes**, because the 600w and
   1280w files of that photo have different intrinsic ratios: 211.125px against
-  210.875px painted height, which shifts everything below by 0.25px. The
-  measured document height differed by 1px (9977 against 9976).
+  210.875px painted height, which shifted everything below by 0.25px and made
+  the document 9977px tall on one side and 9976px on the other.
 
-The harness handles this with the declared `pinImageSizes` normalization so the
-gate is deterministic, but that normalization is a measurement device, not a
-fix: the page still ships `srcset` without `sizes`. Fixing it belongs in the
-product and changes which file customers download, so it is deliberately not
-done on this capture branch.
+Fixed in `ProductShortcodes::image_tag()`: when a candidate list is printed, the
+computed size is printed after it as `sizes="…"`, escaped with `esc_attr()`, and
+only when WordPress returned a non-empty string. `srcset => null` still
+suppresses both, because a lone `sizes` attribute selects nothing. The
+attribute order the browser depends on is unchanged — the tag is still
+`width height src <caller attributes> srcset sizes`. The docblock, which already
+claimed the helper emits sizes, is now true.
+
+Covered by four unit tests in `ProductShortcodesTest`:
+generated candidates carry `sizes` right after `srcset`; a `false` answer from
+WordPress prints no `sizes`; the gallery main picture prints neither `srcset`
+nor `sizes`; and a quote inside the computed size is escaped rather than closing
+the attribute.
+
+The harness's `pinImageSizes` compensation has been deleted. Nothing in the
+capture rewrites page markup any more, so a red run now means a real difference.
 
 ## History
 
@@ -136,4 +174,13 @@ done on this capture branch.
   the residue: same-host controls reproduced the same pixel counts at the same
   rectangles, proving the residue was capture-side. Kept because they are what
   ruled out a product cause for the sticky border and footer blur.
-- `batch3/` — final harness. 24 of 24 at 0.
+- `batch3/` — captured with the CDP clip *and* the `pinImageSizes` workaround.
+  24 of 24 at 0. Proves the capture mechanism, not an uncompensated matrix.
+
+## Pending after deployment
+
+The uncompensated 24-case matrix. It cannot be run meaningfully before the
+product fix is live: `https://de-linker.com` still serves `srcset` without
+`sizes` while the fixed code serves both, so any cross-host diff would report
+that real difference rather than a parity result. Once deployed, rerun the
+`Reproduce` command above and record the result here.

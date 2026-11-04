@@ -69,7 +69,6 @@ for (const width of widths) {
 		const ruledRegions = new Map();
 		const imageSources = {};
 		const sortRecords = {};
-		const imageSizePins = {};
 		for (const [base, label] of values.baseline
 			? [[localBase, "before"]]
 			: [
@@ -96,36 +95,14 @@ for (const width of widths) {
 					reducedMotion: "reduce",
 					deviceScaleFactor: 1,
 				});
-				await context.addInitScript((pinImageSizes) => {
+				await context.addInitScript(() => {
 					// Exercise the page at rest during the full-page scroll, without
 					// the preview card's 8s dwell. Only this disposable browser stores it.
 					localStorage.setItem(
 						"linker-genie-peek-dismissed-until",
 						String(Date.now() + 30 * 86400000),
 					);
-					if (!pinImageSizes) return;
-					// `srcset` without `sizes` assumes 100vw, so an image displayed
-					// far narrower has its candidate picked from a guess that turned
-					// out to depend on request timing: the live host settled on the
-					// 600w file and the local host on the 1280w one for identical
-					// markup, and those files carry different intrinsic ratios,
-					// which moved the layout by 0.25px. Pin each such image to the
-					// width it actually paints at, before its request is made.
-					const pin = () => {
-						for (const element of document.querySelectorAll(
-							"img[srcset]:not([sizes]), source[srcset]:not([sizes])",
-						)) {
-							const box =
-								element.tagName === "SOURCE"
-									? element.parentElement?.getBoundingClientRect()
-									: element.getBoundingClientRect();
-							if (!box || box.width < 1) continue;
-							element.setAttribute("sizes", `${Math.round(box.width)}px`);
-						}
-					};
-					document.addEventListener("DOMContentLoaded", pin);
-					window.addEventListener("load", pin);
-				}, Boolean(scenario.pinImageSizes));
+				});
 				page = await context.newPage();
 				// The existing snapshot capture budget also covers live lazy media.
 				await page.goto(base + route, {
@@ -237,15 +214,6 @@ for (const width of widths) {
 				}
 				if (Object.keys(sorted).length) await page.waitForTimeout(200);
 				sortRecords[label] = sorted;
-				// Which srcset candidate each side actually paints, recorded so a
-				// reading shows the pinned sizes took effect. Not a mask.
-				imageSizePins[label] = await page.evaluate(() =>
-					[...document.querySelectorAll("img[srcset][sizes]")].map((img) => ({
-						src: new URL(img.currentSrc || img.src).pathname,
-						sizes: img.getAttribute("sizes"),
-						natural: [img.naturalWidth, img.naturalHeight],
-					})),
-				);
 				imageSources[label] = await page
 					.locator(".woocommerce-cart-form img")
 					.evaluateAll((images) =>
@@ -367,7 +335,6 @@ for (const width of widths) {
 			ruledRegions: [...ruledRegions.values()],
 			imageSources,
 			sortRecords,
-			imageSizePins,
 		});
 	}
 }
