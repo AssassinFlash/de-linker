@@ -1159,7 +1159,8 @@ rule_date <= evidence_snapshot_date`; earlier or later dates return
 `outside_version`, while absent inputs still return `missing_inputs`. For DE,
 `power_kw` is required only when `de_before_control_test` is not false; after
 that stage, an outside-version date does not invent a missing-power error.
-The rule date selects a source reading and does not change a project connection date;
+The rule date selects a source reading and does not change a project
+connection date;
 the editor offers each basis's most recently verified source date directly.
 A date inside that range produces only a conditional reading of the retained
 source, not proof of the text that historically governed a project. Any result

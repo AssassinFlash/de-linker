@@ -367,6 +367,18 @@ def test_missing_inputs_precede_an_outside_version_date(country: str) -> None:
             "de_eeg_control": "outside_version",
             "de_eeg_export": "outside_version",
         }
+        in_range = review_country_rules(
+            "DE",
+            rule_input(
+                "de_pv_installed",
+                rule_date="2026-11-04",
+                de_before_control_test=False,
+            ),
+        )
+        assert outcomes(in_range) == {
+            "de_eeg_control": "not_this_phase",
+            "de_eeg_export": "not_this_phase",
+        }
 
 
 def test_ui_checked_dates_match_the_current_engine_sources() -> None:
