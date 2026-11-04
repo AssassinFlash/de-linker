@@ -10,6 +10,9 @@ machine, `--direct` (no proxy). Raw evidence:
   flips between runs (see §3). `repeat-1/` was aborted by a browser crash
   during its last route; its 14 recorded PNGs matched `batch2` exactly and were
   deleted after being measured.
+- `control-live-390/` — live against live on both sides, all 12 routes at 390.
+- `control-pdp1440-{1,2}/` — live against live on both sides, PDP at 1440,
+  two independent runs.
 
 ## Per-case counts
 
@@ -86,9 +89,22 @@ appears there cannot be a product difference.
 | `solution` 390 | 600, bounds `[18,3060,138,3540]`, max 55 | **600, bounds `[18,3060,138,3540]`, max 55** |
 | every other route 390 | 0 | 0 |
 
+`control-pdp1440-{1,2}/` did the same for the 1440 PDP in two independent runs,
+and one of them reproduced that artifact too:
+
+| Run | live↔live control |
+| --- | --- |
+| 1 | 0 |
+| 2 | **629, bounds `[505,6328,1286,6507]`** |
+
+The cross-host PDP 1440 residual is 629 at `[505,6328,1286,6507]` — the same
+count at the same rectangle, against the same host on both sides.
+
 Both captures are the same live page, same browser build, seconds apart, and
 they differ by exactly the same pixel count at exactly the same rectangle as the
-cross-host run. The artifact is produced by the capture, not by either site.
+cross-host run. The artifact is produced by the capture, not by either site. The
+PDP 390 residual (210, the footer count badge's anti-aliased edge) behaves the
+same way: 210 in `batch2` and 0 in `repeat-2`, nothing changed in between.
 
 The four residual cases are **bistable per browser instance while stable within
 an instance**:
