@@ -9,7 +9,7 @@
   - `up <name>`：若不存在则创建：建数据库（Homebrew MySQL，用户 `linker_local`）、下载 WordPress 7.1.4（校验 sha）、安装（站名 "Linker (local <name>)"、管理员 `local-admin`、随机密码写入实例目录 `admin.txt`，权限 600）、安装 WooCommerce 11.2.0（`wp plugin verify-checksums` 核对）、从 #6 的快照装入许可插件（LiveCanvas、SEOPress、SEOPress PRO、WindPress）、主题与 `wp-content/uploads`（`--snapshot <dir>`）、符号链接 `plugins/linker-*` 到仓库、装入隔离 mu-plugin、固定链接 `/%postname%/`（`router.php` 承担改写）、启动 `php -S 127.0.0.1:<port>`（php@8.3，`php.ini` 取线上的限额：`memory_limit`、`post_max_size`、`upload_max_filesize` 2048M，`max_execution_time`、`max_input_time` 360，`max_input_vars` 5000），并启用本地 Redis 对象缓存（brew redis + Redis Object Cache 插件，每个实例一个键前缀），与线上切换后的配置一致。
   - `down <name>`、`reset <name>`（删库删目录重建）、`login <name>`（生成一次性登录链接：WP-CLI `wp user session create` 不存在，用 `wp eval` 生成带 nonce 的临时自动登录 token，10 分钟过期，用后即删）、`status`。
   - `serve`：以 uv 启动 `services/engine`（端口按实例分配）与 `services/genie`，并用 `wp option update` 把地址写入实例。
-- 隔离 mu-plugin（`tools/local/mu/000-linker-local-isolation.php`）：`wp_mail` 改为写入实例目录 `mail/*.eml`（本地邮件捕获）；`pre_http_request` 只放行 127.0.0.1（重定向同样只许 127.0.0.1），拦下的记入隔离日志；CSP 放行本机端口；把站点标为 noindex。
+- 隔离 mu-plugin（`tools/local/mu/000-linker-local-isolation.php`）：`wp_mail` 改为写入实例目录 `mail/*.eml`（本地邮件捕获）；`pre_http_request` 只放行 127.0.0.1（重定向同样只许 127.0.0.1），唯一例外是 Cloudflare Turnstile 的**精确**服务端校验端点 `https://challenges.cloudflare.com/turnstile/v0/siteverify`（仅 https、仅该 host 与 path、仅默认/443 端口——`just turnstile-test` 的官方 dummy 密钥链需要它，其余任何外网地址包括同 host 的其他端口与路径仍然拦截），拦下的记入隔离日志；CSP 放行本机端口；把站点标为 noindex。
 - `docs/local-stack.md`：安装前提（`brew install php@8.3 mysql redis wp-cli uv just composer`）、命令、目录、常见故障。
 
 ## 不做

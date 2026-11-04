@@ -9,7 +9,7 @@ import time
 from pathlib import Path
 
 import pytest
-from linker_local import private_config
+
 from linker_local.instance import Instance
 from linker_local.planner_worker import PlannerWorker
 from linker_local.private_config import lifecycle_lock, publish_once
@@ -188,7 +188,7 @@ def test_lifecycle_lock_refuses_a_second_manager_and_then_releases(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr(private_config, "LOCK_WAIT_SECONDS", 0.2)
+    monkeypatch.setenv("LINKER_LOCAL_LOCK_WAIT", "0.2")
     lock = tmp_path / "run/services.lock"
     with lifecycle_lock(lock):
         with pytest.raises(ProcessError, match="already"):
@@ -198,8 +198,12 @@ def test_lifecycle_lock_refuses_a_second_manager_and_then_releases(
         pass
 
 
-def test_lifecycle_lock_waits_for_a_finishing_manager(tmp_path: Path) -> None:
-    lock = tmp_path / "run/services.lock"
+def test_lifecycle_lock_waits_for_a_finishing_manager(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    lock = tmp_path / "run" / "services.lock"
+    ready = tmp_path / "holder-ready"
+    release = tmp_path / "holder-release"
     src = Path(__file__).parents[1] / "src"
     holder = subprocess.Popen(
         [
@@ -210,17 +214,34 @@ def test_lifecycle_lock_waits_for_a_finishing_manager(tmp_path: Path) -> None:
             "from pathlib import Path\n"
             "from linker_local.private_config import lifecycle_lock\n"
             f"with lifecycle_lock(Path({str(lock)!r})):\n"
-            "    time.sleep(1.0)\n",
+            f"    Path({str(ready)!r}).write_text('')\n"
+            f"    deadline = time.monotonic() + 10.0\n"
+            f"    while not Path({str(release)!r}).exists() and time.monotonic() < deadline:\n"
+            "        time.sleep(0.05)\n",
         ],
     )
     try:
-        time.sleep(0.3)
-        started = time.monotonic()
+        # A handshake, not a guessed delay: the holder only signals once it
+        # actually holds the lock, and it keeps the lock until released.
+        handshake = time.monotonic() + 10.0
+        while not ready.exists() and time.monotonic() < handshake:
+            time.sleep(0.02)
+        assert ready.exists(), "the holder never signalled that it holds the lock"
+        # The contention is real: while the holder owns the lock a short probe
+        # cannot take it, so the acquisition below genuinely has to wait.
+        monkeypatch.setenv("LINKER_LOCAL_LOCK_WAIT", "0.05")
+        with pytest.raises(ProcessError, match="already"):
+            with lifecycle_lock(lock):
+                pass
+        # The same acquire succeeds once the finishing holder lets go.
+        monkeypatch.setenv("LINKER_LOCAL_LOCK_WAIT", "10")
+        release.write_text("", encoding="utf8")
         with lifecycle_lock(lock):
             pass
-        assert time.monotonic() - started >= 0.2
     finally:
-        assert holder.wait() == 0
+        if not release.exists():
+            release.write_text("", encoding="utf8")
+        assert holder.wait(timeout=10.0) == 0, "the holder subprocess must exit"
 
 
 def test_local_queue_empty_does_not_pass_unresolved_remote_work(

@@ -13,17 +13,29 @@ from pathlib import Path
 
 from .processes import ProcessError
 
-# Sequential operator commands hand the lock over in well under a second; an
-# instant refusal turned those routine handoffs (for example a browser suite's
-# fixture calls) into spurious failures. True contention still refuses.
-LOCK_WAIT_SECONDS = 5.0
+# A policy bound, not a measurement: it must cover one finishing sibling — the
+# longest single holder this tool creates is a whole `wp` passthrough — while
+# still surfacing true contention (a second manager, a stuck serve) instead of
+# serializing behind it. Hosts with slower WP-CLI boots override it.
+DEFAULT_LOCK_WAIT_SECONDS = 10.0
+
+
+def lock_wait_seconds() -> float:
+    raw = os.environ.get("LINKER_LOCAL_LOCK_WAIT")
+    if raw is None:
+        return DEFAULT_LOCK_WAIT_SECONDS
+    try:
+        value = float(raw)
+    except ValueError:
+        return DEFAULT_LOCK_WAIT_SECONDS
+    return value if value > 0 else DEFAULT_LOCK_WAIT_SECONDS
 
 
 @contextmanager
 def lifecycle_lock(path: Path) -> Iterator[None]:
     path.parent.mkdir(parents=True, exist_ok=True)
     descriptor = os.open(path, os.O_CREAT | os.O_RDWR, 0o600)
-    deadline = time.monotonic() + LOCK_WAIT_SECONDS
+    deadline = time.monotonic() + lock_wait_seconds()
     try:
         while True:
             try:

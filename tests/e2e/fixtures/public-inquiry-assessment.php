@@ -144,6 +144,11 @@ final class PublicInquiryAssessment {
 	/**
 	 * Work the fixture completes explicitly rather than through a background consumer.
 	 *
+	 * `linker_commerce_mail_attempt` (the Outbox hook) must NOT be deferred:
+	 * scheduling it is part of job creation (NativeJobCapacity refuses a job
+	 * whose recovery action is absent), and TestMode keeps any actual send on
+	 * the tester address only.
+	 *
 	 * @param string $hook Action Scheduler hook.
 	 */
 	private static function background_hook( string $hook ): bool {
@@ -153,7 +158,6 @@ final class PublicInquiryAssessment {
 				'linker_inquiry_assessment_process',
 				'linker_inquiry_assessment_expire',
 				'linker_inquiry_assessment_finish',
-				'linker_commerce_mail_attempt',
 			),
 			true
 		);

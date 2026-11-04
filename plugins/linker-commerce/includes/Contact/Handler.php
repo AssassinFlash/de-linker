@@ -140,8 +140,10 @@ final class Handler {
 		$order->read_meta_data( true );
 		$skipped = (string) $order->get_meta( ReceiptLimit::SKIPPED_META );
 		if ( 'assessment_pending' === $skipped ) {
-			// The handoff still calls ReceiptLimit::take(). When that allowance is
-			// already spent, the confirmation can say so on the first page instead
+			// Under enforce the receipt budget decides at the assessment handoff
+			// (SendAuthorization::jobs), so this first page cannot guess and stays
+			// receipt_pending. Outside enforce the legacy site counter is already
+			// final, and a spent allowance can say so on the first page instead
 			// of waiting for a later reload to discover daily_cap.
 			return self::receipt_allowance_exhausted() ? 'sent_no_receipt' : 'receipt_pending';
 		}

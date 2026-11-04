@@ -16,7 +16,8 @@ final class Application {
 
 	/**
 	 * Initial workspace shell and session-boundary messages kept inline so the
-	 * entry renders translated immediately while the full static catalog loads.
+	 * page still reads in its own language when the full static catalog cannot
+	 * be requested at all.
 	 *
 	 * @var list<string>
 	 */
@@ -168,6 +169,12 @@ final class Application {
 	 * wp_inline_script_attributes — attributes only, never the tag. The loader
 	 * therefore cannot be appended to that tag; it runs one priority later,
 	 * after filter_translations() has recorded the versioned catalog URL.
+	 *
+	 * `window.linkerToolsCatalog` settles exactly when the request settles: the
+	 * module awaits it before the first render, so a slow network delays that
+	 * frame instead of painting the untranslated shell. Only a failed fetch,
+	 * unreadable JSON or an absent runtime resolves it early, and then the
+	 * inline shell subset is what the page keeps.
 	 */
 	public function print_translation_loader(): void {
 		if ( ! is_string( $this->catalog_url ) || '' === $this->catalog_url ) {
@@ -178,7 +185,7 @@ final class Application {
 			return;
 		}
 		$loader = sprintf(
-			'( ( domain, url ) => { if ( typeof window.fetch !== "function" ) return; const nativeFetch = window.fetch.bind( window ); let pending = nativeFetch( url, { credentials: "same-origin" } ).then( ( r ) => ( r.ok ? r.json() : null ) ).then( ( data ) => { const localeData = data && data.locale_data && ( data.locale_data[ domain ] || data.locale_data.messages ); if ( localeData && window.wp && window.wp.i18n ) { localeData[ "" ] = Object.assign( {}, localeData[ "" ], { domain } ); window.wp.i18n.setLocaleData( localeData, domain ); } } ).catch( () => {} ).finally( () => { pending = null; } ); window.fetch = ( input, init ) => ( pending ? pending.then( () => nativeFetch( input, init ) ) : nativeFetch( input, init ) ); } )( "linker-tools", %s );',
+			'( ( domain, url ) => { window.linkerToolsCatalog = new Promise( ( resolve ) => { const done = () => resolve( true ); if ( typeof window.fetch !== "function" ) { done(); return; } fetch( url, { credentials: "same-origin" } ).then( ( r ) => ( r.ok ? r.json() : null ) ).then( ( data ) => { const localeData = data && data.locale_data && ( data.locale_data[ domain ] || data.locale_data.messages ); if ( localeData && window.wp && window.wp.i18n ) { localeData[ "" ] = Object.assign( {}, localeData[ "" ], { domain } ); window.wp.i18n.setLocaleData( localeData, domain ); } } ).catch( () => {} ).finally( done ); } ); } )( "linker-tools", %s );',
 			$url
 		);
 		wp_print_inline_script_tag( $loader, array( 'id' => 'linker-planner-translation-loader' ) );

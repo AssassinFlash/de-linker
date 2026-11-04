@@ -66,7 +66,9 @@ final class PublicVerificationTest extends IntegrationTestCase {
 			$seen[0]['body']
 		);
 		$this->assertSame( 0, $seen[0]['redirection'] );
-		$this->assertSame( 3, $seen[0]['timeout'] );
+		// Protection\Turnstile::TIMEOUT: above the measured provider round trip
+		// (2.45–3.47 s on 2026-11-05), below the ten-second verification lease.
+		$this->assertSame( 8, $seen[0]['timeout'] );
 		$this->assertStringNotContainsString( self::SECRET, (string) wp_json_encode( $this->configuration() ) );
 		$this->assertStringNotContainsString( 'synthetic-token', (string) wp_json_encode( $result ) );
 	}

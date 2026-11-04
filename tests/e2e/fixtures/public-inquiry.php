@@ -83,6 +83,51 @@ require_once __DIR__ . '/public-inquiry-assessment.php';
 		}
 		return;
 	}
+	if ( 'process' === $mode ) {
+		// Drive the real assessment pipeline to its settled state. The submit
+		// request's own wake usually claims the order first and runs the
+		// genuine classification concurrently, holding the same database mutex
+		// for the whole model attempt. process() is zero-wait by design, so a
+		// second call only returns while that worker runs; this waits on the
+		// worker's own mutex instead of re-claiming on a timer. The mu-plugin
+		// fixture answers the classifier call with a deterministic normal
+		// verdict, so no model is spent and no request leaves the machine.
+		$terminal = array( 'normal', 'manual', 'quarantined', 'invalidated' );
+		// Three claimed model attempts' worth of the real bound
+		// (Queue::WAIT_SECONDS): enough for the concurrent worker to finish its
+		// claim plus this loop's own claim and handoff. A retry window is not
+		// waited out — the fixture's answer is deterministic, so a retry means
+		// the answer was rejected, and reporting the unsettled status is the
+		// diagnosis instead of a longer wait.
+		$deadline = microtime( true ) + 3 * \Linker\Commerce\Inquiry\Assessment\Queue::WAIT_SECONDS;
+		$statuses = array();
+		foreach ( $fixture->orders() as $order ) {
+			$id = $order->get_id();
+			while ( microtime( true ) < $deadline ) {
+				$state  = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $id );
+				$status = is_array( $state ) ? (string) ( $state['status'] ?? '' ) : '';
+				if ( in_array( $status, $terminal, true ) ) {
+					break;
+				}
+				// Block on the same mutex the worker holds until it finishes;
+				// the order is then claimed here when it is still pending, and
+				// a classified one is handed off by recover(). Lock::run's
+				// bounded wait paces the loop, so no iteration is a blind sleep.
+				\Linker\Commerce\Inquiry\Assessment\Lock::run( 'send-process-' . $id, static function (): void {}, 1 );
+				\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $id );
+				\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $id );
+			}
+			$final           = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $id );
+			$statuses[ $id ] = is_array( $final ) ? (string) ( $final['status'] ?? '' ) : 'unreadable';
+		}
+		echo wp_json_encode(
+			array(
+				'processed' => count( $fixture->orders() ),
+				'statuses'  => $statuses,
+			)
+		);
+		return;
+	}
 	$orders = $fixture->orders();
 	$jobs   = $fixture->jobs();
 	if ( 'read' !== $mode ) {

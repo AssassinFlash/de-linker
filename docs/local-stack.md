@@ -81,7 +81,8 @@ PHP 内置服务器的启动和绑定错误见 `server.log`，PHP warning 与致
 ## 隔离（`tools/local/mu/`，每次 `up` 复制进实例）
 
 - **邮件**：`wp_mail()` 照常组信，发送一步改为写文件 `mail/<时间>-<UUID>.eml`，内容就是线上 `mail()` 会收到的那封（含 To、Subject、Cc、Bcc）；写不进去时 `wp_mail()` 照常报失败。WordPress 默认发件人 `wordpress@127.0.0.1` 会被 PHPMailer 拒绝，本地改为 `wordpress@example.test`。绕过 `wp_mail()` 直接调 `mail()` 的代码会失败：实例的 php.ini 设了 `sendmail_path = /usr/bin/false`，邮件到不了本机的 sendmail（macOS 的 Postfix 会真的投递）。
-- **外联**：WordPress 的 HTTP API 只放行 `127.0.0.1`（实例自己、engine、Genie）；其余请求返回错误 `linker_local_blocked`，并记一行到 `logs/isolation.log`（时间、方法、URL）。从 127.0.0.1 重定向到别处也会被拦下（方法记为 `REDIRECT`）。WordPress 自己的更新检查也会出现在这里：建好的实例日志里就有几行 `api.wordpress.org`，都已被拦下；日志里的每一行都是一次没有发出的请求。
+- **外联**：WordPress 的 HTTP API 只放行 `127.0.0.1`（实例自己、engine、Genie）；其余请求返回错误 `linker_local_blocked`，并记一行到 `logs/isolation.log`（时间、方法、URL）。唯一放行的外网地址是 Turnstile 的精确服务端校验端点 `https://challenges.cloudflare.com/turnstile/v0/siteverify`（必须是 https、该 host 与 path、默认或 443 端口；其余端口与路径仍拦截），因为 `just turnstile-test` 的官方 dummy 密钥链要真的调用它。从 127.0.0.1 重定向到别处也会被拦下（方法记为 `REDIRECT`）。WordPress 自己的更新检查也会出现在这里：建好的实例日志里就有几行 `api.wordpress.org`，都已被拦下；日志里的每一行都是一次没有发出的请求。
+- **Turnstile 验收配置**：`just turnstile-test <name>` 写入四项常量——`LINKER_PUBLIC_PROTECTION_MODE=enforce`、Cloudflare 官方 dummy site/secret key、`LINKER_TURNSTILE_HOSTNAME=example.com`（dummy key 的 siteverify 响应固定报这个 hostname）——并逐项读回。浏览器套件在 `beforeAll` 里用同一组值，`afterAll` 恢复：把 `enforce` 留在实例上会让之后所有没有证明的公开提交被拒。生产拒绝 dummy key（`Protection\Configuration::test_keys`），这条链碰不到线上。
 - **浏览器**：经过 WordPress 的每个响应都带 `Content-Security-Policy: default-src 'self' http://127.0.0.1:* …; form-action 'self'`，页面只能从本机加载资源、只能把表单提交给自己；以及 `X-Robots-Tag: noindex, nofollow`。`php -S` 直接返回的静态文件（图片、脚本）不带这两个头。
 - **改写**：`router.php` 做线上 LiteSpeed 改写规则做的事（文件照原样给，目录补斜杠，其余交给 `index.php`）；mu-plugin 让 `got_url_rewrite()` 返回真，否则"设置 → 固定链接"会给每种结构前面加 `/index.php`。
 
@@ -121,6 +122,7 @@ PHP 内置服务器的启动和绑定错误见 `server.log`，PHP warning 与致
 - 这两个实例有自己的数据根（`LINKER_LOCAL_HOME`，结束后删除），但 MySQL、Redis、下载缓存和端口是全机共用的：同一时间只有一组在跑，其余检出的 `just test` 在锁 `~/de-linker-local/stack-test.lock` 上等候；分配端口时也避开 `~/de-linker-local/instances.toml` 里登记的端口。
 - 若真有实例叫 `pytesta` 或 `pytestb`，测试拒绝运行，免得删掉它的库。
 - CI 上没有这些工具，这组测试跳过；本机缺工具则失败。
+- 这组测试要 PHP 8.3：直接跑 `pytest` 时 `PATH` 上的 `php` 若是别的版本会被拒绝，用 `just test`（或自己设 `PHP=/opt/homebrew/opt/php@8.3/bin/php`）。
 
 ## 常见故障
 

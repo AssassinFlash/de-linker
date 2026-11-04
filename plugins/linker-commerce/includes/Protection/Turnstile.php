@@ -14,8 +14,16 @@ final class Turnstile {
 	// Official server-side validation, fixed research #506, captured 2026-10-21.
 	private const ENDPOINT    = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 	private const TOKEN_LIMIT = 2048;
-	// Initial form-wait ceiling, docs/specs/519-public-admission.md.
-	private const TIMEOUT = 3;
+	/**
+	 * Provider round-trip ceiling. Measured 2026-11-05 from this network:
+	 * fourteen consecutive siteverify calls took 2.45 s to 3.47 s, so the
+	 * earlier three-second bound cut off normal provider latency and turned
+	 * genuine customer challenges into `unavailable`. Eight seconds covers
+	 * that distribution and stays under both this endpoint's verification
+	 * lease (Protection\Controller::LEASE, ten seconds) and the client's
+	 * fifteen-second request bound (src/protection/client.ts NETWORK_MS).
+	 */
+	private const TIMEOUT = 8;
 
 	/**
 	 * The WordPress HTTP API remains the single production transport.

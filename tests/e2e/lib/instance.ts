@@ -176,6 +176,92 @@ export function runJustRaw(args: string[]): { stdout: string; status: number } {
 	}
 }
 
+/**
+ * Local Turnstile acceptance profile: Cloudflare's official always-pass dummy
+ * pair, `enforce` so the browser chain runs the real verification, and the
+ * testing hostname the dummy keys always report (siteverify metadata
+ * `result_with_testing_key`). Production refuses the test key families
+ * (Protection\Configuration::test_keys), so this cannot weaken live.
+ *
+ * These are the same values `just turnstile-test` writes for a human run. A
+ * browser suite must not leave them behind: they turn every public door on the
+ * instance into an enforce-mode chain, and the PHP integration suites that post
+ * through those doors without a proof expect the instance as they found it.
+ */
+export const TURNSTILE_PROFILE: Record<string, string> = {
+	LINKER_PUBLIC_PROTECTION_MODE: 'enforce',
+	LINKER_TURNSTILE_SITE_KEY: '1x00000000000000000000AA',
+	LINKER_TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA',
+	LINKER_TURNSTILE_HOSTNAME: 'example.com',
+};
+
+/**
+ * Apply the dummy profile for one run and return the restore that puts the
+ * instance's own constants back (an absent constant is deleted again). Reads
+ * and writes go through WP-CLI, so the running site sees the same values the
+ * suite's fixtures read back.
+ */
+export function applyTurnstileProfile(
+	name: string = instanceName()
+): () => void {
+	const prior = Object.keys(TURNSTILE_PROFILE).map((constant) => {
+		const current = runJustRaw([
+			'wp',
+			name,
+			'config',
+			'get',
+			constant,
+			'--type=constant',
+		]);
+		return {
+			constant,
+			value: current.status === 0 ? current.stdout.trim() : null,
+		};
+	});
+	for (const [constant, value] of Object.entries(TURNSTILE_PROFILE)) {
+		wp(
+			['config', 'set', constant, value, '--type=constant', '--quiet'],
+			name
+		);
+		if (
+			wp(['config', 'get', constant, '--type=constant'], name).trim() !==
+			value
+		) {
+			throw new Error(
+				`turnstile profile: ${constant} did not read back as applied`
+			);
+		}
+	}
+	return () => {
+		for (const { constant, value } of prior) {
+			if (value === null) {
+				wp(
+					[
+						'config',
+						'delete',
+						constant,
+						'--type=constant',
+						'--quiet',
+					],
+					name
+				);
+				continue;
+			}
+			wp(
+				[
+					'config',
+					'set',
+					constant,
+					value,
+					'--type=constant',
+					'--quiet',
+				],
+				name
+			);
+		}
+	};
+}
+
 /** Runs `just` from the repository root; throws with the captured output. */
 export function runJust(
 	args: string[],

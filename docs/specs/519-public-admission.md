@@ -24,9 +24,14 @@ test keys only. Production must reject the dummy-key configuration.
 Siteverify uses the fixed official HTTPS endpoint, strict success Boolean,
 hostname/action binding and a stable UUID idempotency key. Omit optional remoteip.
 Tokens are bounded to the documented 2048 characters; the provider's 300-second
-single-use validity is not replaced with a client claim. A three-second HTTP
-ceiling is an initial operational parameter chosen here to limit form waiting;
-a retry keeps its request UUID and is bounded by the token lifetime. Classify
+single-use validity is not replaced with a client claim. The HTTP ceiling limits
+how long a customer waits on the provider; measured on 2026-11-05 from the
+workshop network, fourteen consecutive siteverify calls took 2.45 s to 3.47 s,
+so the initial three-second value cut off normal provider latency and turned
+genuine challenges into `unavailable`. The ceiling is now eight seconds: above
+that measured distribution, below this endpoint's ten-second verification lease
+(`Protection\Controller`) and the client's fifteen-second request bound. A retry
+keeps its request UUID and is bounded by the token lifetime. Classify
 invalid/expired/replay separately from provider/configuration failure.
 
 A proof is bound to the current server-derived browser/account subject and

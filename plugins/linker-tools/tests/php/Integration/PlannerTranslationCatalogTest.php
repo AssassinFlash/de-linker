@@ -50,7 +50,7 @@ final class PlannerTranslationCatalogTest extends TestCase {
 		$this->assertIsInt( $loader_pos, 'the on-demand catalog loader is printed as its own script' );
 		$this->assertGreaterThan( $data_pos, $loader_pos, 'the loader runs after the translation data has printed' );
 		$loader = substr( $html, $loader_pos, 8000 );
-		$this->assertStringContainsString( 'nativeFetch', $loader );
+		$this->assertStringContainsString( 'linkerToolsCatalog', $loader );
 		$this->assertStringContainsString( 'languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json?ver=', $loader );
 
 		// The URL the loader fetches must hold the form strings.

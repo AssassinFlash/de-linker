@@ -6,6 +6,9 @@ declare global {
 				sprintf(format: string, ...values: (string | number)[]): string;
 			};
 		};
+		/** Resolves when the footer catalog request settled; the inline shell
+		 * subset remains the fallback, so failure is not a rejection. */
+		linkerToolsCatalog?: Promise<unknown>;
 	}
 }
 

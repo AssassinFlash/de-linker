@@ -63,23 +63,31 @@ function Application({ config }: { config: Configuration }) {
 		</SessionBoundary>
 	);
 }
-for (const element of document.querySelectorAll<HTMLElement>(
-	"[data-linker-planner]",
-)) {
-	try {
-		const config = readConfiguration(element, import.meta.url);
-		createRoot(element).render(
-			<StrictMode>
-				<ApplicationBoundary>
-					<Application config={config} />
-				</ApplicationBoundary>
-			</StrictMode>,
-		);
-	} catch {
-		element.setAttribute("role", "alert");
-		element.textContent = __(
-			"The workspace could not be displayed. Saved projects are unchanged.",
-			"linker-tools",
-		);
+async function mount(): Promise<void> {
+	// The first render must see the full catalog (or its bounded failure, which
+	// leaves the inline shell subset in place); rendering earlier paints the
+	// untranslated form and nothing re-renders when the catalog arrives.
+	await window.linkerToolsCatalog;
+	for (const element of document.querySelectorAll<HTMLElement>(
+		"[data-linker-planner]",
+	)) {
+		try {
+			const config = readConfiguration(element, import.meta.url);
+			createRoot(element).render(
+				<StrictMode>
+					<ApplicationBoundary>
+						<Application config={config} />
+					</ApplicationBoundary>
+				</StrictMode>,
+			);
+		} catch {
+			element.setAttribute("role", "alert");
+			element.textContent = __(
+				"The workspace could not be displayed. Saved projects are unchanged.",
+				"linker-tools",
+			);
+		}
 	}
 }
+
+void mount();

@@ -179,9 +179,11 @@ function linker_local_filter_http( $response, array $args, string $url ) {
  * @return bool
  */
 function linker_local_is_turnstile_verification( string $url ): bool {
+	$port = wp_parse_url( $url, PHP_URL_PORT );
 	return 'https' === wp_parse_url( $url, PHP_URL_SCHEME )
 		&& 'challenges.cloudflare.com' === wp_parse_url( $url, PHP_URL_HOST )
-		&& '/turnstile/v0/siteverify' === wp_parse_url( $url, PHP_URL_PATH );
+		&& '/turnstile/v0/siteverify' === wp_parse_url( $url, PHP_URL_PATH )
+		&& ( null === $port || 443 === $port );
 }
 
 /**

@@ -163,7 +163,14 @@ final class PlannerApplicationTest extends TestCase {
 			$captured
 		);
 		$this->assertStringContainsString( 'window.wp.i18n.setLocaleData', $captured );
-		$this->assertStringContainsString( 'nativeFetch', $captured );
+		$this->assertStringContainsString( 'window.linkerToolsCatalog', $captured );
+		$this->assertStringContainsString( 'new Promise', $captured );
+		// The catalog settles on the request's own outcome: no timer may paint
+		// an untranslated first frame on a slow network, and the shared fetch
+		// must stay untouched for the rest of the page.
+		$this->assertStringNotContainsString( 'setTimeout', $captured );
+		$this->assertStringNotContainsString( 'window.fetch =', $captured );
+		$this->assertStringContainsString( '.catch( () => {} ).finally( done )', $captured );
 		$this->assertConditionsMet();
 	}
 }
