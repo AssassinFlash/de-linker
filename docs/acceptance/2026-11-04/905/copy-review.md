@@ -635,3 +635,198 @@ Other batches' files: the engine, Genie, the Planner and the registry belong to
 agents running in parallel. The Planner's own strings were read only to
 establish that `dispatch` there means energy dispatch, and the four findings in
 11.1 are recorded as baseline reasons, not as edits.
+
+---
+
+# Addendum — the first full production scan (2026-11-04)
+
+The tables above came from seven pages and four legal pages, read as rendered
+HTML. The first `--wp-cli` scan of the whole published site found the rest. This
+addendum is the classification of every live hit and the review of every new
+rewrite. The machine-readable form is `live-apply-plan.json` beside this file.
+
+## A.1 What the scan saw, and two defects it exposed in the checker
+
+**Scope.** 50 published pages and 20 posts, read through `/tmp/wp-production.sh`
+(read-only `post list` / `post get`; no writes). 118 hits: **72 non-legal** and
+**46 on legal pages**. The earlier sample (25 pages) reported 92 non-legal; the
+difference is the twin accounting below plus the pages outside the sample.
+
+**Defect 1 — a slug does not identify a document.** Polylang gives both
+language versions of a page the same slug: page 14 and page 6915 are both
+`blog`, pages 4083 and 6633 are both `genie`. The live source key was
+`db:<post_type>:<slug>`, so two documents shared one identity — the German
+blog's `Bestell*` hit was attributed to the English page, and one page's
+baseline entry could have covered the other's copy. The key now carries the
+post ID (`db:page:6915:blog`), and the true count is **93 non-legal hits across
+23 documents**, one more than the slug-keyed scan could see.
+
+**Defect 2 — `Artikel` has no owner in the database.** `german-copy.py` owns the
+German blog word with its documented allowances, but it scans *repository*
+files. The German blog page says `Artikel` **eleven times** and no gate reads
+it: the wordlist deliberately delegates the word, and the delegating check
+cannot see database content. This addendum rewrites the one occurrence that
+carries a listed term (`Jeder Artikel` → `Jeder Beitrag`); the other ten are
+recorded here as an open finding, because fixing them is a repo-versus-database
+ownership decision, not a copy tweak, and this batch does not change the
+wordlist's ownership map mid-flight.
+
+## A.2 Classification totals
+
+Every one of the 72 non-legal hits takes exactly one disposition.
+
+| Disposition | Count | Meaning |
+|---|---|---|
+| (c) rewrite | **70** | genuine shop vocabulary on a marketing or blog surface; every one has a pair in `live-apply-plan.json` |
+| (a) keep, baselined | **2** | `SCADA & GRID DISPATCH` / `SCADA & NETZ-DISPATCH`: energy dispatch, the grid setpoint an EPC's SCADA controls. Not a shipment. |
+| (b) legal | 46 | on the six legal pages; triaged in A.5, none rewritten |
+
+**The two "keeps" are the whole of the (a) class.** There is no sequence-sense
+`order` and no `window.dispatchEvent` on a published page: the extractor reads
+prose, so code and CSS never reach the gate in the first place, and the earlier
+batch already removed the Planner's sequence words from customer copy.
+
+70 rewrites are carried by **66 pairs** across **20 documents**: four pairs
+replace a string that carries two hits (the German rail titles and the
+`bestellen`/`Mindestbestellmenge` sentence), and one pair is applied twice
+(`Search all articles`, label plus `aria-label`).
+
+**Proof the plan is complete:** applying all 66 pairs in memory and re-running
+the same extractor over the same content takes the site from **118 hits to 48**
+— 46 legal plus exactly the 2 keeps. Nothing else survives.
+
+```text
+before  118   (72 non-legal + 46 legal)
+after    48   (2 keeps + 46 legal)
+```
+
+## A.3 Per-document rewrites
+
+| ID | Page | Lang | Hits | Character of the defect |
+|---|---|---|---|---|
+| 862 | about | en | 8 | purchase/dispatch/order across the supply cards and the minimum-quantity FAQ |
+| 6865 | ueber-uns | de | 5 | DE twin of 862 |
+| 14 | blog | en | 12 | the blog word (`article`) plus one `before the order` |
+| 6915 | blog | de | 1 | DE twin of 14 (slug shared); `Jeder Artikel` + `vor der Bestellung` |
+| 842 | for-epc | en | 8 | commercial-flow nouns; one genuine energy keep |
+| 6867 | fuer-epc | de | 7 | DE twin of 842 |
+| 826 | for-installer | en | 5 | dispatch dates, purchase |
+| 6869 | fuer-installateur | de | 4 | DE twin of 826 |
+| 792 | commercial-storage | en | 1 | rail stage title |
+| 749 | residential-storage | en | 3 | rail title ×2, `shipping date` |
+| 6923 | heimspeicher | de | 3 | DE twin of 749 |
+| 2748 | services-support | en | 2 | **missed by the #905 pass** — see A.4 |
+| 3302 | solution-configurator | en | 1 | `before ordering` |
+| 6693 | loesungskonfigurator | de | 1 | DE twin of 3302 |
+| 1755 | utility-storage | en | 3 | shipping schedule, order conditions |
+| 6917 | grossspeicher | de | 1 | DE twin of 1755 |
+| 6873 | danke | de | 2 | `bevor Sie bestellen`, `je Bestellung` |
+| 623 | thank-you | en | 3 | twin of 6873 plus `Technical articles` |
+| 552 | installer-checklist… | en | 1 | closing sentence |
+| 6885 | installateur-checkliste… | de | 1 | DE twin of 552 |
+
+## A.4 Why 2748 still had two hits after the #905 table
+
+The table for page 2748 was written from the **rendered** page. These two
+strings sit in a comparison card whose markup the renderer collapses:
+
+- `Complete system packages dispatched together`
+- `Packed and dispatched as one delivery through Linker`
+
+They were not "missed by carelessness": the first pass read what a browser
+draws, and a collapsed card is not drawn. The lesson is in the method — the
+stored content is the authority, not the render. Both are rewritten here with
+the same mapping the rest of that page already uses (`dispatched` → `delivered`,
+`as one delivery` → `as one consignment`).
+
+## A.5 Legal pages (six) — sentence triage
+
+The four original pages keep their earlier triage (§9). The imprint and the
+returns policy join them, and take the same three-way rule.
+
+### 1672 / 6829 — Imprint / Impressum
+
+| Sentence | Kind | Disposition |
+|---|---|---|
+| `…compatibility lists are provided for buyer review; certificates are requested per order.` | **legal boilerplate**, not a shop flow — it states *when* a certificate is requested, and that request really happens, once per inquiry | **Keep, against the first draft, which rewrote it.** The sentence is shared verbatim with page 623, where the same clause is rewritten to `per inquiry` because that page is marketing. The imprint keeps the original: it is a statement of what the company provides, the document above it is a legal notice, and changing one word of a published legal notice is the owner's call, not a copy pass's. The two pages will read slightly differently; that is the honest state, and it is recorded rather than silently harmonised. |
+
+**0 surgical fixes.** One kept, with the reason above.
+
+### 1038 / 6698 — Refund and Returns Policy / Rückerstattungs- und Rücksenderichtlinie
+
+This page is a **hybrid**, and that is the interesting finding: it is a legal
+policy in form, but it describes a **claims process that runs on a real order**,
+not on an online purchase.
+
+| Sentence | Kind | Disposition |
+|---|---|---|
+| `This policy sets out how Linker handles order errors, transport damage, warranty claims, and returns…` | **scope clause** of a legal policy | **Keep.** It defines what the document covers. |
+| `Order errors and transport damage` (heading) | legal heading | **Keep.** |
+| `Check a delivery against the order confirmation on receipt.` | **stale fact** — the site issues a Proforma and no order confirmation | **Surgical:** `…against the delivery documents on receipt.` |
+| `…contact Linker with the order number before the goods are used or installed.` (×3 variants) | **mixed** — the process is real, but the customer has no order number; they have an inquiry and a Proforma | **Surgical:** `…with the Proforma number…` in each. |
+| `Linker keeps the order record, the serial numbers, and the delivery documents…` | real claims process | **Keep.** The record really is kept. |
+| `…whether for a confirmed order error, transport damage, or an authorised return, Linker issues it to the original payment method…` | real refund mechanism, offline | **Keep.** Refunds are real; only an *online* payment flow would be false. |
+
+**2 surgical fixes** (order confirmation → delivery documents; order number →
+Proforma number), the rest kept with reasons. The German twin takes the same two
+fixes: `Auftragsbestätigung` → `Lieferdokumente` and `Bestellnummer` →
+`Proformanummer` (the German says `Auftragsbestätigung`, a document the site
+does not issue either — the same stale fact in the other language's word). These are **not** in `live-apply-plan.json` yet, because they
+change a legal document and the owner should see them first; they are specified
+here precisely enough to apply unchanged.
+
+## A.6 Adversarial review of the new rewrites
+
+Draft → critique → final, per string, as in §1. Only the findings that changed
+a draft are listed; the mappings that the #905 tables established
+(`before you order` → `before your inquiry`, `Versand` → `Lieferung`,
+`dispatch` → `delivery`) were applied as settled and are not re-litigated.
+
+**Rejected: `Your equipment, prepared for shipment.`** (about, the Barleben
+card). Hard Stop 1 and the ruling that logistics is agreed offline: `for
+shipment` names the logistics step again with a softer word. Final:
+`stocked in Barleben for delivery to projects across Europe` — the stock fact
+and the destination, no process claim.
+
+**Rejected: `Our team handles the commercial side with you.`** (about, the
+partner-portal card). The original said `handles the purchase with you`, and
+"commercial side" is vague enough to say nothing. Final: `Our team prepares your
+Proforma and handles the commercial terms with you` — names the document the
+site actually produces.
+
+**Rejected: `Equipment Pricing & Supply Terms`** (utility-storage heading). The
+original is `Order Conditions`; "terms" collides with the Terms of Sale on a
+different page. Final: `Equipment Pricing & Supply Conditions`, which keeps the
+heading's shape.
+
+**Rejected: `Einkauf` for `purchase`** (German). `Einkauf` is a consumer's
+shopping trip; the B2B word is `Beschaffung`, and the German page had already
+used `Beschaffung` in its own hero. No DE pair needed a new purchase word
+because the German pages phrase it as `mit Ihnen abstimmen`.
+
+**Changed on critique: `Mindestbestellmenge` → `Mindestmenge`.** The first draft
+pair changed only the FAQ question and left `bestellen` in the answer beneath
+it. Reading the whole sentence showed the hit survived the pair — caught by
+applying the plan in memory and re-scanning, not by reading the diff. The pair
+now covers the full sentence: `…anfragen, wie es Ihr Projektzeitplan erfordert.`
+
+**Changed on critique: `Technical articles and system notes` → `Technical posts
+and system notes`.** The first draft reached for `guides`. `Post` is the word
+AGENTS §3 already sets for the blog, and the German twin (`Beitrag`) is the
+matching term, so the pair stays symmetric.
+
+**Checked and left alone: the four `SCADA & … DISPATCH` badges.** Energy
+dispatch, not a shipment. Rewriting them would have damaged a true technical
+term to satisfy a word list, which is the failure mode the ruling on customer
+reading effect forbids.
+
+## A.7 What this addendum does not cover
+
+- **The FAQ product strings.** They live in `docs/faq` data and product meta,
+  and the FAQ import (PR #914) is still pending. Untouched, as instructed.
+- **The other ten `Artikel` on the German blog.** Recorded in A.1 as an
+  ownership gap, not rewritten.
+- **The Refund & Returns footer link.** Still a content decision: the page is
+  live and legal, so the footer entry is now consistent rather than wrong.
+- **Production writes.** Main line applies; this branch carries the plan, the
+  baseline and the copy.
