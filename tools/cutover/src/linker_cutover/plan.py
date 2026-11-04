@@ -82,13 +82,15 @@ PAGE_CACHE_QUERY_EXCLUSION = "?"
 PAGE_CACHE_LOGIN_COOKIE_OPTION = "litespeed.conf.cache-login_cookie"
 
 # WindPress compiles the volume (and the templates' Tailwind classes) into
-# this cache from a real browser, and a deploy has no browser: after present
-# changes anything the cache feeds on, only WindPress's own Generate (wp-admin
-# → Performance, or `just windpress-compile <instance>` locally) refreshes it.
-# The deploy cannot run that step, so `steps.deploy` verifies it instead —
-# AGENTS.md §4, the 2026-11-03 incident: the deploy completed 19:09, the
-# frontend kept serving the CSS compiled six hours earlier, and the fix only
-# reached visitors when Generate ran by hand at 19:19.
+# this cache with the compiler bundle the admin's Generate runs in a browser
+# worker; `just windpress-compile-production` runs that same compiler headless
+# in Node (tools/windpress-node-compile.mjs) through the same REST inputs and
+# the same cache/store route, and `just windpress-compile <instance>` drives a
+# local instance's admin with a real browser. After present changes anything
+# the cache feeds on, one of those refreshes it; `steps.deploy` verifies the
+# cache advanced — AGENTS.md §4, the 2026-11-03 incident: the deploy completed
+# 19:09, the frontend kept serving the CSS compiled six hours earlier, and the
+# fix only reached visitors when Generate ran by hand at 19:19.
 WINDPRESS_VOLUME = "wp-content/uploads/windpress/data"
 WINDPRESS_CACHE = "wp-content/uploads/windpress/cache/tailwind.css"
 # Reads the cache's mtime through WordPress's own uploads directory — the same
