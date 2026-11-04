@@ -94,7 +94,13 @@ export function storeClient(
 			const response = await fetcher( `${ base }/products?${ query }`, {
 				credentials: 'same-origin',
 			} );
-			return response.ok ? response.json() : [];
+			if ( ! response.ok ) {
+				// A refused read rejects: returning [] here once made a failed
+				// Store API round look identical to "no such product", so the
+				// card could not tell a pending read from a failed one (#901).
+				throw new Error( `products ${ response.status }` );
+			}
+			return response.json();
 		},
 
 		async addAll( lines, onStatus, proof ) {

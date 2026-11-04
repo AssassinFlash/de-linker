@@ -121,9 +121,12 @@ test.each( [ 'design/residential', 'roof/pack', 'report/pdf' ] )(
 			resourceAction( url, 'POST' ),
 			'synthetic-proof'
 		);
-		expect( document.querySelector( '[role="status"]' )?.textContent ).toBe(
-			''
-		);
+		// Node existence, not empty text: a removed node cannot linger as a
+		// second live region (#901).
+		expect( document.querySelector( '[role="status"]' ) ).toBeNull();
+		expect(
+			document.querySelector( '[data-linker-resource-verification]' )
+		).toBeNull();
 	}
 );
 
@@ -485,4 +488,66 @@ test( 'an older transport outcome cannot hide a newer attempt in the same slot',
 	nextReply( new Response( '{}' ) );
 	await next;
 	expect( slot.hidden ).toBe( true );
+} );
+
+test( 'a failed non-genie proof leaves no status node behind', async () => {
+	window.linkerPublicProtection!.proof = vi.fn(
+		async ( action, container ) => {
+			container.dispatchEvent(
+				new CustomEvent( 'linker:protection', {
+					detail: { action, state: 'failed' },
+				} )
+			);
+			throw new Error( 'verification_widget_300030' );
+		}
+	);
+	const fetcher = vi.fn< typeof fetch >();
+	await expect(
+		resourceFetch(
+			fetcher,
+			'https://site.test/wp-json/linker-ai/v1/genie/conversations',
+			{ method: 'POST', body: '{}' }
+		)
+	).rejects.toThrow( 'verification_widget_300030' );
+	expect( fetcher ).not.toHaveBeenCalled();
+	expect( document.querySelectorAll( '[role="status"]' ) ).toHaveLength( 0 );
+	expect(
+		document.querySelectorAll( '[data-linker-resource-verification]' )
+	).toHaveLength( 0 );
+} );
+
+test( 'repeated non-genie failures do not accumulate status nodes', async () => {
+	window.linkerPublicProtection!.proof = vi.fn(
+		async ( action, container ) => {
+			container.dispatchEvent(
+				new CustomEvent( 'linker:protection', {
+					detail: { action, state: 'expired' },
+				} )
+			);
+			throw new Error( 'verification_expired' );
+		}
+	);
+	const input = { method: 'POST', body: '{}' };
+	const url = 'https://site.test/wp-json/linker-ai/v1/genie/conversations';
+	for ( let attempt = 0; attempt < 3; ++attempt ) {
+		await expect(
+			resourceFetch( vi.fn< typeof fetch >(), url, input )
+		).rejects.toThrow( 'verification_expired' );
+		expect( document.querySelectorAll( '[role="status"]' ) ).toHaveLength(
+			0
+		);
+	}
+} );
+
+test( 'a successful non-genie write removes its own status node', async () => {
+	window.linkerPublicProtection!.complete = vi.fn( () => true );
+	await resourceFetch(
+		vi.fn( async () => new Response( '{}' ) ),
+		'https://site.test/wp-json/linker-ai/v1/genie/conversations',
+		{ method: 'POST', body: '{"id":12}' }
+	);
+	expect( document.querySelectorAll( '[role="status"]' ) ).toHaveLength( 0 );
+	expect(
+		document.querySelectorAll( '[data-linker-resource-verification]' )
+	).toHaveLength( 0 );
 } );

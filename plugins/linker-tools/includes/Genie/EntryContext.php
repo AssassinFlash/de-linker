@@ -20,6 +20,57 @@ use WP_REST_Response;
 
 /** No cookie, user identity or token is exposed by these auxiliary routes. */
 final class EntryContext {
+
+	/**
+	 * Entry-context reads one connection may send per hour.
+	 *
+	 * One request every two seconds, sustained: far past any human browser
+	 * (the client coalesces concurrent bootstraps and re-reads identity only
+	 * on focus), while the route is otherwise unlimited — a cookieless POST
+	 * is one wp_options row each, and 1 req/s once measured 164 rows in one
+	 * research session (#906 §2.2). The address is REMOTE_ADDR only, never a
+	 * forwarded header a sender sets freely (FormGuard::address()).
+	 */
+	public const CONNECTION_HOURLY = 1800;
+
+	/**
+	 * Entry-context reads the whole site takes per day. The site's entire
+	 * history minted ≈786 browser keys (#906 §2.2); 20 000 is ~200× that
+	 * traffic and bounds the option-table churn the hourly sweep then
+	 * reclaims.
+	 */
+	public const SITE_DAILY = 20000;
+
+	/**
+	 * Per-connection hourly limit.
+	 *
+	 * @var RateLimit
+	 */
+	private readonly RateLimit $connection;
+
+	/**
+	 * Site-wide daily cap.
+	 *
+	 * @var RateLimit
+	 */
+	private readonly RateLimit $site;
+
+	/**
+	 * Sets up the route with its conservative allowance (#906 left the
+	 * decision to this batch: the route sits outside ResourcePolicy's
+	 * admission with `__return_true`, so without this it has no limit at
+	 * all). Refusal is a plain 429: the client treats a non-2xx read as a
+	 * retryable identity failure, which is exactly the shape an abusive
+	 * caller should see.
+	 *
+	 * @param RateLimit|null $connection Per-connection hourly limit; the default when omitted.
+	 * @param RateLimit|null $site       Site-wide daily cap; the default when omitted.
+	 */
+	public function __construct( ?RateLimit $connection = null, ?RateLimit $site = null ) {
+		$this->connection = $connection ?? new RateLimit( 'genie_entry_context', self::CONNECTION_HOURLY, HOUR_IN_SECONDS );
+		$this->site       = $site ?? new RateLimit( 'genie_entry_context_day', self::SITE_DAILY, DAY_IN_SECONDS );
+	}
+
 	/** Registers the same-origin auxiliary routes, using native REST authentication. */
 	public function register(): void {
 		register_rest_route(
@@ -53,8 +104,13 @@ final class EntryContext {
 	 * Resolves the current server principal before cached text can be displayed.
 	 *
 	 * @param WP_REST_Request $request Current authenticated request.
+	 * @return WP_REST_Response|WP_Error The scope, or 429 when the allowance is spent.
 	 */
-	public function read( WP_REST_Request $request ): WP_REST_Response {
+	public function read( WP_REST_Request $request ): WP_REST_Response|WP_Error {
+		$who = FormGuard::address();
+		if ( ! $this->connection->take( $who ) || ! $this->site->take( '' ) ) {
+			return new WP_Error( 'linker_entry_context_quota', 'linker_entry_context_quota', array( 'status' => 429 ) );
+		}
 		$response = new WP_REST_Response( array( 'scope' => ( new Conversations() )->entry_scope( (string) $request->get_param( 'tab' ) ) ) );
 		$response->header( 'Cache-Control', 'private, no-store' );
 		$response->header( 'Vary', 'Cookie' );

@@ -60,6 +60,7 @@ final class PluginTest extends TestCase {
 		$proxy         = new RecordingProxy( $conversations );
 		$entries       = new RecordingEntries( self::FILE );
 		$retention     = new Retention( self::FILE );
+		$browser_claim = new \Linker\Tools\Genie\BrowserClaim( self::FILE );
 		$user_context  = new class() extends UserContext {
 			/**
 			 * Records instead of hooking.
@@ -109,6 +110,8 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'init', array( $retention, 'schedule' ) );
 		WP_Mock::expectActionAdded( Retention::HOOK, array( $retention, 'sweep' ) );
 		WP_Mock::expectActionAdded( Retention::DELETE_HOOK, array( $retention, 'delete' ) );
+		WP_Mock::expectActionAdded( 'init', array( $browser_claim, 'schedule' ) );
+		WP_Mock::expectActionAdded( \Linker\Tools\Genie\BrowserClaim::HOOK, array( $browser_claim, 'sweep' ) );
 		WP_Mock::expectFilterAdded( 'f!windpress/core/cache:compile.providers', array( $windpress, 'providers' ) );
 		// The configurator page's LiveCanvas template prints this shortcode.
 		WP_Mock::userFunction(
@@ -160,7 +163,7 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'wp_print_footer_scripts', array( $resources, 'assets' ), 0 );
 		WP_Mock::userFunction( 'wp_next_scheduled', array( 'return' => 1 ) );
 
-		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention, $user_context, $windpress, $mount, $engine, $quality, $quality_route, $quality_page, $preview, $mail, $contact, $inquiry, $inquiry_card, $hero, $page_cache, $page_indexing, $resources, $provider_budget ) )->register();
+		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention, $browser_claim, $user_context, $windpress, $mount, $engine, $quality, $quality_route, $quality_page, $preview, $mail, $contact, $inquiry, $inquiry_card, $hero, $page_cache, $page_indexing, $resources, $provider_budget ) )->register();
 
 		$this->assertSame( array( 'registered' ), $entries->calls );
 		$this->assertTrue( $user_context->registered, 'the identity seam is hooked' );

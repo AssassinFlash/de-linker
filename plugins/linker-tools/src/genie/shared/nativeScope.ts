@@ -16,8 +16,16 @@ interface SharedScope {
 }
 const WINDOW_KEY = '__linkerGenieNativeScope';
 export const TAB_KEY = 'linker-genie-entry-tab';
-/** Existing auxiliary metadata deadline; independent of model transport. */
-const CONTEXT_BUDGET_MS = 5000;
+/**
+ * The entry-context read's budget: 20 seconds, the same native-read budget as
+ * Genie's artifact reads (product.ts ARTIFACT_TIMEOUT_MS). The former 5 000 was
+ * inherited from a product-metadata deadline that was itself raised to 20 s two
+ * days after it was copied (0a5a224c9), and production sampling put 30-way
+ * concurrent entry-context at p95 5.003 s — at the old threshold (#901). Any
+ * change here is one batch with Conversations::BROWSER_CLAIM_SECONDS, whose
+ * sibling-dedup window is this budget.
+ */
+export const CONTEXT_BUDGET_MS = 20_000;
 
 function shared(): SharedScope {
 	const target = window as unknown as Record< string, unknown >;
