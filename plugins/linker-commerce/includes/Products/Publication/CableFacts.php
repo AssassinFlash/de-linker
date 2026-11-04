@@ -69,7 +69,7 @@ final class CableFacts {
 			$raw['parameter_sets'][ $index ]['source'] = $evidence;
 		}
 		if ( array_key_exists( 'reference_current_ratings', $raw ) ) {
-			if ( ! is_array( $raw['reference_current_ratings'] ) || ! array_is_list( $raw['reference_current_ratings'] ) || ( array() !== $raw['reference_current_ratings'] && 'single_conductor' !== $raw['construction'] ) ) {
+			if ( ! is_array( $raw['reference_current_ratings'] ) || ! array_is_list( $raw['reference_current_ratings'] ) ) {
 				return null;
 			}
 			$seen = array();

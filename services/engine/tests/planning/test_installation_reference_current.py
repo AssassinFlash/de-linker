@@ -208,6 +208,28 @@ def test_incomplete_or_changed_evidence_never_compares(
     assert not result["qualified"]
 
 
+def test_multicore_reference_may_carry_a_table_but_never_compares() -> None:
+    inputs, basis = prepared()
+    reference = basis["cable_references"][0]
+    # The cited product is a two-core cable that also publishes a reference
+    # current table. Storing that table is legal; only the single-conductor
+    # comparison method refuses to use it.
+    reference["cable_facts"].update(construction="multicore_cable", core_count=2)
+    reference.pop("product_revision")
+    reference.pop("reference_revision")
+    reference["product_revision"] = digest(encode(reference))
+    reference["reference_revision"] = reference["product_revision"]
+    inputs["installation"]["cable_runs"][0]["conductor"]["cable_reference"][
+        "product_revision"
+    ] = reference["product_revision"]
+    confirm(inputs)
+    result = rows(inputs, basis)
+    assert result[0]["status"] == "not_evaluated"
+    assert "cable_specification_mismatch" in result[0]["reasons"]
+    assert result[0]["reference_current_a"] is None and not result[0]["qualified"]
+    assert result[1]["status"] == "below_reference"
+
+
 def test_touching_requires_reciprocal_same_route_and_selected_product() -> None:
     inputs, basis = prepared(2)
     runs = inputs["installation"]["cable_runs"]
