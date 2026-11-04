@@ -1201,6 +1201,39 @@ def same_module_inputs(before, head, module, cache=None):
     )
 
 
+def github_advanced_base(parent, base):
+    """Whether a merge's first parent is the recorded base or its descendant.
+
+    The pull_request payload pins BASE_SHA at push time, but GitHub rebuilds
+    refs/pull/N/merge against the current base tip, so the merge's first
+    parent can move forward while the event (and every re-run of it) keeps
+    the older value. A first parent descending from the recorded base is
+    that movement; any other tip is a base this event never claimed.
+    """
+    if parent == base:
+        return True
+    try:
+        git("cat-file", "-e", base + "^{commit}")
+    except subprocess.CalledProcessError:
+        git("fetch", "--depth=1", "origin", base)
+    for deepen in (None, "250", "2000"):
+        if deepen is not None:
+            # Shallow history can hide the commits connecting two present
+            # objects; deepen along the parent tip before believing a "no".
+            git("fetch", f"--deepen={deepen}", "origin", parent)
+        verdict = subprocess.run(
+            ["git", "merge-base", "--is-ancestor", base, parent],
+            stderr=subprocess.DEVNULL,
+        )
+        if verdict.returncode == 0:
+            return True
+        if verdict.returncode != 1 or (
+            git("rev-parse", "--is-shallow-repository").strip() != b"true"
+        ):
+            return False
+    return False
+
+
 def planner_build_flag(commit, *, source=None, base=None):
     """Reconstruct a CI merge's flag only from available native Git evidence."""
     try:
@@ -1219,7 +1252,7 @@ def planner_build_flag(commit, *, source=None, base=None):
             or parents[0] == parents[1]
             or any(re.fullmatch(r"[0-9a-f]{40}", parent) is None for parent in parents)
             or (source is not None and parents[1] != source)
-            or (base is not None and parents[0] != base)
+            or (base is not None and not github_advanced_base(parents[0], base))
         ):
             return None
         # cat-file reads actual parent headers even at a shallow boundary;
