@@ -359,6 +359,13 @@ class LegalPageTests(unittest.TestCase):
             hit = commerce.Hit("db", f"db:page:{slug}", 1, "An order", "order*")
             self.assertTrue(commerce.is_legal(hit), slug)
 
+    def test_the_imprint_and_returns_policy_are_legal_too(self):
+        """Joined after the first full live scan: both are owner-published legal
+        documents, so they take the legal handling rather than a marketing rewrite."""
+        for slug in ("imprint", "impressum", "refund-returns", "rueckgabe-erstattung"):
+            hit = commerce.Hit("db", f"db:page:1672:{slug}", 1, "An order", "order*")
+            self.assertTrue(commerce.is_legal(hit), slug)
+
     def test_a_marketing_page_is_not_exempt(self):
         hit = commerce.Hit("db", "db:page:capability", 1, "An order", "order*")
         self.assertFalse(commerce.is_legal(hit))
@@ -366,6 +373,31 @@ class LegalPageTests(unittest.TestCase):
     def test_a_repository_file_is_never_exempt(self):
         hit = commerce.Hit("gettext", "privacy-policy.php", 1, "An order", "order*")
         self.assertFalse(commerce.is_legal(hit))
+
+
+    def test_polylang_twins_are_separate_documents(self):
+        """Both language versions of a page share a slug on this site.
+
+        Page 14 and page 6915 are both `blog`. Keyed by slug alone their hits
+        would share one identity, so one page's baseline entry could cover the
+        other's copy — and the German blog's hit would be reported against the
+        English page.
+        """
+        documents = [
+            ("page", "blog", 14, "<p>Read the post</p>"),
+            ("page", "blog", 6915, "<p>Jeder Beitrag vor der Bestellung</p>"),
+        ]
+        hits = commerce.live_hits(documents, commerce.load_terms())
+        self.assertEqual([hit.source for hit in hits], ["db:page:6915:blog"])
+
+    def test_a_live_baseline_entry_matches_its_own_twin_only(self):
+        baseline = {
+            ("db:page:14:blog", "order*", "x"): {"count": 1, "why": "why"},
+        }
+        twin_hit = commerce.Hit("db", "db:page:6915:blog", 1, "vor der Bestellung", "Bestell*")
+        findings, covered = commerce.apply_baseline([twin_hit], baseline, live=True)
+        self.assertEqual(covered, 0)
+        self.assertTrue(any("new 'Bestell*'" in f for f in findings))
 
 
 class LiveDatabaseTests(unittest.TestCase):
@@ -408,7 +440,9 @@ class LiveDatabaseTests(unittest.TestCase):
                 json.dumps(
                     {
                         "files": {
-                            "db:page:home": [
+                            # Slug alone does not identify a document: Polylang
+                            # twins share it, so the live key carries the ID.
+                            "db:page:6913:home": [
                                 {
                                     "term": "order*",
                                     "string": "Check combinations before you order.",
@@ -436,28 +470,31 @@ class LiveDatabaseTests(unittest.TestCase):
             )
         self.assertEqual(result.returncode, 1, result.stderr)
         # The baselined page does not appear as a finding…
-        self.assertNotIn("db:page:home", result.stdout.split("legal")[0])
+        self.assertNotIn("db:page:6913:home", result.stdout.split("legal")[0])
         # …the new German hit does…
         self.assertIn("new 'Versand*'", result.stdout)
         # …and the protected page is reported without failing on its own.
         self.assertIn("hit(s) on protected legal pages", result.stdout)
-        self.assertIn("db:page:terms-of-sale", result.stdout)
+        self.assertIn("db:page:1674:terms-of-sale", result.stdout)
 
     def test_published_content_is_read_as_prose(self):
         documents = [
             (
                 "page",
                 "capability",
+                874,
                 '<p>Check compatibility before you order.</p>'
                 '<div class="wc-proceed-to-checkout"><a href="/x">x</a></div>',
             )
         ]
         hits = commerce.live_hits(documents, commerce.load_terms())
         self.assertEqual([hit.term for hit in hits], ["order*"])
-        self.assertEqual(hits[0].source, "db:page:capability")
+        self.assertEqual(hits[0].source, "db:page:874:capability")
 
     def test_a_legal_page_hit_is_kept_but_exempt_from_failing(self):
-        documents = [("page", "terms-of-sale", "<p>Payment falls due on delivery.</p>")]
+        documents = [
+            ("page", "terms-of-sale", 1674, "<p>Payment falls due on delivery.</p>")
+        ]
         hits = commerce.live_hits(documents, commerce.load_terms())
         self.assertTrue(hits)
         self.assertTrue(all(commerce.is_legal(hit) for hit in hits))
@@ -486,7 +523,7 @@ class LiveDatabaseTests(unittest.TestCase):
             )
             wp.chmod(0o755)
             documents = commerce.live_documents(str(wp))
-        self.assertEqual(documents, [("page", "capability", "<p>Before you order</p>")])
+        self.assertEqual(documents, [("page", "capability", 7, "<p>Before you order</p>")])
         self.assertEqual(
             [hit.term for hit in commerce.live_hits(documents, commerce.load_terms())],
             ["order*"],

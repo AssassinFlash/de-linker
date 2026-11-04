@@ -126,10 +126,25 @@ EXCLUDED_PARTS = {
     ".git",
 }
 
-# Owner ruling 2026-10-25 protects real legal text. The slugs are the four live
-# pages (issue #905, verified against production wp_posts); they exempt a page
-# from failing while its hits are still reported.
-LEGAL_SLUGS = ("privacy-policy", "datenschutz", "terms-of-sale", "verkaufsbedingungen")
+# Owner ruling 2026-10-25 protects real legal text. These are the live legal
+# pages, verified against production wp_posts (issue #905). They exempt a page
+# from failing while its hits are still reported and triaged.
+#
+# The first four are the privacy and terms pair. The last two joined after the
+# first full live scan: the imprint and the returns policy are legal documents
+# in the same sense — a company statement the owner must publish, and a policy
+# that governs claims — so they take the same handling rather than being
+# rewritten as marketing copy.
+LEGAL_SLUGS = (
+    "privacy-policy",
+    "datenschutz",
+    "terms-of-sale",
+    "verkaufsbedingungen",
+    "imprint",
+    "impressum",
+    "refund-returns",
+    "rueckgabe-erstattung",
+)
 
 # [^\W_] is a letter or digit (unicode): the same word boundary the shared
 # German list uses (Linker\I18n\Translation\Rules::banned_in).
@@ -450,8 +465,11 @@ def wp_run(wp: str, *args: str) -> str:
     return result.stdout
 
 
-def live_documents(wp: str) -> list[tuple[str, str, str]]:
-    """(post type, slug, content) of the published pages and posts, read-only.
+def live_documents(wp: str) -> list[tuple[str, str, int, str]]:
+    """(post type, slug, ID, content) of the published pages and posts, read-only.
+
+    The ID is part of the tuple because a slug does not identify a document:
+    Polylang gives both language versions of a page the same slug.
 
     The bulk listing asks for `post_content` among its fields. Whether a given
     WP-CLI build honours that for this column is not something this gate should
@@ -476,35 +494,46 @@ def live_documents(wp: str) -> list[tuple[str, str, str]]:
     )
     if not isinstance(rows, list):
         raise RuntimeError("wp post list did not return a list")
-    documents: list[tuple[str, str, str]] = []
+    documents: list[tuple[str, str, int, str]] = []
     for row in rows:
         if not isinstance(row, dict):
             continue
+        identifier = row.get("ID")
+        if identifier is None:
+            raise RuntimeError("wp post list returned a row without ID")
+        try:
+            identifier = int(identifier)
+        except (TypeError, ValueError) as error:
+            raise RuntimeError(
+                f"wp post list returned a non-numeric ID: {identifier!r}"
+            ) from error
         if "post_content" in row:
             content = str(row.get("post_content") or "")
         else:
-            identifier = row.get("ID")
-            if identifier is None:
-                raise RuntimeError("wp post list returned a row without ID")
             content = wp_run(
                 wp, "post", "get", str(identifier), "--field=post_content"
             ).rstrip("\n")
         documents.append(
-            (
-                str(row.get("post_type", "")),
-                str(row.get("post_name", "")),
-                content,
-            )
+            (str(row.get("post_type", "")), str(row.get("post_name", "")), identifier, content)
         )
     return documents
 
 
-def live_hits(documents: list[tuple[str, str, str]], terms: list[str]) -> list[Hit]:
-    """Every banned word in published page and post content."""
+def live_hits(
+    documents: list[tuple[str, str, int, str]], terms: list[str]
+) -> list[Hit]:
+    """Every banned word in published page and post content.
+
+    A slug does not identify a document on this site: Polylang gives the two
+    language versions of a page the same slug (page 14 and page 6915 are both
+    `blog`), so keying a hit by slug would merge two documents into one
+    identity and let one page's baseline entry cover the other's copy. When the
+    listing reports IDs, they are part of the source key.
+    """
     patterns = [(term, term_pattern(term)) for term in terms]
     hits: list[Hit] = []
-    for post_type, slug, content in documents:
-        source = f"db:{post_type}:{slug}"
+    for post_type, slug, identifier, content in documents:
+        source = f"db:{post_type}:{identifier}:{slug}"
         for value, line in fragment_strings(content):
             hits.extend(
                 Hit("db", source, line, value, term)

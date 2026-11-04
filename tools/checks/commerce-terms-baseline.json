@@ -1,5 +1,5 @@
 {
-  "_source": "Existing hits of tools/checks/commerce-terms.txt, recorded when the gate was introduced (issue #905). Every entry is copy that already shipped; the ratchet only refuses new ones. Remove an entry when its string is rewritten or deleted: the gate reports a stale entry as a failure until then.",
+  "_source": "Existing hits of tools/checks/commerce-terms.txt, recorded when the gate was introduced (issue #905). Every entry is copy that already shipped; the ratchet only refuses new ones. Remove an entry when its string is rewritten or deleted: the gate reports a stale entry as a failure until then. Entries whose source starts with `db:` are live-database exemptions, registered from the first full production scan; their source key carries the post ID because Polylang twins share a slug.",
   "files": {
     "plugins/linker-commerce/includes/Abilities/CheckCompatibility.php": [
       {
@@ -187,6 +187,22 @@
         "string": "In each interval, each converter supplies its own DC auxiliary demand and its allocated share of AC demand before charging from local DC PV. AC demand is shared in proportion to each unit’s available power. Charging from the AC bus must be enabled and supported by the equipment documentation. It uses remaining AC surplus; grid charging is requested only when separately permitted and within the remaining import limit. This time-step calculation uses no forecast and does not reproduce a manufacturer EMS or an optimal dispatch schedule.",
         "count": 1,
         "justification": "energy dispatch: the Planner's calculation of when a converter charges or discharges, not a shipment"
+      }
+    ],
+    "db:page:842:for-epc": [
+      {
+        "term": "dispatch*",
+        "string": "SCADA & GRID DISPATCH",
+        "count": 1,
+        "justification": "energy dispatch: the grid setpoint control an EPC's SCADA system performs, not a shipment"
+      }
+    ],
+    "db:page:6867:fuer-epc": [
+      {
+        "term": "dispatch*",
+        "string": "SCADA & NETZ-DISPATCH",
+        "count": 1,
+        "justification": "energy dispatch: German twin of the SCADA badge above, same meaning"
       }
     ]
   }

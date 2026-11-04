@@ -1,0 +1,431 @@
+{
+  "_meta": {
+    "generated": "2026-11-04",
+    "source": "production wp_posts via /tmp/wp-production.sh (read-only SELECT/list/get)",
+    "scan": "tools/checks/commerce-terms.py --wp-cli, extractor identical to the repository scan",
+    "counts": {
+      "documents": 20,
+      "pairs": 66,
+      "hits_before": 118,
+      "non_legal_before": 72,
+      "rewrite": 70,
+      "keep": 2,
+      "legal": 46,
+      "legal_surgical_pending": 4,
+      "article_gap_de_blog": "page 6915 holds 11 'Artikel'; only the one carrying a listed term is rewritten here. The other ten are a repo-vs-database ownership gap, recorded in copy-review.md A.1."
+    },
+    "semantics": "Apply each pair by replacing `before` with `after` in post_content. `before` is a literal substring, verified unique (or `occurrences` times) in the stored content at generation time. Nothing else in the document changes.",
+    "mt_note": "DE pages are auto-translated from EN on EN save. For MT-managed twins, apply EN first, read what the pipeline produced, and only write the DE pair if the pipeline leaves a banned word or breaks meaning. The DE strings here are the review reference."
+  },
+  "notes": {
+    "862": "About. 'handles warehouse dispatch' is a three-step card; the replacement keeps the verb in the same grammatical slot. The FAQ pair (minimum order) appears twice in the FAQ answers but the two sentences differ, so each is its own pair.",
+    "6865": "Über uns: DE twin of 862. Written natively, not translated: 'organisiert die Lieferung aus dem Lager' keeps the card's third-person subject. MT note: if the pipeline rewrites this page from EN on save, re-check that 'Lagerversand' does not return.",
+    "14": "Blog (EN). Nine interface strings plus one sentence. 'Read article' follows the #905 decision (Read the post). 'Search all articles' occurs twice (label + aria-label) and both must change.",
+    "6915": "Blog (DE), the Polylang twin of 14 that shares its slug. Only two hits: 'Jeder Artikel' (the German blog word, AGENTS §3) and 'vor der Bestellung'. NOTE: this page holds 11 'Artikel' occurrences total; german-copy.py owns that word but scans repository files only, so the database occurrences are outside every gate. Recorded as a finding, not silently widened mid-batch.",
+    "842": "For EPC (EN). 'SCADA & GRID DISPATCH' is kept: energy dispatch (grid setpoint control), not a shipment. Everything else is commercial-flow vocabulary and is rewritten. 'before the order is released to production' becomes 'before the Proforma is issued' — the Proforma is the document the site actually issues.",
+    "6867": "Für EPC: DE twin of 842. 'SCADA & NETZ-DISPATCH' kept for the same reason. MT note: 'Versanddatum' → 'Lieferdatum' and 'Bestellung' → 'Proformarechnung' are the two nouns that must not reappear.",
+    "826": "For Installer (EN). Two of the five are the same defect as 6921's rail (a dispatch date in the flow); the rest are purchase nouns.",
+    "6869": "Für Installateur: DE twin of 826. German had 'Projektversand und Dokumentation' as a section title — written natively as 'Projektlieferung', not translated word-for-word.",
+    "792": "Commercial Storage (EN). Single rail stage title, same defect 6921 had in German.",
+    "6923": "Heimspeicher: DE twin of 749. 'Versand' appears as the rail title twice (span + h3) and once in body copy. MT note: this page is auto-translated from 749, so expect 'Lieferung' to come back automatically; the DE pairs here are the review reference.",
+    "749": "Residential Storage (EN). Rail title twice plus 'shipping date'; 'shipping' here means delivery, so 'delivery date' is the accurate word, not a euphemism.",
+    "2748": "Services & Support (EN). These two were missed by the #905 table because that pass read the rendered page and these live in a comparison card; the strings are unchanged since. No DE twin action here.",
+    "3302": "Solution Configurator (EN). One sentence, 'before ordering' → 'before the inquiry' per the established mapping.",
+    "6693": "Lösungskonfigurator: DE twin of 3302.",
+    "1755": "Utility-Scale Storage (EN). 'a shipping schedule confirmed in the order' → 'a delivery schedule confirmed in the Proforma': both the shipping noun and the order noun were wrong. 'Equipment Pricing & Order Conditions' is a section heading; &amp; is HTML-encoded in the stored text and must stay encoded.",
+    "6917": "Großspeicher: DE twin of 1755. 'im Auftrag bestätigten Versandplan' → 'in der Proformarechnung bestätigten Lieferplan'; 'Auftrag' is the order document that does not exist.",
+    "6873": "Danke (DE thank-you page). Both hits are in the 'what to check before you buy' guidance, which is about the inquiry step, not a checkout.",
+    "623": "Thank You (EN). Mirror of 6873 plus 'Technical articles' → 'Technical posts'.",
+    "552": "Checklist post (EN). The hit is a body sentence, not the technical power-up sequence — the sequence words are fine.",
+    "6885": "Checklist post (DE), twin of 552.",
+    "1038": "Refund and Returns Policy. LEGAL: not in the pairs above on purpose. Two surgical fixes are specified in copy-review.md A.5 and need the owner's sight first: 'against the order confirmation on receipt' -> 'against the delivery documents on receipt' (the site issues a Proforma, no order confirmation), and 'order number' -> 'Proforma number' in the three sentences that tell the buyer to quote it. Everything else on the page describes a real offline claims process and stays.",
+    "6698": "DE twin of 1038. Same two fixes: 'Auftragsbestätigung' -> 'Lieferdokumente' (the site issues no order confirmation in either language) and 'Bestellnummer' -> 'Proformanummer' three times.",
+    "1672": "Imprint. LEGAL: the single hit is kept. 'certificates are requested per order' is shared verbatim with page 623, where it is rewritten because that page is marketing; the imprint keeps the published legal wording. See copy-review.md A.5.",
+    "6829": "DE twin of 1672. Same kept clause, 'je Bestellung angefordert'."
+  },
+  "862": {
+    "slug": "about",
+    "lang": "en",
+    "pairs": [
+      {
+        "before": "handles warehouse dispatch,",
+        "after": "handles delivery from stock,"
+      },
+      {
+        "before": "Inverter, battery and meter as one consolidated order through Linker",
+        "after": "Inverter, battery and meter arriving as one consignment from Linker"
+      },
+      {
+        "before": "stocked in Barleben for dispatch to projects across Europe.",
+        "after": "stocked in Barleben for delivery to projects across Europe."
+      },
+      {
+        "before": "Our team handles the purchase with you.",
+        "after": "Our team prepares your Proforma and handles the commercial terms with you."
+      },
+      {
+        "before": "contract terms, warranty handling, and order fulfillment under German commercial law.",
+        "after": "contract terms, warranty handling, and how inquiries are handled under German commercial law."
+      },
+      {
+        "before": "Can we order individual system packages for specific projects, or is there a minimum order volume?",
+        "after": "Can we request individual system packages for specific projects, or is there a minimum quantity?"
+      },
+      {
+        "before": "There is no container-level minimum order. You can order complete system packages for individual",
+        "after": "There is no container-level minimum quantity. You can request complete system packages for individual"
+      },
+      {
+        "before": "transparent wholesale net pricing across all order sizes, whether purchasing a single hybrid-and-battery setup",
+        "after": "transparent wholesale net pricing across all project sizes, whether you need a single hybrid-and-battery setup"
+      }
+    ]
+  },
+  "6865": {
+    "slug": "ueber-uns",
+    "lang": "de",
+    "pairs": [
+      {
+        "before": "wickelt den Lagerversand ab",
+        "after": "organisiert die Lieferung aus dem Lager"
+      },
+      {
+        "before": "als eine konsolidierte Bestellung über Linker",
+        "after": "als eine konsolidierte Anfrage von Linker"
+      },
+      {
+        "before": "Können wir einzelne Systempakete für bestimmte Projekte bestellen, oder gibt es ein Mindestbestellvolumen?",
+        "after": "Können wir einzelne Systempakete für bestimmte Projekte anfragen, oder gibt es eine Mindestmenge?"
+      },
+      {
+        "before": "Es gibt keine Mindestbestellmenge auf Containerebene. Sie können komplette Systempakete für einzelne Wohngebäudeinstallationen oder gewerbliche Standorte bestellen, wie es Ihr Projektzeitplan erfordert.",
+        "after": "Es gibt keine Mindestmenge auf Containerebene. Sie können komplette Systempakete für einzelne Wohngebäudeinstallationen oder gewerbliche Standorte anfragen, wie es Ihr Projektzeitplan erfordert."
+      },
+      {
+        "before": "Netto-Großhandelspreise über alle Bestellgrößen hinweg, egal ob Sie ein einzelnes",
+        "after": "Netto-Großhandelspreise über alle Projektgrößen hinweg, egal ob Sie ein einzelnes"
+      }
+    ]
+  },
+  "14": {
+    "slug": "blog",
+    "lang": "en",
+    "pairs": [
+      {
+        "before": "Articles on system sizing, inverter-battery pairing, commissioning and monitoring",
+        "after": "Posts on system sizing, inverter-battery pairing, commissioning and monitoring"
+      },
+      {
+        "before": ">Search articles<",
+        "after": ">Search posts<"
+      },
+      {
+        "before": "Find technical articles",
+        "after": "Find technical posts"
+      },
+      {
+        "before": "Latest articles",
+        "after": "Latest posts"
+      },
+      {
+        "before": "Read article",
+        "after": "Read the post"
+      },
+      {
+        "before": "Each article works through a decision installers and EPCs meet on live projects: inverter selection and battery sizing before the order,",
+        "after": "Each post works through a decision installers and EPCs meet on live projects: inverter selection and battery sizing before the inquiry,"
+      },
+      {
+        "before": "Browse articles",
+        "after": "Browse posts"
+      },
+      {
+        "before": "Browse all articles",
+        "after": "Browse all posts"
+      },
+      {
+        "before": "Search all articles",
+        "after": "Search all posts",
+        "occurrences": 2
+      },
+      {
+        "before": "Search for an article",
+        "after": "Search for a post"
+      }
+    ]
+  },
+  "6915": {
+    "slug": "blog-de",
+    "lang": "de",
+    "pairs": [
+      {
+        "before": "Jeder Artikel behandelt eine Entscheidung",
+        "after": "Jeder Beitrag behandelt eine Entscheidung"
+      },
+      {
+        "before": "Batteriedimensionierung vor der Bestellung",
+        "after": "Batteriedimensionierung vor der Anfrage"
+      }
+    ]
+  },
+  "842": {
+    "slug": "for-epc",
+    "lang": "en",
+    "pairs": [
+      {
+        "before": "Clear terms for your equipment purchase.",
+        "after": "Clear terms for your equipment supply."
+      },
+      {
+        "before": "Formal B2B quotation and order through Linker Germany",
+        "after": "Formal B2B quotation and inquiry through Linker Germany"
+      },
+      {
+        "before": "Equipment ships on the dispatch date confirmed with the order.",
+        "after": "Equipment ships on the delivery date confirmed with the Proforma."
+      },
+      {
+        "before": "Before any purchase commitment",
+        "after": "Before any commercial commitment"
+      },
+      {
+        "before": "The configuration stays flexible until the order is released.",
+        "after": "The configuration stays flexible until the Proforma is issued."
+      },
+      {
+        "before": "before the order is released to production",
+        "after": "before the Proforma is issued"
+      }
+    ]
+  },
+  "6867": {
+    "slug": "fuer-epc",
+    "lang": "de",
+    "pairs": [
+      {
+        "before": "für Ihre Standortplanung vor dem Versand",
+        "after": "für Ihre Standortplanung vor der Lieferung"
+      },
+      {
+        "before": "werden vor dem Versand zusammengeführt.",
+        "after": "werden vor der Lieferung zusammengeführt."
+      },
+      {
+        "before": "Formelles B2B-Angebot und Bestellung über Linker in Deutschland",
+        "after": "Formelles B2B-Angebot und Anfrage über Linker in Deutschland"
+      },
+      {
+        "before": "am mit der Bestellung bestätigten Versanddatum verschickt.",
+        "after": "am mit der Proformarechnung bestätigten Lieferdatum verschickt."
+      },
+      {
+        "before": "bis die Bestellung ausgelöst wird.",
+        "after": "bis die Proformarechnung ausgestellt wird."
+      }
+    ]
+  },
+  "826": {
+    "slug": "for-installer",
+    "lang": "en",
+    "pairs": [
+      {
+        "before": "confirmed dispatch dates",
+        "after": "confirmed delivery dates"
+      },
+      {
+        "before": "arranges the purchase with you",
+        "after": "prepares the Proforma with you"
+      },
+      {
+        "before": "so you can plan the purchase.",
+        "after": "so you can plan the project."
+      },
+      {
+        "before": "Equipment dispatched to your installation schedule.",
+        "after": "Equipment delivered to your installation schedule."
+      },
+      {
+        "before": "you receive a dispatch date based on current availability",
+        "after": "you receive a delivery date based on current availability"
+      }
+    ]
+  },
+  "6869": {
+    "slug": "fuer-installateur",
+    "lang": "de",
+    "pairs": [
+      {
+        "before": "bestätigte Versandtermine",
+        "after": "bestätigte Liefertermine"
+      },
+      {
+        "before": "Projektversand und Dokumentation",
+        "after": "Projektlieferung und Dokumentation"
+      },
+      {
+        "before": "Ausrüstung wird gemäß Ihrem Installationsplan versandt.",
+        "after": "Ausrüstung wird gemäß Ihrem Installationsplan geliefert."
+      },
+      {
+        "before": "Die Geräte werden aus dem Lagerbestand in Deutschland versandt. Sobald die Proformarechnung bestätigt ist, erhalten Sie ein Versanddatum",
+        "after": "Die Geräte werden aus dem Lagerbestand in Deutschland geliefert. Sobald die Proformarechnung bestätigt ist, erhalten Sie ein Lieferdatum"
+      }
+    ]
+  },
+  "792": {
+    "slug": "commercial-storage",
+    "lang": "en",
+    "pairs": [
+      {
+        "before": "<span class=\"t-title\">Dispatch</span>",
+        "after": "<span class=\"t-title\">Delivery</span>"
+      }
+    ]
+  },
+  "6873": {
+    "slug": "danke",
+    "lang": "de",
+    "pairs": [
+      {
+        "before": "bevor Sie bestellen.",
+        "after": "bevor Sie Ihre Anfrage senden."
+      },
+      {
+        "before": "Zertifikate werden je Bestellung angefordert.",
+        "after": "Zertifikate werden je Anfrage angefordert."
+      }
+    ]
+  },
+  "623": {
+    "slug": "thank-you",
+    "lang": "en",
+    "pairs": [
+      {
+        "before": "before you order.",
+        "after": "before your inquiry."
+      },
+      {
+        "before": "Technical articles and system notes",
+        "after": "Technical posts and system notes"
+      },
+      {
+        "before": "certificates are requested per order.",
+        "after": "certificates are requested per inquiry."
+      }
+    ]
+  },
+  "749": {
+    "slug": "residential-storage",
+    "lang": "en",
+    "pairs": [
+      {
+        "before": "<span class=\"t-title\">Dispatch</span>",
+        "after": "<span class=\"t-title\">Delivery</span>"
+      },
+      {
+        "before": "<h3>04 · Dispatch</h3>",
+        "after": "<h3>04 · Delivery</h3>"
+      },
+      {
+        "before": "a proforma invoice with a shipping date you can plan around.",
+        "after": "a proforma invoice with a delivery date you can plan around."
+      }
+    ]
+  },
+  "6923": {
+    "slug": "heimspeicher",
+    "lang": "de",
+    "pairs": [
+      {
+        "before": "<span class=\"t-title\">Versand</span>",
+        "after": "<span class=\"t-title\">Lieferung</span>"
+      },
+      {
+        "before": "<h3>04 · Versand</h3>",
+        "after": "<h3>04 · Lieferung</h3>"
+      },
+      {
+        "before": "mit einem Versanddatum, mit dem Sie planen können.",
+        "after": "mit einem Lieferdatum, mit dem Sie planen können."
+      }
+    ]
+  },
+  "2748": {
+    "slug": "services-support",
+    "lang": "en",
+    "pairs": [
+      {
+        "before": "Complete system packages dispatched together",
+        "after": "Complete system packages delivered together"
+      },
+      {
+        "before": "Packed and dispatched as one delivery through Linker",
+        "after": "Packed and delivered as one consignment through Linker"
+      }
+    ]
+  },
+  "3302": {
+    "slug": "solution-configurator",
+    "lang": "en",
+    "pairs": [
+      {
+        "before": "Check any open items before ordering.",
+        "after": "Check any open items before the inquiry."
+      }
+    ]
+  },
+  "6693": {
+    "slug": "loesungskonfigurator",
+    "lang": "de",
+    "pairs": [
+      {
+        "before": "Prüfen Sie offene Punkte vor der Bestellung.",
+        "after": "Prüfen Sie offene Punkte vor der Anfrage."
+      }
+    ]
+  },
+  "1755": {
+    "slug": "utility-storage",
+    "lang": "en",
+    "pairs": [
+      {
+        "before": "warranty coverage, and a shipping schedule confirmed in the order.",
+        "after": "warranty coverage, and a delivery schedule confirmed in the Proforma."
+      },
+      {
+        "before": "Equipment Pricing &amp; Order Conditions",
+        "after": "Equipment Pricing &amp; Supply Conditions"
+      }
+    ]
+  },
+  "6917": {
+    "slug": "grossspeicher",
+    "lang": "de",
+    "pairs": [
+      {
+        "before": "im Auftrag bestätigten Versandplan",
+        "after": "in der Proformarechnung bestätigten Lieferplan"
+      }
+    ]
+  },
+  "552": {
+    "slug": "post-installer-checklist-inverter-battery-pairing",
+    "lang": "en",
+    "pairs": [
+      {
+        "before": "before you order.",
+        "after": "before your inquiry."
+      }
+    ]
+  },
+  "6885": {
+    "slug": "post-installateur-checkliste-wechselrichter-akku",
+    "lang": "de",
+    "pairs": [
+      {
+        "before": "vor Ihrer Bestellung",
+        "after": "vor Ihrer Anfrage"
+      }
+    ]
+  }
+}
