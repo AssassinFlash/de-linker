@@ -292,6 +292,7 @@ final class EntryScopeConcurrencyTest extends TestCase {
 					'headers' => array(
 						'Content-Type' => 'application/json',
 						'X-WP-Nonce'   => wp_create_nonce( 'wp_rest' ),
+						'Origin'       => home_url(),
 					),
 					'body'    => $body,
 				)
@@ -319,6 +320,7 @@ final class EntryScopeConcurrencyTest extends TestCase {
 					'headers' => array(
 						'Content-Type' => 'application/json',
 						'X-WP-Nonce'   => wp_create_nonce( 'wp_rest' ),
+						'Origin'       => home_url(),
 					),
 					'body'    => $second_body,
 				)

@@ -30,6 +30,17 @@ final class EntryContext {
 	 * is one wp_options row each, and 1 req/s once measured 164 rows in one
 	 * research session (#906 §2.2). The address is REMOTE_ADDR only, never a
 	 * forwarded header a sender sets freely (FormGuard::address()).
+	 *
+	 * That REMOTE_ADDR is the real client address is verified for this host,
+	 * not assumed: de-linker.com answers directly as Hostinger LiteSpeed
+	 * (Let's Encrypt certificate, no CDN headers), and the 2026-10-22 attack
+	 * forensics recorded REMOTE_ADDR-keyed buckets distinguishing two
+	 * attacker connections in production
+	 * (docs/research/2026-10-22-incident-forensics/DOSSIER.md, §S1). If a
+	 * CDN or reverse proxy is ever put in front, the incident-defense
+	 * dossier's rule applies first: prove the trusted-proxy boundary and the
+	 * restored client address before changing what this key reads
+	 * (docs/research/2026-10-22-incident-defense/DOSSIER.md).
 	 */
 	public const CONNECTION_HOURLY = 1800;
 
@@ -103,10 +114,18 @@ final class EntryContext {
 	/**
 	 * Resolves the current server principal before cached text can be displayed.
 	 *
+	 * Same-origin admission runs first, before the allowance: a cross-site
+	 * page can fire opaque no-cors POSTs from a visitor's browser, and a
+	 * refusal must not spend that visitor's own allowance (the sibling
+	 * project-brief route gates the same way).
+	 *
 	 * @param WP_REST_Request $request Current authenticated request.
-	 * @return WP_REST_Response|WP_Error The scope, or 429 when the allowance is spent.
+	 * @return WP_REST_Response|WP_Error The scope, or 403/429 when refused.
 	 */
 	public function read( WP_REST_Request $request ): WP_REST_Response|WP_Error {
+		if ( ! Origin::allows( $request ) ) {
+			return Failure::make( 'origin', 403 );
+		}
 		$who = FormGuard::address();
 		if ( ! $this->connection->take( $who ) || ! $this->site->take( '' ) ) {
 			return new WP_Error( 'linker_entry_context_quota', 'linker_entry_context_quota', array( 'status' => 429 ) );
