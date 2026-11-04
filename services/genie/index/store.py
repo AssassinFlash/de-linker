@@ -315,6 +315,11 @@ def export(directory: Path, path: Path) -> None:
         document_types = {
             d.sha256: d.doc_type for d in corpus.read_documents(directory)
         }
+        document_products: dict[str, set[int]] = {}
+        for document in by_id.values():
+            document_products.setdefault(document["blob_sha256"], set()).update(
+                document["product_ids"]
+            )
         bare_documents = {
             sha
             for sha, _table in table_audit(
@@ -322,6 +327,8 @@ def export(directory: Path, path: Path) -> None:
                 authorized,
                 proof.get("chunk_scopes", {}),
                 document_types,
+                products,
+                document_products,
             ).bare
         }
         for product in manifest.get("products", []):

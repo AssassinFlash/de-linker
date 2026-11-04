@@ -20,6 +20,7 @@ from index.publication import (
 from linker_genie.certificate_scope import has_explicit_exclusion
 from linker_genie.compatibility_physical import physical_key, valid_physical_evidence
 from linker_genie.family_scope import family_id
+from linker_genie.model_aliases import woo_model
 from linker_genie.publication import PublicationClient, Snapshot
 from linker_genie.publication_scope import author_scope_allows
 from linker_genie.source_models import (
@@ -1340,11 +1341,11 @@ def compile_scopes(
             }
         )
         for column, label in enumerate(axis, 1):
-            pid = current.get(label.casefold())
-            if (
-                pid is None
-                or statuses.get(label.casefold(), "published") != "published"
-            ):
+            # A physically proven column label may name its product under the
+            # manufacturer's other writing (#900 §9.6 explicit alias table).
+            resolved = woo_model(label)
+            pid = current.get(resolved)
+            if pid is None or statuses.get(resolved, "published") != "published":
                 continue
             proof = _scope(source, sha, pid)
             if not proof["associations"]:
