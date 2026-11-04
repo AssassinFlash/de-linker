@@ -548,12 +548,13 @@ eval *args:
 present name:
     PHP={{ php }} {{ linker_local }} wp "{{ name }}" linker-commerce present --user=1
 
-# Recompile an instance's WindPress cache through its admin — the only compile
-# that exists (Tailwind v4 has no server-side build): one-time login, WindPress
-# → Settings → Performance → Generate, the stored cache must be newer than the
-# one from before, and the templates' and the entries' anchor classes must be in
-# the product. `just windpress-compile <instance>` after every content-changing
-# round.
+# Recompile an instance's WindPress cache through its admin — the browser
+# path (Tailwind v4's compiler ships as a browser worker): one-time login,
+# WindPress → Settings → Performance → Generate, the stored cache must be
+# newer than the one from before, and the templates' and the entries' anchor
+# classes must be in the product. `just windpress-compile <instance>` after
+# every content-changing round. Production has the headless equivalent:
+# `just windpress-compile-production` runs the same compiler bundles in Node.
 [positional-arguments]
 windpress-compile name *options:
     #!/usr/bin/env bash
@@ -595,6 +596,53 @@ windpress-compile name *options:
         exit 1
     fi
     echo "windpress: cache recompiled ($before -> $after), anchor classes present"
+
+# Recompile production's WindPress cache headless: tools/windpress-node-compile.mjs
+# runs the same compiler bundles the admin's Generate loads in a browser, feeds
+# them the same REST inputs (volume, provider scans), and stores through the
+# same admin/settings/cache/store route — no browser, no one-time login, about
+# a minute warm. The recipe then re-reads the cache mtime the way the deploy
+# guard does (WP-CLI on the host) and checks the anchor classes in the served
+# CSS. Credentials: a `username:` / `password:` file (default
+# ~/Downloads/wp-admin.txt when present) — never printed.
+[positional-arguments]
+windpress-compile-production *options:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    site="https://de-linker.com"
+    creds=""
+    for option in "$@"; do
+        case "$option" in
+            --site=*) site="${option#--site=}" ;;
+            --credentials=*) creds="${option#--credentials=}" ;;
+            *) echo "unknown option: $option (supported: --site=<url>, --credentials=<file>)" >&2; exit 2 ;;
+        esac
+    done
+    if [ -z "$creds" ] && [ -f "${HOME}/Downloads/wp-admin.txt" ]; then
+        creds="${HOME}/Downloads/wp-admin.txt"
+    fi
+    if [ -z "$creds" ]; then
+        echo "windpress: no credentials (pass --credentials=<file> with username:/password: lines)" >&2
+        exit 1
+    fi
+    mtime_read='cd /home/u388076051/domains/de-linker.com/public_html && /usr/local/bin/wp eval '"'"'$m = @filemtime( wp_upload_dir()["basedir"] . "/windpress/cache/tailwind.css" ); echo false === $m ? "missing" : $m;'"'"''
+    before="$(ssh hostinger-de-linker "$mtime_read")"
+    echo "windpress: compiling headless (cache mtime before: $before)"
+    node "{{ justfile_directory() }}/tools/windpress-node-compile.mjs" "$site" --credentials="$creds"
+    after="$(ssh hostinger-de-linker "$mtime_read")"
+    if [ -z "$after" ] || [ "$after" -le "$before" ]; then
+        echo "windpress: the cache file did not get newer ($before -> $after)" >&2
+        exit 1
+    fi
+    # The same anchors `just windpress-compile` checks through the plugins'
+    # missing_anchor_classes; production has no plugin eval here, so grep the
+    # served CSS for the entries' ask-chip classes the templates never print.
+    missing="$(curl -fsSL "$site/wp-content/uploads/windpress/cache/tailwind.css" | grep -c -E '\.min-h-11|\.rounded-xl|\.border-neutral-200')"
+    if [ "$missing" -ne 3 ]; then
+        echo "windpress: the compiled cache misses the entries' anchor classes (found $missing of 3)" >&2
+        exit 1
+    fi
+    echo "windpress: cache recompiled headless ($before -> $after), anchor classes present"
 
 [private]
 php-install:

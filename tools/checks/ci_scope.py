@@ -356,6 +356,10 @@ def selected_modules(changes, base="", head=""):
             selected.add("python:" + path.split("/")[1])
             if commerce_migration_input(path):
                 selected.add("php:commerce")
+        elif path.startswith("tools/windpress-node-compile"):
+            # The headless WindPress compile is deploy-flow tooling; its test
+            # runs from the cutover package (tools/cutover/tests).
+            selected.add("python:cutover")
         elif path.startswith("tools/faq/") or re.match(
             r"docs/research/2026-10-20-campaign-\d+/harness/", path
         ):

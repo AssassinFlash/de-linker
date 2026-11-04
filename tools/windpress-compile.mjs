@@ -1,11 +1,13 @@
 /**
  * Drives an instance's WindPress admin through the official compile — the
- * only compile that exists, since Tailwind v4 has no server-side build: a
- * one-time login, then WindPress admin → Settings → Performance → Generate.
- * The browser-side compiler stores the result through the WindPress REST
- * route admin/settings/cache/store, whose answer carries the cache index;
- * this script refuses to report success unless the stored cache is newer
- * than the mtime given on the command line.
+ * browser path: a one-time login, then WindPress admin → Settings →
+ * Performance → Generate. The browser-side compiler stores the result
+ * through the WindPress REST route admin/settings/cache/store, whose answer
+ * carries the cache index; this script refuses to report success unless the
+ * stored cache is newer than the mtime given on the command line.
+ * Production skips this browser drive entirely:
+ * tools/windpress-node-compile.mjs runs the same compiler bundles headless
+ * in Node through the same REST inputs and store route.
  *
  * Usage: node tools/windpress-compile.mjs <one-time-login-url> [before-mtime]
  *

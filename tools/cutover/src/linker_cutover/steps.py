@@ -520,14 +520,15 @@ def windpress_cache_guard(
 
     Present writes what the cache is compiled FROM — the templates' Tailwind
     classes and the WindPress volume — while the cache itself is compiled by
-    WindPress's Generate in a browser, which a deploy has no instance of
-    (AGENTS.md §4: the pipeline forces the rebuild). Two signals say present
-    changed those inputs: the volume's content identity, and present's own
-    templates report; a report this code cannot parse counts as a change,
-    because an input it failed to see is exactly the stale CSS the 2026-11-03
-    incident shipped (deploy done 19:09, frontend stale until Generate ran by
-    hand at 19:19). Either signal changing means the compiled cache must
-    advance past what it was when this deployment began.
+    WindPress's Generate, whose compiler lives in the browser bundle
+    (`just windpress-compile-production` runs that same compiler headless in
+    Node through the same REST store). Two signals say present changed those
+    inputs: the volume's content identity, and present's own templates
+    report; a report this code cannot parse counts as a change, because an
+    input it failed to see is exactly the stale CSS the 2026-11-03 incident
+    shipped (deploy done 19:09, frontend stale until Generate ran by hand at
+    19:19). Either signal changing means the compiled cache must advance past
+    what it was when this deployment began.
     """
     volume_before = before["volume"]
     raw_cache_before = before["cache"]
@@ -556,7 +557,9 @@ def windpress_cache_guard(
     message = (
         f"present changed the WindPress inputs, but {state}: the frontend "
         f"would keep serving the previous CSS ({plan.WINDPRESS_CACHE}; "
-        "AGENTS.md §4). Generate the cache — wp-admin → WindPress → "
+        "AGENTS.md §4). Generate the cache — `just "
+        "windpress-compile-production` (the headless Node compile through "
+        "the same REST store, ~a minute), wp-admin → WindPress → "
         "Performance → Generate (Settings > Performance > Generate), or "
         "`just windpress-compile <name>` on a local instance — then "
         "`just cutover resume-deploy`. Verify first: "
