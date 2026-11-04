@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Integration;
 
 use Linker\Commerce\Protection\Admission;
+use Linker\Commerce\Protection\Allowance;
 use Linker\Commerce\Protection\Configuration;
 use Linker\Commerce\Protection\Identity;
 use Linker\Commerce\Protection\Proof;
@@ -67,9 +68,18 @@ final class PublicTrustTest extends IntegrationTestCase {
 	 * @param string $proof Verified proof, '' for a proofless attempt.
 	 * @return array<string,mixed>|WP_Error The permit or the refusal.
 	 */
-	private function reserve( string $proof = '' ): array|WP_Error {
+	/**
+	 * One reserve on the admission under test, with a proof or without one.
+	 *
+	 * @param string $proof Verified proof, '' for a proofless attempt.
+	 * @param string $action Server action scope.
+	 * @return array<string,mixed>|WP_Error The permit or the refusal.
+	 */
+	private function reserve( string $proof = '', string $action = 'genie' ): array|WP_Error {
+		$identity = Identity::current();
+		$this->assertInstanceOf( Identity::class, $identity );
 		return $this->admission()->reserve(
-			'genie',
+			$action,
 			$proof,
 			wp_generate_uuid4(),
 			array(
@@ -80,8 +90,9 @@ final class PublicTrustTest extends IntegrationTestCase {
 					),
 				),
 			),
-			array(),
-			90
+			array( new Allowance( $action . '_trust_test', $identity->browser, 5, HOUR_IN_SECONDS ) ),
+			90,
+			'genie_contact' === $action
 		);
 	}
 
@@ -163,26 +174,26 @@ final class PublicTrustTest extends IntegrationTestCase {
 
 	/**
 	 * Business actions keep their single-use proofs: genie trust never
-	 * admits one, and a used business proof fails later, on the ledger.
+	 * admits one, and its proof is still required. The consumed-once replay
+	 * refusal itself is pinned by PublicControllerTest
+	 * (linker_admission_proof_reused); this test adds only the trust delta.
 	 */
 	public function test_business_actions_keep_their_single_use_proofs(): void {
 		$identity = Identity::current();
 		$this->assertInstanceOf( Identity::class, $identity );
 		( new Trust() )->grant( 'genie', $identity );
 
-		$payload   = array( 'message' => 'Please contact me.' );
-		$admission = $this->admission();
-		$refused   = $admission->reserve( 'genie_contact', '', wp_generate_uuid4(), $payload, array(), 90, true );
+		$refused = $this->reserve( '', 'genie_contact' );
 		$this->assertInstanceOf( WP_Error::class, $refused );
 		$this->assertSame( 'linker_admission_proof', $refused->get_error_code(), 'Genie trust never admits a business action.' );
 
-		$proof  = ( new Proof() )->issue( 'verified', 'genie_contact', $identity, wp_generate_uuid4() );
-		$first  = $admission->reserve( 'genie_contact', $proof, wp_generate_uuid4(), $payload, array(), 90, true );
-		$second = $admission->reserve( 'genie_contact', $proof, wp_generate_uuid4(), $payload, array(), 90, true );
-		$this->assertNotInstanceOf( WP_Error::class, $first, $first instanceof WP_Error ? $first->get_error_message() : '' );
-		$this->assertInstanceOf( WP_Error::class, $second );
-		$this->assertNotSame( 'linker_admission_proof', $second->get_error_code(), 'The used proof fails later, on the ledger, not as absent.' );
-		$admission->cancel( $first );
+		$proof = ( new Proof() )->issue( 'verified', 'genie_contact', $identity, wp_generate_uuid4() );
+		$first = $this->reserve( $proof, 'genie_contact' );
+		$this->assertNotInstanceOf( WP_Error::class, $first, 'The MAC-valid proof reserves its permit.' );
+		$validated = $this->admission()->validate( $first );
+		$this->assertInstanceOf( WP_Error::class, $validated, 'A proof that never ran a challenge is refused at the ledger check.' );
+		$this->assertSame( 409, $validated->get_error_data()['status'], 'Refused as an unconsumable proof (409), not as an absent one (400).' );
+		$this->admission()->cancel( $first );
 	}
 
 	/**
