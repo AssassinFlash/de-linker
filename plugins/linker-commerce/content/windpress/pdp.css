@@ -1317,6 +1317,87 @@
 	line-height: 1.65;
 }
 
+/* Related products — Woo's native related loop (the template's
+   [lc_wc_related] → single-product/related.php). The count and columns are
+   Woo's own related defaults (4/4, woocommerce_output_related_products in
+   wc-template-functions.php); the wrapper takes the page's block rhythm and
+   the cards take the product-card language of the shop grid (sf-card:
+   transparent card, 1:1 contained media tile on --pdp-soft, 14px title with
+   hover underline). Loop cards stay informational — the PDP CTA owns the add
+   path (loop cards carry no add-to-cart control, the acceptance matrix's
+   recorded design for product cards). The empty guard follows the blog
+   template's :has() precedent: a product with no related models renders the
+   block's own nothing. */
+#tv-storefront-pdp .pdp-related:not(:has(li.product)) {
+	display: none;
+}
+
+#tv-storefront-pdp .pdp-related section.related {
+	margin: 0;
+}
+
+#tv-storefront-pdp .pdp-related section.related > h2 {
+	margin: 0;
+	color: var(--pdp-ink);
+	font-family: var(--pdp-font);
+	font-size: clamp(26px, 2.6vw, 32px);
+	font-weight: 700;
+	line-height: 1.15;
+	letter-spacing: -0.01em;
+}
+
+#tv-storefront-pdp .pdp-related ul.products {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 2.5rem 1.25rem;
+	margin: 36px 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+#tv-storefront-pdp .pdp-related li.product {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	min-width: 0;
+	margin: 0;
+	width: 100%;
+}
+
+#tv-storefront-pdp .pdp-related li.product img {
+	width: 100%;
+	aspect-ratio: 1;
+	object-fit: contain;
+	padding: 10%;
+	background: var(--pdp-soft);
+	border-radius: var(--proto-radius-card);
+}
+
+#tv-storefront-pdp .pdp-related .woocommerce-loop-product__title {
+	margin: 0;
+	color: var(--pdp-ink);
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.4;
+}
+
+#tv-storefront-pdp .pdp-related li.product:is(:hover, :focus-within) .woocommerce-loop-product__title {
+	text-decoration: underline;
+	text-underline-offset: 4px;
+}
+
+#tv-storefront-pdp .pdp-related .price {
+	margin-top: auto;
+	color: var(--pdp-ink);
+	font-size: 14px;
+	font-weight: 500;
+}
+
+#tv-storefront-pdp .pdp-related li.product > .button,
+#tv-storefront-pdp .pdp-related .added_to_cart {
+	display: none;
+}
+
 /* Image viewer */
 #tv-storefront-pdp #pdp-image-viewer {
 	max-width: calc(100vw - 24px);
@@ -1429,6 +1510,11 @@
 
 	#tv-storefront-pdp .pdp-faq-side {
 		min-height: 200px;
+	}
+
+	/* Related cards follow the shop grid's tablet density. */
+	#tv-storefront-pdp .pdp-related ul.products {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }
 
@@ -1968,5 +2054,12 @@
 	   has its own mobile navigation row in storefront.css. */
 	body:has(#tv-storefront-pdp) .linker-genie {
 		bottom: calc(var(--pdp-action-height, 64px) + 28px);
+	}
+}
+
+/* The shop grid's phone density (one card under 640). */
+@media (max-width: 640px) {
+	#tv-storefront-pdp .pdp-related ul.products {
+		grid-template-columns: minmax(0, 1fr);
 	}
 }

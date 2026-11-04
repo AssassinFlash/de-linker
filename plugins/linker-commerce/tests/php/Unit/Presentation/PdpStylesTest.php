@@ -234,4 +234,22 @@ final class PdpStylesTest extends TestCase {
 		$this->assertStringContainsString( 'left: 12px;', $css );
 		$this->assertStringContainsString( 'bottom: calc(12px + env(safe-area-inset-bottom))', $css );
 	}
+
+	/**
+	 * The native related-products loop (the template's [lc_wc_related], Woo's
+	 * single-product/related.php) has its design in this volume: the block
+	 * hides when the native loop renders nothing, the cards take the shop
+	 * grid's card language, and the loop CTA stays hidden — loop cards are
+	 * informational, the PDP CTA owns the add path (2026-11-04 matrix F1).
+	 */
+	public function test_the_native_related_products_loop_is_styled_and_informational(): void {
+		$rules = $this->rules( self::PDP_CSS );
+
+		$this->assertStringContainsString( '.pdp-related:not(:has(li.product))', $rules );
+		$this->assertStringContainsString( '.pdp-related section.related > h2 {', $rules );
+		$this->assertStringContainsString( '.pdp-related ul.products {', $rules );
+		$this->assertStringContainsString( '.pdp-related li.product img {', $rules );
+		$this->assertStringContainsString( '.pdp-related .woocommerce-loop-product__title {', $rules );
+		$this->assertStringContainsString( '.pdp-related li.product > .button,', $rules );
+	}
 }

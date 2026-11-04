@@ -96,6 +96,13 @@
 			<h2 class="pdp-section-title">Kompatibilitätsangaben</h2>
 			[linker_pdp_pairings]
 		</section>[/lc_if]
+
+		<!-- Woo's native related products: lc_wc_related renders
+		     single-product/related.php with Woo's own related defaults (4
+		     products, 4 columns, wc-template-functions.php); the section,
+		     heading and card design come from .pdp-related in the WindPress
+		     volume. The heading itself is Woo's own translation. -->
+		<div class="pdp-block sf-container pdp-related">[lc_wc_related]</div>
 	</div>
 
 	<div class="pdp-mobile-action"><div class="pdp-price">[linker_pdp_price]</div>[linker_pdp_cta]</div>
