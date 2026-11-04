@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { __ } from "../i18n.ts";
+import { __, sprintf } from "../i18n.ts";
 import { calendarDate } from "../domain/gridConnection.ts";
 import {
 	emptyCountryRuleInputs,
@@ -13,9 +13,18 @@ const countries: Record<RuleBasis, string> = {
 	nl_storage_max_active: "NL",
 	de_pv_installed: "DE",
 };
-// All three retained source readings were checked on this date; changing this
-// choice never changes a project or connection date.
-const CHECKED_SOURCE_DATE = "2026-11-01";
+// Source-reading dates: docs/research/2026-10-23-modern-workbench/COUNTRY-EVIDENCE.md.
+const CHECKED_SOURCE_DATES: Record<RuleBasis, string> = {
+	fr_generation_pmax: "2026-11-04",
+	nl_storage_max_active: "2026-11-04",
+	de_pv_installed: "2026-11-04",
+};
+function checkedSourceDate(basis: RuleBasis, locale: string): string {
+	return new Intl.DateTimeFormat(locale, {
+		dateStyle: "long",
+		timeZone: "UTC",
+	}).format(new Date(CHECKED_SOURCE_DATES[basis] + "T00:00:00Z"));
+}
 
 export function CountryRuleForm({
 	value,
@@ -130,18 +139,27 @@ export function CountryRuleForm({
 					</p>
 					<p>
 						{value.basis === "fr_generation_pmax"
-							? __(
-									"Source version: 26 June 2020, checked 1 November 2026.",
-									"linker-tools",
+							? sprintf(
+									__(
+										"Source version: 26 June 2020, checked %s.",
+										"linker-tools",
+									),
+									checkedSourceDate(value.basis, locale),
 								)
 							: value.basis === "nl_storage_max_active"
-								? __(
-										"Source version: 1 October 2026, checked 1 November 2026.",
-										"linker-tools",
+								? sprintf(
+										__(
+											"Source version: 1 October 2026, checked %s.",
+											"linker-tools",
+										),
+										checkedSourceDate(value.basis, locale),
 									)
-								: __(
-										"German source text checked 1 November 2026; earlier transition rules are not established here.",
-										"linker-tools",
+								: sprintf(
+										__(
+											"German source text checked %s; earlier transition rules are not established here.",
+											"linker-tools",
+										),
+										checkedSourceDate(value.basis, locale),
 									)}
 					</p>
 					<p>
@@ -153,9 +171,12 @@ export function CountryRuleForm({
 					<button
 						type="button"
 						className="lp-button"
-						onClick={() => changeDate(CHECKED_SOURCE_DATE)}
+						onClick={() => changeDate(CHECKED_SOURCE_DATES[value.basis])}
 					>
-						{__("Use the source checked on 1 November 2026", "linker-tools")}
+						{sprintf(
+							__("Use the source checked on %s", "linker-tools"),
+							checkedSourceDate(value.basis, locale),
+						)}
 					</button>
 					<div className="grid gap-5 md:grid-cols-2">
 						<label className="lp-field">

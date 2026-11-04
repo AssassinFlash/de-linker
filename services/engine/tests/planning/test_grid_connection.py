@@ -82,10 +82,17 @@ def test_complete_project_declaration_is_neither_verified_rule_nor_permission() 
         "connection_permission": "unresolved",
     }
     sources = cast(list[Object], result["rule_sources"])
-    assert sources[0]["edition"] is None and sources[0]["raw_sha256"] is None
-    assert sources[0]["evidence_snapshot_date"] == "2026-10-28"
+    assert sources[0]["edition"] is None
+    assert (
+        sources[0]["raw_sha256"]
+        == "7dbf22b9f82a3bf380d25975e4d9fe9c68fa37c9feb4ee7972e3272f91f0b208"
+    )
+    assert sources[0]["evidence_snapshot_date"] == "2026-11-04"
     assert sources[1]["edition"] == "VDE-AR-N 4110:2023-09"
-    assert sources[1]["raw_sha256"] is None
+    assert (
+        sources[1]["raw_sha256"]
+        == "4aea379ed9f11476d915b5f9baacad618b39209df9acd02c78c612418fe528c6"
+    )
     assert "135" not in json.dumps(result)
 
 

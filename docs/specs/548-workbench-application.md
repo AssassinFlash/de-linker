@@ -1153,17 +1153,28 @@ declared maximum deliverable active power and its separately bounded LFSM-U
 statism; and the specified German EEG §9(2) pre-test controls and export
 condition for declared aggregated solar installed power. Their source versions,
 reading dates, exact source text hashes, conditions and gaps are recorded in
-`docs/research/2026-10-23-modern-workbench/COUNTRY-EVIDENCE.md`. A date outside
-the source version observed is not evaluated. The rule date selects a source
-reading and does not change a project connection date; the editor offers the
-most recently verified source date directly. Any result still requires a
-separate review of applicability at the project date and at the current date.
+`docs/research/2026-10-23-modern-workbench/COUNTRY-EVIDENCE.md`. With the other
+required inputs present, a reading is evaluated only when `effective_from <=
+rule_date <= evidence_snapshot_date`; earlier or later dates return
+`outside_version`, while absent inputs still return `missing_inputs`. For DE,
+`power_kw` is required only when `de_before_control_test` is not false; after
+that stage, an outside-version date does not invent a missing-power error.
+The rule date selects a source reading and does not change a project
+connection date;
+the editor offers each basis's most recently verified source date directly.
+A date inside that range produces only a conditional reading of the retained
+source, not proof of the text that historically governed a project. Any result
+still requires a separate review of applicability at the project date and at
+the current date.
 A French project explicitly
 declared as Enedis and total PV self-consumption without grid injection also
 receives the operator's sourced declaration and CACSI information; no operator
 is inferred from country. The Enedis source records a Consuel certificate or a
 declaration on honour, and retains its conditional statement about circuit
-changes, added batteries and possible plug-and-play exceptions.
+changes, added batteries and possible plug-and-play exceptions. This page has
+no effective-date statement of its own, so only its exact
+`evidence_snapshot_date` is evaluated; every other date returns
+`outside_version`.
 
 These readings are conditional on the declared scope and values. They do not
 verify operator territory, legal transition rules, equipment compliance,

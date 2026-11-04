@@ -104,7 +104,10 @@ def test_country_evidence_pdf_distinguishes_project_entries_from_permission(
     assert text("grid_all_entered", locale) in contents
     assert text("grid_no_permission", locale) in contents
     assert "2023-09" in contents
-    assert "2026-10-28" in contents
+    assert "2026-11-04" in contents
+    compact = "".join(contents.split())
+    assert "7dbf22b9f82a3bf380d25975e4d9fe9c68fa37c9feb4ee7972e3272f91f0b208" in compact
+    assert "4aea379ed9f11476d915b5f9baacad618b39209df9acd02c78c612418fe528c6" in compact
     unknown = grid_connection_sections(
         country_assessment(declared(country=None)), locale
     )
