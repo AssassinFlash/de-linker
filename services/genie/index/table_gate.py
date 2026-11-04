@@ -209,6 +209,13 @@ def audit(
     """Judge every table group of the corpus against its doc_type standard."""
     authorized = authorized_tables(chunk_products, chunk_scopes)
     # Proven table scope per document, for the sibling-coverage condition.
+    # table_columns grants live on the native fragments themselves, so their
+    # document comes from the chunk list.
+    chunk_docs = {
+        chunk.id: chunk.doc_sha256
+        for chunk in chunks
+        if chunk.kind == "table" and chunk.source_table
+    }
     scoped_products: dict[str, set[int]] = {}
     for cid, scope in chunk_scopes.items():
         if not isinstance(scope, dict) or cid not in chunk_products:
@@ -219,6 +226,15 @@ def audit(
                 scoped_products.setdefault(value["source_sha256"], set()).update(
                     chunk_products[cid]
                 )
+        columns = scope.get("table_columns")
+        if (
+            isinstance(columns, dict)
+            and isinstance(columns.get("source_table"), str)
+            and cid in chunk_docs
+        ):
+            scoped_products.setdefault(chunk_docs[cid], set()).update(
+                chunk_products[cid]
+            )
     bare: set[tuple[str, str]] = set()
     exempted: dict[tuple[str, str], str] = {}
     coverage: dict[str, dict[str, Any]] = {}
