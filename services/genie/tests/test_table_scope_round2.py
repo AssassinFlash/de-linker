@@ -71,7 +71,9 @@ def test_rebuild_places_per_model_values_and_merges_shared_ink(
     assert (shared["col_start"], shared["col_end"]) == (3, 5)
     assert shared["text"] == "98.1%"
     weights = sorted(
-        (c["col_start"], c["text"]) for c in cells if c["row_start"] == 2 and c["col_start"] > 0
+        (c["col_start"], c["text"])
+        for c in cells
+        if c["row_start"] == 2 and c["col_start"] > 0
     )
     assert weights == [(1, "82"), (2, "96"), (3, "96"), (4, "98")]
     assert max(cell["col_end"] for cell in cells) == 5
