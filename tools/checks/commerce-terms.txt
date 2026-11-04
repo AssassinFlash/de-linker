@@ -1,0 +1,79 @@
+# Commerce vocabulary: the one wordlist the customer-visible copy is held to.
+#
+# This file is the single authority. docs/specs/11-commerce.md and AGENTS.md §3
+# point here instead of carrying their own copies of the list (issue #905): the
+# site has one link, product → inquiry (presented as a Proforma), and everything
+# after that happens offline (AGENTS.md §1). Copy must not describe a shop.
+#
+# Format: one term per line. `#` starts a comment. A trailing `*` matches the
+# stem as a prefix, so compounds and inflections match too ("Versand*" covers
+# Versand, Versandkosten, Versandart). Without `*` the term matches as a whole
+# word. Matching ignores case and uses word boundaries, the same semantics as
+# the shared German list (plugins/linker-i18n/data/banned-de.json).
+
+# English commerce nouns. Prefixes where the stem is unambiguous in this
+# domain; explicit forms where a prefix would collide with unrelated words
+# ("cart*" would match carton and cartridge, so the plural is its own line).
+order*
+checkout*
+payment*
+shipping*
+# "dispatch" was missing from the first version of this list, and that gap is
+# visible on the live site: the German home said "Lagerversand" while its
+# English twin said "warehouse dispatch", and the German commercial-storage
+# stage read "04 · Versand" against an English "04 · Dispatch". Only the German
+# side was caught, because only the German side had a listed word. AGENTS.md §1
+# rules out 发货 (dispatch) in the same sentence as payment and purchasing.
+# "dispatch" is also the Planner's word for energy dispatch ("an optimal
+# dispatch schedule", a calculation, not a delivery), so the four such strings
+# are baselined with that reason rather than rewritten.
+dispatch*
+# AGENTS.md §1 rules out 采购 (purchasing) too. No string in the tree uses the
+# word today; it is listed so the first one that does is caught.
+purchase*
+cart
+carts
+basket*
+catalogue*
+article
+articles
+
+# German. The spec's own words plus the inflections that carry the same
+# meaning: Bestell* = Bestellung, Bestellungen, bestellt, bestellbar,
+# Bestellnummer; Zahlung* = Zahlung, Zahlungen, Zahlungsziel,
+# Zahlungsbedingungen; Bezahl* = bezahlen, Bezahlung, Bezahlvorgang;
+# Warenkorb* = Warenkorb, Warenkorbs; Kasse* = Kasse, Kassen.
+Versand*
+Kasse*
+Bezahl*
+Warenkorb*
+Bestell*
+Zahlung*
+
+# Deliberately absent, each owned elsewhere:
+#   - German "Artikel" (the blog word) and "Katalog": tools/checks/german-copy.py
+#     owns them with documented allowances (the legal citation "Artikel 5", the
+#     SKU compound Artikelnummer, Katalognummer). A second owner here would need
+#     a second allowance list and the two would drift.
+#   - "Rechnung"/"invoice": the Proforma invoice is real (AGENTS.md §2,
+#     2026-10-09); it is the document the site actually issues.
+#   - "Lieferung"/"delivery": physical delivery exists after the inquiry; only
+#     the shipping/store copy is banned.
+#
+# Measured and left out, with the reason each one is not a wordlist problem:
+#   - "shop": the scanner reads every gettext literal, and three strings use the
+#     word where it is the right word for someone else's vocabulary — a
+#     WooCommerce settings description ("the store address under General",
+#     whose German admin screen says "Shop-Adresse") and a plugin docstring that
+#     describes Polylang's behaviour. Adding "shop" would baseline those and
+#     teach the next reader that shop vocabulary is tolerated. The real gap is
+#     that the scanner cannot tell wp-admin copy from customer copy; naming a
+#     word would hide that, not fix it.
+#   - "return*": 33 strings, every one of them "returns the version of …", a
+#     value coming back from a function. The commerce sense ("returns") is not
+#     separable by word boundary, and the one place it matters is below.
+#   - "refund*", "Auftrag*": each has exactly one customer-facing or
+#     admin-facing hit, recorded in the sweep section of
+#     docs/acceptance/2026-11-04/905/copy-review.md as needing a decision above
+#     this gate's authority (a footer link to a live returns page, and
+#     WooCommerce's own order vocabulary in wp-admin).

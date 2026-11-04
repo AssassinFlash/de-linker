@@ -122,7 +122,7 @@ final class FormTest extends TestCase {
 			'offer'       => 'Price & availability',
 			'document'    => 'Product documents',
 			'project'     => 'Discuss a project',
-			'support'     => 'Support for an order',
+			'support'     => 'Support after delivery',
 			'partnership' => 'Work with Linker',
 		) as $value => $label ) {
 			$this->assertStringContainsString( '<option value="' . $value . '">' . $label . '</option>', $html );

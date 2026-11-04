@@ -955,9 +955,9 @@ msgstr "Produktunterlagen"
 msgid "Discuss a project"
 msgstr "Projekt besprechen"
 
-#: includes/Contact/Form.php:243
-msgid "Support for an order"
-msgstr "Hilfe zu einer Bestellung"
+#: includes/Contact/Form.php:251
+msgid "Support after delivery"
+msgstr "Hilfe nach der Lieferung"
 
 #: includes/Contact/Form.php:244
 msgid "Work with Linker"
@@ -1886,7 +1886,7 @@ msgstr "Interne Benachrichtigung"
 
 #: includes/Inquiry/Assessment/NotificationHoldView.php:27
 msgid "Released for delivery"
-msgstr "Zum Versand freigegeben"
+msgstr "Zur Zustellung freigegeben"
 
 #: includes/Inquiry/Assessment/NotificationHoldView.php:35
 msgid "Notification on hold"
@@ -1907,7 +1907,7 @@ msgid ""
 "notification queues the same message for delivery."
 msgstr ""
 "Die Anfrage und die ursprüngliche Benachrichtigung bleiben gespeichert. Mit "
-"der Freigabe stellen Sie dieselbe Nachricht in die Versandwarteschlange."
+"der Freigabe stellen Sie dieselbe Nachricht in die Zustellwarteschlange."
 
 #: includes/Inquiry/Assessment/NotificationHoldView.php:37
 msgid "Confirmed abuse campaign"
@@ -2128,7 +2128,7 @@ msgstr ""
 
 #: includes/Inquiry/Assessment/SendAuthorization.php:735
 msgid "Notification released for delivery."
-msgstr "Benachrichtigung zum Versand freigegeben."
+msgstr "Benachrichtigung zur Zustellung freigegeben."
 
 #: includes/Inquiry/Assessment/SendAuthorization.php:776
 #: includes/Mail/NotificationHold.php:96
@@ -2389,10 +2389,10 @@ msgstr "Wir prüfen Ihre Anfrage und senden Ihnen eine Proformarechnung."
 
 #: includes/Inquiry/ProformaGateway.php:68
 msgid ""
-"Sends the inquiry without payment. Staff issue the Proforma invoice from the "
+"Sends the inquiry free of charge. Staff issue the Proforma invoice from the "
 "inquiry. Always on: it is the only way to send an inquiry."
 msgstr ""
-"Sendet die Anfrage ohne Zahlung. Die Proformarechnung stellen die "
+"Sendet die Anfrage kostenfrei. Die Proformarechnung stellen die "
 "Mitarbeitenden in der Anfrage aus. Immer aktiv: Nur so lässt sich eine "
 "Anfrage senden."
 
@@ -2696,8 +2696,8 @@ msgstr "Alle Beiträge"
 msgid "Share on %s"
 msgstr "Auf %s teilen"
 
-#: includes/Presentation/BlogShortcodes.php:212
-msgid "Read article"
+#: includes/Presentation/BlogShortcodes.php:228
+msgid "Read the post"
 msgstr "Beitrag lesen"
 
 #. translators: %d: maximum number of products in a comparison.
@@ -2779,11 +2779,11 @@ msgstr "Englisch"
 msgid "%d on file"
 msgstr "%d Einträge hinterlegt"
 
-#: includes/Presentation/LibraryPage.php:230
-#: includes/Presentation/LibraryPage.php:270
-#: includes/Presentation/LibraryPage.php:319
-msgid "Before you order"
-msgstr "Vor der Bestellung"
+#: includes/Presentation/LibraryPage.php:245
+#: includes/Presentation/LibraryPage.php:285
+#: includes/Presentation/LibraryPage.php:334
+msgid "Before your inquiry"
+msgstr "Vor Ihrer Anfrage"
 
 #: includes/Presentation/LibraryPage.php:231
 #: includes/Presentation/LibraryPage.php:271
@@ -3923,7 +3923,7 @@ msgid ""
 "Parcel rate for one eligible item within Germany: %s when you submit. "
 "Freight for multiple items is confirmed separately."
 msgstr ""
-"Paketpreis für ein versandfähiges Produkt innerhalb Deutschlands: %s bei "
+"Paketpreis für ein Produkt innerhalb Deutschlands: %s bei "
 "Absenden der Anfrage. Fracht für mehrere Produkte wird gesondert bestätigt."
 
 #: includes/Products/Materials.php:1157 includes/Products/Materials.php:1167
@@ -3970,8 +3970,8 @@ msgid "What was searched for."
 msgstr "Danach wurde gesucht."
 
 #: includes/Products/ProductSearchController.php:156
-msgid "The hits, in shop order."
-msgstr "Die Treffer in Shop-Reihenfolge."
+msgid "The matching products, as the product range lists them."
+msgstr "Die passenden Produkte, wie das Sortiment sie führt."
 
 #: includes/Products/ProductSearchController.php:166
 msgid "Product name."
@@ -5318,7 +5318,7 @@ msgstr "In die Benachrichtigungswarteschlange aufgenommen"
 
 #: includes/Registration/RegistrationCapacityAdmin.php:110
 msgid "Notification skipped by policy"
-msgstr "Benachrichtigung gemäß Versandregel übersprungen"
+msgstr "Benachrichtigung gemäß Richtlinie übersprungen"
 
 #: includes/Registration/RegistrationCapacityAdmin.php:111
 msgid "Notification data erased"

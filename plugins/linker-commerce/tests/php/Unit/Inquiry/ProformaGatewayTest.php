@@ -39,7 +39,7 @@ final class ProformaGatewayTest extends TestCase {
 		$this->assertSame( 'Proforma invoice', $gateway->get_title() );
 		$this->assertSame( 'We check your inquiry and send you a Proforma invoice.', $gateway->get_description() );
 		$this->assertSame( 'Proforma invoice', $gateway->get_method_title() );
-		$this->assertStringContainsString( 'without payment', $gateway->get_method_description() );
+		$this->assertStringContainsString( 'free of charge', $gateway->get_method_description() );
 	}
 
 	/**

@@ -1,0 +1,193 @@
+{
+  "_source": "Existing hits of tools/checks/commerce-terms.txt, recorded when the gate was introduced (issue #905). Every entry is copy that already shipped; the ratchet only refuses new ones. Remove an entry when its string is rewritten or deleted: the gate reports a stale entry as a failure until then.",
+  "files": {
+    "plugins/linker-commerce/includes/Abilities/CheckCompatibility.php": [
+      {
+        "term": "order*",
+        "string": "Two product IDs: one inverter and one battery, in either order.",
+        "count": 1,
+        "justification": "either argument order of a compatibility check"
+      }
+    ],
+    "plugins/linker-commerce/includes/Stock/StockController.php": [
+      {
+        "term": "order*",
+        "string": "One row per pushed item, in request order.",
+        "count": 1,
+        "justification": "the order rows arrive in a request"
+      }
+    ],
+    "apps/planner/src/components/ProfileLabels.ts": [
+      {
+        "term": "order*",
+        "string": "Intervals must be in time order and must not overlap. Correct the source rather than sorting it here.",
+        "count": 1,
+        "justification": "time order of CSV intervals, not a purchase"
+      }
+    ],
+    "apps/planner/src/components/energy/EnergyError.tsx": [
+      {
+        "term": "order*",
+        "string": "The PV reference needs a retained weather source, two ordered sampling grids and complete PV model parameters.",
+        "count": 1,
+        "justification": "ordered sampling grids in a PV input, not a purchase"
+      }
+    ],
+    "apps/planner/src/components/energy/PlanningReportResult.tsx": [
+      {
+        "term": "order*",
+        "string": "The PV string CSV has one row per string and time interval. The module condition lists follow the order of module IDs in that row.",
+        "count": 1,
+        "justification": "order of module IDs inside a CSV row"
+      }
+    ],
+    "apps/planner/src/components/equipment/PvModuleSelection.tsx": [
+      {
+        "term": "order*",
+        "string": "Choose modules and review their order to match your planned wiring. Enter the MPPT and inverter input for each string.",
+        "count": 1,
+        "justification": "the order modules are wired into strings"
+      },
+      {
+        "term": "order*",
+        "string": "Order by columns",
+        "count": 1,
+        "justification": "table sort control in the Planner"
+      },
+      {
+        "term": "order*",
+        "string": "Order by rows",
+        "count": 1,
+        "justification": "table sort control in the Planner"
+      },
+      {
+        "term": "order*",
+        "string": "Reverse order",
+        "count": 1,
+        "justification": "reverses the displayed module sequence"
+      },
+      {
+        "term": "order*",
+        "string": "Review selected order (%d modules)",
+        "count": 1,
+        "justification": "the selected module sequence"
+      }
+    ],
+    "apps/planner/src/components/equipment/PvStringSetup.tsx": [
+      {
+        "term": "order*",
+        "string": "Leave this blank to use the complete selection. A smaller group uses the first modules in the displayed order; the remainder stays selected for the next string.",
+        "count": 1,
+        "justification": "which modules a string takes, in display order"
+      },
+      {
+        "term": "order*",
+        "string": "The first %d selected modules will be saved in this order.",
+        "count": 1,
+        "justification": "the order modules are saved in"
+      }
+    ],
+    "plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po": [
+      {
+        "term": "order*",
+        "string": "One row per pushed item, in request order.",
+        "count": 1,
+        "justification": "the order rows arrive in a request"
+      },
+      {
+        "term": "order*",
+        "string": "Two product IDs: one inverter and one battery, in either order.",
+        "count": 1,
+        "justification": "either argument order of a compatibility check"
+      }
+    ],
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal.po": [
+      {
+        "term": "dispatch*",
+        "string": "Import and export limits apply once at the shared AC metering point. In each interval, charging or discharging is shared in proportion to each unit's available power within its declared power and energy limits. The rule uses no forecast, does not request grid charging and does not reproduce a manufacturer EMS or an optimal dispatch schedule.",
+        "count": 1,
+        "justification": "energy dispatch: the Planner's calculation of when a converter charges or discharges, not a shipment"
+      },
+      {
+        "term": "dispatch*",
+        "string": "In each interval, each converter supplies its own DC auxiliary demand and its allocated share of AC demand before charging from local DC PV. AC demand is shared in proportion to each unit’s available power. Charging from the AC bus must be enabled and supported by the equipment documentation. It uses remaining AC surplus; grid charging is requested only when separately permitted and within the remaining import limit. This time-step calculation uses no forecast and does not reproduce a manufacturer EMS or an optimal dispatch schedule.",
+        "count": 1,
+        "justification": "energy dispatch: the Planner's calculation of when a converter charges or discharges, not a shipment"
+      },
+      {
+        "term": "order*",
+        "string": "Choose modules and review their order to match your planned wiring. Enter the MPPT and inverter input for each string.",
+        "count": 1,
+        "justification": "the order modules are wired into strings"
+      },
+      {
+        "term": "order*",
+        "string": "Intervals must be in time order and must not overlap. Correct the source rather than sorting it here.",
+        "count": 1,
+        "justification": "time order of CSV intervals, not a purchase"
+      },
+      {
+        "term": "order*",
+        "string": "Leave this blank to use the complete selection. A smaller group uses the first modules in the displayed order; the remainder stays selected for the next string.",
+        "count": 1,
+        "justification": "which modules a string takes, in display order"
+      },
+      {
+        "term": "order*",
+        "string": "Order by columns",
+        "count": 1,
+        "justification": "table sort control in the Planner"
+      },
+      {
+        "term": "order*",
+        "string": "Order by rows",
+        "count": 1,
+        "justification": "table sort control in the Planner"
+      },
+      {
+        "term": "order*",
+        "string": "Reverse order",
+        "count": 1,
+        "justification": "reverses the displayed module sequence"
+      },
+      {
+        "term": "order*",
+        "string": "Review selected order (%d modules)",
+        "count": 1,
+        "justification": "the selected module sequence"
+      },
+      {
+        "term": "order*",
+        "string": "The PV reference needs a retained weather source, two ordered sampling grids and complete PV model parameters.",
+        "count": 1,
+        "justification": "ordered sampling grids in a PV input, not a purchase"
+      },
+      {
+        "term": "order*",
+        "string": "The PV string CSV has one row per string and time interval. The module condition lists follow the order of module IDs in that row.",
+        "count": 1,
+        "justification": "order of module IDs inside a CSV row"
+      },
+      {
+        "term": "order*",
+        "string": "The first %d selected modules will be saved in this order.",
+        "count": 1,
+        "justification": "the order modules are saved in"
+      }
+    ],
+    "apps/planner/src/components/energy/PlantEnergyForm.tsx": [
+      {
+        "term": "dispatch*",
+        "string": "Import and export limits apply once at the shared AC metering point. In each interval, charging or discharging is shared in proportion to each unit's available power within its declared power and energy limits. The rule uses no forecast, does not request grid charging and does not reproduce a manufacturer EMS or an optimal dispatch schedule.",
+        "count": 1,
+        "justification": "energy dispatch: the Planner's calculation of when a converter charges or discharges, not a shipment"
+      },
+      {
+        "term": "dispatch*",
+        "string": "In each interval, each converter supplies its own DC auxiliary demand and its allocated share of AC demand before charging from local DC PV. AC demand is shared in proportion to each unit’s available power. Charging from the AC bus must be enabled and supported by the equipment documentation. It uses remaining AC surplus; grid charging is requested only when separately permitted and within the remaining import limit. This time-step calculation uses no forecast and does not reproduce a manufacturer EMS or an optimal dispatch schedule.",
+        "count": 1,
+        "justification": "energy dispatch: the Planner's calculation of when a converter charges or discharges, not a shipment"
+      }
+    ]
+  }
+}

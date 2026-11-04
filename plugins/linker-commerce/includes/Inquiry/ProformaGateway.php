@@ -65,7 +65,7 @@ final class ProformaGateway extends WC_Payment_Gateway {
 	 * Description in the admin list of payment methods.
 	 */
 	public function get_method_description() {
-		return __( 'Sends the inquiry without payment. Staff issue the Proforma invoice from the inquiry. Always on: it is the only way to send an inquiry.', 'linker-commerce' );
+		return __( 'Sends the inquiry free of charge. Staff issue the Proforma invoice from the inquiry. Always on: it is the only way to send an inquiry.', 'linker-commerce' );
 	}
 
 	/**

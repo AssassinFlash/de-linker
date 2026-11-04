@@ -153,7 +153,7 @@ final class ProductSearchController extends WP_REST_Controller {
 						'type'        => 'string',
 					),
 					'items' => array(
-						'description' => __( 'The hits, in shop order.', 'linker-commerce' ),
+						'description' => __( 'The matching products, as the product range lists them.', 'linker-commerce' ),
 						'type'        => 'array',
 						'items'       => array(
 							'type'       => 'object',
