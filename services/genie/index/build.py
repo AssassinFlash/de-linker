@@ -653,6 +653,14 @@ def build(
             proof.get("chunk_products", {}),
             proof.get("chunk_scopes", {}),
             {document.sha256: document.doc_type for document in chunked.documents},
+            {
+                p["product_id"]: p
+                for p in source.get("publication_manifest", {}).get("products", [])
+            },
+            {
+                d["blob_sha256"]: set(d["product_ids"])
+                for d in source.get("publication_manifest", {}).get("documents", [])
+            },
         ).coverage,
         "file": {
             "name": INDEX_FILE,

@@ -1458,14 +1458,196 @@ def _pdf_footnote_counts(
     return counts, references
 
 
+def _page_words_in_box(
+    page: object, number: int, box: tuple[float, float, float, float]
+) -> list[tuple[str, tuple[float, float, float, float]]] | None:
+    """Every visible word whose centre lies inside `box`, in TOPLEFT coordinates."""
+    from typing import Any, cast
+
+    physical = cast(Any, page)[number - 1]
+    try:
+        left, bottom, right, top = physical.get_bbox()
+        if physical.get_rotation() != 0 or left != 0 or bottom != 0:
+            return None
+        text_page = physical.get_textpage()
+        try:
+            count = text_page.count_chars()
+            words: list[tuple[str, tuple[float, float, float, float]]] = []
+            current, start = "", None
+            for index in range(count + 1):
+                char = text_page.get_text_range(index, 1) if index < count else " "
+                # PDFium returns control markers (e.g. \x07) and U+FFFE for
+                # glyphs without a Unicode mapping; they are not word ink and
+                # must not chain neighbouring columns into one word.
+                if (
+                    index < count
+                    and not char.isspace()
+                    and ord(char) >= 32
+                    and ord(char) != 0xFFFE
+                ):
+                    if not current:
+                        start = index
+                    current += char
+                    continue
+                if current:
+                    assert start is not None
+                    boxes = [text_page.get_charbox(i) for i in range(start, index)]
+                    if any(not b for b in boxes):
+                        return None
+                    x0 = min(b[0] for b in boxes) - left
+                    x1 = max(b[2] for b in boxes) - left
+                    y0 = top - max(b[3] for b in boxes)
+                    y1 = top - min(b[1] for b in boxes)
+                    if (
+                        box[0] <= (x0 + x1) / 2 <= box[2]
+                        and box[1] <= (y0 + y1) / 2 <= box[3]
+                    ):
+                        words.append((current, (x0, y0, x1, y1)))
+                    current = ""
+            return words
+        finally:
+            text_page.close()
+    finally:
+        physical.close()
+
+
+def _rebuild_external_grid(
+    pdf: object,
+    number: int,
+    table_bbox: tuple[float, float, float, float],
+    axis_spans: Sequence[SourceSpan],
+) -> list[SourceCell] | None:
+    """Rebuild a corrupted native grid from the page's own word boxes.
+
+    The ETR 80-125 kW datasheets (EN 76df70ea8474 / DE 8ced72d8cec0, p.3)
+    print a real one-label-plus-six-model table whose column centers are the
+    axis line's model positions; Docling collapses it into duplicated text
+    cells. When a proven external axis meets a native grid failing its shape
+    checks, this rebuilds the grid entirely from visible word evidence:
+
+    - rows: transitive vertical word overlap (no line-spacing assumption);
+    - column bands: the axis spans' x centers, each half the smallest gap
+      between neighbouring centers wide (the table's own geometry, the only
+      threshold used);
+    - label words must sit wholly in the left band; value words cluster by
+      sub-band gaps, and a cluster becomes one cell spanning exactly the
+      bands its ink overlaps — a centered value shared by neighbouring
+      models arrives as the same merged cell the native parser would have
+      produced, and per-model values land in their own columns.
+
+    Anything ambiguous (a straddling label, overlapping cluster columns, a
+    word outside every band) aborts the repair; the caller stays without an
+    axis. No per-document name or spacing constant is consulted.
+    """
+    centers = sorted((span["bbox"][0] + span["bbox"][2]) / 2 for span in axis_spans)
+    if len(centers) < 2:
+        return None
+    band_half = min(b - a for a, b in zip(centers, centers[1:], strict=False)) / 2
+    if band_half <= 0:
+        return None
+    bands = [(center - band_half, center + band_half) for center in centers]
+    words = _page_words_in_box(pdf, number, table_bbox)
+    if not words:
+        return None
+    ordered = sorted(words, key=lambda item: item[1][1])
+    rows: list[list[tuple[str, tuple[float, float, float, float]]]] = []
+    for word, box in ordered:
+        if rows and rows[-1] and box[1] < rows[-1][-1][1][3]:
+            # Transitive y overlap keeps wrapped body lines apart: a later
+            # line starts only below the previous line's lowest ink.
+            rows[-1].append((word, box))
+        else:
+            rows.append([(word, box)])
+    label_boundary = bands[0][0]
+    cells: list[SourceCell] = []
+    for index, row in enumerate(rows):
+        labels = sorted(
+            (item for item in row if item[1][2] <= label_boundary),
+            key=lambda i: i[1][0],
+        )
+        values = sorted(
+            (item for item in row if item[1][0] >= label_boundary),
+            key=lambda i: i[1][0],
+        )
+        if len(labels) + len(values) != len(row) or not labels:
+            return None
+        cells.append(
+            SourceCell(
+                row_start=index,
+                row_end=index + 1,
+                col_start=0,
+                col_end=1,
+                column_header=False,
+                row_header=False,
+                row_section=not values,
+                text=" ".join(item[0] for item in labels),
+                bbox=_union_box(item[1] for item in labels),
+                bbox_origin="TOPLEFT",
+            )
+        )
+        clusters: list[list[tuple[str, tuple[float, float, float, float]]]] = []
+        for item in values:
+            if clusters and item[1][0] - clusters[-1][-1][1][2] < band_half:
+                clusters[-1].append(item)
+            else:
+                clusters.append([item])
+        covered: list[int] = []
+        for cluster in clusters:
+            left = min(item[1][0] for item in cluster)
+            right = max(item[1][2] for item in cluster)
+            inside = [
+                i for i, band in enumerate(bands) if right > band[0] and left < band[1]
+            ]
+            if not inside:
+                return None
+            first, last = inside[0], inside[-1]
+            if any(first <= existing <= last for existing in covered):
+                # Two clusters claiming overlapping columns is ambiguous.
+                return None
+            covered.extend(range(first, last + 1))
+            cells.append(
+                SourceCell(
+                    row_start=index,
+                    row_end=index + 1,
+                    col_start=1 + first,
+                    col_end=2 + last,
+                    column_header=False,
+                    row_header=False,
+                    row_section=False,
+                    text=" ".join(item[0] for item in cluster),
+                    bbox=_union_box(item[1] for item in cluster),
+                    bbox_origin="TOPLEFT",
+                )
+            )
+    if max(cell["col_end"] for cell in cells) != 1 + len(centers):
+        return None
+    return cells
+
+
+def _union_box(
+    boxes: Iterable[tuple[float, float, float, float]],
+) -> tuple[float, float, float, float]:
+    materialised = list(boxes)
+    return (
+        min(box[0] for box in materialised),
+        min(box[1] for box in materialised),
+        max(box[2] for box in materialised),
+        max(box[3] for box in materialised),
+    )
+
+
 def _external_axis(
     pdf: object,
     page: int,
     previous: Sequence[Block],
     table: Block,
     spans: list[SourceSpan],
-) -> ExternalAxis | None:
-    """Capture consecutive, visible original body text preceding a native table."""
+) -> tuple[ExternalAxis, tuple[SourceCell, ...] | None] | None:
+    """Capture consecutive, visible original body text preceding a native table.
+
+    Returns the axis and, when the native grid was rebuilt from physical word
+    evidence (a shared single-value-column table), the repaired cells.
+    """
     from typing import Any, cast
 
     if (
@@ -1492,26 +1674,6 @@ def _external_axis(
         re.IGNORECASE,
     )
     if match is None:
-        return None
-    header = [
-        cell
-        for cell in table.source_cells
-        if cell["row_start"] == 0 and cell["row_end"] == 1 and cell["text"]
-    ]
-    first = [cell for cell in header if cell["col_start"] == 0]
-    if len(first) != 1:
-        return None
-    value_col_start = first[0]["col_end"]
-    first_row_is_data = any(cell["col_start"] >= value_col_start for cell in header)
-    if (
-        value_col_start < 1
-        or (not first_row_is_data and value_col_start != 1)
-        or (first_row_is_data and (value_col_start != 2 or first[0]["column_header"]))
-        or any(
-            cell is not first[0] and cell["col_start"] < value_col_start
-            for cell in header
-        )
-    ):
         return None
     physical_page = cast(Any, pdf)[page - 1]
     try:
@@ -1583,15 +1745,39 @@ def _external_axis(
     assert heading is not None
     if (
         len(matched) < 2
-        or max((cell["col_end"] for cell in table.source_cells), default=0)
-        != len(matched) + value_col_start
         or len({s["text"].casefold() for s in matched}) != len(matched)
         or any(
             m.span() not in covered for m in TOKEN.finditer(source_text, heading.end())
         )
         or any(s["bbox"][3] > table_bbox[1] for s in matched)
-        or (
-            first_row_is_data
+    ):
+        return None
+    header = [
+        cell
+        for cell in table.source_cells
+        if cell["row_start"] == 0 and cell["row_end"] == 1 and cell["text"]
+    ]
+    first = [cell for cell in header if cell["col_start"] == 0]
+    native_value_col_start = first[0]["col_end"] if len(first) == 1 else 0
+    native_first_row_is_data = len(first) == 1 and any(
+        cell["col_start"] >= native_value_col_start for cell in header
+    )
+    native_shape_ok = (
+        len(first) == 1
+        and native_value_col_start >= 1
+        and (
+            not native_first_row_is_data
+            and native_value_col_start == 1
+            or native_first_row_is_data
+            and native_value_col_start == 2
+            and not first[0]["column_header"]
+        )
+        and not any(
+            cell is not first[0] and cell["col_start"] < native_value_col_start
+            for cell in header
+        )
+        and not (
+            native_first_row_is_data
             and any(
                 "-" in token
                 and any(c.isalpha() for c in token)
@@ -1601,8 +1787,8 @@ def _external_axis(
                 for token in TOKEN.findall(cell["text"])
             )
         )
-        or (
-            first_row_is_data
+        and not (
+            native_first_row_is_data
             and any(
                 re.search(
                     r"(?<![\w./-])" + re.escape(span["text"]) + r"(?![\w./-])",
@@ -1614,12 +1800,24 @@ def _external_axis(
                 for span in matched
             )
         )
-    ):
-        return None
-    section_rows, section_barriers = _external_sections(
-        pdf, page, table.source_cells, table_bbox
+        and max((cell["col_end"] for cell in table.source_cells), default=0)
+        == len(matched) + native_value_col_start
     )
-    return ExternalAxis(
+    cells: Sequence[SourceCell] = table.source_cells
+    repaired: tuple[SourceCell, ...] | None = None
+    if native_shape_ok:
+        value_col_start = native_value_col_start
+        first_row_is_data = native_first_row_is_data
+    else:
+        rebuilt = _rebuild_external_grid(pdf, page, table_bbox, matched)
+        if rebuilt is None:
+            return None
+        cells = rebuilt
+        repaired = tuple(rebuilt)
+        value_col_start = 1
+        first_row_is_data = False
+    section_rows, section_barriers = _external_sections(pdf, page, cells, table_bbox)
+    axis = ExternalAxis(
         source_ids=[block.source_id for block in previous],
         source_text=source_text,
         source_spans=source_spans,
@@ -1631,6 +1829,7 @@ def _external_axis(
         value_col_start=value_col_start,
         first_row_is_data=first_row_is_data,
     )
+    return axis, repaired
 
 
 def _preceding_axis_blocks(blocks: Sequence[Block]) -> list[Block]:
@@ -1935,7 +2134,7 @@ def enrich_model_axes(
             for index, block in enumerate(page.blocks):
                 cells: list[SourceCell] = []
                 recovered = False
-                external = (
+                external_result = (
                     _external_axis(
                         pdf,
                         page.number,
@@ -1946,6 +2145,13 @@ def enrich_model_axes(
                     if index and block.kind == "table" and block.source_cells
                     else None
                 )
+                external = None
+                block_repaired = False
+                if external_result is not None:
+                    external, repaired_cells = external_result
+                    if repaired_cells is not None:
+                        block = replace(block, source_cells=repaired_cells)
+                        block_repaired = True
                 if external:
                     key = (page.number, block.source_id)
                     if key not in footnotes:
@@ -2025,7 +2231,11 @@ def enrich_model_axes(
                             recovered = True
                         own["model_spans"] = matched
                     cells.append(own)
-                if recovered:
+                if recovered and not block_repaired:
+                    # A rebuilt grid is single-line by construction with
+                    # word-derived boxes; the native re-proof here would drop
+                    # every repeated value cell ('Integrated' appears nine
+                    # times in the ETR protection section).
                     cells = _single_line_cells(
                         pdf,
                         page.number,

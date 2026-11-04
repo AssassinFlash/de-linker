@@ -16,12 +16,20 @@ from index.chunking import Chunk
 from index.corpus import DocumentRow
 from index.publication import scope_proofs
 from index.table_gate import (
+    PARSE_DAMAGED,
     TABLE_GATE_MIN_COLUMNS,
     TABLE_GATE_MIN_ROWS,
     audit,
+    b_content_reason,
     gate_fails,
 )
 from linker_genie.table_projection import SourceCell
+
+PRODUCTS = {
+    1: {"model": "GW10K-ET-G10"},
+    2: {"model": "GW15K-ET-G10"},
+    3: {"model": "CU2-11K-T-I"},
+}
 
 
 def _table_chunk(sha: str, table: str, rows: int, text: str) -> Chunk:
@@ -77,6 +85,7 @@ def _group(rows: int, columns: int, prose: bool = True, axis: bool = False) -> A
         columns=columns,
         parameter_prose=prose,
         axis_proven=axis,
+        axis_labels=[],
     )
 
 
@@ -96,6 +105,48 @@ def test_compatibility_is_strictest_certificate_exempt_manual_needs_axis() -> No
     assert not gate_fails("manual", _group(9, 3, axis=False))
 
 
+def _axis_group(labels: list[str]) -> Any:
+    from index.table_gate import TableGroup
+
+    return TableGroup(
+        chunks=[],
+        rows=6,
+        columns=1 + len(labels),
+        parameter_prose=True,
+        axis_proven=True,
+        axis_labels=labels,
+    )
+
+
+def test_b_content_rule_exempts_only_foreign_devices() -> None:
+    # The table's axis names only devices that are not this document's
+    # products (spec 609 B-content). BC3-TV is not carried by Woo at all.
+    assert (
+        b_content_reason(_axis_group(["BC3-TV"]), {1}, PRODUCTS)
+        == "device_not_published"
+    )
+    # A device Woo carries under another document is a missing-link signal.
+    assert (
+        b_content_reason(_axis_group(["CU2-11K-T-I"]), {1}, PRODUCTS)
+        == "device_not_associated"
+    )
+    # The document's own model must never be exempted.
+    assert b_content_reason(_axis_group(["GW10K-ET-G10"]), {1}, PRODUCTS) is None
+    assert (
+        b_content_reason(_axis_group(["GW10K-ET-G10", "CU2-11K-T-I"]), {1}, PRODUCTS)
+        is None
+    )
+    # Aliased document labels resolve to the document's own model first.
+    assert (
+        b_content_reason(
+            _axis_group(["CH2-30K-T4"]), {1959}, {1959: {"model": "CHS2-30K-T4-X"}}
+        )
+        is None
+    )
+    # Without a proven axis there is no B-content evidence.
+    assert b_content_reason(_group(6, 3), {1}, PRODUCTS) is None
+
+
 def test_audit_marks_bare_parameter_tables_and_accepts_authorized_ones() -> None:
     datasheet = _table_chunk("d1" * 32, "docling:p2:#/tables/0", 4, PARAMETER_TEXT)
     scopes = {
@@ -107,17 +158,74 @@ def test_audit_marks_bare_parameter_tables_and_accepts_authorized_ones() -> None
             },
         }
     }
-    covered = audit([datasheet], {"derived": [1954]}, scopes, {"d1" * 32: "datasheet"})
+    covered = audit(
+        [datasheet],
+        {"derived": [1]},
+        scopes,
+        {"d1" * 32: "datasheet"},
+        PRODUCTS,
+        {"d1" * 32: {1}},
+    )
     assert not covered.bare
     assert covered.coverage["datasheet"]["tables"] == 1
     assert covered.coverage["datasheet"]["with_scope"] == 1
     # The same projection whose derived chunk carries no product grant does
     # not cover the table (store-level authorization refused it).
-    refused = audit([datasheet], {}, scopes, {"d1" * 32: "datasheet"})
+    refused = audit(
+        [datasheet], {}, scopes, {"d1" * 32: "datasheet"}, PRODUCTS, {"d1" * 32: {1}}
+    )
     assert refused.bare == {("d1" * 32, "docling:p2:#/tables/0")}
-    bare = audit([datasheet], {}, {}, {"d1" * 32: "datasheet"})
+    bare = audit(
+        [datasheet], {}, {}, {"d1" * 32: "datasheet"}, PRODUCTS, {"d1" * 32: {1}}
+    )
     assert bare.bare == {("d1" * 32, "docling:p2:#/tables/0")}
     assert bare.coverage["datasheet"]["bare_parameter_tables"] == 1
+
+
+def test_parse_damaged_entry_needs_sibling_table_scope() -> None:
+    sha, table = next(iter(PARSE_DAMAGED))
+    damaged = _table_chunk(sha, table, 4, PARAMETER_TEXT)
+    doc_types = {sha: "datasheet"}
+    # No sibling document provides proven table scope: the entry is inert and
+    # the gate blocks.
+    blocked = audit([damaged], {}, {}, doc_types, PRODUCTS, {sha: {1}})
+    assert blocked.bare == {(sha, table)}
+    # A different document's proven table scope for every product exempts it.
+    scopes = {
+        "sibling": {
+            "basis": "table_projection",
+            "table_projection": {
+                "source_sha256": "f" * 32,
+                "source_table": "docling:p1:#/tables/0",
+            },
+        }
+    }
+    exempted = audit(
+        [damaged],
+        {"sibling": [1]},
+        scopes,
+        doc_types,
+        PRODUCTS,
+        {sha: {1}},
+    )
+    assert not exempted.bare
+    assert exempted.exempted[(sha, table)] == PARSE_DAMAGED[(sha, table)]
+    assert (
+        exempted.coverage["datasheet"]["exempted_bare_tables"][
+            PARSE_DAMAGED[(sha, table)]
+        ]
+        == 1
+    )
+    # A sibling that covers only part of the products does not exempt.
+    partial = audit(
+        [damaged],
+        {"sibling": [1]},
+        scopes,
+        doc_types,
+        PRODUCTS,
+        {sha: {1, 2}},
+    )
+    assert partial.bare == {(sha, table)}
 
 
 def _export(tmp_path: Path, sha: str, selected: list[Chunk]) -> Path:

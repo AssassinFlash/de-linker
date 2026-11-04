@@ -13,6 +13,7 @@ import re
 from collections.abc import Mapping, Sequence
 from typing import Any, NotRequired, TypedDict
 
+from linker_genie.model_aliases import woo_model
 from linker_genie.source_models import (
     family_labels,
     model_pattern,
@@ -2106,7 +2107,7 @@ def valid_projection(
     column = value["model_column"]
     if axis is None or not 1 <= column <= len(axis):
         return False
-    if axis[column - 1].casefold() != value["model"].casefold():
+    if woo_model(axis[column - 1]) != value["model"].casefold():
         return False
     if external:
         required: dict[str, SourceFootnote] = {}
