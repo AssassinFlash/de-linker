@@ -1,0 +1,280 @@
+{
+ "driver": "genie",
+ "fixRound": 3,
+ "base": "http://127.0.0.1:8904",
+ "observedAt": "2026-11-04T19:49:15.723Z",
+ "rows": [
+  {
+   "key": "genie:dock:en:1440",
+   "driver": "genie",
+   "state": "dock",
+   "lang": "en",
+   "width": 1440,
+   "url": "/",
+   "observedAt": "2026-11-04T19:46:42.972Z",
+   "checks": [
+    {
+     "name": "floating control present and sized",
+     "result": "pass",
+     "detail": "50×50 at 1370,930"
+    },
+    {
+     "name": "the floating control opens the dock with its composer",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:dock:en:1440.png",
+   "scope": "the standing dock on a marketing page above the 860px breakpoint"
+  },
+  {
+   "key": "genie:dock-keyboard-focus-escape-and-return:en:1440",
+   "driver": "genie",
+   "state": "dock-keyboard-focus-escape-and-return",
+   "lang": "en",
+   "width": 1440,
+   "url": "/",
+   "observedAt": "2026-11-04T19:46:46.573Z",
+   "checks": [
+    {
+     "name": "Escape closes the dock",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "reopen restores the dock",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "Tab moves focus inside the dock",
+     "result": "pass",
+     "detail": "linker-genie-app__mic"
+    }
+   ],
+   "passed": 3,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:dock-keyboard-focus-escape-and-return:en:1440.png",
+   "scope": "keyboard cycle on the standing dock: Escape, reopen, Tab"
+  },
+  {
+   "key": "genie:thinking:en:1440",
+   "driver": "genie",
+   "state": "thinking",
+   "lang": "en",
+   "width": 1440,
+   "url": "/genie/",
+   "observedAt": "2026-11-04T19:47:26.238Z",
+   "checks": [
+    {
+     "name": "turn answered (the thinking state precedes a real answer)",
+     "result": "pass",
+     "detail": "HTTP 200 · turn_id=79 · route=products"
+    }
+   ],
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:thinking:en:1440.png",
+   "scope": "a real turn on the dock; the indicator's presence is measured by askTurn's own waiting state"
+  },
+  {
+   "key": "genie:answer-text:en:1440",
+   "driver": "genie",
+   "state": "answer-text",
+   "lang": "en",
+   "width": 1440,
+   "url": "/genie/",
+   "observedAt": "2026-11-04T19:47:26.287Z",
+   "checks": [
+    {
+     "name": "answer text rendered for the customer",
+     "result": "pass",
+     "detail": "289 chars"
+    },
+    {
+     "name": "question rendered exactly once as a user message",
+     "result": "pass",
+     "detail": "user messages=1"
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:answer-text:en:1440.png",
+   "scope": "the customer-visible answer, read from the dock's own message list"
+  },
+  {
+   "key": "genie:product-card:en:1440",
+   "driver": "genie",
+   "state": "product-card",
+   "lang": "en",
+   "width": 1440,
+   "url": "/genie/",
+   "observedAt": "2026-11-04T19:47:26.336Z",
+   "checks": [
+    {
+     "name": "product card rendered by the turn",
+     "result": "pass",
+     "detail": "cards=1"
+    },
+    {
+     "name": "card carries both actions",
+     "result": "pass",
+     "detail": "add=1, save=1"
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:product-card:en:1440.png",
+   "scope": "a real product question that returns a card"
+  },
+  {
+   "key": "genie:product-add-retry:en:1440",
+   "driver": "genie",
+   "state": "product-add-retry",
+   "lang": "en",
+   "width": 1440,
+   "url": "/genie/",
+   "observedAt": "2026-11-04T19:47:37.461Z",
+   "checks": [
+    {
+     "name": "add affordance present on the card",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "a failed add surfaces its own feedback",
+     "result": "pass",
+     "detail": "card status=[\"Addition not confirmed.\"]"
+    },
+    {
+     "name": "the retry reaches the draft endpoint and is confirmed",
+     "result": "pass",
+     "detail": "draft requests=2 · confirmed=true"
+    }
+   ],
+   "passed": 3,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:product-add-retry:en:1440.png",
+   "scope": "one-shot abort of the draft add, then the customer's own retry"
+  },
+  {
+   "key": "genie:consumer-draft-readback:en:1440",
+   "driver": "genie",
+   "state": "consumer-draft-readback",
+   "lang": "en",
+   "width": 1440,
+   "url": "/cart/",
+   "observedAt": "2026-11-04T19:47:40.413Z",
+   "checks": [
+    {
+     "name": "the solution draft page renders",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "the added product line is read back on the draft page",
+     "result": "pass",
+     "detail": "rows=1 · mentions the model=true"
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:consumer-draft-readback:en:1440.png",
+   "scope": "native Solution draft consumer after the Genie add"
+  },
+  {
+   "key": "genie:save-pending-error-success:en:1440",
+   "driver": "genie",
+   "state": "save-pending-error-success",
+   "lang": "en",
+   "width": 1440,
+   "url": "/genie/",
+   "observedAt": "2026-11-04T19:48:35.128Z",
+   "checks": [
+    {
+     "name": "save affordance present on the card turn",
+     "result": "pass",
+     "detail": "save=true · turn=200"
+    },
+    {
+     "name": "a failed save surfaces its own feedback",
+     "result": "pass",
+     "detail": "card status=[\"The request status could not be confirmed. Please check before sending it again.\"]"
+    },
+    {
+     "name": "the save retry reaches the endpoint and is acknowledged",
+     "result": "pass",
+     "detail": "solution requests=2 · card status=[\"Saved in this browser for now.\"]"
+    }
+   ],
+   "passed": 3,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:save-pending-error-success:en:1440.png",
+   "scope": "one-shot abort of the save, then the customer's own retry"
+  },
+  {
+   "key": "genie:consumer-saved-solution-readback:en:1440",
+   "driver": "genie",
+   "state": "consumer-saved-solution-readback",
+   "lang": "en",
+   "width": 1440,
+   "url": "/genie/",
+   "observedAt": "2026-11-04T19:48:35.161Z",
+   "checks": [
+    {
+     "name": "the conversation acknowledges the saved solution",
+     "result": "pass",
+     "detail": "card status=[\"Saved in this browser for now.\"]; the configurator-side consumer is covered by the project-brief saved-solution rows"
+    }
+   ],
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:consumer-saved-solution-readback:en:1440.png",
+   "scope": "Genie-side acknowledgement of the save"
+  },
+  {
+   "key": "genie:service-error-retry:en:1440",
+   "driver": "genie",
+   "state": "service-error-retry",
+   "lang": "en",
+   "width": 1440,
+   "url": "/genie/",
+   "observedAt": "2026-11-04T19:49:15.667Z",
+   "checks": [
+    {
+     "name": "error UI shown on turn failure",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "retry affordance preserved",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "retry succeeded against the real service",
+     "result": "pass",
+     "detail": "1076 chars after retry",
+     "failureInjection": "one-shot network abort"
+    }
+   ],
+   "passed": 3,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:service-error-retry:en:1440.png",
+   "scope": "one-shot network abort of the turn, then the customer's own retry against the real service"
+  }
+ ],
+ "modelBudget": "3 real turns per combo (product card, save card, retry) — bounded, no bulk sampling"
+}

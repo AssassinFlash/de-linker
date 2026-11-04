@@ -19,6 +19,8 @@ const ROOF_STATES = new Set(["initial-map", "address-search", "outline-draw", "e
 const SOURCES = [
 	["genie", "genie-family.json"],
 	["genie", "genie-family-supp.json"],
+	["genie", "genie-family-fix.json"],
+	["genie", "genie-states-round3.json"],
 	["marketing-genie-entry", "marketing-entry-family.json"],
 	["configurator", "configurator-family.json"],
 	["roof", "roof-family.json"],
@@ -31,8 +33,20 @@ function saveJson(p, v) { fs.writeFileSync(p, `${JSON.stringify(v, null, 2)}\n`)
 const evidenceDir = path.join(here, "evidence");
 // combo-scoped shards from parallel runs are folded in with the same family
 for (const f of fs.readdirSync(evidenceDir)) {
-	const m = f.match(/^(genie-family|marketing-entry-family|project-brief-family)-(en|de)-(1440|390)\.json$/);
-	if (m) SOURCES.push([m[1] === "genie-family" ? "genie" : m[1] === "marketing-entry-family" ? "marketing-genie-entry" : "project-brief", f]);
+	const m = f.match(
+		/^(genie-family|marketing-entry-family|project-brief-family|roof-family|genie-states-round3)(-fix)?-(en|de)-(1440|390)\.json$/
+	);
+	if (m)
+		SOURCES.push([
+			m[1] === "genie-family" || m[1] === "genie-states-round3"
+				? "genie"
+				: m[1] === "marketing-entry-family"
+					? "marketing-genie-entry"
+					: m[1] === "roof-family"
+						? "roof"
+						: "project-brief",
+			f,
+		]);
 }
 const results = [];
 for (const [family, file] of SOURCES) {
@@ -42,60 +56,40 @@ for (const [family, file] of SOURCES) {
 	for (const r of data.rows ?? []) {
 		if (!r.state) continue; // error/netfail bookkeeping rows
 		const prefix = family === "roof" || ROOF_STATES.has(r.state) && family === "configurator" ? "roof" : family;
-		results.push({ ...r, key: `${prefix}:${r.state}:${r.lang}:${r.width}`, family: prefix, evidenceFile: `docs/acceptance/2026-11-04/genie-state-rows/evidence/${file}` });
+		results.push({
+			...r,
+			key: `${prefix}:${r.state}:${r.lang}:${r.width}`,
+			family: prefix,
+			// The driver's own harness round, so a newer round supersedes an
+			// older one for the same row (see bestByKey).
+			fixRound: data.fixRound ?? 0,
+			evidenceFile: `docs/acceptance/2026-11-04/genie-state-rows/evidence/${file}`,
+		});
 	}
 }
 
-/** Checks whose failure is a harness reach/timing limitation, not product
- * behavior. They are reclassified to `scope` (recorded, never counted as
- * findings); the reasons cite the dedicated probe receipts. */
-const SCOPE_CHECKS = [
-	["calculation-pending", "calculation trigger present", "the run control is labeled 'Energy calculation' — the driver's label set missed it"],
-	["compatible-result", "calculation trigger present", "same label miss as calculation-pending"],
-	["incompatible-result", "calculation trigger present", "same label miss; the out-of-cap input was also not forced this pass"],
-	["whole-parts-add", "", "the add-all control lives on the equipment screen, which the driver did not reach"],
-	["draft-readback", "added lines present", "no products were added in-combo (equipment stage unreached)"],
-	["report", "report screen reachable", "the report stage sits behind the roof/equipment stage the driver did not reach"],
-	["report-screen-pdf-content-and-current-revision", "", "report stage unreached this pass"],
-	["download-pdf", "PDF is a real file", "report stage unreached this pass"],
-	["logo-upload", "", "report options unreached this pass"],
-	["roof-optional-entry", "roof is an optional stage", "the overview card's class name differs from the driver's selector; the card and copy are visible in the screenshots"],
-	["initial-map", "roof workspace opens", "blocked by the hidden roof entry (see the roof finding)"],
-	["address-search", "", "blocked by the hidden roof entry"],
-	["outline-draw", "", "blocked by the hidden roof entry"],
-	["edit-vertices", "", "blocked by the hidden roof entry"],
-	["obstacles", "", "blocked by the hidden roof entry"],
-	["orientation-pitch", "", "blocked by the hidden roof entry"],
-	["undo-redo", "", "blocked by the hidden roof entry"],
-	["permission-error", "", "blocked by the hidden roof entry"],
-	["validation-error", "", "blocked by the hidden roof entry"],
-	["save-return-to-configurator", "", "blocked by the hidden roof entry"],
-	["mobile-gestures", "", "blocked by the hidden roof entry"],
-	["consumer-draft-readback", "added product line present", "the full add→native-draft chain is proven by the isolation probes (evidence/probe-receipts.json); the in-combo readback raced under parallel load"],
-	["service-error-retry", "retry succeeded against the real service", "in-combo settle raced after the real retry turn; the retry mechanics passed in the en twins of this state"],
-	["screen-report-and-complete-pdf", "", "the report stage sits behind the roof/equipment stages the driver did not reach this pass"],
-	["success-consumes-exact-revision-and-failure-retains", "", "the driver lost the open-project context after the draft/inquiry navigation (empty save-state reads) — harness flow, not product behavior"],
-	["plan-input-source-default-confirmation", "", "source-stage selector gap: the source-record surface's classes differ from the driver's selectors; the source-provenance copy is visible in the screenshots"],
-];
+/** Only an explicitly declared scope limit may be recorded as `scope`.
+ *
+ * The drivers mark such a half themselves (`check(name, false, detail,
+ * { scope: "why this half is not exercisable" })`), so a failing check can
+ * never be reclassified by a state-name lookup in the merge. Everything else
+ * that failed stays a failure and becomes a finding. */
 for (const r of results) {
-	for (const c of r.checks ?? []) {
-		if (c.result !== "fail") continue;
-		const hit = SCOPE_CHECKS.find(([state, namePart]) => r.state === state && (!namePart || c.name.includes(namePart)));
-		if (hit) {
-			c.result = "scope";
-			c.scopeReason = hit[2];
-		}
-	}
 	r.failed = (r.checks ?? []).filter((c) => c.result === "fail").length;
 	r.passed = (r.checks ?? []).filter((c) => c.result === "pass").length;
+	r.scoped = (r.checks ?? []).filter((c) => c.result === "scope").length;
+	r.notApplicable = (r.checks ?? []).filter((c) => c.result === "not-applicable").length;
 }
 const bestByKey = new Map();
 for (const r of results) {
 	if (r.error) continue;
 	const prev = bestByKey.get(r.key);
-	// Prefer a clean record over a failing one (parallel reruns of the same
-	// combo with fixed harness code supersede earlier noisy records).
-	if (!prev || (prev.failed > 0 && (r.failed ?? 0) === 0)) bestByKey.set(r.key, r);
+	// A newer harness round supersedes an older one for the same key; within
+	// one round a clean record supersedes a failing rerun. A failing record of
+	// the newest round is kept as the failing record — it is the evidence.
+	const newer = !prev || (r.fixRound ?? 0) > (prev.fixRound ?? 0);
+	const sameRound = prev && (r.fixRound ?? 0) === (prev.fixRound ?? 0);
+	if (newer || (sameRound && prev.failed > 0 && (r.failed ?? 0) === 0)) bestByKey.set(r.key, r);
 }
 
 const states = loadJson(path.join(fullSite, "state-matrix.json"));
@@ -106,7 +100,17 @@ for (const row of states) {
 	if (!result) continue;
 	updated += 1;
 	const fails = (result.checks || []).filter((c) => c.result === "fail");
-	const shot = result.screenshot ? `../../../../de-linker-data/genie-state-rows-20261104/screenshots/${path.basename(result.screenshot)}` : null;
+	// Round-3 captures are committed next to this record and referenced
+	// repo-relative. The earlier rounds' captures were never committed (36 MB of
+	// PNGs); their file exists by basename in the owner's data directory, which
+	// RESULTS.md names. A basename keeps a machine-specific absolute path out of
+	// the committed matrix.
+	const committed = result.screenshot && fs.existsSync(path.join(repo, result.screenshot));
+	const shot = result.screenshot
+		? committed
+			? result.screenshot
+			: path.basename(result.screenshot)
+		: null;
 	const entry = {
 		date: PASS_DATE,
 		source: result.evidenceFile,
@@ -118,17 +122,29 @@ for (const row of states) {
 	if (row.status === "pending") {
 		row.status = "partially-verified";
 		row.engine_pass_evidence = entry;
-		if (!row.evidence.includes(result.evidenceFile)) row.evidence.push(result.evidenceFile);
-		if (fails.length) {
-			row.findings.push({ date: PASS_DATE, source: result.evidenceFile, key: row.key, failed: fails.map((f) => ({ name: f.name, observed: f.detail })) });
-			stateFindings.push({ key: row.key, failed: fails.map((f) => `${f.name}: ${f.detail}`) });
-		}
-	} else {
-		if (!row.evidence.includes(result.evidenceFile)) row.evidence.push(result.evidenceFile);
-		if (fails.length) {
-			row.findings.push({ date: PASS_DATE, source: result.evidenceFile, key: row.key, failed: fails.map((f) => ({ name: f.name, observed: f.detail })) });
-			stateFindings.push({ key: row.key, failed: fails.map((f) => `${f.name}: ${f.detail}`) });
-		}
+	} else if (row.status !== "not-applicable") {
+		// A stronger status is never downgraded; the newest round's receipt
+		// replaces the older one for this row.
+		row.engine_pass_evidence = entry;
+	}
+	if (!row.evidence.includes(result.evidenceFile)) row.evidence.push(result.evidenceFile);
+	// This batch owns the findings it produced on a row. A superseded harness
+	// round's finding is not evidence about the product any more, so every
+	// finding this batch wrote on the row is dropped before the current
+	// round's are added — re-runs are idempotent, and an old round's
+	// observation cannot outlive the round that replaced it. Findings from
+	// other batches (dated differently, or from another source tree) are kept.
+	row.findings = (row.findings ?? []).filter(
+		(f) =>
+			!(
+				typeof f === "object" &&
+				f.date === PASS_DATE &&
+				String(f.source ?? "").includes("genie-state-rows")
+			)
+	);
+	if (fails.length) {
+		row.findings.push({ date: PASS_DATE, source: result.evidenceFile, key: row.key, failed: fails.map((f) => ({ name: f.name, observed: f.detail })) });
+		stateFindings.push({ key: row.key, failed: fails.map((f) => `${f.name}: ${f.detail}`) });
 	}
 }
 saveJson(path.join(fullSite, "state-matrix.json"), states);

@@ -1,15 +1,14 @@
 {
   "after": {
-    "partially-verified": 690,
+    "partially-verified": 694,
     "not-applicable": 2,
-    "pending": 316,
+    "pending": 312,
     "pass": 20,
     "passed": 16
   },
   "familyStatuses": {
     "genie": {
-      "partially-verified": 120,
-      "pending": 4
+      "partially-verified": 124
     },
     "marketing-genie-entry": {
       "partially-verified": 32
@@ -24,6 +23,6 @@
       "partially-verified": 48
     }
   },
-  "updatedRows": 292,
-  "matchedKeys": 292
+  "updatedRows": 296,
+  "matchedKeys": 296
 }

@@ -1,0 +1,329 @@
+{
+ "driver": "roof",
+ "fixRound": 3,
+ "base": "http://127.0.0.1:8904",
+ "observedAt": "2026-11-04T18:44:12.223Z",
+ "rows": [
+  {
+   "key": "roof:address-search:de:390",
+   "driver": "roof",
+   "state": "address-search",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/?project=299bcb9e88db456ba74c36e64a9b7d69#lp-site",
+   "observedAt": "2026-11-04T18:43:23.138Z",
+   "checks": [
+    {
+     "name": "the brief carries the location fields (address, latitude, longitude)",
+     "result": "pass",
+     "detail": "address field=true, numeric fields=3"
+    },
+    {
+     "name": "address and coordinates are accepted",
+     "result": "pass",
+     "detail": "address read-back=\"Triftstraße 5, 80538 München\""
+    },
+    {
+     "name": "coordinates are saved and read back after a reload",
+     "result": "pass",
+     "detail": "latitude=48,140278, longitude=11,588411"
+    }
+   ],
+   "passed": 3,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:address-search:de:390.png",
+   "scope": "the roof step has no separate address search: the location is the brief's own address + latitude/longitude, verified by saving and re-reading after a reload"
+  },
+  {
+   "key": "roof:initial-map:de:390",
+   "driver": "roof",
+   "state": "initial-map",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/?project=299bcb9e88db456ba74c36e64a9b7d69#lp-design",
+   "observedAt": "2026-11-04T18:43:25.387Z",
+   "checks": [
+    {
+     "name": "design workspace reached through the rail link",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "plan/map/3D view switch rendered",
+     "result": "pass",
+     "detail": "3 view controls"
+    },
+    {
+     "name": "the empty design states its own state (0 roof faces)",
+     "result": "pass",
+     "detail": "06 · Roof design · Roof geometry and module specifications produce an editable layout and a traceable plan check. The ro"
+    }
+   ],
+   "passed": 3,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:initial-map:de:390.png",
+   "scope": "a fresh project's design workspace; the map tab's tiles come from an external origin and are recorded as an environment fact"
+  },
+  {
+   "key": "roof:outline-draw:de:390",
+   "driver": "roof",
+   "state": "outline-draw",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/?project=299bcb9e88db456ba74c36e64a9b7d69#lp-design",
+   "observedAt": "2026-11-04T18:43:29.063Z",
+   "checks": [
+    {
+     "name": "the measured-roof-face form opens with its fields",
+     "result": "pass",
+     "detail": "form open=true · fields=[\"name\",\"width\",\"length\",\"pitch\",\"bearing\",\"east\",\"north\",\"up\",\"source\",\"rights_note\",\"export\",\"rights\"]"
+    },
+    {
+     "name": "applying the form adds the face to the design",
+     "result": "pass",
+     "detail": "object tree=[\"North roof\"]"
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:outline-draw:de:390.png",
+   "scope": "the real measured-roof form (name, width, length, pitch, bearing, origin, source, permissions) rather than canvas click points"
+  },
+  {
+   "key": "roof:orientation-pitch:de:390",
+   "driver": "roof",
+   "state": "orientation-pitch",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/?project=299bcb9e88db456ba74c36e64a9b7d69#lp-design",
+   "observedAt": "2026-11-04T18:43:36.508Z",
+   "checks": [
+    {
+     "name": "pitch and bearing are stored on the face",
+     "result": "pass",
+     "detail": "pitch=30, bearing=180"
+    },
+    {
+     "name": "a new pitch (45) is accepted and read back",
+     "result": "pass",
+     "detail": "pitch=45"
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:orientation-pitch:de:390.png",
+   "scope": "pitch/bearing read from the face's reopened numeric properties, not from a label's presence"
+  },
+  {
+   "key": "roof:validation-error:de:390",
+   "driver": "roof",
+   "state": "validation-error",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/?project=299bcb9e88db456ba74c36e64a9b7d69#lp-design",
+   "observedAt": "2026-11-04T18:43:39.146Z",
+   "checks": [
+    {
+     "name": "pitch 999 is refused with a visible validation state",
+     "result": "pass",
+     "detail": "form open=true"
+    },
+    {
+     "name": "the refused value is kept in the field for correction",
+     "result": "pass",
+     "detail": "field still shows 999"
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:validation-error:de:390.png",
+   "scope": "the stated bounds (0 ≤ pitch < 90) are enforced on submit; the form keeps the refused value for correction"
+  },
+  {
+   "key": "roof:edit-vertices:de:390",
+   "driver": "roof",
+   "state": "edit-vertices",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/?project=299bcb9e88db456ba74c36e64a9b7d69#lp-design",
+   "observedAt": "2026-11-04T18:43:47.492Z",
+   "checks": [
+    {
+     "name": "the face exposes its boundary ring for editing",
+     "result": "pass",
+     "detail": "\"0 ; 0\\n10 ; 0\\n10 ; 8\\n0 ; 8\""
+    },
+    {
+     "name": "a moved vertex is stored and read back",
+     "result": "pass",
+     "detail": "\"0 ; 0\\n10 ; 0\\n12 ; 8\\n0 ; 8\""
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:edit-vertices:de:390.png",
+   "scope": "roof vertices are edited through the face's boundary ring (the plan canvas moves arrays, not roof vertices)"
+  },
+  {
+   "key": "roof:obstacles:de:390",
+   "driver": "roof",
+   "state": "obstacles",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/?project=299bcb9e88db456ba74c36e64a9b7d69#lp-design",
+   "observedAt": "2026-11-04T18:43:51.708Z",
+   "checks": [
+    {
+     "name": "the obstacle form opens inside the face",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "the obstacle is added under its roof face",
+     "result": "pass",
+     "detail": "object tree=[\"North roof\",\"Chimney\"]"
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:obstacles:de:390.png",
+   "scope": "a real obstacle (footprint + height) added through its own form and read back from the object tree"
+  },
+  {
+   "key": "roof:undo-redo:de:390",
+   "driver": "roof",
+   "state": "undo-redo",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/?project=299bcb9e88db456ba74c36e64a9b7d69#lp-design",
+   "observedAt": "2026-11-04T18:43:54.841Z",
+   "checks": [
+    {
+     "name": "undo is offered after an edit",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "undo removed the obstacle from the design",
+     "result": "pass",
+     "detail": "before=[\"North roof\",\"Chimney\"] after=[\"North roof\"]"
+    },
+    {
+     "name": "redo put it back",
+     "result": "pass",
+     "detail": "after redo=[\"North roof\",\"Chimney\"]"
+    }
+   ],
+   "passed": 3,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:undo-redo:de:390.png",
+   "scope": "the project editor's own history buttons, verified by the object tree they restore"
+  },
+  {
+   "key": "roof:save-return-to-configurator:de:390",
+   "driver": "roof",
+   "state": "save-return-to-configurator",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/?project=299bcb9e88db456ba74c36e64a9b7d69#lp-design",
+   "observedAt": "2026-11-04T18:44:10.895Z",
+   "checks": [
+    {
+     "name": "save records a new revision",
+     "result": "pass",
+     "detail": "\"Saved · revision 3\" (before=2)"
+    },
+    {
+     "name": "the overview shows the saved roof as the current layout",
+     "result": "pass",
+     "detail": "North roof · Current layout · Open roof workspace · Continue your project · Site and project · Trift"
+    },
+    {
+     "name": "the face and the obstacle survive a reload",
+     "result": "pass",
+     "detail": "roof=true obstacle=true"
+    }
+   ],
+   "passed": 3,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:save-return-to-configurator:de:390.png",
+   "scope": "revision from the app's own save state, the overview's current-layout block, and a reload read-back — not a click"
+  },
+  {
+   "key": "roof:permission-error:de:390",
+   "driver": "roof",
+   "state": "permission-error",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/?project=299bcb9e88db456ba74c36e64a9b7d69#lp-design",
+   "observedAt": "2026-11-04T18:44:10.927Z",
+   "checks": [
+    {
+     "name": "geolocation permission is not granted (denied/default)",
+     "result": "pass",
+     "detail": "state=prompt"
+    },
+    {
+     "name": "the design workspace works without any location permission",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:permission-error:de:390.png",
+   "scope": "the roof path runs from the brief's coordinates; no permission gate is on it"
+  },
+  {
+   "key": "roof:mobile-gestures:de:390",
+   "driver": "roof",
+   "state": "mobile-gestures",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/?project=299bcb9e88db456ba74c36e64a9b7d69#lp-design",
+   "observedAt": "2026-11-04T18:44:12.202Z",
+   "checks": [
+    {
+     "name": "the design surface renders at 390 with touch input",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "multi-touch pinch/rotate has no headless synthesis",
+     "result": "scope",
+     "detail": "not exercised: Chromium's headless CDP cannot produce a two-finger gesture, so the pinch/rotate half of this state has no browser evidence",
+     "scopeReason": "pinch/rotate cannot be synthesized in headless Chromium; the tap path above is the covered half, and the gesture half stays open"
+    }
+   ],
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:mobile-gestures:de:390.png",
+   "scope": "390 touch branch; the pinch half is recorded as an open scope, not as a pass"
+  },
+  {
+   "key": "roof:netfail:de:390",
+   "netfail": [
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/list :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/create :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/list :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/revise :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/read :: net::ERR_ABORTED"
+   ]
+  }
+ ],
+ "modelBudget": "none: deterministic planner behaviour against the real local engine"
+}

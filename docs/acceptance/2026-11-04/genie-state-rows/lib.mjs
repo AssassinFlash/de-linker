@@ -50,6 +50,9 @@ export async function newPage(browser, { lang, width }, extra = {}) {
 	const context = await browser.newContext({
 		viewport: { width, height: width === 390 ? 844 : 1000 },
 		locale: lang === "de" ? "de-DE" : "en-US",
+		// The 390 combos are the app's touch branch: without a mobile identity
+		// and touch input, media-query touch paths stay unexercised.
+		...(width === 390 ? { isMobile: true, hasTouch: true } : {}),
 		...extra,
 	});
 	await context.addInitScript(() => {
@@ -61,6 +64,8 @@ export async function newPage(browser, { lang, width }, extra = {}) {
 		}
 	});
 	const page = await context.newPage();
+	page.on("crash", () => console.log("PAGE CRASH", JSON.stringify({ lang, width })));
+	page.on("close", () => console.log("PAGE CLOSE", JSON.stringify({ lang, width })));
 	const netfail = [];
 	page.on("requestfailed", (r) => {
 		if (!r.url().startsWith(BASE)) return;
@@ -144,8 +149,30 @@ export class Recorder {
 	}
 }
 
-export function check(name, ok, detail = null, injected = false) {
-	return { name, result: ok ? "pass" : "fail", detail, ...(injected ? { failureInjection: "one-shot network abort" } : {}) };
+/**
+ * One recorded check.
+ *
+ * A check is a pass or a fail. The only third result is a *declared* scope
+ * limit, which the caller must name explicitly — `{ scope: "<why this half is
+ * not exercisable>" }` — so a harness that cannot reach a state can never be
+ * mistaken for a product that works. `{ notApplicable: "<why this state does
+ * not exist here>" }` records a state the product does not have at this
+ * width/capability; it is not a pass and not a failure. Nothing is
+ * reclassified by state name.
+ */
+export function check(name, ok, detail = null, opts = {}) {
+	const options = opts === true ? { failureInjection: true } : opts ?? {};
+	const scope = !ok && typeof options.scope === "string" ? options.scope : null;
+	const notApplicable =
+		!ok && typeof options.notApplicable === "string" ? options.notApplicable : null;
+	return {
+		name,
+		result: ok ? "pass" : notApplicable ? "not-applicable" : scope ? "scope" : "fail",
+		detail,
+		...(scope ? { scopeReason: scope } : {}),
+		...(notApplicable ? { notApplicableReason: notApplicable } : {}),
+		...(options.failureInjection ? { failureInjection: "one-shot network abort" } : {}),
+	};
 }
 
 export async function localeOf(page) {
@@ -169,3 +196,164 @@ export function watchRequests(page, pattern) {
 		() => page.off("request", on),
 	];
 }
+
+// --- real-turn harness -------------------------------------------------------
+// The genie app renders two instances on pages that carry the home hero
+// (`#linker-genie-mount` dock, `.linker-genie-hero__surface` hero). Every
+// read/write below is scoped to one instance: the dock on `/genie/`, the dock
+// in the dock combos, and the hero only where the hero itself is the state.
+
+export const dock = (page) => page.locator("#linker-genie-mount").first();
+export const composer = (page) => dock(page).locator(".linker-genie-app__input").first();
+export const sendButton = (page) => dock(page).locator(".linker-genie-app__send").first();
+
+/** Answers of this instance, excluding the "thinking" placeholder. */
+export function assistantBodies(page) {
+	return dock(page)
+		.locator(".linker-genie-app__message--assistant:not(.linker-genie-wait)")
+		.allInnerTexts()
+		.catch(() => []);
+}
+
+export function appErrors(page) {
+	return dock(page).locator(".linker-genie-app__error").allInnerTexts().catch(() => []);
+}
+
+/** Open the dock from a marketing page (peek card closed first). */
+export async function openDock(page) {
+	const peekClose = page.locator("[data-linker-genie-peek-close]").first();
+	if (await peekClose.count()) {
+		await peekClose.click().catch(() => {});
+		await page.waitForTimeout(500);
+	}
+	const open = page.locator("[data-linker-genie-open], .linker-genie-open").first();
+	if (await open.count()) {
+		await open.click().catch(() => {});
+	}
+	await composer(page)
+		.waitFor({ state: "visible", timeout: 25000 })
+		.catch(() => {});
+	// The send button is disabled while the native draft context is not ready.
+	for (let i = 0; i < 40; i++) {
+		if (!(await sendButton(page).isDisabled().catch(() => true))) break;
+		await page.waitForTimeout(500);
+	}
+}
+
+/**
+ * Send one real turn and read the answer the way a customer sees it.
+ *
+ * Success requires all three: the proxy answered 2xx, the meta carried a
+ * `turn_id` (the control row's own gate for vote buttons), and the assistant
+ * message carries text. A turn that errors is reported as a failed check with
+ * the app's own error text — never as a route/UI defect and never as success.
+ */
+export async function askTurn(page, question, { timeout = 300000 } = {}) {
+	const input = composer(page);
+	await input.waitFor({ state: "visible", timeout: 20000 });
+	await input.fill(question);
+	for (let i = 0; i < 40; i++) {
+		if (!(await sendButton(page).isDisabled().catch(() => true))) break;
+		await page.waitForTimeout(500);
+	}
+	let response = null;
+	const onResponse = async (r) => {
+		if (!r.url().includes("/genie/turn") || r.request().method() !== "POST") return;
+		if (response) return;
+		let body = "";
+		try {
+			body = await r.text();
+		} catch {
+			body = "";
+		}
+		// The proxy answers `{ conversation_id, stream }`; the meta event with
+		// `turn_id`/`route` lives inside the SSE string.
+		let stream = body;
+		try {
+			const parsed = JSON.parse(body);
+			if (parsed && typeof parsed.stream === "string") stream = parsed.stream;
+		} catch {}
+		const meta = stream.match(/turn_id\\?"?\s*:\s*(\d+)/);
+		const route = stream.match(/route\\?"?\s*:\s*\\?"([^"\\]+)/);
+		const intent = stream.match(/intent\\?"?\s*:\s*\\?"([^"\\]+)/);
+		response = {
+			status: r.status(),
+			turnId: meta ? Number(meta[1]) : null,
+			route: route ? route[1] : null,
+			intent: intent ? intent[1] : null,
+			bodyHead: stream.slice(0, 240),
+		};
+	};
+	page.on("response", onResponse);
+	await sendButton(page).click({ timeout: 15000 }).catch(() => {});
+	const started = Date.now();
+	let last = "";
+	let stableSince = 0;
+	let result = null;
+	while (Date.now() - started < timeout) {
+		await page.waitForTimeout(1500);
+		const bodies = await assistantBodies(page);
+		const errors = await appErrors(page);
+		const waiting = (await dock(page).locator(".linker-genie-wait").count()) > 0;
+		const joined = bodies.join("\n");
+		if (errors.length && !waiting) {
+			result = { ok: false, error: errors.join(" | ").slice(0, 200) };
+			break;
+		}
+		if (!waiting && joined && joined === last) {
+			if (!stableSince) stableSince = Date.now();
+			if (Date.now() - stableSince > 3500) {
+				result = { ok: true, text: joined, bodies };
+				break;
+			}
+		} else {
+			stableSince = 0;
+		}
+		last = joined;
+	}
+	page.off("response", onResponse);
+	const answerText = result?.text ?? last;
+	// The answer this turn produced is the last assistant message, not the
+	// whole thread: earlier answers stay in the panel.
+	const thisAnswer = (result?.bodies ?? []).slice(-1)[0] ?? "";
+	const httpOk = !!response && response.status >= 200 && response.status < 300;
+	const answered = !!result?.ok && httpOk && !!response?.turnId && answerText.length > 80;
+	let reason = null;
+	if (!answered) {
+		reason =
+			result?.error ??
+			(!response
+				? "no turn request observed"
+				: !httpOk
+					? `turn request failed (HTTP ${response.status})`
+					: !response.turnId
+						? `no turn_id in the answer meta (HTTP ${response.status})`
+						: `no customer-visible answer text (HTTP ${response.status})`);
+	}
+	return {
+		ok: answered,
+		httpStatus: response?.status ?? null,
+		turnId: response?.turnId ?? null,
+		route: response?.route ?? null,
+		intent: response?.intent ?? null,
+		/* The whole thread, and the one message this turn added. */
+		text: answerText,
+		answer: thisAnswer,
+		error: answered ? null : String(reason),
+	};
+}
+
+/** The two thumb buttons and the copy button of the last answer.
+ * `CopyReply` and `VoteButtons` share the `__vote` class, so the thumbs are
+ * selected by their own accessible names, not by the shared class. */
+export function answerControls(page) {
+	const actions = dock(page).locator(".linker-genie-answer-actions").last();
+	return {
+		actions,
+		votes: actions.locator(
+			'[aria-label="Helpful"], [aria-label="Not helpful"], [aria-label="Hilfreich"], [aria-label="Nicht hilfreich"]'
+		),
+		copy: actions.locator('[aria-label="Copy response"], [aria-label="Antwort kopieren"]'),
+	};
+}
+

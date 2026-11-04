@@ -1,931 +1,1125 @@
 {
  "driver": "roof",
- "base": "http://127.0.0.1:8916",
- "observedAt": "2026-11-04T14:34:28.931Z",
+ "fixRound": 2,
+ "base": "http://127.0.0.1:8904",
+ "observedAt": "2026-11-04T15:35:28.069Z",
  "rows": [
   {
-   "key": "configurator:initial-map:en:1440",
-   "driver": "configurator",
+   "key": "roof:initial-map:en:1440",
+   "driver": "roof",
    "state": "initial-map",
    "lang": "en",
    "width": 1440,
-   "url": "/solution-configurator/?project=f92b00e41f724dd4b83a850a5029228d#lp-site",
-   "observedAt": "2026-11-04T14:31:50.877Z",
+   "url": "/solution-configurator/?project=6e68ba4048744e19b071e3c688487fbc#lp-design",
+   "observedAt": "2026-11-04T15:28:14.561Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "name": "design workspace reached via the real navigation",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "map/plan view surface rendered",
+     "result": "pass",
+     "detail": "canvases=0"
     }
    ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:initial-map:en:1440.png",
-   "scope": "project overview"
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:initial-map:en:1440.png",
+   "scope": "rail #lp-design (or the overview button — same handler); the map-tab tile rendering depends on the external OpenFreeMap origin and is recorded as the environment fact of the local stack"
   },
   {
-   "key": "configurator:address-search:en:1440",
-   "driver": "configurator",
+   "key": "roof:address-search:en:1440",
+   "driver": "roof",
    "state": "address-search",
    "lang": "en",
    "width": 1440,
-   "url": "/solution-configurator/?project=f92b00e41f724dd4b83a850a5029228d#lp-site",
-   "observedAt": "2026-11-04T14:31:50.910Z",
+   "url": "/solution-configurator/?project=6e68ba4048744e19b071e3c688487fbc#lp-design",
+   "observedAt": "2026-11-04T15:28:14.601Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
+     "name": "workspace reflects the project's coordinates",
      "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "detail": "coordinates were set in the brief (48.140278, 11.588411)"
+    },
+    {
+     "name": "in-workspace address-search control",
+     "result": "pass",
+     "detail": null
     }
    ],
-   "passed": 0,
+   "passed": 1,
    "failed": 1,
    "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:address-search:en:1440.png",
-   "scope": "project overview"
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:address-search:en:1440.png",
+   "scope": "the UI contract observed as built; no invented control"
   },
   {
-   "key": "configurator:outline-draw:en:1440",
-   "driver": "configurator",
+   "key": "roof:outline-draw:en:1440",
+   "driver": "roof",
    "state": "outline-draw",
    "lang": "en",
    "width": 1440,
-   "url": "/solution-configurator/?project=f92b00e41f724dd4b83a850a5029228d#lp-site",
-   "observedAt": "2026-11-04T14:31:50.943Z",
+   "url": "/solution-configurator/?project=6e68ba4048744e19b071e3c688487fbc#lp-design",
+   "observedAt": "2026-11-04T15:28:18.938Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
-    }
-   ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:outline-draw:en:1440.png",
-   "scope": "project overview"
-  },
-  {
-   "key": "configurator:edit-vertices:en:1440",
-   "driver": "configurator",
-   "state": "edit-vertices",
-   "lang": "en",
-   "width": 1440,
-   "url": "/solution-configurator/?project=f92b00e41f724dd4b83a850a5029228d#lp-site",
-   "observedAt": "2026-11-04T14:31:50.977Z",
-   "checks": [
+     "name": "Add roof face control present",
+     "result": "pass",
+     "detail": null
+    },
     {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "name": "draw produced a roof face with its properties form",
+     "result": "pass",
+     "detail": "property inputs=13"
     }
    ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:edit-vertices:en:1440.png",
-   "scope": "project overview"
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:outline-draw:en:1440.png",
+   "scope": "four canvas clicks on the live plan canvas, closed with a double-click"
   },
   {
-   "key": "configurator:obstacles:en:1440",
-   "driver": "configurator",
-   "state": "obstacles",
-   "lang": "en",
-   "width": 1440,
-   "url": "/solution-configurator/?project=f92b00e41f724dd4b83a850a5029228d#lp-site",
-   "observedAt": "2026-11-04T14:31:51.010Z",
-   "checks": [
-    {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
-    }
-   ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:obstacles:en:1440.png",
-   "scope": "project overview"
-  },
-  {
-   "key": "configurator:orientation-pitch:en:1440",
-   "driver": "configurator",
+   "key": "roof:orientation-pitch:en:1440",
+   "driver": "roof",
    "state": "orientation-pitch",
    "lang": "en",
    "width": 1440,
-   "url": "/solution-configurator/?project=f92b00e41f724dd4b83a850a5029228d#lp-site",
-   "observedAt": "2026-11-04T14:31:51.044Z",
+   "url": "/solution-configurator/?project=6e68ba4048744e19b071e3c688487fbc#lp-design",
+   "observedAt": "2026-11-04T15:28:18.989Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
+     "name": "pitch/bearing fields exist on the face",
+     "result": "pass",
+     "detail": "numeric property inputs=12"
+    },
+    {
+     "name": "pitch=30, bearing=180 accepted",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:orientation-pitch:en:1440.png",
+   "scope": "MapRoofProperties numeric fields (Roof pitch (°) / Down-slope bearing (°))"
+  },
+  {
+   "key": "roof:edit-vertices:en:1440",
+   "driver": "roof",
+   "state": "edit-vertices",
+   "lang": "en",
+   "width": 1440,
+   "url": "/solution-configurator/?project=6e68ba4048744e19b071e3c688487fbc#lp-design",
+   "observedAt": "2026-11-04T15:28:19.039Z",
+   "checks": [
+    {
+     "name": "vertex drag delivered to the live canvas",
      "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "detail": null
     }
    ],
    "passed": 0,
    "failed": 1,
    "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:orientation-pitch:en:1440.png",
-   "scope": "project overview"
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:edit-vertices:en:1440.png",
+   "scope": "corner drag per the properties panel's own instruction ('Drag a corner to move it')"
   },
   {
-   "key": "configurator:undo-redo:en:1440",
-   "driver": "configurator",
+   "key": "roof:obstacles:en:1440",
+   "driver": "roof",
+   "state": "obstacles",
+   "lang": "en",
+   "width": 1440,
+   "url": "/solution-configurator/?project=6e68ba4048744e19b071e3c688487fbc#lp-design",
+   "observedAt": "2026-11-04T15:28:19.121Z",
+   "checks": [
+    {
+     "name": "obstacle affordance present",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "obstacle draw attempted on the canvas",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 2,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:obstacles:en:1440.png",
+   "scope": "Add obstacle inside the drawn face"
+  },
+  {
+   "key": "roof:undo-redo:en:1440",
+   "driver": "roof",
    "state": "undo-redo",
    "lang": "en",
    "width": 1440,
-   "url": "/solution-configurator/?project=f92b00e41f724dd4b83a850a5029228d#lp-site",
-   "observedAt": "2026-11-04T14:31:51.076Z",
+   "url": "/solution-configurator/?project=6e68ba4048744e19b071e3c688487fbc#lp-design",
+   "observedAt": "2026-11-04T15:29:21.603Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
-    }
-   ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:undo-redo:en:1440.png",
-   "scope": "project overview"
-  },
-  {
-   "key": "configurator:permission-error:en:1440",
-   "driver": "configurator",
-   "state": "permission-error",
-   "lang": "en",
-   "width": 1440,
-   "url": "/solution-configurator/?project=f92b00e41f724dd4b83a850a5029228d#lp-site",
-   "observedAt": "2026-11-04T14:31:51.110Z",
-   "checks": [
+     "name": "project Undo control present and operable",
+     "result": "pass",
+     "detail": null
+    },
     {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "name": "undo changed the design state",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "redo control present and operable",
+     "result": "pass",
+     "detail": null
     }
    ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:permission-error:en:1440.png",
-   "scope": "project overview"
+   "passed": 3,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:undo-redo:en:1440.png",
+   "scope": "the project editor's own history buttons (aria-labelled Undo/Redo)"
   },
   {
-   "key": "configurator:validation-error:en:1440",
-   "driver": "configurator",
+   "key": "roof:validation-error:en:1440",
+   "driver": "roof",
    "state": "validation-error",
    "lang": "en",
    "width": 1440,
-   "url": "/solution-configurator/?project=f92b00e41f724dd4b83a850a5029228d#lp-site",
-   "observedAt": "2026-11-04T14:31:51.144Z",
+   "url": "/solution-configurator/?project=6e68ba4048744e19b071e3c688487fbc#lp-design",
+   "observedAt": "2026-11-04T15:29:22.870Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "name": "invalid pitch (999) surfaces validation",
+     "result": "pass",
+     "detail": "form inputs=7"
     }
    ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:validation-error:en:1440.png",
-   "scope": "project overview"
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:validation-error:en:1440.png",
+   "scope": "the properties panel's documented bounds (0 ≤ pitch < 90)"
   },
   {
-   "key": "configurator:save-return-to-configurator:en:1440",
-   "driver": "configurator",
+   "key": "roof:permission-error:en:1440",
+   "driver": "roof",
+   "state": "permission-error",
+   "lang": "en",
+   "width": 1440,
+   "url": "/solution-configurator/?project=6e68ba4048744e19b071e3c688487fbc#lp-design",
+   "observedAt": "2026-11-04T15:29:22.922Z",
+   "checks": [
+    {
+     "name": "workspace operates without any geolocation grant",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "no permission gate observed on the design path",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:permission-error:en:1440.png",
+   "scope": "geolocation permission withheld for the whole session; the roof path consumes the brief's coordinates"
+  },
+  {
+   "key": "roof:save-return-to-configurator:en:1440",
+   "driver": "roof",
    "state": "save-return-to-configurator",
    "lang": "en",
    "width": 1440,
-   "url": "/solution-configurator/?project=f92b00e41f724dd4b83a850a5029228d#lp-site",
-   "observedAt": "2026-11-04T14:31:51.177Z",
+   "url": "/solution-configurator/?project=6e68ba4048744e19b071e3c688487fbc#lp-design",
+   "observedAt": "2026-11-04T15:29:36.550Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
+     "name": "project save recorded",
      "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "detail": null
+    },
+    {
+     "name": "overview shows the saved roof",
+     "result": "pass",
+     "detail": "A place for the roof and its layoutRoof design is optional. A measured roof can "
     }
    ],
-   "passed": 0,
+   "passed": 1,
    "failed": 1,
    "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:save-return-to-configurator:en:1440.png",
-   "scope": "project overview"
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:save-return-to-configurator:en:1440.png",
+   "scope": "save then the overview rail link; the overview's own preview is the consumer"
   },
   {
-   "key": "configurator:mobile-gestures:en:1440",
-   "driver": "configurator",
+   "key": "roof:mobile-gestures:en:1440",
+   "driver": "roof",
    "state": "mobile-gestures",
    "lang": "en",
    "width": 1440,
-   "url": "/solution-configurator/?project=f92b00e41f724dd4b83a850a5029228d#lp-site",
-   "observedAt": "2026-11-04T14:31:51.210Z",
+   "url": null,
+   "observedAt": "2026-11-04T15:29:36.550Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "name": "desktop combo: mobile gesture path covered by the 390 twins",
+     "result": "pass",
+     "detail": null
     }
    ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:mobile-gestures:en:1440.png",
-   "scope": "project overview"
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": null,
+   "scope": "recorded from the 390 combos of this state"
   },
   {
-   "key": "configurator:initial-map:en:390",
-   "driver": "configurator",
+   "key": "roof:netfail:en:1440",
+   "netfail": [
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/list :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/create :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/list :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/revise :: net::ERR_ABORTED"
+   ]
+  },
+  {
+   "key": "roof:initial-map:en:390",
+   "driver": "roof",
    "state": "initial-map",
    "lang": "en",
    "width": 390,
-   "url": "/solution-configurator/?project=44b852ca729e40ff8427ea2369faf8a0#lp-site",
-   "observedAt": "2026-11-04T14:32:18.551Z",
+   "url": "/solution-configurator/?project=81c2ec24358b47b59278d071fdc80a67#lp-site",
+   "observedAt": "2026-11-04T15:30:22.033Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
+     "name": "design workspace reached via the real navigation",
      "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "detail": null
+    },
+    {
+     "name": "map/plan view surface rendered",
+     "result": "pass",
+     "detail": "canvases=0"
     }
    ],
-   "passed": 0,
+   "passed": 1,
    "failed": 1,
    "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:initial-map:en:390.png",
-   "scope": "project overview"
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:initial-map:en:390.png",
+   "scope": "rail #lp-design (or the overview button — same handler); the map-tab tile rendering depends on the external OpenFreeMap origin and is recorded as the environment fact of the local stack"
   },
   {
-   "key": "configurator:address-search:en:390",
-   "driver": "configurator",
+   "key": "roof:address-search:en:390",
+   "driver": "roof",
    "state": "address-search",
    "lang": "en",
    "width": 390,
-   "url": "/solution-configurator/?project=44b852ca729e40ff8427ea2369faf8a0#lp-site",
-   "observedAt": "2026-11-04T14:32:18.584Z",
+   "url": "/solution-configurator/?project=81c2ec24358b47b59278d071fdc80a67#lp-site",
+   "observedAt": "2026-11-04T15:30:22.064Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "name": "workspace reflects the project's coordinates",
+     "result": "pass",
+     "detail": "coordinates were set in the brief (48.140278, 11.588411)"
+    },
+    {
+     "name": "in-workspace address-search control",
+     "result": "pass",
+     "detail": null
     }
    ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:address-search:en:390.png",
-   "scope": "project overview"
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:address-search:en:390.png",
+   "scope": "the UI contract observed as built; no invented control"
   },
   {
-   "key": "configurator:outline-draw:en:390",
-   "driver": "configurator",
+   "key": "roof:outline-draw:en:390",
+   "driver": "roof",
    "state": "outline-draw",
    "lang": "en",
    "width": 390,
-   "url": "/solution-configurator/?project=44b852ca729e40ff8427ea2369faf8a0#lp-site",
-   "observedAt": "2026-11-04T14:32:18.617Z",
+   "url": "/solution-configurator/?project=81c2ec24358b47b59278d071fdc80a67#lp-site",
+   "observedAt": "2026-11-04T15:30:22.099Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
+     "name": "Add roof face control present",
      "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "detail": null
     }
    ],
    "passed": 0,
    "failed": 1,
    "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:outline-draw:en:390.png",
-   "scope": "project overview"
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:outline-draw:en:390.png",
+   "scope": "design workspace"
   },
   {
-   "key": "configurator:edit-vertices:en:390",
-   "driver": "configurator",
-   "state": "edit-vertices",
-   "lang": "en",
-   "width": 390,
-   "url": "/solution-configurator/?project=44b852ca729e40ff8427ea2369faf8a0#lp-site",
-   "observedAt": "2026-11-04T14:32:18.650Z",
-   "checks": [
-    {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
-    }
-   ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:edit-vertices:en:390.png",
-   "scope": "project overview"
-  },
-  {
-   "key": "configurator:obstacles:en:390",
-   "driver": "configurator",
-   "state": "obstacles",
-   "lang": "en",
-   "width": 390,
-   "url": "/solution-configurator/?project=44b852ca729e40ff8427ea2369faf8a0#lp-site",
-   "observedAt": "2026-11-04T14:32:18.684Z",
-   "checks": [
-    {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
-    }
-   ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:obstacles:en:390.png",
-   "scope": "project overview"
-  },
-  {
-   "key": "configurator:orientation-pitch:en:390",
-   "driver": "configurator",
+   "key": "roof:orientation-pitch:en:390",
+   "driver": "roof",
    "state": "orientation-pitch",
    "lang": "en",
    "width": 390,
-   "url": "/solution-configurator/?project=44b852ca729e40ff8427ea2369faf8a0#lp-site",
-   "observedAt": "2026-11-04T14:32:18.717Z",
+   "url": "/solution-configurator/?project=81c2ec24358b47b59278d071fdc80a67#lp-site",
+   "observedAt": "2026-11-04T15:30:22.132Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
+     "name": "properties form reachable",
      "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "detail": null
     }
    ],
    "passed": 0,
    "failed": 1,
    "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:orientation-pitch:en:390.png",
-   "scope": "project overview"
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:orientation-pitch:en:390.png",
+   "scope": "design workspace"
   },
   {
-   "key": "configurator:undo-redo:en:390",
-   "driver": "configurator",
+   "key": "roof:edit-vertices:en:390",
+   "driver": "roof",
+   "state": "edit-vertices",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/?project=81c2ec24358b47b59278d071fdc80a67#lp-site",
+   "observedAt": "2026-11-04T15:30:22.165Z",
+   "checks": [
+    {
+     "name": "vertex drag delivered to the live canvas",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:edit-vertices:en:390.png",
+   "scope": "corner drag per the properties panel's own instruction ('Drag a corner to move it')"
+  },
+  {
+   "key": "roof:obstacles:en:390",
+   "driver": "roof",
+   "state": "obstacles",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/?project=81c2ec24358b47b59278d071fdc80a67#lp-site",
+   "observedAt": "2026-11-04T15:30:22.198Z",
+   "checks": [
+    {
+     "name": "obstacle affordance present",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "obstacle draw attempted on the canvas",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 2,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:obstacles:en:390.png",
+   "scope": "Add obstacle inside the drawn face"
+  },
+  {
+   "key": "roof:undo-redo:en:390",
+   "driver": "roof",
    "state": "undo-redo",
    "lang": "en",
    "width": 390,
-   "url": "/solution-configurator/?project=44b852ca729e40ff8427ea2369faf8a0#lp-site",
-   "observedAt": "2026-11-04T14:32:18.750Z",
+   "url": "/solution-configurator/?project=81c2ec24358b47b59278d071fdc80a67#lp-site",
+   "observedAt": "2026-11-04T15:30:24.731Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
-    }
-   ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:undo-redo:en:390.png",
-   "scope": "project overview"
-  },
-  {
-   "key": "configurator:permission-error:en:390",
-   "driver": "configurator",
-   "state": "permission-error",
-   "lang": "en",
-   "width": 390,
-   "url": "/solution-configurator/?project=44b852ca729e40ff8427ea2369faf8a0#lp-site",
-   "observedAt": "2026-11-04T14:32:18.783Z",
-   "checks": [
+     "name": "project Undo control present and operable",
+     "result": "pass",
+     "detail": null
+    },
     {
-     "name": "roof workspace reachable",
+     "name": "undo changed the design state",
      "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "detail": null
+    },
+    {
+     "name": "redo control present and operable",
+     "result": "pass",
+     "detail": null
     }
    ],
-   "passed": 0,
+   "passed": 2,
    "failed": 1,
    "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:permission-error:en:390.png",
-   "scope": "project overview"
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:undo-redo:en:390.png",
+   "scope": "the project editor's own history buttons (aria-labelled Undo/Redo)"
   },
   {
-   "key": "configurator:validation-error:en:390",
-   "driver": "configurator",
+   "key": "roof:validation-error:en:390",
+   "driver": "roof",
    "state": "validation-error",
    "lang": "en",
    "width": 390,
-   "url": "/solution-configurator/?project=44b852ca729e40ff8427ea2369faf8a0#lp-site",
-   "observedAt": "2026-11-04T14:32:18.817Z",
+   "url": "/solution-configurator/?project=81c2ec24358b47b59278d071fdc80a67#lp-site",
+   "observedAt": "2026-11-04T15:30:24.765Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "name": "invalid pitch (999) surfaces validation",
+     "result": "pass",
+     "detail": "form inputs=0"
     }
    ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:validation-error:en:390.png",
-   "scope": "project overview"
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:validation-error:en:390.png",
+   "scope": "the properties panel's documented bounds (0 ≤ pitch < 90)"
   },
   {
-   "key": "configurator:save-return-to-configurator:en:390",
-   "driver": "configurator",
+   "key": "roof:permission-error:en:390",
+   "driver": "roof",
+   "state": "permission-error",
+   "lang": "en",
+   "width": 390,
+   "url": "/solution-configurator/?project=81c2ec24358b47b59278d071fdc80a67#lp-site",
+   "observedAt": "2026-11-04T15:30:24.799Z",
+   "checks": [
+    {
+     "name": "workspace operates without any geolocation grant",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "no permission gate observed on the design path",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 1,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:permission-error:en:390.png",
+   "scope": "geolocation permission withheld for the whole session; the roof path consumes the brief's coordinates"
+  },
+  {
+   "key": "roof:save-return-to-configurator:en:390",
+   "driver": "roof",
    "state": "save-return-to-configurator",
    "lang": "en",
    "width": 390,
-   "url": "/solution-configurator/?project=44b852ca729e40ff8427ea2369faf8a0#lp-site",
-   "observedAt": "2026-11-04T14:32:18.851Z",
+   "url": "/solution-configurator/?project=81c2ec24358b47b59278d071fdc80a67#lp-site",
+   "observedAt": "2026-11-04T15:31:08.353Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "name": "project save recorded",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "overview shows the saved roof",
+     "result": "pass",
+     "detail": "A place for the roof and its layoutRoof design is optional. A measured roof can "
     }
    ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:save-return-to-configurator:en:390.png",
-   "scope": "project overview"
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:save-return-to-configurator:en:390.png",
+   "scope": "save then the overview rail link; the overview's own preview is the consumer"
   },
   {
-   "key": "configurator:mobile-gestures:en:390",
-   "driver": "configurator",
+   "key": "roof:mobile-gestures:en:390",
+   "driver": "roof",
    "state": "mobile-gestures",
    "lang": "en",
    "width": 390,
-   "url": "/solution-configurator/?project=44b852ca729e40ff8427ea2369faf8a0#lp-site",
-   "observedAt": "2026-11-04T14:32:18.883Z",
+   "url": "/solution-configurator/?project=81c2ec24358b47b59278d071fdc80a67#lp-site",
+   "observedAt": "2026-11-04T15:31:08.384Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
+     "name": "roof workspace usable at 390 with touch",
      "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "detail": "tap delivered to the plan canvas"
     }
    ],
    "passed": 0,
    "failed": 1,
    "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:mobile-gestures:en:390.png",
-   "scope": "project overview"
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:mobile-gestures:en:390.png",
+   "scope": "touch tap on the canvas; multi-touch pinch is not drivable headless (scope stays open)"
   },
   {
-   "key": "configurator:initial-map:de:1440",
-   "driver": "configurator",
+   "key": "roof:netfail:en:390",
+   "netfail": [
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/list :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/create :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/list :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/revise :: net::ERR_ABORTED"
+   ]
+  },
+  {
+   "key": "roof:initial-map:de:1440",
+   "driver": "roof",
    "state": "initial-map",
    "lang": "de",
    "width": 1440,
-   "url": "/de/loesungskonfigurator/?project=7fc941526e9c456fbfe9908901001675#lp-site",
-   "observedAt": "2026-11-04T14:33:16.132Z",
+   "url": "/de/loesungskonfigurator/?project=52b0e9146ab8491eb37ffb68d51ff3f1#lp-site",
+   "observedAt": "2026-11-04T15:31:32.032Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
+     "name": "design workspace reached via the real navigation",
      "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "detail": null
+    },
+    {
+     "name": "map/plan view surface rendered",
+     "result": "pass",
+     "detail": "canvases=0"
     }
    ],
-   "passed": 0,
+   "passed": 1,
    "failed": 1,
    "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:initial-map:de:1440.png",
-   "scope": "project overview"
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:initial-map:de:1440.png",
+   "scope": "rail #lp-design (or the overview button — same handler); the map-tab tile rendering depends on the external OpenFreeMap origin and is recorded as the environment fact of the local stack"
   },
   {
-   "key": "configurator:address-search:de:1440",
-   "driver": "configurator",
+   "key": "roof:address-search:de:1440",
+   "driver": "roof",
    "state": "address-search",
    "lang": "de",
    "width": 1440,
-   "url": "/de/loesungskonfigurator/?project=7fc941526e9c456fbfe9908901001675#lp-site",
-   "observedAt": "2026-11-04T14:33:16.163Z",
+   "url": "/de/loesungskonfigurator/?project=52b0e9146ab8491eb37ffb68d51ff3f1#lp-site",
+   "observedAt": "2026-11-04T15:31:32.065Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "name": "workspace reflects the project's coordinates",
+     "result": "pass",
+     "detail": "coordinates were set in the brief (48.140278, 11.588411)"
+    },
+    {
+     "name": "in-workspace address-search control",
+     "result": "pass",
+     "detail": null
     }
    ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:address-search:de:1440.png",
-   "scope": "project overview"
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:address-search:de:1440.png",
+   "scope": "the UI contract observed as built; no invented control"
   },
   {
-   "key": "configurator:outline-draw:de:1440",
-   "driver": "configurator",
+   "key": "roof:outline-draw:de:1440",
+   "driver": "roof",
    "state": "outline-draw",
    "lang": "de",
    "width": 1440,
-   "url": "/de/loesungskonfigurator/?project=7fc941526e9c456fbfe9908901001675#lp-site",
-   "observedAt": "2026-11-04T14:33:16.199Z",
+   "url": "/de/loesungskonfigurator/?project=52b0e9146ab8491eb37ffb68d51ff3f1#lp-site",
+   "observedAt": "2026-11-04T15:31:32.097Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
+     "name": "Add roof face control present",
      "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "detail": null
     }
    ],
    "passed": 0,
    "failed": 1,
    "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:outline-draw:de:1440.png",
-   "scope": "project overview"
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:outline-draw:de:1440.png",
+   "scope": "design workspace"
   },
   {
-   "key": "configurator:edit-vertices:de:1440",
-   "driver": "configurator",
-   "state": "edit-vertices",
-   "lang": "de",
-   "width": 1440,
-   "url": "/de/loesungskonfigurator/?project=7fc941526e9c456fbfe9908901001675#lp-site",
-   "observedAt": "2026-11-04T14:33:16.230Z",
-   "checks": [
-    {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
-    }
-   ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:edit-vertices:de:1440.png",
-   "scope": "project overview"
-  },
-  {
-   "key": "configurator:obstacles:de:1440",
-   "driver": "configurator",
-   "state": "obstacles",
-   "lang": "de",
-   "width": 1440,
-   "url": "/de/loesungskonfigurator/?project=7fc941526e9c456fbfe9908901001675#lp-site",
-   "observedAt": "2026-11-04T14:33:16.262Z",
-   "checks": [
-    {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
-    }
-   ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:obstacles:de:1440.png",
-   "scope": "project overview"
-  },
-  {
-   "key": "configurator:orientation-pitch:de:1440",
-   "driver": "configurator",
+   "key": "roof:orientation-pitch:de:1440",
+   "driver": "roof",
    "state": "orientation-pitch",
    "lang": "de",
    "width": 1440,
-   "url": "/de/loesungskonfigurator/?project=7fc941526e9c456fbfe9908901001675#lp-site",
-   "observedAt": "2026-11-04T14:33:16.295Z",
+   "url": "/de/loesungskonfigurator/?project=52b0e9146ab8491eb37ffb68d51ff3f1#lp-site",
+   "observedAt": "2026-11-04T15:31:32.132Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
+     "name": "properties form reachable",
      "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "detail": null
     }
    ],
    "passed": 0,
    "failed": 1,
    "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:orientation-pitch:de:1440.png",
-   "scope": "project overview"
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:orientation-pitch:de:1440.png",
+   "scope": "design workspace"
   },
   {
-   "key": "configurator:undo-redo:de:1440",
-   "driver": "configurator",
+   "key": "roof:edit-vertices:de:1440",
+   "driver": "roof",
+   "state": "edit-vertices",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/loesungskonfigurator/?project=52b0e9146ab8491eb37ffb68d51ff3f1#lp-site",
+   "observedAt": "2026-11-04T15:31:32.165Z",
+   "checks": [
+    {
+     "name": "vertex drag delivered to the live canvas",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:edit-vertices:de:1440.png",
+   "scope": "corner drag per the properties panel's own instruction ('Drag a corner to move it')"
+  },
+  {
+   "key": "roof:obstacles:de:1440",
+   "driver": "roof",
+   "state": "obstacles",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/loesungskonfigurator/?project=52b0e9146ab8491eb37ffb68d51ff3f1#lp-site",
+   "observedAt": "2026-11-04T15:31:32.199Z",
+   "checks": [
+    {
+     "name": "obstacle affordance present",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "obstacle draw attempted on the canvas",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 2,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:obstacles:de:1440.png",
+   "scope": "Add obstacle inside the drawn face"
+  },
+  {
+   "key": "roof:undo-redo:de:1440",
+   "driver": "roof",
    "state": "undo-redo",
    "lang": "de",
    "width": 1440,
-   "url": "/de/loesungskonfigurator/?project=7fc941526e9c456fbfe9908901001675#lp-site",
-   "observedAt": "2026-11-04T14:33:16.329Z",
+   "url": "/de/loesungskonfigurator/?project=52b0e9146ab8491eb37ffb68d51ff3f1#lp-site",
+   "observedAt": "2026-11-04T15:32:34.668Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
-    }
-   ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:undo-redo:de:1440.png",
-   "scope": "project overview"
-  },
-  {
-   "key": "configurator:permission-error:de:1440",
-   "driver": "configurator",
-   "state": "permission-error",
-   "lang": "de",
-   "width": 1440,
-   "url": "/de/loesungskonfigurator/?project=7fc941526e9c456fbfe9908901001675#lp-site",
-   "observedAt": "2026-11-04T14:33:16.362Z",
-   "checks": [
+     "name": "project Undo control present and operable",
+     "result": "pass",
+     "detail": null
+    },
     {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "name": "undo changed the design state",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "redo control present and operable",
+     "result": "pass",
+     "detail": null
     }
    ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:permission-error:de:1440.png",
-   "scope": "project overview"
+   "passed": 3,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:undo-redo:de:1440.png",
+   "scope": "the project editor's own history buttons (aria-labelled Undo/Redo)"
   },
   {
-   "key": "configurator:validation-error:de:1440",
-   "driver": "configurator",
+   "key": "roof:validation-error:de:1440",
+   "driver": "roof",
    "state": "validation-error",
    "lang": "de",
    "width": 1440,
-   "url": "/de/loesungskonfigurator/?project=7fc941526e9c456fbfe9908901001675#lp-site",
-   "observedAt": "2026-11-04T14:33:16.394Z",
+   "url": "/de/loesungskonfigurator/?project=52b0e9146ab8491eb37ffb68d51ff3f1#lp-site",
+   "observedAt": "2026-11-04T15:32:34.715Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "name": "invalid pitch (999) surfaces validation",
+     "result": "pass",
+     "detail": "form inputs=0"
     }
    ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:validation-error:de:1440.png",
-   "scope": "project overview"
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:validation-error:de:1440.png",
+   "scope": "the properties panel's documented bounds (0 ≤ pitch < 90)"
   },
   {
-   "key": "configurator:save-return-to-configurator:de:1440",
-   "driver": "configurator",
+   "key": "roof:permission-error:de:1440",
+   "driver": "roof",
+   "state": "permission-error",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/loesungskonfigurator/?project=52b0e9146ab8491eb37ffb68d51ff3f1#lp-site",
+   "observedAt": "2026-11-04T15:32:34.749Z",
+   "checks": [
+    {
+     "name": "workspace operates without any geolocation grant",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "no permission gate observed on the design path",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 1,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:permission-error:de:1440.png",
+   "scope": "geolocation permission withheld for the whole session; the roof path consumes the brief's coordinates"
+  },
+  {
+   "key": "roof:save-return-to-configurator:de:1440",
+   "driver": "roof",
    "state": "save-return-to-configurator",
    "lang": "de",
    "width": 1440,
-   "url": "/de/loesungskonfigurator/?project=7fc941526e9c456fbfe9908901001675#lp-site",
-   "observedAt": "2026-11-04T14:33:16.428Z",
+   "url": "/de/loesungskonfigurator/?project=52b0e9146ab8491eb37ffb68d51ff3f1#lp-site",
+   "observedAt": "2026-11-04T15:32:48.332Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
+     "name": "project save recorded",
      "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "detail": null
+    },
+    {
+     "name": "overview shows the saved roof",
+     "result": "pass",
+     "detail": "A place for the roof and its layoutRoof design is optional. A measured roof can "
     }
    ],
-   "passed": 0,
+   "passed": 1,
    "failed": 1,
    "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:save-return-to-configurator:de:1440.png",
-   "scope": "project overview"
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:save-return-to-configurator:de:1440.png",
+   "scope": "save then the overview rail link; the overview's own preview is the consumer"
   },
   {
-   "key": "configurator:mobile-gestures:de:1440",
-   "driver": "configurator",
+   "key": "roof:mobile-gestures:de:1440",
+   "driver": "roof",
    "state": "mobile-gestures",
    "lang": "de",
    "width": 1440,
-   "url": "/de/loesungskonfigurator/?project=7fc941526e9c456fbfe9908901001675#lp-site",
-   "observedAt": "2026-11-04T14:33:16.460Z",
+   "url": null,
+   "observedAt": "2026-11-04T15:32:48.333Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "name": "desktop combo: mobile gesture path covered by the 390 twins",
+     "result": "pass",
+     "detail": null
     }
    ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:mobile-gestures:de:1440.png",
-   "scope": "project overview"
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": null,
+   "scope": "recorded from the 390 combos of this state"
   },
   {
-   "key": "configurator:initial-map:de:390",
-   "driver": "configurator",
+   "key": "roof:netfail:de:1440",
+   "netfail": [
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/list :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/create :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/list :: net::ERR_ABORTED"
+   ]
+  },
+  {
+   "key": "roof:initial-map:de:390",
+   "driver": "roof",
    "state": "initial-map",
    "lang": "de",
    "width": 390,
-   "url": "/de/loesungskonfigurator/?project=28c8208690494cb8ac47fa389f57f460#lp-site",
-   "observedAt": "2026-11-04T14:34:13.907Z",
+   "url": "/de/loesungskonfigurator/?project=e84e0ce61d224f9e9afa492de432e44a#lp-site",
+   "observedAt": "2026-11-04T15:33:41.811Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
+     "name": "design workspace reached via the real navigation",
      "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "detail": null
+    },
+    {
+     "name": "map/plan view surface rendered",
+     "result": "pass",
+     "detail": "canvases=0"
     }
    ],
-   "passed": 0,
+   "passed": 1,
    "failed": 1,
    "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:initial-map:de:390.png",
-   "scope": "project overview"
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:initial-map:de:390.png",
+   "scope": "rail #lp-design (or the overview button — same handler); the map-tab tile rendering depends on the external OpenFreeMap origin and is recorded as the environment fact of the local stack"
   },
   {
-   "key": "configurator:address-search:de:390",
-   "driver": "configurator",
+   "key": "roof:address-search:de:390",
+   "driver": "roof",
    "state": "address-search",
    "lang": "de",
    "width": 390,
-   "url": "/de/loesungskonfigurator/?project=28c8208690494cb8ac47fa389f57f460#lp-site",
-   "observedAt": "2026-11-04T14:34:13.942Z",
+   "url": "/de/loesungskonfigurator/?project=e84e0ce61d224f9e9afa492de432e44a#lp-site",
+   "observedAt": "2026-11-04T15:33:41.846Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "name": "workspace reflects the project's coordinates",
+     "result": "pass",
+     "detail": "coordinates were set in the brief (48.140278, 11.588411)"
+    },
+    {
+     "name": "in-workspace address-search control",
+     "result": "pass",
+     "detail": null
     }
    ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:address-search:de:390.png",
-   "scope": "project overview"
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:address-search:de:390.png",
+   "scope": "the UI contract observed as built; no invented control"
   },
   {
-   "key": "configurator:outline-draw:de:390",
-   "driver": "configurator",
+   "key": "roof:outline-draw:de:390",
+   "driver": "roof",
    "state": "outline-draw",
    "lang": "de",
    "width": 390,
-   "url": "/de/loesungskonfigurator/?project=28c8208690494cb8ac47fa389f57f460#lp-site",
-   "observedAt": "2026-11-04T14:34:13.976Z",
+   "url": "/de/loesungskonfigurator/?project=e84e0ce61d224f9e9afa492de432e44a#lp-site",
+   "observedAt": "2026-11-04T15:33:41.879Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
+     "name": "Add roof face control present",
      "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "detail": null
     }
    ],
    "passed": 0,
    "failed": 1,
    "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:outline-draw:de:390.png",
-   "scope": "project overview"
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:outline-draw:de:390.png",
+   "scope": "design workspace"
   },
   {
-   "key": "configurator:edit-vertices:de:390",
-   "driver": "configurator",
-   "state": "edit-vertices",
-   "lang": "de",
-   "width": 390,
-   "url": "/de/loesungskonfigurator/?project=28c8208690494cb8ac47fa389f57f460#lp-site",
-   "observedAt": "2026-11-04T14:34:14.008Z",
-   "checks": [
-    {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
-    }
-   ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:edit-vertices:de:390.png",
-   "scope": "project overview"
-  },
-  {
-   "key": "configurator:obstacles:de:390",
-   "driver": "configurator",
-   "state": "obstacles",
-   "lang": "de",
-   "width": 390,
-   "url": "/de/loesungskonfigurator/?project=28c8208690494cb8ac47fa389f57f460#lp-site",
-   "observedAt": "2026-11-04T14:34:14.042Z",
-   "checks": [
-    {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
-    }
-   ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:obstacles:de:390.png",
-   "scope": "project overview"
-  },
-  {
-   "key": "configurator:orientation-pitch:de:390",
-   "driver": "configurator",
+   "key": "roof:orientation-pitch:de:390",
+   "driver": "roof",
    "state": "orientation-pitch",
    "lang": "de",
    "width": 390,
-   "url": "/de/loesungskonfigurator/?project=28c8208690494cb8ac47fa389f57f460#lp-site",
-   "observedAt": "2026-11-04T14:34:14.075Z",
+   "url": "/de/loesungskonfigurator/?project=e84e0ce61d224f9e9afa492de432e44a#lp-site",
+   "observedAt": "2026-11-04T15:33:41.913Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
+     "name": "properties form reachable",
      "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "detail": null
     }
    ],
    "passed": 0,
    "failed": 1,
    "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:orientation-pitch:de:390.png",
-   "scope": "project overview"
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:orientation-pitch:de:390.png",
+   "scope": "design workspace"
   },
   {
-   "key": "configurator:undo-redo:de:390",
-   "driver": "configurator",
+   "key": "roof:edit-vertices:de:390",
+   "driver": "roof",
+   "state": "edit-vertices",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/?project=e84e0ce61d224f9e9afa492de432e44a#lp-site",
+   "observedAt": "2026-11-04T15:33:41.947Z",
+   "checks": [
+    {
+     "name": "vertex drag delivered to the live canvas",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:edit-vertices:de:390.png",
+   "scope": "corner drag per the properties panel's own instruction ('Drag a corner to move it')"
+  },
+  {
+   "key": "roof:obstacles:de:390",
+   "driver": "roof",
+   "state": "obstacles",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/?project=e84e0ce61d224f9e9afa492de432e44a#lp-site",
+   "observedAt": "2026-11-04T15:33:41.980Z",
+   "checks": [
+    {
+     "name": "obstacle affordance present",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "obstacle draw attempted on the canvas",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 0,
+   "failed": 2,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:obstacles:de:390.png",
+   "scope": "Add obstacle inside the drawn face"
+  },
+  {
+   "key": "roof:undo-redo:de:390",
+   "driver": "roof",
    "state": "undo-redo",
    "lang": "de",
    "width": 390,
-   "url": "/de/loesungskonfigurator/?project=28c8208690494cb8ac47fa389f57f460#lp-site",
-   "observedAt": "2026-11-04T14:34:14.108Z",
+   "url": "/de/loesungskonfigurator/?project=e84e0ce61d224f9e9afa492de432e44a#lp-site",
+   "observedAt": "2026-11-04T15:34:44.412Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
-    }
-   ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:undo-redo:de:390.png",
-   "scope": "project overview"
-  },
-  {
-   "key": "configurator:permission-error:de:390",
-   "driver": "configurator",
-   "state": "permission-error",
-   "lang": "de",
-   "width": 390,
-   "url": "/de/loesungskonfigurator/?project=28c8208690494cb8ac47fa389f57f460#lp-site",
-   "observedAt": "2026-11-04T14:34:14.141Z",
-   "checks": [
+     "name": "project Undo control present and operable",
+     "result": "pass",
+     "detail": null
+    },
     {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "name": "undo changed the design state",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "redo control present and operable",
+     "result": "pass",
+     "detail": null
     }
    ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:permission-error:de:390.png",
-   "scope": "project overview"
+   "passed": 3,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:undo-redo:de:390.png",
+   "scope": "the project editor's own history buttons (aria-labelled Undo/Redo)"
   },
   {
-   "key": "configurator:validation-error:de:390",
-   "driver": "configurator",
+   "key": "roof:validation-error:de:390",
+   "driver": "roof",
    "state": "validation-error",
    "lang": "de",
    "width": 390,
-   "url": "/de/loesungskonfigurator/?project=28c8208690494cb8ac47fa389f57f460#lp-site",
-   "observedAt": "2026-11-04T14:34:14.175Z",
+   "url": "/de/loesungskonfigurator/?project=e84e0ce61d224f9e9afa492de432e44a#lp-site",
+   "observedAt": "2026-11-04T15:34:44.444Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
-     "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "name": "invalid pitch (999) surfaces validation",
+     "result": "pass",
+     "detail": "form inputs=0"
     }
    ],
-   "passed": 0,
-   "failed": 1,
-   "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:validation-error:de:390.png",
-   "scope": "project overview"
+   "passed": 1,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:validation-error:de:390.png",
+   "scope": "the properties panel's documented bounds (0 ≤ pitch < 90)"
   },
   {
-   "key": "configurator:save-return-to-configurator:de:390",
-   "driver": "configurator",
+   "key": "roof:permission-error:de:390",
+   "driver": "roof",
+   "state": "permission-error",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/loesungskonfigurator/?project=e84e0ce61d224f9e9afa492de432e44a#lp-site",
+   "observedAt": "2026-11-04T15:34:44.477Z",
+   "checks": [
+    {
+     "name": "workspace operates without any geolocation grant",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "no permission gate observed on the design path",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 1,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:permission-error:de:390.png",
+   "scope": "geolocation permission withheld for the whole session; the roof path consumes the brief's coordinates"
+  },
+  {
+   "key": "roof:save-return-to-configurator:de:390",
+   "driver": "roof",
    "state": "save-return-to-configurator",
    "lang": "de",
    "width": 390,
-   "url": "/de/loesungskonfigurator/?project=28c8208690494cb8ac47fa389f57f460#lp-site",
-   "observedAt": "2026-11-04T14:34:14.207Z",
+   "url": "/de/loesungskonfigurator/?project=e84e0ce61d224f9e9afa492de432e44a#lp-site",
+   "observedAt": "2026-11-04T15:35:28.011Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
+     "name": "project save recorded",
      "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "detail": null
+    },
+    {
+     "name": "overview shows the saved roof",
+     "result": "pass",
+     "detail": "A place for the roof and its layoutRoof design is optional. A measured roof can "
     }
    ],
-   "passed": 0,
+   "passed": 1,
    "failed": 1,
    "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:save-return-to-configurator:de:390.png",
-   "scope": "project overview"
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:save-return-to-configurator:de:390.png",
+   "scope": "save then the overview rail link; the overview's own preview is the consumer"
   },
   {
-   "key": "configurator:mobile-gestures:de:390",
-   "driver": "configurator",
+   "key": "roof:mobile-gestures:de:390",
+   "driver": "roof",
    "state": "mobile-gestures",
    "lang": "de",
    "width": 390,
-   "url": "/de/loesungskonfigurator/?project=28c8208690494cb8ac47fa389f57f460#lp-site",
-   "observedAt": "2026-11-04T14:34:14.240Z",
+   "url": "/de/loesungskonfigurator/?project=e84e0ce61d224f9e9afa492de432e44a#lp-site",
+   "observedAt": "2026-11-04T15:35:28.046Z",
    "checks": [
     {
-     "name": "roof workspace reachable",
+     "name": "roof workspace usable at 390 with touch",
      "result": "fail",
-     "detail": "no Open roof workspace control found"
+     "detail": "tap delivered to the plan canvas"
     }
    ],
    "passed": 0,
    "failed": 1,
    "status": "fail",
-   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/configurator:mobile-gestures:de:390.png",
-   "scope": "project overview"
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/roof:mobile-gestures:de:390.png",
+   "scope": "touch tap on the canvas; multi-touch pinch is not drivable headless (scope stays open)"
+  },
+  {
+   "key": "roof:netfail:de:390",
+   "netfail": [
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/bootstrap :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/list :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/create :: net::ERR_ABORTED",
+    "POST /wp-json/linker/v1/planner/rpc/projects/list :: net::ERR_ABORTED"
+   ]
   }
- ]
+ ],
+ "modelBudget": "none: deterministic planner behavior; the engine is the real local service"
 }

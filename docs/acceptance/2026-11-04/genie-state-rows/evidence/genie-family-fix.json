@@ -1,0 +1,385 @@
+{
+ "driver": "genie",
+ "fixRound": 2,
+ "base": "http://127.0.0.1:8916",
+ "observedAt": "2026-11-04T16:21:46.486Z",
+ "rows": [
+  {
+   "key": "genie:copy-and-rating:en:1440",
+   "driver": "genie",
+   "state": "copy-and-rating",
+   "lang": "en",
+   "width": 1440,
+   "url": "/genie/",
+   "observedAt": "2026-11-04T16:13:11.181Z",
+   "checks": [
+    {
+     "name": "documents-routed (datasheet question): turn succeeded (real model answer)",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "documents-routed (datasheet question): copy/rating controls rendered",
+     "result": "fail",
+     "detail": "vote-class elements=0"
+    },
+    {
+     "name": "documents-routed (datasheet question): copy puts the answer on the clipboard",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "documents-routed (datasheet question): rating pair present",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "product-routed (bare model query): turn succeeded (real model answer)",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "product-routed (bare model query): copy/rating controls rendered",
+     "result": "fail",
+     "detail": "vote-class elements=0"
+    },
+    {
+     "name": "product-routed (bare model query): copy puts the answer on the clipboard",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "product-routed (bare model query): rating pair present",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 2,
+   "failed": 6,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:copy-and-rating:en:1440.png",
+   "scope": "copy/vote verified separately per route, each only on a successful real turn; failed turns keep their original error text — no route attribution from a failed turn"
+  },
+  {
+   "key": "genie:ordinary-draft-failure-owner-isolation:en:1440",
+   "driver": "genie",
+   "state": "ordinary-draft-failure-owner-isolation",
+   "lang": "en",
+   "width": 1440,
+   "url": "/",
+   "observedAt": "2026-11-04T16:14:03.408Z",
+   "checks": [
+    {
+     "name": "failed send shows error UI",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "draft text preserved in the composer after failure",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "owned-recovery panel offered after reload",
+     "result": "pass",
+     "detail": "Current unsent draft\n\nowner-isolation-probe ndcnvm\n\nRestore unsent draft"
+    },
+    {
+     "name": "panel shows the draft owner's text",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "Restore unsent draft restores into the composer",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "a different guest is offered no recovery and no text",
+     "result": "pass",
+     "detail": "foreignLeak=false"
+    }
+   ],
+   "passed": 5,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:ordinary-draft-failure-owner-isolation:en:1440.png",
+   "scope": "failure injected ×3 at the network boundary; recovery via the app's own Restore unsent draft affordance"
+  },
+  {
+   "key": "genie:cross-surface-entry-question-consumed:en:1440",
+   "driver": "genie",
+   "state": "cross-surface-entry-question-consumed",
+   "lang": "en",
+   "width": 1440,
+   "url": "/",
+   "observedAt": "2026-11-04T16:14:30.521Z",
+   "checks": [
+    {
+     "name": "question arrived in the conversation exactly once",
+     "result": "fail",
+     "detail": "occurrences=0"
+    },
+    {
+     "name": "exactly one turn request fired",
+     "result": "pass",
+     "detail": "turns=1"
+    }
+   ],
+   "passed": 1,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:cross-surface-entry-question-consumed:en:1440.png",
+   "scope": "home hero → in-place conversation: a real consumed turn"
+  },
+  {
+   "key": "genie:home-hero:en:1440",
+   "driver": "genie",
+   "state": "home-hero",
+   "lang": "en",
+   "width": 1440,
+   "url": "/",
+   "observedAt": "2026-11-04T16:14:30.693Z",
+   "checks": [
+    {
+     "name": "hero reaches its ready state",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "hero input accepts text",
+     "result": "pass",
+     "detail": null
+    }
+   ],
+   "passed": 2,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:home-hero:en:1440.png",
+   "scope": "home hero entry surface; the un-interacted pixel-gate area untouched"
+  },
+  {
+   "key": "genie:copy-and-rating:en:390",
+   "driver": "genie",
+   "state": "copy-and-rating",
+   "lang": "en",
+   "width": 390,
+   "url": "/genie/",
+   "observedAt": "2026-11-04T16:15:49.243Z",
+   "checks": [
+    {
+     "name": "documents-routed (datasheet question): turn succeeded (real model answer)",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "documents-routed (datasheet question): copy/rating controls rendered",
+     "result": "fail",
+     "detail": "vote-class elements=0"
+    },
+    {
+     "name": "documents-routed (datasheet question): copy puts the answer on the clipboard",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "documents-routed (datasheet question): rating pair present",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "product-routed (bare model query): turn succeeded (real model answer)",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "product-routed (bare model query): copy/rating controls rendered",
+     "result": "fail",
+     "detail": "vote-class elements=0"
+    },
+    {
+     "name": "product-routed (bare model query): copy puts the answer on the clipboard",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "product-routed (bare model query): rating pair present",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 2,
+   "failed": 6,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:copy-and-rating:en:390.png",
+   "scope": "copy/vote verified separately per route, each only on a successful real turn; failed turns keep their original error text — no route attribution from a failed turn"
+  },
+  {
+   "key": "genie:fixdriver:en:390",
+   "error": "locator.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('.linker-genie-app__input').first()\n"
+  },
+  {
+   "key": "genie:copy-and-rating:de:1440",
+   "driver": "genie",
+   "state": "copy-and-rating",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T16:18:21.694Z",
+   "checks": [
+    {
+     "name": "documents-routed (datasheet question): turn succeeded (real model answer)",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "documents-routed (datasheet question): copy/rating controls rendered",
+     "result": "fail",
+     "detail": "vote-class elements=0"
+    },
+    {
+     "name": "documents-routed (datasheet question): copy puts the answer on the clipboard",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "documents-routed (datasheet question): rating pair present",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "product-routed (bare model query): turn succeeded (real model answer)",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "product-routed (bare model query): copy/rating controls rendered",
+     "result": "fail",
+     "detail": "vote-class elements=0"
+    },
+    {
+     "name": "product-routed (bare model query): copy puts the answer on the clipboard",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "product-routed (bare model query): rating pair present",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 2,
+   "failed": 6,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:copy-and-rating:de:1440.png",
+   "scope": "copy/vote verified separately per route, each only on a successful real turn; failed turns keep their original error text — no route attribution from a failed turn"
+  },
+  {
+   "key": "genie:ordinary-draft-failure-owner-isolation:de:1440",
+   "driver": "genie",
+   "state": "ordinary-draft-failure-owner-isolation",
+   "lang": "de",
+   "width": 1440,
+   "url": "/de/",
+   "observedAt": "2026-11-04T16:19:14.002Z",
+   "checks": [
+    {
+     "name": "failed send shows error UI",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "draft text preserved in the composer after failure",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "owned-recovery panel offered after reload",
+     "result": "pass",
+     "detail": "Bisheriger ungesendeter Entwurf\n\nowner-isolation-probe n23qc0\n\nBisherigen Entwur"
+    },
+    {
+     "name": "panel shows the draft owner's text",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "Restore unsent draft restores into the composer",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "a different guest is offered no recovery and no text",
+     "result": "pass",
+     "detail": "foreignLeak=false"
+    }
+   ],
+   "passed": 5,
+   "failed": 1,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:ordinary-draft-failure-owner-isolation:de:1440.png",
+   "scope": "failure injected ×3 at the network boundary; recovery via the app's own Restore unsent draft affordance"
+  },
+  {
+   "key": "genie:copy-and-rating:de:390",
+   "driver": "genie",
+   "state": "copy-and-rating",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T16:20:32.586Z",
+   "checks": [
+    {
+     "name": "documents-routed (datasheet question): turn succeeded (real model answer)",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "documents-routed (datasheet question): copy/rating controls rendered",
+     "result": "fail",
+     "detail": "vote-class elements=0"
+    },
+    {
+     "name": "documents-routed (datasheet question): copy puts the answer on the clipboard",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "documents-routed (datasheet question): rating pair present",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "product-routed (bare model query): turn succeeded (real model answer)",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "product-routed (bare model query): copy/rating controls rendered",
+     "result": "fail",
+     "detail": "vote-class elements=0"
+    },
+    {
+     "name": "product-routed (bare model query): copy puts the answer on the clipboard",
+     "result": "fail",
+     "detail": null
+    },
+    {
+     "name": "product-routed (bare model query): rating pair present",
+     "result": "fail",
+     "detail": null
+    }
+   ],
+   "passed": 2,
+   "failed": 6,
+   "status": "fail",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:copy-and-rating:de:390.png",
+   "scope": "copy/vote verified separately per route, each only on a successful real turn; failed turns keep their original error text — no route attribution from a failed turn"
+  },
+  {
+   "key": "genie:fixdriver:de:390",
+   "error": "locator.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('.linker-genie-app__input').first()\n"
+  }
+ ],
+ "modelBudget": "2 turns per combo (documents + product) + 1 hero turn at en:1440 = 9 real turns; failed turns recorded verbatim"
+}

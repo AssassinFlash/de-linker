@@ -1,0 +1,116 @@
+{
+ "driver": "genie",
+ "fixRound": 3,
+ "base": "http://127.0.0.1:8904",
+ "observedAt": "2026-11-04T19:20:19.276Z",
+ "rows": [
+  {
+   "key": "genie:copy-and-rating:de:390",
+   "driver": "genie",
+   "state": "copy-and-rating",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T19:18:43.996Z",
+   "checks": [
+    {
+     "name": "documents-routed (datasheet question): real model turn answered (2xx + turn_id + answer text)",
+     "result": "pass",
+     "detail": "HTTP 200 · turn_id=59 · route=documents · 713 chars"
+    },
+    {
+     "name": "documents-routed (datasheet question): copy + both thumbs rendered on the answer",
+     "result": "pass",
+     "detail": "copy buttons=1, thumbs=2"
+    },
+    {
+     "name": "documents-routed (datasheet question): copy puts the answer on the clipboard",
+     "result": "pass",
+     "detail": "clipboard 721 chars · \"GoodWe Lynx Home F Zu diesem Modell kann\" · contained in the answer=true"
+    },
+    {
+     "name": "documents-routed (datasheet question): thumbs post the vote and stay pressed",
+     "result": "pass",
+     "detail": "POST 1 · HTTP 200"
+    },
+    {
+     "name": "product-routed (bare model query): real model turn answered (2xx + turn_id + answer text)",
+     "result": "pass",
+     "detail": "HTTP 200 · turn_id=60 · route=products · 1310 chars"
+    },
+    {
+     "name": "product-routed (bare model query): copy + both thumbs rendered on the answer",
+     "result": "pass",
+     "detail": "copy buttons=1, thumbs=2"
+    },
+    {
+     "name": "product-routed (bare model query): copy puts the answer on the clipboard",
+     "result": "pass",
+     "detail": "clipboard 596 chars · \"GoodWe Lynx Home F Zu diesem Modell find\" · contained in the answer=true"
+    },
+    {
+     "name": "product-routed (bare model query): thumbs post the vote and stay pressed",
+     "result": "pass",
+     "detail": "POST 1 · HTTP 200"
+    }
+   ],
+   "passed": 8,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:copy-and-rating:de:390.png",
+   "scope": "copy + vote checked on each route's own answer; the thumb controls only exist on an answered turn (VoteButtons needs the meta turn_id), so a failed turn is recorded as a failed turn, never as a missing control or a route gap (route=documents/products)"
+  },
+  {
+   "key": "genie:ordinary-draft-failure-owner-isolation:de:390",
+   "driver": "genie",
+   "state": "ordinary-draft-failure-owner-isolation",
+   "lang": "de",
+   "width": 390,
+   "url": "/de/genie/",
+   "observedAt": "2026-11-04T19:20:19.250Z",
+   "checks": [
+    {
+     "name": "failed send shows the app's error UI",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "draft text preserved in the composer after the failure",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "owned-recovery panel offered after reload",
+     "result": "pass",
+     "detail": "Bisheriger ungesendeter Entwurf · owner-isolation-probe 19l3ei · Bisherigen Entw"
+    },
+    {
+     "name": "panel shows the draft owner's text",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "Restore unsent draft puts the text back in the composer",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "restored draft persists across a further reload",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "a different guest is offered no recovery and no text",
+     "result": "pass",
+     "detail": "panels=0 value=\"\""
+    }
+   ],
+   "passed": 7,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:ordinary-draft-failure-owner-isolation:de:390.png",
+   "scope": "failure injected ×3 at the network boundary on /genie/ (the dock's own page); every read is scoped to #linker-genie-mount, and the home page's hero instance is checked separately by the hero rows"
+  }
+ ],
+ "modelBudget": "2 real turns per combo (documents + product) + 1 hero turn at en:1440; failed turns recorded verbatim, never counted as success"
+}

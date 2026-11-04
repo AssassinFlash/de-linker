@@ -1,0 +1,183 @@
+{
+ "driver": "genie",
+ "fixRound": 3,
+ "base": "http://127.0.0.1:8904",
+ "observedAt": "2026-11-04T18:08:52.737Z",
+ "rows": [
+  {
+   "key": "genie:copy-and-rating:en:1440",
+   "driver": "genie",
+   "state": "copy-and-rating",
+   "lang": "en",
+   "width": 1440,
+   "url": "/genie/",
+   "observedAt": "2026-11-04T18:05:15.461Z",
+   "checks": [
+    {
+     "name": "documents-routed (datasheet question): real model turn answered (2xx + turn_id + answer text)",
+     "result": "pass",
+     "detail": "HTTP 200 · turn_id=36 · route=documents · 433 chars"
+    },
+    {
+     "name": "documents-routed (datasheet question): copy + both thumbs rendered on the answer",
+     "result": "pass",
+     "detail": "copy buttons=1, thumbs=2"
+    },
+    {
+     "name": "documents-routed (datasheet question): copy puts the answer on the clipboard",
+     "result": "pass",
+     "detail": "clipboard 429 chars · head=\"Datasheet values Our documents do not st\" · clip=\"### Datasheet values Our documents do no\""
+    },
+    {
+     "name": "documents-routed (datasheet question): thumbs post the vote and stay pressed",
+     "result": "pass",
+     "detail": "POST 1 · HTTP 200"
+    },
+    {
+     "name": "product-routed (bare model query): real model turn answered (2xx + turn_id + answer text)",
+     "result": "pass",
+     "detail": "HTTP 200 · turn_id=37 · route=products · 944 chars"
+    },
+    {
+     "name": "product-routed (bare model query): copy + both thumbs rendered on the answer",
+     "result": "pass",
+     "detail": "copy buttons=1, thumbs=2"
+    },
+    {
+     "name": "product-routed (bare model query): copy puts the answer on the clipboard",
+     "result": "pass",
+     "detail": "clipboard 510 chars · head=\"GoodWe Lynx Home F – datasheet figures O\" · clip=\"### GoodWe Lynx Home F – datasheet figur\""
+    },
+    {
+     "name": "product-routed (bare model query): thumbs post the vote and stay pressed",
+     "result": "pass",
+     "detail": "POST 1 · HTTP 200"
+    }
+   ],
+   "passed": 8,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:copy-and-rating:en:1440.png",
+   "scope": "copy + vote checked on each route's own answer; the thumb controls only exist on an answered turn (VoteButtons needs the meta turn_id), so a failed turn is recorded as a failed turn, never as a missing control or a route gap (route=documents/products)"
+  },
+  {
+   "key": "genie:ordinary-draft-failure-owner-isolation:en:1440",
+   "driver": "genie",
+   "state": "ordinary-draft-failure-owner-isolation",
+   "lang": "en",
+   "width": 1440,
+   "url": "/",
+   "observedAt": "2026-11-04T18:08:23.201Z",
+   "checks": [
+    {
+     "name": "failed send shows the app's error UI",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "draft text preserved in the composer after the failure",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "owned-recovery panel offered after reload",
+     "result": "pass",
+     "detail": "Current unsent draft · owner-isolation-probe nodn1e · Restore unsent draft"
+    },
+    {
+     "name": "panel shows the draft owner's text",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "Restore unsent draft puts the text back in the composer",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "restored draft persists across a further reload",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "a different guest is offered no recovery and no text",
+     "result": "pass",
+     "detail": "panels=0 value=\"\""
+    }
+   ],
+   "passed": 7,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:ordinary-draft-failure-owner-isolation:en:1440.png",
+   "scope": "failure injected ×3 at the network boundary; every read is scoped to #linker-genie-mount (the hero carries its own instance on the home page)"
+  },
+  {
+   "key": "genie:cross-surface-entry-question-consumed:en:1440",
+   "driver": "genie",
+   "state": "cross-surface-entry-question-consumed",
+   "lang": "en",
+   "width": 1440,
+   "url": "/",
+   "observedAt": "2026-11-04T18:08:52.580Z",
+   "checks": [
+    {
+     "name": "question became a message in the hero conversation",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "question appears exactly once in the conversation",
+     "result": "pass",
+     "detail": "occurrences=1"
+    },
+    {
+     "name": "exactly one turn request fired",
+     "result": "pass",
+     "detail": "turns=1"
+    },
+    {
+     "name": "the hero conversation shows the answer",
+     "result": "pass",
+     "detail": "1711 chars"
+    }
+   ],
+   "passed": 4,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:cross-surface-entry-question-consumed:en:1440.png",
+   "scope": "home hero → in-place conversation, read on the hero's own instance"
+  },
+  {
+   "key": "genie:home-hero:en:1440",
+   "driver": "genie",
+   "state": "home-hero",
+   "lang": "en",
+   "width": 1440,
+   "url": "/",
+   "observedAt": "2026-11-04T18:08:52.711Z",
+   "checks": [
+    {
+     "name": "hero reaches its ready state",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "hero input accepts text",
+     "result": "pass",
+     "detail": null
+    },
+    {
+     "name": "hero conversation answers the question",
+     "result": "pass",
+     "detail": "1711 chars"
+    }
+   ],
+   "passed": 3,
+   "failed": 0,
+   "status": "observed",
+   "screenshot": "docs/acceptance/2026-11-04/genie-state-rows/screenshots/genie:home-hero:en:1440.png",
+   "scope": "home hero entry surface; the un-interacted pixel-gate area untouched"
+  }
+ ],
+ "modelBudget": "2 real turns per combo (documents + product) + 1 hero turn at en:1440; failed turns recorded verbatim, never counted as success"
+}
