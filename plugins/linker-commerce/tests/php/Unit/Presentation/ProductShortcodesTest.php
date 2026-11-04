@@ -1878,6 +1878,55 @@ final class ProductShortcodesTest extends TestCase {
 	}
 
 	/**
+	 * An explicit thumbnail size is not replaced by the attachment's computed size.
+	 */
+	public function test_caller_sizes_is_not_replaced_or_duplicated(): void {
+		unset( $GLOBALS['product'] );
+		$this->pdp_srcset = 'http://linker.test/uploads/image-6505-300x225.png 300w';
+
+		$html = $this->pdp( true )->pdp_gallery_thumbs();
+
+		$this->assertSame( 3, substr_count( $html, 'sizes="72px"' ) );
+		$this->assertStringContainsString( 'sizes="72px"', $html );
+		$this->assertStringNotContainsString( '(max-width: 1024px)', $html );
+	}
+
+	/**
+	 * Brand logos carry the attachment's computed size as well as its candidates.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function test_brand_logo_carries_wordpress_sizes(): void {
+		unset( $GLOBALS['product'] );
+		WP_Mock::userFunction(
+			'get_the_terms',
+			array(
+				'return' => static fn ( int $id, string $taxonomy ): array => 'pa_brand' === $taxonomy
+					? array(
+						new \WP_Term(
+							(object) array(
+								'slug' => 'unique-brand',
+								'name' => 'Unique Brand',
+							)
+						),
+					)
+					: array(),
+			)
+		);
+		WP_Mock::userFunction( 'get_posts', array( 'return' => array( 991 ) ) );
+		WP_Mock::userFunction( 'wp_get_attachment_image_src', array( 'return' => fn ( int $id ): array => 991 === $id ? array( 'http://linker.test/uploads/logo.png', 1480, 288, false ) : array( $this->pdp_image_url( $id ), 1024, 768, false ) ) );
+		WP_Mock::userFunction( 'wp_get_attachment_image_srcset', array( 'return' => fn ( int $id ): string => 991 === $id ? 'http://linker.test/uploads/logo-300.png 300w, http://linker.test/uploads/logo.png 1480w' : '' ) );
+		WP_Mock::userFunction( 'wp_get_attachment_image_sizes', array( 'return' => fn ( int $id ): string|false => 991 === $id ? '(max-width: 120px) 120px, 120px' : false ) );
+		$shortcodes = $this->pdp( true );
+
+		$html = $shortcodes->pdp_brand_logo();
+
+		$this->assertStringContainsString( 'srcset="http://linker.test/uploads/logo-300.png 300w, http://linker.test/uploads/logo.png 1480w"', $html );
+		$this->assertStringContainsString( ' sizes="(max-width: 120px) 120px, 120px"', $html );
+	}
+
+	/**
 	 * Encode existing native query leaves without collapsing nested arrays.
 	 *
 	 * @param array<mixed>|string $value Parsed native query value.

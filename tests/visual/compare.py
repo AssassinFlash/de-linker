@@ -33,11 +33,15 @@ for case in manifest["cases"]:
             sort_mismatches[selector] = {"live": live_sets, "local": local_sets}
     if live.size != local.size:
         print(f"{stem}: size mismatch {live.size} / {local.size}", file=sys.stderr)
-        results.append({"case": stem, "stem": case["stem"],
-                        "path": case["path"], "viewport_width": case["width"],
-                        "dimension_match": False,
-                        "live_size": live.size, "local_size": local.size,
-                        "ruled_change": False})
+        row = {"case": stem, "stem": case["stem"],
+               "path": case["path"], "viewport_width": case["width"],
+               "dimension_match": False,
+               "live_size": live.size, "local_size": local.size,
+               "ruled_change": False,
+               "sorted_containers_match": not sort_mismatches}
+        if sort_mismatches:
+            row["sorted_container_mismatches"] = sort_mismatches
+        results.append(row)
         failed = True
         continue
     diff = ImageChops.difference(live, local)

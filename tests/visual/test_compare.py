@@ -81,6 +81,8 @@ class ExactPixelComparison(unittest.TestCase):
                 self.assertEqual(result.returncode, expected_exit, result.stderr)
                 if expected_pixels is None:
                     self.assertIn("size mismatch", result.stderr)
+                    row = json.loads((root / "results.json").read_text())[0]
+                    self.assertTrue(row["sorted_containers_match"])
                 else:
                     row = json.loads((root / "results.json").read_text())[0]
                     self.assertEqual(row["unmasked_different_pixels"], expected_pixels)

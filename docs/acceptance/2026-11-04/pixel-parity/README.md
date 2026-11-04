@@ -54,6 +54,26 @@ python3 tests/visual/compare.py <outdir>   # recount without a browser
 `batch1/` (harness before this work) reported 7 failures across the same 24
 cases. None of them was a product difference; each had a capture cause.
 
+| Case                                     | 1440 (batch1 → batch2) | 390 (batch1 → batch2) |
+| ---------------------------------------- | ---------------------- | --------------------- |
+| `home`                                   | 0 → 0                  | 0 → 0                 |
+| `de`                                     | 0 → 0                  | 0 → 0                 |
+| `products`                               | 0 → 0                  | 0 → 0                 |
+| `de_produkte`                            | 0 → 0                  | 0 → 0                 |
+| `product_saj_ats1_t63_a`                 | 177,283 → 629          | 121,076 → 210         |
+| `de_produkt_goodwe_gw60k_sts_g10`        | 147,800 → 0            | 120,337 → 0           |
+| `solution`                               | 0 → 629                | 600 → 600             |
+| `de_loesung`                             | 0 → 0                  | 240 → 0               |
+| `hybrid_inverter_vs_ac_coupled_storage`  | 0 → 0                  | 15 → 0                |
+| `de_hybridwechselrichter_vs_ac_speicher` | 0 → 0                  | 0 → 0                 |
+| `cart`                                   | 0 → 0                  | 0 → 0                 |
+| `de_loesungsentwurf`                     | 0 → 0                  | 0 → 0                 |
+
+That intermediate comparison was 17 clean to 20 clean. It is retained to show
+which failures were removed and which new compositor case appeared; it is not
+the final gate. An aborted `repeat-1` had 14 recorded PNGs that matched batch2
+exactly and was deleted only after that comparison, not to hide a failure.
+
 ### 1. `scroll-behavior: smooth` defeated the lazy-load sweep
 
 The site sets `scroll-behavior: smooth` on the root element. The old sweep used
@@ -155,17 +175,19 @@ Two consequences, both real for customers:
 
 Fixed in `ProductShortcodes::image_tag()`: when a candidate list is printed, the
 computed size is printed after it as `sizes="…"`, escaped with `esc_attr()`, and
-only when WordPress returned a non-empty string. `srcset => null` still
-suppresses both, because a lone `sizes` attribute selects nothing. The
-attribute order the browser depends on is unchanged — the tag is still
-`width height src <caller attributes> srcset sizes`. The docblock, which already
-claimed the helper emits sizes, is now true.
+only when WordPress returned a non-empty string and the caller did not already
+provide `sizes`. An explicit caller value such as `sizes="72px"` wins exactly
+once; `srcset => null` still suppresses both, because a lone `sizes` attribute
+selects nothing. Brand logos now carry their attachment's `sizes` from the same
+WordPress source and print it alongside `srcset`. The attribute order remains
+`width height src <caller attributes> srcset sizes`.
 
-Covered by four unit tests in `ProductShortcodesTest`:
+Covered by six unit tests in `ProductShortcodesTest`:
 generated candidates carry `sizes` right after `srcset`; a `false` answer from
 WordPress prints no `sizes`; the gallery main picture prints neither `srcset`
-nor `sizes`; and a quote inside the computed size is escaped rather than closing
-the attribute.
+nor `sizes`; a quote inside the computed size is escaped rather than closing
+the attribute; an explicit thumbnail `sizes="72px"` is not replaced or
+duplicated; and the brand logo carries its attachment's computed size.
 
 The harness's `pinImageSizes` compensation has been deleted. Nothing in the
 capture rewrites page markup any more, so a red run now means a real difference.

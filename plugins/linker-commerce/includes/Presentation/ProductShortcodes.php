@@ -726,6 +726,9 @@ final class ProductShortcodes {
 			$html = '<div class="pdp-brand pdp-brand--logo"><img class="pdp-brand-logo" src="' . esc_url( (string) $logo['src'] ) . '"';
 			if ( '' !== (string) $logo['srcset'] ) {
 				$html .= ' srcset="' . esc_attr( (string) $logo['srcset'] ) . '"';
+				if ( '' !== (string) ( $logo['sizes'] ?? '' ) ) {
+					$html .= ' sizes="' . esc_attr( (string) $logo['sizes'] ) . '"';
+				}
 			}
 			return $html . ' alt="' . esc_attr( (string) $logo['alt'] ) . '" loading="eager" decoding="async" fetchpriority="high" /></div>';
 		}
@@ -2247,7 +2250,7 @@ final class ProductShortcodes {
 		// differ by 0.25px of painted height.
 		if ( \is_string( $srcset ) && '' !== $srcset ) {
 			$html .= ' srcset="' . esc_attr( $srcset ) . '"';
-			if ( \is_string( $sizes ) && '' !== $sizes ) {
+			if ( \is_string( $sizes ) && '' !== $sizes && ! \array_key_exists( 'sizes', $attributes ) ) {
 				$html .= ' sizes="' . esc_attr( $sizes ) . '"';
 			}
 		}
