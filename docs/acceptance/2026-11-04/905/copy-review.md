@@ -603,7 +603,33 @@ covers it — but it means a page edited in production after the last deploy can
 carry a banned word that no repository check will report. The deploy smoke is
 the only fence for that, which is why `--wp-cli` exists and why main-line runs it.
 
-### 11.7 What the sweep explicitly did not touch
+### 11.7 Surfaces the extractor does not reach, checked rather than assumed
+
+**Hard-coded markup inside plain PHP strings.** `echo '<p>Get help…</p>'` is not
+a gettext literal, so the gate never reads it. Probed all `.php` code roots for
+string literals that open with a tag: **zero** carry a listed word. Not a gap
+today, so no code was added for it. It would become one the moment someone
+writes customer copy that way, which the gate would then not see — recorded
+here as a known limit rather than hidden.
+
+**`mu-plugins/` is outside the roots, and the stated reason was wrong.** The
+first version of the docstring said the directory holds "deploy, guard and
+error-logging infrastructure whose output is wp-admin and log lines, not
+customer copy". It holds four gettext strings: one REST refusal ("Sorry, you
+are not allowed to do that.") repeated four times. The exclusion is still
+correct — watching one refusal four times buys nothing — but the reason had to
+change, because a wrong reason is how a root stays excluded after it stops
+being harmless. The comment now states the measured fact, and
+`test_mu_plugins_holds_one_refusal_and_no_listed_word` fails with "add
+mu-plugins/ to CODE_ROOTS" if a listed word ever appears there.
+Mutation-checked by inserting one.
+
+**The email and Proforma templates are inside the scan.** All 14 email
+templates and 11 other templates under `plugins/linker-commerce/templates/` are
+`.php` and already read by the gettext pass; `test_every_customer_surface_root_is_reachable`
+pins that they stay inside it.
+
+### 11.8 What the sweep explicitly did not touch
 
 Other batches' files: the engine, Genie, the Planner and the registry belong to
 agents running in parallel. The Planner's own strings were read only to
