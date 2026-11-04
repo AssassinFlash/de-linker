@@ -20,7 +20,7 @@
 			},
 			"country_rule_inputs": {
 				"schema_version": 1,
-				"rule_date": "2026-11-01",
+				"rule_date": "2026-11-04",
 				"power_kw": 10.5,
 				"connection_voltage_kv": 0.4,
 				"de_before_control_test": null,
@@ -89,11 +89,11 @@
 			"rule_review": {
 				"schema_version": 1,
 				"country_code": "FR",
-				"rule_date": "2026-11-01",
+				"rule_date": "2026-11-04",
 				"inputs": {
 					"schema_version": 1,
 					"basis": "fr_generation_pmax",
-					"rule_date": "2026-11-01",
+					"rule_date": "2026-11-04",
 					"power_kw": 10.5,
 					"connection_voltage_kv": 0.4,
 					"de_before_control_test": null,
@@ -109,7 +109,7 @@
 						"edition": "2020-06-26",
 						"clause": "Article 35",
 						"effective_from": "2020-06-26",
-						"evidence_snapshot_date": "2026-11-01",
+						"evidence_snapshot_date": "2026-11-04",
 						"text_sha256": "4d35445b56b2d705e6afb81e93a4beec10f896ffcd3f14b1e69feda61794dfb3"
 					}
 				],
@@ -150,7 +150,7 @@
 			},
 			"country_rule_inputs": {
 				"schema_version": 1,
-				"rule_date": "2026-11-01",
+				"rule_date": "2026-11-04",
 				"power_kw": 0.8,
 				"connection_voltage_kv": null,
 				"de_before_control_test": null,
@@ -219,11 +219,11 @@
 			"rule_review": {
 				"schema_version": 1,
 				"country_code": "NL",
-				"rule_date": "2026-11-01",
+				"rule_date": "2026-11-04",
 				"inputs": {
 					"schema_version": 1,
 					"basis": "nl_storage_max_active",
-					"rule_date": "2026-11-01",
+					"rule_date": "2026-11-04",
 					"power_kw": 0.8,
 					"connection_voltage_kv": null,
 					"de_before_control_test": null,
@@ -239,8 +239,8 @@
 						"edition": "2026-10-01",
 						"clause": "Article 2.9(3)(a), (g)",
 						"effective_from": "2026-10-01",
-						"evidence_snapshot_date": "2026-11-01",
-						"text_sha256": "d20979cca5d06af7da83962f2a6afaef8112fe2cf2411ec540e84b08436831e0"
+						"evidence_snapshot_date": "2026-11-04",
+						"text_sha256": "41c61e47556c3415fc2072745f38bc2f7ae9a6e82a2ad6aa9f981828ebd7edf1"
 					}
 				],
 				"checks": [
@@ -291,7 +291,7 @@
 			},
 			"country_rule_inputs": {
 				"schema_version": 1,
-				"rule_date": "2026-11-01",
+				"rule_date": "2026-11-04",
 				"power_kw": 30,
 				"connection_voltage_kv": null,
 				"de_before_control_test": true,
@@ -383,11 +383,11 @@
 			"rule_review": {
 				"schema_version": 1,
 				"country_code": "DE",
-				"rule_date": "2026-11-01",
+				"rule_date": "2026-11-04",
 				"inputs": {
 					"schema_version": 1,
 					"basis": "de_pv_installed",
-					"rule_date": "2026-11-01",
+					"rule_date": "2026-11-04",
 					"power_kw": 30.0,
 					"connection_voltage_kv": null,
 					"de_before_control_test": true,
@@ -403,7 +403,7 @@
 						"edition": null,
 						"clause": "§ 9(2), (3)",
 						"effective_from": null,
-						"evidence_snapshot_date": "2026-11-01",
+						"evidence_snapshot_date": "2026-11-04",
 						"text_sha256": "dfbff2f705291e19c119bcbefec5ed046917044e20a8c20d43e993000df3958f"
 					}
 				],
@@ -455,7 +455,7 @@
 			},
 			"country_rule_inputs": {
 				"schema_version": 1,
-				"rule_date": "2026-11-01",
+				"rule_date": "2026-11-04",
 				"power_kw": 10.5,
 				"connection_voltage_kv": 0.4,
 				"de_before_control_test": null,
@@ -523,11 +523,11 @@
 			"rule_review": {
 				"schema_version": 1,
 				"country_code": "FR",
-				"rule_date": "2026-11-01",
+				"rule_date": "2026-11-04",
 				"inputs": {
 					"schema_version": 1,
 					"basis": "fr_generation_pmax",
-					"rule_date": "2026-11-01",
+					"rule_date": "2026-11-04",
 					"power_kw": 10.5,
 					"connection_voltage_kv": 0.4,
 					"de_before_control_test": null,
@@ -543,7 +543,7 @@
 						"edition": "2020-06-26",
 						"clause": "Article 35",
 						"effective_from": "2020-06-26",
-						"evidence_snapshot_date": "2026-11-01",
+						"evidence_snapshot_date": "2026-11-04",
 						"text_sha256": "4d35445b56b2d705e6afb81e93a4beec10f896ffcd3f14b1e69feda61794dfb3"
 					},
 					{
@@ -553,7 +553,7 @@
 						"edition": null,
 						"clause": "Déclarer mon installation, CACSI",
 						"effective_from": null,
-						"evidence_snapshot_date": "2026-11-01",
+						"evidence_snapshot_date": "2026-11-04",
 						"text_sha256": "3741f1e39b855240554fc7348cd130d08f8b186e2e3a38dd831b2c708b4ff673"
 					}
 				],

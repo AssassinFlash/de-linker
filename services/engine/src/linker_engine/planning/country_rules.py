@@ -40,10 +40,8 @@ class CountryRuleInputs(Document):
 
 # These are the exact official-source text extractions recorded in
 # docs/research/2026-10-23-modern-workbench/COUNTRY-EVIDENCE.md.
-# "effective_from" is the rule version floor: the date the cited text entered
-# into force, and readings are only offered from that date onward.
-# "evidence_snapshot_date" records when that text was last verified as read;
-# it documents research, not a future legal assurance about later amendments.
+# Each reading is bounded by its effective date and the last date on which the
+# cited text was verified; later dates remain unresolved instead of inheriting it.
 _SOURCES: dict[str, Object] = {
     "FR": {
         "id": "fr_arrete_article_35",
@@ -52,7 +50,7 @@ _SOURCES: dict[str, Object] = {
         "edition": "2020-06-26",
         "clause": "Article 35",
         "effective_from": "2020-06-26",
-        "evidence_snapshot_date": "2026-11-01",
+        "evidence_snapshot_date": "2026-11-04",
         "text_sha256": "4d35445b56b2d705e6afb81e93a4beec10f896ffcd3f14b1e69feda61794dfb3",
     },
     "NL": {
@@ -62,8 +60,8 @@ _SOURCES: dict[str, Object] = {
         "edition": "2026-10-01",
         "clause": "Article 2.9(3)(a), (g)",
         "effective_from": "2026-10-01",
-        "evidence_snapshot_date": "2026-11-01",
-        "text_sha256": "d20979cca5d06af7da83962f2a6afaef8112fe2cf2411ec540e84b08436831e0",
+        "evidence_snapshot_date": "2026-11-04",
+        "text_sha256": "41c61e47556c3415fc2072745f38bc2f7ae9a6e82a2ad6aa9f981828ebd7edf1",
     },
     "DE": {
         "id": "de_eeg_section_9",
@@ -74,7 +72,7 @@ _SOURCES: dict[str, Object] = {
         # EEG 2023 (BGBl. 2022 I S. 1237) entered into force on
         # 1 January 2023; § 9 has been in force from that date.
         "effective_from": "2023-01-01",
-        "evidence_snapshot_date": "2026-11-01",
+        "evidence_snapshot_date": "2026-11-04",
         "text_sha256": "dfbff2f705291e19c119bcbefec5ed046917044e20a8c20d43e993000df3958f",
     },
 }
@@ -95,7 +93,7 @@ _ENEDIS_SOURCE: Object = {
     # entered into force on 26 June 2020 (published JORF n°0156 du 25 juin
     # 2020); the declaration reading starts from that date.
     "effective_from": "2020-06-26",
-    "evidence_snapshot_date": "2026-11-01",
+    "evidence_snapshot_date": "2026-11-04",
     "text_sha256": "3741f1e39b855240554fc7348cd130d08f8b186e2e3a38dd831b2c708b4ff673",
 }
 
@@ -119,10 +117,9 @@ def review_country_rules(
     assert country is not None
     source = dict(_SOURCES[country])
     source_id = cast(str, source["id"])
-    # The version floor is the cited text's entry-into-force date recorded
-    # in _SOURCES/_ENEDIS_SOURCE; no code-side fallback date exists.
     floor = cast(str, source["effective_from"])
-    in_version = facts.rule_date is not None and facts.rule_date >= floor
+    through = cast(str, source["evidence_snapshot_date"])
+    in_version = facts.rule_date is not None and floor <= facts.rule_date <= through
     actual: Object = {
         "power_kw": facts.power_kw,
         "connection_voltage_kv": facts.connection_voltage_kv,
@@ -190,11 +187,13 @@ def review_country_rules(
         ):
             sources.append(dict(_ENEDIS_SOURCE))
             enedis_floor = cast(str, _ENEDIS_SOURCE["effective_from"])
+            enedis_through = cast(str, _ENEDIS_SOURCE["evidence_snapshot_date"])
             enedis_outcome = (
                 "missing_inputs"
                 if missing_date
                 else "outside_version"
-                if facts.rule_date is None or facts.rule_date < enedis_floor
+                if facts.rule_date is None
+                or not enedis_floor <= facts.rule_date <= enedis_through
                 else "enedis_declare_cacsi"
             )
             enedis_missing = ["rule_date"] if missing_date else []

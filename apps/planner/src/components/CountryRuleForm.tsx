@@ -15,7 +15,7 @@ const countries: Record<RuleBasis, string> = {
 };
 // All three retained source readings were checked on this date; changing this
 // choice never changes a project or connection date.
-const CHECKED_SOURCE_DATE = "2026-11-01";
+const CHECKED_SOURCE_DATE = "2026-11-04";
 
 export function CountryRuleForm({
 	value,
@@ -131,16 +131,16 @@ export function CountryRuleForm({
 					<p>
 						{value.basis === "fr_generation_pmax"
 							? __(
-									"Source version: 26 June 2020, checked 1 November 2026.",
+									"Source version: 26 June 2020, checked 4 November 2026.",
 									"linker-tools",
 								)
 							: value.basis === "nl_storage_max_active"
 								? __(
-										"Source version: 1 October 2026, checked 1 November 2026.",
+										"Source version: 1 October 2026, checked 4 November 2026.",
 										"linker-tools",
 									)
 								: __(
-										"German source text checked 1 November 2026; earlier transition rules are not established here.",
+										"German source text checked 4 November 2026; earlier transition rules are not established here.",
 										"linker-tools",
 									)}
 					</p>
@@ -155,7 +155,7 @@ export function CountryRuleForm({
 						className="lp-button"
 						onClick={() => changeDate(CHECKED_SOURCE_DATE)}
 					>
-						{__("Use the source checked on 1 November 2026", "linker-tools")}
+						{__("Use the source checked on 4 November 2026", "linker-tools")}
 					</button>
 					<div className="grid gap-5 md:grid-cols-2">
 						<label className="lp-field">

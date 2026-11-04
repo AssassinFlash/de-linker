@@ -35,7 +35,7 @@ def rule_input(basis: str, **changes: Any) -> Object:
     value: Object = {
         "schema_version": 1,
         "basis": basis,
-        "rule_date": "2026-11-01",
+        "rule_date": "2026-11-04",
         "power_kw": None,
         "connection_voltage_kv": None,
         "de_before_control_test": None,
@@ -200,39 +200,62 @@ def test_missing_inputs_versions_and_unrelated_countries_do_not_infer() -> None:
     assert country_assessment(newer) == country_assessment(original)
 
 
-def test_dates_before_effective_from_are_outside_the_version_and_not_evaluated() -> (
-    None
-):
-    # DE floor: EEG 2023 § 9 in force from 2023-01-01 (BGBl. 2022 I S. 1237).
-    de = review_country_rules(
-        "DE",
-        rule_input(
+@pytest.mark.parametrize(
+    ("country", "basis", "rule_date", "changes"),
+    [
+        (
+            "DE",
             "de_pv_installed",
-            rule_date="2022-12-31",
-            power_kw=25,
-            de_before_control_test=True,
-            de_remuneration="feed_in_or_tenant",
+            "2022-12-31",
+            {
+                "power_kw": 25,
+                "de_before_control_test": True,
+                "de_remuneration": "feed_in_or_tenant",
+            },
         ),
-    )
-    # FR floor: Arrêté du 9 juin 2020 in force from 2020-06-26
-    # (JORF n°0156 du 25 juin 2020).
-    fr = review_country_rules(
-        "FR",
-        rule_input(
+        (
+            "DE",
+            "de_pv_installed",
+            "2026-11-05",
+            {
+                "power_kw": 25,
+                "de_before_control_test": True,
+                "de_remuneration": "feed_in_or_tenant",
+            },
+        ),
+        (
+            "FR",
             "fr_generation_pmax",
-            rule_date="2020-06-25",
-            power_kw=10,
-            connection_voltage_kv=0.4,
+            "2020-06-25",
+            {"power_kw": 10, "connection_voltage_kv": 0.4},
         ),
+        (
+            "FR",
+            "fr_generation_pmax",
+            "2026-11-05",
+            {
+                "power_kw": 10,
+                "connection_voltage_kv": 0.4,
+                "fr_enedis_full_self_consumption": True,
+            },
+        ),
+        ("NL", "nl_storage_max_active", "2026-09-30", {"power_kw": 10}),
+        ("NL", "nl_storage_max_active", "2026-11-05", {"power_kw": 10}),
+    ],
+)
+def test_dates_outside_the_verified_source_reading_are_not_evaluated(
+    country: str, basis: str, rule_date: str, changes: Object
+) -> None:
+    review = review_country_rules(
+        country, rule_input(basis, rule_date=rule_date, **changes), operator="Enedis"
     )
-    for review in (de, fr):
-        assert review is not None
-        checks = cast(list[Object], review["checks"])
-        assert {str(check["outcome"]) for check in checks} == {"outside_version"}
-        assert {str(check["status"]) for check in checks} == {"unresolved"}
+    assert review is not None
+    checks = cast(list[Object], review["checks"])
+    assert {str(check["outcome"]) for check in checks} == {"outside_version"}
+    assert {str(check["status"]) for check in checks} == {"unresolved"}
 
 
-@pytest.mark.parametrize("rule_date", ["2023-01-01", "2026-11-02", "2026-11-03"])
+@pytest.mark.parametrize("rule_date", ["2023-01-01", "2026-11-02", "2026-11-04"])
 def test_dates_from_effective_from_are_inside_the_de_version(rule_date: str) -> None:
     assert outcomes(
         review_country_rules(
@@ -251,7 +274,7 @@ def test_dates_from_effective_from_are_inside_the_de_version(rule_date: str) -> 
     }
 
 
-@pytest.mark.parametrize("rule_date", ["2020-06-26", "2026-11-03"])
+@pytest.mark.parametrize("rule_date", ["2020-06-26", "2026-11-04"])
 def test_dates_from_effective_from_are_inside_the_fr_version(rule_date: str) -> None:
     assert outcomes(
         review_country_rules(

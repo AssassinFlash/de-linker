@@ -91,14 +91,14 @@ for (const de of [false, true]) {
 		}
 		await mount(t, React.createElement(Harness), de);
 		const label = de
-			? "Am 1. November 2026 geprüften Quellenstand verwenden"
-			: "Use the source checked on 1 November 2026";
+			? "Am 4. November 2026 geprüften Quellenstand verwenden"
+			: "Use the source checked on 4 November 2026";
 		const button = [...document.querySelectorAll("button")].find(
 			(item) => item.textContent === label,
 		);
 		assert.ok(button);
 		await act(async () => button.click());
-		assert.equal(current.country_rule_inputs.rule_date, "2026-11-01");
+		assert.equal(current.country_rule_inputs.rule_date, "2026-11-04");
 		assert.equal(current.connection_date, "2027-05-14");
 	});
 	test(`${de ? "DE" : "EN"}: removing the grid information names its dependent rule inputs and can be undone`, async (t) => {
@@ -169,12 +169,12 @@ for (const de of [false, true]) {
 		assert.equal(valid, false);
 		assert.equal(date.value, "2026-02-30");
 		assert.equal(current.rule_date, null);
-		await enter(date, "2026-11-01");
+		await enter(date, "2026-11-04");
 		const power = field(de ? "Angegebene Leistung kW" : "Declared power kW");
 		assert.ok(power);
 		await enter(power, de ? "10,5" : "10.5");
 		assert.equal(current.power_kw, 10.5);
-		assert.equal(current.rule_date, "2026-11-01");
+		assert.equal(current.rule_date, "2026-11-04");
 		assert.equal(valid, true);
 	});
 	test(`${de ? "DE" : "EN"}: rule results display the correct frozen source and scoped outcome`, async (t) => {

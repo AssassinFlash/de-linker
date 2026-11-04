@@ -13180,8 +13180,8 @@ msgid "France: generation-unit Pmax"
 msgstr "Frankreich: Pmax der Erzeugungseinheit"
 
 #: build/planner/assets/planner.js:1
-msgid "German source text checked 1 November 2026; earlier transition rules are not established here."
-msgstr "Deutscher Quellentext geprüft am 1. November 2026; frühere Übergangsregeln sind hier nicht geklärt."
+msgid "German source text checked 4 November 2026; earlier transition rules are not established here."
+msgstr "Deutscher Quellentext geprüft am 4. November 2026; frühere Übergangsregeln sind hier nicht geklärt."
 
 #: build/planner/assets/planner.js:1
 msgid "Germany: EEG solar installed power"
@@ -13212,12 +13212,12 @@ msgid "Rule scope and power basis"
 msgstr "Regelungsbereich und Leistungsbezug"
 
 #: build/planner/assets/planner.js:1
-msgid "Source version: 1 October 2026, checked 1 November 2026."
-msgstr "Quellenfassung: 1. Oktober 2026, geprüft am 1. November 2026."
+msgid "Source version: 1 October 2026, checked 4 November 2026."
+msgstr "Quellenfassung: 1. Oktober 2026, geprüft am 4. November 2026."
 
 #: build/planner/assets/planner.js:1
-msgid "Source version: 26 June 2020, checked 1 November 2026."
-msgstr "Quellenfassung: 26. Juni 2020, geprüft am 1. November 2026."
+msgid "Source version: 26 June 2020, checked 4 November 2026."
+msgstr "Quellenfassung: 26. Juni 2020, geprüft am 4. November 2026."
 
 #: build/planner/assets/planner.js:1
 msgid "The selected rule does not match this project's country. No rule result will be added until they match."
@@ -13388,8 +13388,8 @@ msgid "The rule date selects a documented source reading. It does not change the
 msgstr "Das Regelungsdatum wählt einen dokumentierten Quellenstand. Es ändert nicht das Anschlussdatum des Projekts und belegt nicht, ob die Regel heute gilt."
 
 #: build/planner/assets/planner.js:1
-msgid "Use the source checked on 1 November 2026"
-msgstr "Am 1. November 2026 geprüften Quellenstand verwenden"
+msgid "Use the source checked on 4 November 2026"
+msgstr "Am 4. November 2026 geprüften Quellenstand verwenden"
 
 #: build/planner/assets/planner.js:1
 msgid "This is a conditional reference for the selected rule date and declared project scope and values. Verify whether the cited rules apply today and on the project's grid connection date. The grid operator, connection voltage, local requirements, equipment compliance and grid permission need separate verification."

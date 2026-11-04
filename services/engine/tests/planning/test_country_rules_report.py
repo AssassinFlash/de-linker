@@ -186,7 +186,7 @@ def test_saved_rules_reach_all_consumers_and_remain_frozen(
         assert lfsm_label in report_text
         assert lfsm_label in pdf_text
     assert date_condition in " ".join(pdf_text.split())
-    assert "2026-11-01" in pdf_text
+    assert "2026-11-04" in pdf_text
     assert "PRIVATE TAB TITLE" in pdf_text
     attachments = result["prepared_attachments"]
     assert set(attachments) == {"bill_of_materials_csv", "country_rule_review_csv"}
