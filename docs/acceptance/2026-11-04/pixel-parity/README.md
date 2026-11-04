@@ -6,8 +6,10 @@ machine, `--direct` (no proxy). Raw evidence:
 
 - `batch1/` — first run, harness before this change. 24 cases, **7 failures**.
 - `batch2/` — same routes with the corrected harness. 24 cases, **4 failures**.
-- `repeat-1/`, `repeat-2/` — the four disputed cases re-captured twice to separate
-  product differences from capture nondeterminism.
+- `repeat-2/` — the four disputed cases re-captured, showing that the residual
+  flips between runs (see §3). `repeat-1/` was aborted by a browser crash
+  during its last route; its 14 recorded PNGs matched `batch2` exactly and were
+  deleted after being measured.
 
 ## Per-case counts
 
@@ -72,17 +74,29 @@ an instance**:
 
 - Same-host controls are clean: live↔live across all 12 scenarios at 1440 gave 0
   differences (3 runs); local↔local at 390 `/de/` gave 0 (2 runs).
-- The same case flips between instances: `/solution/` 390 gave 0, 600, 0 across
-  three independent cross-host runs, and 600 in `batch1`, `batch2` and
-  `repeat-1`. `product_saj_ats1_t63_a` 1440 gave 0 in one probe and 629 in
-  `batch2` and `repeat-1`.
+- The same case flips between instances while staying internally stable. Across
+  four runs of the same four cases, each case moved between runs and each run
+  was self-consistent:
+
+  | Case | batch2 | repeat-2 |
+  | --- | --- | --- |
+  | `product_saj_ats1_t63_a` 1440 | 629 | 629 |
+  | `product_saj_ats1_t63_a` 390 | 210 | 0 |
+  | `solution` 1440 | 629 | 0 |
+  | `solution` 390 | 600 | 600 |
+  | `de_loesung` 390 | 0 | 360 (three more hairlines) |
+
+  An earlier probe of `product_saj_ats1_t63_a` 1440 also produced a clean 0.
+  Nothing in the page changed between those runs.
 - The regions are compositor features, not content:
-  - `/solution/` 390 — five 1px hairlines, x 18–138, exactly
-    `border-bottom: 1px solid rgb(209,217,206)` of the five
-    `position: sticky; left: 0` first-column cells of `.lk-twin-table`. Their
-    layout height is 79.875px, so each border falls on a fractional y and snaps
-    either side per instance. Computed styles and geometry are equal on both
-    hosts (33 paint-relevant properties compared, all identical).
+  - `/solution/` 390 and `de_loesung` 390 — one-pixel horizontal hairlines,
+    x 18–137, exactly `border-bottom` of the `position: sticky; left: 0`
+    first-column cells of `.lk-twin-table` (`rgb(190,203,192)` for the header
+    cell, `rgb(209,217,206)` for the body cells). Their layout height is
+    79.875px, so each border falls on a fractional y and snaps either side per
+    instance; the local capture is missing the border the live one paints.
+    Computed styles and geometry are equal on both hosts (33 paint-relevant
+    properties compared, all identical).
   - 629-px regions at 1440 — inside `.footer-console`, which carries
     `backdrop-filter: blur(28px) saturate(1.25)`; the differing columns sit on
     the card's rounded right edge.
