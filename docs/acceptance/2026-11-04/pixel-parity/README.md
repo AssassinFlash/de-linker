@@ -69,21 +69,29 @@ reproduced the full 177,714.
 Fix: re-enter the document at the final viewport (`page.reload`) before
 capturing, so layout and decode happen at the captured size.
 
-### 3. Remaining four failures are capture nondeterminism, not product differences
+### 3. Remaining four failures reproduce on the live host against itself
 
 `batch2` residual: `solution` 1440 (629), `product_saj_ats1_t63_a` 1440 (629),
 `solution` 390 (600), `product_saj_ats1_t63_a` 390 (210).
 
-All four sit on anti-aliased edges of translucent or blurred footer/table
-surfaces, and all four are **bistable per browser instance while stable within
-an instance**:
+The decisive measurement is a **same-host control**: capture `https://de-linker.com`
+on both sides of the comparison. Anything a cross-host run reports that also
+appears there cannot be a product difference.
 
-- Same-host controls are clean: live↔live across all 12 scenarios at 1440 gave 0
-  differences (2 complete runs; a third was interrupted); local↔local at 390
-  `/de/` gave 0 (2 runs).
-- The same case flips between instances while staying internally stable. Across
-  four runs of the same four cases, each case moved between runs and each run
-  was self-consistent:
+`control-live-390/` did that for all 12 routes at 390 and reproduced the
+`/solution/` artifact against the live host itself:
+
+| Case | live↔local | live↔live control |
+| --- | --- | --- |
+| `solution` 390 | 600, bounds `[18,3060,138,3540]`, max 55 | **600, bounds `[18,3060,138,3540]`, max 55** |
+| every other route 390 | 0 | 0 |
+
+Both captures are the same live page, same browser build, seconds apart, and
+they differ by exactly the same pixel count at exactly the same rectangle as the
+cross-host run. The artifact is produced by the capture, not by either site.
+
+The four residual cases are **bistable per browser instance while stable within
+an instance**:
 
   | Case | batch2 | repeat-2 |
   | --- | --- | --- |
@@ -93,23 +101,26 @@ an instance**:
   | `solution` 390 | 600 | 600 |
   | `de_loesung` 390 | 0 | 360 (three more hairlines) |
 
-  An earlier probe of `product_saj_ats1_t63_a` 1440 also produced a clean 0.
-  Nothing in the page changed between those runs.
-- The regions are compositor features, not content:
-  - `/solution/` 390 and `de_loesung` 390 — one-pixel horizontal hairlines,
-    x 18–137, exactly `border-bottom` of the `position: sticky; left: 0`
-    first-column cells of `.lk-twin-table` (`rgb(190,203,192)` for the header
-    cell, `rgb(209,217,206)` for the body cells). Their layout height is
-    79.875px, so each border falls on a fractional y and snaps either side per
-    instance; the local capture is missing the border the live one paints.
-    Computed styles and geometry are equal on both hosts (33 paint-relevant
-    properties compared, all identical).
-  - 629-px regions at 1440 — inside `.footer-console`, which carries
-    `backdrop-filter: blur(28px) saturate(1.25)`; the differing columns sit on
-    the card's rounded right edge.
-  - 210-px region at 390 — `.footer-panel-count`, a 27×27 `border-radius: 50%`
-    badge with `background: rgba(255,255,255,.396)` over the footer's blurred
-    gradient; the differing rows are its anti-aliased edge.
+An earlier probe of `product_saj_ats1_t63_a` 1440 also produced a clean 0, and
+an earlier live↔live run at 390 produced a single `[18,3000,138,3001]` hairline.
+Nothing in the pages changed between those runs.
+
+The regions are compositor features, not content:
+
+- `/solution/` 390 and `de_loesung` 390 — one-pixel horizontal hairlines,
+  x 18–137, exactly `border-bottom` of the `position: sticky; left: 0`
+  first-column cells of `.lk-twin-table` (`rgb(190,203,192)` for the header
+  cell, `rgb(209,217,206)` for the body cells). Their layout height is
+  79.875px, so each border falls on a fractional y and snaps either side per
+  instance; the local capture is missing the border the live one paints.
+  Computed styles and geometry are equal on both hosts (33 paint-relevant
+  properties compared, all identical).
+- 629-px regions at 1440 — inside `.footer-console`, which carries
+  `backdrop-filter: blur(28px) saturate(1.25)`; the differing columns sit on
+  the card's rounded right edge.
+- 210-px region at 390 — `.footer-panel-count`, a 27×27 `border-radius: 50%`
+  badge with `background: rgba(255,255,255,.396)` over the footer's blurred
+  gradient; the differing rows are its anti-aliased edge.
 - Feature toggles move the artifact without touching content: removing
   `backdrop-filter` makes `/solution/` 390 reach 0; removing `position: sticky`
   also makes it 0.
