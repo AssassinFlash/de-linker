@@ -105,7 +105,7 @@ final class Application {
 		add_action( 'init', array( $this, 'assets' ) );
 		add_shortcode( 'linker_planner', array( $this, 'mount' ) );
 		add_filter( 'load_script_translations', array( $this, 'filter_translations' ), 10, 4 );
-		add_filter( 'wp_inline_script_tag', array( $this, 'inline_translation_loader' ), 10, 3 );
+		add_action( 'wp_footer', array( $this, 'print_translation_loader' ), 22 );
 		( new Indexing() )->register();
 		( new WindPress( $this->plugin_file ) )->register();
 	}
@@ -160,33 +160,28 @@ final class Application {
 	}
 
 	/**
-	 * Append the on-demand catalog loader to the planner's inline translation tag.
+	 * Print the on-demand catalog loader as its own footer script.
 	 *
-	 * @param string               $tag        Rendered `<script>` tag.
-	 * @param string               $javascript Inline script body.
-	 * @param array<string, mixed> $attributes Script element attributes.
+	 * WordPress prints the module translation data on wp_footer at priority 21
+	 * (WP_Script_Modules::print_script_module_translations(), since 7.0.0)
+	 * through wp_print_inline_script_tag(), whose only filter is
+	 * wp_inline_script_attributes — attributes only, never the tag. The loader
+	 * therefore cannot be appended to that tag; it runs one priority later,
+	 * after filter_translations() has recorded the versioned catalog URL.
 	 */
-	public function inline_translation_loader( string $tag, string $javascript, array $attributes ): string {
-		unset( $javascript );
-		if ( ( $attributes['id'] ?? null ) !== 'wp-script-module-translation-data-' . self::HANDLE ) {
-			return $tag;
-		}
-		if ( ! is_string( $this->catalog_url ) || '' === $this->catalog_url || ! str_ends_with( rtrim( $tag ), '</script>' ) ) {
-			return $tag;
+	public function print_translation_loader(): void {
+		if ( ! is_string( $this->catalog_url ) || '' === $this->catalog_url ) {
+			return;
 		}
 		$url = wp_json_encode( $this->catalog_url, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES );
 		if ( ! is_string( $url ) ) {
-			return $tag;
+			return;
 		}
 		$loader = sprintf(
 			'( ( domain, url ) => { if ( typeof window.fetch !== "function" ) return; const nativeFetch = window.fetch.bind( window ); let pending = nativeFetch( url, { credentials: "same-origin" } ).then( ( r ) => ( r.ok ? r.json() : null ) ).then( ( data ) => { const localeData = data && data.locale_data && ( data.locale_data[ domain ] || data.locale_data.messages ); if ( localeData && window.wp && window.wp.i18n ) { localeData[ "" ] = Object.assign( {}, localeData[ "" ], { domain } ); window.wp.i18n.setLocaleData( localeData, domain ); } } ).catch( () => {} ).finally( () => { pending = null; } ); window.fetch = ( input, init ) => ( pending ? pending.then( () => nativeFetch( input, init ) ) : nativeFetch( input, init ) ); } )( "linker-tools", %s );',
 			$url
 		);
-		$pos    = strrpos( $tag, '</script>' );
-		if ( false === $pos ) {
-			return $tag;
-		}
-		return substr( $tag, 0, $pos ) . "\n" . $loader . "\n</script>";
+		wp_print_inline_script_tag( $loader, array( 'id' => 'linker-planner-translation-loader' ) );
 	}
 
 	/** Isolated React module, using the installed native translation runtime. */
