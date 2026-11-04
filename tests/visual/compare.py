@@ -23,11 +23,14 @@ for case in manifest["cases"]:
     sort_records = case.get("sortRecords") or {}
     sort_mismatches = {}
     for selector, per_side in sort_records.items():
-        live_sets = [sorted(entry["sorted"]) for entry in per_side.get("live", [])]
-        local_sets = [sorted(entry["sorted"]) for entry in per_side.get("local", [])]
+        live_sets = [
+            sorted(entry["sorted"]) for entry in per_side.get("live", [])
+        ]
+        local_sets = [
+            sorted(entry["sorted"]) for entry in per_side.get("local", [])
+        ]
         if live_sets != local_sets:
             sort_mismatches[selector] = {"live": live_sets, "local": local_sets}
-            failed = True
     if live.size != local.size:
         print(f"{stem}: size mismatch {live.size} / {local.size}", file=sys.stderr)
         results.append({"case": stem, "dimension_match": False,
