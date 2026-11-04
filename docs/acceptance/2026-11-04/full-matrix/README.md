@@ -78,6 +78,38 @@ See `RESULTS.md` for the final before/after counts, per-family coverage and
 the honest remainder list, and `DEFECTS.md` for every defect/divergence with
 root cause and reproduction evidence.
 
+## Slice 2 (same day, continued on this branch)
+
+The second bounded slice executed the remainder list's two runnable items:
+
+1. **Role/submission states on an isolated local instance** — the `fullmatrix`
+   instance was recreated from the same snapshot (`just up` +
+   `just pull load`), fixtures created via WP-CLI (four customers in every
+   approval state via `linker_approval_status`/`linker_approval_reason`),
+   then `role-sweep.mjs` (passes 1–3) and `role-sweep-pass4.mjs` exercised:
+   invalid sign-in + password toggle, the two-step registration chain
+   (structure, empty-field validation, back-retention, a real submission —
+   pending account created, customer + internal registration mails captured
+   locally with the owner-ruled recipient routing), the lost-password flow
+   end-to-end (key link arrives via the async queue in ≤90s, reset
+   completes), per-role overviews + endpoint deep links, per-role price
+   gates, rejected-login refusal, logout, and the draft chain (PDP add,
+   quantity edit, zero-delete, remove + undo, continue link), guest inquiry
+   to the native received endpoint with a valid key, contact submission, and
+   the proforma status/document chain. Local mail is captured by the
+   isolation mu-plugin — real transport is impossible, satisfying the
+   test-mail discipline structurally.
+2. **Page-sweep tail** — resumed from `resume.json` against the original
+   matrix blob (sha `25a65991…`) to complete the remaining rows.
+
+Findings added in this slice: F8 (registration website field rejects
+multi-label domains like `www.example.com` — production-confirmed), F9
+(signed-in inquiry order mis-attribution + missing confirmation — needs
+review), plus harness-fact records (PublicGuard `MIN_SECONDS=3` dwell and the
+3-per-hour per-connection submission limit are protective behaviors the
+harness must respect; automated enforce-mode Turnstile submissions are not
+exercisable headless — matching the repo e2e suite's own "no submit" boundary).
+
 ## Resource creation and reclamation contract
 
 Baseline disk: 1,272,147,264 KiB available on `/dev/disk3s1`. One pre-existing

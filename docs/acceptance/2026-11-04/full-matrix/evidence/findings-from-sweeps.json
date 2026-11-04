@@ -1,31 +1,38 @@
 {
   "pageFindings": [
     {
-      "key": "https://de-linker.com/refund-returns/@390",
-      "url": "https://de-linker.com/refund-returns/",
-      "signals": [
-        "real horizontal overflow: scrollWidth=467 vs clientWidth=390 — on this local snapshot the known cause is the CookieYes hidden preference markup (DEFECTS.md F4); production measured clean"
-      ]
-    },
-    {
-      "key": "https://de-linker.com/privacy-policy/@390",
-      "url": "https://de-linker.com/privacy-policy/",
-      "signals": [
-        "real horizontal overflow: scrollWidth=528 vs clientWidth=390 — on this local snapshot the known cause is the CookieYes hidden preference markup (DEFECTS.md F4); production measured clean"
-      ]
-    },
-    {
-      "key": "https://de-linker.com/solution-configurator/@1440",
-      "url": "https://de-linker.com/solution-configurator/",
+      "key": "https://de-linker.com/de/loesungskonfigurator/@1440",
+      "url": "https://de-linker.com/de/loesungskonfigurator/",
       "signals": [
         "basic check failed (no visible h1 at read)"
       ]
     },
     {
-      "key": "https://de-linker.com/solution-configurator/@390",
-      "url": "https://de-linker.com/solution-configurator/",
+      "key": "https://de-linker.com/de/loesungskonfigurator/@390",
+      "url": "https://de-linker.com/de/loesungskonfigurator/",
       "signals": [
         "basic check failed (no visible h1 at read)"
+      ]
+    },
+    {
+      "key": "https://de-linker.com/de/rueckgabe-erstattung/@390",
+      "url": "https://de-linker.com/de/rueckgabe-erstattung/",
+      "signals": [
+        "real horizontal overflow: scrollWidth=492 vs clientWidth=390 — on this local snapshot the known cause is the CookieYes hidden preference markup (DEFECTS.md F4); production measured clean"
+      ]
+    },
+    {
+      "key": "https://de-linker.com/de/datenschutz/@1440",
+      "url": "https://de-linker.com/de/datenschutz/",
+      "signals": [
+        "interaction errors: 6"
+      ]
+    },
+    {
+      "key": "https://de-linker.com/de/datenschutz/@390",
+      "url": "https://de-linker.com/de/datenschutz/",
+      "signals": [
+        "real horizontal overflow: scrollWidth=490 vs clientWidth=390 — on this local snapshot the known cause is the CookieYes hidden preference markup (DEFECTS.md F4); production measured clean"
       ]
     }
   ],
@@ -141,6 +148,42 @@
       ]
     },
     {
+      "key": "inquiry:signed-in-summary:en:1440",
+      "failed": [
+        "signed-in submission accepted: http://127.0.0.1:8904/proforma-request/"
+      ]
+    },
+    {
+      "key": "inquiry:success-confirmation:de:1440",
+      "failed": [
+        "lands on native order-received: http://127.0.0.1:8904/proforma-request/"
+      ]
+    },
+    {
+      "key": "inquiry:receipt-and-notification-queue:en:1440",
+      "failed": [
+        "captured mail for the inquiry: []"
+      ]
+    },
+    {
+      "key": "inquiry:receipt-and-notification-queue:de:1440",
+      "failed": [
+        "captured mail for the inquiry: []"
+      ]
+    },
+    {
+      "key": "contact:notification-queue:en:1440",
+      "failed": [
+        "captured mail for the contact: []"
+      ]
+    },
+    {
+      "key": "contact:notification-queue:de:1440",
+      "failed": [
+        "captured mail for the contact: []"
+      ]
+    },
+    {
       "key": "files-and-feedback:404:en:1440",
       "failed": [
         "missing upload file: status=410"
@@ -210,6 +253,18 @@
       "key": "document-library:search-empty-and-clear:de:390",
       "failed": [
         "clear restores items: items=0"
+      ]
+    },
+    {
+      "key": "dynamic-routes:inquiry-detail-and-received-key:de:1440",
+      "failed": [
+        "success key verified end-to-end: confirmed=false"
+      ]
+    },
+    {
+      "key": "dynamic-routes:password-reset-token-states:de:1440",
+      "failed": [
+        "reset mail captured with key link: link=null"
       ]
     }
   ],

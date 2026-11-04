@@ -3,15 +3,15 @@
     "page": {
       "rows": 708,
       "interaction": {
-        "partially-verified": 300,
-        "pending": 324,
-        "not-applicable": 84
+        "partially-verified": 615,
+        "pending": 5,
+        "not-applicable": 88
       },
       "visual_review": {
-        "partially-verified": 382,
-        "partial-with-finding": 5,
-        "not-applicable": 84,
-        "pending": 237
+        "partially-verified": 609,
+        "partial-with-finding": 10,
+        "not-applicable": 88,
+        "pending": 1
       },
       "render": {
         "verified-basic-local-and-production": 17,
@@ -19,16 +19,15 @@
         "preliminary-pass": 460,
         "pass": 40,
         "verified-basic-production": 72,
-        "not-applicable": 84,
-        "pending": 4
+        "not-applicable": 88
       }
     },
     "state": {
       "rows": 1044,
       "status": {
-        "partially-verified": 418,
+        "partially-verified": 477,
         "not-applicable": 2,
-        "pending": 588,
+        "pending": 529,
         "pass": 20,
         "passed": 16
       }
@@ -41,8 +40,8 @@
       }
     },
     "updated": {
-      "page": 235,
-      "state": 201,
+      "page": 556,
+      "state": 266,
       "template": 31
     }
   }

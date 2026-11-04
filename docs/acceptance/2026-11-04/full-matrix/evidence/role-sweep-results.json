@@ -1,0 +1,2120 @@
+[
+  {
+    "key": "authentication:invalid-sign-in:en:1440",
+    "stateKey": "authentication:invalid-sign-in",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/",
+    "checks": [
+      {
+        "name": "wrong password rejected with message",
+        "result": "pass",
+        "observed": "The username or the password is not correct."
+      },
+      {
+        "name": "stays on login",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/my-account/"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:invalid-sign-in:en:1440.png",
+    "scope": "Wrong-password sign-in attempt on isolated local instance",
+    "observedAt": "2026-11-04T13:01:33.243Z",
+    "pass": "role"
+  },
+  {
+    "key": "authentication:password-toggle:en:1440",
+    "stateKey": "authentication:password-toggle",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/",
+    "checks": [
+      {
+        "name": "password visibility toggle",
+        "result": "observe",
+        "observed": "input type after toggle=absent"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:password-toggle:en:1440.png",
+    "scope": "Password reveal control probe",
+    "observedAt": "2026-11-04T13:01:33.309Z",
+    "pass": "role"
+  },
+  {
+    "key": "authentication:register-person-step:en:1440",
+    "stateKey": "authentication:register-person-step",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/register/",
+    "checks": [
+      {
+        "name": "step 1 company fields visible",
+        "result": "pass",
+        "observed": "company=true"
+      },
+      {
+        "name": "step 2 sign-in fields hidden",
+        "result": "pass",
+        "observed": "emailVisible=false"
+      },
+      {
+        "name": "step indicator shown",
+        "result": "pass",
+        "observed": "indicator=true"
+      }
+    ],
+    "passed": 3,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:register-person-step:en:1440.png",
+    "scope": "Two-step registration structure at rest",
+    "observedAt": "2026-11-04T13:01:35.001Z",
+    "pass": "role"
+  },
+  {
+    "key": "authentication:invalid-fields:en:1440",
+    "stateKey": "authentication:invalid-fields",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/register/",
+    "checks": [
+      {
+        "name": "empty step 1 does not advance",
+        "result": "pass",
+        "observed": "still-step1=true"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:invalid-fields:en:1440.png",
+    "scope": "Empty-step validation on Next",
+    "observedAt": "2026-11-04T13:01:35.672Z",
+    "pass": "role"
+  },
+  {
+    "key": "authentication:back-retains-input:en:1440",
+    "stateKey": "authentication:back-retains-input",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/register/",
+    "checks": [
+      {
+        "name": "back returns to step 1 with input retained",
+        "result": "pass",
+        "observed": "company=Fullmatrix Co mw24lb6c"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:back-retains-input:en:1440.png",
+    "scope": "Step-back input retention",
+    "observedAt": "2026-11-04T13:01:36.910Z",
+    "pass": "role"
+  },
+  {
+    "key": "authentication:registration-success:en:1440",
+    "stateKey": "authentication:registration-success",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/",
+    "checks": [
+      {
+        "name": "registration accepted",
+        "result": "pass",
+        "observed": "url=http://127.0.0.1:8904/my-account/ notice="
+      },
+      {
+        "name": "new account exists",
+        "result": "pass",
+        "observed": "wp user get fm-ui-mw24lb6c-en@local.test"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:registration-success:en:1440.png",
+    "scope": "Real two-step registration submission on isolated local instance; mail captured locally only",
+    "observedAt": "2026-11-04T13:02:11.688Z",
+    "pass": "role",
+    "mailCapture": [
+      {
+        "file": "20261104-130137-937990ba-35e8-43f9-9682-661efbbae385.eml",
+        "to": "Ui Register <fm-ui-mw24lb6c-en@local.test>",
+        "subject": "New customer: Fullmatrix Co mw24lb6c"
+      },
+      {
+        "file": "20261104-130137-c957db83-2068-4ea8-8618-bfece43d956c.eml",
+        "to": "Linker <sales@de-linker.com>",
+        "subject": "We received your partner registration"
+      }
+    ]
+  },
+  {
+    "key": "authentication:password-email-confirmation:en:1440",
+    "stateKey": "authentication:password-email-confirmation",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/",
+    "checks": [
+      {
+        "name": "mail captured for the registration",
+        "result": "pass",
+        "observed": "[{\"to\":\"Ui Register <fm-ui-mw24lb6c-en@local.test>\",\"subject\":\"New customer: Fullmatrix Co mw24lb6c\"},{\"to\":\"Linker <sales@de-linker.com>\",\"subject\":\"We received your partner registration\"}]"
+      },
+      {
+        "name": "recipients are local capture only",
+        "result": "pass",
+        "observed": "files in /Users/chesterjohn/de-linker-local/fullmatrix/mail; isolation mu-plugin blocks real transport"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:password-email-confirmation:en:1440.png",
+    "scope": "Mail discipline: local capture, no real sends",
+    "observedAt": "2026-11-04T13:02:11.721Z",
+    "pass": "role"
+  },
+  {
+    "key": "dynamic-routes:password-reset-token-states:en:1440",
+    "stateKey": "dynamic-routes:password-reset-token-states",
+    "lang": "en",
+    "width": 1440,
+    "url": "-",
+    "checks": [
+      {
+        "name": "reset mail captured with key link",
+        "result": "fail",
+        "observed": "link=null"
+      },
+      {
+        "name": "valid key opens reset form and accepts new password",
+        "result": "observe",
+        "observed": "final=null (no-link-found)"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "wp-cli triggered reset (isolated local); valid-key flow exercised end to end; invalid-key covered in pass1",
+    "observedAt": "2026-11-04T13:02:18.369Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:overview-pending:en:1440",
+    "stateKey": "account:overview-pending",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/",
+    "checks": [
+      {
+        "name": "signed in and on account",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/my-account/"
+      },
+      {
+        "name": "status surface",
+        "result": "observe",
+        "observed": "true"
+      },
+      {
+        "name": "pending notice present, no approval claimed",
+        "result": "pass",
+        "observed": "Under review"
+      }
+    ],
+    "passed": 3,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:overview-pending:en:1440.png",
+    "scope": "Overview for pending customer on isolated local instance",
+    "observedAt": "2026-11-04T13:02:21.280Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:inquiries-pending:en:1440",
+    "stateKey": "account:inquiries-pending",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/orders/",
+    "checks": [
+      {
+        "name": "endpoint reachable signed in",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/my-account/orders/"
+      },
+      {
+        "name": "empty-state content",
+        "result": "observe",
+        "observed": "HTTP 404: no page at this address"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:inquiries-pending:en:1440.png",
+    "scope": "Deep link /my-account/orders/ as pending",
+    "observedAt": "2026-11-04T13:02:23.151Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:saved-solutions-pending:en:1440",
+    "stateKey": "account:saved-solutions-pending",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "endpoint reachable signed in",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/"
+      },
+      {
+        "name": "empty-state content",
+        "result": "observe",
+        "observed": "Products\nSolutions\nPlan with Linker\nServices\nFor Partners\nAbout\nSearch\nSolution draft\nMy account\nEN\n"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:saved-solutions-pending:en:1440.png",
+    "scope": "Deep link /my-account/solutions/ as pending",
+    "observedAt": "2026-11-04T13:02:25.563Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:documents-pending:en:1440",
+    "stateKey": "account:documents-pending",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/documents/",
+    "checks": [
+      {
+        "name": "endpoint reachable signed in",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/my-account/documents/"
+      },
+      {
+        "name": "empty-state content",
+        "result": "observe",
+        "observed": "Products\nSolutions\nPlan with Linker\nServices\nFor Partners\nAbout\nSearch\nSolution draft\nMy account\nEN\n"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:documents-pending:en:1440.png",
+    "scope": "Deep link /my-account/documents/ as pending",
+    "observedAt": "2026-11-04T13:02:27.409Z",
+    "pass": "role"
+  },
+  {
+    "key": "product:pending-price-gate:en:1440",
+    "stateKey": "product:pending-price-gate",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/product/saj-ats1-t63-a/",
+    "checks": [
+      {
+        "name": "price hidden from pending",
+        "result": "pass",
+        "observed": "{\"priceText\":\"Account under review. Prices after approval.\",\"priceVisible\":true}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-product:pending-price-gate:en:1440.png",
+    "scope": "PDP price visibility as pending (guest price row recorded separately)",
+    "observedAt": "2026-11-04T13:02:29.378Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:account-details:en:1440",
+    "stateKey": "account:account-details",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/edit-account/",
+    "checks": [
+      {
+        "name": "details form present",
+        "result": "pass",
+        "observed": "inputs=10"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:account-details:en:1440.png",
+    "scope": "Account details form as signed-in customer (save flows not submitted this pass)",
+    "observedAt": "2026-11-04T13:02:31.038Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:overview-approved:en:1440",
+    "stateKey": "account:overview-approved",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/",
+    "checks": [
+      {
+        "name": "signed in and on account",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/my-account/"
+      },
+      {
+        "name": "status surface",
+        "result": "observe",
+        "observed": "true"
+      },
+      {
+        "name": "overview renders",
+        "result": "observe",
+        "observed": "none"
+      }
+    ],
+    "passed": 3,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:overview-approved:en:1440.png",
+    "scope": "Overview for approved customer on isolated local instance",
+    "observedAt": "2026-11-04T13:02:33.924Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:inquiries-empty:en:1440",
+    "stateKey": "account:inquiries-empty",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/orders/",
+    "checks": [
+      {
+        "name": "endpoint reachable signed in",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/my-account/orders/"
+      },
+      {
+        "name": "empty-state content",
+        "result": "observe",
+        "observed": "HTTP 404: no page at this address"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:inquiries-empty:en:1440.png",
+    "scope": "Deep link /my-account/orders/ as approved",
+    "observedAt": "2026-11-04T13:02:35.733Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:saved-solutions-empty:en:1440",
+    "stateKey": "account:saved-solutions-empty",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "endpoint reachable signed in",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/"
+      },
+      {
+        "name": "empty-state content",
+        "result": "observe",
+        "observed": "Products\nSolutions\nPlan with Linker\nServices\nFor Partners\nAbout\nSearch\nSolution draft\n1\nMy account\nE"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:saved-solutions-empty:en:1440.png",
+    "scope": "Deep link /my-account/solutions/ as approved",
+    "observedAt": "2026-11-04T13:02:38.195Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:documents-empty:en:1440",
+    "stateKey": "account:documents-empty",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/documents/",
+    "checks": [
+      {
+        "name": "endpoint reachable signed in",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/my-account/documents/"
+      },
+      {
+        "name": "empty-state content",
+        "result": "observe",
+        "observed": "Products\nSolutions\nPlan with Linker\nServices\nFor Partners\nAbout\nSearch\nSolution draft\n1\nMy account\nE"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:documents-empty:en:1440.png",
+    "scope": "Deep link /my-account/documents/ as approved",
+    "observedAt": "2026-11-04T13:02:40.058Z",
+    "pass": "role"
+  },
+  {
+    "key": "product:approved-price:en:1440",
+    "stateKey": "product:approved-price",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/product/saj-ats1-t63-a/",
+    "checks": [
+      {
+        "name": "price visible to approved",
+        "result": "pass",
+        "observed": "{\"priceText\":\"€490.00\",\"priceVisible\":true}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-product:approved-price:en:1440.png",
+    "scope": "PDP price visibility as approved (guest price row recorded separately)",
+    "observedAt": "2026-11-04T13:02:42.058Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:account-details:en:1440",
+    "stateKey": "account:account-details",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/edit-account/",
+    "checks": [
+      {
+        "name": "details form present",
+        "result": "pass",
+        "observed": "inputs=10"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:account-details:en:1440.png",
+    "scope": "Account details form as signed-in customer (save flows not submitted this pass)",
+    "observedAt": "2026-11-04T13:02:43.721Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:logout:en:1440",
+    "stateKey": "account:logout",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/?signed-out=true",
+    "checks": [
+      {
+        "name": "logout returns to login",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/my-account/?signed-out=true"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:logout:en:1440.png",
+    "scope": "Native logout endpoint as approved customer",
+    "observedAt": "2026-11-04T13:02:46.291Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:overview-restricted:en:1440",
+    "stateKey": "account:overview-restricted",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/",
+    "checks": [
+      {
+        "name": "signed in and on account",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/my-account/"
+      },
+      {
+        "name": "restriction reason shown",
+        "result": "pass",
+        "observed": "true"
+      },
+      {
+        "name": "overview renders",
+        "result": "observe",
+        "observed": "Restricted"
+      }
+    ],
+    "passed": 3,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:overview-restricted:en:1440.png",
+    "scope": "Overview for restricted customer on isolated local instance",
+    "observedAt": "2026-11-04T13:02:49.224Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:inquiries-restricted:en:1440",
+    "stateKey": "account:inquiries-restricted",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/orders/",
+    "checks": [
+      {
+        "name": "endpoint reachable signed in",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/my-account/orders/"
+      },
+      {
+        "name": "empty-state content",
+        "result": "observe",
+        "observed": "HTTP 404: no page at this address"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:inquiries-restricted:en:1440.png",
+    "scope": "Deep link /my-account/orders/ as restricted",
+    "observedAt": "2026-11-04T13:02:51.043Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:saved-solutions-restricted:en:1440",
+    "stateKey": "account:saved-solutions-restricted",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "endpoint reachable signed in",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/"
+      },
+      {
+        "name": "empty-state content",
+        "result": "observe",
+        "observed": "Products\nSolutions\nPlan with Linker\nServices\nFor Partners\nAbout\nSearch\nSolution draft\nMy account\nEN\n"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:saved-solutions-restricted:en:1440.png",
+    "scope": "Deep link /my-account/solutions/ as restricted",
+    "observedAt": "2026-11-04T13:02:53.534Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:documents-restricted:en:1440",
+    "stateKey": "account:documents-restricted",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/documents/",
+    "checks": [
+      {
+        "name": "endpoint reachable signed in",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/my-account/documents/"
+      },
+      {
+        "name": "empty-state content",
+        "result": "observe",
+        "observed": "Products\nSolutions\nPlan with Linker\nServices\nFor Partners\nAbout\nSearch\nSolution draft\nMy account\nEN\n"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:documents-restricted:en:1440.png",
+    "scope": "Deep link /my-account/documents/ as restricted",
+    "observedAt": "2026-11-04T13:02:55.311Z",
+    "pass": "role"
+  },
+  {
+    "key": "product:restricted-price-gate:en:1440",
+    "stateKey": "product:restricted-price-gate",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/product/saj-ats1-t63-a/",
+    "checks": [
+      {
+        "name": "price hidden from restricted",
+        "result": "pass",
+        "observed": "{\"priceText\":\"Not available for your account\",\"priceVisible\":true}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-product:restricted-price-gate:en:1440.png",
+    "scope": "PDP price visibility as restricted (guest price row recorded separately)",
+    "observedAt": "2026-11-04T13:02:57.253Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:account-details:en:1440",
+    "stateKey": "account:account-details",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/edit-account/",
+    "checks": [
+      {
+        "name": "details form present",
+        "result": "pass",
+        "observed": "inputs=10"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:account-details:en:1440.png",
+    "scope": "Account details form as signed-in customer (save flows not submitted this pass)",
+    "observedAt": "2026-11-04T13:02:58.866Z",
+    "pass": "role"
+  },
+  {
+    "key": "authentication:rejected-sign-in-and-session-revocation:en:1440",
+    "stateKey": "authentication:rejected-sign-in-and-session-revocation",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/",
+    "checks": [
+      {
+        "name": "rejected login refused with guidance",
+        "result": "pass",
+        "observed": "This account is not approved for sign-in. We have emailed you the reason. Write to sales@de-linker.com and we will look at it again."
+      },
+      {
+        "name": "reason email surfaced or queued",
+        "result": "observe",
+        "observed": "reason travels via the async mail job pipeline (engine-dependent delivery); refusal message itself is synchronous"
+      },
+      {
+        "name": "not signed in",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/my-account/"
+      }
+    ],
+    "passed": 3,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:rejected-sign-in-and-session-revocation:en:1440.png",
+    "scope": "Rejected account sign-in refusal + reason visibility",
+    "observedAt": "2026-11-04T13:03:01.662Z",
+    "pass": "role"
+  },
+  {
+    "key": "draft:native-pdp-entry-query-consumed-once:en:1440",
+    "stateKey": "draft:native-pdp-entry-query-consumed-once",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/proforma-request/",
+    "checks": [
+      {
+        "name": "add link engaged",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/proforma-request/?add-to-cart=1178"
+      },
+      {
+        "name": "query consumed / redirected",
+        "result": "pass",
+        "observed": "final=http://127.0.0.1:8904/proforma-request/"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-draft:native-pdp-entry-query-consumed-once:en:1440.png",
+    "scope": "PDP CTA add on isolated local instance as approved customer",
+    "observedAt": "2026-11-04T13:03:07.417Z",
+    "pass": "role"
+  },
+  {
+    "key": "draft:guest-populated:en:1440",
+    "stateKey": "draft:guest-populated",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/cart/",
+    "checks": [
+      {
+        "name": "draft has the added product",
+        "result": "pass",
+        "observed": "rows=1"
+      },
+      {
+        "name": "approved price shown in draft",
+        "result": "pass",
+        "observed": "euro amount present"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-draft:guest-populated:en:1440.png",
+    "scope": "Draft populated via PDP add as approved customer (row family: draft populated + approved price)",
+    "observedAt": "2026-11-04T13:03:09.214Z",
+    "pass": "role"
+  },
+  {
+    "key": "draft:quantity-edit:en:1440",
+    "stateKey": "draft:quantity-edit",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/cart/",
+    "checks": [
+      {
+        "name": "quantity updates to 2",
+        "result": "pass",
+        "observed": "qty=2"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-draft:quantity-edit:en:1440.png",
+    "scope": "Native cart quantity update",
+    "observedAt": "2026-11-04T13:03:10.364Z",
+    "pass": "role"
+  },
+  {
+    "key": "draft:quantity-zero:en:1440",
+    "stateKey": "draft:quantity-zero",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/cart/",
+    "checks": [
+      {
+        "name": "zero quantity deletes row",
+        "result": "pass",
+        "observed": "rows=0"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-draft:quantity-zero:en:1440.png",
+    "scope": "Zero-quantity deletion (undo on this path is not offered by Woo; undo covered on the remove-link path)",
+    "observedAt": "2026-11-04T13:03:11.364Z",
+    "pass": "role"
+  },
+  {
+    "key": "draft:continue-to-inquiry:en:1440",
+    "stateKey": "draft:continue-to-inquiry",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/cart/",
+    "checks": [
+      {
+        "name": "continue link to proforma request present",
+        "result": "observe",
+        "observed": "href=null"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-draft:continue-to-inquiry:en:1440.png",
+    "scope": "Draft → inquiry navigation affordance",
+    "observedAt": "2026-11-04T13:03:42.362Z",
+    "pass": "role"
+  },
+  {
+    "key": "inquiry:guest-empty:en:1440",
+    "stateKey": "inquiry:guest-empty",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/proforma-request/",
+    "checks": [
+      {
+        "name": "guest inquiry form present",
+        "result": "pass",
+        "observed": "visible inputs=5"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-inquiry:guest-empty:en:1440.png",
+    "scope": "Guest proforma-request form at rest",
+    "observedAt": "2026-11-04T13:03:46.463Z",
+    "pass": "role"
+  },
+  {
+    "key": "inquiry:invalid-fields:en:1440",
+    "stateKey": "inquiry:invalid-fields",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/proforma-request/",
+    "checks": [
+      {
+        "name": "empty submit does not navigate",
+        "result": "pass",
+        "observed": "url=http://127.0.0.1:8904/proforma-request/"
+      },
+      {
+        "name": "browser validation flags",
+        "result": "observe",
+        "observed": "name,email,consent"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-inquiry:invalid-fields:en:1440.png",
+    "scope": "Empty inquiry submission blocked pre-transport",
+    "observedAt": "2026-11-04T13:03:47.431Z",
+    "pass": "role"
+  },
+  {
+    "key": "inquiry:success-confirmation:en:1440",
+    "stateKey": "inquiry:success-confirmation",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/proforma-request/",
+    "checks": [
+      {
+        "name": "lands on native order-received",
+        "result": "fail",
+        "observed": "http://127.0.0.1:8904/proforma-request/"
+      },
+      {
+        "name": "confirmation content",
+        "result": "observe",
+        "observed": "Send an inquiry"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-inquiry:success-confirmation:en:1440.png",
+    "scope": "Real guest inquiry submission on isolated local instance",
+    "observedAt": "2026-11-04T13:03:49.083Z",
+    "pass": "role",
+    "mailCapture": []
+  },
+  {
+    "key": "inquiry:receipt-and-notification-queue:en:1440",
+    "stateKey": "inquiry:receipt-and-notification-queue",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/proforma-request/",
+    "checks": [
+      {
+        "name": "captured mail for the inquiry",
+        "result": "fail",
+        "observed": "[]"
+      },
+      {
+        "name": "no real transport",
+        "result": "pass",
+        "observed": "isolation capture dir only"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-inquiry:receipt-and-notification-queue:en:1440.png",
+    "scope": "Mail discipline: recipients asserted from local capture, no real sends",
+    "observedAt": "2026-11-04T13:03:49.115Z",
+    "pass": "role"
+  },
+  {
+    "key": "dynamic-routes:inquiry-detail-and-received-key:en:1440",
+    "stateKey": "dynamic-routes:inquiry-detail-and-received-key",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/proforma-request/order-received/?key=fm_bogus_key",
+    "checks": [
+      {
+        "name": "success key verified end-to-end",
+        "result": "fail",
+        "observed": "confirmed=false"
+      },
+      {
+        "name": "bogus key page behavior",
+        "result": "observe",
+        "observed": "h1=This page does not exist."
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-dynamic-routes:inquiry-detail-and-received-key:en:1440.png",
+    "scope": "Valid received-key exercised via real submission; bogus key separately",
+    "observedAt": "2026-11-04T13:03:50.824Z",
+    "pass": "role"
+  },
+  {
+    "key": "contact:validation:en:1440",
+    "stateKey": "contact:validation",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/contact/",
+    "checks": [
+      {
+        "name": "empty contact submit blocked",
+        "result": "pass",
+        "observed": "url=http://127.0.0.1:8904/contact/"
+      },
+      {
+        "name": "privacy link near form",
+        "result": "pass",
+        "observed": "privacy link count"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-contact:validation:en:1440.png",
+    "scope": "Contact form empty-submit + privacy link",
+    "observedAt": "2026-11-04T13:03:53.367Z",
+    "pass": "role"
+  },
+  {
+    "key": "contact:success:en:1440",
+    "stateKey": "contact:success",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/contact/?contact=invalid#contact-form",
+    "checks": [
+      {
+        "name": "success state reached (notice or query arg)",
+        "result": "fail",
+        "observed": "url=http://127.0.0.1:8904/contact/?contact=invalid#contact-form notice="
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-contact:success:en:1440.png",
+    "scope": "Real contact submission on isolated local instance",
+    "observedAt": "2026-11-04T13:04:26.664Z",
+    "pass": "role",
+    "mailCapture": []
+  },
+  {
+    "key": "contact:notification-queue:en:1440",
+    "stateKey": "contact:notification-queue",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/contact/?contact=invalid#contact-form",
+    "checks": [
+      {
+        "name": "captured mail for the contact",
+        "result": "fail",
+        "observed": "[]"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-contact:notification-queue:en:1440.png",
+    "scope": "Contact notification recipients asserted from local capture",
+    "observedAt": "2026-11-04T13:04:26.778Z",
+    "pass": "role"
+  },
+  {
+    "key": "inquiry:signed-in-summary:en:1440",
+    "stateKey": "inquiry:signed-in-summary",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/proforma-request/",
+    "checks": [
+      {
+        "name": "signed-in submission accepted",
+        "result": "fail",
+        "observed": "http://127.0.0.1:8904/proforma-request/"
+      },
+      {
+        "name": "signed-in summary/prefill observed",
+        "result": "observe",
+        "observed": "Send an inquiry"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-inquiry:signed-in-summary:en:1440.png",
+    "scope": "Approved-customer inquiry submission (prefill recorded at rest earlier)",
+    "observedAt": "2026-11-04T13:04:35.812Z",
+    "pass": "role"
+  },
+  {
+    "key": "authentication:invalid-sign-in:de:1440",
+    "stateKey": "authentication:invalid-sign-in",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/",
+    "checks": [
+      {
+        "name": "wrong password rejected with message",
+        "result": "pass",
+        "observed": "The username or the password is not correct."
+      },
+      {
+        "name": "stays on login",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/my-account/"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:invalid-sign-in:de:1440.png",
+    "scope": "Wrong-password sign-in attempt on isolated local instance",
+    "observedAt": "2026-11-04T13:04:41.448Z",
+    "pass": "role"
+  },
+  {
+    "key": "authentication:password-toggle:de:1440",
+    "stateKey": "authentication:password-toggle",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/",
+    "checks": [
+      {
+        "name": "password visibility toggle",
+        "result": "observe",
+        "observed": "input type after toggle=absent"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:password-toggle:de:1440.png",
+    "scope": "Password reveal control probe",
+    "observedAt": "2026-11-04T13:04:41.517Z",
+    "pass": "role"
+  },
+  {
+    "key": "authentication:register-person-step:de:1440",
+    "stateKey": "authentication:register-person-step",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/register/",
+    "checks": [
+      {
+        "name": "step 1 company fields visible",
+        "result": "pass",
+        "observed": "company=true"
+      },
+      {
+        "name": "step 2 sign-in fields hidden",
+        "result": "pass",
+        "observed": "emailVisible=false"
+      },
+      {
+        "name": "step indicator shown",
+        "result": "pass",
+        "observed": "indicator=true"
+      }
+    ],
+    "passed": 3,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:register-person-step:de:1440.png",
+    "scope": "Two-step registration structure at rest",
+    "observedAt": "2026-11-04T13:04:43.208Z",
+    "pass": "role"
+  },
+  {
+    "key": "authentication:invalid-fields:de:1440",
+    "stateKey": "authentication:invalid-fields",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/register/",
+    "checks": [
+      {
+        "name": "empty step 1 does not advance",
+        "result": "pass",
+        "observed": "still-step1=true"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:invalid-fields:de:1440.png",
+    "scope": "Empty-step validation on Next",
+    "observedAt": "2026-11-04T13:04:43.855Z",
+    "pass": "role"
+  },
+  {
+    "key": "authentication:back-retains-input:de:1440",
+    "stateKey": "authentication:back-retains-input",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/register/",
+    "checks": [
+      {
+        "name": "back returns to step 1 with input retained",
+        "result": "pass",
+        "observed": "company=Fullmatrix Co mw24lb6c"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:back-retains-input:de:1440.png",
+    "scope": "Step-back input retention",
+    "observedAt": "2026-11-04T13:04:45.059Z",
+    "pass": "role"
+  },
+  {
+    "key": "authentication:registration-success:de:1440",
+    "stateKey": "authentication:registration-success",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/",
+    "checks": [
+      {
+        "name": "registration accepted",
+        "result": "pass",
+        "observed": "url=http://127.0.0.1:8904/my-account/ notice="
+      },
+      {
+        "name": "new account exists",
+        "result": "pass",
+        "observed": "wp user get fm-ui-mw24lb6c-de@local.test"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:registration-success:de:1440.png",
+    "scope": "Real two-step registration submission on isolated local instance; mail captured locally only",
+    "observedAt": "2026-11-04T13:05:20.160Z",
+    "pass": "role",
+    "mailCapture": [
+      {
+        "file": "20261104-130445-d84a9eeb-23af-4bbe-b32f-b3f3201724b0.eml",
+        "to": "Ui Register <fm-ui-mw24lb6c-de@local.test>",
+        "subject": "New customer: Fullmatrix Co mw24lb6c"
+      },
+      {
+        "file": "20261104-130446-6a6ffca1-3604-4664-adaa-6a3ac59d33a3.eml",
+        "to": "Linker <sales@de-linker.com>",
+        "subject": "We received your partner registration"
+      }
+    ]
+  },
+  {
+    "key": "authentication:password-email-confirmation:de:1440",
+    "stateKey": "authentication:password-email-confirmation",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/",
+    "checks": [
+      {
+        "name": "mail captured for the registration",
+        "result": "pass",
+        "observed": "[{\"to\":\"Ui Register <fm-ui-mw24lb6c-de@local.test>\",\"subject\":\"New customer: Fullmatrix Co mw24lb6c\"},{\"to\":\"Linker <sales@de-linker.com>\",\"subject\":\"We received your partner registration\"}]"
+      },
+      {
+        "name": "recipients are local capture only",
+        "result": "pass",
+        "observed": "files in /Users/chesterjohn/de-linker-local/fullmatrix/mail; isolation mu-plugin blocks real transport"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:password-email-confirmation:de:1440.png",
+    "scope": "Mail discipline: local capture, no real sends",
+    "observedAt": "2026-11-04T13:05:20.203Z",
+    "pass": "role"
+  },
+  {
+    "key": "dynamic-routes:password-reset-token-states:de:1440",
+    "stateKey": "dynamic-routes:password-reset-token-states",
+    "lang": "de",
+    "width": 1440,
+    "url": "-",
+    "checks": [
+      {
+        "name": "reset mail captured with key link",
+        "result": "fail",
+        "observed": "link=null"
+      },
+      {
+        "name": "valid key opens reset form and accepts new password",
+        "result": "observe",
+        "observed": "final=null (no-link-found)"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": null,
+    "scope": "wp-cli triggered reset (isolated local); valid-key flow exercised end to end; invalid-key covered in pass1",
+    "observedAt": "2026-11-04T13:05:26.821Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:overview-pending:de:1440",
+    "stateKey": "account:overview-pending",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/",
+    "checks": [
+      {
+        "name": "signed in and on account",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/my-account/"
+      },
+      {
+        "name": "status surface",
+        "result": "observe",
+        "observed": "true"
+      },
+      {
+        "name": "pending notice present, no approval claimed",
+        "result": "pass",
+        "observed": "Under review"
+      }
+    ],
+    "passed": 3,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:overview-pending:de:1440.png",
+    "scope": "Overview for pending customer on isolated local instance",
+    "observedAt": "2026-11-04T13:05:29.694Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:inquiries-pending:de:1440",
+    "stateKey": "account:inquiries-pending",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/orders/",
+    "checks": [
+      {
+        "name": "endpoint reachable signed in",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/my-account/orders/"
+      },
+      {
+        "name": "empty-state content",
+        "result": "observe",
+        "observed": "HTTP 404: no page at this address"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:inquiries-pending:de:1440.png",
+    "scope": "Deep link /my-account/orders/ as pending",
+    "observedAt": "2026-11-04T13:05:31.528Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:saved-solutions-pending:de:1440",
+    "stateKey": "account:saved-solutions-pending",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "endpoint reachable signed in",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/"
+      },
+      {
+        "name": "empty-state content",
+        "result": "observe",
+        "observed": "Products\nSolutions\nPlan with Linker\nServices\nFor Partners\nAbout\nSearch\nSolution draft\nMy account\nEN\n"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:saved-solutions-pending:de:1440.png",
+    "scope": "Deep link /my-account/solutions/ as pending",
+    "observedAt": "2026-11-04T13:05:33.935Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:documents-pending:de:1440",
+    "stateKey": "account:documents-pending",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/documents/",
+    "checks": [
+      {
+        "name": "endpoint reachable signed in",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/my-account/documents/"
+      },
+      {
+        "name": "empty-state content",
+        "result": "observe",
+        "observed": "Products\nSolutions\nPlan with Linker\nServices\nFor Partners\nAbout\nSearch\nSolution draft\nMy account\nEN\n"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:documents-pending:de:1440.png",
+    "scope": "Deep link /my-account/documents/ as pending",
+    "observedAt": "2026-11-04T13:05:35.721Z",
+    "pass": "role"
+  },
+  {
+    "key": "product:pending-price-gate:de:1440",
+    "stateKey": "product:pending-price-gate",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/product/saj-ats1-t63-a/",
+    "checks": [
+      {
+        "name": "price hidden from pending",
+        "result": "pass",
+        "observed": "{\"priceText\":\"Account under review. Prices after approval.\",\"priceVisible\":true}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-product:pending-price-gate:de:1440.png",
+    "scope": "PDP price visibility as pending (guest price row recorded separately)",
+    "observedAt": "2026-11-04T13:05:37.653Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:account-details:de:1440",
+    "stateKey": "account:account-details",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/edit-account/",
+    "checks": [
+      {
+        "name": "details form present",
+        "result": "pass",
+        "observed": "inputs=10"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:account-details:de:1440.png",
+    "scope": "Account details form as signed-in customer (save flows not submitted this pass)",
+    "observedAt": "2026-11-04T13:05:39.327Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:overview-approved:de:1440",
+    "stateKey": "account:overview-approved",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/",
+    "checks": [
+      {
+        "name": "signed in and on account",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/my-account/"
+      },
+      {
+        "name": "status surface",
+        "result": "observe",
+        "observed": "true"
+      },
+      {
+        "name": "overview renders",
+        "result": "observe",
+        "observed": "none"
+      }
+    ],
+    "passed": 3,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:overview-approved:de:1440.png",
+    "scope": "Overview for approved customer on isolated local instance",
+    "observedAt": "2026-11-04T13:05:42.215Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:inquiries-empty:de:1440",
+    "stateKey": "account:inquiries-empty",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/orders/",
+    "checks": [
+      {
+        "name": "endpoint reachable signed in",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/my-account/orders/"
+      },
+      {
+        "name": "empty-state content",
+        "result": "observe",
+        "observed": "HTTP 404: no page at this address"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:inquiries-empty:de:1440.png",
+    "scope": "Deep link /my-account/orders/ as approved",
+    "observedAt": "2026-11-04T13:05:44.133Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:saved-solutions-empty:de:1440",
+    "stateKey": "account:saved-solutions-empty",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "endpoint reachable signed in",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/"
+      },
+      {
+        "name": "empty-state content",
+        "result": "observe",
+        "observed": "Products\nSolutions\nPlan with Linker\nServices\nFor Partners\nAbout\nSearch\nSolution draft\n1\nMy account\nE"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:saved-solutions-empty:de:1440.png",
+    "scope": "Deep link /my-account/solutions/ as approved",
+    "observedAt": "2026-11-04T13:05:46.577Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:documents-empty:de:1440",
+    "stateKey": "account:documents-empty",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/documents/",
+    "checks": [
+      {
+        "name": "endpoint reachable signed in",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/my-account/documents/"
+      },
+      {
+        "name": "empty-state content",
+        "result": "observe",
+        "observed": "Products\nSolutions\nPlan with Linker\nServices\nFor Partners\nAbout\nSearch\nSolution draft\n1\nMy account\nE"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:documents-empty:de:1440.png",
+    "scope": "Deep link /my-account/documents/ as approved",
+    "observedAt": "2026-11-04T13:05:48.354Z",
+    "pass": "role"
+  },
+  {
+    "key": "product:approved-price:de:1440",
+    "stateKey": "product:approved-price",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/product/saj-ats1-t63-a/",
+    "checks": [
+      {
+        "name": "price visible to approved",
+        "result": "pass",
+        "observed": "{\"priceText\":\"€490.00\",\"priceVisible\":true}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-product:approved-price:de:1440.png",
+    "scope": "PDP price visibility as approved (guest price row recorded separately)",
+    "observedAt": "2026-11-04T13:05:50.227Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:account-details:de:1440",
+    "stateKey": "account:account-details",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/edit-account/",
+    "checks": [
+      {
+        "name": "details form present",
+        "result": "pass",
+        "observed": "inputs=10"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:account-details:de:1440.png",
+    "scope": "Account details form as signed-in customer (save flows not submitted this pass)",
+    "observedAt": "2026-11-04T13:05:51.878Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:logout:de:1440",
+    "stateKey": "account:logout",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/?signed-out=true",
+    "checks": [
+      {
+        "name": "logout returns to login",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/my-account/?signed-out=true"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:logout:de:1440.png",
+    "scope": "Native logout endpoint as approved customer",
+    "observedAt": "2026-11-04T13:05:54.393Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:overview-restricted:de:1440",
+    "stateKey": "account:overview-restricted",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/",
+    "checks": [
+      {
+        "name": "signed in and on account",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/my-account/"
+      },
+      {
+        "name": "restriction reason shown",
+        "result": "pass",
+        "observed": "true"
+      },
+      {
+        "name": "overview renders",
+        "result": "observe",
+        "observed": "Restricted"
+      }
+    ],
+    "passed": 3,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:overview-restricted:de:1440.png",
+    "scope": "Overview for restricted customer on isolated local instance",
+    "observedAt": "2026-11-04T13:05:57.273Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:inquiries-restricted:de:1440",
+    "stateKey": "account:inquiries-restricted",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/orders/",
+    "checks": [
+      {
+        "name": "endpoint reachable signed in",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/my-account/orders/"
+      },
+      {
+        "name": "empty-state content",
+        "result": "observe",
+        "observed": "HTTP 404: no page at this address"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:inquiries-restricted:de:1440.png",
+    "scope": "Deep link /my-account/orders/ as restricted",
+    "observedAt": "2026-11-04T13:05:59.117Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:saved-solutions-restricted:de:1440",
+    "stateKey": "account:saved-solutions-restricted",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/",
+    "checks": [
+      {
+        "name": "endpoint reachable signed in",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/"
+      },
+      {
+        "name": "empty-state content",
+        "result": "observe",
+        "observed": "Products\nSolutions\nPlan with Linker\nServices\nFor Partners\nAbout\nSearch\nSolution draft\nMy account\nEN\n"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:saved-solutions-restricted:de:1440.png",
+    "scope": "Deep link /my-account/solutions/ as restricted",
+    "observedAt": "2026-11-04T13:06:01.609Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:documents-restricted:de:1440",
+    "stateKey": "account:documents-restricted",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/documents/",
+    "checks": [
+      {
+        "name": "endpoint reachable signed in",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/my-account/documents/"
+      },
+      {
+        "name": "empty-state content",
+        "result": "observe",
+        "observed": "Products\nSolutions\nPlan with Linker\nServices\nFor Partners\nAbout\nSearch\nSolution draft\nMy account\nEN\n"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:documents-restricted:de:1440.png",
+    "scope": "Deep link /my-account/documents/ as restricted",
+    "observedAt": "2026-11-04T13:06:03.421Z",
+    "pass": "role"
+  },
+  {
+    "key": "product:restricted-price-gate:de:1440",
+    "stateKey": "product:restricted-price-gate",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/product/saj-ats1-t63-a/",
+    "checks": [
+      {
+        "name": "price hidden from restricted",
+        "result": "pass",
+        "observed": "{\"priceText\":\"Not available for your account\",\"priceVisible\":true}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-product:restricted-price-gate:de:1440.png",
+    "scope": "PDP price visibility as restricted (guest price row recorded separately)",
+    "observedAt": "2026-11-04T13:06:05.351Z",
+    "pass": "role"
+  },
+  {
+    "key": "account:account-details:de:1440",
+    "stateKey": "account:account-details",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/edit-account/",
+    "checks": [
+      {
+        "name": "details form present",
+        "result": "pass",
+        "observed": "inputs=10"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:account-details:de:1440.png",
+    "scope": "Account details form as signed-in customer (save flows not submitted this pass)",
+    "observedAt": "2026-11-04T13:06:07.025Z",
+    "pass": "role"
+  },
+  {
+    "key": "authentication:rejected-sign-in-and-session-revocation:de:1440",
+    "stateKey": "authentication:rejected-sign-in-and-session-revocation",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/my-account/",
+    "checks": [
+      {
+        "name": "rejected login refused with guidance",
+        "result": "pass",
+        "observed": "This account is not approved for sign-in. We have emailed you the reason. Write to sales@de-linker.com and we will look at it again."
+      },
+      {
+        "name": "reason email surfaced or queued",
+        "result": "observe",
+        "observed": "reason travels via the async mail job pipeline (engine-dependent delivery); refusal message itself is synchronous"
+      },
+      {
+        "name": "not signed in",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/my-account/"
+      }
+    ],
+    "passed": 3,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:rejected-sign-in-and-session-revocation:de:1440.png",
+    "scope": "Rejected account sign-in refusal + reason visibility",
+    "observedAt": "2026-11-04T13:06:09.852Z",
+    "pass": "role"
+  },
+  {
+    "key": "draft:native-pdp-entry-query-consumed-once:de:1440",
+    "stateKey": "draft:native-pdp-entry-query-consumed-once",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/proforma-request/",
+    "checks": [
+      {
+        "name": "add link engaged",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/proforma-request/?add-to-cart=1178"
+      },
+      {
+        "name": "query consumed / redirected",
+        "result": "pass",
+        "observed": "final=http://127.0.0.1:8904/proforma-request/"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-draft:native-pdp-entry-query-consumed-once:de:1440.png",
+    "scope": "PDP CTA add on isolated local instance as approved customer",
+    "observedAt": "2026-11-04T13:06:15.806Z",
+    "pass": "role"
+  },
+  {
+    "key": "draft:guest-populated:de:1440",
+    "stateKey": "draft:guest-populated",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/cart/",
+    "checks": [
+      {
+        "name": "draft has the added product",
+        "result": "pass",
+        "observed": "rows=1"
+      },
+      {
+        "name": "approved price shown in draft",
+        "result": "pass",
+        "observed": "euro amount present"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-draft:guest-populated:de:1440.png",
+    "scope": "Draft populated via PDP add as approved customer (row family: draft populated + approved price)",
+    "observedAt": "2026-11-04T13:06:17.699Z",
+    "pass": "role"
+  },
+  {
+    "key": "draft:quantity-edit:de:1440",
+    "stateKey": "draft:quantity-edit",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/cart/",
+    "checks": [
+      {
+        "name": "quantity updates to 2",
+        "result": "pass",
+        "observed": "qty=2"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-draft:quantity-edit:de:1440.png",
+    "scope": "Native cart quantity update",
+    "observedAt": "2026-11-04T13:06:18.834Z",
+    "pass": "role"
+  },
+  {
+    "key": "draft:quantity-zero:de:1440",
+    "stateKey": "draft:quantity-zero",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/cart/",
+    "checks": [
+      {
+        "name": "zero quantity deletes row",
+        "result": "pass",
+        "observed": "rows=0"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-draft:quantity-zero:de:1440.png",
+    "scope": "Zero-quantity deletion (undo on this path is not offered by Woo; undo covered on the remove-link path)",
+    "observedAt": "2026-11-04T13:06:19.831Z",
+    "pass": "role"
+  },
+  {
+    "key": "draft:continue-to-inquiry:de:1440",
+    "stateKey": "draft:continue-to-inquiry",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/cart/",
+    "checks": [
+      {
+        "name": "continue link to proforma request present",
+        "result": "observe",
+        "observed": "href=null"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-draft:continue-to-inquiry:de:1440.png",
+    "scope": "Draft → inquiry navigation affordance",
+    "observedAt": "2026-11-04T13:06:50.843Z",
+    "pass": "role"
+  },
+  {
+    "key": "inquiry:guest-empty:de:1440",
+    "stateKey": "inquiry:guest-empty",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/proforma-request/",
+    "checks": [
+      {
+        "name": "guest inquiry form present",
+        "result": "pass",
+        "observed": "visible inputs=5"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-inquiry:guest-empty:de:1440.png",
+    "scope": "Guest proforma-request form at rest",
+    "observedAt": "2026-11-04T13:06:54.932Z",
+    "pass": "role"
+  },
+  {
+    "key": "inquiry:invalid-fields:de:1440",
+    "stateKey": "inquiry:invalid-fields",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/proforma-request/",
+    "checks": [
+      {
+        "name": "empty submit does not navigate",
+        "result": "pass",
+        "observed": "url=http://127.0.0.1:8904/proforma-request/"
+      },
+      {
+        "name": "browser validation flags",
+        "result": "observe",
+        "observed": "name,email,consent"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-inquiry:invalid-fields:de:1440.png",
+    "scope": "Empty inquiry submission blocked pre-transport",
+    "observedAt": "2026-11-04T13:06:55.915Z",
+    "pass": "role"
+  },
+  {
+    "key": "inquiry:success-confirmation:de:1440",
+    "stateKey": "inquiry:success-confirmation",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/proforma-request/",
+    "checks": [
+      {
+        "name": "lands on native order-received",
+        "result": "fail",
+        "observed": "http://127.0.0.1:8904/proforma-request/"
+      },
+      {
+        "name": "confirmation content",
+        "result": "observe",
+        "observed": "Send an inquiry"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-inquiry:success-confirmation:de:1440.png",
+    "scope": "Real guest inquiry submission on isolated local instance",
+    "observedAt": "2026-11-04T13:06:57.548Z",
+    "pass": "role",
+    "mailCapture": []
+  },
+  {
+    "key": "inquiry:receipt-and-notification-queue:de:1440",
+    "stateKey": "inquiry:receipt-and-notification-queue",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/proforma-request/",
+    "checks": [
+      {
+        "name": "captured mail for the inquiry",
+        "result": "fail",
+        "observed": "[]"
+      },
+      {
+        "name": "no real transport",
+        "result": "pass",
+        "observed": "isolation capture dir only"
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-inquiry:receipt-and-notification-queue:de:1440.png",
+    "scope": "Mail discipline: recipients asserted from local capture, no real sends",
+    "observedAt": "2026-11-04T13:06:57.581Z",
+    "pass": "role"
+  },
+  {
+    "key": "dynamic-routes:inquiry-detail-and-received-key:de:1440",
+    "stateKey": "dynamic-routes:inquiry-detail-and-received-key",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/proforma-request/order-received/?key=fm_bogus_key",
+    "checks": [
+      {
+        "name": "success key verified end-to-end",
+        "result": "fail",
+        "observed": "confirmed=false"
+      },
+      {
+        "name": "bogus key page behavior",
+        "result": "observe",
+        "observed": "h1=This page does not exist."
+      }
+    ],
+    "passed": 1,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-dynamic-routes:inquiry-detail-and-received-key:de:1440.png",
+    "scope": "Valid received-key exercised via real submission; bogus key separately",
+    "observedAt": "2026-11-04T13:06:59.263Z",
+    "pass": "role"
+  },
+  {
+    "key": "contact:validation:de:1440",
+    "stateKey": "contact:validation",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/contact/",
+    "checks": [
+      {
+        "name": "empty contact submit blocked",
+        "result": "pass",
+        "observed": "url=http://127.0.0.1:8904/contact/"
+      },
+      {
+        "name": "privacy link near form",
+        "result": "pass",
+        "observed": "privacy link count"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-contact:validation:de:1440.png",
+    "scope": "Contact form empty-submit + privacy link",
+    "observedAt": "2026-11-04T13:07:01.894Z",
+    "pass": "role"
+  },
+  {
+    "key": "contact:success:de:1440",
+    "stateKey": "contact:success",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/contact/?contact=receipt_pending&contact_order=wc_order_v77ad1e9neqwE#contact-form",
+    "checks": [
+      {
+        "name": "success state reached (notice or query arg)",
+        "result": "pass",
+        "observed": "url=http://127.0.0.1:8904/contact/?contact=receipt_pending&contact_order=wc_order_v77ad1e9neqwE#contact-form notice=✓\n\nThank you. Your message is with the Linker team.\n\nSend another message"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-contact:success:de:1440.png",
+    "scope": "Real contact submission on isolated local instance",
+    "observedAt": "2026-11-04T13:07:05.317Z",
+    "pass": "role",
+    "mailCapture": []
+  },
+  {
+    "key": "contact:notification-queue:de:1440",
+    "stateKey": "contact:notification-queue",
+    "lang": "de",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/contact/?contact=receipt_pending&contact_order=wc_order_v77ad1e9neqwE#contact-form",
+    "checks": [
+      {
+        "name": "captured mail for the contact",
+        "result": "fail",
+        "observed": "[]"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-contact:notification-queue:de:1440.png",
+    "scope": "Contact notification recipients asserted from local capture",
+    "observedAt": "2026-11-04T13:07:05.410Z",
+    "pass": "role"
+  },
+  {
+    "key": "authentication:register-person-step:en:390",
+    "stateKey": "authentication:register-person-step",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/my-account/register/",
+    "checks": [
+      {
+        "name": "two-step structure at 390",
+        "result": "pass",
+        "observed": "step1=true step2hidden=true"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:register-person-step:en:390.png",
+    "scope": "Two-step registration at mobile width",
+    "observedAt": "2026-11-04T13:07:07.496Z",
+    "pass": "role"
+  },
+  {
+    "key": "product:pending-price-gate:en:390",
+    "stateKey": "product:pending-price-gate",
+    "lang": "en",
+    "width": 390,
+    "url": "http://127.0.0.1:8904/product/saj-ats1-t63-a/",
+    "checks": [
+      {
+        "name": "guest sees no price at 390",
+        "result": "pass",
+        "observed": "{\"priceText\":\"Net price after partner sign-inCreate account\",\"priceVisible\":false}"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-product:pending-price-gate:en:390.png",
+    "scope": "Guest price gate at mobile width",
+    "observedAt": "2026-11-04T13:07:09.450Z",
+    "pass": "role"
+  }
+]

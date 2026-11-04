@@ -6,7 +6,31 @@ All counts parsed from the matrix JSONs' top-level rows
 (`docs/acceptance/2026-10-22/full-site/`), before = branch base `8c9e6d809`,
 after = this branch's merge commit.
 
-## Coverage delta
+## Coverage delta (cumulative, after slice 2 same-day)
+
+| Matrix | Column | Original | After slice 1 | After slice 2 |
+| --- | --- | ---: | ---: | ---: |
+| Page (708 rows) | interaction pending | 556 | 324 | **5** |
+| | interaction partially-verified | 68 | 300 | **615** |
+| | interaction not-applicable | 84 | 84 | **88** |
+| | visual_review pending | 387 | 237 | **1** |
+| | visual_review partially-verified | 236 | 382 | **609** |
+| | visual_review partial-with-finding | 1 | 5 | **10** |
+| | render pending | 4 | 4 | **0** |
+| State (1,044 rows) | pending | 771 | 588 | **529** |
+| | partially-verified | 235 | 418 | **477** |
+| Template (31 rows) | pending | 29 | 1 | **1** (LC 30, empty content) |
+
+Slice-2 specifics: the page sweep finished all 556 selected rows (547
+basic-pass; 9 fails = 4× configurator no-H1 (F7, now also DE), 4× Trina
+reference module 404 on snapshot AND production → rows moved to
+not-applicable with the measured basis, 1× browser-crash row that makes no
+claim). Role/submission passes contributed the registration chain, password
+reset end-to-end, per-role account/price views, the draft chain, guest
+inquiry to the native received endpoint with a valid key, contact success,
+and the proforma status/document probe.
+
+## Slice-1 coverage delta (kept for history)
 
 | Matrix | Column | Before | After | Δ |
 | --- | --- | ---: | ---: | ---: |
@@ -74,16 +98,23 @@ mismatches since corrected or re-verified (compare family verified via
    pass was not authorized to make (no model prompts). Executable in a
    follow-up with `just serve fullmatrix --service engine` and an authorized
    model budget.
-2. **Role/permission and submission states (~200 state rows)**:
-   `authentication` success chains, `account` role views
-   (pending/restricted/approved), `draft` approved-price states, `inquiry`
-   submission/confirmation/receipt-queue, `contact` success, Proforma PDF,
-   `files-and-feedback` signed-in auth, `dynamic-routes` valid-key states.
-   These are executable on an isolated local instance with account fixtures
-   (local mail capture only) — not executed this pass because the page sweep
-   consumed the instance's throughput budget; the instance pattern and
-   harnesses are established for a follow-up.
-3. **Page sweep continuation (321 selected rows)**: resumable as above.
+2. ~~Role/permission and submission states~~ — **executed in slice 2** on
+   the recreated isolated instance (see README "Slice 2"). Sub-items that
+   remain open within this group:
+   - Inquiry/contact **notification delivery** (receipt-and-notification-queue
+     rows' delivery half): outbound jobs are authorized by the Jev assessment
+     chain (`Inquiry/Assessment/SendAuthorization`) — engine/model-dependent.
+   - Signed-in inquiry end state: F9 (order created as customer 0, no
+     confirmation shown) — needs the main line's review before the row can
+     close.
+   - Proforma PDF content depth: the team status transition was simulated
+     locally and the owner document surface probed; full document content
+     verification stays with the engine-dependent chain.
+   - DE-language submission rows carry refused-submission findings from the
+     guard timing window (harness); the identical chains are proven on EN.
+3. ~~Page sweep continuation~~ — **completed in slice 2**: all 556 selected
+   rows captured (the sweep now covers every pending page row in the
+   original matrix).
 4. **Manual visual review (visual_review ≠ pass anywhere)**: no row claims
    full manual visual approval; automated geometry/media signals only.
 5. **Live-vs-local pixel parity**: not run — requires the paired-capture
@@ -96,9 +127,13 @@ mismatches since corrected or re-verified (compare family verified via
 
 ## Resource report
 
-- Instance `fullmatrix` (ports 8904-8906, DB `linker_fullmatrix`) created by
-  the interrupted attempt, reused and **retired at pass end** via
-  `just down fullmatrix` + retirement (DB/files/registration removed).
+- Instance `fullmatrix`: created by the interrupted attempt, retired after
+  slice 1, **recreated for slice 2** from the same snapshot (`just up` +
+  `just pull load`, 2760/2760 attachments with 1 missing attachment file
+  flagged) with this worktree's plugins linked, and **retired again at
+  slice-2 end**. Slice-2 local writes (fixtures, submissions, orders,
+  mail-capture files) lived only inside the instance and are destroyed with
+  it; the evidence JSONs in this directory carry the durable record.
 - Production snapshot `~/de-linker-data/20261104-1914/` kept subject to the
   shared latest-three successful-snapshot boundary (it is the newest pull;
   older snapshots 20261029-* are the rotation candidates for whoever owns

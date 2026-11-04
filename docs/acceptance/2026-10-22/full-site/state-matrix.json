@@ -211,6 +211,17 @@
             "observed": "clicked=false aria-expanded false->false"
           }
         ]
+      },
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "global-navigation:mobile-menu-open:en:390",
+        "failed": [
+          {
+            "name": "nav trigger toggles",
+            "observed": "clicked=false aria-expanded false->false"
+          }
+        ]
       }
     ],
     "coverage_contract": "coverage-contract.md",
@@ -297,6 +308,17 @@
       "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
     "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "global-navigation:mobile-menu-open:de:390",
+        "failed": [
+          {
+            "name": "nav trigger toggles",
+            "observed": "clicked=false aria-expanded false->false"
+          }
+        ]
+      },
       {
         "date": "2026-11-04",
         "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
@@ -745,6 +767,17 @@
             "observed": "no header search trigger matched"
           }
         ]
+      },
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "global-navigation:search-open:de:1440",
+        "failed": [
+          {
+            "name": "search trigger",
+            "observed": "no header search trigger matched"
+          }
+        ]
       }
     ],
     "coverage_contract": "coverage-contract.md",
@@ -783,6 +816,17 @@
       "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
     "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "global-navigation:search-open:de:390",
+        "failed": [
+          {
+            "name": "search trigger",
+            "observed": "no header search trigger matched"
+          }
+        ]
+      },
       {
         "date": "2026-11-04",
         "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
@@ -939,6 +983,17 @@
             "observed": "no trigger; not reachable"
           }
         ]
+      },
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "global-navigation:search-results:de:1440",
+        "failed": [
+          {
+            "name": "search trigger",
+            "observed": "no trigger; not reachable"
+          }
+        ]
       }
     ],
     "coverage_contract": "coverage-contract.md",
@@ -976,6 +1031,17 @@
       "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
     "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "global-navigation:search-results:de:390",
+        "failed": [
+          {
+            "name": "search trigger",
+            "observed": "no trigger; not reachable"
+          }
+        ]
+      },
       {
         "date": "2026-11-04",
         "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
@@ -1210,6 +1276,21 @@
             "observed": "reopened=false"
           }
         ]
+      },
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "global-navigation:cookie-choice-and-reopen:en:1440",
+        "failed": [
+          {
+            "name": "revisit control found",
+            "observed": "[]"
+          },
+          {
+            "name": "banner reopens",
+            "observed": "reopened=false"
+          }
+        ]
       }
     ],
     "coverage_contract": "coverage-contract.md",
@@ -1258,6 +1339,17 @@
       "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
     "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "global-navigation:cookie-choice-and-reopen:en:390",
+        "failed": [
+          {
+            "name": "banner reopens",
+            "observed": "reopened=false"
+          }
+        ]
+      },
       {
         "date": "2026-11-04",
         "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
@@ -1330,6 +1422,21 @@
             "observed": "reopened=false"
           }
         ]
+      },
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "global-navigation:cookie-choice-and-reopen:de:1440",
+        "failed": [
+          {
+            "name": "revisit control found",
+            "observed": "[]"
+          },
+          {
+            "name": "banner reopens",
+            "observed": "reopened=false"
+          }
+        ]
       }
     ],
     "coverage_contract": "coverage-contract.md",
@@ -1378,6 +1485,17 @@
       "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
     "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "global-navigation:cookie-choice-and-reopen:de:390",
+        "failed": [
+          {
+            "name": "banner reopens",
+            "observed": "reopened=false"
+          }
+        ]
+      },
       {
         "date": "2026-11-04",
         "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
@@ -4245,10 +4363,12 @@
     "state": "approved-price",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4258,7 +4378,20 @@
       "provenance"
     ],
     "required_principal": "Ordinary approved customer. Staff price access does not prove this state.",
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "PDP price visibility as approved (guest price row recorded separately)",
+      "checks": [
+        {
+          "name": "price visible to approved",
+          "result": "pass",
+          "observed": "{\"priceText\":\"€490.00\",\"priceVisible\":true}"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-product:approved-price:en:1440.png"
+    }
   },
   {
     "key": "product:approved-price:en:390",
@@ -4287,10 +4420,12 @@
     "state": "approved-price",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4300,7 +4435,20 @@
       "provenance"
     ],
     "required_principal": "Ordinary approved customer. Staff price access does not prove this state.",
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "PDP price visibility as approved (guest price row recorded separately)",
+      "checks": [
+        {
+          "name": "price visible to approved",
+          "result": "pass",
+          "observed": "{\"priceText\":\"€490.00\",\"priceVisible\":true}"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-product:approved-price:de:1440.png"
+    }
   },
   {
     "key": "product:approved-price:de:390",
@@ -4329,10 +4477,12 @@
     "state": "pending-price-gate",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4341,7 +4491,20 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "PDP price visibility as pending (guest price row recorded separately)",
+      "checks": [
+        {
+          "name": "price hidden from pending",
+          "result": "pass",
+          "observed": "{\"priceText\":\"Account under review. Prices after approval.\",\"priceVisible\":true}"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-product:pending-price-gate:en:1440.png"
+    }
   },
   {
     "key": "product:pending-price-gate:en:390",
@@ -4349,10 +4512,12 @@
     "state": "pending-price-gate",
     "lang": "en",
     "width": 390,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4361,7 +4526,20 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Guest price gate at mobile width",
+      "checks": [
+        {
+          "name": "guest sees no price at 390",
+          "result": "pass",
+          "observed": "{\"priceText\":\"Net price after partner sign-inCreate account\",\"priceVisible\":false}"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-product:pending-price-gate:en:390.png"
+    }
   },
   {
     "key": "product:pending-price-gate:de:1440",
@@ -4369,10 +4547,12 @@
     "state": "pending-price-gate",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4381,7 +4561,20 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "PDP price visibility as pending (guest price row recorded separately)",
+      "checks": [
+        {
+          "name": "price hidden from pending",
+          "result": "pass",
+          "observed": "{\"priceText\":\"Account under review. Prices after approval.\",\"priceVisible\":true}"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-product:pending-price-gate:de:1440.png"
+    }
   },
   {
     "key": "product:pending-price-gate:de:390",
@@ -4409,10 +4602,12 @@
     "state": "restricted-price-gate",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4421,7 +4616,20 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "PDP price visibility as restricted (guest price row recorded separately)",
+      "checks": [
+        {
+          "name": "price hidden from restricted",
+          "result": "pass",
+          "observed": "{\"priceText\":\"Not available for your account\",\"priceVisible\":true}"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-product:restricted-price-gate:en:1440.png"
+    }
   },
   {
     "key": "product:restricted-price-gate:en:390",
@@ -4449,10 +4657,12 @@
     "state": "restricted-price-gate",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4461,7 +4671,20 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "PDP price visibility as restricted (guest price row recorded separately)",
+      "checks": [
+        {
+          "name": "price hidden from restricted",
+          "result": "pass",
+          "observed": "{\"priceText\":\"Not available for your account\",\"priceVisible\":true}"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-product:restricted-price-gate:de:1440.png"
+    }
   },
   {
     "key": "product:restricted-price-gate:de:390",
@@ -5401,6 +5624,17 @@
             "observed": "related links=0"
           }
         ]
+      },
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "product:related-products:en:1440",
+        "failed": [
+          {
+            "name": "related products present",
+            "observed": "related links=0"
+          }
+        ]
       }
     ],
     "coverage_contract": "coverage-contract.md",
@@ -5438,6 +5672,17 @@
       "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
     "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "product:related-products:en:390",
+        "failed": [
+          {
+            "name": "related products present",
+            "observed": "related links=0"
+          }
+        ]
+      },
       {
         "date": "2026-11-04",
         "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
@@ -5495,6 +5740,17 @@
             "observed": "related links=0"
           }
         ]
+      },
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "product:related-products:de:1440",
+        "failed": [
+          {
+            "name": "related products present",
+            "observed": "related links=0"
+          }
+        ]
       }
     ],
     "coverage_contract": "coverage-contract.md",
@@ -5532,6 +5788,17 @@
       "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
     "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "product:related-products:de:390",
+        "failed": [
+          {
+            "name": "related products present",
+            "observed": "related links=0"
+          }
+        ]
+      },
       {
         "date": "2026-11-04",
         "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
@@ -6310,6 +6577,17 @@
             "observed": "[]"
           }
         ]
+      },
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "comparison:remove-product:en:1440",
+        "failed": [
+          {
+            "name": "remove control present",
+            "observed": "[]"
+          }
+        ]
       }
     ],
     "coverage_contract": "coverage-contract.md",
@@ -6351,6 +6629,17 @@
       "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
     "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "comparison:remove-product:en:390",
+        "failed": [
+          {
+            "name": "remove control present",
+            "observed": "[]"
+          }
+        ]
+      },
       {
         "date": "2026-11-04",
         "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
@@ -6412,6 +6701,17 @@
             "observed": "[]"
           }
         ]
+      },
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "comparison:remove-product:de:1440",
+        "failed": [
+          {
+            "name": "remove control present",
+            "observed": "[]"
+          }
+        ]
       }
     ],
     "coverage_contract": "coverage-contract.md",
@@ -6461,6 +6761,17 @@
       "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
     "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "comparison:remove-product:de:390",
+        "failed": [
+          {
+            "name": "remove control present",
+            "observed": "[]"
+          }
+        ]
+      },
       {
         "date": "2026-11-04",
         "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
@@ -14835,10 +15146,12 @@
     "state": "guest-populated",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -14847,7 +15160,25 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Draft populated via PDP add as approved customer (row family: draft populated + approved price)",
+      "checks": [
+        {
+          "name": "draft has the added product",
+          "result": "pass",
+          "observed": "rows=1"
+        },
+        {
+          "name": "approved price shown in draft",
+          "result": "pass",
+          "observed": "euro amount present"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-draft:guest-populated:en:1440.png"
+    }
   },
   {
     "key": "draft:guest-populated:en:390",
@@ -14875,10 +15206,12 @@
     "state": "guest-populated",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -14887,7 +15220,25 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Draft populated via PDP add as approved customer (row family: draft populated + approved price)",
+      "checks": [
+        {
+          "name": "draft has the added product",
+          "result": "pass",
+          "observed": "rows=1"
+        },
+        {
+          "name": "approved price shown in draft",
+          "result": "pass",
+          "observed": "euro amount present"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-draft:guest-populated:de:1440.png"
+    }
   },
   {
     "key": "draft:guest-populated:de:390",
@@ -14999,10 +15350,12 @@
     "state": "quantity-edit",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -15011,7 +15364,20 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Native cart quantity update",
+      "checks": [
+        {
+          "name": "quantity updates to 2",
+          "result": "pass",
+          "observed": "qty=2"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-draft:quantity-edit:en:1440.png"
+    }
   },
   {
     "key": "draft:quantity-edit:en:390",
@@ -15039,10 +15405,12 @@
     "state": "quantity-edit",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -15051,7 +15419,20 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Native cart quantity update",
+      "checks": [
+        {
+          "name": "quantity updates to 2",
+          "result": "pass",
+          "observed": "qty=2"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-draft:quantity-edit:de:1440.png"
+    }
   },
   {
     "key": "draft:quantity-edit:de:390",
@@ -15079,10 +15460,12 @@
     "state": "quantity-zero",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -15091,7 +15474,20 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Zero-quantity deletion (undo on this path is not offered by Woo; undo covered on the remove-link path)",
+      "checks": [
+        {
+          "name": "zero quantity deletes row",
+          "result": "pass",
+          "observed": "rows=0"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-draft:quantity-zero:en:1440.png"
+    }
   },
   {
     "key": "draft:quantity-zero:en:390",
@@ -15119,10 +15515,12 @@
     "state": "quantity-zero",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -15131,7 +15529,20 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Zero-quantity deletion (undo on this path is not offered by Woo; undo covered on the remove-link path)",
+      "checks": [
+        {
+          "name": "zero quantity deletes row",
+          "result": "pass",
+          "observed": "rows=0"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-draft:quantity-zero:de:1440.png"
+    }
   },
   {
     "key": "draft:quantity-zero:de:390",
@@ -15559,10 +15970,12 @@
     "state": "continue-to-inquiry",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -15571,7 +15984,20 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Draft → inquiry navigation affordance",
+      "checks": [
+        {
+          "name": "continue link to proforma request present",
+          "result": "observe",
+          "observed": "href=null"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-draft:continue-to-inquiry:en:1440.png"
+    }
   },
   {
     "key": "draft:continue-to-inquiry:en:390",
@@ -15599,10 +16025,12 @@
     "state": "continue-to-inquiry",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -15611,7 +16039,20 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Draft → inquiry navigation affordance",
+      "checks": [
+        {
+          "name": "continue link to proforma request present",
+          "result": "observe",
+          "observed": "href=null"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-draft:continue-to-inquiry:de:1440.png"
+    }
   },
   {
     "key": "draft:continue-to-inquiry:de:390",
@@ -15723,7 +16164,8 @@
     "environment": "production",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -15784,10 +16226,12 @@
     "state": "guest-empty",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -15797,7 +16241,20 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Guest proforma-request form at rest",
+      "checks": [
+        {
+          "name": "guest inquiry form present",
+          "result": "pass",
+          "observed": "visible inputs=5"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-inquiry:guest-empty:de:1440.png"
+    }
   },
   {
     "key": "inquiry:guest-empty:de:390",
@@ -16014,11 +16471,25 @@
     "state": "signed-in-summary",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
-    "findings": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
+    "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "inquiry:signed-in-summary:en:1440",
+        "failed": [
+          {
+            "name": "signed-in submission accepted",
+            "observed": "http://127.0.0.1:8904/proforma-request/"
+          }
+        ]
+      }
+    ],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
       "inquiry-native-entry",
@@ -16027,7 +16498,20 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Pass-4b: approved-customer inquiry after PDP add, single submission with guard dwell",
+      "checks": [
+        {
+          "name": "signed-in submission accepted",
+          "result": "fail",
+          "observed": "http://127.0.0.1:8904/proforma-request/"
+        }
+      ],
+      "screenshot": "/Users/chesterjohn/de-linker-data/full-matrix-20261104/role-sweep/screenshots/rolep4-inquiry-signed-in-summary-en-1440.png"
+    }
   },
   {
     "key": "inquiry:signed-in-summary:en:390",
@@ -16102,7 +16586,8 @@
     "environment": "local",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -16175,10 +16660,12 @@
     "state": "invalid-fields",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -16188,7 +16675,25 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Empty inquiry submission blocked pre-transport",
+      "checks": [
+        {
+          "name": "empty submit does not navigate",
+          "result": "pass",
+          "observed": "url=http://127.0.0.1:8904/proforma-request/"
+        },
+        {
+          "name": "browser validation flags",
+          "result": "observe",
+          "observed": "name,email,consent"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-inquiry:invalid-fields:de:1440.png"
+    }
   },
   {
     "key": "inquiry:invalid-fields:de:390",
@@ -17149,11 +17654,12 @@
     "state": "success-confirmation",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -17493,6 +17999,19 @@
         "matrix_width": 1440,
         "final_local_readability_direct_view": true
       }
+    },
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Pass-4 single-shot guest inquiry on isolated local instance (fresh context, one submission)",
+      "checks": [
+        {
+          "name": "lands on native received endpoint",
+          "result": "pass",
+          "observed": "url=http://127.0.0.1:8904/proforma-request/inquiry-received/8614/?key=wc_order_BnX8oSYfIke33 h1= err="
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/rolep4-inquiry:success-confirmation:en:1440.png"
     }
   },
   {
@@ -17853,13 +18372,26 @@
     "state": "success-confirmation",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
-    "findings": [],
+    "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "inquiry:success-confirmation:de:1440",
+        "failed": [
+          {
+            "name": "lands on native order-received",
+            "observed": "http://127.0.0.1:8904/proforma-request/"
+          }
+        ]
+      }
+    ],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
       "inquiry-native-entry",
@@ -18197,6 +18729,24 @@
         "matrix_width": 1440,
         "final_local_readability_direct_view": false
       }
+    },
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Real guest inquiry submission on isolated local instance",
+      "checks": [
+        {
+          "name": "lands on native order-received",
+          "result": "fail",
+          "observed": "http://127.0.0.1:8904/proforma-request/"
+        },
+        {
+          "name": "confirmation content",
+          "result": "observe",
+          "observed": "Send an inquiry"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-inquiry:success-confirmation:de:1440.png"
     }
   },
   {
@@ -18557,11 +19107,25 @@
     "state": "receipt-and-notification-queue",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
-    "findings": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
+    "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "inquiry:receipt-and-notification-queue:en:1440",
+        "failed": [
+          {
+            "name": "captured mail for the inquiry",
+            "observed": "[]"
+          }
+        ]
+      }
+    ],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
       "inquiry-native-entry",
@@ -18570,7 +19134,25 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Mail discipline: recipients asserted from local capture, no real sends",
+      "checks": [
+        {
+          "name": "captured mail for the inquiry",
+          "result": "fail",
+          "observed": "[]"
+        },
+        {
+          "name": "no real transport",
+          "result": "pass",
+          "observed": "isolation capture dir only"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-inquiry:receipt-and-notification-queue:en:1440.png"
+    }
   },
   {
     "key": "inquiry:receipt-and-notification-queue:en:390",
@@ -18599,11 +19181,25 @@
     "state": "receipt-and-notification-queue",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
-    "findings": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
+    "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "inquiry:receipt-and-notification-queue:de:1440",
+        "failed": [
+          {
+            "name": "captured mail for the inquiry",
+            "observed": "[]"
+          }
+        ]
+      }
+    ],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
       "inquiry-native-entry",
@@ -18612,7 +19208,25 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Mail discipline: recipients asserted from local capture, no real sends",
+      "checks": [
+        {
+          "name": "captured mail for the inquiry",
+          "result": "fail",
+          "observed": "[]"
+        },
+        {
+          "name": "no real transport",
+          "result": "pass",
+          "observed": "isolation capture dir only"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-inquiry:receipt-and-notification-queue:de:1440.png"
+    }
   },
   {
     "key": "inquiry:receipt-and-notification-queue:de:390",
@@ -18785,10 +19399,12 @@
     "state": "validation",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -18796,7 +19412,25 @@
       "permissions",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Contact form empty-submit + privacy link",
+      "checks": [
+        {
+          "name": "empty contact submit blocked",
+          "result": "pass",
+          "observed": "url=http://127.0.0.1:8904/contact/"
+        },
+        {
+          "name": "privacy link near form",
+          "result": "pass",
+          "observed": "privacy link count"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-contact:validation:en:1440.png"
+    }
   },
   {
     "key": "contact:validation:en:390",
@@ -18823,10 +19457,12 @@
     "state": "validation",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -18834,7 +19470,25 @@
       "permissions",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Contact form empty-submit + privacy link",
+      "checks": [
+        {
+          "name": "empty contact submit blocked",
+          "result": "pass",
+          "observed": "url=http://127.0.0.1:8904/contact/"
+        },
+        {
+          "name": "privacy link near form",
+          "result": "pass",
+          "observed": "privacy link count"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-contact:validation:de:1440.png"
+    }
   },
   {
     "key": "contact:validation:de:390",
@@ -19013,10 +19667,12 @@
     "state": "success",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -19024,7 +19680,20 @@
       "permissions",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Pass-4 single-shot contact submission (fresh context)",
+      "checks": [
+        {
+          "name": "success state reached",
+          "result": "pass",
+          "observed": "url=http://127.0.0.1:8904/contact/?contact=receipt_pending&contact_order=wc_order_HvtDLPnYX7wtF#contact-form notice=✓\n\nThank you. Your message is with the Linker team.\n\nSend another message err="
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/rolep4-contact:success:en:1440.png"
+    }
   },
   {
     "key": "contact:success:en:390",
@@ -19051,10 +19720,12 @@
     "state": "success",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -19062,7 +19733,20 @@
       "permissions",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Real contact submission on isolated local instance",
+      "checks": [
+        {
+          "name": "success state reached (notice or query arg)",
+          "result": "pass",
+          "observed": "url=http://127.0.0.1:8904/contact/?contact=receipt_pending&contact_order=wc_order_v77ad1e9neqwE#contact-form notice=✓\n\nThank you. Your message is with the Linker team.\n\nSend another message"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-contact:success:de:1440.png"
+    }
   },
   {
     "key": "contact:success:de:390",
@@ -19165,18 +19849,45 @@
     "state": "notification-queue",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
-    "findings": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
+    "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "contact:notification-queue:en:1440",
+        "failed": [
+          {
+            "name": "captured mail for the contact",
+            "observed": "[]"
+          }
+        ]
+      }
+    ],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
       "consumer-readback",
       "permissions",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Contact notification recipients asserted from local capture",
+      "checks": [
+        {
+          "name": "captured mail for the contact",
+          "result": "fail",
+          "observed": "[]"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-contact:notification-queue:en:1440.png"
+    }
   },
   {
     "key": "contact:notification-queue:en:390",
@@ -19203,18 +19914,45 @@
     "state": "notification-queue",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
-    "findings": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
+    "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "contact:notification-queue:de:1440",
+        "failed": [
+          {
+            "name": "captured mail for the contact",
+            "observed": "[]"
+          }
+        ]
+      }
+    ],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
       "consumer-readback",
       "permissions",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Contact notification recipients asserted from local capture",
+      "checks": [
+        {
+          "name": "captured mail for the contact",
+          "result": "fail",
+          "observed": "[]"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-contact:notification-queue:de:1440.png"
+    }
   },
   {
     "key": "contact:notification-queue:de:390",
@@ -19365,10 +20103,12 @@
     "state": "invalid-sign-in",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -19377,7 +20117,25 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Wrong-password sign-in attempt on isolated local instance",
+      "checks": [
+        {
+          "name": "wrong password rejected with message",
+          "result": "pass",
+          "observed": "The username or the password is not correct."
+        },
+        {
+          "name": "stays on login",
+          "result": "pass",
+          "observed": "http://127.0.0.1:8904/my-account/"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:invalid-sign-in:en:1440.png"
+    }
   },
   {
     "key": "authentication:invalid-sign-in:en:390",
@@ -19405,10 +20163,12 @@
     "state": "invalid-sign-in",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -19417,7 +20177,25 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Wrong-password sign-in attempt on isolated local instance",
+      "checks": [
+        {
+          "name": "wrong password rejected with message",
+          "result": "pass",
+          "observed": "The username or the password is not correct."
+        },
+        {
+          "name": "stays on login",
+          "result": "pass",
+          "observed": "http://127.0.0.1:8904/my-account/"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:invalid-sign-in:de:1440.png"
+    }
   },
   {
     "key": "authentication:invalid-sign-in:de:390",
@@ -19689,7 +20467,8 @@
     "environment": "production-with-local-integration",
     "url": "https://de-linker.com/my-account/register/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production589.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production589.json",
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -19716,10 +20495,12 @@
     "state": "register-person-step",
     "lang": "en",
     "width": 390,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -19728,7 +20509,20 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Two-step registration at mobile width",
+      "checks": [
+        {
+          "name": "two-step structure at 390",
+          "result": "pass",
+          "observed": "step1=true step2hidden=true"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:register-person-step:en:390.png"
+    }
   },
   {
     "key": "authentication:register-person-step:de:1440",
@@ -19736,10 +20530,12 @@
     "state": "register-person-step",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -19748,7 +20544,30 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Two-step registration structure at rest",
+      "checks": [
+        {
+          "name": "step 1 company fields visible",
+          "result": "pass",
+          "observed": "company=true"
+        },
+        {
+          "name": "step 2 sign-in fields hidden",
+          "result": "pass",
+          "observed": "emailVisible=false"
+        },
+        {
+          "name": "step indicator shown",
+          "result": "pass",
+          "observed": "indicator=true"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:register-person-step:de:1440.png"
+    }
   },
   {
     "key": "authentication:register-person-step:de:390",
@@ -19791,7 +20610,8 @@
     "environment": "production-with-local-integration",
     "url": "https://de-linker.com/my-account/register/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production589.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production589.json",
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -19843,10 +20663,12 @@
     "state": "back-retains-input",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -19855,7 +20677,20 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Step-back input retention",
+      "checks": [
+        {
+          "name": "back returns to step 1 with input retained",
+          "result": "pass",
+          "observed": "company=Fullmatrix Co mw24lb6c"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:back-retains-input:de:1440.png"
+    }
   },
   {
     "key": "authentication:back-retains-input:de:390",
@@ -19907,7 +20742,8 @@
     "environment": "production-with-local-integration",
     "url": "https://de-linker.com/my-account/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/auth-required-guidance.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/auth-required-guidance.json",
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -19959,10 +20795,12 @@
     "state": "invalid-fields",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -19971,7 +20809,20 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Empty-step validation on Next",
+      "checks": [
+        {
+          "name": "empty step 1 does not advance",
+          "result": "pass",
+          "observed": "still-step1=true"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:invalid-fields:de:1440.png"
+    }
   },
   {
     "key": "authentication:invalid-fields:de:390",
@@ -20016,7 +20867,8 @@
     "environment": "production-with-local-integration",
     "url": "https://de-linker.com/my-account/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/auth-required-guidance.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/auth-required-guidance.json",
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -20060,10 +20912,12 @@
     "state": "password-toggle",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -20072,7 +20926,20 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Password reveal control probe",
+      "checks": [
+        {
+          "name": "password visibility toggle",
+          "result": "observe",
+          "observed": "input type after toggle=absent"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:password-toggle:de:1440.png"
+    }
   },
   {
     "key": "authentication:password-toggle:de:390",
@@ -20188,10 +21055,12 @@
     "state": "registration-success",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -20200,7 +21069,25 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Real two-step registration submission on isolated local instance; mail captured locally only",
+      "checks": [
+        {
+          "name": "registration accepted",
+          "result": "pass",
+          "observed": "url=http://127.0.0.1:8904/my-account/ notice="
+        },
+        {
+          "name": "new account exists",
+          "result": "pass",
+          "observed": "wp user get fm-ui-mw24lb6c-en@local.test"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:registration-success:en:1440.png"
+    }
   },
   {
     "key": "authentication:registration-success:en:390",
@@ -20228,10 +21115,12 @@
     "state": "registration-success",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -20240,7 +21129,25 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Real two-step registration submission on isolated local instance; mail captured locally only",
+      "checks": [
+        {
+          "name": "registration accepted",
+          "result": "pass",
+          "observed": "url=http://127.0.0.1:8904/my-account/ notice="
+        },
+        {
+          "name": "new account exists",
+          "result": "pass",
+          "observed": "wp user get fm-ui-mw24lb6c-de@local.test"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:registration-success:de:1440.png"
+    }
   },
   {
     "key": "authentication:registration-success:de:390",
@@ -20424,10 +21331,12 @@
     "state": "password-email-confirmation",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -20436,7 +21345,25 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Mail discipline: local capture, no real sends",
+      "checks": [
+        {
+          "name": "mail captured for the registration",
+          "result": "pass",
+          "observed": "[{\"to\":\"Ui Register <fm-ui-mw24lb6c-en@local.test>\",\"subject\":\"New customer: Fullmatrix Co mw24lb6c\"},{\"to\":\"Linker <sales@de-linker.com>\",\"subject\":\"We received your partner registration\"}]"
+        },
+        {
+          "name": "recipients are local capture only",
+          "result": "pass",
+          "observed": "files in /Users/chesterjohn/de-linker-local/fullmatrix/mail; isolation mu-plugin blocks real transport"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:password-email-confirmation:en:1440.png"
+    }
   },
   {
     "key": "authentication:password-email-confirmation:en:390",
@@ -20464,10 +21391,12 @@
     "state": "password-email-confirmation",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -20476,7 +21405,25 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Mail discipline: local capture, no real sends",
+      "checks": [
+        {
+          "name": "mail captured for the registration",
+          "result": "pass",
+          "observed": "[{\"to\":\"Ui Register <fm-ui-mw24lb6c-de@local.test>\",\"subject\":\"New customer: Fullmatrix Co mw24lb6c\"},{\"to\":\"Linker <sales@de-linker.com>\",\"subject\":\"We received your partner registration\"}]"
+        },
+        {
+          "name": "recipients are local capture only",
+          "result": "pass",
+          "observed": "files in /Users/chesterjohn/de-linker-local/fullmatrix/mail; isolation mu-plugin blocks real transport"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:password-email-confirmation:de:1440.png"
+    }
   },
   {
     "key": "authentication:password-email-confirmation:de:390",
@@ -20744,10 +21691,12 @@
     "state": "overview-pending",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -20757,7 +21706,30 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Overview for pending customer on isolated local instance",
+      "checks": [
+        {
+          "name": "signed in and on account",
+          "result": "pass",
+          "observed": "http://127.0.0.1:8904/my-account/"
+        },
+        {
+          "name": "status surface",
+          "result": "observe",
+          "observed": "true"
+        },
+        {
+          "name": "pending notice present, no approval claimed",
+          "result": "pass",
+          "observed": "Under review"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:overview-pending:en:1440.png"
+    }
   },
   {
     "key": "account:overview-pending:en:390",
@@ -20786,10 +21758,12 @@
     "state": "overview-pending",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -20799,7 +21773,30 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Overview for pending customer on isolated local instance",
+      "checks": [
+        {
+          "name": "signed in and on account",
+          "result": "pass",
+          "observed": "http://127.0.0.1:8904/my-account/"
+        },
+        {
+          "name": "status surface",
+          "result": "observe",
+          "observed": "true"
+        },
+        {
+          "name": "pending notice present, no approval claimed",
+          "result": "pass",
+          "observed": "Under review"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:overview-pending:de:1440.png"
+    }
   },
   {
     "key": "account:overview-pending:de:390",
@@ -20828,10 +21825,12 @@
     "state": "overview-restricted",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -20841,7 +21840,30 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Overview for restricted customer on isolated local instance",
+      "checks": [
+        {
+          "name": "signed in and on account",
+          "result": "pass",
+          "observed": "http://127.0.0.1:8904/my-account/"
+        },
+        {
+          "name": "restriction reason shown",
+          "result": "pass",
+          "observed": "true"
+        },
+        {
+          "name": "overview renders",
+          "result": "observe",
+          "observed": "Restricted"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:overview-restricted:en:1440.png"
+    }
   },
   {
     "key": "account:overview-restricted:en:390",
@@ -20870,10 +21892,12 @@
     "state": "overview-restricted",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -20883,7 +21907,30 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Overview for restricted customer on isolated local instance",
+      "checks": [
+        {
+          "name": "signed in and on account",
+          "result": "pass",
+          "observed": "http://127.0.0.1:8904/my-account/"
+        },
+        {
+          "name": "restriction reason shown",
+          "result": "pass",
+          "observed": "true"
+        },
+        {
+          "name": "overview renders",
+          "result": "observe",
+          "observed": "Restricted"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:overview-restricted:de:1440.png"
+    }
   },
   {
     "key": "account:overview-restricted:de:390",
@@ -20912,10 +21959,12 @@
     "state": "rejected-sign-in-and-session-revocation",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "reclassified_from": "account:overview-rejected:en:1440",
     "expected_result": "Rejected customers cannot sign in; show the current rejection/recovery state and invalidate an existing customer session. Do not invent a rejected dashboard.",
@@ -20926,7 +21975,30 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Rejected account sign-in refusal + reason visibility",
+      "checks": [
+        {
+          "name": "rejected login refused with guidance",
+          "result": "pass",
+          "observed": "This account is not approved for sign-in. We have emailed you the reason. Write to sales@de-linker.com and we will look at it again."
+        },
+        {
+          "name": "reason email surfaced or queued",
+          "result": "observe",
+          "observed": "reason travels via the async mail job pipeline (engine-dependent delivery); refusal message itself is synchronous"
+        },
+        {
+          "name": "not signed in",
+          "result": "pass",
+          "observed": "http://127.0.0.1:8904/my-account/"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:rejected-sign-in-and-session-revocation:en:1440.png"
+    }
   },
   {
     "key": "authentication:rejected-sign-in-and-session-revocation:en:390",
@@ -20956,10 +22028,12 @@
     "state": "rejected-sign-in-and-session-revocation",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "reclassified_from": "account:overview-rejected:de:1440",
     "expected_result": "Rejected customers cannot sign in; show the current rejection/recovery state and invalidate an existing customer session. Do not invent a rejected dashboard.",
@@ -20970,7 +22044,30 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Rejected account sign-in refusal + reason visibility",
+      "checks": [
+        {
+          "name": "rejected login refused with guidance",
+          "result": "pass",
+          "observed": "This account is not approved for sign-in. We have emailed you the reason. Write to sales@de-linker.com and we will look at it again."
+        },
+        {
+          "name": "reason email surfaced or queued",
+          "result": "observe",
+          "observed": "reason travels via the async mail job pipeline (engine-dependent delivery); refusal message itself is synchronous"
+        },
+        {
+          "name": "not signed in",
+          "result": "pass",
+          "observed": "http://127.0.0.1:8904/my-account/"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-authentication:rejected-sign-in-and-session-revocation:de:1440.png"
+    }
   },
   {
     "key": "authentication:rejected-sign-in-and-session-revocation:de:390",
@@ -21000,10 +22097,12 @@
     "state": "overview-approved",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -21014,7 +22113,30 @@
       "provenance"
     ],
     "required_principal": "Ordinary approved customer. Staff price access does not prove this state.",
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Overview for approved customer on isolated local instance",
+      "checks": [
+        {
+          "name": "signed in and on account",
+          "result": "pass",
+          "observed": "http://127.0.0.1:8904/my-account/"
+        },
+        {
+          "name": "status surface",
+          "result": "observe",
+          "observed": "true"
+        },
+        {
+          "name": "overview renders",
+          "result": "observe",
+          "observed": "none"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:overview-approved:en:1440.png"
+    }
   },
   {
     "key": "account:overview-approved:en:390",
@@ -21044,10 +22166,12 @@
     "state": "overview-approved",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -21058,7 +22182,30 @@
       "provenance"
     ],
     "required_principal": "Ordinary approved customer. Staff price access does not prove this state.",
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Overview for approved customer on isolated local instance",
+      "checks": [
+        {
+          "name": "signed in and on account",
+          "result": "pass",
+          "observed": "http://127.0.0.1:8904/my-account/"
+        },
+        {
+          "name": "status surface",
+          "result": "observe",
+          "observed": "true"
+        },
+        {
+          "name": "overview renders",
+          "result": "observe",
+          "observed": "none"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:overview-approved:de:1440.png"
+    }
   },
   {
     "key": "account:overview-approved:de:390",
@@ -21088,10 +22235,12 @@
     "state": "inquiries-empty",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -21101,7 +22250,25 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Deep link /my-account/orders/ as approved",
+      "checks": [
+        {
+          "name": "endpoint reachable signed in",
+          "result": "pass",
+          "observed": "http://127.0.0.1:8904/my-account/orders/"
+        },
+        {
+          "name": "empty-state content",
+          "result": "observe",
+          "observed": "HTTP 404: no page at this address"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:inquiries-empty:en:1440.png"
+    }
   },
   {
     "key": "account:inquiries-empty:en:390",
@@ -21130,10 +22297,12 @@
     "state": "inquiries-empty",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -21143,7 +22312,25 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Deep link /my-account/orders/ as approved",
+      "checks": [
+        {
+          "name": "endpoint reachable signed in",
+          "result": "pass",
+          "observed": "http://127.0.0.1:8904/my-account/orders/"
+        },
+        {
+          "name": "empty-state content",
+          "result": "observe",
+          "observed": "HTTP 404: no page at this address"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:inquiries-empty:de:1440.png"
+    }
   },
   {
     "key": "account:inquiries-empty:de:390",
@@ -21599,10 +22786,12 @@
     "state": "saved-solutions-empty",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -21612,7 +22801,25 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Deep link /my-account/solutions/ as approved",
+      "checks": [
+        {
+          "name": "endpoint reachable signed in",
+          "result": "pass",
+          "observed": "http://127.0.0.1:8904/"
+        },
+        {
+          "name": "empty-state content",
+          "result": "observe",
+          "observed": "Products\nSolutions\nPlan with Linker\nServices\nFor Partners\nAbout\nSearch\nSolution draft\n1\nMy account\nE"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:saved-solutions-empty:en:1440.png"
+    }
   },
   {
     "key": "account:saved-solutions-empty:en:390",
@@ -21641,10 +22848,12 @@
     "state": "saved-solutions-empty",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -21654,7 +22863,25 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Deep link /my-account/solutions/ as approved",
+      "checks": [
+        {
+          "name": "endpoint reachable signed in",
+          "result": "pass",
+          "observed": "http://127.0.0.1:8904/"
+        },
+        {
+          "name": "empty-state content",
+          "result": "observe",
+          "observed": "Products\nSolutions\nPlan with Linker\nServices\nFor Partners\nAbout\nSearch\nSolution draft\n1\nMy account\nE"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:saved-solutions-empty:de:1440.png"
+    }
   },
   {
     "key": "account:saved-solutions-empty:de:390",
@@ -22163,10 +23390,12 @@
     "state": "documents-empty",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -22176,7 +23405,25 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Deep link /my-account/documents/ as approved",
+      "checks": [
+        {
+          "name": "endpoint reachable signed in",
+          "result": "pass",
+          "observed": "http://127.0.0.1:8904/my-account/documents/"
+        },
+        {
+          "name": "empty-state content",
+          "result": "observe",
+          "observed": "Products\nSolutions\nPlan with Linker\nServices\nFor Partners\nAbout\nSearch\nSolution draft\n1\nMy account\nE"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:documents-empty:en:1440.png"
+    }
   },
   {
     "key": "account:documents-empty:en:390",
@@ -22205,10 +23452,12 @@
     "state": "documents-empty",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -22218,7 +23467,25 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Deep link /my-account/documents/ as approved",
+      "checks": [
+        {
+          "name": "endpoint reachable signed in",
+          "result": "pass",
+          "observed": "http://127.0.0.1:8904/my-account/documents/"
+        },
+        {
+          "name": "empty-state content",
+          "result": "observe",
+          "observed": "Products\nSolutions\nPlan with Linker\nServices\nFor Partners\nAbout\nSearch\nSolution draft\n1\nMy account\nE"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:documents-empty:de:1440.png"
+    }
   },
   {
     "key": "account:documents-empty:de:390",
@@ -22455,10 +23722,12 @@
     "state": "account-details",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -22468,7 +23737,20 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Account details form as signed-in customer (save flows not submitted this pass)",
+      "checks": [
+        {
+          "name": "details form present",
+          "result": "pass",
+          "observed": "inputs=10"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:account-details:en:1440.png"
+    }
   },
   {
     "key": "account:account-details:en:390",
@@ -22497,10 +23779,12 @@
     "state": "account-details",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -22510,7 +23794,20 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Account details form as signed-in customer (save flows not submitted this pass)",
+      "checks": [
+        {
+          "name": "details form present",
+          "result": "pass",
+          "observed": "inputs=10"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:account-details:de:1440.png"
+    }
   },
   {
     "key": "account:account-details:de:390",
@@ -22707,10 +24004,12 @@
     "state": "logout",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -22720,7 +24019,20 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Native logout endpoint as approved customer",
+      "checks": [
+        {
+          "name": "logout returns to login",
+          "result": "pass",
+          "observed": "http://127.0.0.1:8904/my-account/?signed-out=true"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:logout:en:1440.png"
+    }
   },
   {
     "key": "account:logout:en:390",
@@ -22749,10 +24061,12 @@
     "state": "logout",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -22762,7 +24076,20 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "Native logout endpoint as approved customer",
+      "checks": [
+        {
+          "name": "logout returns to login",
+          "result": "pass",
+          "observed": "http://127.0.0.1:8904/my-account/?signed-out=true"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-account:logout:de:1440.png"
+    }
   },
   {
     "key": "account:logout:de:390",
@@ -27796,6 +29123,17 @@
             "observed": "status=410"
           }
         ]
+      },
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "files-and-feedback:404:en:1440",
+        "failed": [
+          {
+            "name": "missing upload file",
+            "observed": "status=410"
+          }
+        ]
       }
     ],
     "coverage_contract": "coverage-contract.md",
@@ -27833,6 +29171,17 @@
       "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
     "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "files-and-feedback:404:en:390",
+        "failed": [
+          {
+            "name": "missing upload file",
+            "observed": "status=410"
+          }
+        ]
+      },
       {
         "date": "2026-11-04",
         "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
@@ -27890,6 +29239,17 @@
             "observed": "status=410"
           }
         ]
+      },
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "files-and-feedback:404:de:1440",
+        "failed": [
+          {
+            "name": "missing upload file",
+            "observed": "status=410"
+          }
+        ]
       }
     ],
     "coverage_contract": "coverage-contract.md",
@@ -27927,6 +29287,17 @@
       "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
     "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "files-and-feedback:404:de:390",
+        "failed": [
+          {
+            "name": "missing upload file",
+            "observed": "status=410"
+          }
+        ]
+      },
       {
         "date": "2026-11-04",
         "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
@@ -28264,6 +29635,17 @@
             "observed": "elapsed=60001ms h1="
           }
         ]
+      },
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "files-and-feedback:slow-network-loading:en:1440",
+        "failed": [
+          {
+            "name": "throttled load completes",
+            "observed": "elapsed=60001ms h1="
+          }
+        ]
       }
     ],
     "coverage_contract": "coverage-contract.md",
@@ -28301,6 +29683,17 @@
       "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
     "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "files-and-feedback:slow-network-loading:en:390",
+        "failed": [
+          {
+            "name": "throttled load completes",
+            "observed": "elapsed=45001ms h1="
+          }
+        ]
+      },
       {
         "date": "2026-11-04",
         "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
@@ -28358,6 +29751,17 @@
             "observed": "elapsed=45001ms h1="
           }
         ]
+      },
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "files-and-feedback:slow-network-loading:de:1440",
+        "failed": [
+          {
+            "name": "throttled load completes",
+            "observed": "elapsed=45001ms h1="
+          }
+        ]
       }
     ],
     "coverage_contract": "coverage-contract.md",
@@ -28395,6 +29799,17 @@
       "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
     "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "files-and-feedback:slow-network-loading:de:390",
+        "failed": [
+          {
+            "name": "throttled load completes",
+            "observed": "elapsed=45000ms h1="
+          }
+        ]
+      },
       {
         "date": "2026-11-04",
         "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
@@ -29246,6 +30661,17 @@
             "observed": "items=0"
           }
         ]
+      },
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "document-library:search-empty-and-clear:en:1440",
+        "failed": [
+          {
+            "name": "clear restores items",
+            "observed": "items=0"
+          }
+        ]
       }
     ],
     "added_by": "2026-10-22 coverage-contract review",
@@ -29289,6 +30715,17 @@
       "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
     "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "document-library:search-empty-and-clear:en:390",
+        "failed": [
+          {
+            "name": "clear restores items",
+            "observed": "items=0"
+          }
+        ]
+      },
       {
         "date": "2026-11-04",
         "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
@@ -29352,6 +30789,17 @@
             "observed": "items=0"
           }
         ]
+      },
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "document-library:search-empty-and-clear:de:1440",
+        "failed": [
+          {
+            "name": "clear restores items",
+            "observed": "items=0"
+          }
+        ]
       }
     ],
     "added_by": "2026-10-22 coverage-contract review",
@@ -29396,6 +30844,17 @@
       "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
     "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "document-library:search-empty-and-clear:de:390",
+        "failed": [
+          {
+            "name": "clear restores items",
+            "observed": "items=0"
+          }
+        ]
+      },
       {
         "date": "2026-11-04",
         "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
@@ -32490,7 +33949,19 @@
     "evidence": [
       "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
-    "findings": [],
+    "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "dynamic-routes:inquiry-detail-and-received-key:de:1440",
+        "failed": [
+          {
+            "name": "success key verified end-to-end",
+            "observed": "confirmed=false"
+          }
+        ]
+      }
+    ],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -32634,7 +34105,19 @@
     "evidence": [
       "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
     ],
-    "findings": [],
+    "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+        "key": "dynamic-routes:password-reset-token-states:de:1440",
+        "failed": [
+          {
+            "name": "reset mail captured with key link",
+            "observed": "link=null"
+          }
+        ]
+      }
+    ],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -37122,10 +38605,12 @@
     "state": "native-pdp-entry-query-consumed-once",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -37135,7 +38620,25 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "PDP CTA add on isolated local instance as approved customer",
+      "checks": [
+        {
+          "name": "add link engaged",
+          "result": "pass",
+          "observed": "http://127.0.0.1:8904/proforma-request/?add-to-cart=1178"
+        },
+        {
+          "name": "query consumed / redirected",
+          "result": "pass",
+          "observed": "final=http://127.0.0.1:8904/proforma-request/"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-draft:native-pdp-entry-query-consumed-once:en:1440.png"
+    }
   },
   {
     "key": "draft:native-pdp-entry-query-consumed-once:en:390",
@@ -37164,10 +38667,12 @@
     "state": "native-pdp-entry-query-consumed-once",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
+    "status": "partially-verified",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -37177,7 +38682,25 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "automated_pass_evidence": {
+      "date": "2026-11-04",
+      "source": "docs/acceptance/2026-11-04/full-matrix/evidence/state-sweep-results.json",
+      "scope": "PDP CTA add on isolated local instance as approved customer",
+      "checks": [
+        {
+          "name": "add link engaged",
+          "result": "pass",
+          "observed": "http://127.0.0.1:8904/proforma-request/?add-to-cart=1178"
+        },
+        {
+          "name": "query consumed / redirected",
+          "result": "pass",
+          "observed": "final=http://127.0.0.1:8904/proforma-request/"
+        }
+      ],
+      "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/role-draft:native-pdp-entry-query-consumed-once:de:1440.png"
+    }
   },
   {
     "key": "draft:native-pdp-entry-query-consumed-once:de:390",

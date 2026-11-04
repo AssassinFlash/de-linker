@@ -15,6 +15,15 @@
         "httpStatus": 200,
         "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
         "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/faq-download/",
+        "localUrl": "http://127.0.0.1:8904/faq-download/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
       }
     ],
     "applicable_states": [],
@@ -82,6 +91,15 @@
     "sha256": "b1d82f2328cafd8fe7698fc42cf76c0cfd55301b839c8d73653e13073a0d6a4d",
     "status": "partially-verified",
     "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/faq-dokumente/",
+        "localUrl": "http://127.0.0.1:8904/de/faq-dokumente/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
       {
         "url": "https://de-linker.com/de/faq-dokumente/",
         "localUrl": "http://127.0.0.1:8904/de/faq-dokumente/",
@@ -158,6 +176,15 @@
     "sha256": "07af703cb97defb8b657d4fce909dc27bfb71298308321ea3ed434f4d8d6cc91",
     "status": "partially-verified",
     "rendered_routes": [
+      {
+        "url": "https://de-linker.com/genie/",
+        "localUrl": "http://127.0.0.1:8904/genie/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
       {
         "url": "https://de-linker.com/genie/",
         "localUrl": "http://127.0.0.1:8904/genie/",
@@ -247,6 +274,15 @@
     "sha256": "07af703cb97defb8b657d4fce909dc27bfb71298308321ea3ed434f4d8d6cc91",
     "status": "partially-verified",
     "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/genie/",
+        "localUrl": "http://127.0.0.1:8904/de/genie/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
       {
         "url": "https://de-linker.com/de/genie/",
         "localUrl": "http://127.0.0.1:8904/de/genie/",
@@ -346,6 +382,15 @@
         "httpStatus": 200,
         "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
         "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/solution-configurator/",
+        "localUrl": "http://127.0.0.1:8904/solution-configurator/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
       }
     ],
     "applicable_states": [],
@@ -397,6 +442,15 @@
     "sha256": "d1d98433d21093a3096b40306170507d32b6bcc2a66952c501ccc3396b5ec141",
     "status": "partially-verified",
     "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/loesungskonfigurator/",
+        "localUrl": "http://127.0.0.1:8904/de/loesungskonfigurator/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
       {
         "url": "https://de-linker.com/de/loesungskonfigurator/",
         "localUrl": "http://127.0.0.1:8904/de/loesungskonfigurator/",
@@ -457,6 +511,24 @@
     "sha256": "4d9854644ed3c2208dde57f7fe6ad66fa54bf9933fe6d95eb27abdd092a74b5b",
     "status": "partially-verified",
     "rendered_routes": [
+      {
+        "url": "https://de-linker.com/products/",
+        "localUrl": "http://127.0.0.1:8904/products/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/de/produkte/",
+        "localUrl": "http://127.0.0.1:8904/de/produkte/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
       {
         "url": "https://de-linker.com/products/",
         "localUrl": "http://127.0.0.1:8904/products/",
@@ -558,6 +630,24 @@
         "httpStatus": 200,
         "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
         "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/cart/",
+        "localUrl": "http://127.0.0.1:8904/cart/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/de/loesungsentwurf/",
+        "localUrl": "http://127.0.0.1:8904/de/loesungsentwurf/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
       }
     ],
     "applicable_states": [],
@@ -641,6 +731,24 @@
     "sha256": "6ba4be52970f04b17970efb31ad00dc20f3dc2bbd1bdaa3d23dbf4d886ac34cf",
     "status": "partially-verified",
     "rendered_routes": [
+      {
+        "url": "https://de-linker.com/proforma-request/",
+        "localUrl": "http://127.0.0.1:8904/proforma-request/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/de/proforma-anfrage/",
+        "localUrl": "http://127.0.0.1:8904/de/proforma-anfrage/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
       {
         "url": "https://de-linker.com/proforma-request/",
         "localUrl": "http://127.0.0.1:8904/proforma-request/",
@@ -1065,6 +1173,24 @@
         "httpStatus": 200,
         "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
         "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/my-account/",
+        "localUrl": "http://127.0.0.1:8904/my-account/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/de/mein-konto/",
+        "localUrl": "http://127.0.0.1:8904/de/mein-konto/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
       }
     ],
     "applicable_states": [],
@@ -1143,6 +1269,15 @@
         "httpStatus": 200,
         "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
         "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/compare-products/",
+        "localUrl": "http://127.0.0.1:8904/compare-products/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
       }
     ],
     "applicable_states": [],
@@ -1205,6 +1340,15 @@
     "sha256": "69a8e0f2302984a9673c69b1fef9ae1b4058d3e8540dcfcc0435e74e54c4ca32",
     "status": "partially-verified",
     "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/produkte-vergleichen/",
+        "localUrl": "http://127.0.0.1:8904/de/produkte-vergleichen/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
       {
         "url": "https://de-linker.com/de/produkte-vergleichen/",
         "localUrl": "http://127.0.0.1:8904/de/produkte-vergleichen/",
@@ -1284,6 +1428,15 @@
         "httpStatus": 404,
         "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
         "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/_coverage-review-missing-route/",
+        "localUrl": "http://127.0.0.1:8904/_coverage-review-missing-route/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 404,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
       }
     ],
     "applicable_states": [],
@@ -1343,6 +1496,15 @@
         "httpStatus": 404,
         "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
         "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/de/_coverage-review-missing-route/",
+        "localUrl": "http://127.0.0.1:8904/de/_coverage-review-missing-route/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 404,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
       }
     ],
     "applicable_states": [],
@@ -1394,6 +1556,15 @@
     "sha256": "8a8170434531cbe463558f078137feb841df7f9b36fb4a349b8cd4494d20940d",
     "status": "partially-verified",
     "rendered_routes": [
+      {
+        "url": "https://de-linker.com/?s=SAJ",
+        "localUrl": "http://127.0.0.1:8904/?s=SAJ",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
       {
         "url": "https://de-linker.com/?s=SAJ",
         "localUrl": "http://127.0.0.1:8904/?s=SAJ",
@@ -1510,6 +1681,15 @@
     "sha256": "ce230ffe9b8ec62d6f565b6c111db7cbe5d4352a7c823d14598715801586f591",
     "status": "partially-verified",
     "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/?s=SAJ",
+        "localUrl": "http://127.0.0.1:8904/de/?s=SAJ",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
       {
         "url": "https://de-linker.com/de/?s=SAJ",
         "localUrl": "http://127.0.0.1:8904/de/?s=SAJ",
@@ -1648,6 +1828,15 @@
         "httpStatus": 200,
         "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
         "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/hybrid-inverter-vs-ac-coupled-storage/",
+        "localUrl": "http://127.0.0.1:8904/hybrid-inverter-vs-ac-coupled-storage/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
       }
     ],
     "applicable_states": [],
@@ -1736,6 +1925,15 @@
         "httpStatus": 200,
         "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
         "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/de/hybridwechselrichter-vs-ac-speicher/",
+        "localUrl": "http://127.0.0.1:8904/de/hybridwechselrichter-vs-ac-speicher/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
       }
     ],
     "applicable_states": [],
@@ -1802,6 +2000,15 @@
     "sha256": "f8d2fd7e85d2e4a720601697d0df7a4934a9126e23aaa57957231c4061fb2460",
     "status": "partially-verified",
     "rendered_routes": [
+      {
+        "url": "https://de-linker.com/category/applications-blog/",
+        "localUrl": "http://127.0.0.1:8904/category/applications-blog/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
       {
         "url": "https://de-linker.com/category/applications-blog/",
         "localUrl": "http://127.0.0.1:8904/category/applications-blog/",
@@ -1879,6 +2086,15 @@
         "httpStatus": 200,
         "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
         "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/de/kategorie/anwendungen/",
+        "localUrl": "http://127.0.0.1:8904/de/kategorie/anwendungen/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
       }
     ],
     "applicable_states": [],
@@ -1940,6 +2156,15 @@
     "sha256": "42dde3ad317a1ce5d7486f7fefd88093cc11a59abab4e418d2baf05338e34dfc",
     "status": "partially-verified",
     "rendered_routes": [
+      {
+        "url": "https://de-linker.com/blog/",
+        "localUrl": "http://127.0.0.1:8904/blog/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
       {
         "url": "https://de-linker.com/blog/",
         "localUrl": "http://127.0.0.1:8904/blog/",
@@ -2017,6 +2242,15 @@
         "httpStatus": 200,
         "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
         "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/de/blog/",
+        "localUrl": "http://127.0.0.1:8904/de/blog/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
       }
     ],
     "applicable_states": [],
@@ -2086,6 +2320,15 @@
         "httpStatus": 200,
         "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
         "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/product/saj-ats1-t63-a/",
+        "localUrl": "http://127.0.0.1:8904/product/saj-ats1-t63-a/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
       }
     ],
     "applicable_states": [],
@@ -2145,6 +2388,15 @@
         "httpStatus": 200,
         "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
         "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/de/produkt/goodwe-gw60k-sts-g10/",
+        "localUrl": "http://127.0.0.1:8904/de/produkt/goodwe-gw60k-sts-g10/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
       }
     ],
     "applicable_states": [],
@@ -2196,6 +2448,15 @@
     "sha256": "4d9854644ed3c2208dde57f7fe6ad66fa54bf9933fe6d95eb27abdd092a74b5b",
     "status": "partially-verified",
     "rendered_routes": [
+      {
+        "url": "https://de-linker.com/product-category/accessories/",
+        "localUrl": "http://127.0.0.1:8904/product-category/accessories/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
       {
         "url": "https://de-linker.com/product-category/accessories/",
         "localUrl": "http://127.0.0.1:8904/product-category/accessories/",
@@ -2304,6 +2565,15 @@
     "sha256": "857843c916e4fd0b0c06ae741189141ac5fa1d9d8789fdb3d88db4214d0e8ba8",
     "status": "partially-verified",
     "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/batteriesysteme/",
+        "localUrl": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/batteriesysteme/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
       {
         "url": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/batteriesysteme/",
         "localUrl": "http://127.0.0.1:8904/de/produkt-kategorie/gewerbespeicher/batteriesysteme/",
@@ -2429,6 +2699,24 @@
         "httpStatus": 200,
         "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
         "scope": "Template post_content is empty (len=0) on the local snapshot AND on production (read-only wp db query 2026-11-04). No code or markup renders from it; 'binding' here records the empty fact, not a render proof. Execution/behavior contract unsatisfiable while content is empty."
+      },
+      {
+        "url": "https://de-linker.com/",
+        "localUrl": "http://127.0.0.1:8904/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Template post_content is empty (len=0) on the local snapshot AND on production (read-only wp db query 2026-11-04). No code or markup renders from it; 'binding' here records the empty fact, not a render proof. Execution/behavior contract unsatisfiable while content is empty."
+      },
+      {
+        "url": "https://de-linker.com/de/",
+        "localUrl": "http://127.0.0.1:8904/de/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Template post_content is empty (len=0) on the local snapshot AND on production (read-only wp db query 2026-11-04). No code or markup renders from it; 'binding' here records the empty fact, not a render proof. Execution/behavior contract unsatisfiable while content is empty."
       }
     ],
     "applicable_states": [],
@@ -2436,6 +2724,11 @@
       "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json"
     ],
     "findings": [
+      {
+        "date": "2026-11-04",
+        "source": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "finding": "Template post_content is empty (len=0) on the local snapshot and on production (read-only query). The coverage contract's execution+consumer proof cannot be satisfied; populate, retire the template, or obtain an owner ruling before any not-applicable claim."
+      },
       {
         "date": "2026-11-04",
         "source": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
@@ -2499,6 +2792,33 @@
     "sha256": "1ec44224f94e0535cb114a8571a02812710b6d7bf16eeb1fc315ce09a9e1f4e3",
     "status": "partially-verified",
     "rendered_routes": [
+      {
+        "url": "https://de-linker.com/",
+        "localUrl": "http://127.0.0.1:8904/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/cart/",
+        "localUrl": "http://127.0.0.1:8904/cart/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/privacy-policy/",
+        "localUrl": "http://127.0.0.1:8904/privacy-policy/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
       {
         "url": "https://de-linker.com/",
         "localUrl": "http://127.0.0.1:8904/",
@@ -2624,6 +2944,33 @@
         "httpStatus": 200,
         "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
         "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/",
+        "localUrl": "http://127.0.0.1:8904/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/cart/",
+        "localUrl": "http://127.0.0.1:8904/cart/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/privacy-policy/",
+        "localUrl": "http://127.0.0.1:8904/privacy-policy/",
+        "width": null,
+        "lang": "en",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
       }
     ],
     "applicable_states": [],
@@ -2689,6 +3036,33 @@
     "sha256": "daf8d1a6372ba7df23ef429fb9bf44432119ac9930c9aa21d8ed4d3f0f235415",
     "status": "partially-verified",
     "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/",
+        "localUrl": "http://127.0.0.1:8904/de/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/de/loesungsentwurf/",
+        "localUrl": "http://127.0.0.1:8904/de/loesungsentwurf/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/de/datenschutz/",
+        "localUrl": "http://127.0.0.1:8904/de/datenschutz/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
       {
         "url": "https://de-linker.com/de/",
         "localUrl": "http://127.0.0.1:8904/de/",
@@ -2788,6 +3162,33 @@
     "sha256": "c84e4ba2824651ddff96ed5ab987cdb40b95e63c4757d5bc682d1f254053070c",
     "status": "partially-verified",
     "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/",
+        "localUrl": "http://127.0.0.1:8904/de/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/de/loesungsentwurf/",
+        "localUrl": "http://127.0.0.1:8904/de/loesungsentwurf/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
+      {
+        "url": "https://de-linker.com/de/datenschutz/",
+        "localUrl": "http://127.0.0.1:8904/de/datenschutz/",
+        "width": null,
+        "lang": "de",
+        "httpStatus": 200,
+        "evidence": "docs/acceptance/2026-11-04/full-matrix/evidence/template-bindings.json",
+        "scope": "Local production-snapshot instance request. Marker proves this LC template/partial content renders on the route; not a pixel-parity or production-identity claim."
+      },
       {
         "url": "https://de-linker.com/de/",
         "localUrl": "http://127.0.0.1:8904/de/",

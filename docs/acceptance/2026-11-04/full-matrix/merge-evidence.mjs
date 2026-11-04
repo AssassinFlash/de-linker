@@ -36,6 +36,16 @@ for (const row of pages) {
 		pushEvidence(row, PAGE_EVIDENCE);
 		continue;
 	}
+	if (result.httpStatus === 404) {
+		// Measured 404 on the local snapshot AND on production (checked 2026-11-04):
+		// an unpublished/stale inventory route, not a render defect.
+		row.render = "not-applicable";
+		if (row.interaction !== "not-applicable") row.interaction = "not-applicable";
+		if (row.visual_review !== "not-applicable") row.visual_review = "not-applicable";
+		row.na_basis = `${PASS_DATE}: local snapshot and production both return 404 for this URL (production GET verified); the matrix inventory entry is stale — Trina reference module is engineering data, not a published product`;
+		pushEvidence(row, PAGE_EVIDENCE);
+		continue;
+	}
 	if (result.basicPass && row.render === "pending") row.render = "verified-basic-local";
 	if (result.basicPass && row.interaction === "pending") {
 		row.interaction = "partially-verified";
@@ -81,21 +91,28 @@ const stateSources = [
 	path.join(dataDir, "state-sweep-pass2/state-results-pass2.json"),
 	path.join(dataDir, "state-sweep-pass3-de-content/state-results-pass3.json"),
 	path.join(dataDir, "state-sweep-pass4/state-results-pass4.json"),
+	path.join(dataDir, "role-sweep/role-results.json"),
+	path.join(dataDir, "role-sweep/role-results-pass4.json"),
 ].filter((p) => fs.existsSync(p));
 let stateResults = [];
 for (const src of stateSources) {
 	const rows = loadJson(src);
-	const name = src.includes("pass2") ? "state-sweep-pass2-results.json" : src.includes("pass3") ? "state-sweep-pass3-results.json" : src.includes("pass4") ? "state-sweep-pass4-results.json" : "state-sweep-results.json";
+	const name = src.endsWith("role-sweep/role-results.json") ? "role-sweep-results.json"
+		: src.endsWith("role-results-pass4.json") ? "role-sweep-pass4-results.json"
+		: src.includes("pass2") ? "state-sweep-pass2-results.json"
+		: src.includes("pass3") ? "state-sweep-pass3-results.json"
+		: src.includes("pass4") ? "state-sweep-pass4-results.json"
+		: "state-sweep-results.json";
 	fs.copyFileSync(src, path.join(evidenceDir, name));
 	stateResults = stateResults.concat(rows);
 }
 // Later passes supersede earlier ones for the same key; error rows never supersede.
 const bestByKey = new Map();
+const passRank = (r) => ({ role4: 6, role: 5, 4: 4, 3: 3, 2: 2, 1: 1 }[r.pass] || (typeof r.pass === "number" ? r.pass : 1));
 for (const r of stateResults) {
 	if (r.status === "error") continue;
-	const pass = r.pass || 1;
 	const prev = bestByKey.get(r.key);
-	if (!prev || pass > (prev.pass || 1)) bestByKey.set(r.key, r);
+	if (!prev || passRank(r) > passRank(prev)) bestByKey.set(r.key, r);
 }
 const states = loadJson(path.join(fullSite, "state-matrix.json"));
 let stateUpdated = 0;

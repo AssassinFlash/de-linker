@@ -112,6 +112,46 @@ comes from read-only GET requests made on 2026-11-04.
   page-matrix finding on both viewport rows so the manual visual pass makes a
   deliberate call (keep as tool-design, or add an H1 for document outline).
 
+## F8 — Registration website field rejects legitimate multi-label domains (production-confirmed)
+
+- **Symptom**: on `/my-account/register/`, a company website like
+  `www.example.com` or `company.jimdosite.com` fails step 1 with
+  `aria-invalid` + "Please complete the required fields."; the visitor cannot
+  advance until they strip the subdomain (or fall back to entering a VAT ID
+  instead).
+- **Root cause**: `websiteOk()` in `plugins/linker-commerce/assets/account-ui.js`
+  validates with `/^[^\s/?#.]+\.[^\s/?#.]{2,}(?:[/?#]\S*)?$/i` — exactly two
+  labels. The comment says the shape came from the accepted prototype's
+  address test; the comment's intent (reject other URI schemes passed as bare
+  hosts) is unaffected by allowing more labels. The server repeats the same
+  check, so this is not bypassable client-side.
+- **Production evidence**: production `account-ui.js` fetched and diffed —
+  byte-identical `websiteOk`. Local DOM probe: 3-label value →
+  `linker_company_website aria-invalid=true`, step stays 1; 2-label value →
+  step 2 opens.
+- **Fix direction for the main line** (not applied in this batch): allow
+  multi-label hosts, e.g. `/^[^\s/?#.]+(?:\.[^\s/?#.]+)+/` shape, in both the
+  client validator and the server repeat.
+
+## F9 — Signed-in inquiry submission: order created but mis-attributed and confirmation not shown (needs review)
+
+- **Symptom**: submitting the inquiry form as a signed-in approved customer
+  (isolated local snapshot, protection in snapshot state) creates the order —
+  HPOS rows 8614/8615 with status `wc-inquiry-received` — but (a) the order's
+  `customer_id` is **0** despite the signed-in session, and (b) the browser
+  stays on `/proforma-request/` instead of landing on the received
+  confirmation. No error notice is rendered.
+- **Contrast**: the identical form submitted from a guest context works
+  end-to-end (order 8605 + redirect to `inquiry-received/…?key=…` — evidence
+  `role-sweep-pass4-results.json`).
+- **Root cause status**: not fully isolated. Suspects: the protection chain's
+  client-side fetch/submit interplay and `wp_safe_redirect` host validation in
+  the URL-rewritten local environment, or the signed-in attribution path
+  losing the session during the guarded POST. Local-vs-production behavior
+  unknown until re-tested; flagged for the main line with order IDs and
+  screenshots as reproduction.
+- No product code changed in this batch.
+
 ## Clean signals (first-time evidence, no findings)
 
 Across all page-sweep rows completed in this pass: **0 failed images, 0 console

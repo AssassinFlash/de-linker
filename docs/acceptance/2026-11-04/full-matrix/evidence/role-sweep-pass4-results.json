@@ -1,0 +1,112 @@
+[
+  {
+    "key": "inquiry:success-confirmation:en:1440",
+    "stateKey": "inquiry:success-confirmation",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/proforma-request/inquiry-received/8614/?key=wc_order_BnX8oSYfIke33",
+    "checks": [
+      {
+        "name": "lands on native received endpoint",
+        "result": "pass",
+        "observed": "url=http://127.0.0.1:8904/proforma-request/inquiry-received/8614/?key=wc_order_BnX8oSYfIke33 h1= err="
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/rolep4-inquiry:success-confirmation:en:1440.png",
+    "scope": "Pass-4 single-shot guest inquiry on isolated local instance (fresh context, one submission)",
+    "observedAt": "2026-11-04T13:32:43.755Z",
+    "pass": "role4"
+  },
+  {
+    "key": "dynamic-routes:inquiry-detail-and-received-key:en:1440",
+    "stateKey": "dynamic-routes:inquiry-detail-and-received-key",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/proforma-request/inquiry-received/8614/?key=wc_order_BnX8oSYfIke33",
+    "checks": [
+      {
+        "name": "valid received key exercised",
+        "result": "pass",
+        "observed": "http://127.0.0.1:8904/proforma-request/inquiry-received/8614/?key=wc_order_BnX8oSYfIke33"
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/rolep4-dynamic-routes:inquiry-detail-and-received-key:en:1440.png",
+    "scope": "Valid received-key from the real submission above",
+    "observedAt": "2026-11-04T13:32:43.798Z",
+    "pass": "role4"
+  },
+  {
+    "key": "contact:success:en:1440",
+    "stateKey": "contact:success",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/contact/?contact=receipt_pending&contact_order=wc_order_HvtDLPnYX7wtF#contact-form",
+    "checks": [
+      {
+        "name": "success state reached",
+        "result": "pass",
+        "observed": "url=http://127.0.0.1:8904/contact/?contact=receipt_pending&contact_order=wc_order_HvtDLPnYX7wtF#contact-form notice=✓\n\nThank you. Your message is with the Linker team.\n\nSend another message err="
+      }
+    ],
+    "passed": 1,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": "../../../../de-linker-data/full-matrix-20261104/role-sweep/screenshots/rolep4-contact:success:en:1440.png",
+    "scope": "Pass-4 single-shot contact submission (fresh context)",
+    "observedAt": "2026-11-04T13:33:22.072Z",
+    "pass": "role4"
+  },
+  {
+    "key": "dynamic-routes:password-reset-token-states:en:1440",
+    "stateKey": "dynamic-routes:password-reset-token-states",
+    "lang": "en",
+    "width": 1440,
+    "url": "captured",
+    "checks": [
+      {
+        "name": "reset mail captured with key link",
+        "result": "pass",
+        "observed": "mail=Reset your password for Linker link=ost-password/?key=p7WnNRJBxSO6DT6tmPGA&amp;id=50&amp;login=fm-approved (async queue up to 180s)"
+      },
+      {
+        "name": "valid key completes reset",
+        "result": "pass",
+        "observed": "final=http://127.0.0.1:8904/my-account/?password-reset=true"
+      }
+    ],
+    "passed": 2,
+    "failed": 0,
+    "status": "observed",
+    "screenshot": null,
+    "scope": "Pass-4: lost-password UI flow with 180s async mail poll",
+    "observedAt": "2026-11-04T13:34:13.571Z",
+    "pass": "role4"
+  },
+  {
+    "key": "inquiry:signed-in-summary:en:1440",
+    "stateKey": "inquiry:signed-in-summary",
+    "lang": "en",
+    "width": 1440,
+    "url": "http://127.0.0.1:8904/proforma-request/",
+    "checks": [
+      {
+        "name": "signed-in submission accepted",
+        "result": "fail",
+        "observed": "http://127.0.0.1:8904/proforma-request/"
+      }
+    ],
+    "passed": 0,
+    "failed": 1,
+    "status": "fail",
+    "screenshot": "/Users/chesterjohn/de-linker-data/full-matrix-20261104/role-sweep/screenshots/rolep4-inquiry-signed-in-summary-en-1440.png",
+    "scope": "Pass-4b: approved-customer inquiry after PDP add, single submission with guard dwell",
+    "observedAt": "2026-11-04T13:34:41.331Z",
+    "pass": "role4"
+  }
+]
