@@ -81,13 +81,14 @@ The decisive measurement is a **same-host control**: capture `https://de-linker.
 on both sides of the comparison. Anything a cross-host run reports that also
 appears there cannot be a product difference.
 
-`control-live-390/` did that for all 12 routes at 390 and reproduced the
-`/solution/` artifact against the live host itself:
+`control-live-390/` did that for 9 of the 12 routes at 390 (the run stopped when
+the HTTPS proxy refused a tunnel on the tenth) and reproduced the `/solution/`
+artifact against the live host itself:
 
 | Case | live↔local | live↔live control |
 | --- | --- | --- |
 | `solution` 390 | 600, bounds `[18,3060,138,3540]`, max 55 | **600, bounds `[18,3060,138,3540]`, max 55** |
-| every other route 390 | 0 | 0 |
+| the other 8 measured routes 390 | 0 | 0 |
 
 `control-pdp1440-{1,2}/` did the same for the 1440 PDP in two independent runs,
 and one of them reproduced that artifact too:
