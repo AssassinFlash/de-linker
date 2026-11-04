@@ -537,6 +537,70 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		}
 	}
 
+	/** An account without any stored name still prefills the required reply name. */
+	public function test_signed_in_form_prefills_the_display_name_when_no_name_is_saved(): void {
+		$customer = $this->customer();
+		foreach ( array( 'billing_first_name', 'billing_last_name', 'first_name', 'last_name' ) as $meta ) {
+			delete_user_meta( $customer->get_id(), $meta );
+		}
+		$this->as_user( $customer->get_id() );
+		wc_load_cart();
+		$tags = $GLOBALS['shortcode_tags'];
+		$this->later(
+			static function () use ( $tags ): void {
+				$GLOBALS['shortcode_tags'] = $tags;
+			}
+		);
+		( new \Linker\Commerce\Inquiry\Form() )->register();
+		$html = do_shortcode( '[linker_inquiry_form]' );
+		$user = get_userdata( $customer->get_id() );
+		$this->assertInstanceOf( \WP_User::class, $user );
+		$display = (string) $user->display_name;
+		$this->assertNotSame( '', $display );
+		// The required name input carries the account identity instead of an
+		// empty value whose native validation would block the submit silently.
+		$this->assertStringContainsString( 'id="inquiry-name" name="name"', $html );
+		$this->assertSame( 1, preg_match( '/id="inquiry-name"[^>]*value="([^"]*)"/', $html, $input ), 'The reply-name input is rendered with a value.' );
+		$value = $input[1] ?? '';
+		$this->assertSame( $display, html_entity_decode( $value, ENT_QUOTES ) );
+	}
+
+	/** The signed-in inquiry is attributed to the account and confirms on the native receipt. */
+	public function test_signed_in_inquiry_without_saved_name_is_attributed_and_confirms(): void {
+		$customer = $this->customer();
+		foreach ( array( 'billing_first_name', 'billing_last_name', 'first_name', 'last_name' ) as $meta ) {
+			delete_user_meta( $customer->get_id(), $meta );
+		}
+		$this->as_user( $customer->get_id() );
+		wc_load_cart();
+		WC()->cart->empty_cart();
+		$this->later( static fn () => WC()->cart->empty_cart() );
+		$product = $this->product( '125' );
+		WC()->cart->add_to_cart( $product->get_id(), 1 );
+		$user = get_userdata( $customer->get_id() );
+		$this->assertInstanceOf( \WP_User::class, $user );
+		$stamp  = (string) ( time() - 5 );
+		$post   = array(
+			'name'                 => (string) $user->display_name,
+			'email'                => $customer->get_billing_email(),
+			'consent'              => '1',
+			'linker_inquiry_nonce' => wp_create_nonce( 'linker_inquiry' ),
+			'linker_started'       => $stamp,
+			'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
+		);
+		$result = ( new \Linker\Commerce\Inquiry\Handler() )->process( $post );
+		$this->assertInstanceOf( WC_Order::class, $result );
+		$this->later(
+			static function () use ( $result ): void {
+				$result->delete( true );
+			}
+		);
+		$this->assertSame( 'inquiry-received', $result->get_status() );
+		$this->assertSame( $customer->get_id(), $result->get_customer_id(), 'The signed-in account owns its inquiry, never customer 0.' );
+		$received = $result->get_checkout_order_received_url();
+		$this->assertMatchesRegularExpression( '#inquiry-received/' . $result->get_id() . '/\?key=' . $result->get_order_key() . '#', $received );
+	}
+
 	/**
 	 * Billing edits apply only to this inquiry, including clearing or changing VAT.
 	 *

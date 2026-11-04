@@ -403,6 +403,28 @@ test('a malformed website keeps the company step open; a VAT ID alone satisfies 
  assert.equal(vatOnly.form.dataset.activeStep,'2');
 });
 
+// Real company sites live under multi-label hosts (www.example.com,
+// company.jimdosite.com); only single-label hosts stay refused (the server's
+// Website::valid() rejects them too — a public company site needs a TLD).
+for(const [site,opens] of [
+ ['www.example.com',true],
+ ['company.jimdosite.com',true],
+ ['https://www.example.com',true],
+ ['example.com',true],
+ ['localhost',false],
+ ['example.c',false],
+ ['ftp://example.com',false],
+ ['not a site',false],
+]){
+ test(`website ${site} ${opens?'opens':'keeps'} the sign-in step`,()=>{
+  const {form,field}=registerForm();
+  completeCompany(form,{site});
+  form.querySelector('[data-next]').click();
+  assert.equal(form.dataset.activeStep,opens?'2':'1');
+  assert.equal(field('linker_company_website').hasAttribute('aria-invalid'),!opens);
+ });
+}
+
 for(const eventType of ['input','change']) for(const [name,value] of [['linker_company_website','example.test'],['billing_vat_id','DE123456789']]){
  test(`correcting ${name} by ${eventType} clears the empty alternative's stale error`,()=>{
   const {win,form,field}=registerForm();

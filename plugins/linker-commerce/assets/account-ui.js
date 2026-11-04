@@ -313,12 +313,14 @@
 
 		const controls = ( root ) => [ ...root.querySelectorAll( 'input, select, textarea, button' ) ].filter( ( control ) => ! control.matches( 'input[type="hidden"]' ) );
 
-		// The accepted prototype's own address test (registration-prototype.js:257),
-		// tightened so another scheme cannot pass as a bare host. The server
-		// repeats the check; this only saves a round trip.
+		// A public company address: one or more host labels, a dot in the host
+		// and at least two characters after its last label (the server's
+		// Registration\Website::valid() agrees), tightened so another scheme
+		// cannot pass as a bare host. The server repeats the check; this only
+		// saves a round trip.
 		const websiteOk = ( value ) => {
 			const rest = value.replace( /^https?:\/\//i, '' );
-			return ! /^[a-z][a-z0-9+.-]*:/i.test( rest ) && /^[^\s/?#.]+\.[^\s/?#.]{2,}(?:[/?#]\S*)?$/i.test( rest );
+			return ! /^[a-z][a-z0-9+.-]*:/i.test( rest ) && /^[^\s/?#.]+(?:\.[^\s/?#.]+)*\.[^\s/?#.]{2,}(?:[/?#]\S*)?$/i.test( rest );
 		};
 
 		const mark = ( row, invalid ) => {

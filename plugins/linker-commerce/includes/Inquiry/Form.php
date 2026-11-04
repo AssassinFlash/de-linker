@@ -78,6 +78,13 @@ final class Form {
 		if ( '' === $name && is_user_logged_in() ) {
 			$name = trim( (string) wp_get_current_user()->first_name . ' ' . (string) wp_get_current_user()->last_name );
 		}
+		if ( '' === $name && is_user_logged_in() ) {
+			// Accounts without any stored name (staff-created, legacy imports) still
+			// have an identity; the required reply-name input must never render
+			// empty for them, or the browser's own validation silently blocks
+			// the inquiry submit before it reaches the server.
+			$name = trim( (string) wp_get_current_user()->display_name );
+		}
 		$email = $customer->get_billing_email();
 		if ( '' === $email && is_user_logged_in() ) {
 			$email = wp_get_current_user()->user_email;
