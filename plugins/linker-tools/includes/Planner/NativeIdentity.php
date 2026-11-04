@@ -44,12 +44,41 @@ final class NativeIdentity {
 	 * @return Principal|WP_Error Verified native principal or explicit refusal.
 	 */
 	public function resolve( WP_REST_Request $request ): Principal|WP_Error {
+		$resolved = $this->principal_and_session( $request );
+		return is_wp_error( $resolved ) ? $resolved : $resolved['principal'];
+	}
+
+	/**
+	 * The lightest revalidation answer: only the query_scope the browser compares.
+	 *
+	 * @param WP_REST_Request $request Native request.
+	 * @return string|WP_Error Current browser namespace or explicit refusal.
+	 */
+	public function scope( WP_REST_Request $request ): string|WP_Error {
+		$resolved = $this->principal_and_session( $request );
+		return is_wp_error( $resolved )
+			? $resolved
+			: self::query_scope( $resolved['principal'], $resolved['session'] );
+	}
+
+	/**
+	 * Verify the presented native proof and its session key in one pass.
+	 *
+	 * @param WP_REST_Request $request Native request.
+	 * @return array{principal:Principal,session:string}|WP_Error Verified principal with the session token/query key bootstrap would use.
+	 */
+	private function principal_and_session( WP_REST_Request $request ): array|WP_Error {
 		$user = get_current_user_id();
 		if ( $user > 0 ) {
 			$nonce = (string) $request->get_header( 'x-wp-nonce' );
-			return '' !== wp_get_session_token() && false !== wp_verify_nonce( $nonce, 'wp_rest' )
-				? new Principal( 'user', self::user_subject( $user ) )
-				: Failure::make( 'session', 401 );
+			$token = wp_get_session_token();
+			if ( '' === $token || false === wp_verify_nonce( $nonce, 'wp_rest' ) ) {
+				return Failure::make( 'session', 401 );
+			}
+			return array(
+				'principal' => new Principal( 'user', self::user_subject( $user ) ),
+				'session'   => $token,
+			);
 		}
 		// Core deliberately downgrades cookie-auth requests without a REST nonce
 		// to user zero. Never reinterpret that logged-in browser as a guest.
@@ -67,7 +96,10 @@ final class NativeIdentity {
 		if ( false === wp_verify_nonce( (string) $request->get_header( 'x-linker-planner-nonce' ), self::NONCE_ACTION ) ) {
 			return Failure::make( 'guest_nonce', 403 );
 		}
-		return new Principal( 'guest', self::guest_subject( $proof['id'] ) );
+		return array(
+			'principal' => new Principal( 'guest', self::guest_subject( $proof['id'] ) ),
+			'session'   => $proof['id'],
+		);
 	}
 
 	/**

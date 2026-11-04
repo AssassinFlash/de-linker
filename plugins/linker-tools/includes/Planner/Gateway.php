@@ -55,6 +55,15 @@ final class Gateway {
 		);
 		register_rest_route(
 			self::NAMESPACE,
+			self::ROUTE . '/scope',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'scope' ),
+				'permission_callback' => array( $this, 'scope_permission' ),
+			)
+		);
+		register_rest_route(
+			self::NAMESPACE,
 			self::ROUTE . '/rpc/(?P<path>' . self::PATHS . ')',
 			array(
 				'methods'             => 'POST',
@@ -285,6 +294,41 @@ final class Gateway {
 				'nonce'            => $context['nonce'],
 				'claim_pending'    => ! $recovered || $this->claims->pending( get_current_user_id() ),
 				'runtime'          => $version,
+			)
+		);
+	}
+
+	/**
+	 * Admit only the same-origin probe; identity is resolved once in scope().
+	 *
+	 * @param WP_REST_Request $request Native scope probe.
+	 * @return true|WP_Error Allowed same-origin probe or refusal.
+	 */
+	public function scope_permission( WP_REST_Request $request ): bool|WP_Error {
+		if ( ! Origin::allows( $request ) ) {
+			return Failure::make( 'origin', 403 );
+		}
+		return true;
+	}
+
+	/**
+	 * Lightest session revalidation: only the scope the browser compares.
+	 *
+	 * Unlike bootstrap this neither recovers claims nor contacts the private
+	 * service, so a tab refocus costs one native identity resolution.
+	 *
+	 * @param WP_REST_Request $request Verified native scope probe.
+	 * @return WP_REST_Response|WP_Error Current query_scope or explicit refusal.
+	 */
+	public function scope( WP_REST_Request $request ): WP_REST_Response|WP_Error {
+		$scope = $this->identity->scope( $request );
+		if ( is_wp_error( $scope ) ) {
+			return $scope;
+		}
+		return new WP_REST_Response(
+			array(
+				'schema_version' => 1,
+				'query_scope'    => $scope,
 			)
 		);
 	}

@@ -70,6 +70,19 @@ export class PlannerClient {
 		throw new ApiError(401, "cookie_confirmation_required");
 	}
 
+	/** Lightest identity probe: only the query_scope a revalidation compares. */
+	async probeScope(signal?: AbortSignal): Promise<string> {
+		const value = await this.post(
+			new URL("scope", this.base),
+			'{"schema_version":1}',
+			signal,
+		);
+		const scope = readObject(value).query_scope;
+		if (typeof scope !== "string" || !/^[a-f0-9]{64}$/.test(scope))
+			throw new ApiError(502, "invalid_reply");
+		return scope;
+	}
+
 	async query(
 		path: JsonRpcPath,
 		command: JsonObject,

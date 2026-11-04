@@ -486,7 +486,7 @@ def assess_equipment(
             ):
                 if count is None or stacks is None:
                     column_limit_issue = "unresolved"
-                elif count > 6 or stacks != 1:
+                elif count > 6:
                     column_limit_issue = "violated"
             voc_condition_violated = False
             for text in condition_texts:
