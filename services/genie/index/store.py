@@ -21,6 +21,7 @@ import sqlite_vec
 
 from index import corpus
 from index.table_compiler import external_axis_anchors
+from index.table_gate import audit as table_audit
 from linker_genie.compatibility_physical import physical_key
 from linker_genie.hs3_evidence import hs3_anchors
 from linker_genie.publication import Snapshot
@@ -302,6 +303,21 @@ def export(directory: Path, path: Path) -> None:
         ready = []
         unprepared = []
         document_status = {d.sha256: d.status for d in corpus.read_documents(directory)}
+        # Per-table gate (#900): a document whose parameter tables carry no scope
+        # at all must not read as prepared because one marketing passage filled
+        # its (product, document) pair. Standards are per doc_type; see
+        # index.table_gate. The PHP receipt gate must learn this reason before a
+        # build reporting it can be acknowledged.
+        document_types = {d.sha256: d.doc_type for d in corpus.read_documents(directory)}
+        bare_documents = {
+            sha
+            for sha, _table in table_audit(
+                chunks_by_id.values(),
+                proof.get("chunk_products", {}),
+                proof.get("chunk_scopes", {}),
+                document_types,
+            ).bare
+        }
         for product in manifest.get("products", []):
             pid = product["product_id"]
             if covered.get(pid):
@@ -315,6 +331,8 @@ def export(directory: Path, path: Path) -> None:
                     reason = "document_unparsed"
                 elif did not in prepared.get(pid, set()):
                     reason = "no_proven_passage"
+                elif document["blob_sha256"] in bare_documents:
+                    reason = "table_without_scope"
                 else:
                     continue
                 unprepared.append(

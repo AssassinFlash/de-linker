@@ -45,22 +45,27 @@ def meter_references(text: str) -> list[tuple[str, str]]:
     return [(m["model"], m[0]) for m in METER.finditer(text)]
 
 
+# The authored BAT-C component row, EN 'Pack Type / model' and DE 'Batteriepack-Typ /
+# Modell' (BAT-C datasheet DE blob 2a76fb0815a2, p.2; the EN twin isolates the same
+# row through the chunker). Only full-cell matches; a prefix or partial label is
+# never a component-role declaration.
+PACK_MODEL_LABEL = re.compile(
+    r"Pack\s+(?:Type\s*/\s*model|model(?:\s*/\s*type)?)"
+    r"|Batteriepack-(?:Typ|Modell)\s*/\s*(?:Modell|Typ)"
+    r"|Pack-(?:Typ|Modell)\s*/\s*(?:Modell|Typ)",
+    re.IGNORECASE,
+)
+
+
 def pack_model_row(text: str) -> bool:
     """One native property row, distinct from the system's model-column axis.
 
-    The authored BAT-C table uses 'Pack Type / model' for a component. This only
-    isolates that row; its model and facts still need their own permission.
+    The authored BAT-C table uses 'Pack Type / model' / 'Batteriepack-Typ /
+    Modell' for a component. This only isolates that row; its model and facts
+    still need their own permission.
     """
     lines = text.splitlines()
     if len(lines) != 1 or not text.startswith("|") or not text.endswith("|"):
         return False
     cells = [cell.strip() for cell in text.split("|")[1:-1]]
-    return (
-        len(cells) >= 3
-        and re.fullmatch(
-            r"Pack\s+(?:Type\s*/\s*model|model(?:\s*/\s*type)?)",
-            cells[0],
-            re.IGNORECASE,
-        )
-        is not None
-    )
+    return len(cells) >= 3 and PACK_MODEL_LABEL.fullmatch(cells[0]) is not None

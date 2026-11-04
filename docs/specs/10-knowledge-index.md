@@ -49,7 +49,7 @@ Woo 发布许可、处理完成和问题可回答范围各有含义：
 | `materialization_complete` | 当前全部输入已成功处理 | 成功代次可结束队列作业；失败解析保留重试 |
 | `preparation_complete` / 已证明产品集 | 当前关联有可用于回答的证明片段 | 保留真实缺口和原因，不由处理成功推断 |
 
-`no_proven_passage` 是处理后的语义诊断，保留在 loaded 和 Woo 收据中；它不制造产品准备许可，也不要求相同输入和处理规则永久重复构建。`document_unparsed` 则继续待办并真正重试解析。发布产品仍可被正常发现和展示，具体技术回答必须有对应依据。
+`no_proven_passage` 是处理后的语义诊断，保留在 loaded 和 Woo 收据中；它不制造产品准备许可，也不要求相同输入和处理规则永久重复构建。`document_unparsed` 则继续待办并真正重试解析。`table_without_scope`（#900）按表格粒度报警：该文档存在参数表（按 doc_type 分标准——datasheet 任何 ≥4 行参数表、compatibility 所有表格、manual 仅表头型号轴已证明的表、certificate 豁免）而没有任何产品关联时，即使有已过审段落也判未准备；manifest 的 `table_coverage` 记录各 doc_type 的表格覆盖，发布程序对 datasheet 的裸参数表设硬阈值。发布产品仍可被正常发现和展示，具体技术回答必须有对应依据。
 
 ## 代次、实际执行与恢复
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import re
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import replace
 from typing import Any, cast
 
@@ -50,8 +50,11 @@ from linker_genie.table_projection import (
     projection_id,
     read_cells,
     render_projection,
+    render_single_model,
+    row_cells_single,
     row_footnotes,
     safe_rows,
+    safe_rows_single,
 )
 
 SCOPE_DECLARATION = re.compile(
@@ -103,12 +106,13 @@ def _author_contexts(
         r"\d+(?:[.,]\d+)?\s*[-–]\s*\d+(?:[.,]\d+)?\s*"
         r"(?:kWh|MWh|Wh|kW|MW|W)"
     )
+    # A capacity cover's engineering values are dash ranges ('5-30kW/5-108kWh')
+    # or slash-joined/singular unit values ('125kW/261kWh', the ESA 261kWh
+    # manual cover heading of #900 §5.1; the dash-only regex misses it).
+    unit_value = r"\d+(?:[.,]\d+)?\s*[kmunMGT]?(?:Hz|Wh|W|VA|V|Ah|A)"
     ratings = re.compile(
-        r"(?<![\w./-])"
-        + rating_range
-        + r"(?:\s*/\s*"
-        + rating_range
-        + r")*(?![\w./-])",
+        rf"(?<![\w./-])(?:{rating_range}|{unit_value})"
+        rf"(?:\s*/\s*(?:{rating_range}|{unit_value}))*(?![\w./-])",
         re.IGNORECASE,
     )
     active: dict[str, list[dict[str, Any]]] = {}
@@ -215,6 +219,18 @@ def _author_contexts(
                 text, contained, shapes, section=kind == "heading", families=families
             )
             if contained or (not broad_family and unknown):
+                # A heading whose only digit-bearing codes are accessories or
+                # topics ('WiFi/LAN Kit-20') names no model and no capacity
+                # segment of one. It is not an author restriction at all.
+                if (
+                    kind == "heading"
+                    and not contained
+                    and unknown
+                    and SCOPE_DECLARATION.search(text) is None
+                    and not ratings.search(text)
+                    and _accessory_heading(text, labels, families, shapes)
+                ):
+                    continue
                 boundary: dict[str, Any] = {
                     "kind": kind,
                     "quote": text,
@@ -222,14 +238,14 @@ def _author_contexts(
                     "heading_path": list(paths.get(sha, ())),
                 }
                 # A generic cover's unit-bearing engineering range is not a
-                # model identity. Keep it as a restriction on ordinary content;
-                # only a separately proven original model axis can supersede it.
+                # model identity — on any page, not only a cover (#900 §5.1:
+                # capacity covers like 'ESA Series 125kW/261kWh' with no current
+                # model inside denied 146 physically proven tables). The former
+                # page-1 'All-in-One' special case is a subset of this rule.
                 if (
                     kind == "heading"
-                    and chunk.page == 1
                     and not contained
                     and unknown
-                    and re.search(r"\bAll[- ]in[- ]One\b", text, re.IGNORECASE)
                     and SCOPE_DECLARATION.search(text) is None
                     and ratings.search(text) is not None
                     and not unknown_models(
@@ -401,8 +417,10 @@ def _pack_rows(
     header: str,
     tokenizer: Tokenizer,
     max_tokens: int,
+    render: Callable[[Sequence[int]], str | None] | None = None,
 ) -> list[list[int]]:
     """Keep source row boundaries; an oversized field is never silently cut."""
+    project = render or (lambda group: render_projection(cells, column, group))
     groups: list[list[int]] = []
     current: list[int] = []
     current_notes: tuple[str, ...] | None = None
@@ -413,13 +431,13 @@ def _pack_rows(
         if current and notes != current_notes:
             groups.append(current)
             current = []
-        text = render_projection(cells, column, [*current, row])
+        text = project([*current, row])
         assert text is not None
         if tokenizer.count(header + "\n" + text) > max_tokens:
             if current:
                 groups.append(current)
                 current = []
-            text = render_projection(cells, column, [row])
+            text = project([row])
             assert text is not None
             if tokenizer.count(header + "\n" + text) > max_tokens:
                 continue
@@ -548,6 +566,32 @@ def _quote_shares_axis_family(
 
 
 TABLE_CAPTION = re.compile(r"^\s*table\s*\d+\b", re.IGNORECASE)
+
+
+def _accessory_heading(
+    text: str, labels: set[str], families: set[str], shapes: set[str]
+) -> bool:
+    """A heading naming only accessory/topic codes narrows nothing.
+
+    'WiFi/LAN Kit-20' (#900 §5.1) carries no current model, no capacity segment
+    and no code shaped like a known model family. Only 'Letters-Digits'
+    accessory codes qualify ('Kit-20'); a fused code like the real meter model
+    'DTSU666' or a digit-led fragment keeps the fail-closed boundary.
+    """
+    tokens = codes(text)
+    if not tokens:
+        return False
+    for token in tokens:
+        if (
+            token.casefold() in labels
+            or token.casefold() in families
+            or re.fullmatch(r"[A-Za-z]+-\d+", token) is None
+        ):
+            return False
+        prefix = re.match(r"[A-Za-z]+", token)
+        if prefix is not None and prefix[0].casefold() in shapes:
+            return False
+    return True
 
 # "This function is available only on battery systems that support cloud
 # board communication" (GoodWe BAT-C manual p.61) restricts a capability,
@@ -1019,6 +1063,200 @@ def _overview_units(
     return output, scopes
 
 
+def _single_model_render(
+    cells: Sequence[SourceCell], model: str
+) -> Callable[[Sequence[int]], str | None]:
+    def render(group: Sequence[int]) -> str | None:
+        return render_single_model(cells, group, model)
+
+    return render
+
+
+def _single_model_units(
+    groups: dict[tuple[str, str], list[Chunk]],
+    source: Snapshot,
+    statuses: dict[str, str],
+    current: dict[str, int],
+    contexts: dict[str, list[dict[str, Any]]],
+    by_id: dict[str, Chunk],
+    tokenizer: Tokenizer,
+    max_tokens: int,
+) -> tuple[list[Chunk], dict[str, ScopeProof]]:
+    """Authorize a single-product document's two-column tables (#900 §9.1).
+
+    A 'property | value' table of a document that Woo links to exactly one
+    current published product has no multi-model axis and previously no path at
+    all. The projection is proven by: the document's single current product; a
+    unique same-page original text declaration of exactly that model before the
+    table; and per-row safety over the native cells. Rows naming any other or
+    unresolved model are dropped row by row (a not-yet-published generation in
+    the surrounding text denies itself, never the table).
+    """
+    output: list[Chunk] = []
+    scopes: dict[str, ScopeProof] = {}
+    for (sha, table), parts in groups.items():
+        first = parts[0]
+        cells = read_cells(first.source_cells)
+        if (
+            cells is None
+            or any(part.source_cells for part in parts[1:])
+            or any(part.page != first.page for part in parts)
+            or model_axis(cells) is not None
+            or max((cell["col_end"] for cell in cells), default=0) != 2
+        ):
+            continue
+        if any(
+            span["source_sha256"] != sha or span["page"] != first.page
+            for cell in cells
+            for span in cell.get("model_spans", [])
+        ):
+            continue
+        linked = {
+            pid
+            for document in source.documents.values()
+            if document["blob_sha256"] == sha
+            for pid in document["product_ids"]
+            if pid in source.products
+        }
+        if len(linked) != 1:
+            continue
+        pid = next(iter(linked))
+        product = source.products[pid]
+        model = str(product.get("model", ""))
+        if (
+            not model
+            or model.casefold() not in current
+            or statuses.get(model.casefold(), "published") != "published"
+        ):
+            continue
+        pattern = model_pattern(model)
+        mentions = [
+            chunk
+            for chunk in (by_id.get(cid) for cid in first.preceding_text)
+            if chunk is not None
+            and chunk.doc_sha256 == sha
+            and chunk.kind == "text"
+            and pattern.search(chunk.text)
+        ]
+        if not mentions:
+            continue
+        # The declaration is the chunker's own reading-order provenance chain
+        # (the same chain _table_columns joins), not a page radius: the ESA
+        # datasheet declares its model on p.1 for the p.2 table. Every current
+        # model in the whole chain must resolve to this table's one product;
+        # the anchor itself is the mention nearest to the table.
+        declaration = mentions[-1]
+        if any(
+            other != model.casefold()
+            and model_pattern(other).search(
+                "".join(
+                    chunk.text
+                    for chunk in (
+                        by_id.get(cid) for cid in first.preceding_text
+                    )
+                    if chunk is not None
+                    and chunk.doc_sha256 == sha
+                    and chunk.kind == "text"
+                )
+            )
+            for other in current
+            if other
+        ):
+            continue
+        proof = _scope(source, sha, pid)
+        if not proof["associations"]:
+            continue
+        if first.id in contexts:
+            axis_products = {pid}
+            boundaries = [
+                boundary
+                for boundary in contexts[first.id]
+                if boundary.get("rating_cover") is not True
+                and not _series_cover_for_axis(boundary, [model], by_id)
+                and not _quote_covers_axis(boundary.get("quote"), [model])
+                and _quote_shares_axis_family(
+                    boundary.get("quote"), axis_products, source.products
+                )
+                and not _is_table_caption(boundary.get("quote"))
+                and not _is_feature_availability_note(boundary.get("quote"))
+            ]
+            if boundaries:
+                proof = _constrain(proof, boundaries)
+                if not author_scope_allows(proof, {pid}, source.products):
+                    continue
+        header = f"{model} | p. {first.page}"
+        known = [*current, *statuses, model]
+        native_rows = sorted(
+            {
+                row
+                for cell in cells
+                for row in range(cell["row_start"], cell["row_end"])
+                if row > 0
+            }
+        )
+        safe = [
+            row
+            for row in native_rows
+            if row_cells_single(cells, row) is not None
+            and row_footnotes(cells, row, 1) is not None
+            and safe_rows_single(cells, [row], model, known)
+        ]
+        for rows in _pack_rows(
+            cells,
+            1,
+            safe,
+            header,
+            tokenizer,
+            max_tokens,
+            render=_single_model_render(cells, model),
+        ):
+            text = render_single_model(cells, rows, model)
+            assert text is not None
+            cid = projection_id(sha, first.page, table, model, text)
+            output.append(
+                replace(
+                    first,
+                    id=cid,
+                    header=header,
+                    text=text,
+                    tokens=tokenizer.count(header + "\n" + text),
+                    source_rows=tuple(rows),
+                    source_cells=(),
+                )
+            )
+            scopes[cid] = {
+                **proof,
+                "basis": "table_single_model",
+                "source_chunk_ids": list(
+                    dict.fromkeys(
+                        [
+                            *proof["source_chunk_ids"],
+                            declaration.id,
+                            *(part.id for part in parts),
+                        ]
+                    )
+                ),
+                "single_model_projection": {
+                    "source_sha256": sha,
+                    "source_table": table,
+                    "source_page": first.page,
+                    "source_cells": list(cells),
+                    "source_cells_sha256": cells_digest(cells),
+                    "source_rows": rows,
+                    "model_column": 1,
+                    "product_id": pid,
+                    "model": model,
+                    "text_sha256": hashlib.sha256(text.encode()).hexdigest(),
+                    "declaration": {
+                        "chunk_id": declaration.id,
+                        "text": declaration.text,
+                        "page": declaration.page,
+                    },
+                },
+            }
+    return output, scopes
+
+
 def compile_scopes(
     chunks: list[Chunk],
     manifest: dict[str, Any],
@@ -1206,6 +1444,11 @@ def compile_scopes(
                         **({"footnote_sources": used_sources} if used_sources else {}),
                     },
                 }
+    single_units, single_scopes = _single_model_units(
+        groups, source, statuses, current, contexts, by_id, tokenizer, max_tokens
+    )
+    output.extend(single_units)
+    result.update(single_scopes)
     source_anchors = external_axis_anchors(relevant)
     compatibility, compatibility_scopes = _compatibility_units(
         relevant, source, statuses, tokenizer, max_tokens, source_anchors

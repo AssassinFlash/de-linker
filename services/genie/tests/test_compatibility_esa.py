@@ -353,6 +353,17 @@ def test_missing_footnote_leaves_the_association_unprepared(tmp_path: Path) -> N
         "product_id": 2415,
         "reason": "no_proven_passage",
     } in pending
+    # #900 §9.7: the IoT list is a compatibility document, the strictest table
+    # standard — its bare tables keep the pair flagged even though the ESA
+    # association's passages prepare it.
+    assert {
+        "document_id": iot,
+        "product_id": 2397,
+        "reason": "table_without_scope",
+    } in pending
     assert not any(
-        item["document_id"] == iot and item["product_id"] == 2397 for item in pending
+        item["document_id"] == iot
+        and item["product_id"] == 2397
+        and item["reason"] == "no_proven_passage"
+        for item in pending
     )

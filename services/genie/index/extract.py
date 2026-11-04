@@ -1775,6 +1775,92 @@ def _span_stays_in_cell(
     )
 
 
+def _header_label_spans(
+    cell: SourceCell, spans: Sequence[SourceSpan]
+) -> list[SourceSpan]:
+    """Page spans whose text could be this header cell's model label."""
+    original = {token.casefold() for token in TOKEN.findall(cell["text"])}
+    labels = {
+        token.casefold()
+        for token in TOKEN.findall(re.sub(r"(?<=-)\s+", "", cell["text"]))
+    }
+    return [
+        span
+        for span in spans
+        if span["text"].casefold() in labels
+        or any(
+            token.endswith("-") and span["text"].casefold().startswith(token)
+            for token in original
+        )
+    ]
+
+
+def _header_cell_spans(
+    cell: SourceCell, spans: Sequence[SourceSpan]
+) -> list[SourceSpan]:
+    """Spans whose centre lies inside the native header cell box."""
+    box = cell["bbox"]
+    assert box is not None
+    return [
+        span
+        for span in _header_label_spans(cell, spans)
+        if box[0] <= (span["bbox"][0] + span["bbox"][2]) / 2 <= box[2]
+        and min(box[1], box[3]) <= (span["bbox"][1] + span["bbox"][3]) / 2
+        <= max(box[1], box[3])
+        and _span_stays_in_cell(span, box)
+    ]
+
+
+def _recover_shifted_header_spans(
+    cells: Sequence[SourceCell],
+    header_matches: dict[int, list[SourceSpan]],
+    spans: Sequence[SourceSpan],
+) -> dict[int, tuple[float, float, float, float]]:
+    """Retry a header cell whose Docling box misses its own ink (#900 §4.5).
+
+    SAJ HS3 datasheet DE blob e00f9645d187, p.2: the sixth header cell's bbox
+    top sits 4.6 pt below its own text ink (top 32.6 against ink 27.4-32.0),
+    so the centre-containment test rejects the only span it should own. When
+    sibling header cells of the same row did match, their proven ink band —
+    not the mislaid cell box — supplies the vertical acceptance; the cell's
+    own x range and the exactly-one-candidate rule keep the column identity.
+    The recovered cell gets its row's proven ink band as the corrected frame,
+    so every later re-derivation (model_axis, valid_projection) sees the same
+    proven geometry. This corrects a wrong frame from the same row's proven
+    geometry; it does not widen any tolerance.
+    """
+    corrections: dict[int, tuple[float, float, float, float]] = {}
+    proven = [span for matched in header_matches.values() for span in matched]
+    if not proven:
+        return corrections
+    taken = {(span["char_start"], span["char_end"]) for span in proven}
+    top = min(span["bbox"][1] for span in proven)
+    bottom = max(span["bbox"][3] for span in proven)
+    for index, matched in header_matches.items():
+        if matched:
+            continue
+        cell = cells[index]
+        box = cell["bbox"]
+        assert box is not None
+        candidates = [
+            span
+            for span in _header_label_spans(cell, spans)
+            if (span["char_start"], span["char_end"]) not in taken
+            and box[0] <= (span["bbox"][0] + span["bbox"][2]) / 2 <= box[2]
+            and top <= (span["bbox"][1] + span["bbox"][3]) / 2 <= bottom
+            and _span_stays_in_cell(span, box)
+        ]
+        if len(candidates) == 1:
+            header_matches[index] = candidates
+            corrections[index] = (
+                box[0],
+                min(box[1], top),
+                box[2],
+                max(box[3], bottom),
+            )
+    return corrections
+
+
 def enrich_model_axes(
     pages: list[Page],
     pdf_path: Path,
@@ -1875,8 +1961,25 @@ def enrich_model_axes(
                             complete_pages,
                         )
                     external["footnotes"] = footnotes[key]
-                for cell in block.source_cells:
+                header_matches: dict[int, list[SourceSpan]] = {}
+                for index, cell in enumerate(block.source_cells):
+                    if (
+                        cell["row_start"] == 0
+                        and cell["row_end"] == 1
+                        and cell["col_start"] > 0
+                        and cell["column_header"]
+                        and cell["bbox"] is not None
+                        and cell["bbox_origin"] == "TOPLEFT"
+                    ):
+                        header_matches[index] = _header_cell_spans(cell, spans)
+                span_corrections = _recover_shifted_header_spans(
+                    block.source_cells, header_matches, spans
+                )
+                for index, cell in enumerate(block.source_cells):
                     own: SourceCell = {**cell}
+                    if index in span_corrections:
+                        own["bbox"] = span_corrections[index]
+                        recovered = True
                     if not block.source_picture:
                         matched_wraps = [
                             wrap for wrap in word_wraps if valid_word_wrap(wrap, cell)
@@ -1886,74 +1989,40 @@ def enrich_model_axes(
                     if external and cell["row_start"] == 0 and cell["col_start"] == 0:
                         own["external_axis"] = external
                         recovered = True
-                    box = cell["bbox"]
-                    if (
-                        cell["row_start"] == 0
-                        and cell["row_end"] == 1
-                        and cell["col_start"] > 0
-                        and cell["column_header"]
-                        and box is not None
-                        and cell["bbox_origin"] == "TOPLEFT"
-                    ):
+                    matched = header_matches.get(index)
+                    if matched:
                         original = {
                             token.casefold() for token in TOKEN.findall(cell["text"])
                         }
-                        labels = {
-                            token.casefold()
-                            for token in TOKEN.findall(
-                                re.sub(r"(?<=-)\s+", "", cell["text"])
+                        # A native header may already be complete while its
+                        # physical axis is newly recovered from a PDF wrap.
+                        recovered = recovered or any(
+                            (s["char_start"], s["char_end"]) in wrapped_spans
+                            for s in matched
+                        )
+                        if (
+                            len(matched) == cell["col_end"] - cell["col_start"]
+                            and any(
+                                s["text"].casefold() not in original for s in matched
                             )
-                        }
-                        matched = [
-                            span
-                            for span in spans
-                            if (
-                                span["text"].casefold() in labels
-                                or any(
-                                    token.endswith("-")
-                                    and span["text"].casefold().startswith(token)
-                                    for token in original
-                                )
-                            )
-                            and box[0]
-                            <= (span["bbox"][0] + span["bbox"][2]) / 2
-                            <= box[2]
-                            and min(box[1], box[3])
-                            <= (span["bbox"][1] + span["bbox"][3]) / 2
-                            <= max(box[1], box[3])
-                            and _span_stays_in_cell(span, box)
-                        ]
-                        if matched:
-                            # A native header may already be complete while its
-                            # physical axis is newly recovered from a PDF wrap.
-                            recovered = recovered or any(
-                                (s["char_start"], s["char_end"]) in wrapped_spans
-                                for s in matched
-                            )
-                            if (
-                                len(matched) == cell["col_end"] - cell["col_start"]
-                                and any(
-                                    s["text"].casefold() not in original
+                            and all(
+                                any(
+                                    s["text"].casefold().startswith(token)
+                                    or s["text"].casefold().endswith(token)
                                     for s in matched
                                 )
-                                and all(
-                                    any(
-                                        s["text"].casefold().startswith(token)
-                                        or s["text"].casefold().endswith(token)
-                                        for s in matched
-                                    )
-                                    for token in original
-                                )
-                            ):
-                                # Only the in-memory header is recovered from exact
-                                # visible PDF labels. Cached cells and body rows stay
-                                # unchanged, including a suffix misplaced by Docling.
-                                own["text"] = " ".join(
-                                    s["text"]
-                                    for s in sorted(matched, key=lambda s: s["bbox"][0])
-                                )
-                                recovered = True
-                            own["model_spans"] = matched
+                                for token in original
+                            )
+                        ):
+                            # Only the in-memory header is recovered from exact
+                            # visible PDF labels. Cached cells and body rows stay
+                            # unchanged, including a suffix misplaced by Docling.
+                            own["text"] = " ".join(
+                                s["text"]
+                                for s in sorted(matched, key=lambda s: s["bbox"][0])
+                            )
+                            recovered = True
+                        own["model_spans"] = matched
                     cells.append(own)
                 if recovered:
                     cells = _single_line_cells(

@@ -655,6 +655,9 @@ RECORDS: list[dict[str, Any]] = [
                     "boundary": {
                         "kind": "heading",
                         "quote": "ESA Series 125kW/261kWh",
+                        # #900 §9.5: a unit-bearing capacity cover is not a
+                        # model narrowing; the context compiler flags it now.
+                        "rating_cover": True,
                         "source_chunk_id": "0adfb3d5e6df-p1-8fbc39ae",
                         "heading_path": [],
                     },
@@ -1011,6 +1014,8 @@ RECORDS.extend(
                             "kind": "heading",
                             "quote": "ESA Series 125kW/261kWh C&I Energy "
                             "Storage System",
+                            # #900 §9.5: capacity cover, not a model narrowing.
+                            "rating_cover": True,
                             "source_chunk_id": "f4d53810d74c-p2-c0136c0d",
                             "heading_path": [],
                         },
