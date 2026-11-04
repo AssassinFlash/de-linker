@@ -101,6 +101,31 @@ Fixed by the declared `sortChildren` normalization: each declared container is
 sorted by card title on both sides, and `compare.py` requires the resulting item
 sets to be equal, so a different card set still fails.
 
+## Known product-side finding (not fixed here)
+
+`ProductShortcodes::image_tag()` computes
+`wp_get_attachment_image_sizes( $image_id, $size )` into `$sizes` and never
+prints it — the variable is assigned and unused, and no `sizes` attribute is
+ever emitted. Every PDP image built by that helper therefore carries
+`srcset` without `sizes`, which makes the browser assume `100vw`.
+
+Two consequences, both real for customers:
+
+- **Candidate choice is not tied to the painted width.** At 390 the SAJ feature
+  image paints at 350px but the browser sizes it as 390px and, on that basis,
+  picked the 600w file on one host and the 1280w file on another from identical
+  markup. A customer can receive a needlessly large download.
+- **Layout is not identical between those two outcomes**, because the 600w and
+  1280w files of that photo have different intrinsic ratios: 211.125px against
+  210.875px painted height, which shifts everything below by 0.25px. The
+  measured document height differed by 1px (9977 against 9976).
+
+The harness handles this with the declared `pinImageSizes` normalization so the
+gate is deterministic, but that normalization is a measurement device, not a
+fix: the page still ships `srcset` without `sizes`. Fixing it belongs in the
+product and changes which file customers download, so it is deliberately not
+done on this capture branch.
+
 ## History
 
 - `batch1/` — before this work. 24 cases, 17 clean, 7 failures.
