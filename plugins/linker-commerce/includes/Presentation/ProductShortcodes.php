@@ -2201,9 +2201,9 @@ final class ProductShortcodes {
 
 	/**
 	 * An image tag with the live renderer's attribute set: the attachment's
-	 * width/height, src, the caller's attributes, then srcset and sizes last.
-	 * `srcset => null` in the attributes suppresses the candidates, and sizes
-	 * goes with them — a lone sizes attribute selects nothing.
+	 * width/height, src, the caller's attributes, then srcset and computed sizes
+	 * only when the caller did not provide sizes. `srcset => null` suppresses
+	 * the candidates and their sizes; an explicit caller sizes wins exactly once.
 	 *
 	 * @param int                        $image_id   The attachment.
 	 * @param string                     $size       Registered size name.
@@ -2242,12 +2242,11 @@ final class ProductShortcodes {
 			$html .= ' ' . $name . '="' . esc_attr( $value ) . '"';
 		}
 		// An explicit srcset (the thumbnails carry the live page's candidate)
-		// replaces the generated one; null left none to print. `sizes` belongs
-		// to the candidates: WordPress computes it per size and the browser
-		// picks a source from it, so omitting it makes the browser assume
-		// 100vw. That mismatch made the same 350px-wide picture resolve to the
-		// 600w file on one host and the 1280w file on another, whose ratios
-		// differ by 0.25px of painted height.
+		// replaces the generated one; null left none to print. WordPress computes
+		// sizes per size, but an explicit caller sizes wins and is never duplicated.
+		// Omitting it makes the browser assume 100vw. That mismatch made the same
+		// 350px-wide picture resolve to the 600w file on one host and the 1280w file
+		// on another, whose ratios differ by 0.25px of painted height.
 		if ( \is_string( $srcset ) && '' !== $srcset ) {
 			$html .= ' srcset="' . esc_attr( $srcset ) . '"';
 			if ( \is_string( $sizes ) && '' !== $sizes && ! \array_key_exists( 'sizes', $attributes ) ) {
