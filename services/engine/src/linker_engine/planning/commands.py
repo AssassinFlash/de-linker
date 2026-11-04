@@ -35,7 +35,7 @@ def replay(
     # Claim-event receipts themselves never inherit another actor's authority.
     if actor.kind == "user" and (
         scope == "create"
-        or scope.startswith(("revise:", "asset:", "evaluate:", "handoff:"))
+        or scope.startswith(("revise:", "asset:", "evaluate:", "handoff:", "delete:"))
     ):
         rows.extend(
             connection.execute(

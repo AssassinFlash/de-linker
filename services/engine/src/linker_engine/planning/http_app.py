@@ -76,6 +76,7 @@ from .http_documents import (
     ProfilePreviewRead,
     ProjectAssistant,
     ProjectCreate,
+    ProjectDelete,
     ProjectList,
     ProjectRead,
     ProjectRevise,
@@ -553,6 +554,16 @@ def create_private_app(
                 key=body.key,
                 input_contract=body.input_contract,
             )
+        )
+
+    @app.post("/projects/delete")
+    def delete(body: ProjectDelete, request: Request) -> Object:
+        actor = verified_actor(request.scope, write=True)
+        previous = previous_result(actor, "projects/delete", body)
+        if previous is not None:
+            return previous
+        return workspace.delete(
+            actor, body.project_id, body.expected_revision, key=body.key
         )
 
     @app.post("/projects/runs")

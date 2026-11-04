@@ -5934,6 +5934,53 @@ msgid "Refresh calculation status"
 msgstr "Berechnungsstatus aktualisieren"
 
 #: build/planner/assets/planner.js:1
+msgid "Delete project"
+msgstr "Projekt löschen"
+
+#: build/planner/assets/planner.js:1
+#, javascript-format
+msgid "Delete project %s"
+msgstr "Projekt %s löschen"
+
+#: build/planner/assets/planner.js:1
+msgid "Delete this project"
+msgstr "Dieses Projekt löschen"
+
+#: build/planner/assets/planner.js:1
+#, javascript-format
+msgid "Delete the project \"%s\" at revision %d?"
+msgstr "Das Projekt „%s“ mit Version %d löschen?"
+
+#: build/planner/assets/planner.js:1
+msgid "Deleting…"
+msgstr "Wird gelöscht…"
+
+#: build/planner/assets/planner.js:1
+msgid "Try deleting again"
+msgstr "Löschen erneut versuchen"
+
+#: build/planner/assets/planner.js:1
+msgid "All of its revisions, runs and stored inputs are removed from the workspace. A project handed to the Linker team as an inquiry cannot be deleted."
+msgstr "Alle Versionen, Berechnungen und gespeicherten Eingaben dieses Projekts werden aus dem Arbeitsbereich entfernt. Ein Projekt, das dem Linker-Team als Anfrage übergeben wurde, kann nicht gelöscht werden."
+
+#: build/planner/assets/planner.js:1
+msgid "This project was handed to the Linker team as an inquiry and cannot be deleted."
+msgstr "Dieses Projekt wurde dem Linker-Team als Anfrage übergeben und kann nicht gelöscht werden."
+
+#: build/planner/assets/planner.js:1
+msgid "This project changed before it could be deleted. The list now shows the current revision; deleting uses that revision the next time."
+msgstr "Dieses Projekt wurde geändert, bevor es gelöscht werden konnte. Die Liste zeigt jetzt die aktuelle Version; beim nächsten Löschen wird diese Version verwendet."
+
+#: build/planner/assets/planner.js:1
+msgid "The project could not be deleted. Nothing was removed; you can try again."
+msgstr "Das Projekt konnte nicht gelöscht werden. Es wurde nichts entfernt; Sie können es erneut versuchen."
+
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/NewProject.tsx:472
+msgid "The project this request belonged to was deleted. Your draft is still here; creating it now starts a new project."
+msgstr "Das Projekt, zu dem diese Anfrage gehörte, wurde gelöscht. Ihr Entwurf bleibt erhalten. Wenn Sie ihn jetzt anlegen, entsteht ein neues Projekt."
+
+#: build/planner/assets/planner.js:1
 msgid "Refresh projects"
 msgstr "Projekte aktualisieren"
 

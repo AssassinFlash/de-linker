@@ -38,10 +38,11 @@ commands go through the existing single Workspace authority. The caller cannot
 select code, model versions, dependency hashes, numerical settings or an owner.
 Enqueue returns a durable run; the HTTP process never performs numerical replay.
 
-Operations cover create/read/revise project, bounded project/run navigation,
-enqueue/read/cancel energy run, owned asset metadata/bytes, CSV import and
-explicit numeric battery scenarios. An owned run may download its own immutable
-energy trace. No raw content-hash or filesystem-path download is accepted.
+Operations cover create/read/revise/delete project, bounded project/run
+navigation, enqueue/read/cancel energy run, owned asset metadata/bytes, CSV
+import and explicit numeric battery scenarios. An owned run may download its
+own immutable energy trace. No raw content-hash or filesystem-path download is
+accepted.
 Project views do not return owner subjects. Team principals have named read
 access and cannot create or mutate through this adapter.
 

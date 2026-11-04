@@ -129,8 +129,9 @@ Initial local resource policy: 16 MiB command bytes, 32 JSON container levels,
 32 MiB reply bytes and a 5 second RPC timeout. Public mutation keys are native
 UUID v4s and the shared journal reserves a 30 second dispatch lease. Per-browser
 and per-account ceilings are respectively 10/100 new projects per UTC day,
-240/1200 revisions or parameter updates per hour, 20/100 CSV imports per day,
-and 30/120 calculation submissions per hour. Corresponding site ceilings are
+240/1200 revisions, parameter updates or deletions per hour, 20/100 CSV imports
+per day, and 30/120 calculation submissions per hour. Corresponding site
+ceilings are
 500/day, 5000/hour, 500/day and 500/hour. These are initial local operational
 policy, not production workload evidence or physical scope; load acceptance
 and matching ingress settings remain part of the full delivery. The journal

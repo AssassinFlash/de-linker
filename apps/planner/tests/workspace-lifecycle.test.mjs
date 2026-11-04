@@ -1181,3 +1181,113 @@ test("a selected project waits for a pending guest claim before reading and open
 	await until(() => document.querySelector("textarea"));
 	assert.equal(readCalls, 1);
 });
+
+test("a creation receipt whose project was deleted is rekeyed and the draft is created", async (t) => {
+	const fixture = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const { SessionBoundary } =
+		await import("../src/components/SessionBoundary.tsx");
+	const { NewProject } = await import("../src/components/NewProject.tsx");
+	const { PlannerClient } = await import("../src/data/PlannerClient.ts");
+	// The deleted project's own creation command is the one stored intent.
+	const dead = JSON.stringify({
+		schema_version: 1,
+		title: "Deleted project",
+		inputs: { brief: { schema_version: 1 } },
+		key: "11111111-1111-4111-8111-111111111111",
+	});
+	let bodies = [];
+	let cleared = [];
+	let created = null;
+	const response = (value, status = 200) =>
+		new Response(JSON.stringify(value), {
+			status,
+			headers: { "Content-Type": "application/json" },
+		});
+	const client = new PlannerClient({
+		origin: location.origin,
+		baseUrl: location.origin + "/rpc/",
+		nonceUrl: location.origin + "/nonce",
+		fetch: async (url, init) => {
+			if (String(url).endsWith("/nonce")) return new Response("abcdefghij");
+			if (String(url).endsWith("/bootstrap"))
+				return response({ ...session, kind: "user" });
+			if (String(url).endsWith("/operations/replay/projects/create"))
+				return response({ error: { code: "not_found" } }, 404);
+			bodies.push(JSON.parse(init.body));
+			if (bodies.length === 1)
+				return response({ error: { code: "not_found" } }, 404);
+			const command = JSON.parse(init.body);
+			return response({
+				id: "1".repeat(32),
+				title: command.title,
+				revision: 1,
+				input_sha256: "2".repeat(64),
+				inputs: command.inputs,
+			});
+		},
+	});
+	const store = {
+		async readCreations() {
+			return [
+				{
+					key: "11111111-1111-4111-8111-111111111111",
+					title: "Deleted project",
+					body: dead,
+					destination: null,
+					createdAt: 1,
+				},
+			];
+		},
+		async writeCreation() {},
+		async clearCreation(scope, body) {
+			cleared.push(body);
+		},
+	};
+	const root = createRoot(fixture.element);
+	t.after(() => fixture.dispose(root));
+	await act(async () =>
+		root.render(
+			React.createElement(
+				React.StrictMode,
+				null,
+				React.createElement(SessionBoundary, { client }, (value, recheck) =>
+					React.createElement(NewProject, {
+						session: value,
+						client,
+						store,
+						recheck,
+						created: (project) => {
+							created = project;
+							return true;
+						},
+					}),
+				),
+			),
+		),
+	);
+	await until(() => document.querySelector("form"));
+	const submit = () =>
+		act(async () =>
+			document
+				.querySelector("form")
+				.dispatchEvent(
+					new window.Event("submit", { bubbles: true, cancelable: true }),
+				),
+		);
+	await submit();
+	await until(() =>
+		document.body.textContent.includes(
+			"The project this request belonged to was deleted.",
+		),
+	);
+	// The dead receipt is dropped from browser storage, and the draft survives.
+	assert.deepEqual(cleared, [dead]);
+	assert.equal(document.querySelector("input").value, "Deleted project");
+	await submit();
+	await until(() => created !== null);
+	assert.equal(bodies.length, 2);
+	assert.equal(bodies[1].title, "Deleted project");
+	assert.deepEqual(bodies[1].inputs, { brief: { schema_version: 1 } });
+	assert.notEqual(bodies[1].key, "11111111-1111-4111-8111-111111111111");
+});

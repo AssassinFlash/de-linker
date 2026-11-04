@@ -12,6 +12,7 @@ import { ApiError } from "../data/protocol.ts";
 import { readProject } from "../data/readProtocol.ts";
 import { readProjectPage } from "../data/projectIndex.ts";
 import { useSiteIntegration } from "../data/useSiteIntegration.ts";
+import { clearCreationsForTitle } from "../data/recoveryIntents.ts";
 import { recoveryScopes } from "../data/recoveryScopes.ts";
 import { __, sprintf } from "../i18n.ts";
 import { Icon } from "./Icon.tsx";
@@ -23,11 +24,31 @@ import { savedSolutionId } from "../domain/savedSolution.ts";
 import { ProjectEditor } from "./ProjectEditor.tsx";
 import { Notice } from "./Notice.tsx";
 import { ENTRY_QUERY_KEYS, readEntryHints } from "../domain/entryHints.ts";
+import { readObject, wire } from "../data/readProtocol.ts";
 import { replacePlannerLocation } from "../data/plannerLocation.ts";
 
 function currentProject(): string | null {
 	const value = new URL(location.href).searchParams.get("project");
 	return value && /^[a-f0-9]{32}$/.test(value) ? value : null;
+}
+/** A delete binds one key to one revision, so a changed revision is a new
+ * command and never reuses the key of the attempt that lost the race. */
+function deleteCommand(
+	projectId: string,
+	revision: number,
+	maxDepth: number,
+	maxBytes: number,
+): string {
+	return wire(
+		{
+			schema_version: 1,
+			project_id: projectId,
+			expected_revision: revision,
+			key: crypto.randomUUID(),
+		},
+		maxDepth,
+		maxBytes,
+	);
 }
 export function Workspace({
 	client,
@@ -174,6 +195,130 @@ export function Workspace({
 		);
 		return true;
 	}
+	const [confirmingDelete, setConfirmingDelete] = useState<string | null>(null);
+	const [deleteBusy, setDeleteBusy] = useState(false);
+	const [deleteRetry, setDeleteRetry] = useState<{
+		id: string;
+		body: string;
+	} | null>(null);
+	const [deleteFailure, setDeleteFailure] = useState<{
+		id: string;
+		kind: "handoff" | "changed" | "failed";
+	} | null>(null);
+	const remove = useCallback(
+		async (item: { id: string; title: string; revision: number }) => {
+			if (deleteBusy || !client.isCurrentScope(session.query_scope)) return;
+			// A command key is bound to one canonical command. Repeated transport
+			// failures repeat the captured bytes so the engine can replay its
+			// receipt; a conflict starts a new command for the current revision.
+			const body =
+				deleteRetry?.id === item.id
+					? deleteRetry.body
+					: deleteCommand(
+							item.id,
+							item.revision,
+							session.runtime.limits.max_json_depth,
+							session.runtime.limits.max_body_bytes,
+						);
+			setDeleteRetry({ id: item.id, body });
+			setDeleteBusy(true);
+			try {
+				const reply = readObject(
+					await client.send("projects/delete", body, session.query_scope),
+				);
+				if (
+					reply.project_id !== item.id ||
+					reply.deleted !== true ||
+					typeof reply.revision !== "number"
+				)
+					throw new ApiError(502, "invalid_reply");
+				setConfirmingDelete(null);
+				setDeleteRetry(null);
+				setDeleteFailure(null);
+				cache.removeQueries({
+					queryKey: [session.query_scope, "project", item.id],
+				});
+				void clearCreationsForTitle(
+					store,
+					recovery.data ?? [session.query_scope],
+					item.title,
+					projects
+						.filter((candidate) => candidate.id !== item.id)
+						.map((candidate) => candidate.title),
+				).catch(() => undefined);
+				void cache.invalidateQueries({
+					queryKey: [session.query_scope, "projects"],
+				});
+			} catch (error) {
+				if (!(error instanceof ApiError)) {
+					setDeleteFailure({ id: item.id, kind: "failed" });
+					return;
+				}
+				if (
+					error.status === 401 ||
+					error.status === 403 ||
+					error.code === "session_changed"
+				) {
+					recheck();
+					return;
+				}
+				if (error.status === 404) {
+					// Another session already removed it; the list is the truth.
+					setConfirmingDelete(null);
+					setDeleteRetry(null);
+					setDeleteFailure(null);
+					void cache.invalidateQueries({
+						queryKey: [session.query_scope, "projects"],
+					});
+					return;
+				}
+				if (error.status === 409) {
+					// The single conflict code covers a changed revision and a
+					// handoff refusal; the current row discriminates them. Neither
+					// attempt mutated anything, so the next one is a new command
+					// carrying the revision the refreshed list now shows.
+					setDeleteRetry(null);
+					try {
+						const current = readProject(
+							await client.query(
+								"projects/read",
+								{
+									schema_version: 1,
+									project_id: item.id,
+									revision: null,
+								},
+								session.query_scope,
+							),
+						);
+						setDeleteFailure({
+							id: item.id,
+							kind: current.revision === item.revision ? "handoff" : "changed",
+						});
+					} catch {
+						setDeleteFailure({ id: item.id, kind: "failed" });
+					}
+					void cache.invalidateQueries({
+						queryKey: [session.query_scope, "projects"],
+					});
+					return;
+				}
+				setDeleteFailure({ id: item.id, kind: "failed" });
+			} finally {
+				setDeleteBusy(false);
+			}
+		},
+		[
+			cache,
+			client,
+			deleteBusy,
+			deleteRetry,
+			projects,
+			recheck,
+			recovery.data,
+			session,
+			store,
+		],
+	);
 	if (selected)
 		return !session.claim_pending && project.data ? (
 			<ProjectEditor
@@ -389,26 +534,117 @@ export function Workspace({
 					)}
 					<div className="lp-project-rows">
 						{projects.map((item) => (
-							<button
-								key={item.id}
-								className="lp-project-row"
-								onClick={() => select(item.id)}
-							>
-								<span className="lp-project-row-icon">
-									<Icon name="folder" />
-								</span>
-								<span>
-									<strong>{item.title}</strong>
-									<small>
-										{sprintf(__("Revision %d", "linker-tools"), item.revision)}{" "}
-										<span aria-hidden="true">·</span>{" "}
-										{new Intl.DateTimeFormat(config.locale, {
-											dateStyle: "medium",
-										}).format(new Date(item.updated_at * 1000))}
-									</small>
-								</span>
-								<Icon name="arrow" />
-							</button>
+							<div className="lp-project-entry" key={item.id}>
+								<div className="lp-project-entry-row">
+									<button
+										className="lp-project-row"
+										onClick={() => select(item.id)}
+									>
+										<span className="lp-project-row-icon">
+											<Icon name="folder" />
+										</span>
+										<span>
+											<strong>{item.title}</strong>
+											<small>
+												{sprintf(
+													__("Revision %d", "linker-tools"),
+													item.revision,
+												)}{" "}
+												<span aria-hidden="true">·</span>{" "}
+												{new Intl.DateTimeFormat(config.locale, {
+													dateStyle: "medium",
+												}).format(new Date(item.updated_at * 1000))}
+											</small>
+										</span>
+										<Icon name="arrow" />
+									</button>
+									<button
+										className="lp-icon-button lp-project-delete"
+										aria-label={sprintf(
+											__("Delete project %s", "linker-tools"),
+											item.title,
+										)}
+										disabled={deleteBusy}
+										onClick={() => {
+											setConfirmingDelete(item.id);
+											setDeleteRetry(null);
+											setDeleteFailure(null);
+										}}
+									>
+										<Icon name="trash" />
+									</button>
+								</div>
+								{confirmingDelete === item.id && (
+									<div
+										className="lp-delete-confirm"
+										role="group"
+										aria-label={__("Delete this project", "linker-tools")}
+									>
+										<p>
+											{sprintf(
+												__(
+													'Delete the project "%s" at revision %d?',
+													"linker-tools",
+												),
+												item.title,
+												item.revision,
+											)}
+										</p>
+										<p>
+											{__(
+												"All of its revisions, runs and stored inputs are removed from the workspace. A project handed to the Linker team as an inquiry cannot be deleted.",
+												"linker-tools",
+											)}
+										</p>
+										<div className="lp-inline-actions">
+											<button
+												className="lp-button lp-button-danger"
+												disabled={deleteBusy}
+												onClick={() => {
+													void remove(item);
+												}}
+											>
+												{deleteBusy
+													? __("Deleting…", "linker-tools")
+													: deleteFailure?.id === item.id
+														? __("Try deleting again", "linker-tools")
+														: __("Delete project", "linker-tools")}
+											</button>
+											<button
+												className="lp-text-button"
+												disabled={deleteBusy}
+												onClick={() => {
+													setConfirmingDelete(null);
+													setDeleteRetry(null);
+													setDeleteFailure(null);
+												}}
+											>
+												{__("Cancel", "linker-tools")}
+											</button>
+										</div>
+										{deleteFailure?.id === item.id && (
+											<Notice error>
+												<p>
+													{deleteFailure.kind === "handoff"
+														? __(
+																"This project was handed to the Linker team as an inquiry and cannot be deleted.",
+																"linker-tools",
+															)
+														: deleteFailure.kind === "changed"
+															? __(
+																	"This project changed before it could be deleted. The list now shows the current revision; deleting uses that revision the next time.",
+																	"linker-tools",
+																)
+															: __(
+																	"The project could not be deleted. Nothing was removed; you can try again.",
+																	"linker-tools",
+																)}
+												</p>
+											</Notice>
+										)}
+									</div>
+								)}
+							</div>
 						))}
 					</div>
 					{index.hasNextPage && (

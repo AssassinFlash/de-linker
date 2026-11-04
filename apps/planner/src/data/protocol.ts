@@ -72,6 +72,7 @@ export const RPC_PATHS = [
 	"sources/project-brief",
 	"sources/project-brief/stage",
 	"projects/create",
+	"projects/delete",
 	"projects/list",
 	"projects/read",
 	"projects/revise",

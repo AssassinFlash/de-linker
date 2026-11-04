@@ -226,6 +226,12 @@ class ProjectRevise(ProjectInputs):
     key: Key
 
 
+class ProjectDelete(Command):
+    project_id: Id
+    expected_revision: Revision
+    key: Key
+
+
 class ProjectRuns(Command):
     project_id: Id
     page_size: Annotated[int, Field(strict=True, gt=0)] | None = None

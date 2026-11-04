@@ -20,6 +20,7 @@ from linker_engine.planning.errors import (
     ProjectInputContractRequired,
     VersionUnavailable,
 )
+from linker_engine.planning.guest_claims import GuestClaims
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.project_input_contracts import (
     DIRECT_BEAM_INPUT_CONTRACT,
@@ -473,7 +474,6 @@ def test_future_database_is_not_downgraded(tmp_path: Path) -> None:
         assert connection.execute("PRAGMA user_version").fetchone()[0] == 999
 
 
-
 def test_delete_is_idempotent_and_preserves_a_shared_input_blob(
     workspace: Workspace, owner: Actor
 ) -> None:
@@ -488,7 +488,6 @@ def test_delete_is_idempotent_and_preserves_a_shared_input_blob(
         workspace.get(owner, first.id)
     assert workspace.get(owner, second.id).inputs == {"load": 1}
     assert workspace.blobs.object(second.input_sha256) == {"load": 1}
-
 
 
 def test_delete_refuses_a_project_with_a_handoff(
@@ -509,12 +508,11 @@ def test_delete_refuses_a_project_with_a_handoff(
     assert workspace.run(owner, run.id).state == "queued"
 
 
-
 def test_delete_cancels_active_work_and_removes_project_history(
     workspace: Workspace, owner: Actor, context: Context
 ) -> None:
     project = workspace.create(owner, "Active project", {}, key="new")
-    run = workspace.evaluate(owner, project.id, 1, context, key="run", max_attempts=2)
+    workspace.evaluate(owner, project.id, 1, context, key="run", max_attempts=2)
     jobs = Jobs(workspace)
     lease = jobs.claim("worker-a", kinds=("evaluate",), lease_seconds=30)
     assert lease is not None
@@ -529,3 +527,22 @@ def test_delete_cancels_active_work_and_removes_project_history(
     assert workspace.blobs.read(context.assets["weather"]) == b"frozen-fixture-weather"
     with workspace.database.read() as connection:
         assert connection.execute("PRAGMA foreign_key_check").fetchall() == []
+
+
+def test_a_retired_guest_cannot_read_its_own_deletion_receipt(
+    workspace: Workspace, owner: Actor
+) -> None:
+    guest = Actor("guest", "opaque-cookie")
+    deleted = workspace.create(guest, "Deleted project", {}, key="deleted")
+    kept = workspace.create(guest, "Claimed project", {}, key="claimed")
+    expected = {"project_id": deleted.id, "revision": 1, "deleted": True}
+    assert workspace.delete(guest, deleted.id, 1, key="delete-guest") == expected
+    # The claim retires the guest for good, including its own receipt key.
+    GuestClaims(workspace).claim(guest, owner, key="sign-in")
+    with pytest.raises(NotFound):
+        workspace.delete(guest, deleted.id, 1, key="delete-guest")
+    with pytest.raises(NotFound):
+        workspace.delete(guest, kept.id, 1, key="delete-guest")
+    # The claiming account inherits the receipt and replays it with no project
+    # row left to check.
+    assert workspace.delete(owner, deleted.id, 1, key="delete-guest") == expected
