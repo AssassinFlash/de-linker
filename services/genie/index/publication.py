@@ -88,6 +88,7 @@ class TableColumns(TypedDict):
     source_chunk_id: NotRequired[str]
     text_sha256: NotRequired[str]
     excluded_role_rows: NotRequired[list[dict[str, Any]]]
+    excluded_labels: NotRequired[list[str]]
 
 
 class NativeTable(TypedDict):
@@ -116,12 +117,26 @@ class ScopeProof(TypedDict):
     hs3_conditional_certificate: NotRequired[dict[str, Any]]
     hs3_datasheet_de: NotRequired[dict[str, Any]]
     table_projection: NotRequired[dict[str, Any]]
+    single_model_projection: NotRequired[dict[str, Any]]
     family_scope: NotRequired[dict[str, Any]]
     author_restrictions: NotRequired[list[dict[str, Any]]]
     warranty_scope: NotRequired[dict[str, Any]]
     certificate_scope: NotRequired[dict[str, Any]]
     certificate_fragment: NotRequired[dict[str, Any]]
     model_identity_revision: NotRequired[str]
+
+
+def _blocking_line(
+    line: str,
+    patterns: dict[str, re.Pattern[str]],
+    shapes: set[str],
+    families: set[str],
+) -> bool:
+    """A native row carrying a model reference that cannot inherit the axis."""
+    if any(pattern.search(line) for pattern in patterns.values()):
+        return True
+    contained = {label for label, pattern in patterns.items() if pattern.search(line)}
+    return _unknown_models(line, contained, shapes, families=families)
 
 
 def _table_columns(
@@ -172,14 +187,20 @@ def _table_columns(
         # An explicit component property is not a replacement model-column
         # axis. It remains denied. Only independent native rows with traceable
         # indices can use the already-proven, complete current system columns.
+        role_rows: list[dict[str, Any]] = []
         if excluded and (
-            any(not pack_model_row(part.text) for part in excluded)
-            or any(
+            any(
                 not part.source_rows
                 or len(part.source_rows) != len(part.text.splitlines())
                 or part.source_rows != tuple(sorted(set(part.source_rows)))
                 or any(row < 0 for row in part.source_rows)
                 for part in parts
+            )
+            or any(
+                _blocking_line(line, patterns, shapes, families)
+                and not pack_model_row(line)
+                for part in excluded
+                for line in part.text.splitlines()
             )
         ):
             # This is a rejected TableItem, not merely absent column inheritance.
@@ -187,6 +208,21 @@ def _table_columns(
             # group's failure through scope_proofs' direct passage branch.
             conflicts.update(part.id for part in parts)
             continue
+        for part in excluded:
+            for line, row in zip(part.text.splitlines(), part.source_rows, strict=True):
+                # Isolate each authored component row by its own traceable index;
+                # the chunker's single-line split is an optimization, not the
+                # correctness condition (the German BAT-C datasheet keeps its
+                # pack row inside a 17-row fragment).
+                if pack_model_row(line):
+                    role_rows.append(
+                        {
+                            "role": "pack_model",
+                            "source_chunk_id": part.id,
+                            "source_rows": [row],
+                            "quote": line,
+                        }
+                    )
         text = "\n".join(chunk.text for chunk in preceding)
         headings = list(TECHNICAL_DATA.finditer(text))
         if not headings:
@@ -199,18 +235,21 @@ def _table_columns(
             for match in pattern.finditer(tail)
         )
         labels = {label for _, label, _ in written}
-        if (
-            any(statuses.get(label) != "published" for label in labels)
-            or not labels.issubset(labels_to_ids)
-            # This is an explicit model-column axis; unresolved codes here are
-            # model candidates even when their family is absent from Woo.
-            or _unknown_models(tail, labels, shapes, section=True, families=families)
-        ):
-            conflicts.update(part.id for part in parts)
+        # An unresolved or unpublished code denies itself a column, not the
+        # labels that do resolve to published current products of this document
+        # (#900: the not-yet-published G11 generation poisoned the whole G10
+        # axis). The body width and local-axis checks below still refuse any
+        # table whose physical columns do not match the kept axis exactly.
+        axis_labels = {
+            label
+            for label in labels
+            if statuses.get(label) == "published" and label in labels_to_ids
+        }
+        if len(axis_labels) < 2:
             continue
-        if len(labels) < 2:
-            continue
-        ordered = list(dict.fromkeys(label for _, label, _ in written))
+        ordered = list(
+            dict.fromkeys(label for _, label, _ in written if label in axis_labels)
+        )
         ids = [labels_to_ids[label] for label in ordered]
         if any(
             not observed[part.id][0].issubset(ids)
@@ -233,7 +272,7 @@ def _table_columns(
         # TableItem when a local axis is partial, different or reversed.
         local_conflict = False
         for line in rows:
-            if excluded and pack_model_row(line):
+            if pack_model_row(line):
                 continue
             cells = [cell.strip() for cell in line.split("|")[1:-1]]
             local = [
@@ -265,6 +304,9 @@ def _table_columns(
             ],
             "heading": " ".join(heading.group().split()),
         }
+        excluded_labels = sorted(labels - axis_labels)
+        if excluded_labels:
+            columns["excluded_labels"] = excluded_labels
         for part in parts:
             if part in excluded:
                 continue
@@ -275,15 +317,7 @@ def _table_columns(
                 own_columns["text_sha256"] = hashlib.sha256(
                     part.text.encode()
                 ).hexdigest()
-                own_columns["excluded_role_rows"] = [
-                    {
-                        "role": "pack_model",
-                        "source_chunk_id": p.id,
-                        "source_rows": list(p.source_rows),
-                        "quote": p.text,
-                    }
-                    for p in excluded
-                ]
+                own_columns["excluded_role_rows"] = role_rows
             output[part.id] = own_columns
     return output, conflicts
 

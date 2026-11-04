@@ -27,7 +27,6 @@ COMBINED_FAILURES = [
     "reverse_unknown_later",
     "normal_missing_rows",
     "normal_missing_column_later",
-    "normal_unknown_declaration",
     "normal_missing_preceding",
     "normal_invalid_rows",
 ]

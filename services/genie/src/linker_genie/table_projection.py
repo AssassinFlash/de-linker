@@ -905,6 +905,53 @@ def model_axis(cells: Sequence[SourceCell]) -> list[str] | None:
     return data[0] if data is not None else None
 
 
+def row_cells_single(cells: Sequence[SourceCell], row: int) -> tuple[str, str] | None:
+    """Original property/value pair of a two-column single-model table.
+
+    Same integrity rules as row_cells, but the value column is fixed: there is
+    no multi-model axis whose physical order could need proving, so the axis
+    alignment check is replaced by the strict single value column (exactly
+    column 1, never merged across columns or rows).
+    """
+    label, value = cell_at(cells, row, 0), cell_at(cells, row, 1)
+    if (
+        row <= 0
+        or label is None
+        or value is None
+        or label["col_end"] != 1
+        or value["col_start"] != 1
+        or value["col_end"] != 2
+        or label["row_start"] != row
+        or label["row_end"] != row + 1
+        or value["row_start"] != row
+        or value["row_end"] != row + 1
+        or label["column_header"]
+        or value["column_header"]
+        or label["row_section"]
+        or value["row_section"]
+        or not label["text"].strip()
+        or not value["text"].strip()
+        # A trailing separator is a cut-off list, not a complete rating.
+        or value["text"].rstrip().endswith("/")
+        or re.match(r"^\((?:integrated|optional)\)(?:\s*;|\s*$)", value["text"], re.I)
+        is not None
+        or any("|" in cell["text"] or "\n" in cell["text"] for cell in [label, value])
+        or len(re.findall(r"\[[^\]]+\]", label["text"])) > 1
+        or any(
+            value["text"].count(left) != value["text"].count(right)
+            for left, right in [("(", ")"), ("[", "]")]
+        )
+        or any(
+            re.search(r"[*†‡]+(?:\s*\d+)?\s*$", cell["text"]) is not None
+            for cell in (label, value)
+        )
+    ):
+        return None
+    if not aligned_property(cells, label, value):
+        return None
+    return label["text"], value["text"]
+
+
 def row_cells(
     cells: Sequence[SourceCell], row: int, column: int
 ) -> tuple[str, str] | None:
@@ -1201,10 +1248,7 @@ def safe_rows(
     Unresolved model-like fields are localized to their row. They do not make
     independent native power/current rows unusable for the current product.
     """
-    labels = {label.casefold() for label in known_labels if label}
     own = model.casefold()
-    shapes = model_shapes(labels)
-    families = family_labels(labels)
     external = next(
         (cell["external_axis"] for cell in cells if "external_axis" in cell), None
     )
@@ -1245,9 +1289,47 @@ def safe_rows(
         text = " ".join(
             [*(context[1:2] if context else ()), *pair, *(n["text"] for n in notes)]
         )
-        if any(
-            label != own and model_pattern(label).search(text) for label in labels
-        ) or unknown_models(text, {own}, shapes, section=True, families=families):
+        if not _row_text_is_safe(text, own, known_labels):
+            return False
+    return True
+
+
+def _row_text_is_safe(text: str, own: str, labels: Sequence[str]) -> bool:
+    """A row's full text names no other model and no unresolved model code."""
+    known = {label.casefold() for label in labels if label}
+    if any(
+        label != own and model_pattern(label).search(text) for label in known
+    ) or unknown_models(
+        text, {own}, model_shapes(known), section=True, families=family_labels(known)
+    ):
+        return False
+    return True
+
+
+def safe_rows_single(
+    cells: Sequence[SourceCell],
+    rows: Sequence[int],
+    model: str,
+    known_labels: Sequence[str],
+) -> bool:
+    """Row-local model safety for a two-column single-model table (#900 §9.1).
+
+    Same judgment as safe_rows without the external-axis machinery: a row
+    naming any other or unresolved model denies itself, never the table.
+    """
+    own = model.casefold()
+    for row in rows:
+        pair = row_cells_single(cells, row)
+        if pair is None:
+            return False
+        context = row_context(cells, row)
+        notes = row_footnotes(cells, row, 1)
+        if notes is None:
+            return False
+        text = " ".join(
+            [*(context[1:2] if context else ()), *pair, *(n["text"] for n in notes)]
+        )
+        if not _row_text_is_safe(text, own, known_labels):
             return False
     return True
 
@@ -2074,4 +2156,136 @@ def valid_projection(
         == projection_id(
             sha, value["source_page"], value["source_table"], value["model"], text
         )
+    )
+
+
+def render_single_model(
+    cells: Sequence[SourceCell], rows: Sequence[int], model: str
+) -> str | None:
+    """Attribute/value projection of a two-column table for its single model.
+
+    Same output shape as render_projection: the header line names the property
+    column and the model, every body line is the original property/value pair,
+    and no numeric inference or alias expansion happens. The axis label is the
+    proven same-page declaration's model, not the native header cell (a
+    single-model table's header is a chemistry or category text, e.g.
+    'Battery Data | LFP (LiFePO4)'). Row 0 is the native header row and is
+    never projected.
+    """
+    if (
+        max((cell["col_end"] for cell in cells), default=0) != 2
+        or model_axis(cells) is not None
+        or not model
+        or "|" in model
+        or "\n" in model
+        or not rows
+        or any(type(row) is not int or row <= 0 for row in rows)
+        or list(rows) != sorted(set(rows))
+    ):
+        return None
+    heading = cell_at(cells, 0, 0)
+    label = heading["text"] if heading and heading["text"] else "Model"
+    if "|" in label or "\n" in label:
+        return None
+    lines = [f"| {label} | {model} |"]
+    previous_context = None
+    notes: dict[str, SourceFootnote] = {}
+    for row in rows:
+        pair = row_cells_single(cells, row)
+        required = row_footnotes(cells, row, 1)
+        if pair is None or required is None:
+            return None
+        for note in required:
+            notes[note["text"].split(":", 1)[0]] = note
+        context = row_context(cells, row)
+        if context is not None and context != previous_context:
+            if "|" in context[1] or "\n" in context[1]:
+                return None
+            lines.append(f"| {context[1]} |  |")
+        lines.append("| " + " | ".join(pair) + " |")
+        previous_context = context
+    for note in notes.values():
+        lines.append(f"{note['text']} (p. {note['pdf_span']['page']})")
+    return "\n".join(lines)
+
+
+def valid_single_model_projection(
+    scope: Mapping[str, Any],
+    product_ids: Sequence[int],
+    products: Mapping[int, Mapping[str, Any]],
+    *,
+    sha: str,
+    chunk_id: str,
+    text: str,
+) -> bool:
+    """Store and runtime accept only an exact current-model single-column source.
+
+    The projection is proven by the table's own native cells plus one original
+    text declaration of exactly this model (#900 §9.1: a single-product
+    document's two-column table has no other authorization path). Everything
+    is re-derived from the stored cells; nothing is trusted from the
+    compile-time decision beyond the recorded anchors.
+    """
+    value = scope.get("single_model_projection")
+    if not isinstance(value, dict) or scope.get("basis") != "table_single_model":
+        return False
+    pid = value.get("product_id")
+    cells = read_cells(value.get("source_cells"))
+    if (
+        type(pid) is not int
+        or list(product_ids) != [pid]
+        or scope.get("product_ids") != [pid]
+        or pid not in products
+        or cells is None
+        or value.get("source_sha256") != sha
+        or value.get("source_cells_sha256") != cells_digest(cells)
+        or not isinstance(value.get("source_table"), str)
+        or not value["source_table"]
+        or type(value.get("source_page")) is not int
+        or value["source_page"] <= 0
+        or not isinstance(value.get("source_rows"), list)
+        or value.get("model_column") != 1
+        or not isinstance(value.get("model"), str)
+        or value["model"].casefold() != str(products[pid].get("model", "")).casefold()
+        or not scope.get("source_chunk_ids")
+    ):
+        return False
+    declaration = value.get("declaration")
+    if (
+        not isinstance(declaration, dict)
+        or not isinstance(declaration.get("chunk_id"), str)
+        or declaration["chunk_id"] not in scope["source_chunk_ids"]
+        or not isinstance(declaration.get("text"), str)
+        or not declaration["text"]
+        or type(declaration.get("page")) is not int
+        or declaration["page"] <= 0
+        or not native_chunk_id_matches(
+            sha,
+            declaration["page"],
+            "text",
+            declaration["text"],
+            declaration["chunk_id"],
+        )
+    ):
+        return False
+    own = value["model"]
+    if not model_pattern(own).search(declaration["text"]) or any(
+        str(product.get("model", "")).casefold() != own.casefold()
+        and model_pattern(str(product.get("model", ""))).search(declaration["text"])
+        for product in products.values()
+        if product.get("model")
+    ):
+        return False
+    rendered = render_single_model(cells, value["source_rows"], own)
+    return (
+        rendered == text
+        and safe_rows_single(
+            cells,
+            value["source_rows"],
+            own,
+            [*(str(p.get("model", "")) for p in products.values())],
+        )
+        and value.get("text_sha256") == hashlib.sha256(text.encode()).hexdigest()
+        and chunk_id
+        == projection_id(sha, value["source_page"], value["source_table"], own, text)
     )

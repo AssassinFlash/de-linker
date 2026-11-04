@@ -35,6 +35,7 @@ from linker_genie.table_projection import (
     valid_compatibility_pair,
     valid_compatibility_series,
     valid_projection,
+    valid_single_model_projection,
 )
 from linker_genie.warranty_scope import valid_warranty_scope
 
@@ -72,10 +73,18 @@ def author_scope_allows(
     wanted: set[int],
     products: Mapping[int, Mapping[str, Any]],
 ) -> bool:
-    """A finer authored scope cannot be broadened by a later family fallback."""
+    """A finer authored scope cannot be broadened by a later family fallback.
+
+    An absent restriction list rejects (malformed proof); an empty list is no
+    restriction (#900). Every recorded boundary — including a ``rating_cover``
+    capacity title — still binds ordinary passages: only a physically proven
+    table axis supersedes a cover, at compile time (table_compiler).
+    """
     restrictions = scope.get("author_restrictions")
-    if not isinstance(restrictions, list) or not restrictions:
+    if not isinstance(restrictions, list):
         return False
+    if not restrictions:
+        return True
     for boundary in restrictions:
         if (
             not isinstance(boundary, dict)
@@ -366,6 +375,18 @@ def _authorize_core(
         ):
             return []
     if scope is not None and (
+        scope.get("basis") == "table_single_model" or "single_model_projection" in scope
+    ):
+        if products is None or not valid_single_model_projection(
+            scope,
+            product_ids,
+            products,
+            sha=sha,
+            chunk_id=chunk_id,
+            text=text,
+        ):
+            return []
+    if scope is not None and (
         scope.get("basis") == "manual_peripheral" or "referenced_products" in scope
     ):
         references = scope.get("referenced_products")
@@ -560,6 +581,14 @@ def table_header(
             or "|" in label
             or " ".join(label.split()).casefold()
             != " ".join(str(products[pid].get("model", "")).split()).casefold()
+        ):
+            return None
+    if "excluded_labels" in columns:
+        excluded_labels = columns["excluded_labels"]
+        if (
+            not isinstance(excluded_labels, list)
+            or any(not isinstance(label, str) or not label for label in excluded_labels)
+            or set(excluded_labels) & set(labels)
         ):
             return None
     if "excluded_role_rows" in columns:

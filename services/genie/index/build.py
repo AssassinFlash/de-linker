@@ -47,6 +47,7 @@ from index.physical_evidence import (
     needs_diagram_evidence,
 )
 from index.preparation import recipe_revision
+from index.table_gate import audit as table_audit
 from linker_genie.embedding import (
     BGE_M3,
     MODELS,
@@ -647,6 +648,12 @@ def build(
             "total_chunks": len(chunks),
             "projected_chunks": len(chunks) - len(chunked.chunks),
         },
+        "table_coverage": table_audit(
+            chunks,
+            proof.get("chunk_products", {}),
+            proof.get("chunk_scopes", {}),
+            {document.sha256: document.doc_type for document in chunked.documents},
+        ).coverage,
         "file": {
             "name": INDEX_FILE,
             "bytes": index_path.stat().st_size,

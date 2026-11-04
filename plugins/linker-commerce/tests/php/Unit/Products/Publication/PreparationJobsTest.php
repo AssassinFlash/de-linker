@@ -220,6 +220,32 @@ final class PreparationJobsTest extends TestCase {
 		$this->assertFalse( $this->state['knowledge']['materialization_complete'] );
 	}
 
+	/** A per-table scope warning settles like a semantic warning (#900): deterministic, visible, never ready. */
+	public function test_table_without_scope_settles_materialization_without_preparation(): void {
+		$request                         = $this->recipe_receipt();
+		$request['prepared_products']    = array();
+		$request['preparation_complete'] = false;
+		$request['unprepared_documents'] = $this->diagnostic( 'table_without_scope' );
+		$result                          = ( new PreparationJobs() )->acknowledge( $request );
+		$this->assertIsArray( $result );
+		$this->assertTrue( $result['complete'] );
+		$this->assertSame( 'ready', $this->state['knowledge']['status'] );
+		$this->assertTrue( $this->state['knowledge']['materialization_complete'] );
+		$this->assertFalse( $this->state['knowledge']['preparation_complete'] );
+		$this->assertSame( $request['unprepared_documents'], $this->state['knowledge']['unprepared_documents'] );
+		$this->assertFalse( PreparationJobs::readiness( 12, 'missing' )['knowledge'] );
+	}
+
+	/** Any other diagnostic reason stays a malformed receipt. */
+	public function test_unknown_table_diagnostic_reason_is_rejected(): void {
+		$request                         = $this->receipt( 'knowledge' );
+		$request['unprepared_documents'] = $this->diagnostic( 'table_missing_column' );
+		$result                          = ( new PreparationJobs() )->acknowledge( $request );
+		$this->assertInstanceOf( \WP_Error::class, $result );
+		$this->assertSame( 'invalid_job_ack', $result->get_error_code() );
+		$this->assertSame( 'preparing', $this->state['knowledge']['status'] );
+	}
+
 	/** Code-only upgrades automatically invalidate an old source/recipe lease. */
 	public function test_recipe_change_reclaims_unchanged_source_and_rejects_old_receipt(): void {
 		$old = $this->recipe_receipt();

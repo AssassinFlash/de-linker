@@ -272,6 +272,19 @@ def _inspect_activation(
     return observed
 
 
+def refuse_bare_datasheet_tables(manifest: dict[str, Any], build_dir: Path) -> None:
+    """Hard threshold (#900 report §9.7): a datasheet build may not publish
+    with bare parameter tables — that regression mode is exactly what made
+    preparation read complete while specifications stayed unretrievable.
+    Other doc_types are reported in the manifest only."""
+    datasheet_coverage = manifest.get("table_coverage", {}).get("datasheet", {})
+    if int(datasheet_coverage.get("bare_parameter_tables", 0)) > 0:
+        raise SystemExit(
+            f"{build_dir}: {datasheet_coverage['bare_parameter_tables']} datasheet "
+            "parameter tables have no product scope; refusing to publish"
+        )
+
+
 def publish(
     build_dir: Path,
     root: str,
@@ -293,6 +306,7 @@ def publish(
     expected = str(manifest["file"]["sha256"])
     if _sha256(build_dir / str(manifest["file"]["name"])) != expected:
         raise SystemExit(f"{build_dir}: index.sqlite does not match its manifest")
+    refuse_bare_datasheet_tables(manifest, build_dir)
     prepared = release(
         host, "prepare", root, version, "--reuse-basis", activation=activation
     )

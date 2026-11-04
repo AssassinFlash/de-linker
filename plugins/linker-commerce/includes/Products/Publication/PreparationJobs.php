@@ -623,7 +623,7 @@ final class PreparationJobs {
 		$result    = array();
 		foreach ( $rows as $row ) {
 			$id = is_array( $row ) && is_string( $row['document_id'] ?? null ) ? $row['document_id'] : '';
-			if ( ! is_array( $row ) || ! is_int( $row['product_id'] ?? null ) || ! isset( $documents[ $id ] ) || ! in_array( $row['product_id'], $documents[ $id ]['product_ids'], true ) || ! in_array( $row['reason'] ?? null, array( 'no_proven_passage', 'document_unparsed' ), true ) ) {
+			if ( ! is_array( $row ) || ! is_int( $row['product_id'] ?? null ) || ! isset( $documents[ $id ] ) || ! in_array( $row['product_id'], $documents[ $id ]['product_ids'], true ) || ! in_array( $row['reason'] ?? null, array( 'no_proven_passage', 'document_unparsed', 'table_without_scope' ), true ) ) {
 				return new WP_Error( 'invalid_job_ack', 'Unprepared documents must name current document/product associations.', array( 'status' => 400 ) );
 			}
 			$result[ $id . '/' . $row['product_id'] ] = array(

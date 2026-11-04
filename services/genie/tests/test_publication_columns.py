@@ -182,8 +182,6 @@ def test_actual_grid_type_table_is_retrievable_with_all_three_columns_in_source_
 @pytest.mark.parametrize(
     "boundary",
     [
-        "unknown_model",
-        "unknown_axis",
         "table_unknown_model",
         "new_table",
         "new_section",
@@ -228,6 +226,28 @@ def test_table_column_scope_stops_at_actual_structure_or_unproven_model(
     proof = scope_proofs(selected, manifest(), authority(manifest()))
     assert all(
         c.id not in proof
+        for c in selected
+        if c.kind == "table" and c.source_table == "docling:p2:#/tables/0"
+    )
+
+
+@pytest.mark.parametrize("mention", ["GW125/261-ESA-LCN-G11", "Z999"])
+def test_unknown_code_in_preceding_prose_denies_only_itself(mention: str) -> None:
+    """#900 §4.1: an unresolved code in the tail excludes itself, not the axis.
+
+    The body-width and local-axis checks still refuse a table whose physical
+    columns do not match the kept published axis exactly; a prose mention
+    naming no column of this table must not veto the published labels.
+    """
+    source = pages(HCA)
+    target = next(
+        i for i, block in enumerate(source[1].blocks) if block.kind == "table"
+    )
+    source[1].blocks.insert(target, Block("text", text=mention))
+    selected = chunks(source=source)
+    proof = scope_proofs(selected, manifest(), authority(manifest()))
+    assert any(
+        c.id in proof
         for c in selected
         if c.kind == "table" and c.source_table == "docling:p2:#/tables/0"
     )
