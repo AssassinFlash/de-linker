@@ -127,6 +127,14 @@ for (const width of widths) {
 					content:
 						"*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}",
 				});
+				// An instant sweep can scroll past a lazy image before Chrome starts its
+				// request; measured at 390 on 2026-11-05, the footer logo stayed
+				// currentSrc='' after the sweep and network idle. Promote every img before
+				// sweeping so the full-page capture sees the real bitmap.
+				await page.evaluate(() => {
+					for (const image of document.images) image.loading = "eager";
+				});
+				await page.waitForLoadState("networkidle");
 				// The layout viewport stays at the requested width and the
 				// established 900px height for the whole capture; the full page
 				// is taken with a CDP clip below. Growing the viewport instead
@@ -174,12 +182,17 @@ for (const width of widths) {
 						await Promise.all(visible.map((img) => img.decode()));
 					});
 				await sweep(600, 120);
+				// A lazy request starts at the bottom but a large image can still be in
+				// flight; currentSrc is selected only when it completes.
+				await page.waitForLoadState("networkidle");
 				await decodeImages();
 				await page.waitForLoadState("networkidle");
 				// Loading the lazy images above can make the document taller;
 				// sweep again so the new bottom is observed too. The viewport
 				// is still not resized.
 				await sweep(600, 60);
+				// The second pass can trigger another lazy stratum; settle it the same way.
+				await page.waitForLoadState("networkidle");
 				await decodeImages();
 				await page.evaluate(async () => {
 					await document.fonts.ready;
