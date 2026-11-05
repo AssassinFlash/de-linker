@@ -115,3 +115,20 @@ project/site/equipment-check/interval-import/roof-import/module-catalog; the
 array-placement → PV → scenario → report tail is the remaining acceptance work.
 Fifteen exploration test projects were removed through the engine's own
 Workspace.delete (0 left, 46 total).
+
+## Addendum 6 (same day): array placed on the roof; weather step pending
+
+The array creation works on production once every field is filled (the array
+form reads its fields by name; the mounting-note textarea is required too):
+4×6 = 24 Trina modules placed on the imported roof, 11.04 kWp declared DC
+nameplate, 1 roof face, all saved in the project revision. Earlier failures
+were test-side field omissions, not product defects.
+
+The weather step (PVGIS typical-year source) is the next link; its request
+button stays disabled until the location/year/database settings are prepared
+and saved, and this run did not complete that gate. The remaining
+weather → PV → scenario → report sequence is the deepest acceptance tail.
+
+Production note: a Hostinger load-average spike (~788 → ~61 within minutes)
+was observed during this session and decayed without action; current CPU is
+mostly idle. No persistent resource incident.
