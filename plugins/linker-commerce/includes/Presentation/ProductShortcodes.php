@@ -129,6 +129,27 @@ final class ProductShortcodes {
 		add_shortcode( 'linker_pdp_disclosures', array( $this, 'pdp_disclosures' ) );
 		add_shortcode( 'linker_pdp_faq_side', array( $this, 'pdp_faq_side' ) );
 		add_shortcode( 'linker_pdp_features', array( $this, 'pdp_features' ) );
+		add_filter( 'wp_calculate_image_sizes', array( $this, 'related_image_sizes' ), 10, 2 );
+	}
+
+	/**
+	 * Give Woo's native related-product thumbnails one explicit source size.
+	 *
+	 * WordPress prefixes lazy image sizes with `auto`; measured 2026-11-05, the
+	 * same 305px PDP card markup selected the 300w file on live and the 1000w
+	 * original locally. Woo's own fallback for this registered size is
+	 * `(max-width: 300px) 100vw, 300px`, and the live card selected 300w, so the
+	 * explicit native filter value is `300px`.
+	 *
+	 * @param string|int[] $sizes WordPress's computed source sizes.
+	 * @param string|int[] $size The requested image size.
+	 * @return string|int[] The unchanged value outside Woo's related thumbnail size.
+	 */
+	public function related_image_sizes( $sizes, $size ) {
+		if ( 'woocommerce_thumbnail' === $size ) {
+			return '300px';
+		}
+		return $sizes;
 	}
 
 	/**
