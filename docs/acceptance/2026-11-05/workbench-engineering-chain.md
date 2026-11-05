@@ -83,3 +83,21 @@ workbench's project/site/equipment-check/interval-import chain is proven on
 production (above); the roof-canvas → PV → scenario → report sequence is the
 remaining deep acceptance work. Ten exploration test projects were removed
 through the engine's own Workspace.delete (0 left, 46 total).
+
+## Addendum 4 (same day): roof GeoJSON import and module catalog work
+
+- The roof layout was created on production **without canvas drawing**, through
+  the native GeoJSON import: a WGS84 roof rectangle (20×10 m) → the import
+  wizard (file/plane/source steps with pitch, true-north bearing, height,
+  provenance and permission declarations) → `geometry/import` 200 → the roof
+  outline rendered in the plan view, 1 roof face in the saved project.
+- The module catalog (`products/current` → `pv_modules`) includes the Trina
+  Solar TSM-460NEG9R.28 reference module from the Woo engineering overlay
+  (feed overlay = 3 entries: the Trina module + 2 Nexans cables); the module
+  selector populates once the catalog finishes loading. The reference product
+  (Woo 8349) is published, bound to its datasheet, and `ready.engineering=true`.
+
+So the roof and module inputs are available through the native import/catalog
+paths; the module-placement → PV → scenario → report tail remains the deepest
+acceptance work. Nineteen exploration test projects were removed through the
+engine's own Workspace.delete (0 left, 46 total).
