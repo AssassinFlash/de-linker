@@ -585,17 +585,35 @@ def test_the_language_rule_tells_a_german_page_from_an_english_fallback() -> Non
     assert not load._reads_german(english_route)
 
 
-def test_a_live_code_copy_without_any_german_page_to_check_is_refused(
-    snapshot_dir: Path, instance: Instance, tmp_path: Path
+def test_a_polylang_copy_without_any_german_page_to_check_is_refused(
+    snapshot_dir: Path,
+    instance: Instance,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """The old i18n plugin installed but nothing holding German is not a copy
-    of the live site; verify refuses instead of reporting ok."""
+    """Polylang active but nothing holding German is not a copy of the live
+    site; verify refuses instead of reporting ok."""
     twin = copied(snapshot_dir, tmp_path)
-    stub = twin / "live" / "plugins" / "linker-i18n"
+    stub = twin / "live" / "plugins" / "polylang"
     stub.mkdir(parents=True)
-    (stub / "linker-i18n.php").write_text(
-        "<?php\n/**\n * Plugin Name: linker-i18n\n */\n"
+    (stub / "polylang.php").write_text(
+        "<?php\n/**\n * Plugin Name: polylang\n */\n"
+        "if (!function_exists('pll_home_url')) {\n"
+        "    function pll_home_url($slug) { return ''; }\n"
+        "}\n"
     )
+    monkeypatch.setattr(load, "_active_plugins", lambda wp: ["polylang/polylang.php"])
 
     with pytest.raises(load.LoadError, match="no page holds German"):
         load.load(instance, twin, live_code=True, say=lambda message: None)
+
+
+def test_the_report_seam_tells_skip_from_broken_promise() -> None:
+    """No Polylang is a skip (None), not a refusal; Polylang with no German
+    route is a broken promise (empty list) verify() refuses."""
+    assert load._german_routes_from_report({"polylang": False}) is None
+    assert load._german_routes_from_report({}) is None
+    assert load._german_routes_from_report(
+        {"polylang": True, "german_pages": ["/de/"]}
+    ) == ["/de/"]
+    assert load._german_routes_from_report({"polylang": True, "german_pages": []}) == []
