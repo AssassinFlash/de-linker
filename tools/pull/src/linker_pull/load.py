@@ -531,9 +531,7 @@ def verify(
     german_ok: bool | None = None
     if german_pages is not None:
         if not german_pages:
-            raise LoadError(
-                "Polylang is installed but no page holds German to check"
-            )
+            raise LoadError("Polylang is installed but no page holds German to check")
         checked = {}
         for path in german_pages[:3]:
             checked[path] = _page_is_german(target, path)

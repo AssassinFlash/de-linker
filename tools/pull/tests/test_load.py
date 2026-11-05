@@ -586,7 +586,10 @@ def test_the_language_rule_tells_a_german_page_from_an_english_fallback() -> Non
 
 
 def test_a_polylang_copy_without_any_german_page_to_check_is_refused(
-    snapshot_dir: Path, instance: Instance, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    snapshot_dir: Path,
+    instance: Instance,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Polylang active but nothing holding German is not a copy of the live
     site; verify refuses instead of reporting ok."""
@@ -599,9 +602,7 @@ def test_a_polylang_copy_without_any_german_page_to_check_is_refused(
         "    function pll_home_url($slug) { return ''; }\n"
         "}\n"
     )
-    monkeypatch.setattr(
-        load, "_active_plugins", lambda wp: ["polylang/polylang.php"]
-    )
+    monkeypatch.setattr(load, "_active_plugins", lambda wp: ["polylang/polylang.php"])
 
     with pytest.raises(load.LoadError, match="no page holds German"):
         load.load(instance, twin, live_code=True, say=lambda message: None)
@@ -615,6 +616,4 @@ def test_the_report_seam_tells_skip_from_broken_promise() -> None:
     assert load._german_routes_from_report(
         {"polylang": True, "german_pages": ["/de/"]}
     ) == ["/de/"]
-    assert load._german_routes_from_report(
-        {"polylang": True, "german_pages": []}
-    ) == []
+    assert load._german_routes_from_report({"polylang": True, "german_pages": []}) == []
