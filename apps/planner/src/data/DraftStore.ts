@@ -265,15 +265,34 @@ export class DraftStore {
 				let createdAt = previous?.createdAt;
 				let previousDestination = previous?.destination ?? null;
 				if (!previous || previous.body !== oldBody) {
-					if (legacy.result?.body !== oldBody) {
-						refuse(new Error("creation_intent_not_found"));
+					if (!previous && legacy.result?.body === oldBody) {
+						createdAt = 0;
+						previousDestination = null;
+					} else {
+						refuse(
+							previous
+								? new Error("creation_intent_conflict")
+								: new Error("creation_intent_not_found"),
+						);
 						return;
 					}
-					createdAt = 0;
-					previousDestination = null;
+				}
+				const retainedBytes = records.reduce(
+					(sum, record) =>
+						record.key === oldCommand.key
+							? sum
+							: sum + new TextEncoder().encode(record.body).length,
+					0,
+				);
+				if (
+					retainedBytes + new TextEncoder().encode(body).length >
+					MAX_RECOVERY_BYTES
+				) {
+					refuse(new Error("recovery_storage_limit"));
+					return;
 				}
 				intents.delete(scope + ":" + oldCommand.key);
-				if (legacy.result?.body === oldBody)
+				if (!previous && legacy.result?.body === oldBody)
 					transaction.objectStore(CREATIONS).delete(scope);
 				intents.put({
 					id: scope + ":" + command.key,

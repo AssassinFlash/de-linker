@@ -252,10 +252,48 @@ button.addEventListener("click", async () => {
 			},
 		);
 		await fixture(
+			"a corrupt same-key creation cannot be replaced through the legacy record",
+			async () => {
+				const conflictKey = crypto.randomUUID();
+				const original = creation("Synthetic original bytes", conflictKey);
+				const tampered = creation("Synthetic tampered bytes", conflictKey);
+				await first.writeCreation(scope, original);
+				const current = await open();
+				const raw = current.transaction("creation_intents", "readwrite");
+				const rawDone = commit(raw);
+				raw.objectStore("creation_intents").put({
+					id: scope + ":" + conflictKey,
+					scope,
+					body: tampered,
+					destination: null,
+					created_at: 2,
+				});
+				await rawDone;
+				current.close();
+				await refuses(
+					first.replaceCreation(
+						scope,
+						original,
+						creation("Synthetic refused replacement", crypto.randomUUID()),
+					),
+					"creation_intent_conflict",
+				);
+				const records = await second.readCreations(scope);
+				equal(
+					records.some((item) => item.body === tampered),
+					true,
+				);
+				equal(
+					records.some((item) => item.body === original),
+					false,
+				);
+			},
+		);
+		await fixture(
 			"bounded recovery refuses a 129th intent without erasing the first 128",
 			async () => {
-				for (const body of [b, replacement])
-					await first.clearCreation(scope, body);
+				for (const record of await first.readCreations(scope))
+					await first.clearCreation(scope, record.body);
 				for (let index = 0; index < 128; index++)
 					await first.writeCreation(
 						scope,
