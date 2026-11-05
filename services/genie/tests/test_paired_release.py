@@ -6,6 +6,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -1070,6 +1071,54 @@ def test_application_health_requires_the_actual_serving_identity(
     paired.application_health("b" * 64)
     with pytest.raises(RuntimeError, match="serving identity differs"):
         paired.application_health("b" * 64)
+
+
+def test_application_health_retries_only_connection_start_up(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class Response:
+        def __enter__(self) -> Response:
+            return self
+
+        def __exit__(self, *_: object) -> None:
+            return None
+
+        def read(self) -> str:
+            return json.dumps(
+                {"status": "ok", "serving_revision": "b" * 64},
+            )
+
+    calls: list[object] = []
+
+    def urlopen(*_args: object, **_kwargs: object) -> Response:
+        calls.append(None)
+        if len(calls) == 1:
+            raise ConnectionRefusedError("start-up socket not bound yet")
+        return Response()
+
+    monkeypatch.setattr(paired, "urlopen", urlopen)
+    monkeypatch.setattr(paired, "HEALTH_RETRY_DELAY_SECONDS", 0.0)
+    paired.application_health("b" * 64)
+    assert len(calls) == 2
+
+
+def test_application_health_start_up_retry_is_bounded(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[object] = []
+
+    def urlopen(*_args: object, **_kwargs: object) -> object:
+        calls.append(None)
+        raise ConnectionRefusedError("start-up socket not bound yet")
+
+    monkeypatch.setattr(paired, "urlopen", urlopen)
+    monkeypatch.setattr(paired, "HEALTH_RETRY_DELAY_SECONDS", 0.0)
+    monkeypatch.setattr(paired, "HEALTH_STARTUP_TIMEOUT_SECONDS", 1.0)
+    monotonic = iter([0.0, 0.0, 2.0])
+    monkeypatch.setattr(time, "monotonic", lambda: next(monotonic))
+    with pytest.raises(RuntimeError, match="bounded window"):
+        paired.application_health("b" * 64)
+    assert len(calls) == 1
 
 
 def test_activation_health_failure_automatically_restores_the_previous_pair(
