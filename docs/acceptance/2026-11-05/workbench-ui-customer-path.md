@@ -75,3 +75,45 @@ SHA-256 and Woo product revision, and the honest
 The browser project was deleted through the engine's own `Workspace.delete`
 (workspace back to the 46-project baseline, 0 `SC %` projects). No test process,
 browser tab or temporary copy of this run was left behind.
+
+## Release to production (2026-11-05, after PR #968 merged)
+
+Both namespaces that consume `linker_engine/publication.py` were released,
+because WordPress talks to the private planner pair, not to `/opt/linker-engine`
+(see the 2026-11-05 project-delete record's systemic finding).
+
+- Backup first: `workspace.sqlite` → `~/de-linker-vps-backups/2026-11-05-publication-retry/`
+  (868 352 bytes, sha256 `0b0bac5b99c9e7673c455b61d76275294828574bdd942a66371a7e40aac9472a`).
+- Source: main `0753e14cf982930c4d97830e6446fe5555bf87cf` packed by the reviewed
+  `ops/planner_source.py` (closure verified against `.git-source-manifest.json`).
+- New release: `/opt/linker-planner/releases/1ce0cff7dcf8d70db5ef2b5ec08125f84f5ae787986438628b1f79d886ea9559`
+  (directory name is sha256 of the revision, matching the existing convention).
+  `runtime_sha256` `16c69e01127195cfdb9ef01ee8caf4fdc393ef4271e81e2760fc397add32feaf`,
+  `execution_key` `a80a81e3…`, `storage_binding` `f91b6338…` unchanged
+  (schema 5, no migration); 13 `project_input_contracts` prepared;
+  prepare and activate both exit 0.
+- Rollback retained: `ca784637c19afc67233cea2a1cd2d0ea57f2496b67d652197ac8886cf151b45e`
+  via `ops/planner_release.py rollback <new spec>`.
+
+### Read-back after deploy
+
+- `linker-planner-http` and `linker-planner-worker` active; the service's own
+  startup probe logged `POST /planning/version 200`.
+- Real browser: new project created (`projects/create` 200, `Saved · revision 1`),
+  project page reopened (`projects/read` 200), overview rendered.
+- **The 503 is gone**: `ProductSources.current()` on the deployed release
+  returned successfully **5 consecutive times** (1 PV module template, 85 products,
+  3–4 s each) — the same call that previously raised `VersionUnavailable` on one
+  transient handshake abort.
+- Test project deleted through `Workspace.delete` (workspace back to 46 projects,
+  0 `SC %`); staging archive removed from `/tmp`.
+
+### Release-path defects found and fixed during the release
+
+The previous release had been prepared by `root`, leaving
+`/opt/linker-planner/selection.json`, both `.deploy/http.env` and
+`worker.env` at `0600 root`. The service user cannot read its own selection or
+environment, so every subsequent `prepare` failed with `PermissionError`.
+Ownership was corrected to `linker-planner` (mode kept at `0600`), which is the
+state the release tooling expects. Anyone preparing a release as `root` must
+restore that ownership before the next release.
