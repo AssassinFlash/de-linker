@@ -51,3 +51,23 @@ execution, per-unit trace, German report); a production customer-path run with
 a real imported load profile + PVGIS generation is the remaining acceptance
 step. Four test projects from this exploration were deleted through the
 engine's own Workspace.delete (0 left, 46 total).
+
+## Addendum 2 (same day): real interval-data import works, including DST validation
+
+The Energy inputs → Import interval data chain was exercised on production with
+a real 8,760-row hourly load-profile CSV (203,846 bytes):
+
+- Column preview (`profiles/inspect` 200) and the full mapping form (timestamp/
+  value/measurement point/kW/decimal/source type/interval boundaries/timestamp
+  role/time zone/duration/source label/storage rights) work.
+- A Europe/Berlin-local-time profile was correctly rejected with
+  `422 invalid_input · local_time_nonexistent` at the 2026-03-29 02:00 DST gap
+  — real timestamp validation, not a rubber stamp.
+- The same profile in UTC imported successfully (`profiles/csv` 200), stored as
+  a private project source (interval_seconds 3600, gross_load).
+
+The energy scenario calculation and the planning report are the next step,
+driven through the same native planner RPC the UI uses (the SPA's custom
+controls make repeated browser driving slow; the RPC is the production
+interface itself). All 21 exploration test projects were removed through the
+engine's own Workspace.delete (0 left, 46 total).
