@@ -293,8 +293,8 @@
     "src/domain/sceneInit.ts": "0914ab791cb2c44f34a1b163504da42e356a14a632689dde522edb03b4453621",
     "src/domain/solarSetup.ts": "cc54a524e2239ad3d6d44f4fa822ffaa6131ce3af78c6a1ec3cd88570d06d3f4",
     "src/domain/validateGeometry.ts": "17baa1bd20bf813b12948c4c13aea22c51e69eb8cd292308b355236ce669a75a",
-    "src/i18n.ts": "a47796f8ed800737cb256c481d6ea84e603c1e43ebff3c11324b1d6c6bb534de",
-    "src/main.tsx": "c959c3612ddf8accd3f1a029be3984298534b49524689094ead828d8fa187c8c",
+    "src/i18n.ts": "4dbdd12c0124571cbeb3dab69f8223a989aad559a06db9946609542bbccd444c",
+    "src/main.tsx": "8c9ee469d13346b5ba459202c2f27459e1292766192d94861da6260be7866707",
     "tsconfig.json": "8afdb7f33b9f65ad55e77973c5a88f8b627385d30ced0f1a44f4c283dc3dc8f8",
     "vite.config.ts": "124325835376cd0382f1a8c0652d2264597cb7ae6f054f05b7e1807bbf98916d"
   },
@@ -303,7 +303,7 @@
     "assets/MapViewport-NZ7f9uJ5.js": "dffcb129385310286f497113cfaca93a3f325f9c92d29796a24150ef99c95109",
     "assets/SceneViewport-o3G5gHv-.js": "277f45c7c243aefe99ab718d8afab5bc19053a1a3ba636b0c8bd70770e9cf9f7",
     "assets/planner-core-D6WtspfN.js": "c0fa8297ff0cbb7e8c7ff6c3606e0bf0ddd7947095b66e5b30e23a70aba4bbc2",
-    "assets/planner.js": "76e85881e658391a9fcfed21d9b3d12bf034ed2783b1d4f37e52a87af4861047",
+    "assets/planner.js": "08e13b02c614bc73a56b97dcf0c99f6b477d188d30b374bc045b770bb81ae320",
     "assets/rolldown-runtime-BWaJ3C7D.js": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
     "vite-manifest.json": "890d9292c99e5aabd1f546a030b8492cba6e4161b84d1719d4527f6ff514c6cf",
     "windpress.scan.txt": "1f27ef0d3e3ea43c8c0218efc81d5ae27cc5041d6d36993d112634f52859ed1d"

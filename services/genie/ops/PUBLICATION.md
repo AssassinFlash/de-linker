@@ -146,8 +146,17 @@ the installed launch definition/executable and pause its idle schedule under the
 existing worker lock before executing this operator. No concurrent publication
 owner may switch the runtime/index during the window. The API and judge unit
 ExecStart must use `/opt/linker-genie/current/.venv/bin/`; actual post-start PIDs
-must have the selected release as cwd. Resolve a different unit layout before
-publishing, rather than weakening this check.
+must have the selected release as cwd. Before stopping the old pair, the
+candidate interpreter must import `linker_genie`, `linker_genie.app` and
+`linker_genie.quality.worker`, and the operator (not the child) must verify all
+three module files resolve inside the candidate's own `src`, with no inherited
+`PYTHON*` environment. After startup, both units must remain active past the
+existing judge settle window, actual PIDs/cwd must match the selected release,
+and the application must answer `GET http://127.0.0.1:8902/health` with
+`status=ok` and the selected release's exact `serving_revision`. An import,
+startup, identity or health failure refuses activation and restores the previous
+pair (including its own serving identity). Resolve a different unit layout
+before publishing, rather than weakening these checks.
 
 For a guarded source-only publication, pass the same verified current runtime
 as `--candidate` and `--previous` to `paired_release.main(arguments, guard=guard)`.
@@ -217,7 +226,8 @@ No-job and lock-busy exits are incomplete releases, not success. Semantic gaps r
 
 Before any possible index activation, runtime-switch or startup failure restores
 the old selector, starts both units even if the failed stop/start left them
-inactive, verifies actual PIDs/cwd and compares the entire old loaded receipt.
+inactive, verifies actual PIDs/cwd and the previous `/health` serving identity,
+and compares the entire old loaded receipt.
 If that readback succeeds after the explicitly supplied pre-activation guard refused while the original
 lease is still live, the worker retains the one pending local build and journal
 until that lease expires. It sends no failed ACK and ordinary polling does not

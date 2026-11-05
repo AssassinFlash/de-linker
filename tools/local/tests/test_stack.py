@@ -378,6 +378,34 @@ def test_wordpress_requests_reach_this_machine_only(stack: Stack) -> None:
     assert "\tGET\thttps://de-linker.com/\n" in log
 
 
+def test_only_the_exact_turnstile_verification_endpoint_leaves_local(
+    stack: Stack,
+) -> None:
+    b = stack.instance(B)
+    outcome = stack.wp(
+        b.name,
+        "eval",
+        "var_export( linker_local_filter_http( false, array( 'method' => 'POST' ),"
+        " 'https://challenges.cloudflare.com/turnstile/v0/siteverify' ) );"
+        " echo ' ';"
+        " echo linker_local_filter_http( false, array( 'method' => 'GET' ),"
+        " 'https://challenges.cloudflare.com/turnstile/v0/other' )->get_error_code();"
+        " echo ' ';"
+        " echo linker_local_filter_http( false, array( 'method' => 'GET' ),"
+        " 'http://challenges.cloudflare.com/turnstile/v0/siteverify' )->get_error_code();"
+        " echo ' ';"
+        " echo linker_local_filter_http( false, array( 'method' => 'GET' ),"
+        " 'https://challenges.cloudflare.com:8443/turnstile/v0/siteverify' )->get_error_code();"
+        " echo ' ';"
+        " var_export( linker_local_filter_http( false, array( 'method' => 'GET' ),"
+        " 'https://challenges.cloudflare.com:443/turnstile/v0/siteverify' ) );",
+    )
+
+    assert outcome == (
+        "false linker_local_blocked linker_local_blocked linker_local_blocked false"
+    )
+
+
 @contextmanager
 def serving(respond: type[BaseHTTPRequestHandler]) -> Iterator[int]:
     """Run a handler on a free port of 127.0.0.1; yield the port."""

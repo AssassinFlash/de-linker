@@ -194,8 +194,8 @@ ci-php-package project:
     fi
 
 # Local preflight installs these shared autoloaders before parallel package checks.
-[private]
 [positional-arguments]
+[private]
 ci-php-deps project:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -214,8 +214,8 @@ ci-php-deps project:
         just --justfile "{{ justfile() }}" ci-node-deps "$1"
     fi
 
-[private]
 [positional-arguments]
+[private]
 ci-node-deps project:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -441,23 +441,29 @@ wp name *args:
 
 # Turnstile acceptance on a LOCAL instance (`just up <name>` first): Cloudflare's
 # official always-pass dummy pair plus enforce mode, so the full browser chain
-# (widget → protection/verify → proof → genie turn → session trust) runs locally
-# with no real challenge and no real keys. Production refuses these key families
-# (Protection\Configuration::test_keys), so this can never weaken live; real-
-# question acceptance on production goes through the service-level channel
-# (x-linker-service-token + 64-hex x-linker-resource-subject on the VPS loopback).
+# (widget → protection/verify → proof → genie turn / cart write / contact
+# submit) runs locally with no real challenge and no real keys. The testing key
+# pair always reports hostname "example.com" (siteverify metadata
+# result_with_testing_key), so the expected hostname constant must say so; with
+# the default home host every verification would fail the hostname pin.
+# Production refuses these key families (Protection\Configuration::test_keys),
+# so this can never weaken live; real-question acceptance on production goes
+# through the service-level channel (x-linker-service-token + 64-hex
+# x-linker-resource-subject on the VPS loopback).
 # Re-runnable; leaves the settings in place for the instance's own lifetime.
 [positional-arguments]
 turnstile-test name:
     #!/usr/bin/env bash
     set -euo pipefail
-    just --justfile "{{ justfile_directory() }}" wp "$1" config set LINKER_PUBLIC_PROTECTION_MODE enforce --type=constant --add --quiet
-    just --justfile "{{ justfile_directory() }}" wp "$1" config set LINKER_TURNSTILE_SITE_KEY 1x00000000000000000000000000AA --type=constant --add --quiet
-    just --justfile "{{ justfile_directory() }}" wp "$1" config set LINKER_TURNSTILE_SECRET_KEY 1x0000000000000000000000000000000AA --type=constant --add --quiet
-    test "$(just --justfile "{{ justfile_directory() }}" wp "$1" config get LINKER_PUBLIC_PROTECTION_MODE --type=constant)" = enforce
-    test "$(just --justfile "{{ justfile_directory() }}" wp "$1" config get LINKER_TURNSTILE_SITE_KEY --type=constant)" = 1x00000000000000000000000000AA
-    test "$(just --justfile "{{ justfile_directory() }}" wp "$1" config get LINKER_TURNSTILE_SECRET_KEY --type=constant)" = 1x0000000000000000000000000000000AA
-    echo "turnstile-test: dummy pair + enforce active on '$1' (local only)"
+    just --justfile "{{ justfile() }}" wp "$1" config set LINKER_PUBLIC_PROTECTION_MODE enforce --type=constant --add --quiet
+    just --justfile "{{ justfile() }}" wp "$1" config set LINKER_TURNSTILE_SITE_KEY 1x00000000000000000000AA --type=constant --add --quiet
+    just --justfile "{{ justfile() }}" wp "$1" config set LINKER_TURNSTILE_SECRET_KEY 1x0000000000000000000000000000000AA --type=constant --add --quiet
+    just --justfile "{{ justfile() }}" wp "$1" config set LINKER_TURNSTILE_HOSTNAME example.com --type=constant --add --quiet
+    test "$(just --justfile "{{ justfile() }}" wp "$1" config get LINKER_PUBLIC_PROTECTION_MODE --type=constant)" = enforce
+    test "$(just --justfile "{{ justfile() }}" wp "$1" config get LINKER_TURNSTILE_SITE_KEY --type=constant)" = 1x00000000000000000000AA
+    test "$(just --justfile "{{ justfile() }}" wp "$1" config get LINKER_TURNSTILE_SECRET_KEY --type=constant)" = 1x0000000000000000000000000000000AA
+    test "$(just --justfile "{{ justfile() }}" wp "$1" config get LINKER_TURNSTILE_HOSTNAME --type=constant)" = example.com
+    echo "turnstile-test: dummy pair + enforce + testing hostname active on '$1' (local only)"
 
 # The mock ERP (ticket #69, docs/specs/69-stock.md): sets a fresh push key on
 # the instance, picks two stock-managed products with SKUs, and drives the
@@ -796,8 +802,8 @@ py-check:
     uv run --locked ruff format --check ../../plugins/linker-commerce/tests/fixtures/smtp_sink.py
     uv run --locked mypy --strict ../../plugins/linker-commerce/tests/fixtures/smtp_sink.py
 
-[private]
 [positional-arguments]
+[private]
 py-test-group group:
     #!/usr/bin/env bash
     set -euo pipefail

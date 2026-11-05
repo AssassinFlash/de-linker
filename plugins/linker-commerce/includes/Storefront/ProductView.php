@@ -238,7 +238,7 @@ final class ProductView {
 	 * light), as the product page shows it; null when the library holds none.
 	 *
 	 * @param int $product_id The product.
-	 * @return array{src: string, srcset: string, alt: string}|null
+	 * @return array{src: string, srcset: string, sizes: string, alt: string}|null
 	 */
 	private function brand_logo( int $product_id ): ?array {
 		static $logos = array();
@@ -264,6 +264,7 @@ final class ProductView {
 				? array(
 					'src'    => (string) $source[0],
 					'srcset' => (string) wp_get_attachment_image_srcset( $id, 'full' ),
+					'sizes'  => (string) wp_get_attachment_image_sizes( $id, 'full' ),
 					'alt'    => $this->term_name( $product_id, 'pa_brand' ),
 				)
 				: null;

@@ -125,21 +125,52 @@ final class PlannerApplicationTest extends TestCase {
 		$this->assertSame( array( 'Ihr Arbeitsbereich wird geöffnet…' ), $messages['Opening your workspace…'] ?? null );
 		$this->assertSame( array( 'Lösungskonfigurator' ), $messages['Solution Configurator'] ?? null );
 		$this->assertSame( array( 'Ihre Projekte' ), $messages['Your projects'] ?? null );
+		// The form strings are deliberately not in the inline subset: they
+		// arrive through the on-demand catalog loader.
+		$this->assertArrayNotHasKey( 'Create project', $messages );
 
-		$inline_tag = '<script id="wp-script-module-translation-data-linker-planner">wp.i18n.setLocaleData({}, "linker-tools");</script>';
-		$unchanged  = $app->inline_translation_loader( $inline_tag, '', array( 'id' => 'other-script' ) );
-		$this->assertSame( $inline_tag, $unchanged );
-
-		$augmented    = $app->inline_translation_loader(
-			$inline_tag,
-			'',
-			array( 'id' => 'wp-script-module-translation-data-' . Application::HANDLE )
+		// Without a recorded catalog URL (translations never loaded for this
+		// page) no loader is printed at all.
+		$fresh = new Application( $root . 'linker-tools.php' );
+		WP_Mock::userFunction(
+			'wp_print_inline_script_tag',
+			array(
+				'times' => 0,
+			)
 		);
+		$fresh->print_translation_loader();
+
+		// With the catalog URL recorded by filter_translations(), the loader
+		// is printed as its own inline script — core offers no tag-level
+		// filter to append it to the translation data tag.
+		$captured = null;
+		WP_Mock::userFunction(
+			'wp_print_inline_script_tag',
+			array(
+				'times'  => 1,
+				'args'   => array( \WP_Mock\Functions::type( 'string' ), array( 'id' => 'linker-planner-translation-loader' ) ),
+				'return' => static function ( string $javascript ) use ( &$captured ): string {
+					$captured = $javascript;
+					return '';
+				},
+			)
+		);
+		$app->print_translation_loader();
+		$this->assertIsString( $captured );
 		$expected_ver = substr( (string) hash_file( 'sha256', $file ), 0, 12 );
 		$this->assertStringContainsString(
 			$base . 'languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json?ver=' . $expected_ver,
-			$augmented
+			$captured
 		);
-		$this->assertStringContainsString( 'window.wp.i18n.setLocaleData', $augmented );
+		$this->assertStringContainsString( 'window.wp.i18n.setLocaleData', $captured );
+		$this->assertStringContainsString( 'window.linkerToolsCatalog', $captured );
+		$this->assertStringContainsString( 'new Promise', $captured );
+		// The catalog settles on the request's own outcome: no timer may paint
+		// an untranslated first frame on a slow network, and the shared fetch
+		// must stay untouched for the rest of the page.
+		$this->assertStringNotContainsString( 'setTimeout', $captured );
+		$this->assertStringNotContainsString( 'window.fetch =', $captured );
+		$this->assertStringContainsString( '.catch( () => {} ).finally( done )', $captured );
+		$this->assertConditionsMet();
 	}
 }
