@@ -5,6 +5,7 @@ import os
 import sqlite3
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 import pytest
@@ -185,7 +186,9 @@ def test_pending_tasks_without_a_live_executor_refuse_restart(
 
 def test_lifecycle_lock_refuses_a_second_manager_and_then_releases(
     tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    monkeypatch.setenv("LINKER_LOCAL_LOCK_WAIT", "0.2")
     lock = tmp_path / "run/services.lock"
     with lifecycle_lock(lock):
         with pytest.raises(ProcessError, match="already"):
@@ -193,6 +196,52 @@ def test_lifecycle_lock_refuses_a_second_manager_and_then_releases(
                 pytest.fail("second lifecycle manager acquired the lock")
     with lifecycle_lock(lock):
         pass
+
+
+def test_lifecycle_lock_waits_for_a_finishing_manager(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    lock = tmp_path / "run" / "services.lock"
+    ready = tmp_path / "holder-ready"
+    release = tmp_path / "holder-release"
+    src = Path(__file__).parents[1] / "src"
+    holder = subprocess.Popen(
+        [
+            sys.executable,
+            "-c",
+            "import sys, time\n"
+            f"sys.path.insert(0, {str(src)!r})\n"
+            "from pathlib import Path\n"
+            "from linker_local.private_config import lifecycle_lock\n"
+            f"with lifecycle_lock(Path({str(lock)!r})):\n"
+            f"    Path({str(ready)!r}).write_text('')\n"
+            f"    deadline = time.monotonic() + 10.0\n"
+            f"    while not Path({str(release)!r}).exists() and time.monotonic() < deadline:\n"
+            "        time.sleep(0.05)\n",
+        ],
+    )
+    try:
+        # A handshake, not a guessed delay: the holder only signals once it
+        # actually holds the lock, and it keeps the lock until released.
+        handshake = time.monotonic() + 10.0
+        while not ready.exists() and time.monotonic() < handshake:
+            time.sleep(0.02)
+        assert ready.exists(), "the holder never signalled that it holds the lock"
+        # The contention is real: while the holder owns the lock a short probe
+        # cannot take it, so the acquisition below genuinely has to wait.
+        monkeypatch.setenv("LINKER_LOCAL_LOCK_WAIT", "0.05")
+        with pytest.raises(ProcessError, match="already"):
+            with lifecycle_lock(lock):
+                pass
+        # The same acquire succeeds once the finishing holder lets go.
+        monkeypatch.setenv("LINKER_LOCAL_LOCK_WAIT", "10")
+        release.write_text("", encoding="utf8")
+        with lifecycle_lock(lock):
+            pass
+    finally:
+        if not release.exists():
+            release.write_text("", encoding="utf8")
+        assert holder.wait(timeout=10.0) == 0, "the holder subprocess must exit"
 
 
 def test_local_queue_empty_does_not_pass_unresolved_remote_work(

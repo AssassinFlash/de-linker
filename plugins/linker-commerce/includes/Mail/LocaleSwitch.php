@@ -138,7 +138,12 @@ final class LocaleSwitch {
 	 * not the one switched to.
 	 */
 	private function reload_domain(): void {
-		unload_textdomain( 'linker-commerce' );
+		// Reloadable: when the switched-to locale has no catalog of ours (the
+		// site default's en_US is the source language), the domain must still be
+		// lazily loadable afterwards. A plain unload marks it never-reloadable
+		// for the rest of the request, so a later switch to German in the same
+		// request would render English source strings.
+		unload_textdomain( 'linker-commerce', true );
 		$locale = '' === $this->locale ? determine_locale() : $this->locale;
 		$mofile = dirname( __DIR__, 2 ) . '/languages/linker-commerce-' . $locale . '.mo';
 		if ( is_readable( $mofile ) ) {

@@ -48,6 +48,11 @@ require_once __DIR__ . '/public-inquiry-assessment.php';
 			if ( 'capped' === ( $args[2] ?? '' ) ) {
 				for ( $i = 0; $i < 10; ++$i ) {
 					( new \Linker\Commerce\Inquiry\ReceiptLimit() )->take();
+					// Enforce mode caps receipts through the ledger-backed
+					// ReceiptBudget site day, not the legacy option counter.
+					// A distinct target each time fills the shared site
+					// allowance without tripping a per-target cap first.
+					\Linker\Commerce\Protection\ReceiptBudget::take( "cap-fixture-{$i}@example.test", "cap-fixture-{$i}" );
 				}
 			}
 			PublicInquiryAssessment::install();
@@ -58,54 +63,106 @@ require_once __DIR__ . '/public-inquiry-assessment.php';
 		echo wp_json_encode( array( 'product' => $product->get_id() ) );
 		return;
 	}
-	$orders = $fixture->orders();
-	$jobs   = $fixture->jobs();
-	if ( 'read' === $mode ) {
-		$store = new \Linker\Commerce\Mail\JobStore();
-		$seen  = array_fill_keys( $jobs, true );
-		foreach ( $owned_jobs( $orders ) as $job_id ) {
-			if ( isset( $seen[ $job_id ] ) || null === $store->load( $job_id ) ) {
-				continue;
+	if ( 'cleanup' === $mode ) {
+		// No fixture installed is itself clean, and reading the records of an
+		// absent state would refuse; re-running cleanup must stay safe.
+		if ( false !== get_option( 'linker_246_round2_browser' ) ) {
+			$orders = $fixture->orders();
+			try {
+				foreach ( $owned_jobs( $orders ) as $job_id ) {
+					if ( 'linker_mail_job' === get_post_type( $job_id ) ) {
+						wp_delete_post( $job_id, true );
+					}
+				}
+				$fixture->cleanup();
+			} finally {
+				PublicInquiryAssessment::remove();
 			}
-			$jobs[]          = $job_id;
-			$seen[ $job_id ] = true;
+		} else {
+			PublicInquiryAssessment::remove();
+		}
+		return;
+	}
+	if ( 'process' === $mode ) {
+		// Drive the real assessment pipeline to its settled state. The submit
+		// request's own wake usually claims the order first and runs the
+		// genuine classification concurrently, holding the same database mutex
+		// for the whole model attempt. process() is zero-wait by design, so a
+		// second call only returns while that worker runs; this waits on the
+		// worker's own mutex instead of re-claiming on a timer. The mu-plugin
+		// fixture answers the classifier call with a deterministic normal
+		// verdict, so no model is spent and no request leaves the machine.
+		$terminal = array( 'normal', 'manual', 'quarantined', 'invalidated' );
+		// Three claimed model attempts' worth of the real bound
+		// (Queue::WAIT_SECONDS): enough for the concurrent worker to finish its
+		// claim plus this loop's own claim and handoff. A retry window is not
+		// waited out — the fixture's answer is deterministic, so a retry means
+		// the answer was rejected, and reporting the unsettled status is the
+		// diagnosis instead of a longer wait.
+		$deadline = microtime( true ) + 3 * \Linker\Commerce\Inquiry\Assessment\Queue::WAIT_SECONDS;
+		$statuses = array();
+		foreach ( $fixture->orders() as $order ) {
+			$id = $order->get_id();
+			while ( microtime( true ) < $deadline ) {
+				$state  = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $id );
+				$status = is_array( $state ) ? (string) ( $state['status'] ?? '' ) : '';
+				if ( in_array( $status, $terminal, true ) ) {
+					break;
+				}
+				// Block on the same mutex the worker holds until it finishes;
+				// the order is then claimed here when it is still pending, and
+				// a classified one is handed off by recover(). Lock::run's
+				// bounded wait paces the loop, so no iteration is a blind sleep.
+				\Linker\Commerce\Inquiry\Assessment\Lock::run( 'send-process-' . $id, static function (): void {}, 1 );
+				\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $id );
+				\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $id );
+			}
+			$final           = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $id );
+			$statuses[ $id ] = is_array( $final ) ? (string) ( $final['status'] ?? '' ) : 'unreadable';
 		}
 		echo wp_json_encode(
 			array(
-				'orders' => array_map(
-					static fn ( $order ) => array(
-						'status'        => $order->get_status(),
-						'customer'      => $order->get_customer_id(),
-						'source'        => $order->get_meta( '_linker_inquiry_source' ),
-						'skipped'       => $order->get_meta( '_linker_receipt_skipped' ),
-						'items'         => count( $order->get_items() ),
-						'authorization' => ( static function ( int $id ): array {
-							$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $id );
-							return is_array( $state ) ? array(
-								'status'    => $state['status'] ?? null,
-								'team_only' => $state['team_only'] ?? false,
-								'jobs'      => array_keys( $state['jobs'] ?? array() ),
-							) : array();
-						} )( $order->get_id() ),
-					),
-					$orders
-				),
-				'mail'   => array_map( static fn ( $id ) => json_decode( get_post_meta( $id, '_linker_mail_message', true ), true ), $jobs ),
+				'processed' => count( $fixture->orders() ),
+				'statuses'  => $statuses,
 			)
 		);
 		return;
 	}
-	if ( 'cleanup' !== $mode ) {
+	$orders = $fixture->orders();
+	$jobs   = $fixture->jobs();
+	if ( 'read' !== $mode ) {
 		throw new RuntimeException( 'Unknown fixture mode.' );
 	}
-	try {
-		foreach ( $owned_jobs( $orders ) as $job_id ) {
-			if ( 'linker_mail_job' === get_post_type( $job_id ) ) {
-				wp_delete_post( $job_id, true );
-			}
+	$store = new \Linker\Commerce\Mail\JobStore();
+	$seen  = array_fill_keys( $jobs, true );
+	foreach ( $owned_jobs( $orders ) as $job_id ) {
+		if ( isset( $seen[ $job_id ] ) || null === $store->load( $job_id ) ) {
+			continue;
 		}
-		$fixture->cleanup();
-	} finally {
-		PublicInquiryAssessment::remove();
+		$jobs[]          = $job_id;
+		$seen[ $job_id ] = true;
 	}
+	echo wp_json_encode(
+		array(
+			'orders' => array_map(
+				static fn( $order ) => array(
+					'status'        => $order->get_status(),
+					'customer'      => $order->get_customer_id(),
+					'source'        => $order->get_meta( '_linker_inquiry_source' ),
+					'skipped'       => $order->get_meta( '_linker_receipt_skipped' ),
+					'items'         => count( $order->get_items() ),
+					'authorization' => ( static function ( int $id ): array {
+						$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $id );
+						return is_array( $state ) ? array(
+							'status'    => $state['status'] ?? null,
+							'team_only' => $state['team_only'] ?? false,
+							'jobs'      => array_keys( $state['jobs'] ?? array() ),
+						) : array();
+					} )( $order->get_id() ),
+				),
+				$orders
+			),
+			'mail'   => array_map( static fn( $id ) => json_decode( get_post_meta( $id, '_linker_mail_message', true ), true ), $jobs ),
+		)
+	);
 } )( $args );

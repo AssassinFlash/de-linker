@@ -94,7 +94,7 @@ final class Configuration {
 	}
 
 	/** Official dummy key families are permitted only outside production. */
-	private function test_keys(): bool {
+	public function test_keys(): bool {
 		return 1 === preg_match( '/\A[123]x0{8}/', $this->site_key )
 			|| 1 === preg_match( '/\A[123]x0{8}/', $this->secret );
 	}
