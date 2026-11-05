@@ -31,7 +31,9 @@ def test_service_exposes_only_business_routes_without_schema_ui() -> None:
     with TestClient(app) as client:
         for path in ["/docs", "/redoc", "/openapi.json", "/docs/oauth2-redirect"]:
             assert client.get(path).status_code == 404
-        assert client.get("/health").json() == {"status": "ok"}
+        health = client.get("/health").json()
+        assert health["status"] == "ok"
+        assert len(health["serving_revision"]) == 64
         for path in POSTS:
             route = path.replace("{turn_id}", "synthetic").replace(
                 "{conversation_id}", "synthetic"
