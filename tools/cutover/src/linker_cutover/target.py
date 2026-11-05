@@ -21,6 +21,7 @@ and why `backup` runs before anything else.
 from __future__ import annotations
 
 import json
+import os
 import shlex
 import signal
 import ssl
@@ -229,6 +230,10 @@ class Target:
                 "-o",
                 "ProxyCommand=false",
             )
+            # Hostinger's shared SSH endpoint sometimes needs well over ten
+            # seconds for banner exchange; a fixed tight ceiling turned a slow
+            # handshake into a failed deploy. Operators can widen it explicitly.
+            open_timeout = int(os.environ.get("LINKER_CUTOVER_SSH_TIMEOUT", "30"))
             started = time.monotonic()
             print(f"deploy: opening task SSH session {host}", flush=True)
             master = subprocess.Popen(
@@ -239,7 +244,7 @@ class Target:
                     "-o",
                     "BatchMode=yes",
                     "-o",
-                    "ConnectTimeout=10",
+                    f"ConnectTimeout={open_timeout}",
                     "-o",
                     "ServerAliveInterval=15",
                     "-o",
@@ -262,9 +267,10 @@ class Target:
                             master.stderr.read() if master.stderr is not None else ""
                         )
                         raise CutoverError(f"SSH session failed: {detail.strip()}")
-                    if time.monotonic() - started > 10:
+                    if time.monotonic() - started > open_timeout:
                         raise CutoverError(
-                            "SSH session did not open within ConnectTimeout=10"
+                            "SSH session did not open within "
+                            f"ConnectTimeout={open_timeout}"
                         )
                     time.sleep(0.05)
                 print(
