@@ -17,8 +17,11 @@ use Linker\Commerce\Presentation\LibraryPage;
 use Linker\Commerce\Presentation\JournalTitles;
 use Linker\Commerce\Presentation\LoginGate;
 use Linker\Commerce\Presentation\Module;
+use Linker\Commerce\Presentation\ProductShortcodes;
 use Linker\Commerce\Presentation\Shortcodes;
 use Linker\Commerce\Presentation\WindPress;
+use Linker\Commerce\Storefront\ProductFilters;
+use Linker\Commerce\Storefront\ProductView;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
 use WP_Mock\Matcher\AnyInstance;
@@ -66,7 +69,11 @@ final class ModuleTest extends TestCase {
 		$library    = new LibraryPage();
 		$account    = new AccountTemplates();
 		$blog       = new BlogShortcodes();
-		$module     = new Module( $shortcodes, $gate, $windpress, null, $compare, $library, $account, $blog );
+		$products   = new ProductShortcodes(
+			new ProductFilters(),
+			new ProductView(),
+		);
+		$module     = new Module( $shortcodes, $gate, $windpress, $products, $compare, $library, $account, $blog );
 
 		// 68 data-only registrations across the product, checkout, comparison,
 		// library, account and blog families, including the product's configurator
@@ -78,6 +85,12 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'woocommerce_checkout_redirect_empty_cart', array( $gate, 'keep_empty_checkout' ) );
 		WP_Mock::expectFilterAdded( 'f!windpress/core/cache:compile.providers', array( $windpress, 'providers' ) );
 		WP_Mock::expectFilterAdded( 'f!windpress/integration/livecanvas/compile:get_contents.render', array( $windpress, 'render_raw' ), 10, 2 );
+		WP_Mock::expectFilterAdded(
+			'wp_calculate_image_sizes',
+			array( $products, 'related_image_sizes' ),
+			10,
+			2,
+		);
 		WP_Mock::expectActionAdded( 'template_redirect', array( $compare, 'canonical_address' ), 5 );
 		WP_Mock::expectActionAdded( 'wp_head', array( $library, 'print_schema' ) );
 		$families     = new AnyInstance( FamilyNavigation::class );
