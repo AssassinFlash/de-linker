@@ -35,7 +35,10 @@ candidate, current, previous and persisted protections; it never deletes unknown
 releases for space. It requires the new reader and a real successful timer pass.
 
 Each command owns and reaps its subprocess group (30 seconds by default, locked
-build 240 seconds, remote controller 480 seconds). Reader connection startup is
+build 240 seconds, remote controller 480 seconds — a verify that asks for a
+longer worker wait extends that window to the wait plus 120 seconds of
+connect/startup/verify overhead, so the controller cannot kill a session the
+remote side would have completed). Reader connection startup is
 bounded to 45 seconds; an answered version/coverage/geo/process mismatch fails
 once. Feed-worker drain is bounded to 90 seconds. Local fixture resources use a
 single `linker-legacy-reader-*` temporary root, loopback server and owned child,
