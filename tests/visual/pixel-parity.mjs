@@ -197,8 +197,38 @@ for (const width of widths) {
 				await page.evaluate(async () => {
 					await document.fonts.ready;
 				});
+				// Woo's add-to-cart.js appends its screen-reader live region to
+				// <body> after load (div.widget_shopping_cart_live_region, 1px).
+				// Its late arrival changes document.scrollHeight by one row: the
+				// 2026-11-05 SAJ PDP capture at 390 was 9977px with it and 9976px
+				// without, every painted row identical. Settle that final DOM on
+				// Woo pages before measuring; pages whose Woo scripts never add it
+				// stay consistently without it on both sides.
+				if (await page.locator("body.woocommerce-page").count()) {
+					await page
+						.waitForSelector("div.widget_shopping_cart_live_region", {
+							state: "attached",
+							timeout: 10000,
+						})
+						.catch(() => {});
+				}
 				// Existing capture setup settles fonts/layout for 800ms after decode.
 				await page.waitForTimeout(800);
+				// Chrome can keep a lazy image's early srcset candidate when its
+				// activation races the final layout: with byte-identical files and
+				// identical srcset/sizes, the SAJ feature image painted at
+				// 211.125px from the 600w file on one host and 210.875px from the
+				// 1280w file on the other (2026-11-05). Re-selecting every srcset
+				// image at the settled final state makes both sides choose from
+				// the same layout: measured 210.875px and 9976px on both.
+				await page.evaluate(() => {
+					for (const image of document.images) {
+						if (image.srcset) image.srcset = image.srcset;
+					}
+				});
+				await page.waitForLoadState("networkidle");
+				await decodeImages();
+				await page.waitForLoadState("networkidle");
 				// Woo shuffles related products on every request
 				// (wc_get_related_products() runs shuffle() behind the filterable
 				// woocommerce_product_related_posts_shuffle, default true), so two
