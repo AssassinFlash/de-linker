@@ -213,10 +213,49 @@ button.addEventListener("click", async () => {
 				equal((await second.readCreations(otherScope)).length, 1);
 			},
 		);
+		const replaceable = creation("Synthetic replaceable creation");
+		const replacement = creation(
+			"Synthetic replaceable creation",
+			crypto.randomUUID(),
+		);
+		await fixture(
+			"a dead creation receipt is replaced without a storage gap or duplicate",
+			async () => {
+				await first.writeCreation(scope, replaceable);
+				const before = (await second.readCreations(scope)).find(
+					(item) => item.body === replaceable,
+				);
+				equal(before === undefined, false);
+				await first.replaceCreation(
+					scope,
+					replaceable,
+					replacement,
+					"equipment",
+				);
+				const records = await second.readCreations(scope);
+				equal(
+					records.some((item) => item.body === replaceable),
+					false,
+				);
+				const after = records.find((item) => item.body === replacement);
+				equal(after === undefined, false);
+				equal(after?.destination, "equipment");
+				equal(after?.createdAt, before?.createdAt);
+				await refuses(
+					first.replaceCreation(
+						scope,
+						replaceable,
+						creation("Synthetic late replacement", crypto.randomUUID()),
+					),
+					"creation_intent_not_found",
+				);
+			},
+		);
 		await fixture(
 			"bounded recovery refuses a 129th intent without erasing the first 128",
 			async () => {
-				await first.clearCreation(scope, b);
+				for (const body of [b, replacement])
+					await first.clearCreation(scope, body);
 				for (let index = 0; index < 128; index++)
 					await first.writeCreation(
 						scope,

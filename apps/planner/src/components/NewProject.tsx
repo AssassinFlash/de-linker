@@ -254,6 +254,12 @@ export function NewProject({
 					session.runtime.limits.max_json_depth,
 					session.runtime.limits.max_body_bytes,
 				);
+				await store
+					.replaceCreation(originScope, dead, rekeyed, destination.current)
+					.catch(() => {
+						if (lifetime.current === instance) setRecoveryFailed(true);
+					});
+				if (lifetime.current !== instance) return;
 				intent.current = rekeyed;
 				setRequests((records) =>
 					records.map((record) =>
@@ -261,9 +267,6 @@ export function NewProject({
 					),
 				);
 				setProjectGone(true);
-				await store.clearCreation(originScope, dead).catch(() => {
-					if (lifetime.current === instance) setRecoveryFailed(true);
-				});
 			}
 		} finally {
 			if (lifetime.current === instance) setBusy(false);

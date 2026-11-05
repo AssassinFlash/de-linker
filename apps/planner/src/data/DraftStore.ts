@@ -219,6 +219,77 @@ export class DraftStore {
 		});
 	}
 
+	/** Replace a dead creation receipt atomically; a crash leaves either the old
+	 * record or this replacement, never a gap or a duplicate title hint. */
+	async replaceCreation(
+		scope: string,
+		oldBody: string,
+		body: string,
+		destination: "design" | "equipment" | null = null,
+	): Promise<void> {
+		storageKey(scope, "0".repeat(32));
+		const oldCommand = validateCreation(oldBody);
+		const command = validateCreation(body);
+		if (oldCommand.key === command.key)
+			throw new Error("creation_intent_conflict");
+		if (
+			destination !== null &&
+			destination !== "design" &&
+			destination !== "equipment"
+		)
+			throw new Error("invalid_creation_recovery");
+		const db = await this.open();
+		const transaction = db.transaction(
+			[CREATIONS, CREATION_INTENTS],
+			"readwrite",
+		);
+		const committed = complete(transaction);
+		const intents = transaction.objectStore(CREATION_INTENTS);
+		const legacy = transaction.objectStore(CREATIONS).get(scope);
+		let refusal: Error | null = null;
+		const refuse = (error: Error) => {
+			refusal = error;
+			transaction.abort();
+		};
+		scanCreations(
+			intents,
+			scope,
+			(records) => {
+				const previous = records.find(
+					(record) => record.key === oldCommand.key,
+				);
+				if (records.some((record) => record.key === command.key)) {
+					refuse(new Error("creation_intent_conflict"));
+					return;
+				}
+				let createdAt = previous?.createdAt;
+				let previousDestination = previous?.destination ?? null;
+				if (!previous || previous.body !== oldBody) {
+					if (legacy.result?.body !== oldBody) {
+						refuse(new Error("creation_intent_not_found"));
+						return;
+					}
+					createdAt = 0;
+					previousDestination = null;
+				}
+				intents.delete(scope + ":" + oldCommand.key);
+				if (legacy.result?.body === oldBody)
+					transaction.objectStore(CREATIONS).delete(scope);
+				intents.put({
+					id: scope + ":" + command.key,
+					scope,
+					body,
+					destination: destination ?? previousDestination,
+					created_at: createdAt,
+				});
+			},
+			refuse,
+		);
+		await committed.catch((error: unknown) => {
+			throw refusal ?? error;
+		});
+	}
+
 	async clearCreation(scope: string, body: string): Promise<void> {
 		storageKey(scope, "0".repeat(32));
 		const command = validateCreation(body);

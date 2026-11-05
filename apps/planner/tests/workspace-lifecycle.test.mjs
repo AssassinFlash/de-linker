@@ -1198,6 +1198,7 @@ test("a creation receipt whose project was deleted is rekeyed and the draft is c
 	});
 	let bodies = [];
 	let cleared = [];
+	let replacements = [];
 	let created = null;
 	const response = (value, status = 200) =>
 		new Response(JSON.stringify(value), {
@@ -1227,19 +1228,32 @@ test("a creation receipt whose project was deleted is rekeyed and the draft is c
 			});
 		},
 	});
+	const records = [
+		{
+			key: "11111111-1111-4111-8111-111111111111",
+			title: "Deleted project",
+			body: dead,
+			destination: null,
+			createdAt: 1,
+		},
+	];
 	const store = {
 		async readCreations() {
-			return [
-				{
-					key: "11111111-1111-4111-8111-111111111111",
-					title: "Deleted project",
-					body: dead,
-					destination: null,
-					createdAt: 1,
-				},
-			];
+			return records;
 		},
 		async writeCreation() {},
+		async replaceCreation(scope, oldBody, body, destination) {
+			const index = records.findIndex((record) => record.body === oldBody);
+			if (index < 0) throw new Error("creation_intent_not_found");
+			records[index] = {
+				key: JSON.parse(body).key,
+				title: JSON.parse(body).title,
+				body,
+				destination,
+				createdAt: records[index].createdAt,
+			};
+			replacements.push([scope, oldBody, body, destination]);
+		},
 		async clearCreation(scope, body) {
 			cleared.push(body);
 		},
@@ -1281,8 +1295,12 @@ test("a creation receipt whose project was deleted is rekeyed and the draft is c
 			"The project this request belonged to was deleted.",
 		),
 	);
-	// The dead receipt is dropped from browser storage, and the draft survives.
-	assert.deepEqual(cleared, [dead]);
+	// The dead receipt is replaced in browser storage; the draft survives a reload.
+	assert.deepEqual(cleared, []);
+	assert.equal(records.length, 1);
+	assert.notEqual(records[0].body, dead);
+	assert.equal(records[0].title, "Deleted project");
+	assert.equal(records[0].createdAt, 1);
 	assert.equal(document.querySelector("input").value, "Deleted project");
 	await submit();
 	await until(() => created !== null);
@@ -1290,4 +1308,8 @@ test("a creation receipt whose project was deleted is rekeyed and the draft is c
 	assert.equal(bodies[1].title, "Deleted project");
 	assert.deepEqual(bodies[1].inputs, { brief: { schema_version: 1 } });
 	assert.notEqual(bodies[1].key, "11111111-1111-4111-8111-111111111111");
+	assert.deepEqual(replacements, [
+		[session.query_scope, dead, records[0].body, null],
+	]);
+	assert.deepEqual(cleared, [records[0].body]);
 });
