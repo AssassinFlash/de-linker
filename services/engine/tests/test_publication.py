@@ -309,9 +309,8 @@ def test_transient_tls_alert_recovers_without_closing_the_action(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """The site edge sometimes aborts a fresh handshake; that is not a withdrawal."""
+    import requests
     from requests.exceptions import SSLError
-
-    import linker_engine.publication as module
 
     manifest = {"schema_version": 1, "source_revision": "synthetic"}
     calls: list[int] = []
@@ -329,7 +328,7 @@ def test_transient_tls_alert_recovers_without_closing_the_action(
             raise SSLError("TLSV1_ALERT_INTERNAL_ERROR")
         return Response()
 
-    monkeypatch.setattr(module.requests, "get", flaky)
+    monkeypatch.setattr(requests, "get", flaky)
     assert Publication._manifest("https://example.invalid/manifest") == manifest
     assert len(calls) == 2
 
@@ -337,9 +336,8 @@ def test_transient_tls_alert_recovers_without_closing_the_action(
 def test_persistent_transport_failure_stays_closed(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    import requests
     from requests.exceptions import ConnectionError as RequestsConnectionError
-
-    import linker_engine.publication as module
 
     calls: list[int] = []
 
@@ -347,7 +345,7 @@ def test_persistent_transport_failure_stays_closed(
         calls.append(1)
         raise RequestsConnectionError("site unreachable")
 
-    monkeypatch.setattr(module.requests, "get", down)
+    monkeypatch.setattr(requests, "get", down)
     with pytest.raises(RequestsConnectionError):
         Publication._manifest("https://example.invalid/manifest")
     assert len(calls) == 3
