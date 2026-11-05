@@ -32,6 +32,8 @@ LIVE_FILES = {
     "wp-content/uploads/2026/07/logo-150x150.webp": "thumbnail",
     "wp-content/uploads/woocommerce-placeholder.webp": "placeholder",
     "wp-content/uploads/windpress/cache/tailwind.css": "css",
+    "wp-content/uploads/linker-hca-warranty/warranty-eu.pdf": "warranty",
+    "wp-content/uploads/linker-publication-618/figure.svg": "figure",
     "wp-content/uploads/wc-logs/transactional-emails.log": "jdoe@kunde.example",
     "wp-content/uploads/tv-b2b-private/business-document-18.pdf": "private",
     "wp-content/uploads/woocommerce_uploads/.htaccess": "deny from all",
@@ -152,6 +154,8 @@ def test_a_snapshot_holds_the_pseudonymized_database_and_the_files_it_needs(
         "2026/07/logo-150x150.webp",
         "woocommerce-placeholder.webp",
         "windpress/cache/tailwind.css",
+        "linker-hca-warranty/warranty-eu.pdf",
+        "linker-publication-618/figure.svg",
     }
     assert files_under(taken / "plugins") == {
         "livecanvas/livecanvas.php",

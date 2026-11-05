@@ -54,19 +54,18 @@ LIVE_PLUGINS = "live/plugins"
 LIVE_MU_PLUGINS = "live/mu-plugins"
 SITE = "site"
 LOCK = ".snapshot.lock"
-# What of wp-content/uploads is copied: the media library (year folders, as
-# uploads_use_yearmonth_folders files them), WooCommerce's placeholder image
-# (an attachment at the top level) and WindPress's CSS, which the pages load.
-# Everything else stays on the host: on 2026-10-09 that was wc-logs/ (mail and
-# error logs), tv-b2b-private/ (a customer's business document) and
-# woocommerce_uploads/ (empty, access-protected).
+# What of wp-content/uploads stays on the host: WooCommerce's logs
+# (wc-logs/), a customer's private business documents (tv-b2b-private/) and
+# its access-protected downloads (woocommerce_uploads/). Everything else is
+# the site's media — the year folders, the placeholder image, WindPress's
+# CSS, and whatever top-level directory a plugin files public assets into
+# (on 2026-11-05 an allowlist of that day's layout silently dropped the
+# linker-hca-warranty/ PDFs a live page was serving). Not copied is a
+# deliberate, named decision; new public assets come along by default.
 UPLOAD_FILTERS = (
-    "--include=/[0-9][0-9][0-9][0-9]/",
-    "--include=/[0-9][0-9][0-9][0-9]/**",
-    "--include=/woocommerce-placeholder*",
-    "--include=/windpress/",
-    "--include=/windpress/**",
-    "--exclude=*",
+    "--exclude=/wc-logs/",
+    "--exclude=/tv-b2b-private/",
+    "--exclude=/woocommerce_uploads/",
 )
 # A long step says how far it got at least this often: the working rule for
 # long commands is visible progress at least every 30 seconds.

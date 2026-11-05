@@ -24,17 +24,13 @@ list stays, so the instance is a copy of the live site. Code Snippets stays
 off either way: its table is data here. The instance must keep mail and
 outgoing requests on this Mac (linker-local's isolation mu-plugin does).
 
-With live_code, the address rewrite breaks the old i18n plugin's German
-freshness gate: the stored German was fingerprinted over a body that held the
-live address, and the rewritten body no longer matches, so the plugin serves
-the English fallback (18 of the 316 German pages on 2026-10-10, the home
-among them). `_refresh_german()` repairs exactly those posts — recomputing
-every fingerprint THROUGH THE PLUGIN'S OWN CODE (wp eval-file in the
-instance; the sha formula is never copied here) and only where undoing the
-address rewrite on a copy of the content reproduces the stored fingerprint,
-which proves the mismatch is the rewrite's doing and not German that was
-already stale on live. This is transitional scaffolding around the old
-plugin's rule, and it goes when #18 deletes the old plugins.
+With live_code, German routes come from Polylang — the plugin the live site
+serves German through. `_german_routes()` collects them through Polylang's
+own code (`pll_home_url()` for the German front page, the language taxonomy
+for published German objects; wp eval-file in the instance), and verify()
+spot-checks that those routes serve German. The old i18n plugin this check
+grew around is gone from live; its `_linker_de_content` fingerprints went
+with it.
 
 The users afterwards are the snapshot's: staff accounts keep their logins,
 so a login link for one of them (`just login <name> --user <login>`) opens
@@ -47,10 +43,9 @@ instance: which snapshot it holds and when that was taken.
 
 Finally it compares the instance with the snapshot's manifest (published
 products, attachments, the files of the attachments, leftovers of the live
-address) and reports what differs. With live_code and the old i18n plugin
-installed it also spot-checks that German pages serve German (the language
-a `--live-code` copy promises), so a freshness fallback cannot hide behind
-`ok: true` again.
+address) and reports what differs. With live_code it also spot-checks that
+Polylang's German pages serve German (the language a `--live-code` copy
+promises), so a fallback cannot hide behind `ok: true` again.
 """
 
 from __future__ import annotations
@@ -237,7 +232,7 @@ def load(
         "option", "update", "active_plugins", json.dumps(active), "--format=json", *SKIP
     )
     say(f"active plugins: {', '.join(entry.split('/')[0] for entry in active)}")
-    german = _refresh_german(target, say) if live_code else None
+    german = _german_routes(target, say) if live_code else None
     wp.run("rewrite", "flush")
     _bind_publication(wp, say, active)
     # The dump replaced every user_pass with an irreversible placeholder
@@ -332,111 +327,77 @@ def write_admin_note(path: Path, name: str, url: str, staff: list[str]) -> None:
     path.chmod(0o600)
 
 
-def _refresh_german(target: Instance, say: Say) -> list[str] | None:
-    """Repair the old i18n plugin's German freshness fingerprints the address
-    rewrite broke, and return German page paths for verify() to spot-check.
-
-    Transitional scaffolding around the old plugin's rule (docs/specs/6-live-pull.md,
-    2026-10-10): it goes when #18 deletes the old plugins. The fingerprints are
-    recomputed by the plugin's own Translator, through a wp eval-file driver run
-    in the instance — the sha formula is never reimplemented here. A post is
-    repaired only when the plugin's own content_sha() over an address-undone
-    copy of the content equals the stored fingerprint: the mismatch is then the
-    rewrite's doing, not German that was stale on live already (that stale
-    state stays as it was, gate and all). None when the old i18n plugin is not
-    installed (a snapshot's live/ always has it; a test harness's does not).
+def _german_routes(target: Instance, say: Say) -> list[str] | None:
+    """Collect the German routes verify() spot-checks, through Polylang's own
+    code (docs/specs/6-live-pull.md): the German front page from
+    pll_home_url(), published German objects from the language taxonomy —
+    wp eval-file in the instance, so no rule is reimplemented here. None when
+    Polylang is not active: no Polylang, no promise (a test harness's live/
+    has none).
     """
-    if not (target.wp_content / "plugins" / "linker-i18n").is_dir():
-        return None
-    live_forms = [old for old, _ in replacements(live.URL, target.url)]
-    local_forms = [new for _, new in replacements(live.URL, target.url)]
-    pairs = json.dumps(
-        [list(pair) for pair in zip(local_forms, live_forms, strict=True)]
-    )
     with tempfile.NamedTemporaryFile(
         "w", suffix=".php", encoding="utf-8", delete=False
     ) as driver:
         driver.write(_GERMAN_DRIVER)
         driver_path = Path(driver.name)
     try:
-        # No SKIP flags: the driver needs the plugins loaded — they are active
-        # by now — and every fingerprint comes from the plugin's own classes.
-        output = WpCli(target).run("eval-file", str(driver_path), pairs)
+        # No SKIP flags: the driver needs the plugins loaded — Polylang is
+        # active by now — and every route comes from the plugin's own code.
+        output = WpCli(target).run("eval-file", str(driver_path))
     finally:
         driver_path.unlink(missing_ok=True)
     report = json.loads(output or "{}")
+    routes = _german_routes_from_report(report)
     say(
-        f"german: {report.get('repaired', 0)} pages' fingerprints recomputed"
-        f" ({report.get('stale_left', 0)} stale before the load stay stale)"
+        "german: no Polylang, nothing to check"
+        if routes is None
+        else f"german: {len(routes)} German routes to spot-check"
     )
+    return routes
+
+
+def _german_routes_from_report(report: dict[str, Any]) -> list[str] | None:
+    """The driver's report as verify() input: None skips (no Polylang), an
+    empty list is a broken promise verify() must refuse."""
+    if not report.get("polylang"):
+        return None
     return [str(path) for path in report.get("german_pages", [])]
 
 
-# Runs inside the instance (`wp eval-file <file> <json-pairs>`); the positional
-# arguments arrive as $args (EvalFile_Command.php). Every fingerprint is the
-# plugin's own (Translator::content_sha, Document::key, Translator::mark_current)
-# — this file only drives them, so the rule has one implementation.
+# Runs inside the instance (`wp eval-file <file>`); every route comes from
+# Polylang itself — pll_home_url() and the plugin's language taxonomy.
 _GERMAN_DRIVER = r"""<?php
-$pairs = json_decode($args[0] ?? '[]', true);
-$undo = function ($text) use ($pairs) {
-    return str_replace(array_column($pairs, 0), array_column($pairs, 1), (string) $text);
-};
-if (!class_exists('Linker\\I18n\\Translator')) {
-    wp_send_json(array('repaired' => 0, 'stale_left' => 0, 'german_pages' => array()));
+if (!function_exists('pll_home_url')) {
+    wp_send_json(array('polylang' => false, 'german_pages' => array()));
 }
 global $wpdb;
-$ids = $wpdb->get_col(
-    "SELECT post_id FROM {$wpdb->postmeta}"
-    . " WHERE meta_key = '_linker_de_content' AND meta_value <> ''"
+$paths = array((string) wp_parse_url(pll_home_url('de'), PHP_URL_PATH));
+$term = $wpdb->get_row(
+    "SELECT t.term_id FROM {$wpdb->terms} t"
+    . " JOIN {$wpdb->term_taxonomy} tt ON tt.term_id = t.term_id"
+    . " WHERE tt.taxonomy = 'language' AND t.slug = 'de' LIMIT 1"
 );
-// The front page first, so the spot-check covers the home a visitor lands on.
-$front = (int) get_option('page_on_front');
-usort($ids, function ($a, $b) use ($front) { return ($b == $front) - ($a == $front); });
-$repaired = 0;
-$stale = 0;
-$german = array();
-foreach ($ids as $id) {
-    $post = get_post((int) $id);
-    if (!$post) {
-        continue;
-    }
-    $stored = (string) get_post_meta($id, 'Linker\\I18n\\Translator'::META_SOURCE_SHA, true);
-    // The plugin's own formula over the post as it is now.
-    if ($stored !== 'Linker\\I18n\\Translator'::content_sha($id, $post)) {
-        // Prove the mismatch is the address rewrite alone: the same plugin
-        // formula over a copy of the content with the rewrite undone.
-        $undone = clone $post;
-        $undone->post_content = $undo($post->post_content);
-        $payload = get_post_type($id) === 'product'
-            ? 'Linker\\I18n\\Product'::source_payload($id)
-            : null;
-        if ('Linker\\I18n\\Translator'::content_sha($id, $undone, $payload !== null ? $undo($payload) : null) !== $stored) {
-            $stale++;
-            continue;
-        }
-        'Linker\\I18n\\Translator'::mark_current($id);
-        $repaired++;
-    }
-    // The excerpt has its own axis; the same proof, the same plugin key.
-    $es = (string) get_post_meta($id, 'Linker\\I18n\\Translator'::META_EXCERPT_SHA, true);
-    if ($es !== '' && $es !== sha1('Linker\\I18n\\Document'::key($post->post_excerpt))) {
-        if (sha1('Linker\\I18n\\Document'::key($undo($post->post_excerpt))) === $es) {
-            update_post_meta(
-                $id,
-                'Linker\\I18n\\Translator'::META_EXCERPT_SHA,
-                sha1('Linker\\I18n\\Document'::key($post->post_excerpt))
-            );
-        }
-    }
-    if (count($german) < 3) {
-        $path = (string) wp_parse_url(get_permalink($id), PHP_URL_PATH);
-        $de = class_exists('Linker_I18n_Router') ? Linker_I18n_Router::to_de($path) : $path;
-        if ($de !== '') {
-            $german[] = $de;
-        }
+if ($term) {
+    $ids = $wpdb->get_col($wpdb->prepare(
+        "SELECT p.ID FROM {$wpdb->posts} p"
+        . " JOIN {$wpdb->term_relationships} tr ON tr.object_id = p.ID"
+        . " JOIN {$wpdb->term_taxonomy} tt ON tr.term_taxonomy_id = tt.term_taxonomy_id"
+        . " WHERE tt.taxonomy = 'language' AND tt.term_id = %d"
+        . " AND p.post_status = 'publish' AND p.post_type IN ('page','post','product')"
+        . " ORDER BY FIELD(p.post_type, 'page', 'post', 'product'), p.ID",
+        $term->term_id
+    ));
+    foreach ($ids as $id) {
+        $paths[] = (string) wp_parse_url(get_permalink($id), PHP_URL_PATH);
     }
 }
-wp_send_json(array('repaired' => $repaired, 'stale_left' => $stale, 'german_pages' => $german));
+$paths = array_values(array_unique(array_filter($paths, function ($path) {
+    return is_string($path) && $path !== '';
+})));
+wp_send_json(array(
+    'polylang' => true,
+    'german_pages' => array_slice($paths, 0, 3),
+));
 """
 
 
@@ -562,16 +523,16 @@ def verify(
         "live_address_left": leftovers,
         "staff_logins": staff.splitlines(),
     }
-    # With the old i18n plugin installed, a --live-code copy promises German
-    # pages in German; the freshness fallback serves English without any
-    # error, so the promise is checked, not assumed (the 2026-10-10 review
-    # found 18 pages fallen back behind an ok:true). None skips: no plugin,
-    # no promise (a test harness's live/ has no linker-i18n).
+    # A --live-code copy promises German pages in German — live serves them
+    # through Polylang — and the promise is checked, not assumed: a fallback
+    # serves English without any error (the 2026-10-10 review found 18 pages
+    # fallen back behind an ok:true). None skips: no Polylang, no promise
+    # (a test harness's live/ has none).
     german_ok: bool | None = None
     if german_pages is not None:
         if not german_pages:
             raise LoadError(
-                "the old i18n plugin is installed but no page holds German to check"
+                "Polylang is installed but no page holds German to check"
             )
         checked = {}
         for path in german_pages[:3]:
