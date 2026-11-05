@@ -149,7 +149,7 @@ final class DocumentFilesTest extends TestCase {
 		self::assertSame( 1, $first['hash_calls'] );
 
 		// Another document's entry, as a full manifest would have cached it.
-		$shared                 = $first['cache'];
+		$shared                   = $first['cache'];
 		$shared['other-document'] = array(
 			'identity' => 'other-stat-identity',
 			'sha'      => str_repeat( 'a', 64 ),
@@ -207,6 +207,15 @@ final class DocumentFilesTest extends TestCase {
 	 * @param bool        $manifest Whether this is a full manifest.
 	 * @param string|null $after_hash Optional file replacement after hashing.
 	 * @return array<string,mixed>
+	 */
+	/**
+	 * One isolated resolver request, its hash/write counts and the cache after it.
+	 *
+	 * @param mixed       $cache      Cache option carried into the request.
+	 * @param bool        $manifest   Full-manifest read (replace on write-back).
+	 * @param string|null $after_hash Change the file to this content mid-hash.
+	 * @param bool        $partial    Partial projection (merge on write-back).
+	 * @return array<string,mixed> Request outcome.
 	 */
 	private function manifest_hash_request( mixed $cache, bool $manifest = true, ?string $after_hash = null, bool $partial = false ): array {
 		$fixture = dirname( __DIR__, 4 ) . '/fixtures/publication-hash-cache.php';
