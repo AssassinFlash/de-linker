@@ -153,3 +153,16 @@ The remaining acceptance tail is weather-result selection → PV-model
 preparation → PV generation → energy scenario → planning report. Nineteen
 exploration test projects were removed through the engine's own
 Workspace.delete (0 left, 46 total).
+
+## Addendum 8 (same day): PV-generation parameter contract
+
+`runs/pv` requires a complete `pv_generation` parameter document in the
+project (modules with per-module temperature coefficient + datasheet source,
+arrays with transposition/thermal/IAM/loss factors, PVWatts converters with
+reference power and efficiencies). These are produced by the UI's "Prepare PV
+model" step from the current layout and module data; hand-built parameter
+payloads were refused by the strict contract (422) and the public error does
+not name the field. The weather chain is proven on production (addendum 7); the
+PV-model preparation → PV generation → energy scenario → planning report tail
+is the remaining acceptance work. Six exploration test projects were removed
+through the engine's own Workspace.delete (0 left, 46 total).
