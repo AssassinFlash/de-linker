@@ -86,10 +86,10 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'f!windpress/core/cache:compile.providers', array( $windpress, 'providers' ) );
 		WP_Mock::expectFilterAdded( 'f!windpress/integration/livecanvas/compile:get_contents.render', array( $windpress, 'render_raw' ), 10, 2 );
 		WP_Mock::expectFilterAdded(
-			'wp_calculate_image_sizes',
-			array( $products, 'related_image_sizes' ),
+			'wp_get_attachment_image_attributes',
+			array( $products, 'related_image_attributes' ),
 			10,
-			2,
+			3,
 		);
 		WP_Mock::expectActionAdded( 'template_redirect', array( $compare, 'canonical_address' ), 5 );
 		WP_Mock::expectActionAdded( 'wp_head', array( $library, 'print_schema' ) );

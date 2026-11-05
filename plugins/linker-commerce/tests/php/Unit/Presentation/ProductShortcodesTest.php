@@ -1894,14 +1894,21 @@ final class ProductShortcodesTest extends TestCase {
 	/**
 	 * Woo's native related-product loop keeps its thumbnail size stable: the
 	 * same `sizes="auto, ..."` markup selected 300w on live and the original
-	 * 1000w file locally on 2026-11-05, so the native image-size filter names
-	 * Woo's own 300px basis instead of leaving the choice to load timing.
+	 * 1000w file locally on 2026-11-05. The attributes hook still sees the
+	 * requested `woocommerce_thumbnail` name after WordPress has added `auto`.
 	 */
 	public function test_related_product_thumbnail_sizes_are_explicit(): void {
 		$shortcodes = new ProductShortcodes( new ProductFilters(), new ProductView() );
+		$lazy       = array( 'sizes' => 'auto, (max-width: 300px) 100vw, 300px' );
 
-		$this->assertSame( '300px', $shortcodes->related_image_sizes( 'auto, (max-width: 300px) 100vw, 300px', 'woocommerce_thumbnail' ) );
-		$this->assertSame( 'auto, (max-width: 1024px) 100vw, 1024px', $shortcodes->related_image_sizes( 'auto, (max-width: 1024px) 100vw, 1024px', 'large' ) );
+		$this->assertSame(
+			array( 'sizes' => '300px' ),
+			$shortcodes->related_image_attributes( $lazy, null, 'woocommerce_thumbnail' ),
+		);
+		$this->assertSame(
+			$lazy,
+			$shortcodes->related_image_attributes( $lazy, null, 'large' ),
+		);
 	}
 
 	/**
