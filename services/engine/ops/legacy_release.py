@@ -1216,6 +1216,14 @@ def main() -> int:
             if args.operation == "prepare"
             else None
         )
+        # The controller holds one SSH window for the whole remote run. A
+        # verify that waits out a slow worker tick (the feed worker's natural
+        # cadence is 15 minutes) needs that window to cover the wait, or the
+        # controller kills the session and reports failure while the remote
+        # verify would have succeeded.
+        window = 480.0
+        if args.wait_worker_seconds > 0:
+            window = max(window, args.wait_worker_seconds + 120.0)
         remote_output = command(
             [
                 "ssh",
@@ -1229,7 +1237,7 @@ def main() -> int:
                 + shlex.join([*forwarded, "--remote"]),
             ],
             body=body,
-            timeout=480,
+            timeout=window,
         )
         print(remote_output.decode().strip())
         return 0
