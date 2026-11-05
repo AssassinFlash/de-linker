@@ -37,3 +37,17 @@ project title `SC check4 2026-11-05`.
   text-dump confusion was a test-selector artifact, not a product defect.
 - The check's "further checks required" verdicts are the intended honest
   engineering boundary (goal C: no assumed/partial release).
+
+## Addendum (same day): energy-calculation input boundary
+
+Continuing the same chain into Energy inputs / Energy calculation: the
+scenario calculation **requires real interval inputs by design** — the interval
+sources (total site load, available PV output AC, external auxiliary) are
+required, and the storage parameters demand a source/assumption note. It
+refuses to calculate from an annual figure alone. That is the intended honest
+engineering behavior, not a defect. The full energy+report chain has native
+coverage in the owned two-hour fixture (synthetic source claims, frozen
+execution, per-unit trace, German report); a production customer-path run with
+a real imported load profile + PVGIS generation is the remaining acceptance
+step. Four test projects from this exploration were deleted through the
+engine's own Workspace.delete (0 left, 46 total).
