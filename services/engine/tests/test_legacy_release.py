@@ -487,6 +487,43 @@ def test_prune_protects_pytest_interpreter_unknown_dirs_and_current_pair(
     )
 
 
+def test_controller_ssh_window_covers_a_long_worker_wait(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """`verify --wait-worker-seconds 900` must not lose its SSH controller
+    window first: the feed worker's natural tick is 15 minutes, and a fixed
+    480s controller timeout killed the session while the remote verify would
+    have succeeded (2026-11-05 engine release)."""
+    windows: list[float] = []
+
+    def capture(args: list[str], **kwargs: Any) -> bytes:
+        windows.append(kwargs["timeout"])
+        return b'{"status":"ok"}'
+
+    monkeypatch.setattr(ops, "command", capture)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "legacy_release.py",
+            "verify",
+            "--host",
+            "test-host",
+            "--wait-worker-seconds",
+            "900",
+        ],
+    )
+    assert ops.main() == 0
+    assert windows == [1020.0]
+
+    windows.clear()
+    monkeypatch.setattr(
+        sys, "argv", ["legacy_release.py", "verify", "--host", "test-host"]
+    )
+    assert ops.main() == 0
+    assert windows == [480.0]
+
+
 def test_safe_command_diagnostics_keep_phase_and_never_print_stderr_secrets() -> None:
     token = "private-test-value-not-a-real-key"
     with pytest.raises(ops.OperatorError) as caught:
