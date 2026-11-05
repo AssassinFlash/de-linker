@@ -153,8 +153,10 @@ three module files resolve inside the candidate's own `src`, with no inherited
 `PYTHON*` environment. After startup, both units must remain active past the
 existing judge settle window, actual PIDs/cwd must match the selected release,
 and the application must answer `GET http://127.0.0.1:8902/health` with
-`status=ok` and the selected release's exact `serving_revision`. An import,
-startup, identity or health failure refuses activation and restores the previous
+`status=ok` and the selected release's exact `serving_revision`. Connection
+start-up may be retried only inside the operator's bounded health window; a
+response with a different identity fails immediately. An import, startup,
+identity or health failure refuses activation and restores the previous
 pair (including its own serving identity). Resolve a different unit layout
 before publishing, rather than weakening these checks.
 

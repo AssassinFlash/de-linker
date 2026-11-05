@@ -30,9 +30,12 @@ if __package__ in {None, ""} and "__file__" in globals():
 
 UNITS = ("linker-genie.service", "linker-genie-judge.service")
 HEALTH_URL = "http://127.0.0.1:8902/health"
-# gate.py documents the service's loopback port. The request is local; 10 s is
-# the operator's bounded wait, not an application startup timeout.
-HEALTH_TIMEOUT_SECONDS = 10
+# gate.py documents the loopback port. The application itself took about 7 s to
+# finish startup during the 2026-11-05 activation (journal 03:14:21 -> 03:14:28);
+# 20 s bounds connection refusals at roughly twice that measured startup.
+HEALTH_STARTUP_TIMEOUT_SECONDS = 20.0
+HEALTH_ATTEMPT_TIMEOUT_SECONDS = 1.0
+HEALTH_RETRY_DELAY_SECONDS = 0.25
 # A local interpreter import needs no network. 10 s bounds a broken candidate
 # without leaving the pre-stop check hanging on the release lock.
 IMPORT_TIMEOUT_SECONDS = 10
@@ -97,11 +100,31 @@ def identity(source: Path) -> dict[str, str]:
 
 def application_health(expected_serving: str) -> None:
     """Require the running API process and its actual immutable release identity."""
-    # The service binds 127.0.0.1:8902 (gate.py); 10 s covers the loopback call.
-    with urlopen(HEALTH_URL, timeout=HEALTH_TIMEOUT_SECONDS) as response:
-        value = json.load(response)
-    if value != {"status": "ok", "serving_revision": expected_serving}:
-        raise RuntimeError("Genie API health or serving identity differs")
+    deadline = time.monotonic() + HEALTH_STARTUP_TIMEOUT_SECONDS
+    last_startup_error: BaseException | None = None
+    while True:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise RuntimeError(
+                "Genie API health did not complete startup within its bounded window"
+            ) from last_startup_error
+        try:
+            with urlopen(
+                HEALTH_URL,
+                timeout=min(HEALTH_ATTEMPT_TIMEOUT_SECONDS, remaining),
+            ) as response:
+                value = json.load(response)
+        except (OSError, TimeoutError) as error:
+            # Connection refusal and transient HTTP errors are startup behavior;
+            # a response with the wrong identity is checked below and never retried.
+            last_startup_error = error
+            delay = min(HEALTH_RETRY_DELAY_SECONDS, remaining)
+            if delay > 0:
+                time.sleep(delay)
+            continue
+        if value != {"status": "ok", "serving_revision": expected_serving}:
+            raise RuntimeError("Genie API health or serving identity differs")
+        return
 
 
 def check_import(source: Path) -> None:
