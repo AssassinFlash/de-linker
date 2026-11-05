@@ -726,6 +726,9 @@ final class ProductShortcodes {
 			$html = '<div class="pdp-brand pdp-brand--logo"><img class="pdp-brand-logo" src="' . esc_url( (string) $logo['src'] ) . '"';
 			if ( '' !== (string) $logo['srcset'] ) {
 				$html .= ' srcset="' . esc_attr( (string) $logo['srcset'] ) . '"';
+				if ( '' !== (string) ( $logo['sizes'] ?? '' ) ) {
+					$html .= ' sizes="' . esc_attr( (string) $logo['sizes'] ) . '"';
+				}
 			}
 			return $html . ' alt="' . esc_attr( (string) $logo['alt'] ) . '" loading="eager" decoding="async" fetchpriority="high" /></div>';
 		}
@@ -2197,8 +2200,10 @@ final class ProductShortcodes {
 	}
 
 	/**
-	 * An image tag with the live renderer's attribute set: class, src, srcset
-	 * and sizes, no width/height (the stylesheet sizes the box).
+	 * An image tag with the live renderer's attribute set: the attachment's
+	 * width/height, src, the caller's attributes, then srcset and computed sizes
+	 * only when the caller did not provide sizes. `srcset => null` suppresses
+	 * the candidates and their sizes; an explicit caller sizes wins exactly once.
 	 *
 	 * @param int                        $image_id   The attachment.
 	 * @param string                     $size       Registered size name.
@@ -2237,9 +2242,16 @@ final class ProductShortcodes {
 			$html .= ' ' . $name . '="' . esc_attr( $value ) . '"';
 		}
 		// An explicit srcset (the thumbnails carry the live page's candidate)
-		// replaces the generated one; null left none to print.
+		// replaces the generated one; null left none to print. WordPress computes
+		// sizes per size, but an explicit caller sizes wins and is never duplicated.
+		// Omitting it makes the browser assume 100vw. That mismatch made the same
+		// 350px-wide picture resolve to the 600w file on one host and the 1280w file
+		// on another, whose ratios differ by 0.25px of painted height.
 		if ( \is_string( $srcset ) && '' !== $srcset ) {
 			$html .= ' srcset="' . esc_attr( $srcset ) . '"';
+			if ( \is_string( $sizes ) && '' !== $sizes && ! \array_key_exists( 'sizes', $attributes ) ) {
+				$html .= ' sizes="' . esc_attr( $sizes ) . '"';
+			}
 		}
 		return $html . ' />';
 	}

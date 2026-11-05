@@ -31,9 +31,51 @@ python3 -m unittest discover -s tests/visual -p 'test_*.py'
 ```
 
 Capture conditions preserve the already measured procedure: software raster and
-sRGB to avoid GPU dithering, disabled motion/caret, full-height layout before
-decoding visible images, and loaded fonts. Native lazy loading and responsive
-image selection remain unchanged; hidden lazy menu images are not awaited.
+sRGB to avoid GPU dithering, disabled motion/caret, decoded images and fonts, and
+native lazy loading; hidden lazy menu images are not awaited.
+
+The capture never resizes the layout viewport. It stays at the requested width
+and the established 900px height, the page is scrolled through once at that size
+so native lazy images enter it, and the full page is then taken with a CDP
+`Page.captureScreenshot` clip of the document rectangle (`captureBeyondViewport`).
+The installed Playwright already uses this engine path for `fullPage: true`; an
+explicit clip makes the rectangle and no-resize contract visible. The earlier
+error was the separate `setViewportSize` call before that screenshot, not
+`fullPage` itself. Measured before removing that call, re-rastering differed by
+up to 10 levels per channel while image bytes, intrinsic dimensions and canvas
+hashes at natural and box size were identical. After the sweep, every visible
+image must have a selected source and decode successfully; a missing source or
+decode failure is an explicit capture failure, never an empty-image pass.
+
+The scroll sweep must scroll instantly. The site sets `scroll-behavior: smooth`
+on the root element, so a plain `window.scrollTo(0, y)` starts an animation the
+next call interrupts; the sweep then never reaches the lower sections, their
+lazy images keep an empty `currentSrc`, and `img.decode()` on them never
+settles — the capture hangs (measured: five images still without a source).
+
+One input is normalized before the capture, because it is non-deterministic on
+the live site itself and would otherwise turn a measurement artifact into a
+reported defect. It is opt-in per scenario and recorded in `capture.json`:
+
+- **Declared child sorting** (`sortChildren: [{selector, key}]`). Woo calls
+  `shuffle()` in `wc_get_related_products()` behind the filterable
+  `woocommerce_product_related_posts_shuffle` (default true), so the related
+  products block renders in a different order on every request — verified by
+  requesting the live PDP six times with a cache-busting query: six different
+  orders, `cache-control: no-store`. Each declared container is sorted by its
+  key text on both sides before the screenshot, and `compare.py` requires the
+  resulting item sets to be equal, so a different card set still fails. This is
+  not a mask: every pixel of every card is compared, only the order is fixed.
+
+Nothing else is normalized. Image candidate selection in particular is
+compared as the pages actually behave: the product pages emit `srcset` together
+with `sizes`, so the browser's choice follows the painted width rather than a
+`100vw` guess. The capture reads the markup as served and never rewrites it.
+
+`docs/acceptance/2026-11-04/pixel-parity/scenarios.json` holds the current
+full-matrix scenario list (12 routes × 1440/390), including the PDP routes'
+`sortChildren` declaration.
+
 For filled drafts, `capture.json` also records the selected cart image URL and
 natural size for each side. The preview card is dismissed only in
 each disposable browser context so the page is captured at rest. Historical
@@ -42,18 +84,21 @@ acceptance artefacts stay in their ticket directories; new runs call this tool.
 For a disclosure or another state, use `--scenarios <json>` instead of
 `--paths`. Each scenario contains a unique `name`, `path`, optional `widths`,
 ordered `actions` (`click`, `fill: [selector, value]`, `press: [selector, key]`,
-or `visit: "/relative/path"`),
-and `ruledRegions: [{name, selector, padding?}]`. Selectors may match repeated
-components; each matching rectangle is recorded separately, using the union of
-the live and local bounds. A new component may be absent on live; it must exist
-locally. Padding is an explicit part of the ruled region, for example the
-existing shadow of an expanded account menu, and needs ledger evidence.
+or `visit: "/relative/path"`), optional `sortChildren`, and
+`ruledRegions: [{name, selector, padding?}]`. Selectors may
+match repeated components; each matching rectangle is recorded separately, using
+the union of the live and local bounds. A new component may be absent on live;
+it must exist locally. Padding is an explicit part of the ruled region, for
+example the existing shadow of an expanded account menu, and needs ledger
+evidence.
 
 `--baseline` captures the local before images only (and reuses existing before
 images). It does not compare or change the site. Normal capture keeps full raw
 images and exact raw pixel counts. The comparator additionally reports
 `outside_ruled_different_pixels`; any nonzero value fails. Different image sizes
-are recorded as failures and are never cropped, padded or aligned away.
+are recorded as failures and are never cropped, padded or aligned away. Every
+`results.json` row carries the case stem, the route and the viewport width so a
+reading can be traced to its scenario without cross-referencing indices.
 
 `--direct` disables the system proxy only in the disposable capture browser,
 for machines whose HTTPS proxy intermittently refuses CONNECT tunnels. It does

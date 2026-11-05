@@ -81,9 +81,66 @@ class ExactPixelComparison(unittest.TestCase):
                 self.assertEqual(result.returncode, expected_exit, result.stderr)
                 if expected_pixels is None:
                     self.assertIn("size mismatch", result.stderr)
+                    row = json.loads((root / "results.json").read_text())[0]
+                    self.assertTrue(row["sorted_containers_match"])
                 else:
                     row = json.loads((root / "results.json").read_text())[0]
                     self.assertEqual(row["unmasked_different_pixels"], expected_pixels)
+
+
+    def test_sorted_container_must_hold_the_same_items(self):
+        # Sorting removes Woo's per-request shuffle; it may not hide a card that
+        # only one side renders. Identical pixels with different item sets fail.
+        for local_items, expected_exit in ((["A", "B"], 0), (["A", "C"], 1)):
+            with (
+                self.subTest(local_items=local_items),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = Path(directory)
+                (root / "capture.json").write_text(
+                    json.dumps(
+                        {
+                            "cases": [
+                                {
+                                    "path": "/",
+                                    "stem": "home",
+                                    "width": 2,
+                                    "language": "en",
+                                    "headerHeight": 1,
+                                    "sortRecords": {
+                                        "ul.products": {
+                                            "live": [{"observed": ["A", "B"], "sorted": ["A", "B"]}],
+                                            "local": [
+                                                {"observed": list(reversed(local_items)),
+                                                 "sorted": sorted(local_items)}
+                                            ],
+                                        }
+                                    },
+                                }
+                            ],
+                            "allowedHeaderChanges": [],
+                        }
+                    )
+                )
+                image = Image.new("RGB", (2, 2))
+                image.save(root / "home-2-live.png")
+                image.save(root / "home-2-local.png")
+                result = subprocess.run(
+                    [
+                        sys.executable,
+                        str(Path(__file__).with_name("compare.py")),
+                        directory,
+                    ],
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                self.assertEqual(result.returncode, expected_exit, result.stderr)
+                row = json.loads((root / "results.json").read_text())[0]
+                self.assertEqual(row["unmasked_different_pixels"], 0)
+                self.assertEqual(
+                    row["sorted_containers_match"], expected_exit == 0
+                )
 
 
 if __name__ == "__main__":

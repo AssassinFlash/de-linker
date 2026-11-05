@@ -68,6 +68,7 @@ for (const width of widths) {
 		let headerHeight;
 		const ruledRegions = new Map();
 		const imageSources = {};
+		const sortRecords = {};
 		for (const [base, label] of values.baseline
 			? [[localBase, "before"]]
 			: [
@@ -126,49 +127,96 @@ for (const width of widths) {
 					content:
 						"*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}",
 				});
-				await page.evaluate(async () => {
-					// Overlapping 600px scroll steps with 120ms for lazy-load observers
-					// are the established full-page capture procedure.
-					for (let y = 0; y < document.body.scrollHeight; y += 600) {
-						window.scrollTo(0, y);
-						await new Promise((resolve) => setTimeout(resolve, 120));
-					}
-					window.scrollTo(0, 0);
-				});
-				// Expand the viewport so native lazy images enter it, preserving
-				// loading="lazy": sizes="auto" depends on that eligibility. Switching
-				// to eager made live/local race between different srcset candidates.
-				const full = await page.evaluate(
-					() => document.documentElement.scrollHeight,
-				);
-				await page.setViewportSize({ width, height: full });
-				await page.waitForLoadState("networkidle");
-				await page.evaluate(async () => {
-					await Promise.all(
-						[...document.images]
-							.filter(
-								(img) =>
-									img.getClientRects().length > 0 &&
-									getComputedStyle(img).visibility !== "hidden",
-							)
-							.map((img) => img.decode().catch(() => {})),
+				// The layout viewport stays at the requested width and the
+				// established 900px height for the whole capture; the full page
+				// is taken with a CDP clip below. Growing the viewport instead
+				// re-lays-out the document, and images whose decode started at the
+				// shorter height are re-rasterized for the taller one, which made
+				// the same page produce different pixels per host even with
+				// identical image bytes and identical canvas hashes at natural and
+				// at box size.
+				//
+				// The sweep must be instant. The site sets scroll-behavior: smooth
+				// on the root element, so a plain scrollTo starts an animation that
+				// the next call interrupts; the sweep then never reaches the lower
+				// sections, their native lazy images keep an empty currentSrc, and
+				// img.decode() on them never settles (measured: five images still
+				// without a source after a smooth sweep, and the capture hung).
+				const sweep = async (step, pause) =>
+					page.evaluate(
+						async ([stepSize, wait]) => {
+							for (
+								let y = 0;
+								y < document.documentElement.scrollHeight;
+								y += stepSize
+							) {
+								window.scrollTo({ top: y, behavior: "instant" });
+								await new Promise((resolve) => setTimeout(resolve, wait));
+							}
+							window.scrollTo({ top: 0, behavior: "instant" });
+						},
+						[step, pause],
 					);
-				});
+				const decodeImages = () =>
+					page.evaluate(async () => {
+						const visible = [...document.images].filter(
+							(img) =>
+								img.getClientRects().length > 0 &&
+								getComputedStyle(img).visibility !== "hidden",
+						);
+						const missing = visible.filter((img) => !img.currentSrc);
+						if (missing.length)
+							throw new Error(
+								`visible images without a selected source: ${missing
+									.map((img) => img.src || img.alt || "<unnamed>")
+									.join(", ")}`,
+							);
+						await Promise.all(visible.map((img) => img.decode()));
+					});
+				await sweep(600, 120);
+				await decodeImages();
 				await page.waitForLoadState("networkidle");
+				// Loading the lazy images above can make the document taller;
+				// sweep again so the new bottom is observed too. The viewport
+				// is still not resized.
+				await sweep(600, 60);
+				await decodeImages();
 				await page.evaluate(async () => {
-					await Promise.all(
-						[...document.images]
-							.filter(
-								(img) =>
-									img.getClientRects().length > 0 &&
-									getComputedStyle(img).visibility !== "hidden",
-							)
-							.map((img) => img.decode().catch(() => {})),
-					);
 					await document.fonts.ready;
 				});
 				// Existing capture setup settles fonts/layout for 800ms after decode.
 				await page.waitForTimeout(800);
+				// Woo shuffles related products on every request
+				// (wc_get_related_products() runs shuffle() behind the filterable
+				// woocommerce_product_related_posts_shuffle, default true), so two
+				// captures of the same page differ in card order on the live host
+				// itself. Sorting the rendered cards is a declared normalization of
+				// an input that is random by design, not a mask: every pixel is
+				// still compared, and both sides must render the same card set.
+				const sorted = {};
+				for (const rule of scenario.sortChildren ?? []) {
+					const record = await page.evaluate((spec) => {
+						const containers = [...document.querySelectorAll(spec.selector)];
+						if (!containers.length) return null;
+						return containers.map((container) => {
+							const key = (element) =>
+								(element.querySelector(spec.key)?.textContent ?? "").trim();
+							const observed = [...container.children].map(key);
+							[...container.children]
+								.sort((a, b) => key(a).localeCompare(key(b), "en"))
+								.forEach((child) => container.appendChild(child));
+							return {
+								observed,
+								sorted: [...container.children].map(key),
+							};
+						});
+					}, rule);
+					if (!record)
+						throw new Error(`missing sort container: ${rule.selector}`);
+					sorted[rule.selector] = record;
+				}
+				if (Object.keys(sorted).length) await page.waitForTimeout(200);
+				sortRecords[label] = sorted;
 				imageSources[label] = await page
 					.locator(".woocommerce-cart-form img")
 					.evaluateAll((images) =>
@@ -229,10 +277,41 @@ for (const width of widths) {
 					}
 				}
 				const name = `${stem}-${width}-${label}.png`;
-				await page.screenshot({
-					path: path.join(out, name),
-					fullPage: true,
-				});
+				// CDP paints the whole document without resizing the layout
+				// viewport. The installed Playwright already uses this same engine
+				// path for fullPage; the old separate setViewportSize call was the
+				// re-layout trigger, not fullPage itself. Match its full-page bounds.
+				const shotSize = await page.evaluate(() => ({
+					width: Math.max(
+						document.body?.scrollWidth ?? 0,
+						document.documentElement.scrollWidth,
+					),
+					height: Math.max(
+						document.body?.scrollHeight ?? 0,
+						document.documentElement.scrollHeight,
+					),
+				}));
+				const session = await page.context().newCDPSession(page);
+				try {
+					const shot = await session.send("Page.captureScreenshot", {
+						format: "png",
+						fromSurface: true,
+						captureBeyondViewport: true,
+						clip: {
+							x: 0,
+							y: 0,
+							width: shotSize.width,
+							height: shotSize.height,
+							scale: 1,
+						},
+					});
+					fs.writeFileSync(
+						path.join(out, name),
+						Buffer.from(shot.data, "base64"),
+					);
+				} finally {
+					await session.detach();
+				}
 				console.log(name);
 			} finally {
 				try {
@@ -263,6 +342,7 @@ for (const width of widths) {
 			headerHeight,
 			ruledRegions: [...ruledRegions.values()],
 			imageSources,
+			sortRecords,
 		});
 	}
 }
