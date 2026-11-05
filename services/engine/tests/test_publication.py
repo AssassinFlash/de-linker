@@ -303,3 +303,49 @@ def test_source_outage_after_pdf_render_refuses_bytes_as_unavailable(
     assert reply.status_code == 503
     assert reply.json()["detail"]["error"] == "publication_unavailable"
     assert not reply.content.startswith(b"%PDF")
+
+
+def test_transient_tls_alert_recovers_without_closing_the_action(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The site edge sometimes aborts a fresh handshake; that is not a withdrawal."""
+    import linker_engine.publication as module
+    from requests.exceptions import SSLError
+
+    manifest = {"schema_version": 1, "source_revision": "synthetic"}
+    calls: list[int] = []
+
+    class Response:
+        def raise_for_status(self) -> None:
+            return None
+
+        def json(self) -> Any:
+            return copy.deepcopy(manifest)
+
+    def flaky(url: str, **_: Any) -> Response:
+        calls.append(1)
+        if len(calls) == 1:
+            raise SSLError("TLSV1_ALERT_INTERNAL_ERROR")
+        return Response()
+
+    monkeypatch.setattr(module.requests, "get", flaky)
+    assert Publication._manifest("https://example.invalid/manifest") == manifest
+    assert len(calls) == 2
+
+
+def test_persistent_transport_failure_stays_closed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import linker_engine.publication as module
+    from requests.exceptions import ConnectionError as RequestsConnectionError
+
+    calls: list[int] = []
+
+    def down(url: str, **_: Any) -> NoReturn:
+        calls.append(1)
+        raise RequestsConnectionError("site unreachable")
+
+    monkeypatch.setattr(module.requests, "get", down)
+    with pytest.raises(RequestsConnectionError):
+        Publication._manifest("https://example.invalid/manifest")
+    assert len(calls) == 3

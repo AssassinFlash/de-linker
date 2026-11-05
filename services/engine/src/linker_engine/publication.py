@@ -11,6 +11,7 @@ import hashlib
 import json
 import os
 import re
+import time
 from dataclasses import dataclass, replace
 from typing import Any
 from urllib.parse import urlsplit, urlunsplit
@@ -60,11 +61,7 @@ class Publication:
     def read(self) -> dict[str, Any]:
         url = os.environ.get("LINKER_PUBLICATION_URL", MANIFEST_URL)
         try:
-            response = requests.get(
-                url, timeout=10, headers={"Cache-Control": "no-cache"}
-            )
-            response.raise_for_status()
-            data = response.json()
+            data = self._manifest(url)
             if (
                 not isinstance(data, dict)
                 or data.get("schema_version") != 1
@@ -95,6 +92,30 @@ class Publication:
             raise PublicationUnavailable(
                 "Current product publication is unavailable"
             ) from error
+
+    @staticmethod
+    def _manifest(url: str) -> Any:
+        """Read the current manifest, retrying transient transport failures.
+
+        The site's edge intermittently answers a fresh TLS handshake with
+        ``TLSV1_ALERT_INTERNAL_ERROR``; that is a transport blip, not a
+        withdrawn publication. Retrying only connection/SSL faults keeps a
+        genuine permission or dependency change failing closed on the first
+        response instead of being masked by the retry window.
+        """
+        attempts = 3
+        for attempt in range(attempts):
+            try:
+                response = requests.get(
+                    url, timeout=10, headers={"Cache-Control": "no-cache"}
+                )
+                response.raise_for_status()
+                return response.json()
+            except (requests.ConnectionError, requests.Timeout):
+                if attempt + 1 == attempts:
+                    raise
+                time.sleep(0.15 * (attempt + 1))
+        raise AssertionError("unreachable")
 
     def _scope(self, current: dict[str, Any]) -> dict[str, Any]:
         compatibility = self.feed.get("compatibility_revision")
