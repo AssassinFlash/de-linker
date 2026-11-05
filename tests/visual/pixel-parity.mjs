@@ -197,6 +197,21 @@ for (const width of widths) {
 				await page.evaluate(async () => {
 					await document.fonts.ready;
 				});
+				// Woo's add-to-cart.js appends its screen-reader live region to
+				// <body> after load (div.widget_shopping_cart_live_region, 1px).
+				// Its late arrival changes document.scrollHeight by one row: the
+				// 2026-11-05 SAJ PDP capture at 390 was 9977px with it and 9976px
+				// without, every painted row identical. Settle that final DOM on
+				// Woo pages before measuring; pages whose Woo scripts never add it
+				// stay consistently without it on both sides.
+				if (await page.locator("body.woocommerce-page").count()) {
+					await page
+						.waitForSelector("div.widget_shopping_cart_live_region", {
+							state: "attached",
+							timeout: 10000,
+						})
+						.catch(() => {});
+				}
 				// Existing capture setup settles fonts/layout for 800ms after decode.
 				await page.waitForTimeout(800);
 				// Woo shuffles related products on every request
