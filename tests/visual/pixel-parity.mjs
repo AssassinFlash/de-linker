@@ -214,6 +214,21 @@ for (const width of widths) {
 				}
 				// Existing capture setup settles fonts/layout for 800ms after decode.
 				await page.waitForTimeout(800);
+				// Chrome can keep a lazy image's early srcset candidate when its
+				// activation races the final layout: with byte-identical files and
+				// identical srcset/sizes, the SAJ feature image painted at
+				// 211.125px from the 600w file on one host and 210.875px from the
+				// 1280w file on the other (2026-11-05). Re-selecting every srcset
+				// image at the settled final state makes both sides choose from
+				// the same layout: measured 210.875px and 9976px on both.
+				await page.evaluate(() => {
+					for (const image of document.images) {
+						if (image.srcset) image.srcset = image.srcset;
+					}
+				});
+				await page.waitForLoadState("networkidle");
+				await decodeImages();
+				await page.waitForLoadState("networkidle");
 				// Woo shuffles related products on every request
 				// (wc_get_related_products() runs shuffle() behind the filterable
 				// woocommerce_product_related_posts_shuffle, default true), so two
