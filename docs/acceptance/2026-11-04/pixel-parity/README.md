@@ -7,20 +7,45 @@ capture.
 
 ## Result
 
-`batch3/` — **24 of 24 cases at exactly 0 differing pixels**, all sizes equal,
+`final/` (2026-11-05, live snapshot 20261105-1208 loaded into fullmatrix) —
+**24 of 24 cases at exactly 0 differing pixels**, all sizes equal,
 `sorted_containers_match: true` everywhere, no masks, no ruled regions, no
-tolerances. The command exited 0.
+tolerances. `pixel-parity.mjs` exited 0 and the independent `compare.py`
+recount exited 0 (48 zero-difference records).
 
-**What batch3 proves, and what it does not.** batch3 was captured while the
-harness still carried the `pinImageSizes` compensation, i.e. before the product
-fix in §"Product fix" below. It therefore proves that the _capture mechanism_ is
-now deterministic — CDP clip, fixed viewport, instant sweep, sorted related
-cards — and it says nothing about an uncompensated matrix. The compensation has
-since been deleted from the harness and from `scenarios.json`. A final
-uncompensated 24-case matrix can only be meaningful once the product fix is
-deployed to the live site: until then live still serves `srcset` without
-`sizes` while local serves them together, and a cross-host run would report
-that real difference. That run is pending deployment.
+This is the **uncompensated** matrix: no `pinImageSizes`, no DOM rewriting
+beyond the declared normalizations (instant sweep, eager promotion, related
+`sortChildren`, and the two timing settlements below). Live and local ran the
+same deployed code.
+
+### What the first two final attempts caught (both capture-side, both fixed)
+
+- `attempt-20261105-related-order/` — 23/24, SAJ PDP at 390 one row shorter
+  locally (9976 vs 9977). Every painted row was pixel-identical; Woo's
+  add-to-cart.js appends a 1px screen-reader live region after load, and its
+  arrival time differs per host. Fixed: Woo pages now wait for that final DOM
+  before the CDP clip is measured.
+- `attempt-20261105-srcset-race/` — same case, same heights. Direct probes
+  showed the real cause: a lazy image's activation can race the final layout
+  and keep an early srcset candidate. With byte-identical files and identical
+  srcset/sizes, live painted the SAJ feature image at 211.125px from the 600w
+  file and local at 210.875px from the 1280w file, shifting the document tail
+  by 0.25px. Fixed: every srcset image is re-selected at the settled final
+  state (both sides then choose the same candidate; measured 210.875px and
+  equal page heights on both).
+
+A related-products title-order change (PR941) was opened on the first attempt's
+HTML diff and **closed unmerged as a misdiagnosis**: card order was already
+normalized by `sortChildren`, and the zero row-level differences proved the
+cards were not the cause. No production behavior change was needed for the
+gate.
+
+## Earlier capture proof
+
+`batch3/` — 24 of 24 at 0 differing pixels, captured while the harness still
+carried the `pinImageSizes` compensation. It proved the capture mechanism
+deterministic before the product fix; the uncompensated `final/` above is the
+actual gate.
 
 ```
 home                                  1440  0   390  0
@@ -204,11 +229,7 @@ capture rewrites page markup any more, so a red run now means a real difference.
   ruled out a product cause for the sticky border and footer blur.
 - `batch3/` — captured with the CDP clip _and_ the `pinImageSizes` workaround.
   24 of 24 at 0. Proves the capture mechanism, not an uncompensated matrix.
-
-## Pending after deployment
-
-The uncompensated 24-case matrix. It cannot be run meaningfully before the
-product fix is live: `https://de-linker.com` still serves `srcset` without
-`sizes` while the fixed code serves both, so any cross-host diff would report
-that real difference rather than a parity result. Once deployed, rerun the
-`Reproduce` command above and record the result here.
+- `attempt-20261105-related-order/`, `attempt-20261105-srcset-race/` — the two
+  23/24 final attempts; unique failure evidence for the live-region timing and
+  the srcset activation race described in §Result.
+- `final/` — the passing uncompensated matrix (24/24, both exits 0).
