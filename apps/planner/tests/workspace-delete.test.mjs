@@ -202,6 +202,35 @@ test("an owned project is deleted behind an explicit confirm, one request, and t
 	]);
 });
 
+test("an unknown 404 is a delete failure, not proof that another session removed the project", async (t) => {
+	const store = recordingStore();
+	const deletes = [];
+	const mounted = await mount(async (url, init) => {
+		if (String(url).endsWith("/nonce")) return new Response("abcdefghij");
+		if (String(url).endsWith("/bootstrap")) return response(session());
+		if (String(url).endsWith("/recovery/scopes"))
+			return response({ schema_version: 1, scopes: [], next: null });
+		if (String(url).endsWith("/projects/list"))
+			return response({ items: projects(), next: null });
+		if (String(url).endsWith("/projects/delete")) {
+			deletes.push(JSON.parse(String(init.body)));
+			return response({ error: { code: "route_missing" } }, 404);
+		}
+		throw new Error("unexpected fetch " + String(url));
+	}, store);
+	t.after(() => mounted.dispose());
+	await act(async () => deleteIcon().click());
+	await act(async () => confirmButton().click());
+	await until(() =>
+		document
+			.querySelector(".lp-delete-confirm")
+			?.textContent.includes("The project could not be deleted."),
+	);
+	assert.ok(document.querySelector(".lp-delete-confirm"));
+	assert.ok(document.body.textContent.includes("Delete me"));
+	assert.equal(deletes.length, 1);
+});
+
 test("a changed revision explains itself and the retry is a new command for the listed revision", async (t) => {
 	const store = recordingStore();
 	const deletes = [];

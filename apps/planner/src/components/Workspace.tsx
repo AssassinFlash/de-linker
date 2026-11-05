@@ -262,7 +262,7 @@ export function Workspace({
 					recheck();
 					return;
 				}
-				if (error.status === 404) {
+				if (error.status === 404 && error.code === "not_found") {
 					// Another session already removed it; the list is the truth.
 					setConfirmingDelete(null);
 					setDeleteRetry(null);

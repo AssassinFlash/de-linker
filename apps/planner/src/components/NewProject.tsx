@@ -245,6 +245,7 @@ export function NewProject({
 			if (
 				error instanceof ApiError &&
 				error.status === 404 &&
+				error.code === "not_found" &&
 				intent.current !== null
 			) {
 				const dead = intent.current;
