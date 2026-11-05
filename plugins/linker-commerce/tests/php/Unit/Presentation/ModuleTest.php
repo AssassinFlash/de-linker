@@ -92,6 +92,7 @@ final class ModuleTest extends TestCase {
 			10,
 			3,
 		);
+		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
 		WP_Mock::expectFilterAdded( 'woocommerce_related_products_args', array( new AnyInstance( RelatedProducts::class ), 'order' ) );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $compare, 'canonical_address' ), 5 );
 		WP_Mock::expectActionAdded( 'wp_head', array( $library, 'print_schema' ) );
