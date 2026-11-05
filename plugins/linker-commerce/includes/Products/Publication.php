@@ -273,7 +273,7 @@ final class Publication {
 	 */
 	public static function library_read(): array {
 		self::refresh_runtime();
-		DocumentFiles::begin_read();
+		DocumentFiles::begin_read( true, true );
 		try {
 			return self::assemble( true );
 		} finally {
@@ -293,7 +293,7 @@ final class Publication {
 	 */
 	public static function product_library_read( int $id, string $legacy_url = '' ): array {
 		self::refresh_runtime();
-		DocumentFiles::begin_read();
+		DocumentFiles::begin_read( true, true );
 		try {
 			if ( ! self::published_in_current_read( $id ) ) {
 				return array(

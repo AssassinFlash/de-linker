@@ -92,7 +92,7 @@ $GLOBALS['linker_commerce_hash_option']  = $linker_commerce_hash_input['cache'];
 $GLOBALS['linker_commerce_hash_uploads'] = $linker_commerce_hash_input['uploads'];
 $GLOBALS['linker_commerce_hash_change']  = $linker_commerce_hash_input['after_hash'];
 require dirname( __DIR__, 2 ) . '/includes/Products/Publication/DocumentFiles.php';
-DocumentFiles::begin_read( $linker_commerce_hash_input['manifest'] );
+DocumentFiles::begin_read( $linker_commerce_hash_input['manifest'], $linker_commerce_hash_input['partial'] ?? false );
 $linker_commerce_hash_file = DocumentFiles::resolve( 'http://linker.test/wp-content/uploads/2026/manual.pdf' );
 DocumentFiles::end_read();
 echo json_encode(

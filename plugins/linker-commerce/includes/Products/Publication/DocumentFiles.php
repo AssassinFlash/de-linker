@@ -60,14 +60,26 @@ final class DocumentFiles {
 	private static bool $cache_manifest = false;
 
 	/**
+	 * Whether this read is a partial projection (merge, never shrink, the cache).
+	 *
+	 * @var bool
+	 */
+	private static bool $partial = false;
+
+	/**
 	 * Begin a fresh authority assembly.
 	 *
-	 * @param bool $cache_manifest Reuse byte hashes only in a full manifest.
+	 * @param bool $cache_manifest Reuse byte hashes across requests.
+	 * @param bool $partial        A partial projection (library/FAQ read), not
+	 *                             the full manifest: its write-back merges into
+	 *                             the shared cache instead of replacing it, so
+	 *                             the files it did not touch stay cached.
 	 */
-	public static function begin_read( bool $cache_manifest = false ): void {
+	public static function begin_read( bool $cache_manifest = false, bool $partial = false ): void {
 		self::$hashes         = array();
 		self::$reading        = true;
 		self::$cache_manifest = $cache_manifest;
+		self::$partial        = $partial;
 		self::$seen           = array();
 		$cached               = $cache_manifest ? get_option( self::HASH_CACHE_OPTION, array() ) : array();
 		self::$cached         = is_array( $cached ) ? $cached : array();
@@ -76,17 +88,20 @@ final class DocumentFiles {
 	/** Release request assembly data immediately. */
 	public static function end_read(): void {
 		if ( self::$cache_manifest ) {
-			// Retain only files in this manifest, including permitted aliases.
+			// A full manifest forgets removed files; a partial projection merges
+			// into the shared cache so its own subset cannot shrink it.
 			ksort( self::$seen );
 			ksort( self::$cached );
-			if ( self::$seen !== self::$cached ) {
-				update_option( self::HASH_CACHE_OPTION, self::$seen, false );
+			$store = self::$partial ? array_replace( self::$cached, self::$seen ) : self::$seen;
+			if ( $store !== self::$cached ) {
+				update_option( self::HASH_CACHE_OPTION, $store, false );
 			}
 		}
 		self::$hashes         = array();
 		self::$cached         = array();
 		self::$seen           = array();
 		self::$cache_manifest = false;
+		self::$partial        = false;
 		self::$reading        = false;
 	}
 

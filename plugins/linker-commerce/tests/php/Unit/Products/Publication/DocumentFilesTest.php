@@ -135,6 +135,38 @@ final class DocumentFilesTest extends TestCase {
 		self::assertNotSame( $changed['sha'], $again['sha'] );
 	}
 
+	/**
+	 * A partial projection (the library/FAQ reads) reuses the shared byte
+	 * cache but merges on write-back: the files it never touched must survive
+	 * — replacing the cache with its own subset would evict every other
+	 * document for the next full manifest.
+	 */
+	public function test_a_partial_read_reuses_and_merges_the_shared_hash_cache(): void {
+		$file = $this->publication_uploads . '/2026/manual.pdf';
+		// The stable identity must predate the whole-second stat interval.
+		sleep( 1 );
+		$first = $this->manifest_hash_request( array() );
+		self::assertSame( 1, $first['hash_calls'] );
+
+		// Another document's entry, as a full manifest would have cached it.
+		$shared                 = $first['cache'];
+		$shared['other-document'] = array(
+			'identity' => 'other-stat-identity',
+			'sha'      => str_repeat( 'a', 64 ),
+		);
+
+		$partial = $this->manifest_hash_request( $shared, true, null, true );
+		self::assertSame( 0, $partial['hash_calls'], 'The partial read reuses the cached hash.' );
+		self::assertSame( 0, $partial['writes'], 'Nothing changed, nothing to write.' );
+		self::assertSame( $first['sha'], $partial['sha'] );
+		self::assertArrayHasKey( 'other-document', $partial['cache'], 'The partial read must not evict other documents.' );
+		self::assertSame( $shared, $partial['cache'] );
+
+		// The full manifest that follows still hits the shared cache.
+		$full = $this->manifest_hash_request( $partial['cache'] );
+		self::assertSame( 0, $full['hash_calls'] );
+	}
+
 	/** A file changed while it is hashed cannot be returned or cached. */
 	public function test_changed_during_hash_is_unavailable_until_read_again(): void {
 		$file = $this->publication_uploads . '/2026/manual.pdf';
@@ -176,7 +208,7 @@ final class DocumentFilesTest extends TestCase {
 	 * @param string|null $after_hash Optional file replacement after hashing.
 	 * @return array<string,mixed>
 	 */
-	private function manifest_hash_request( mixed $cache, bool $manifest = true, ?string $after_hash = null ): array {
+	private function manifest_hash_request( mixed $cache, bool $manifest = true, ?string $after_hash = null, bool $partial = false ): array {
 		$fixture = dirname( __DIR__, 4 ) . '/fixtures/publication-hash-cache.php';
 		$process = proc_open( array( PHP_BINARY, $fixture ), array( array( 'pipe', 'r' ), array( 'pipe', 'w' ), array( 'pipe', 'w' ) ), $pipes ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open -- Isolate the resolver's request-local state in this test.
 		self::assertIsResource( $process );
@@ -187,6 +219,7 @@ final class DocumentFilesTest extends TestCase {
 					'uploads'    => $this->publication_uploads,
 					'cache'      => $cache,
 					'manifest'   => $manifest,
+					'partial'    => $partial,
 					'after_hash' => $after_hash,
 				),
 				JSON_THROW_ON_ERROR
