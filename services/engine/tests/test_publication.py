@@ -309,8 +309,9 @@ def test_transient_tls_alert_recovers_without_closing_the_action(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """The site edge sometimes aborts a fresh handshake; that is not a withdrawal."""
-    import linker_engine.publication as module
     from requests.exceptions import SSLError
+
+    import linker_engine.publication as module
 
     manifest = {"schema_version": 1, "source_revision": "synthetic"}
     calls: list[int] = []
@@ -336,8 +337,9 @@ def test_transient_tls_alert_recovers_without_closing_the_action(
 def test_persistent_transport_failure_stays_closed(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import linker_engine.publication as module
     from requests.exceptions import ConnectionError as RequestsConnectionError
+
+    import linker_engine.publication as module
 
     calls: list[int] = []
 
