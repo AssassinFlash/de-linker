@@ -20,6 +20,7 @@ import time
 from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol
+from urllib.request import urlopen
 
 if TYPE_CHECKING:
     from linker_genie.embedding import Embedder, Passage
@@ -28,6 +29,16 @@ if __package__ in {None, ""} and "__file__" in globals():
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 UNITS = ("linker-genie.service", "linker-genie-judge.service")
+HEALTH_URL = "http://127.0.0.1:8902/health"
+# gate.py documents the service's loopback port. The request is local; 10 s is
+# the operator's bounded wait, not an application startup timeout.
+HEALTH_TIMEOUT_SECONDS = 10
+# A local interpreter import needs no network. 10 s bounds a broken candidate
+# without leaving the pre-stop check hanging on the release lock.
+IMPORT_TIMEOUT_SECONDS = 10
+# ops/activate.sh uses 3 s because the judge validates its settings at start
+# and exits within about a second when they are missing; recheck after that.
+POST_START_SETTLE_SECONDS = 3.0
 
 
 class CachedEmbedder:
@@ -84,35 +95,58 @@ def identity(source: Path) -> dict[str, str]:
     }
 
 
-def application_health() -> None:
-    """Require the running application, not only an active systemd unit."""
-    subprocess.run(
-        ["curl", "--fail", "--silent", "--show-error", "http://127.0.0.1:8902/health"],
-        check=True,
-        capture_output=True,
-        text=True,
-        timeout=10,
-    )
+def application_health(expected_serving: str) -> None:
+    """Require the running API process and its actual immutable release identity."""
+    # The service binds 127.0.0.1:8902 (gate.py); 10 s covers the loopback call.
+    with urlopen(HEALTH_URL, timeout=HEALTH_TIMEOUT_SECONDS) as response:
+        value = json.load(response)
+    if value != {"status": "ok", "serving_revision": expected_serving}:
+        raise RuntimeError("Genie API health or serving identity differs")
 
 
 def check_import(source: Path) -> None:
-    """Import the exact release package before allowing a service switch."""
-    subprocess.run(
+    """Import both real entry modules and verify their files in this release."""
+    # The child only reports module paths; this parent performs every comparison,
+    # so inherited PYTHON* flags or a stripped child assert cannot weaken it.
+    probe = (
+        "import json\n"
+        "import linker_genie, linker_genie.app, linker_genie.quality.worker\n"
+        "print(json.dumps({"
+        "'package': linker_genie.__file__, "
+        "'api': linker_genie.app.__file__, "
+        "'judge': linker_genie.quality.worker.__file__}))\n"
+    )
+    result = subprocess.run(
         [
             str(source / ".venv/bin/python"),
             "-c",
-            "import linker_genie, linker_genie.app, pathlib, sys; "
-            "expected = pathlib.Path(sys.argv[1]).resolve(); "
-            "actual = pathlib.Path(linker_genie.__file__).resolve(); "
-            "assert actual == expected, (actual, expected)",
-            str(source / "src/linker_genie/__init__.py"),
+            probe,
         ],
-        check=True,
+        check=False,
         capture_output=True,
         text=True,
-        timeout=10,
-        env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
+        timeout=IMPORT_TIMEOUT_SECONDS,
+        env={"PATH": os.defpath, "PYTHONDONTWRITEBYTECODE": "1"},
     )
+    if result.returncode != 0:
+        raise RuntimeError("candidate runtime cannot import both Genie entry modules")
+    try:
+        observed = json.loads(result.stdout)
+    except ValueError as error:
+        raise RuntimeError(
+            "candidate import probe returned no module identity"
+        ) from error
+    expected = {
+        "package": source / "src/linker_genie/__init__.py",
+        "api": source / "src/linker_genie/app.py",
+        "judge": source / "src/linker_genie/quality/worker.py",
+    }
+    for name, relative in expected.items():
+        actual = Path(str(observed.get(name, ""))).resolve(strict=False)
+        if actual != relative.resolve(strict=False):
+            raise RuntimeError(
+                "candidate import resolves a module from another release"
+            )
 
 
 def remote(request: dict[str, Any]) -> dict[str, Any]:
@@ -133,11 +167,16 @@ def remote(request: dict[str, Any]) -> dict[str, Any]:
             raise ValueError("prepared runtime must be an existing real directory")
         if not (source / ".venv/bin/python").is_file():
             raise ValueError("prepared runtime has no installed interpreter")
-    measured = identity(root / candidate)
-    if (index_only and measured["serving"] != request["identity"]["serving"]) or (
-        not index_only and measured != request["identity"]
-    ):
-        raise ValueError("prepared VPS runtime differs from the final Mac source")
+    if request["action"] == "restore":
+        # A damaged candidate must never prevent rollback. The restore target is
+        # measured instead and rechecked after the switch below.
+        measured = identity(root / previous)
+    else:
+        measured = identity(root / candidate)
+        if (index_only and measured["serving"] != request["identity"]["serving"]) or (
+            not index_only and measured != request["identity"]
+        ):
+            raise ValueError("prepared VPS runtime differs from the final Mac source")
     selector = root / "current"
     if not selector.is_symlink():
         raise ValueError("runtime selector must be a symlink")
@@ -156,14 +195,30 @@ def remote(request: dict[str, Any]) -> dict[str, Any]:
     if request["action"] not in {"activate", "restore"}:
         raise ValueError("unknown runtime action")
     if index_only:
-        return {"current": selected(), "pids": running(root, selected()), **measured}
+        pids = running(root, selected())
+        if request["action"] == "activate":
+            check_import(root / candidate)
+            application_health(measured["serving"])
+        return {"current": selected(), "pids": pids, **measured}
     with (root / ".paired-release.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         live = selected()
         target = candidate if request["action"] == "activate" else previous
         if live == target and request["action"] == "activate":
-            return {"current": live, "pids": running(root, live), **measured}
-        check_import(root / target)
+            check_import(root / target)
+            pids = running(root, live)
+            application_health(measured["serving"])
+            return {"current": live, "pids": pids, **measured}
+        target_identity = measured
+        previous_identity = identity(root / previous)
+        if request["action"] == "activate":
+            if identity(root / candidate) != measured:
+                raise RuntimeError(
+                    "prepared candidate changed before runtime selection"
+                )
+            check_import(root / candidate)
+        else:
+            target_identity = previous_identity
         # The prepared unit definitions must continue to execute the selector,
         # not an old absolute release or an unrelated service.
         for unit in UNITS:
@@ -180,23 +235,59 @@ def remote(request: dict[str, Any]) -> dict[str, Any]:
                 subprocess.run(
                     ["systemctl", "is-active", "--quiet", unit], check=True, timeout=10
                 )
-        subprocess.run(["systemctl", "stop", *UNITS], check=True, timeout=45)
-        temporary = root / f".paired-current-{os.getpid()}"
+
+        def select(version: str) -> None:
+            temporary = root / f".paired-current-{os.getpid()}"
+            try:
+                temporary.symlink_to(version)
+                os.replace(temporary, selector)
+            finally:
+                temporary.unlink(missing_ok=True)
+
+        service_touched = False
         try:
-            temporary.symlink_to(target)
-            os.replace(temporary, selector)
-        finally:
-            temporary.unlink(missing_ok=True)
-        subprocess.run(["systemctl", "start", *UNITS], check=True, timeout=45)
-        for unit in UNITS:
-            subprocess.run(
-                ["systemctl", "is-active", "--quiet", unit], check=True, timeout=10
-            )
-        if identity(root / candidate) != measured:
-            raise RuntimeError("prepared source changed during runtime selection")
-        pids = running(root, target)
-        application_health()
-        return {"current": selected(), "pids": pids, **measured}
+            service_touched = True
+            subprocess.run(["systemctl", "stop", *UNITS], check=True, timeout=45)
+            select(target)
+            subprocess.run(["systemctl", "start", *UNITS], check=True, timeout=45)
+            time.sleep(POST_START_SETTLE_SECONDS)
+            for unit in UNITS:
+                subprocess.run(
+                    ["systemctl", "is-active", "--quiet", unit], check=True, timeout=10
+                )
+            if (
+                request["action"] == "activate"
+                and identity(root / candidate) != measured
+            ):
+                raise RuntimeError("prepared source changed during runtime selection")
+            if identity(root / target) != target_identity:
+                raise RuntimeError("selected runtime changed during runtime selection")
+            pids = running(root, target)
+            application_health(target_identity["serving"])
+            return {"current": selected(), "pids": pids, **measured}
+        except BaseException as failure:
+            if request["action"] != "activate" or not service_touched:
+                raise
+            try:
+                try:
+                    subprocess.run(
+                        ["systemctl", "stop", *UNITS], check=False, timeout=45
+                    )
+                except subprocess.TimeoutExpired:
+                    pass
+                select(previous)
+                subprocess.run(["systemctl", "start", *UNITS], check=True, timeout=45)
+                time.sleep(POST_START_SETTLE_SECONDS)
+                running(root, previous)
+                if identity(root / previous) != previous_identity:
+                    raise RuntimeError("previous runtime changed during restore")
+                application_health(previous_identity["serving"])
+            except BaseException as restore_failure:
+                raise RuntimeError(
+                    f"activation failed ({type(failure).__name__}); "
+                    f"automatic restore also failed ({type(restore_failure).__name__})"
+                ) from failure
+            raise
 
 
 class Runtime:

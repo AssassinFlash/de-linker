@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -63,8 +64,18 @@ def test_same_runtime_checks_processes_without_switching_units(
     monkeypatch.setattr(
         subprocess, "run", lambda *args, **kwargs: pytest.fail("no service switch")
     )
+    imported = []
+    healthy = []
+    monkeypatch.setattr(
+        paired, "check_import", lambda source: imported.append(source.name)
+    )
+    monkeypatch.setattr(
+        paired, "application_health", lambda expected: healthy.append(expected)
+    )
     for action in ("status", "activate", "restore"):
         assert paired.remote({**request, "action": action})["current"] == OLD
+    assert imported == [OLD]
+    assert healthy == ["b" * 64]
     assert (tmp_path / "current").resolve().name == OLD
     request["identity"]["serving"] = "d" * 64
     with pytest.raises(ValueError, match="runtime differs"):
@@ -94,12 +105,46 @@ def test_restore_recovers_stopped_units_and_old_selector(
 
     monkeypatch.setattr(subprocess, "run", systemctl)
     monkeypatch.setattr(paired, "running", lambda root, version: {"verified": 1})
+    monkeypatch.setattr(paired, "POST_START_SETTLE_SECONDS", 0)
+    monkeypatch.setattr(paired, "check_import", lambda source: None)
+    monkeypatch.setattr(
+        paired,
+        "application_health",
+        lambda expected: (
+            None if expected == "b" * 64 else pytest.fail("wrong identity")
+        ),
+    )
     with pytest.raises(subprocess.CalledProcessError):
         paired.remote({**request, "action": "activate"})
     result = paired.remote({**request, "action": "restore"})
     assert result["current"] == OLD
     assert (tmp_path / "current").resolve().name == OLD
-    assert events[-4:] == ["start", "is-active", "is-active", "--fail"]
+    assert events[-4:] == ["stop", "start", "is-active", "is-active"]
+
+
+def test_restore_ignores_a_candidate_that_changed_after_activation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    request = prepared(tmp_path)
+    (tmp_path / "current").unlink()
+    (tmp_path / "current").symlink_to(NEW)
+    (tmp_path / NEW / "src/linker_genie/preparation.py").write_text(
+        "def serving_revision(root): return 'damaged'\n"
+    )
+
+    def run(command: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
+        return subprocess.CompletedProcess(
+            command, 0, stdout=str(tmp_path / "current/.venv/bin/python")
+        )
+
+    monkeypatch.setattr(subprocess, "run", run)
+    monkeypatch.setattr(paired, "running", lambda root, version: {"restored": 1})
+    monkeypatch.setattr(paired, "POST_START_SETTLE_SECONDS", 0)
+    monkeypatch.setattr(paired, "application_health", lambda expected: None)
+    result = paired.remote({**request, "action": "restore"})
+    assert result["current"] == OLD
+    assert result["serving"] == "b" * 64
+    assert (tmp_path / "current").resolve().name == OLD
 
 
 @pytest.mark.parametrize(
@@ -933,32 +978,139 @@ def test_activation_refuses_an_unimportable_candidate_before_stopping_units(
     def run(command: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
         calls.append(command)
         if command[:2] == [str(tmp_path / NEW / ".venv/bin/python"), "-c"]:
-            raise subprocess.CalledProcessError(1, command)
+            return subprocess.CompletedProcess(command, 1, stdout="")
         return subprocess.CompletedProcess(
             command, 0, stdout=str(tmp_path / "current/.venv/bin/python")
         )
 
     monkeypatch.setattr(subprocess, "run", run)
-    with pytest.raises(subprocess.CalledProcessError):
+    with pytest.raises(RuntimeError, match="cannot import both"):
         paired.remote({**request, "action": "activate"})
     assert not any(
         len(command) > 1 and command[:2] == ["systemctl", "stop"] for command in calls
     )
 
 
-def test_activation_fails_when_application_health_fails(
+def test_import_probe_is_verified_by_the_parent_without_inherited_python_flags(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = tmp_path / NEW
+    observed_env = {}
+
+    def run(command: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
+        observed_env.update(kwargs["env"])
+        assert kwargs["check"] is False
+        return subprocess.CompletedProcess(
+            command,
+            0,
+            stdout=json.dumps(
+                {
+                    "package": str(source / "src/linker_genie/__init__.py"),
+                    "api": str(source / "src/linker_genie/app.py"),
+                    "judge": str(source / "src/linker_genie/quality/worker.py"),
+                }
+            ),
+        )
+
+    monkeypatch.setattr(subprocess, "run", run)
+    paired.check_import(source)
+    assert observed_env == {
+        "PATH": os.defpath,
+        "PYTHONDONTWRITEBYTECODE": "1",
+    }
+
+
+def test_import_probe_refuses_a_module_resolved_from_another_release(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = tmp_path / NEW
+    other = tmp_path / OLD
+
+    def run(command: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
+        return subprocess.CompletedProcess(
+            command,
+            0,
+            stdout=json.dumps(
+                {
+                    "package": str(source / "src/linker_genie/__init__.py"),
+                    "api": str(other / "src/linker_genie/app.py"),
+                    "judge": str(source / "src/linker_genie/quality/worker.py"),
+                }
+            ),
+        )
+
+    monkeypatch.setattr(subprocess, "run", run)
+    with pytest.raises(RuntimeError, match="another release"):
+        paired.check_import(source)
+
+
+def test_application_health_requires_the_actual_serving_identity(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class Response:
+        def __init__(self, value: dict[str, str]) -> None:
+            self.value = value
+
+        def __enter__(self) -> Response:
+            return self
+
+        def __exit__(self, *_: object) -> None:
+            return None
+
+        def read(self) -> str:
+            return json.dumps(self.value)
+
+    values = iter(
+        [
+            Response({"status": "ok", "serving_revision": "b" * 64}),
+            Response({"status": "ok", "serving_revision": "other"}),
+        ]
+    )
+    monkeypatch.setattr(paired, "urlopen", lambda *_args, **_kwargs: next(values))
+    paired.application_health("b" * 64)
+    with pytest.raises(RuntimeError, match="serving identity differs"):
+        paired.application_health("b" * 64)
+
+
+def test_activation_health_failure_automatically_restores_the_previous_pair(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     request = prepared(tmp_path)
+    events = []
 
     def run(command: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
-        if command[0] == "curl":
-            raise subprocess.CalledProcessError(1, command)
+        if command[0] == str(tmp_path / NEW / ".venv/bin/python"):
+            return subprocess.CompletedProcess(
+                command,
+                0,
+                stdout=json.dumps(
+                    {
+                        "package": str(tmp_path / NEW / "src/linker_genie/__init__.py"),
+                        "api": str(tmp_path / NEW / "src/linker_genie/app.py"),
+                        "judge": str(
+                            tmp_path / NEW / "src/linker_genie/quality/worker.py"
+                        ),
+                    }
+                ),
+            )
+        events.append(command[1])
         return subprocess.CompletedProcess(
             command, 0, stdout=str(tmp_path / "current/.venv/bin/python")
         )
 
     monkeypatch.setattr(subprocess, "run", run)
     monkeypatch.setattr(paired, "running", lambda root, version: {"verified": 1})
-    with pytest.raises(subprocess.CalledProcessError):
+    monkeypatch.setattr(paired, "POST_START_SETTLE_SECONDS", 0)
+    health_calls: list[str] = []
+
+    def health(expected: str) -> None:
+        health_calls.append(expected)
+        if len(health_calls) == 1:
+            raise RuntimeError("candidate health refused")
+
+    monkeypatch.setattr(paired, "application_health", health)
+    with pytest.raises(RuntimeError, match="candidate health refused"):
         paired.remote({**request, "action": "activate"})
+    assert (tmp_path / "current").resolve().name == OLD
+    assert events.count("start") == 2
+    assert events.count("stop") == 2

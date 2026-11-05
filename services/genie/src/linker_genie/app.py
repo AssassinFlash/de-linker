@@ -62,6 +62,7 @@ from linker_genie.inquiry_assessment import AssessmentInput, assess
 from linker_genie.knowledge import SEARCH
 from linker_genie.language import turn_language
 from linker_genie.log import TurnLog
+from linker_genie.preparation import RUNTIME_SERVING_REVISION
 from linker_genie.prices import LOOKUP_DEADLINE, Lookup, commerce_lookup, fill
 from linker_genie.publication import (
     PublicationChanged,
@@ -228,8 +229,8 @@ def provider_debit(body: ProviderDebit) -> dict[str, int | None]:
 
 @app.get("/health")
 def health() -> dict[str, str]:
-    """Report that the service is up."""
-    return {"status": "ok"}
+    """Report liveness and the immutable release the process actually loaded."""
+    return {"status": "ok", "serving_revision": RUNTIME_SERVING_REVISION}
 
 
 @app.exception_handler(WorkError)
