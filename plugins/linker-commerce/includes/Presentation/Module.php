@@ -58,6 +58,7 @@ final class Module {
 		$this->library->register();
 		$this->account->register();
 		$this->blog->register();
+		( new RelatedProducts() )->register();
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_product_scripts' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_account_scripts' ) );
 	}

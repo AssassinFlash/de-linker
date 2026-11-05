@@ -17,6 +17,7 @@ use Linker\Commerce\Presentation\LibraryPage;
 use Linker\Commerce\Presentation\JournalTitles;
 use Linker\Commerce\Presentation\LoginGate;
 use Linker\Commerce\Presentation\Module;
+use Linker\Commerce\Presentation\RelatedProducts;
 use Linker\Commerce\Presentation\ProductShortcodes;
 use Linker\Commerce\Presentation\Shortcodes;
 use Linker\Commerce\Presentation\WindPress;
@@ -91,6 +92,7 @@ final class ModuleTest extends TestCase {
 			10,
 			3,
 		);
+		WP_Mock::expectFilterAdded( 'woocommerce_related_products_args', array( new AnyInstance( RelatedProducts::class ), 'order' ) );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $compare, 'canonical_address' ), 5 );
 		WP_Mock::expectActionAdded( 'wp_head', array( $library, 'print_schema' ) );
 		$families     = new AnyInstance( FamilyNavigation::class );
