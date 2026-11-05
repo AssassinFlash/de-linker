@@ -132,3 +132,24 @@ weather → PV → scenario → report sequence is the deepest acceptance tail.
 Production note: a Hostinger load-average spike (~788 → ~61 within minutes)
 was observed during this session and decayed without action; current CPU is
 mostly idle. No persistent resource incident.
+
+## Addendum 7 (same day): weather acquisition works on production
+
+The PVGIS typical-year weather chain is proven on production, through the
+native planner RPC (bootstrap → confirmed guest session → create → revise with
+`weather_acquisition` → `runs/weather` → poll):
+
+- A 2014–2023 (10-year) Berlin (52.519, 13.388) request **succeeded** with the
+  full dependency/evidence chain (prepared asset, capture receipts, pinned
+  runtime).
+- Two real provider constraints were found and honored: TMY years are
+  2005–2023, and the period must be at least 10 years (the provider rejects
+  both violations; the engine surfaces `weather_provider_rejected`).
+- Earlier UI attempts stalled at the request gate because the form was
+  incomplete (the "Synthetic calculation year" field is a distinct label);
+  the RPC path proves the computation itself works.
+
+The remaining acceptance tail is weather-result selection → PV-model
+preparation → PV generation → energy scenario → planning report. Nineteen
+exploration test projects were removed through the engine's own
+Workspace.delete (0 left, 46 total).
