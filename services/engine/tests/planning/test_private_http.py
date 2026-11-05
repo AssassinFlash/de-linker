@@ -1920,3 +1920,145 @@ def test_project_list_read_and_runs_accept_omitted_optional_parameters(
     ):
         refused = rig.client.post(path, json=bad, headers=headers())
         assert refused.status_code == 422
+
+
+def test_project_delete_is_idempotent_over_the_private_protocol(rig: Rig) -> None:
+    project = rig.create("delete-create")
+    command = {"project_id": project, "expected_revision": 1, "key": "delete-http"}
+    deleted = rig.post("/projects/delete", command)
+    assert deleted == {"project_id": project, "revision": 1, "deleted": True}
+    assert rig.post("/projects/delete", command) == deleted
+    replayed = rig.replay("/projects/delete", command)
+    assert replayed["status"] == "replayed"
+    assert replayed["command_scope"] == f"delete:{project}"
+    assert replayed["result"] == deleted
+    read = rig.client.post(
+        "/projects/read",
+        json={"schema_version": 1, "project_id": project},
+        headers=headers(),
+    )
+    assert read.status_code == 404
+    # A first command for a project that no longer exists is a plain 404,
+    # whether it never existed or belongs to someone else.
+    missing = "d" * 32
+    for actor in (USER, FOREIGN):
+        response = rig.client.post(
+            "/projects/delete",
+            json={
+                "schema_version": 1,
+                "project_id": missing,
+                "expected_revision": 1,
+                "key": "k",
+            },
+            headers=headers(actor),
+        )
+        assert response.status_code == 404
+    assert (
+        rig.client.post(
+            "/projects/delete",
+            json={
+                "schema_version": 1,
+                "project_id": project,
+                "expected_revision": 1,
+                "key": "k",
+            },
+            headers=headers(TEAM),
+        ).status_code
+        == 404
+    )
+    assert (
+        rig.client.post(
+            "/projects/delete",
+            json={
+                "schema_version": 1,
+                "project_id": project,
+                "expected_revision": 0,
+                "key": "k",
+            },
+            headers=headers(),
+        ).status_code
+        == 422
+    )
+
+
+def test_project_delete_keeps_the_revision_guard_and_handoff_refusal(
+    rig: Rig,
+) -> None:
+    project = rig.create("delete-guarded")
+    revised = rig.post(
+        "/projects/revise",
+        {"project_id": project, "expected_revision": 1, "inputs": {}, "key": "revise"},
+    )
+    assert revised["revision"] == 2
+    stale = rig.client.post(
+        "/projects/delete",
+        json={
+            "schema_version": 1,
+            "project_id": project,
+            "expected_revision": 1,
+            "key": "stale",
+        },
+        headers=headers(),
+    )
+    assert stale.status_code == 409
+    assert stale.json()["error"]["code"] == "conflict"
+    # A handoff protects its inquiry from deletion, exactly like the domain layer.
+    second = rig.create("delete-with-handoff")
+    run_id = "e" * 32
+    with rig.workspace.database.transaction() as connection:
+        connection.execute(
+            "INSERT INTO runs (id, project_id, revision, manifest_sha256, created_at) "
+            "VALUES (?, ?, 1, ?, 100.0)",
+            (run_id, second, "f" * 64),
+        )
+        connection.execute(
+            "INSERT INTO handoffs "
+            "(id, project_id, run_id, revision, candidate_id, snapshot_sha256, created_at) "
+            "VALUES (?, ?, ?, 1, 'candidate', ?, 100.0)",
+            ("a" * 32, second, run_id, "b" * 64),
+        )
+    refused = rig.client.post(
+        "/projects/delete",
+        json={
+            "schema_version": 1,
+            "project_id": second,
+            "expected_revision": 1,
+            "key": "handoff",
+        },
+        headers=headers(),
+    )
+    assert refused.status_code == 409
+    assert refused.json()["error"]["code"] == "conflict"
+    read = rig.client.post(
+        "/projects/read",
+        json={"schema_version": 1, "project_id": second},
+        headers=headers(),
+    )
+    assert read.status_code == 200
+    assert read.json()["revision"] == 1
+
+
+def test_delete_replay_survives_claim_after_the_project_is_gone(
+    rig: Rig,
+) -> None:
+    guest = Actor("guest", "woocommerce:t_delete_replay_fixture")
+    from linker_engine.planning.guest_claims import GuestClaims
+
+    project = rig.create("delete-claim-create", guest)
+    command = {"project_id": project, "expected_revision": 1, "key": "guest-delete"}
+    deleted = rig.post("/projects/delete", command, guest)
+    assert deleted["deleted"] is True
+    GuestClaims(rig.workspace).claim(guest, USER, key="login")
+    # The claiming account replays a receipt for a project that no longer
+    # exists, without any project row to lean on.
+    replayed = rig.replay("/projects/delete", command)
+    assert replayed["status"] == "replayed"
+    assert replayed["result"] == deleted
+    assert rig.post("/projects/delete", command) == deleted
+    # A different account sees no receipt of its own.
+    response = rig.client.post(
+        "/operations/replay/projects/delete",
+        json={"schema_version": 1, **command},
+        headers=headers(FOREIGN),
+    )
+    assert response.status_code == 404

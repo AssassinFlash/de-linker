@@ -5,7 +5,7 @@ import { ApiError } from "../data/protocol.ts";
 import type { DraftStore } from "../data/DraftStore.ts";
 import { creationIntents, intentId } from "../data/recoveryIntents.ts";
 import type { ScopedCreation } from "../data/recoveryIntents.ts";
-import { readProject, wire } from "../data/readProtocol.ts";
+import { readObject, readProject, wire } from "../data/readProtocol.ts";
 import { emptyBrief } from "../domain/brief.ts";
 import { projectInputContract } from "../domain/draft.ts";
 import { __ } from "../i18n.ts";
@@ -49,6 +49,7 @@ export function NewProject({
 	const [busy, setBusy] = useState(false);
 	const [failed, setFailed] = useState(false);
 	const [inputContractRequired, setInputContractRequired] = useState(false);
+	const [projectGone, setProjectGone] = useState(false);
 	const [recoveryFailed, setRecoveryFailed] = useState(false);
 	const [productBlocked, setProductBlocked] = useState<
 		"load" | "preparing" | "place" | null
@@ -128,6 +129,7 @@ export function NewProject({
 
 		setBusy(true);
 		setFailed(false);
+		setProjectGone(false);
 		setInputContractRequired(false);
 		try {
 			const requestedProduct = entryHints?.productId ?? null;
@@ -236,6 +238,37 @@ export function NewProject({
 					error.code === "session_changed")
 			)
 				recheck();
+			// A creation receipt names its project. Once that project is deleted
+			// the receipt can never replay, so the stored request is dead. Keep
+			// the draft's own command and only replace its key, so the next
+			// attempt creates the same project content instead of an empty one.
+			if (
+				error instanceof ApiError &&
+				error.status === 404 &&
+				error.code === "not_found" &&
+				intent.current !== null
+			) {
+				const dead = intent.current;
+				const draft = readObject(JSON.parse(dead));
+				const rekeyed = wire(
+					{ ...draft, key: crypto.randomUUID() },
+					session.runtime.limits.max_json_depth,
+					session.runtime.limits.max_body_bytes,
+				);
+				await store
+					.replaceCreation(originScope, dead, rekeyed, destination.current)
+					.catch(() => {
+						if (lifetime.current === instance) setRecoveryFailed(true);
+					});
+				if (lifetime.current !== instance) return;
+				intent.current = rekeyed;
+				setRequests((records) =>
+					records.map((record) =>
+						record.body === dead ? { ...record, body: rekeyed } : record,
+					),
+				);
+				setProjectGone(true);
+			}
 		} finally {
 			if (lifetime.current === instance) setBusy(false);
 		}
@@ -476,15 +509,20 @@ export function NewProject({
 			)}
 			{failed && (
 				<Notice error>
-					{inputContractRequired
+					{projectGone
 						? __(
-								"This workspace version cannot safely save all data in this project. Keep your local draft and reload the workspace before saving again.",
+								"The project this request belonged to was deleted. Your draft is still here; creating it now starts a new project.",
 								"linker-tools",
 							)
-						: __(
-								"Project creation was not confirmed. Retrying uses the same request.",
-								"linker-tools",
-							)}
+						: inputContractRequired
+							? __(
+									"This workspace version cannot safely save all data in this project. Keep your local draft and reload the workspace before saving again.",
+									"linker-tools",
+								)
+							: __(
+									"Project creation was not confirmed. Retrying uses the same request.",
+									"linker-tools",
+								)}
 				</Notice>
 			)}
 			{recoveryFailed && (

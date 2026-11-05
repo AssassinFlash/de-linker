@@ -168,6 +168,103 @@ class Workspace:
             ).fetchall()
             return [self._project(connection, actor, row["id"]) for row in rows]
 
+    def delete(
+        self, actor: Actor, project_id: str, expected_revision: int, *, key: str
+    ) -> Object:
+        positive_integer(expected_revision, "expected revision")
+        command = commands.command_hash({"expected_revision": expected_revision}, key)
+        scope = f"delete:{project_id}"
+        with self.database.transaction() as connection:
+            # A retired guest must not read its old receipts. A claimed account
+            # is not retired, so it still replays the guest's deletion below
+            # without any project row to lean on.
+            active_actor(connection, actor)
+            receipt = commands.replay(
+                connection, self.blobs, actor, scope, key, command
+            )
+            if receipt is not None:
+                return {
+                    "project_id": project_id,
+                    "revision": commands.receipt_number(receipt, "revision"),
+                    "deleted": True,
+                }
+            project = project_row(connection, actor, project_id, write=True)
+            if project["revision"] != expected_revision:
+                raise Conflict("project inputs have changed")
+            if (
+                connection.execute(
+                    "SELECT 1 FROM handoffs WHERE project_id=?", (project_id,)
+                ).fetchone()
+                is not None
+            ):
+                raise Conflict("project has a handoff")
+            now = self.clock()
+            connection.execute(
+                "UPDATE jobs SET state='cancelled', updated_at=? "
+                "WHERE run_id IN (SELECT id FROM runs WHERE project_id=?) "
+                "AND state IN ('queued', 'running', 'retry_wait')",
+                (now, project_id),
+            )
+            connection.execute(
+                "DELETE FROM evaluation_routes WHERE job_id IN "
+                "(SELECT id FROM jobs WHERE run_id IN "
+                "(SELECT id FROM runs WHERE project_id=?))",
+                (project_id,),
+            )
+            connection.execute(
+                "DELETE FROM artifacts WHERE run_id IN "
+                "(SELECT id FROM runs WHERE project_id=?)",
+                (project_id,),
+            )
+            connection.execute(
+                "DELETE FROM weather_downloads WHERE run_id IN "
+                "(SELECT id FROM runs WHERE project_id=?)",
+                (project_id,),
+            )
+            if (
+                connection.execute(
+                    "SELECT 1 FROM sqlite_master WHERE type='table' "
+                    "AND name='weather_acquisitions'"
+                ).fetchone()
+                is not None
+            ):
+                connection.execute(
+                    "DELETE FROM weather_acquisitions WHERE run_id IN "
+                    "(SELECT id FROM runs WHERE project_id=?)",
+                    (project_id,),
+                )
+            connection.execute(
+                "DELETE FROM jobs WHERE run_id IN "
+                "(SELECT id FROM runs WHERE project_id=?)",
+                (project_id,),
+            )
+            connection.execute("DELETE FROM runs WHERE project_id=?", (project_id,))
+            connection.execute(
+                "DELETE FROM project_assets WHERE project_id=?", (project_id,)
+            )
+            connection.execute(
+                "DELETE FROM ownership_transfers WHERE project_id=?", (project_id,)
+            )
+            connection.execute(
+                "DELETE FROM revisions WHERE project_id=?", (project_id,)
+            )
+            connection.execute("DELETE FROM projects WHERE id=?", (project_id,))
+            commands.remember(
+                connection,
+                self.blobs,
+                actor,
+                scope,
+                key,
+                command,
+                {"project_id": project_id, "revision": expected_revision},
+                now,
+            )
+            return {
+                "project_id": project_id,
+                "revision": expected_revision,
+                "deleted": True,
+            }
+
     def revise(
         self,
         actor: Actor,

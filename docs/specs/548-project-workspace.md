@@ -56,6 +56,18 @@ subsequent increments of that same active delivery.
     Concurrent additions must not invalidate it. Damaged backups are rejected
     before publishing a restored workspace. Existing stores/backups are never
     overwritten. Backup/files/directories are private to the service account.
+12. An owner may delete one project with `expected_revision` and an idempotency
+    key. A stale revision and a project with a handoff (the inquiry the team
+    already received) both refuse with the same conflict and remove nothing.
+    Deletion cancels queued, running and retrying jobs and removes the project's
+    runs, jobs, artifacts, downloads, assets, ownership transfers and revisions,
+    so an in-flight worker loses its lease with the row and cannot publish.
+    Content-addressed bytes stay in the shared store because other projects or
+    receipts may reference them. The receipt is committed with the deletion, so
+    a retry returns the same reference, a claimed account replays a guest's
+    deletion even though no project row remains, and the retired guest itself
+    cannot. A first command against a missing or foreign ID is `not_found`;
+    team subjects, who may read a customer's project, can never mutate it.
 
 ## Verification boundary
 

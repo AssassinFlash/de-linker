@@ -6,6 +6,7 @@ lp-breadcrumb
 lp-brief
 lp-brief-fields
 lp-button
+lp-button-danger
 lp-button-secondary
 lp-canvas-caption
 lp-canvas-tools
@@ -14,6 +15,7 @@ lp-checkbox
 lp-comparison
 lp-comparison-variants
 lp-data-table
+lp-delete-confirm
 lp-design-canvas
 lp-design-empty
 lp-design-panel
@@ -110,6 +112,9 @@ lp-project
 lp-project-aside
 lp-project-bar
 lp-project-brief-start
+lp-project-delete
+lp-project-entry
+lp-project-entry-row
 lp-project-index
 lp-project-layout
 lp-project-nav-title

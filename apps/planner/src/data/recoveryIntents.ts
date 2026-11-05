@@ -62,3 +62,23 @@ export function intentId(intent: {
 }): string {
 	return intent.scope + ":" + intent.key;
 }
+
+/** After a project is deleted, its stored creation-recovery hints are stale
+ * retries whose replay names a project that no longer exists. Intents do not
+ * record the resulting project id, so the stored command's title identifies
+ * them. A title another listed project still uses is ambiguous: that intent
+ * may be a live, unsent creation of its own, so it is left untouched and the
+ * workspace keeps offering it. Clearing a hint never removes server data. */
+export async function clearCreationsForTitle(
+	store: DraftStore,
+	scopes: readonly string[],
+	title: string,
+	remainingTitles: readonly string[],
+): Promise<void> {
+	if (remainingTitles.includes(title)) return;
+	for (const intent of await creationIntents(store, scopes)) {
+		if (intent.title === title) {
+			await store.clearCreation(intent.scope, intent.body);
+		}
+	}
+}

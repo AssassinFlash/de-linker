@@ -26,6 +26,7 @@ from .http_documents import (
     GeometryImportCommand,
     HandoffPrepare,
     ProjectCreate,
+    ProjectDelete,
     ProjectRevise,
     ReportEvaluate,
 )
@@ -113,6 +114,35 @@ class HttpReplay:
                         revision=commands.receipt_number(receipt, "revision"),
                     )
                 )
+            )
+        elif path == "projects/delete":
+            delete = ProjectDelete.model_validate(value)
+            command_scope = f"delete:{delete.project_id}"
+            # Unlike revise, a delete retry must read its receipt without
+            # requiring the project: the first attempt removed it. Existence
+            # is only checked for the first command, mirroring Workspace.delete.
+            command: Object = {"expected_revision": delete.expected_revision}
+            command_sha256 = commands.command_hash(command, delete.key)
+            with self.workspace.database.read() as connection:
+                active_actor(connection, actor)
+                receipt = commands.replay(
+                    connection,
+                    self.workspace.blobs,
+                    actor,
+                    command_scope,
+                    delete.key,
+                    command_sha256,
+                )
+                if receipt is None:
+                    project_row(connection, actor, delete.project_id, write=True)
+            result = (
+                None
+                if receipt is None
+                else {
+                    "project_id": delete.project_id,
+                    "revision": commands.receipt_number(receipt, "revision"),
+                    "deleted": True,
+                }
             )
         elif path == "handoffs/prepare":
             handoff = HandoffPrepare.model_validate(value)

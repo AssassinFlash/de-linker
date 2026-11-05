@@ -12,6 +12,7 @@ const paths = {
 	location: "M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0ZM12 7v6M9 10h6",
 	layers: "m3 8 9-5 9 5-9 5-9-5Zm0 5 9 5 9-5M3 18l9 5 9-5",
 	refresh: "M20 8a9 9 0 1 0 1 8M20 3v6h-6",
+	trash: "M4 7h16M10 4h4M6 7l1 13h10l1-13M10 11v6M14 11v6",
 } as const;
 export function Icon({
 	name,

@@ -62,6 +62,16 @@
   [data-linker-planner] .lp-project-row-icon { display: grid; place-content: center; width: 44px; height: 44px; border: 1px solid var(--lp-line); color: var(--proto-teal-800); }
   [data-linker-planner] .lp-project-row strong { display: block; font-size: 16px; font-weight: 600; overflow-wrap: anywhere; }
   [data-linker-planner] .lp-project-row small { display: block; margin-top: 5px; color: var(--proto-neutral-500); font-size: 12px; }
+  [data-linker-planner] .lp-project-entry-row { display: grid; grid-template-columns: minmax(0, 1fr) 44px; align-items: center; border-bottom: 1px solid var(--lp-line); }
+  [data-linker-planner] .lp-project-entry-row .lp-project-row { border-bottom: 0; }
+  [data-linker-planner] .lp-project-entry > .lp-delete-confirm { border-bottom: 1px solid var(--lp-line); }
+  [data-linker-planner] .lp-project-delete { color: var(--proto-neutral-500); }
+  [data-linker-planner] .lp-project-delete:hover:enabled { background: var(--proto-neutral-50); color: var(--proto-sem-danger); }
+  [data-linker-planner] .lp-delete-confirm { padding: 4px 0 22px; }
+  [data-linker-planner] .lp-delete-confirm p { margin: 0 0 10px; font-size: 14px; color: var(--proto-neutral-700); }
+  [data-linker-planner] .lp-delete-confirm p:first-child { color: var(--proto-ink); font-weight: 600; }
+  [data-linker-planner] .lp-button-danger { background: var(--proto-sem-danger); border-color: var(--proto-sem-danger); color: var(--proto-neutral-0); }
+  [data-linker-planner] .lp-button-danger:hover:enabled { background: var(--proto-neutral-800); border-color: var(--proto-neutral-800); color: var(--proto-neutral-0); }
   [data-linker-planner] .lp-workspace-footnote { border-top: 1px solid var(--lp-line); padding-top: 24px; margin-top: 40px; display: flex; align-items: flex-start; gap: 12px; color: var(--proto-neutral-500); font-size: 12px; }
   [data-linker-planner] .lp-workspace-footnote svg { flex-shrink: 0; }
   [data-linker-planner] .lp-tool-identity { padding: 24px clamp(20px, 3vw, 40px); border-top: 1px solid var(--lp-line); background: rgb(255 255 255 / .6); color: var(--proto-neutral-600); font-size: 12px; }
@@ -278,6 +288,7 @@
     [data-linker-planner] .lp-workspace-header { gap: 24px; padding-bottom: 28px; }
     [data-linker-planner] .lp-new-project { width: 100%; }
     [data-linker-planner] .lp-project-row { gap: 12px; }
+    [data-linker-planner] .lp-project-entry-row { grid-template-columns: minmax(0, 1fr) 40px; }
     [data-linker-planner] .lp-design-toolbar { align-items: stretch; }
     [data-linker-planner] .lp-design-toolbar .lp-inline-actions { width: 100%; }
     [data-linker-planner] .lp-design-toolbar .lp-button { font-size: 12px; }
