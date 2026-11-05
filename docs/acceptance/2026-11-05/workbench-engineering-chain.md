@@ -71,3 +71,15 @@ driven through the same native planner RPC the UI uses (the SPA's custom
 controls make repeated browser driving slow; the RPC is the production
 interface itself). All 21 exploration test projects were removed through the
 engine's own Workspace.delete (0 left, 46 total).
+
+## Addendum 3 (same day): roof/PV/report chain boundary
+
+PV generation (both the roof-shading model and the PVGIS annual AC reference)
+requires an editable roof layout: a roof face needs its drawn outline geometry
+before the property panel applies, and the PV forms need modules + a
+location/north reference from that layout. So the roof-canvas drawing step is a
+real prerequisite of the energy/report chain, not optional for it. The
+workbench's project/site/equipment-check/interval-import chain is proven on
+production (above); the roof-canvas → PV → scenario → report sequence is the
+remaining deep acceptance work. Ten exploration test projects were removed
+through the engine's own Workspace.delete (0 left, 46 total).
