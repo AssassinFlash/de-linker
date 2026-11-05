@@ -101,3 +101,17 @@ So the roof and module inputs are available through the native import/catalog
 paths; the module-placement → PV → scenario → report tail remains the deepest
 acceptance work. Nineteen exploration test projects were removed through the
 engine's own Workspace.delete (0 left, 46 total).
+
+## Addendum 5 (same day): array-placement automation boundary
+
+The array-creation form (name, module spec, anchor U/V, rows, columns,
+rotation, tilt, gaps, height) validates every field as required at apply time;
+driving it field-by-field proved fragile in automation (custom number fields
+and label associations), and the Columns field repeatedly failed to retain a
+value through the native/label paths tried. This is a test-tooling limitation
+to solve with a proper component-level driver or a real-browser pass — not
+itself a proven product defect. The workbench is verified on production through
+project/site/equipment-check/interval-import/roof-import/module-catalog; the
+array-placement → PV → scenario → report tail is the remaining acceptance work.
+Fifteen exploration test projects were removed through the engine's own
+Workspace.delete (0 left, 46 total).
