@@ -49,6 +49,7 @@ import type { JsonObject, Session } from "../../data/protocol.ts";
 import { ApiError } from "../../data/protocol.ts";
 import {
 	initialEnergyView,
+	PLANNER_NAVIGATION,
 	replacePlannerLocation,
 } from "../../data/plannerLocation.ts";
 import type { EnergyView } from "../../data/plannerLocation.ts";
@@ -246,6 +247,20 @@ export function EnergyWorkspace({
 		[error, setError] = useState<unknown>(null),
 		[rangeBusy, setRangeBusy] = useState(false);
 	const view = equipmentFocus ? "equipment" : selectedView;
+	useEffect(() => {
+		// A link, a reload or the back button can change the requested view after
+		// this workspace mounted. Without this the form keeps whatever view it
+		// started with, so a direct `energy_view=pv` link silently lands on the
+		// scenario form and the module catalogue behind PV preparation never loads.
+		const sync = () =>
+			setView(initialEnergyView(new URL(window.location.href)));
+		window.addEventListener(PLANNER_NAVIGATION, sync);
+		window.addEventListener("popstate", sync);
+		return () => {
+			window.removeEventListener(PLANNER_NAVIGATION, sync);
+			window.removeEventListener("popstate", sync);
+		};
+	}, []);
 	useEffect(() => {
 		// Undo/redo and profile edits also change the effective scenario, without
 		// passing through this form's onChange handler.

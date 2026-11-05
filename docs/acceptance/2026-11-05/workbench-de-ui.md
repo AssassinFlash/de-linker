@@ -41,6 +41,33 @@ the draft already equalled the saved revision.**
   (`d28e6cbe…`, input revision 3), and the run list rendered in German as
   `Eingabevorsion 3 · 05.11.26, 23:58`.
 
+## Root cause found for the "PV not prepared" loop
+
+The loop was not a translation problem and not a stale draft. `EnergyWorkspace`
+read the requested view **once**, when it mounted (`useState(() =>
+initialEnergyView(...))`), and never listened for later URL changes. A link or
+reload carrying `energy_view=pv` therefore kept whichever view the workspace
+started on — in the DE session it started on `scenario`, so the PV tab was never
+active, `PvSetup` passed `active=false` to `useModuleTemplates`, and
+`products/current` was never requested. `PvSetup.prepared` requires
+`catalog.data`, so preparation could never satisfy the panel and it fell back to
+`PV-Modelleinstellungen noch nicht vorbereitet` on every attempt.
+
+Evidence (planner journal, same session):
+
+- direct load of `…&energy_view=pv#lp-calculations`: **no** `products/current`
+  request at all, panel shows `noch nicht vorbereitet`;
+- click the `PV-Erzeugung` tab (which sets the view through `chooseView`):
+  `POST /planning/products/current 200`, panel shows `Wetterbasierte
+  PV-Referenz`;
+- open `#lp-design` (design workspace): `products/current 200`, because
+  `ModuleForm` calls the same hook without the `active` gate.
+
+Fix (`apps/planner/src/components/energy/EnergyWorkspace.tsx`): the workspace now
+syncs its view from the URL on `PLANNER_NAVIGATION` and `popstate`, so a link,
+reload or back/forward lands on the requested tab and the catalogue loads.
+`tsc --noEmit`, Prettier and the full planner suite (297 tests) pass.
+
 ## What did not complete
 
 Generating the German report stopped on a product rule, not on translation:
