@@ -16,7 +16,7 @@ import { Notice } from "../Notice.tsx";
 import { PvForm } from "./PvForm.tsx";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import { useModuleTemplates } from "../../data/useModuleTemplates.ts";
-import { matchesModule } from "../../data/moduleTemplates.ts";
+import { resolveModuleParameters } from "../../domain/productModules.ts";
 
 export function PvSetup({
 	draft,
@@ -68,22 +68,15 @@ export function PvSetup({
 	try {
 		prepared =
 			!!parsed &&
-			!!catalog.data &&
-			!catalog.error &&
-			!catalog.isFetching &&
 			parsed.setup.pv.modules.every((module) => {
 				const spec = parsed.layout.geometry.module_specs.find(
 					(item) => item.id === module.module_spec_id,
 				);
-				const template =
-					spec && catalog.data?.find((item) => matchesModule(spec, item));
-				return (
-					!!template &&
-					sameJson(module, {
-						...template.parameters,
-						module_spec_id: module.module_spec_id,
-					})
+				const expected = resolveModuleParameters(
+					spec,
+					catalog.error || catalog.isFetching ? undefined : catalog.data,
 				);
+				return !!expected && sameJson(module, expected);
 			}) &&
 			sameJson(
 				compilePv(parsed.setup.pv, inputs.geometry),

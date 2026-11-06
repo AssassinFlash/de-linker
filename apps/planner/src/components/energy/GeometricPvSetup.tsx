@@ -6,7 +6,7 @@ import { readObject } from "../../data/readProtocol.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import { useRetainedWeather } from "../../data/useRetainedWeather.ts";
 import { useModuleTemplates } from "../../data/useModuleTemplates.ts";
-import { matchesModule } from "../../domain/productModules.ts";
+import { resolveModuleParameters } from "../../domain/productModules.ts";
 import { referenceRoof } from "../../domain/pvgisReference.ts";
 import { panelPoses } from "../../domain/panelPoses.ts";
 import { readPvStringPlan } from "../../domain/pvStrings.ts";
@@ -164,23 +164,15 @@ export function GeometricPvSetup({
 	const currentModules =
 		!!roof &&
 		!!parsed &&
-		!!catalog.data &&
-		!catalog.error &&
-		!catalog.isFetching &&
 		parsed.parameters.modules.every((module) => {
 			const specification = roof.geometry.module_specs.find(
-					(item) => item.id === module.module_spec_id,
-				),
-				template =
-					specification &&
-					catalog.data.find((item) => matchesModule(specification, item));
-			return (
-				!!template &&
-				sameJson(module, {
-					...template.parameters,
-					module_spec_id: module.module_spec_id,
-				})
+				(item) => item.id === module.module_spec_id,
 			);
+			const expected = resolveModuleParameters(
+				specification,
+				catalog.error || catalog.isFetching ? undefined : catalog.data,
+			);
+			return !!expected && sameJson(module, expected);
 		});
 	const binding = owned ? weather.binding.data : undefined,
 		requestMatches =

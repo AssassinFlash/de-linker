@@ -115,9 +115,7 @@ def assess_pv_strings(
     total_wp = Decimal(0)
     tracker_strings: dict[int, list[tuple[int, tuple[tuple[float, ...], ...]]]] = {}
     n_mppt, n_refs = scalar(inv, "n_mppt", "count")
-    voc, voc_refs = scalar(mf, "voc_v", "voltage")
-    vmpp, vmpp_refs = scalar(mf, "vmpp_v", "voltage")
-    beta, beta_refs = scalar(mf, "beta_voc_pct_per_c", "temperature_coefficient")
+    has_declared_reference = False
     max_v, max_refs = scalar(inv, "max_pv_input_v", "voltage")
     mpp_window = fact(inv, "mppt_voltage_range_v", "voltage")
     standby = fact(inv, "pv_standby_input_voltage_v", "voltage")
@@ -132,7 +130,18 @@ def assess_pv_strings(
                 "each PV string must use a single maintained module specification"
             )
         spec = specs[next(iter(used_specs))]
-        ProductSources._check_module(spec, proof)
+        if spec.source.woo is not None:
+            ProductSources._check_module(spec, proof)
+            string_mf = mf
+        else:
+            ProductSources.check_declared_reference(spec)
+            has_declared_reference = True
+            string_mf = {}
+        voc, voc_refs = scalar(string_mf, "voc_v", "voltage")
+        vmpp, vmpp_refs = scalar(string_mf, "vmpp_v", "voltage")
+        beta, beta_refs = scalar(
+            string_mf, "beta_voc_pct_per_c", "temperature_coefficient"
+        )
         count = len(module_poses)
         total_wp += Decimal(str(spec.stc_power_w)) * count
         add(f"pv_tracker:{item.id}", item.mppt, n_mppt, n_refs)
@@ -163,10 +172,10 @@ def assess_pv_strings(
             unit="V",
             reason="linear_cold_voc_at_declared_ambient",
         )
-        module_limit, module_refs = scalar(mf, "max_system_voltage_v", "voltage")
+        module_limit, module_refs = scalar(string_mf, "max_system_voltage_v", "voltage")
         # This exact maintained datum includes its own DC/IEC scope. Keep
         # the original cited text; no generic digit stripping is permitted.
-        raw_limit = mf.get("max_system_voltage_v")
+        raw_limit = string_mf.get("max_system_voltage_v")
         if (
             module_limit is None
             and raw_limit
@@ -232,6 +241,7 @@ def assess_pv_strings(
         unit="kWp",
         reason="assigned_modules_must_match_selected_array_rating",
     )
+    tracker_mf = {} if has_declared_reference else mf
     for tracker, strings in tracker_strings.items():
         maximum_strings, refs = scalar(inv, "strings_per_mppt", "count", tracker)
         add(f"pv_parallel_count:{tracker}", len(strings), maximum_strings, refs)
@@ -239,7 +249,7 @@ def assess_pv_strings(
             ("pv_stc_current", "impp_a", "mppt_max_current_a"),
             ("pv_stc_isc", "isc_a", "mppt_max_isc_a"),
         ):
-            current, current_refs = scalar(mf, current_key, "current")
+            current, current_refs = scalar(tracker_mf, current_key, "current")
             maximum, refs = scalar(inv, limit_key, "current", tracker)
             add(
                 f"{key}:{tracker}",
@@ -263,7 +273,7 @@ def assess_pv_strings(
         operating = assess_operating_conditions(
             plan.operating_conditions,
             rows,
-            mf,
+            tracker_mf,
             inv,
             {
                 tracker: len(set(strings)) == 1 and len(strings[0][1]) == 1

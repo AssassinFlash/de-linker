@@ -8,7 +8,10 @@ import { PvModuleParameters } from "./PvModuleParameters.tsx";
 import { PvArrayParameters } from "./PvArrayParameters.tsx";
 import { PvConverterParameters } from "./PvConverterParameters.tsx";
 import type { ModuleTemplate } from "../../data/moduleTemplates.ts";
-import { matchesModule } from "../../data/moduleTemplates.ts";
+import {
+	isCurrentRoofModule,
+	isDeclaredReferenceModule,
+} from "../../domain/productModules.ts";
 
 export function PvForm({
 	value,
@@ -52,18 +55,20 @@ export function PvForm({
 			group.array_ids.map((id) => [id, group.id] as const),
 		),
 	);
-	const moduleSelectionCurrent = [
+	const activeModuleIds = [
 		...new Set(arrays.map((array) => array.module_spec_id)),
-	].every((id) => {
+	];
+	const allDeclaredReference = activeModuleIds.every((id) => {
 		const specification = geometry.module_specs.find(
 			(module) => module.id === id,
 		);
-		return (
-			!!specification &&
-			!!moduleTemplates?.some((template) =>
-				matchesModule(specification, template),
-			)
+		return !!specification && isDeclaredReferenceModule(specification);
+	});
+	const moduleSelectionCurrent = activeModuleIds.every((id) => {
+		const specification = geometry.module_specs.find(
+			(module) => module.id === id,
 		);
+		return isCurrentRoofModule(specification, moduleTemplates);
 	});
 	return (
 		<fieldset className="lp-scenario-fields" disabled={disabled}>
@@ -90,7 +95,9 @@ export function PvForm({
 					type="button"
 					className="lp-button lp-button-secondary"
 					disabled={
-						!valid || moduleTemplates === undefined || !moduleSelectionCurrent
+						!valid ||
+						(!allDeclaredReference && moduleTemplates === undefined) ||
+						!moduleSelectionCurrent
 					}
 					onClick={() => onChange(alignPv(value, geometry, moduleTemplates))}
 				>

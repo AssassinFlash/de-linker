@@ -147,12 +147,9 @@ export function tierFor(stcPowerW: number): PlanningModuleTier {
  * Projection into the stored geometry shape. `source.kind` must stay
  * `user_declared` (the schema and the engine allow nothing else for a module
  * without maintained documents), so the reference marker travels in the note
- * and `woo` stays absent: this is never a product reference.
- *
- * A tier module is a roof-layout input only. The energy and PVGIS steps read
- * Woo-maintained modules (services/engine/src/linker_engine/planning/
- * product_sources.py rejects any other roof module), so no tier is ever
- * offered as a calculation basis.
+ * and `woo` stays absent: this is never a product reference. Both the roof
+ * layout and the energy/PVGIS reference steps read `gamma_pdc_per_c` from the
+ * declared reference module itself.
  */
 export function moduleSpecFromTier(
 	tier: PlanningModuleTier,

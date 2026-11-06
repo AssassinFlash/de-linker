@@ -117,3 +117,43 @@ test("the projection keeps the declared identity and dimensions", () => {
 	assert.equal(spec.width_m, 1.134);
 	assert.equal(spec.model, DEFAULT_MODULE_TIER.model);
 });
+
+test("declared reference tiers align with PV generation and PVGIS roof checks without Woo templates", async () => {
+	const {
+		isCurrentRoofModule,
+		isDeclaredReferenceModule,
+		resolveModuleParameters,
+	} = await import("./productModules.ts");
+	const { alignPv, emptyPv } = await import("./solarSetup.ts");
+	const { referenceRoof } = await import("./pvgisReference.ts");
+	const fixture = (await import("../../tests/fixtures/index.ts")).default;
+	const base = structuredClone(fixture.pv_project.inputs.geometry);
+	const specId = base.module_specs[0]!.id;
+	const spec = moduleSpecFromTier(DEFAULT_MODULE_TIER, specId);
+	assert.equal(isDeclaredReferenceModule(spec), true);
+	assert.equal(isCurrentRoofModule(spec, undefined), true);
+	assert.deepEqual(resolveModuleParameters(spec, undefined), {
+		module_spec_id: specId,
+		gamma_pdc_per_c: -0.0034,
+		source: {
+			kind: "user_declared",
+			note: spec.source.note,
+			document_sha256: null,
+			url: null,
+			page: null,
+		},
+	});
+	const geometry = {
+		...base,
+		module_specs: [spec],
+	};
+	const aligned = alignPv(emptyPv(), geometry, undefined);
+	assert.equal(aligned.modules.length, 1);
+	assert.equal(aligned.modules[0]!.gamma_pdc_per_c, -0.0034);
+	assert.equal(
+		referenceRoof({
+			geometry: geometry as unknown as import("../data/protocol.ts").JsonObject,
+		}).arrays.length,
+		base.arrays.length,
+	);
+});

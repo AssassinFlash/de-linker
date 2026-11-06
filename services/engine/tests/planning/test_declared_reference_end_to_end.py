@@ -244,3 +244,58 @@ def test_the_woo_roof_still_prepares_and_still_binds_the_product(
                         }
                     ),
                 )
+
+
+def test_declared_reference_module_passes_pv_string_assessment(
+    tmp_path: Path,
+) -> None:
+    """String assessment accepts a declared reference module without falsely applying Woo Voc/Isc."""
+    from linker_engine.planning.geometry import panel_poses, read_geometry
+    from linker_engine.planning.pv_string_assessment import assess_pv_strings
+
+    from .test_equipment import inputs as equipment_inputs
+
+    products = product_sources(tmp_path)
+    with frozen_publication():
+        loaded = products.load()
+        feed = loaded.publication.feed
+        declared_geometry, _ = _declared_roof()
+        geometry = read_geometry(declared_geometry)
+        included_ids = [pose.id for pose in panel_poses(geometry) if pose.included]
+        total_kw = (
+            float(len(included_ids) * geometry.module_specs[0].stc_power_w) / 1000.0
+        )
+        value = equipment_inputs(feed, 3)
+        value["geometry"] = declared_geometry
+        value["equipment_selection"]["pv_dc_kw"] = total_kw
+        value["pv_string_plan"] = {
+            "schema_version": 1,
+            "inverter_product_id": 4107,
+            "minimum_ambient_c": -10.0,
+            "temperature_source": "Local station record",
+            "strings": [
+                {
+                    "id": "string_1",
+                    "mppt": 1,
+                    "input": 1,
+                    "module_ids": included_ids,
+                }
+            ],
+        }
+        basis: Object = {
+            "products": feed["products"],
+            "compatibility": loaded.engine.compatibility.snapshot(),
+            "pv_module_inputs": products.electrical_module_basis(),
+        }
+        result = json_object(assess_pv_strings(value, basis))
+        assert result["assigned_modules"] == len(included_ids)
+        assert result["included_modules"] == len(included_ids)
+        checks = {
+            str(cast(Object, c)["id"]): cast(Object, c)
+            for c in cast(list[Object], result["checks"])
+        }
+        assert checks["pv_layout_coverage"]["status"] == "satisfied"
+        assert checks["pv_nameplate_layout"]["status"] == "satisfied"
+        assert checks["pv_cold_voc:string_1"]["status"] == "unresolved"
+
+

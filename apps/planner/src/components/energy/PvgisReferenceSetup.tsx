@@ -4,7 +4,7 @@ import { isDirty } from "../../domain/draft.ts";
 import type { JsonObject } from "../../data/protocol.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import { useModuleTemplates } from "../../data/useModuleTemplates.ts";
-import { matchesModule } from "../../domain/productModules.ts";
+import { isCurrentRoofModule } from "../../domain/productModules.ts";
 import {
 	referencePrepared,
 	referenceDraft,
@@ -79,17 +79,14 @@ export function PvgisReferenceSetup({
 		return () => onValidity(true);
 	}, [invalid, onValidity]);
 	const currentModules =
-		roof &&
-		catalog.data &&
-		!catalog.error &&
-		!catalog.isFetching &&
+		!!roof &&
 		roof.arrays.every((array) => {
 			const module = roof.geometry.module_specs.find(
 				(m) => m.id === array.module_spec_id,
 			);
-			return (
-				module &&
-				catalog.data.some((template) => matchesModule(module, template))
+			return isCurrentRoofModule(
+				module,
+				catalog.error || catalog.isFetching ? undefined : catalog.data,
 			);
 		});
 	const complete = referencePrepared(inputs);

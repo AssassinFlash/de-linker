@@ -18,7 +18,7 @@ import { readBeamWeatherPreview } from "../../data/directBeamWeather.ts";
 import { useRetainedWeather } from "../../data/useRetainedWeather.ts";
 import { referenceRoof } from "../../domain/pvgisReference.ts";
 import { useModuleTemplates } from "../../data/useModuleTemplates.ts";
-import { matchesModule } from "../../domain/productModules.ts";
+import { isCurrentRoofModule } from "../../domain/productModules.ts";
 import { panelPoses } from "../../domain/panelPoses.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
@@ -141,16 +141,14 @@ export function DirectBeamSetup({
 		}
 	}, [inputs.geometry]);
 	const currentModules =
-		roof &&
-		catalog.data &&
-		!catalog.error &&
-		!catalog.isFetching &&
+		!!roof &&
 		roof.arrays.every((a) => {
 			const spec = roof.geometry.module_specs.find(
 				(s) => s.id === a.module_spec_id,
 			);
-			return (
-				spec && catalog.data.some((template) => matchesModule(spec, template))
+			return isCurrentRoofModule(
+				spec,
+				catalog.error || catalog.isFetching ? undefined : catalog.data,
 			);
 		});
 	const sourceMatchesRoof =

@@ -10,7 +10,7 @@ import type { GeometryDocument } from "./geometry.ts";
 import { sameJson } from "./draft.ts";
 import { invalidateEnergyReplay } from "./energyScenario.ts";
 import type { ModuleTemplate } from "./productModules.ts";
-import { matchesModule } from "./productModules.ts";
+import { resolveModuleParameters } from "./productModules.ts";
 
 export interface WeatherDraft extends JsonObject {
 	readonly schema_version: 1;
@@ -298,22 +298,20 @@ export function alignPv(
 			const specification = geometry.module_specs.find(
 				(item) => item.id === id,
 			);
-			const template =
-				specification &&
-				templates?.find((item) => matchesModule(specification, item));
-			return template
-				? { ...template.parameters, module_spec_id: id }
-				: (value.modules.find((item) => item.module_spec_id === id) ?? {
-						module_spec_id: id,
-						gamma_pdc_per_c: null,
-						source: {
-							kind: "user_declared",
-							note: "",
-							url: null,
-							document_sha256: null,
-							page: null,
-						},
-					});
+			return (
+				resolveModuleParameters(specification, templates) ??
+				value.modules.find((item) => item.module_spec_id === id) ?? {
+					module_spec_id: id,
+					gamma_pdc_per_c: null,
+					source: {
+						kind: "user_declared",
+						note: "",
+						url: null,
+						document_sha256: null,
+						page: null,
+					},
+				}
+			);
 		}),
 		arrays: arrays.map(
 			(array) =>
