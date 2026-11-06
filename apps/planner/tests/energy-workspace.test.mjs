@@ -66,6 +66,21 @@ test("a missing saved-wiring assessment has a specific explanation and the nativ
 		/does not match the saved project inputs/,
 	);
 	assert.equal(dom.element.querySelector("button"), null);
+	let opened = false;
+	await act(async () =>
+		root.render(
+			React.createElement(EnergyError, {
+				error: new ApiError(422, "report_inputs_changed"),
+				openScenario() {
+					opened = true;
+				},
+			}),
+		),
+	);
+	const recalculate = dom.element.querySelector("button");
+	assert.equal(recalculate.textContent, "Recalculate energy");
+	await act(async () => recalculate.click());
+	assert.equal(opened, true);
 });
 
 test("actual scenario controls retain raw input, require confirmed save, use one frozen revision, and preserve edits from a late preparation response", async (t) => {
