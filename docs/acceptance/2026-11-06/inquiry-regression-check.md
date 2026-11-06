@@ -75,7 +75,33 @@ checkbox click.
   challenge. That is Cloudflare's anti-bot verdict working as configured,
   not a customer-facing defect.
 
+## Anti-abuse direction (transport admission, same deploy)
+
+Complement to the 2026-11-05 content-layer evidence (`anti-abuse-direction.md`).
+Negative submission against production with a valid form context (fresh
+nonce/request-id fetched from the live page) but **empty `linker_proof`**
+(Turnstile skipped, as an attacker would):
+
+- `POST /wp-admin/admin-post.php action=linker_inquiry` → **302 back to the
+  form**; no order created (HPOS latest unchanged: 8535, an 11-02 acceptance
+  record); **zero mail** (log's last entries remain the 03:07 UTC test
+  delivery). The admission gate (`Protection/Business.php` →
+  `Intake::verified` → `linker_admission_proof`) holds after today's deploy.
+
+## Natural-customer gates still pending (recorded, not substitutable)
+
+`#542`/`#543`/`#545` share one live acceptance gate: the first **naturally
+arriving** normal inquiry (submission → NORMAL license → real inbox delivery).
+Production readback 2026-11-06: no natural inquiry has arrived since 11-02
+(latest records are acceptance orders 8535/8457 and the 10-22 attack wave);
+the tickets explicitly forbid substituting acceptance inquiries, so this
+stays open pending a real external event.
+
+Credential re-scan: all 25 tracked files changed since the 2026-11-05 scan
+(source, tests, build artifacts, tools) — **zero secret-pattern hits**.
+
 ## Cleanup (all read back)
+
 
 - Orders 8615 and 8618 deleted (`delete(true)`); `wc_get_order` → gone
   for both.
