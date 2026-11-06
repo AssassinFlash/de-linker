@@ -24,7 +24,7 @@
     "src/components/ProjectBriefStart.tsx": "84890f4b8431298a1852daecbc0e89d2d5834dbbad9b41a5fc2da04636a66778",
     "src/components/ProjectEditor.tsx": "cbcf9e77f7706a967b195e5fa61fbe05b062899cf2357fc604307504f9198eac",
     "src/components/ProjectOverview.tsx": "44715bab05b71b04c3e36d648148829e5f40322e7d9ae170c007f705c882fa23",
-    "src/components/QuickStart.tsx": "ad56771d50c5f8fb61ea722e19fa25d737066dac9324ff288c8b0209ffd0e132",
+    "src/components/QuickStart.tsx": "d5c941e3e2d468b998c016a928616e7dc7d5bde45ab7b78d62a5c919817eaa04",
     "src/components/RevisionComparison.tsx": "0a5de456a0e2e46e68099f96a05f4ce1398e3c069765411b3390bf15074f5b44",
     "src/components/SavedSolutionReference.tsx": "7d95c3e5ee730d0bd04162c678aafb4f8013c8f4e0182583c8b7f4847785830e",
     "src/components/SavedSolutionStart.tsx": "9323eeea180df65a08dd2ad3951d87583b7bacc0126a0a20d4ef6cc81dad2cb3",

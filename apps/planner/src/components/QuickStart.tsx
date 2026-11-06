@@ -698,11 +698,11 @@ export function QuickStart({
 							? __("Working…", "linker-tools")
 							: __("Generate solution", "linker-tools")}
 					</button>
+					{/* TODO(#places): replace this free-text field with the Google
+					    Places picker (another line owns that integration) and use the
+					    returned coordinates for the weather request. */}
 					<p className="lp-profile-help">
 						{__(
-							// TODO(#places): replace this free-text field with the Google
-							// Places picker (another line owns that integration) and use the
-							// returned coordinates for the weather request.
 							"Entering a postcode or town is enough to start. Roof drawing, interval data and the exact site coordinates stay optional and can be added later.",
 							"linker-tools",
 						)}

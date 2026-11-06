@@ -14200,3 +14200,7 @@ msgstr "Wird ausgeführt…"
 msgid "e.g. 10115 Berlin"
 msgstr "z. B. 10115 Berlin"
 
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Entering a postcode or town is enough to start. Roof drawing, interval data and the exact site coordinates stay optional and can be added later."
+msgstr "Die Angabe einer Postleitzahl oder eines Ortes genügt für den Start. Dachzeichnung, Intervall-Daten und die genauen Standortkoordinaten bleiben optional und lassen sich später ergänzen."
