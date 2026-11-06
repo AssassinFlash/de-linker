@@ -364,3 +364,52 @@ test("manual roof intake marks the unsupported vertical boundary at its field", 
 	assert.equal(app.edits, 1);
 	assert.equal(app.current.sources.at(-1).permissions.export, "permitted");
 });
+
+test("a planning tier is chosen even when the product catalog cannot load", async (t) => {
+	// The catalog request fails: no module may depend on it any more.
+	const app = await mount(t, {
+		locale: "de-DE",
+		query: async () => {
+			throw new Error("catalog unavailable");
+		},
+	});
+	await click("Add module specification");
+	const select = document.querySelector(".lp-geometry-form select");
+	assert.ok(select, "the tier list renders without a product catalog");
+	assert.equal(select.disabled, false);
+	const labels = [...select.options].map((option) => option.textContent.trim());
+	assert.deepEqual(labels, [
+		"400 Wp · 1722 × 1134 mm",
+		"450 Wp · 1762 × 1134 mm",
+		"500 Wp · 1960 × 1134 mm",
+		"550 Wp · 2278 × 1134 mm",
+		"600 Wp · 2384 × 1303 mm",
+	]);
+	assert.equal(select.value, "tier_450", "the default is the 450 Wp tier");
+	assert.match(
+		document.querySelector(".lp-geometry-form").textContent,
+		/customer-supplied, not a Linker sales product/,
+	);
+	// Choosing another tier changes the quantities the form shows.
+	await act(async () => {
+		Object.getOwnPropertyDescriptor(
+			window.HTMLSelectElement.prototype,
+			"value",
+		).set.call(select, "tier_600");
+		select.dispatchEvent(new Event("change", { bubbles: true }));
+	});
+	const quantities = document.querySelector(
+		".lp-geometry-form .lp-design-quantities",
+	);
+	assert.match(quantities.textContent, /Rated power at STC600 W/);
+	await click("Apply properties");
+	assert.equal(app.edits, 1);
+	const spec = app.current.module_specs[0];
+	assert.equal(spec.stc_power_w, 600);
+	assert.equal(spec.length_m, 2.384);
+	assert.equal(spec.width_m, 1.303);
+	assert.equal(spec.source.kind, "user_declared");
+	assert.equal(spec.source.woo, undefined);
+	assert.equal(spec.source.url, null);
+	assert.match(spec.source.note, /^declared_reference/);
+});

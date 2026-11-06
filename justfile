@@ -901,3 +901,22 @@ commerce-terms:
 [group('check')]
 i18n-validity:
     python3 "{{ justfile_directory() }}/tools/checks/i18n-validity.py"
+
+# Deterministic layout defects over real pages, read-only: horizontal overflow,
+# content painted outside a clipping ancestor, a grid item opting out of its
+# container's centring, clipped single-line text, invisible-or-tiny interactive
+# targets, broken images and font faces, sideways document scroll, and
+# overlapping sibling blocks (tests/visual/layout-probes.js). It loads pages,
+# evaluates the probe and writes JSON; it never submits a form, adds to a cart
+# or creates an order. `--selftest` runs the planted-fixture suite instead and
+# fails if a planted defect is missed or a control is reported.
+#   just layout-selfcheck                     # production, 1440x900 + 390x844
+#   just layout-selfcheck --base http://localhost:8080 --only proforma
+#   just layout-selfcheck --selftest
+[group('check')]
+layout-selfcheck *args:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd "{{ justfile_directory() }}/tests/e2e"
+    if [ ! -d node_modules ]; then npm ci --no-audit --no-fund; fi
+    node "../visual/layout-selfcheck.mjs" {{ args }}

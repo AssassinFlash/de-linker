@@ -215,6 +215,21 @@ test("weather preparation checks year order, integer/range constraints and non-l
 			}),
 		refusal("weather_year_order"),
 	);
+	assert.throws(
+		() =>
+			compileWeather({
+				...value,
+				request: { ...value.request, start_year: 2015, end_year: 2023 },
+			}),
+		refusal("weather_period_too_short"),
+	);
+	assert.equal(
+		compileWeather({
+			...value,
+			request: { ...value.request, start_year: 2014, end_year: 2023 },
+		}).schema_version,
+		1,
+	);
 	for (const year of [2000, 2024])
 		assert.throws(
 			() =>

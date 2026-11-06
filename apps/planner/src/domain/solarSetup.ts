@@ -49,6 +49,9 @@ export interface ModuleDraft extends JsonObject {
 		>;
 	};
 }
+/** PVGIS v5_3 TMY answers HTTP 400 for a shorter selection span; the floor is
+ * the provider's (see the engine's pvgis_tmy_request.py). */
+export const MINIMUM_TMY_YEARS = 10;
 export const ARRAY_FACTORS = [
 	"albedo",
 	"beam_iam_b",
@@ -259,6 +262,12 @@ export function compileWeather(value: WeatherDraft): JsonObject {
 		end = value.request.end_year!,
 		year = value.interpretation.synthetic_energy_year!;
 	if (end < start) throw new ApiError(422, "weather_year_order");
+	// PVGIS v5_3 TMY answers HTTP 400 below this span; the provider, not our
+	// policy, sets the floor (services/engine/src/linker_engine/planning/
+	// pvgis_tmy_request.py MINIMUM_TMY_YEARS). Refusing here keeps a rejected
+	// request out of the provider entirely.
+	if (end - start + 1 < MINIMUM_TMY_YEARS)
+		throw new ApiError(422, "weather_period_too_short");
 	if (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0))
 		throw new ApiError(422, "weather_leap_axis");
 	return value;

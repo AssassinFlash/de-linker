@@ -389,11 +389,16 @@ class InstallationInputs(Document):
                     dumped.pop("comparison")
                 if item.mounting_quantity_basis is None:
                     dumped.pop("mounting_quantity_basis")
-                elif (
-                    "woo"
-                    not in item.mounting_quantity_basis.module.source.model_fields_set
-                ):
-                    dumped["mounting_quantity_basis"]["module"]["source"].pop("woo")
+                else:
+                    module = item.mounting_quantity_basis.module
+                    if "woo" not in module.source.model_fields_set:
+                        dumped["mounting_quantity_basis"]["module"]["source"].pop("woo")
+                    # A module declared before the coefficient existed keeps its
+                    # historical bytes; an absent value is not a new claim.
+                    if "gamma_pdc_per_c" not in module.model_fields_set:
+                        dumped["mounting_quantity_basis"]["module"].pop(
+                            "gamma_pdc_per_c"
+                        )
         if "protection_assessments" not in self.model_fields_set:
             value.pop("protection_assessments")
         # A run without a declared conductor keeps its historical bytes, so the

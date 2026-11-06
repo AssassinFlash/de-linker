@@ -1,6 +1,7 @@
 import { ApiError } from "./protocol.ts";
 import { readObject } from "./readProtocol.ts";
 import { RUN_STATES, runPending } from "./planningProtocol.ts";
+import { MINIMUM_TMY_YEARS } from "../domain/solarSetup.ts";
 import type { RunState } from "./planningProtocol.ts";
 
 const ACQUISITION_STATES = [
@@ -23,6 +24,10 @@ export type WeatherValidationFailure =
 	| {
 			readonly code: "weather_response_invalid";
 			readonly reason: "response_validation_failed";
+	  }
+	| {
+			readonly code: "weather_period_too_short";
+			readonly minimumYears: number;
 	  };
 export interface WeatherStatus {
 	readonly runId: string;
@@ -77,6 +82,9 @@ export function weatherFailureFromRun(
 		if (row.retryable !== false) return null;
 		if (row.code === "weather_response_invalid")
 			return { code: row.code, reason: "response_validation_failed" };
+		// A run saved before the planner checked this span still reports why it failed.
+		if (row.code === "weather_period_too_short")
+			return { code: row.code, minimumYears: MINIMUM_TMY_YEARS };
 		if (row.code !== "weather_source_quality_invalid") return null;
 		return readValidationFailure({
 			...readObject(row.details),

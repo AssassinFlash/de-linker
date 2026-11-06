@@ -930,6 +930,17 @@
         },
         "source": {
           "$ref": "#/$defs/ModuleSource"
+        },
+        "gamma_pdc_per_c": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/linker_engine__planning__geometry_documents__Number__2"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [

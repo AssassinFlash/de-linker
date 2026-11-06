@@ -48,6 +48,10 @@ export interface ModuleSpec {
 	length_m: number;
 	thickness_m: number;
 	stc_power_w: number;
+	/** A declared planning reference carries its own temperature coefficient,
+	 * because no product document backs it. A Woo-selected module leaves this
+	 * unset and the published module parameters supply the coefficient. */
+	gamma_pdc_per_c?: number | null;
 	source: {
 		kind: "datasheet" | "user_declared";
 		note: string;

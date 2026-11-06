@@ -2,6 +2,31 @@ import type { WeatherValidationFailure } from "../../data/weatherStatus.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
 
+function failureMessage(failure: WeatherValidationFailure): string {
+	if (failure.code === "weather_period_too_short")
+		return sprintf(
+			__(
+				"The source period must cover at least %d years. PVGIS rejects shorter selections, so no request was sent.",
+				"linker-tools",
+			),
+			failure.minimumYears,
+		);
+	if (failure.code === "weather_response_invalid")
+		return __(
+			"The official weather response did not pass validation and cannot be used for PV calculation.",
+			"linker-tools",
+		);
+	return failure.reason === "negative_wind"
+		? __(
+				"The official weather source contains a negative wind-speed value and cannot be used for PV calculation.",
+				"linker-tools",
+			)
+		: __(
+				"The official weather source contains a negative irradiance value and cannot be used for PV calculation.",
+				"linker-tools",
+			);
+}
+
 export function WeatherFailureNotice({
 	failure,
 	locale,
@@ -9,30 +34,18 @@ export function WeatherFailureNotice({
 	failure: WeatherValidationFailure;
 	locale: string;
 }) {
-	const message =
-		failure.code === "weather_response_invalid"
-			? __(
-					"The official weather response did not pass validation and cannot be used for PV calculation.",
-					"linker-tools",
-				)
-			: failure.reason === "negative_wind"
-				? __(
-						"The official weather source contains a negative wind-speed value and cannot be used for PV calculation.",
-						"linker-tools",
-					)
-				: __(
-						"The official weather source contains a negative irradiance value and cannot be used for PV calculation.",
-						"linker-tools",
-					);
+	const message = failureMessage(failure);
 	return (
 		<Notice error>
 			<p>{message}</p>
-			<p>
-				{__(
-					"No usable weather dataset was created from this response.",
-					"linker-tools",
-				)}
-			</p>
+			{failure.code !== "weather_period_too_short" && (
+				<p>
+					{__(
+						"No usable weather dataset was created from this response.",
+						"linker-tools",
+					)}
+				</p>
+			)}
 			{failure.code === "weather_source_quality_invalid" && (
 				<p>
 					{__("Source value", "linker-tools")}:{" "}

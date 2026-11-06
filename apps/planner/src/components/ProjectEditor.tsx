@@ -57,6 +57,7 @@ import { replacePlannerLocation } from "../data/plannerLocation.ts";
 import { useGenieContext } from "../data/useGenieContext.ts";
 import { InstallationEditor } from "./installation/InstallationEditor.tsx";
 import { readInstallation } from "../domain/installation.ts";
+import { QuickStart } from "./QuickStart.tsx";
 
 type ProjectWorkspace =
 	| "overview"
@@ -160,6 +161,9 @@ export function ProjectEditor({
 	const [calculationsOpened, setCalculationsOpened] = useState(() =>
 		["calculations", "equipment"].includes(workspaceFromHash()),
 	);
+	// A saved project can still be re-planned from the one-screen start; the
+	// full workbench stays open underneath and keeps every saved input.
+	const [quickStart, setQuickStart] = useState(false);
 	const workspaceFocus = useRef(false);
 	useEffect(() => {
 		if (!workspaceFocus.current) return;
@@ -380,6 +384,16 @@ export function ProjectEditor({
 					<button
 						className="lp-text-button"
 						type="button"
+						aria-expanded={quickStart}
+						onClick={() => setQuickStart((value) => !value)}
+					>
+						{quickStart
+							? __("Back to this project's working area", "linker-tools")
+							: __("Quick start: plan in one screen", "linker-tools")}
+					</button>
+					<button
+						className="lp-text-button"
+						type="button"
 						data-linker-genie-open
 					>
 						{__("Ask Genie", "linker-tools")}
@@ -468,7 +482,18 @@ export function ProjectEditor({
 					</div>
 				)}
 			</header>
-			<div className="lp-project-layout">
+			{quickStart && (
+				<QuickStart
+					session={session}
+					client={client}
+					store={store}
+					config={config}
+					recheck={recheck}
+					openWorkbench={() => setQuickStart(false)}
+					close={() => setQuickStart(false)}
+				/>
+			)}
+			<div className="lp-project-layout" hidden={quickStart}>
 				<aside className="lp-project-aside">
 					<div className="lp-project-nav-title">
 						<span className="lp-nav-mark" aria-hidden="true">

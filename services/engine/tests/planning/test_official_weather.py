@@ -119,16 +119,20 @@ def test_one_official_get_needs_no_research_or_service_credentials(
     assert adapter.closed
 
 
-# Representative redirect and terminal rejection; both use the same branch.
-@pytest.mark.parametrize("status", [302, 403])
+# Representative redirect and terminal rejections; all use the same branch.
+# PVGIS answers a too-short TMY period with 400, and the transport must keep
+# that as the provider fallback with its body withheld from the user.
+@pytest.mark.parametrize("status", [302, 400, 403])
 def test_redirects_and_rejections_are_not_followed(status: int) -> None:
     adapter = SequenceAdapter(
         Reply(status, b"denied", {"Location": "https://foreign.invalid"})
     )
-    with pytest.raises(WeatherProviderRejected):
+    with pytest.raises(WeatherProviderRejected) as raised:
         PvgisHttpTransfer(adapter=adapter).download(
             plan(), deadline=60, clock=lambda: 0, guard=lambda: None
         )
+    assert raised.value.code == "weather_provider_rejected"
+    assert "denied" not in str(raised.value)
     assert len(adapter.calls) == 1
 
 

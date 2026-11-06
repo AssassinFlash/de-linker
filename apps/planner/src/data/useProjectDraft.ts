@@ -140,15 +140,17 @@ export function useProjectDraft(
 		return () => window.removeEventListener("beforeunload", beforeUnload);
 	}, []);
 
-	async function save() {
+	/** The saved project, so a caller that must act on a confirmed revision
+	 * (a weather request) does not read a stale baseline from its own render. */
+	async function save(): Promise<Project | null> {
 		if (busy || recoveries.length || !latest.current || latest.current.conflict)
-			return;
+			return null;
 		const prepared = prepareSave(latest.current, crypto.randomUUID(), {
 			maxDepth: session.runtime.limits.max_json_depth,
 			maxBytes: session.runtime.limits.max_body_bytes,
 		});
 		const intent = prepared.pending;
-		if (!intent) return;
+		if (!intent) return latest.current.baseline;
 		latest.current = prepared;
 		setDraft(prepared);
 		setBusy(true);
@@ -167,7 +169,7 @@ export function useProjectDraft(
 				!latest.current ||
 				!client.isCurrentScope(session.query_scope)
 			)
-				return;
+				return null;
 			const next = acknowledgeSave(latest.current, intent, result);
 			latest.current = next;
 			setDraft(next);
@@ -175,8 +177,9 @@ export function useProjectDraft(
 			void cache.invalidateQueries({
 				queryKey: [session.query_scope, "projects"],
 			});
+			return next.baseline;
 		} catch (error) {
-			if (!active.current) return;
+			if (!active.current) return null;
 			setFailed(true);
 			setSourceChanged(
 				error instanceof ApiError && error.code === "product_evidence_changed",
@@ -193,7 +196,7 @@ export function useProjectDraft(
 					error.code === "session_changed")
 			) {
 				recheck();
-				return;
+				return null;
 			}
 			if (
 				error instanceof ApiError &&
@@ -213,7 +216,7 @@ export function useProjectDraft(
 						),
 					);
 					if (!active.current || !client.isCurrentScope(session.query_scope))
-						return;
+						return null;
 					update((previous) => markConflict(previous, remote));
 				} catch {
 					/* Local input and exact uncertain intent remain available. */
@@ -223,6 +226,7 @@ export function useProjectDraft(
 				// These are explicit pre-mutation input refusals, not lost replies.
 				update((previous) => ({ ...previous, pending: null }));
 			}
+			return null;
 		} finally {
 			if (active.current) setBusy(false);
 		}

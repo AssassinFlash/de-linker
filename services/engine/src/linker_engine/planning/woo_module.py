@@ -94,8 +94,13 @@ def module_template(raw: dict[str, Any]) -> Object:
     return decode_object(
         encode(
             {
-                "specification": specification.model_dump(mode="json"),
-                "parameters": parameters.model_dump(mode="json"),
+                # Optional declared-reference fields are absent for a product,
+                # and their nulls must not enter the pinned proof bytes:
+                # historical reports compare this record with today's.
+                "specification": specification.model_dump(
+                    mode="json", exclude_none=True
+                ),
+                "parameters": parameters.model_dump(mode="json", exclude_none=True),
             }
         )
     )

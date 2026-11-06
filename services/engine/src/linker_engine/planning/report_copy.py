@@ -938,6 +938,10 @@ TEXT = {
         "The saved module specifications could not be linked to the product record and its source document.",
         "Die gespeicherten Modulangaben konnten dem Produktdatensatz und dem zugehörigen Quelldokument nicht eindeutig zugeordnet werden.",
     ),
+    "pv_components_declared_reference_module": (
+        "The roof uses a planning reference module: an unverified planning assumption for size and power, not a manufacturer datasheet value. The customer supplies the modules actually installed, so no product record or component list is claimed here.",
+        "Für das Dach ist ein Planungs-Referenzmodul angesetzt: eine unbestätigte Planungsannahme zu Größe und Leistung, kein Wert aus einem Herstellerdatenblatt. Die tatsächlich installierten Module stellt der Kunde bereit; ein Produktdatensatz oder eine Stückliste wird hier daher nicht zugesagt.",
+    ),
     "pv_components_module_power": ("Module power (STC)", "Modulleistung (STC)"),
     "pv_components_capacity": ("PV nameplate power", "PV-Nennleistung"),
     "comparison_title": (

@@ -20,6 +20,7 @@ from linker_engine.planning.pvgis_tmy_request import (
     PvgisTmyInterpretation,
     PvgisTmyRequest,
 )
+from linker_engine.planning.weather_fetch_errors import WeatherPeriodTooShort
 
 from .test_pv_generation import geometry, parameter_document
 
@@ -206,6 +207,28 @@ def test_duplicate_nonfinite_and_all_zero_meteorology_are_not_repaired() -> None
         row.update(T2m=0, WS10m=0)
     with pytest.raises(InvalidInput, match="source verification"):
         parse(encode(document))
+
+
+def test_request_span_below_the_provider_minimum_fails_before_any_request() -> None:
+    # PVGIS v5_3 TMY answers HTTP 400 for periods shorter than 10 years; the
+    # rejection must never reach the provider, so no request is built here.
+    fields = request().model_dump()
+
+    def spanned(start_year: int, end_year: int) -> PvgisTmyRequest:
+        return PvgisTmyRequest(
+            **{**fields, "start_year": start_year, "end_year": end_year}
+        )
+
+    with pytest.raises(WeatherPeriodTooShort) as raised:
+        spanned(2016, 2023)
+    assert raised.value.code == "weather_period_too_short"
+    assert str(raised.value) == "TMY selection years must span at least 10 years"
+    for start_year, end_year in ((2005, 2023), (2005, 2014)):
+        selected = spanned(start_year, end_year)
+        assert selected.parameters()["startyear"] == str(start_year)
+        assert selected.parameters()["endyear"] == str(end_year)
+    with pytest.raises(WeatherPeriodTooShort):
+        spanned(2005, 2013)
 
 
 def test_request_capture_and_calendar_cannot_silently_change() -> None:

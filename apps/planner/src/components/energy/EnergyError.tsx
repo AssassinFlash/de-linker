@@ -1,7 +1,8 @@
 import { ApiError } from "../../data/protocol.ts";
-import { __ } from "../../i18n.ts";
+import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
 import { GeometryInputError } from "../../domain/validateGeometry.ts";
+import { MINIMUM_TMY_YEARS } from "../../domain/solarSetup.ts";
 
 export function energyConstraintText(constraintId: unknown): string | null {
 	switch (constraintId) {
@@ -209,6 +210,14 @@ export function energyErrorText(error: unknown): string {
 			return __(
 				"The last source year must be the same as or later than the first source year.",
 				"linker-tools",
+			);
+		case "weather_period_too_short":
+			return sprintf(
+				__(
+					"The source period must cover at least %d years. PVGIS rejects shorter selections, so no request was sent.",
+					"linker-tools",
+				),
+				MINIMUM_TMY_YEARS,
 			);
 		case "weather_leap_axis":
 			return __(

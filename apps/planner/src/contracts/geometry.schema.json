@@ -317,6 +317,17 @@
         },
         "source": {
           "$ref": "#/$defs/ModuleSource"
+        },
+        "gamma_pdc_per_c": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [

@@ -1466,8 +1466,10 @@ msgstr "Projekt"
 msgid "Project details"
 msgstr "Projektbeschreibung"
 
+#: ../../apps/planner/src/components/QuickStart.tsx
 #: src/configurator/App.tsx:117 src/configurator/App.tsx:130
 #: build/configurator.js
+#: build/planner/assets/planner.js
 msgid "Project type"
 msgstr "Projektart"
 
@@ -13821,3 +13823,380 @@ msgstr "Nicht angegeben"
 #: build/planner/assets/planner.js
 msgid "Use these values"
 msgstr "Angaben übernehmen"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Quick start: plan in one screen"
+msgstr "Schnellstart: Planen auf einem Bildschirm"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Back to this project's working area"
+msgstr "Zurück zum Arbeitsbereich dieses Projekts"
+
+#: ../../apps/planner/src/components/design/ModuleForm.tsx
+#: build/planner/assets/planner.js
+msgid "Open-circuit voltage at STC"
+msgstr "Leerlaufspannung unter STC"
+
+#: ../../apps/planner/src/components/design/ModuleForm.tsx
+#: build/planner/assets/planner.js
+msgid "Short-circuit current at STC"
+msgstr "Kurzschlussstrom unter STC"
+
+#: ../../apps/planner/src/components/design/ModuleForm.tsx
+#: build/planner/assets/planner.js
+msgid "MPP current at STC"
+msgstr "MPP-Strom unter STC"
+
+#: ../../apps/planner/src/components/design/ModuleForm.tsx
+#: build/planner/assets/planner.js
+msgid "Planning reference module specification (customer-supplied, not a Linker sales product); dimensions and power are generic reference values, and the customer's actual modules govern."
+msgstr "Referenzmodul für die Planung (kundenseitig beschafft, kein Produkt von Linker); Maße und Leistung sind allgemeine Referenzwerte, maßgeblich sind die tatsächlich eingesetzten Module des Kunden."
+
+#: ../../apps/planner/src/components/Workspace.tsx
+#: build/planner/assets/planner.js
+msgid "Start a solution"
+msgstr "Lösung starten"
+
+#: ../../apps/planner/src/components/energy/EnergyError.tsx
+#: ../../apps/planner/src/components/energy/WeatherFailureNotice.tsx
+#: build/planner/assets/planner.js
+msgid "The source period must cover at least %d years. PVGIS rejects shorter selections, so no request was sent."
+msgstr "Der Quellzeitraum muss mindestens %d Jahre umfassen. PVGIS lehnt kürzere Zeiträume ab; es wurde daher keine Anfrage gesendet."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "%1$s · %2$s kWp · %3$s"
+msgstr "%1$s · %2$s kWp · %3$s"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "%d matching combinations"
+msgstr "%d passende Kombinationen"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "%s Wp"
+msgstr "%s Wp"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "%s kWh per year"
+msgstr "%s kWh pro Jahr"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "%s kWp"
+msgstr "%s kWp"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "A later step needs inputs this screen does not collect. Everything already calculated stays saved."
+msgstr "Ein späterer Schritt benötigt Angaben, die diese Ansicht nicht abfragt. Alles bereits Berechnete bleibt gespeichert."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Advanced engineering checks (optional)"
+msgstr "Erweiterte technische Prüfungen (optional)"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Annual electricity use"
+msgstr "Jährlicher Stromverbrauch"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Build the report"
+msgstr "Bericht erstellen"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Calculate self-consumption"
+msgstr "Eigenverbrauch berechnen"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Check the chosen combination"
+msgstr "Gewählte Kombination prüfen"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Checks and bill of materials"
+msgstr "Prüfungen und Stückliste"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Current product data is still being prepared."
+msgstr "Die aktuellen Produktdaten werden noch vorbereitet."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Cut commercial peak demand"
+msgstr "Gewerbliche Leistungsspitze kappen"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Declared on the one-screen start form."
+msgstr "Im Schnellstart angegeben."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Done"
+msgstr "Fertig"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "East–west, 10°"
+msgstr "Ost–West, 10°"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Engineering result"
+msgstr "Technisches Ergebnis"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Fetch typical-year weather"
+msgstr "Typisches Jahrwetter abrufen"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Find matching equipment"
+msgstr "Passende Geräte finden"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Flat roof, 0°"
+msgstr "Flachdach, 0°"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Generate solution"
+msgstr "Lösung berechnen"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Keep the lights on when the grid fails"
+msgstr "Bei Netzausfall versorgt bleiben"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Matching equipment"
+msgstr "Passende Geräte"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Model the roof generation"
+msgstr "Dachstromertrag modellieren"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Module power class"
+msgstr "Modulleistungsklasse"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "No single-system combination satisfies these requirements. The full workbench shows every check that refused a product."
+msgstr "Keine Einzelsystem-Kombination erfüllt diese Anforderungen. Der vollständige Arbeitsbereich zeigt jede Prüfung, die ein Produkt abgelehnt hat."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Open the full workbench"
+msgstr "Vollständigen Arbeitsbereich öffnen"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "PV array size"
+msgstr "Größe der PV-Anlage"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Pick from the lists and press Generate solution. The workspace saves the project, fetches the data it can and shows the matching equipment with its bill of materials."
+msgstr "Wählen Sie aus den Listen und drücken Sie „Lösung berechnen“. Der Arbeitsbereich speichert das Projekt, ruft die verfügbaren Daten ab und zeigt die passenden Geräte mit Stückliste."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Plan a system in one screen"
+msgstr "System auf einem Bildschirm planen"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Planned orientation: %s"
+msgstr "Geplante Ausrichtung: %s"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Postcode or town"
+msgstr "Postleitzahl oder Ort"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Prepare the storage scenario"
+msgstr "Speicherszenario vorbereiten"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Quick start"
+msgstr "Schnellstart"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Re-plan this project in one screen"
+msgstr "Dieses Projekt auf einem Bildschirm neu planen"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Recommended equipment"
+msgstr "Empfohlene Geräte"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Report"
+msgstr "Bericht"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Report and solution draft"
+msgstr "Bericht und Lösungsentwurf"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Requirements checked"
+msgstr "Anforderungen geprüft"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Retry this step: %s"
+msgstr "Diesen Schritt wiederholen: %s"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Roof generation needs placed modules. Draw the roof in the full workbench and this step runs with the same inputs."
+msgstr "Der Dachstromertrag benötigt platzierte Module. Zeichnen Sie das Dach im vollständigen Arbeitsbereich; dieser Schritt läuft dann mit denselben Angaben."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Roof geometry, imported interval data and every detailed check live in the full workbench. This project opens there with everything already saved."
+msgstr "Dachgeometrie, importierte Intervall-Daten und alle Detailprüfungen finden Sie im vollständigen Arbeitsbereich. Dieses Projekt öffnet sich dort mit allen gespeicherten Angaben."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Roof orientation and tilt"
+msgstr "Dachausrichtung und Neigung"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Running…"
+msgstr "Läuft…"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Save the project"
+msgstr "Projekt speichern"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "South-facing, 15°"
+msgstr "Südausrichtung, 15°"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "South-facing, 30°"
+msgstr "Südausrichtung, 30°"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Steps run one after another; each result stays saved."
+msgstr "Die Schritte laufen nacheinander; jedes Ergebnis bleibt gespeichert."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "System goal"
+msgstr "Systemziel"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "The chosen combination could not be saved. Your open changes stay on this screen."
+msgstr "Die gewählte Kombination konnte nicht gespeichert werden. Ihre offenen Änderungen bleiben auf diesem Bildschirm erhalten."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "The equipment result is ready; the PDF needs the energy result as well."
+msgstr "Das Geräteergebnis ist fertig; das PDF benötigt zusätzlich das Energieergebnis."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "The full workbench adds roof geometry, imported interval data and the detailed engineering checks. Nothing on this screen is lost by opening it."
+msgstr "Der vollständige Arbeitsbereich ergänzt Dachgeometrie, importierte Intervall-Daten und die detaillierten technischen Prüfungen. Beim Öffnen geht nichts von diesem Bildschirm verloren."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "The project could not be created. Nothing was saved; you can try again."
+msgstr "Das Projekt konnte nicht angelegt werden. Es wurde nichts gespeichert; Sie können es erneut versuchen."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "The server stopped this step (%s)."
+msgstr "Der Server hat diesen Schritt beendet (%s)."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "The step could not be started. Your saved project is unchanged."
+msgstr "Der Schritt konnte nicht gestartet werden. Ihr gespeichertes Projekt bleibt unverändert."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "The step did not finish in time. It keeps running on the server; retrying only starts a new attempt."
+msgstr "Der Schritt wurde nicht rechtzeitig fertig. Er läuft auf dem Server weiter; eine Wiederholung startet nur einen neuen Versuch."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "The step stopped unexpectedly. Every confirmed result stays saved."
+msgstr "Der Schritt wurde unerwartet beendet. Jedes bestätigte Ergebnis bleibt gespeichert."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "The step stopped with %s."
+msgstr "Der Schritt wurde mit %s beendet."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "The storage calculation needs imported interval data for total load, available PV and auxiliary demand. Import the profile in the full workbench."
+msgstr "Die Speicherberechnung benötigt importierte Intervall-Daten für Gesamtlast, verfügbare PV-Leistung und Hilfsverbrauch. Importieren Sie das Profil im vollständigen Arbeitsbereich."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "This combination fills the %s kWh storage window this screen asked for."
+msgstr "Diese Kombination deckt den hier angefragten Speicherbereich von %s kWh ab."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Typical-year weather needs the site coordinates that a drawn roof supplies. Add the roof in the full workbench to run this step."
+msgstr "Das typische Jahrwetter benötigt die Standortkoordinaten, die ein gezeichnetes Dach liefert. Fügen Sie das Dach im vollständigen Arbeitsbereich hinzu, um diesen Schritt auszuführen."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Use as much of my own solar as possible"
+msgstr "Möglichst viel eigenen Solarstrom nutzen"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Waiting for the interval data."
+msgstr "Warten auf die Intervall-Daten."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Working through the steps…"
+msgstr "Die Schritte werden abgearbeitet…"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Working…"
+msgstr "Wird ausgeführt…"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "e.g. 10115 Berlin"
+msgstr "z. B. 10115 Berlin"
+

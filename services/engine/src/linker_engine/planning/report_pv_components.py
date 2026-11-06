@@ -10,6 +10,7 @@ import math
 from typing import cast
 
 from .canonical import Json, Object, digest, encode
+from .declared_module import is_declared_reference
 from .errors import InvalidInput, ReportSourceExportRequired, VersionUnavailable
 from .frozen_documents import FrozenDocuments
 from .geometric_pv_inputs import PROFILE_PURPOSE as GEOMETRIC_PV_PURPOSE
@@ -227,7 +228,15 @@ def _components(
         identities = included[identifier]
         module: ModuleSpec = specifications[array.module_spec_id]
         if module.source.woo is None:
-            return {"status": "unavailable", "reason": "no_woo_module_proof"}
+            # A declared planning reference has no product record to link, by
+            # design. Reporting that as a failed link would invent a claim the
+            # customer never made.
+            reason = (
+                "declared_reference_module"
+                if is_declared_reference(module)
+                else "no_woo_module_proof"
+            )
+            return {"status": "unavailable", "reason": reason}
         try:
             ProductSources._check_module(module, proof)
         except InvalidInput as error:

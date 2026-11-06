@@ -10,6 +10,15 @@ from pydantic import Field, model_validator
 
 from .energy_inputs import Document, SchemaVersion
 from .pvgis_request import Finite, Year
+from .weather_fetch_errors import WeatherPeriodTooShort
+
+# PVGIS v5_3 TMY answers HTTP 400 "The calculation period for this app should
+# be at least 10 years" for shorter selections; the provider, not our policy,
+# sets this floor. TmY years available are 2005-2023. Evidence: the official
+# rejection recorded in docs/acceptance/2026-11-05/workbench-engineering-chain.md
+# (addendum 7) and pvlib's pvgis_tmy docstring in
+# docs/research/2026-10-23-pv-inputs/raw/pvlib-pvgis.py.
+MINIMUM_TMY_YEARS = 10
 
 
 class PvgisTmyRequest(Document):
@@ -30,6 +39,10 @@ class PvgisTmyRequest(Document):
     def ordered(self) -> Self:
         if self.end_year < self.start_year:
             raise ValueError("TMY selection years must be ordered")
+        if self.end_year - self.start_year + 1 < MINIMUM_TMY_YEARS:
+            raise WeatherPeriodTooShort(
+                f"TMY selection years must span at least {MINIMUM_TMY_YEARS} years"
+            )
         return self
 
     def parameters(self) -> dict[str, str]:

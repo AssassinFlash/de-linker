@@ -26,6 +26,7 @@ import { Notice } from "./Notice.tsx";
 import { ENTRY_QUERY_KEYS, readEntryHints } from "../domain/entryHints.ts";
 import { readObject, wire } from "../data/readProtocol.ts";
 import { replacePlannerLocation } from "../data/plannerLocation.ts";
+import { QuickStart } from "./QuickStart.tsx";
 
 function currentProject(): string | null {
 	const value = new URL(location.href).searchParams.get("project");
@@ -73,6 +74,9 @@ export function Workspace({
 	const [entryHints, setEntryHints] = useState(() =>
 		readEntryHints(new URL(location.href).searchParams),
 	);
+	// The one-screen start is the default surface while the account has no
+	// project to reopen; the project list stays one click away.
+	const [quickStart, setQuickStart] = useState(false);
 	const cache = useQueryClient();
 	const recovery = useQuery({
 		queryKey: [session.query_scope, "recovery-scopes", session.claim_pending],
@@ -176,6 +180,17 @@ export function Workspace({
 			},
 		);
 	}, [index.data]);
+	function quickStarted(project: Project): boolean {
+		if (!client.isCurrentScope(session.query_scope)) return false;
+		cache.setQueryData(
+			[session.query_scope, "project", project.id, session.claim_pending],
+			project,
+		);
+		void cache.invalidateQueries({
+			queryKey: [session.query_scope, "projects"],
+		});
+		return true;
+	}
 	function created(project: Project, destination?: "design" | "equipment") {
 		if (!client.isCurrentScope(session.query_scope)) return false;
 		cache.setQueryData(
@@ -490,14 +505,34 @@ export function Workspace({
 						</button>
 					</Notice>
 				)}
+				{quickStart ? (
+					<QuickStart
+						session={session}
+						client={client}
+						store={store}
+						config={config}
+						recheck={recheck}
+						created={quickStarted}
+						openWorkbench={(projectId) => select(projectId)}
+						close={() => setQuickStart(false)}
+					/>
+				) : null}
 				<section
 					className="lp-project-index"
 					aria-labelledby="lp-projects-heading"
+					hidden={quickStart}
 				>
 					<div className="lp-index-heading">
 						<h2 id="lp-projects-heading">
 							{__("Saved projects", "linker-tools")}
 						</h2>
+						<button
+							className="lp-button"
+							onClick={() => setQuickStart(true)}
+						>
+							<Icon name="plus" />
+							{__("Start a solution", "linker-tools")}
+						</button>
 						<button
 							className="lp-icon-button"
 							aria-label={__("Refresh projects", "linker-tools")}
@@ -521,16 +556,29 @@ export function Workspace({
 						</Notice>
 					)}
 					{!index.isPending && !index.isError && !projects.length && (
-						<div className="lp-empty">
-							<Icon name="layers" width="36" height="36" />
-							<h3>{__("Project workspace", "linker-tools")}</h3>
-							<p>
-								{__(
-									"A project can start with the information already available. Roof drawing is optional.",
-									"linker-tools",
-								)}
-							</p>
-						</div>
+						<>
+							<div className="lp-empty">
+								<Icon name="layers" width="36" height="36" />
+								<h3>{__("Project workspace", "linker-tools")}</h3>
+								<p>
+									{__(
+										"A project can start with the information already available. Roof drawing is optional.",
+										"linker-tools",
+									)}
+								</p>
+							</div>
+							{!quickStart && (
+								<QuickStart
+									session={session}
+									client={client}
+									store={store}
+									config={config}
+									recheck={recheck}
+									created={quickStarted}
+									openWorkbench={(projectId) => select(projectId)}
+								/>
+							)}
+						</>
 					)}
 					<div className="lp-project-rows">
 						{projects.map((item) => (

@@ -1,0 +1,189 @@
+<!doctype html>
+<!--
+  Self-test fixture for tests/visual/layout-probes.js. Every defect class the
+  probe claims to find is planted here once, and each near-miss that must NOT
+  be reported carries a `control-` class. `node tests/visual/layout-selfcheck.mjs
+  --selftest` fails when a planted class is missed or a control is reported.
+-->
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>layout probe self-test</title>
+		<style>
+			body {
+				margin: 0;
+				font: 16px/1.5 sans-serif;
+				color: #111;
+			}
+			section {
+				padding: 8px;
+			}
+		</style>
+	</head>
+	<body>
+		<!-- 1. overflow-x-visible -->
+		<section>
+			<div id="planted-overflow" style="width: 180px; white-space: nowrap">
+				This sentence is deliberately far wider than its one-hundred-and-eighty-pixel box and nothing clips it.
+			</div>
+			<div
+				id="control-overflow-clipped"
+				class="control-overflow"
+				style="width: 180px; white-space: nowrap; overflow-x: hidden"
+			>
+				This one is clipped by its own box, so it must not be reported.
+			</div>
+		</section>
+
+		<!-- 2. clipped-by-ancestor -->
+		<section>
+			<div
+				id="planted-clipper"
+				style="width: 200px; height: 40px; overflow: hidden"
+			>
+				<div id="planted-clipped" style="width: 320px; height: 30px">
+					card body that runs past its clipping parent
+				</div>
+			</div>
+			<div
+				id="control-scroller"
+				class="control-scroller"
+				style="width: 200px; overflow-x: auto"
+			>
+				<div style="width: 320px; height: 30px">scrollable content stays reachable</div>
+			</div>
+		</section>
+
+		<!-- 3. opt-out-of-centering (the confirmation-page signature) -->
+		<section>
+			<div
+				id="planted-grid"
+				style="display: grid; justify-items: center; width: 400px; border: 1px solid #ccc"
+			>
+				<h2 style="margin: 0">Inquiry received</h2>
+				<p style="margin: 0">We reply within one business day.</p>
+				<a
+					id="planted-cta"
+					href="#"
+					style="
+						justify-self: start;
+						display: inline-flex;
+						padding: 8px 16px;
+						background: #305;
+						color: #fff;
+					"
+					>Create an account with this email</a
+				>
+			</div>
+			<div
+				id="control-grid-fill"
+				class="control-grid"
+				style="display: grid; justify-items: center; width: 400px"
+			>
+				<p style="margin: 0; width: 100%; justify-self: start">
+					full-width item; starting at the left edge is the whole row
+				</p>
+				<p style="margin: 0">second item</p>
+			</div>
+			<div
+				id="control-flex"
+				class="control-flex"
+				style="display: flex; justify-content: center; align-items: center"
+			>
+				<span>flex item</span>
+				<span style="align-self: flex-start">flex-start is legal for a flex item</span>
+			</div>
+		</section>
+
+		<!-- 4. text-clipped -->
+		<section>
+			<div
+				id="planted-clipped-text"
+				style="
+					width: 300px;
+					height: 10px;
+					line-height: 22px;
+					white-space: nowrap;
+					overflow: hidden;
+				"
+			>
+				A single line whose box is half the line height.
+			</div>
+			<p id="control-wrapping" class="control-wrap" style="width: 200px">
+				A paragraph that wraps normally inside a narrow column is not a defect
+				even though its scrollHeight equals its clientHeight.
+			</p>
+		</section>
+
+		<!-- 5. focusable-invisible and small-target -->
+		<section>
+			<a
+				id="planted-hidden-link"
+				href="#top"
+				style="display: block; opacity: 0"
+				>invisible opacity link that still takes focus</a
+			>
+			<a
+				id="control-hidden-visibility"
+				class="control-visibility"
+				href="#top"
+				style="visibility: hidden"
+				>visibility:hidden is not focusable, so it must not be reported</a
+			>
+			<a
+				id="control-sr-only"
+				class="screen-reader-text"
+				href="#top"
+				style="
+					position: absolute;
+					width: 1px;
+					height: 1px;
+					overflow: hidden;
+					clip-path: inset(50%);
+				"
+				>screen-reader-text pattern</a
+			>
+			<button id="planted-tiny" type="button" style="width: 12px; height: 12px">x</button>
+			<p>
+				A normal paragraph with
+				<a id="control-inline-link" href="#top">an inline link</a>
+				inside a sentence, which WCAG 2.2 exempts from the target-size rule.
+			</p>
+			<button id="control-big" type="button" style="width: 88px; height: 40px">
+				normal button
+			</button>
+		</section>
+
+		<!-- 6. image-broken -->
+		<section>
+			<img id="planted-broken-img" src="./missing-file-for-selftest.png" width="48" height="48" alt="" />
+			<svg id="control-inline-svg" width="24" height="24"><circle cx="12" cy="12" r="10" /></svg>
+		</section>
+
+		<!-- 7. overlap -->
+		<section>
+			<div id="planted-overlap-a" style="height: 80px; background: #eee">block A</div>
+			<div
+				id="planted-overlap-b"
+				style="height: 80px; margin-top: -70px; background: #ddd"
+			>
+				block B pulled up over block A
+			</div>
+			<div style="position: relative; height: 60px">
+				<div id="control-badge-base" style="height: 60px; background: #f6f6f6">card</div>
+				<span
+					id="control-badge"
+					class="control-badge"
+					style="position: absolute; top: 4px; right: 4px; padding: 2px 6px; background: #333; color: #fff"
+					>badge</span
+				>
+			</div>
+		</section>
+
+		<!-- 8. horizontal-scroll: a block wider than any viewport -->
+		<section>
+			<div id="planted-wide" style="width: 1600px; height: 8px; background: #c00"></div>
+		</section>
+	</body>
+</html>

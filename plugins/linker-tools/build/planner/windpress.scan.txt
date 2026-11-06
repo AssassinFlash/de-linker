@@ -125,6 +125,13 @@ lp-project-title
 lp-pv-array-choice
 lp-pv-membership
 lp-pv-parameters
+lp-quickstart
+lp-quickstart-actions
+lp-quickstart-advanced
+lp-quickstart-form
+lp-quickstart-head
+lp-quickstart-result
+lp-quickstart-steps
 lp-rail-caption
 lp-rail-current
 lp-rail-session

@@ -97,6 +97,10 @@ class WeatherResponseTooLarge(InvalidInput):
     code = "weather_response_too_large"
 
 
+class WeatherPeriodTooShort(InvalidInput):
+    code = "weather_period_too_short"
+
+
 class WeatherRemoteFailed(PlanningError):
     code = "weather_remote_failed"
 

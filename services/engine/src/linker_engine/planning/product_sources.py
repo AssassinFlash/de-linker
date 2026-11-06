@@ -22,6 +22,15 @@ from ..publication import (
 )
 from .battery_assembly import battery_assembly
 from .canonical import Json, Object, decode_object, encode
+from .declared_module import (
+    # Re-exported: existing callers read the tier marker from this module.
+    DECLARED_REFERENCE_PREFIX as DECLARED_REFERENCE_PREFIX,
+)
+from .declared_module import (
+    check_declared_module,
+    declared_module_basis,
+    is_declared_reference,
+)
 from .equipment_fact_resolution import declared_battery_ports
 from .equipment_facts import compile_product
 from .errors import Conflict, InvalidInput, ProductEvidenceChanged, VersionUnavailable
@@ -281,13 +290,20 @@ class ProductSources:
         ]
         if not edited and not (pv_changed and "pv_generation" in inputs):
             return
-        if any(module.source.woo is None for module in edited):
-            raise InvalidInput(
-                "choose a Woo-maintained module before adding product facts"
-            )
-        basis = self.module_basis()
+        # A project may be built entirely from declared planning references, so
+        # the Woo publication is read only once a selected module needs it.
+        basis: Object | None = None
         for module in edited:
-            self._check_module(module, basis)
+            if module.source.woo is not None:
+                if basis is None:
+                    basis = self.module_basis()
+                self._check_module(module, basis)
+            elif is_declared_reference(module):
+                check_declared_module(module)
+            else:
+                raise InvalidInput(
+                    "choose a Woo-maintained or declared reference module before adding product facts"
+                )
         if pv_changed and "pv_generation" in inputs:
             self.check_pv_inputs(inputs, basis)
 
@@ -403,26 +419,54 @@ class ProductSources:
             self.confirm_basis(basis, require_reference=False)
 
     def roof_basis(self, inputs: Object) -> Object:
-        """Current included roof identity without requiring a detailed PV model."""
+        """Current included roof identity without requiring a detailed PV model.
+
+        The frozen Woo proof is still read and pinned: it is the publication's
+        reference input, which exists whether or not a given roof places a
+        product module. The per-module check below is what decides whether a
+        declared tier is compared with it at all.
+        """
         basis = self.module_basis()
         self.check_roof_inputs(inputs, basis)
         return basis
 
     @staticmethod
-    def check_roof_inputs(inputs: Object, basis: Object) -> None:
-        """The same geometry/fact identity check also reads frozen historical proofs."""
+    def declared_reference(module: ModuleSpec) -> bool:
+        """Whether this roof module is a declared planning reference, not a product."""
+        return is_declared_reference(module)
+
+    @staticmethod
+    def check_declared_reference(module: ModuleSpec) -> None:
+        check_declared_module(module)
+
+    @staticmethod
+    def check_roof_inputs(inputs: Object, basis: Object | None = None) -> None:
+        """The same geometry/fact identity check also reads frozen historical proofs.
+
+        A roof module is either the Woo-maintained reference (identity checked
+        against the current publication, as before) or a declared planning
+        reference: Linker does not sell PV modules, so the configurator lets the
+        visitor pick a generic size/power tier. That tier records its own
+        numbers under ``declared_reference`` and is never a product claim.
+        """
         from .geometry import panel_poses, read_geometry
 
         geometry = read_geometry(inputs.get("geometry"))
         included = {p.array_id for p in panel_poses(geometry) if p.included}
         used = {a.module_spec_id for a in geometry.arrays if a.id in included}
         if not used:
-            raise InvalidInput("roof PV preparation requires included Woo modules")
+            raise InvalidInput("roof PV preparation requires included modules")
         for module in geometry.module_specs:
-            if module.id in used:
-                if module.source.woo is None:
-                    raise InvalidInput("choose a Woo-maintained roof module")
+            if module.id not in used:
+                continue
+            if module.source.woo is not None:
+                if basis is None:
+                    raise InvalidInput(
+                        "woo_module_proof_missing: a product module needs its maintained proof"
+                    )
                 ProductSources._check_module(module, basis)
+            else:
+                check_declared_module(module)
 
     def pv_basis(self, inputs: Object) -> Object:
         basis = self.module_basis()
@@ -430,17 +474,42 @@ class ProductSources:
         return basis
 
     @staticmethod
-    def check_pv_inputs(inputs: Object, basis: Object) -> None:
+    def check_pv_inputs(inputs: Object, basis: Object | None = None) -> None:
+        """Each module is measured against its own basis, never a shared one."""
         geometry = GeometryDocument.read(inputs.get("geometry"))
         parameters = PvGenerationParameters.read(inputs.get("pv_generation"))
-        template = cast(Object, basis["module"])
-        expected = PvModuleParameters.read(template["parameters"])
         modules = {module.id: module for module in geometry.module_specs}
+        # Only a selected product module reads the frozen Woo projection; a roof
+        # of declared tiers stays calculable without one.
+        expected: PvModuleParameters | None = None
         for item in parameters.modules:
             module = modules.get(item.module_spec_id)
             if module is None:
                 raise InvalidInput("PV module is outside the saved roof layout")
-            ProductSources._check_module(module, basis)
+            if module.source.woo is None:
+                # A declared reference is its own basis: the coefficient comes
+                # from the module, not from the published reference component.
+                declared = declared_module_basis(module)
+                if (
+                    item.module_spec_id != declared.module_spec_id
+                    or item.gamma_pdc_per_c != declared.gamma_pdc_per_c
+                ):
+                    raise InvalidInput(
+                        "declared_module_parameters_changed: PV parameters must match the declared reference module"
+                    )
+                if item.source.woo is not None or item.source.kind != "user_declared":
+                    raise InvalidInput(
+                        "declared_module_source_claim: a declared reference cannot cite a product document"
+                    )
+                continue
+            if expected is None:
+                if basis is None or not isinstance(basis.get("module"), dict):
+                    raise InvalidInput(
+                        "woo_module_proof_missing: a product module needs its maintained proof"
+                    )
+                template = cast(Object, basis["module"])
+                expected = PvModuleParameters.read(template["parameters"])
+            ProductSources._check_module(module, cast(Object, basis))
             ProductSources._check_binding(item.source, expected.source)
             if item != expected.model_copy(update={"module_spec_id": module.id}):
                 raise InvalidInput(

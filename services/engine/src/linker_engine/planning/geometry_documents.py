@@ -183,6 +183,11 @@ class ModuleSpec(Document):
     thickness_m: Positive
     stc_power_w: Positive
     source: ModuleSource
+    # A declared planning reference (a generic size/power tier the visitor
+    # picked) carries its own temperature coefficient, because no Woo product
+    # backs it. Woo-selected modules leave this null and read the coefficient
+    # from the published module parameters instead.
+    gamma_pdc_per_c: Number | None = None
 
 
 class PanelArray(Document):

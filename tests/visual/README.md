@@ -113,3 +113,56 @@ No signed-in cookie is loaded and no order, inquiry or email is submitted.
 Use a language-specific add route (for example `/de/?add-to-cart=4107`) so the
 native Woo notice is in the same language as the captured page. The manifest
 records the declared scenario; the raw full-page images remain unchanged.
+
+# Deterministic layout self-check
+
+`layout-selfcheck.mjs` loads real pages, evaluates `layout-probes.js` in the
+page and reports layout defects as selectors and measured numbers — no
+screenshots are read, so nothing depends on a human (or a model) looking at
+pixels. It uses the same Playwright installation as the capture above and
+adds no dependency.
+
+```sh
+just layout-selfcheck                      # production, 1440x900 + 390x844
+just layout-selfcheck --selftest           # planted-fixture suite
+node tests/visual/layout-selfcheck.mjs \
+  --base https://de-linker.com --out .scratch/visual-selfcheck/run \
+  --widths 1440,390 --heights 900,844 --only proforma
+```
+
+The six production pages are `home`, `products`, `proforma-request`, `cart`,
+`faq-download` and the guest inquiry confirmation at
+`/proforma-request/inquiry-received/8457/?key=…`. Each page's German twin is
+resolved from its own `<link rel="alternate" hreflang="de">` at run time, so a
+changed permalink does not silently test English twice.
+
+What it checks, all from `getComputedStyle` and `getBoundingClientRect`:
+
+| type | rule |
+| --- | --- |
+| `overflow-x-visible` | `scrollWidth - clientWidth > 1` while `overflow-x: visible`, reported once at the innermost element that spills |
+| `clipped-by-ancestor` | element extends past the padding box of a `hidden`/`clip` ancestor (scrollable ancestors are skipped: that content is reachable) |
+| `opt-out-of-centering` | grid container with `justify-items: center` (or `align-items: center`) whose child sets `justify-self`/`align-self` to start/end and measurably hugs that edge while narrower than the container — the confirmation-page CTA signature |
+| `text-clipped` | single-line text (`nowrap` or a line clamp) whose `scrollHeight` exceeds `clientHeight` under a clipping `overflow-y` |
+| `focusable-invisible` | `a`/`button`/`[role=button]`/`[tabindex]` in the tab order while `visibility: hidden`, `opacity: 0` or clipped to 1px |
+| `small-target` | an in-flow interactive element smaller than 24px in either axis (WCAG 2.2 inline-text and screen-reader-text exceptions applied) |
+| `image-broken` | a complete `img` with a source and zero `naturalWidth` |
+| `font-error` | a `document.fonts` face whose status is `error` |
+| `horizontal-scroll` | `documentElement.scrollWidth > clientWidth`, with the offending elements listed |
+| `overlap` | two in-flow sibling blocks whose intersection exceeds 40% of the smaller one (fixed/absolute/sticky layers excluded) |
+
+`opt-out-of-centering-vertical` and `small-target` carry `review` severity:
+they are real measurements but the verdict can legitimately be "intended".
+Everything else is `defect` severity and makes the command exit 1.
+
+Overlay exceptions are declared in `OVERLAY_SELECTORS` in the runner (cookie
+banner, Genie button and panel, Woo store notice, skip links); their overlap is
+their purpose. `--selftest` opens `layout-fixture.html` from disk, which plants
+one instance of every defect class plus nine near-misses that must stay silent,
+and fails if any planted class is missed or any control is reported. Run it
+whenever a probe rule changes — a suite that finds nothing on production is
+only informative if it can still find the planted bugs.
+
+The run is read-only: navigation and `page.evaluate` only. It never submits a
+form, adds to a cart, creates an order or sends mail. It writes
+`layout-selfcheck.json` under `.scratch/visual-selfcheck/` (untracked).
