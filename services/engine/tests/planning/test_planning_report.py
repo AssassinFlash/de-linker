@@ -1076,7 +1076,7 @@ def test_absent_device_inputs_keep_legacy_report_source_shape(
     products = ProductSources(
         lambda: pytest.fail("this fixture uses the frozen source")
     )
-    monkeypatch.setattr(products, "confirm_basis", lambda *args, **kwargs: None)
+    monkeypatch.setattr(products, "confirm_bases", lambda *args, **kwargs: None)
     source = report_sources(
         workspace,
         products,
@@ -1325,10 +1325,10 @@ def test_absent_device_inputs_keep_legacy_report_source_shape(
     )
     permission_checks: list[Object] = []
 
-    def confirm_once(basis: Object, *, require_reference: bool = True) -> None:
-        permission_checks.append(basis)
+    def confirm_once(bases: list[tuple[Object, bool]]) -> None:
+        permission_checks.extend(basis for basis, _require_reference in bases)
 
-    monkeypatch.setattr(products, "confirm_basis", confirm_once)
+    monkeypatch.setattr(products, "confirm_bases", confirm_once)
     explicit = report_sources(workspace, products, owner, first, options)
     assert len(json_object(explicit)["pvlib_references"]) == 1
     assert len(permission_checks) == 1
@@ -1338,7 +1338,7 @@ def test_absent_device_inputs_keep_legacy_report_source_shape(
         def withdrawn(*args: Any, **kwargs: Any) -> None:
             raise ProductEvidenceChanged("current Woo permission changed")
 
-        denied.setattr(products, "confirm_basis", withdrawn)
+        denied.setattr(products, "confirm_bases", withdrawn)
         with pytest.raises(ProductEvidenceChanged):
             report_sources(workspace, products, owner, first, options)
     for dependency in json_object(explicit)["dependencies"].values():

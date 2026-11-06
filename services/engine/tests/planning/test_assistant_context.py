@@ -74,7 +74,7 @@ def test_terminal_report_to_assistant_redacts_owned_text_but_preserves_originals
     )
     product_source = ProductSources(lambda: None)  # type: ignore[arg-type,return-value]
     monkeypatch.setattr(product_source, "equipment_basis", lambda **_: deepcopy(basis))
-    monkeypatch.setattr(product_source, "confirm_basis", lambda *_a, **_kw: None)
+    monkeypatch.setattr(product_source, "confirm_bases", lambda *_a, **_kw: None)
     project = workspace.create(
         owner,
         "Synthetic terminal report",

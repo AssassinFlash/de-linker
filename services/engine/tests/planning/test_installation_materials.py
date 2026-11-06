@@ -232,7 +232,7 @@ def test_owned_mounting_rule_report_worker_and_export_permission(
     inputs["installation"]["materials"] = [item]
     products = ProductSources(lambda: pytest.fail("unexpected live source"))
     monkeypatch.setattr(products, "equipment_basis", lambda **kwargs: basis)
-    monkeypatch.setattr(products, "confirm_basis", lambda *args, **kwargs: None)
+    monkeypatch.setattr(products, "confirm_bases", lambda *args, **kwargs: None)
     kernel = ReportKernel(workspace, products)
     service = ReportService(workspace, kernel, max_attempts=1)
     registry = ExecutionRegistry(kernel)

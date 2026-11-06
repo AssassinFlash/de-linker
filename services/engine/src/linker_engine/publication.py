@@ -236,9 +236,11 @@ class Publication:
             )
         return url
 
-    def reference_view(self, engine: Engine) -> View:
+    def reference_view(
+        self, engine: Engine, *, current: dict[str, Any] | None = None
+    ) -> View:
         """Roof operations use only the reference and its evidence."""
-        current = self.read()
+        current = self.read() if current is None else current
         return View(
             engine, {**self._scope(current), **self._reference_scope(engine, current)}
         )
@@ -537,8 +539,10 @@ class Publication:
         *,
         require_reference: bool = False,
         require_prepared: bool = False,
+        current: dict[str, Any] | None = None,
     ) -> None:
-        current = self.read()
+        # One operation may confirm several frozen proofs against the same read.
+        current = self.read() if current is None else current
         scope = view.dependencies
         if (
             scope.get("engineering_contract") != ENGINEERING_CONTRACT
