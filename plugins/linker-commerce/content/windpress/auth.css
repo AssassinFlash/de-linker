@@ -918,7 +918,7 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 	font-weight: var(--proto-weight-semibold);
 	text-decoration: none;
 }
-#tv-woo-b2b-checkout .linker-proforma-success .linker-form-primary { color: var(--proto-pill-a-fg); }
+#tv-woo-b2b-checkout .linker-proforma-success .linker-form-primary { color: var(--proto-pill-a-fg); justify-self: center; }
 #contact-form .linker-contact-form :where(a, button, input, textarea):focus-visible,
 .linker-proforma-success a:focus-visible {
 	outline: var(--proto-focus-ring);
