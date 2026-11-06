@@ -355,9 +355,11 @@ export function energyErrorText(error: unknown): string {
 export function EnergyError({
 	error,
 	openEquipment,
+	openScenario,
 }: {
 	error: unknown;
 	openEquipment?: () => void;
+	openScenario?: () => void;
 }) {
 	const issue = error instanceof ApiError ? error.evidenceIssue : null;
 	return error ? (
@@ -369,6 +371,15 @@ export function EnergyError({
 					<p>
 						<button type="button" onClick={openEquipment}>
 							{__("Equipment", "linker-tools")}
+						</button>
+					</p>
+				)}
+			{openScenario &&
+				error instanceof ApiError &&
+				error.code === "report_inputs_changed" && (
+					<p>
+						<button type="button" onClick={openScenario}>
+							{__("Recalculate energy", "linker-tools")}
 						</button>
 					</p>
 				)}
