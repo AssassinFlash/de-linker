@@ -578,6 +578,21 @@ def test_physical_lengths_unknowns_and_owned_frozen_exports(
             assert section["table"]["rows"][1][3] == text(
                 "installation_string_link_unlinked", locale
             )
+            linked_row = section["table"]["rows"][0]
+            assert linked_row[0] == "MPPT 1 · input 1"
+            assert linked_row[1] == "Recorded connection"
+            assert linked_row[2] == (
+                "inverter_a · Recorded terminal → inverter_b · Recorded terminal"
+            )
+            assert linked_row[4] == (
+                "Five-core cable: 16 m; Independent conductor A: 16 m; "
+                "Independent conductor B: 16 m"
+            )
+            assert all(
+                "private_string_" not in cell
+                for row in section["table"]["rows"]
+                for cell in row
+            )
             for assistant_locale in ("en", "de"):
                 safe = encode(_result_rows(workspace, run, assistant_locale))
                 assert b"private_string_" not in safe

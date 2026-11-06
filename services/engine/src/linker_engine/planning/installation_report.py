@@ -148,6 +148,19 @@ def installation_sections(source: Object, locale: str) -> list[ReportSection]:
                     f"installation_string_plan_{reconciliation['plan_status']}", locale
                 )
             )
+        prepared = plan.get("prepared_inputs")
+        circuit_names = {
+            str(circuit["id"]): str(circuit["name"])
+            for circuit in cast(
+                list[Object],
+                prepared.get("circuits", []) if isinstance(prepared, dict) else [],
+            )
+        }
+        port_names = {
+            (str(device["id"]), str(port["id"])): f"{device['name']} · {port['name']}"
+            for device in devices
+            for port in cast(list[Object], device["ports"])
+        }
         sections.append(
             ReportSection(
                 id="installation-pv-string-links",
@@ -212,21 +225,28 @@ def installation_sections(source: Object, locale: str) -> list[ReportSection]:
                     column_weights=[0.8, 0.8, 1.2, 1.1, 1.2, 0.9, 1.3],
                     rows=[
                         [
-                            (
-                                f"{row['unit_id']} · {row['inverter_instance_id'] or text('pv_instance_not_recorded', locale)} · "
-                                if "unit_id" in row
-                                else ""
-                            )
-                            + cast(str, row["string_id"]),
-                            cast(str, row["circuit_id"]) or "—",
+                            (f"{row['unit_id']} · " if row.get("unit_id") else "")
+                            + (
+                                f"MPPT {row['mppt']} · input {row['input']}"
+                                if row.get("mppt") is not None
+                                and row.get("input") is not None
+                                else "—"
+                            ),
+                            circuit_names.get(str(row["circuit_id"]), "—"),
                             " → ".join(
-                                f"{endpoint['instance_id']}/{endpoint['port_id']}"
+                                port_names.get(
+                                    (
+                                        str(endpoint["instance_id"]),
+                                        str(endpoint["port_id"]),
+                                    ),
+                                    "—",
+                                )
                                 for endpoint in cast(list[Object], row["endpoints"])
                             )
                             or "—",
                             text(f"installation_string_link_{row['status']}", locale),
                             "; ".join(
-                                f"{cable['id']}: {material_quantity(cable, locale)}"
+                                f"{cable.get('name') or '—'}: {material_quantity(cable, locale)}"
                                 for cable in cast(list[Object], row["cable_runs"])
                             )
                             or text("installation_string_cable_runs_missing", locale),
