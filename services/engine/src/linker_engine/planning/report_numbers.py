@@ -27,6 +27,10 @@ RANGE = " – "
 # below 1 needs before that resolution would round it away.
 DECIMALS = 3
 SIGNIFICANT = 6
+# The established 0.00001 material quantity needs ten places to stay plain.
+# This is the narrowest display widening for that case; smaller values keep
+# exponent notation instead of changing otherwise-unneeded magnitude bands.
+MAX_PLAIN_PLACES = 10
 
 _MARKS = {"en": (",", "."), "de": (".", ",")}
 
@@ -79,7 +83,7 @@ def significant(value: Json, locale: str) -> str:
         # does not acquire a fractional part from the display format.
         return _group(str(value), locale)
     places = _places(value)
-    if places > SIGNIFICANT:
+    if places > MAX_PLAIN_PLACES:
         # A magnitude such as a 1e-12 diode current would need more zeros than
         # a reader can count, so it keeps the exponent notation this report
         # already used for those values.
