@@ -445,6 +445,26 @@ def test_physical_lengths_unknowns_and_owned_frozen_exports(
             text("installation_conductor_not_recorded", locale) == row[5]
             for row in links.table.rows
         )
+        stale = copy.deepcopy(unresolved_source)
+        stale_row = stale["installation"]["pv_string_reconciliation"]["rows"][0]
+        stale_row.update(status="stale_string", mppt=None, input=None)
+        stale_row["circuit_id"] = "removed_circuit"
+        stale_row["endpoints"] = [
+            {"instance_id": "removed_instance", "port_id": "removed_port"}
+        ]
+        stale_row["cable_runs"] = [{"id": "removed_cable", "quantity": 1, "unit": "m"}]
+        stale_rendered = installation_sections(stale, locale)
+        stale_links = next(
+            s for s in stale_rendered if s.id == "installation-pv-string-links"
+        )
+        assert stale_links.table is not None
+        assert stale_links.table.rows[0][:5] == [
+            "private_string_a",
+            "removed_circuit",
+            "removed_instance/removed_port",
+            text("installation_string_link_stale_string", locale),
+            "removed_cable: 1 m",
+        ]
         # A report saved before the closure existed keeps its rows and says the
         # closure was not recorded, instead of raising or inventing one.
         historical = copy.deepcopy(unresolved_source)
@@ -579,7 +599,9 @@ def test_physical_lengths_unknowns_and_owned_frozen_exports(
                 "installation_string_link_unlinked", locale
             )
             linked_row = section["table"]["rows"][0]
-            assert linked_row[0] == "MPPT 1 · input 1"
+            assert linked_row[0] == (
+                "MPPT 1 · Input 1" if locale == "en" else "MPPT 1 · Eingang 1"
+            )
             assert linked_row[1] == "Recorded connection"
             assert linked_row[2] == (
                 "inverter_a · Recorded terminal → inverter_b · Recorded terminal"

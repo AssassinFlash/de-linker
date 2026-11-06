@@ -225,28 +225,34 @@ def installation_sections(source: Object, locale: str) -> list[ReportSection]:
                     column_weights=[0.8, 0.8, 1.2, 1.1, 1.2, 0.9, 1.3],
                     rows=[
                         [
-                            (f"{row['unit_id']} · " if row.get("unit_id") else "")
+                            (
+                                f"{row['unit_id']} · "
+                                if row.get("unit_id") is not None
+                                else ""
+                            )
                             + (
-                                f"MPPT {row['mppt']} · input {row['input']}"
+                                f"MPPT {row['mppt']} · {text('pv_input', locale)} {row['input']}"
                                 if row.get("mppt") is not None
                                 and row.get("input") is not None
-                                else "—"
+                                else cast(str, row["string_id"])
                             ),
-                            circuit_names.get(str(row["circuit_id"]), "—"),
+                            circuit_names.get(
+                                str(row["circuit_id"]), str(row["circuit_id"]) or "—"
+                            ),
                             " → ".join(
                                 port_names.get(
                                     (
                                         str(endpoint["instance_id"]),
                                         str(endpoint["port_id"]),
                                     ),
-                                    "—",
+                                    f"{endpoint['instance_id']}/{endpoint['port_id']}",
                                 )
                                 for endpoint in cast(list[Object], row["endpoints"])
                             )
                             or "—",
                             text(f"installation_string_link_{row['status']}", locale),
                             "; ".join(
-                                f"{cable.get('name') or '—'}: {material_quantity(cable, locale)}"
+                                f"{cable.get('name') or cable['id']}: {material_quantity(cable, locale)}"
                                 for cable in cast(list[Object], row["cable_runs"])
                             )
                             or text("installation_string_cable_runs_missing", locale),
