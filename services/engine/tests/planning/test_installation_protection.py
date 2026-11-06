@@ -267,7 +267,7 @@ def test_worker_freezes_protection_in_report_pdf_csv_and_private_projection(
     inputs, basis = confirmed(capacity_a=5000)
     products = ProductSources(lambda: pytest.fail("unexpected live source"))
     monkeypatch.setattr(products, "equipment_basis", lambda **kwargs: basis)
-    monkeypatch.setattr(products, "confirm_basis", lambda *args, **kwargs: None)
+    monkeypatch.setattr(products, "confirm_bases", lambda *args, **kwargs: None)
     kernel = ReportKernel(workspace, products)
     service = ReportService(workspace, kernel, max_attempts=1)
     registry = ExecutionRegistry(kernel)

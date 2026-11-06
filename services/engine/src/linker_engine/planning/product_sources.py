@@ -54,6 +54,25 @@ def worker_product_provider() -> ProductProvider:
     return Services(Settings.from_environment(), SOURCE)
 
 
+class _Confirmation:
+    """Lazy provider/current manifest shared by one operation only."""
+
+    def __init__(self, load: Callable[[], ProductProvider]) -> None:
+        self._load = load
+        self._provider: ProductProvider | None = None
+        self._manifest: Object | None = None
+
+    def provider(self) -> ProductProvider:
+        if self._provider is None:
+            self._provider = self._load()
+        return self._provider
+
+    def manifest(self) -> Object:
+        if self._manifest is None:
+            self._manifest = self.provider().publication.read()
+        return self._manifest
+
+
 class ProductSources:
     def __init__(self, load: Callable[[], ProductProvider]) -> None:
         self.load = load
@@ -64,11 +83,16 @@ class ProductSources:
     def electrical_module_basis(self) -> Object:
         return self._module_basis(electrical=True)
 
-    def _module_basis(self, *, electrical: bool) -> Object:
+    def _module_basis(
+        self, *, electrical: bool, confirmation: _Confirmation | None = None
+    ) -> Object:
         """Freeze only the used reference, not unrelated sales candidates."""
+        confirmation = confirmation or _Confirmation(self.load)
         try:
-            loaded = self.load()
-            view = loaded.publication.reference_view(loaded.engine)
+            loaded = confirmation.provider()
+            view = loaded.publication.reference_view(
+                loaded.engine, current=confirmation.manifest()
+            )
             identity = view.dependencies["reference_inputs"][0]["reference_input_id"]
             raw = next(
                 row
@@ -86,7 +110,10 @@ class ProductSources:
                 )
             )
             loaded.publication.confirm(
-                view, require_reference=True, require_prepared=True
+                view,
+                require_reference=True,
+                require_prepared=True,
+                current=confirmation.manifest(),
             )
             return result
         except (PublicationChanged, ReferenceEvidenceUnavailable) as error:
@@ -174,12 +201,36 @@ class ProductSources:
             ) from error
 
     def confirm_basis(self, basis: Object, *, require_reference: bool = True) -> None:
+        self._confirm_basis(basis, require_reference=require_reference)
+
+    def confirm_bases(self, bases: list[tuple[Object, bool]]) -> None:
+        """Confirm one operation's proofs against one current Woo snapshot."""
+        confirmation = _Confirmation(self.load)
+        for basis, require_reference in bases:
+            self._confirm_basis(
+                basis,
+                require_reference=require_reference,
+                confirmation=confirmation,
+            )
+
+    def _confirm_basis(
+        self,
+        basis: Object,
+        *,
+        require_reference: bool,
+        confirmation: _Confirmation | None = None,
+    ) -> None:
         scope = basis.get("publication")
         if basis.get("schema_version") != 1 or not isinstance(scope, dict):
             raise VersionUnavailable("pinned Woo product proof is missing")
+        confirmation = confirmation or _Confirmation(self.load)
         nested = basis.get("pv_module_inputs")
         if isinstance(nested, dict):
-            self.confirm_basis(nested)
+            self._confirm_basis(
+                nested,
+                require_reference=True,
+                confirmation=confirmation,
+            )
         if require_reference and set(basis) == {
             "schema_version",
             "publication",
@@ -190,10 +241,9 @@ class ProductSources:
             # Obtain a fresh native permission/preparation proof, then require
             # exact component, document and reference identities. Retained
             # profile bytes and their original publication proof stay intact.
-            current = (
-                self.electrical_module_basis()
-                if "electrical_product" in basis
-                else self.module_basis()
+            current = self._module_basis(
+                electrical="electrical_product" in basis,
+                confirmation=confirmation,
             )
             current_scope = cast(Object, current["publication"])
             if (
@@ -213,7 +263,7 @@ class ProductSources:
                 raise ProductEvidenceChanged("current Woo module data changed")
             return
         try:
-            loaded = self.load()
+            loaded = confirmation.provider()
             if (
                 basis.get("compatibility_origin") == "woocommerce"
                 and loaded.publication.feed.get("compatibility_origin") != "woocommerce"
@@ -225,6 +275,7 @@ class ProductSources:
                 View(loaded.engine, scope),
                 require_reference=require_reference,
                 require_prepared=True,
+                current=confirmation.manifest(),
             )
         except PublicationChanged as error:
             raise ProductEvidenceChanged("current Woo product data changed") from error

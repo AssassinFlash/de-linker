@@ -152,7 +152,7 @@ def report_service(
     workspace: Workspace, monkeypatch: pytest.MonkeyPatch
 ) -> ReportService:
     sources = ProductSources(lambda: pytest.fail("uses the retained Woo proof"))
-    monkeypatch.setattr(sources, "confirm_basis", lambda *args, **kwargs: None)
+    monkeypatch.setattr(sources, "confirm_bases", lambda *args, **kwargs: None)
     return ReportService(workspace, ReportKernel(workspace, sources), max_attempts=1)
 
 

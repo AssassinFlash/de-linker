@@ -365,7 +365,7 @@ def test_scoped_report_source_and_retained_floor_are_frozen(
     inputs["installation"]["cable_runs"] = []
     source = ProductSources(lambda: None)  # type: ignore[arg-type,return-value]
     monkeypatch.setattr(source, "equipment_basis", lambda **_: copy.deepcopy(basis))
-    monkeypatch.setattr(source, "confirm_basis", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr(source, "confirm_bases", lambda *_args, **_kwargs: None)
     project = workspace.create(
         owner,
         "Terminal fixture",

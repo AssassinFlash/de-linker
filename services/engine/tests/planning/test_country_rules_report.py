@@ -101,7 +101,7 @@ def test_saved_rules_reach_all_consumers_and_remain_frozen(
     )
 
     products = ProductSources(lambda: pytest.fail("must use retained Woo proof"))
-    monkeypatch.setattr(products, "confirm_basis", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr(products, "confirm_bases", lambda *_args, **_kwargs: None)
     kernel = ReportKernel(workspace, products)
     options = ReportOptions.read(
         {

@@ -1843,8 +1843,17 @@ def test_pv_reference_proof_tracks_its_component_instead_of_sales_compatibility(
         version="fixture",
     )
     withdrawn = False
+    loads = 0
+    reads = 0
+
+    def load() -> SimpleNamespace:
+        nonlocal loads
+        loads += 1
+        return loaded
 
     def current(self: Publication) -> FixtureObject:
+        nonlocal reads
+        reads += 1
         manifest = publication_manifest(self.feed)
         for row in manifest["products"]:
             row["ready"]["engineering"] = True
@@ -1857,7 +1866,7 @@ def test_pv_reference_proof_tracks_its_component_instead_of_sales_compatibility(
         return manifest
 
     monkeypatch.setattr(Publication, "read", current)
-    source = ProductSources(lambda: loaded)
+    source = ProductSources(load)
     proof = json_object(source.module_basis())
     proof["publication"]["compatibility_revision"] = "0" * 64
     source.confirm_basis(proof)
@@ -1878,6 +1887,24 @@ def test_pv_reference_proof_tracks_its_component_instead_of_sales_compatibility(
     withdrawn = True
     with pytest.raises(ProductEvidenceChanged):
         source.confirm_basis(proof)
+
+    withdrawn = False
+    loads = reads = 0
+    source.confirm_bases([(proof, True), (electrical, True), (electrical, False)])
+    assert (loads, reads) == (1, 1)
+    withdrawn = True
+    with pytest.raises(ProductEvidenceChanged):
+        source.confirm_bases([(proof, True)])
+    assert (loads, reads) == (2, 2)
+    withdrawn = False
+    source.confirm_bases([(electrical, False)])
+    withdrawn = True
+    with pytest.raises(ProductEvidenceChanged):
+        source.confirm_bases([(electrical, False)])
+    assert (loads, reads) == (4, 4)
+    with pytest.raises(VersionUnavailable, match="pinned Woo product proof"):
+        source.confirm_bases([({}, False)])
+    assert (loads, reads) == (4, 4)
 
 
 def test_cited_quantities_keep_apparent_power_conditions_and_table_columns(

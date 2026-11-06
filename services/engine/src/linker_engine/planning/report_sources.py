@@ -1088,7 +1088,9 @@ def confirm_report_sources(
                 "installation",
             }
         )
-    for sha, require_reference in distinct.items():
-        products.confirm_basis(
-            workspace.blobs.object(sha), require_reference=require_reference
-        )
+    products.confirm_bases(
+        [
+            (workspace.blobs.object(sha), require_reference)
+            for sha, require_reference in distinct.items()
+        ]
+    )
