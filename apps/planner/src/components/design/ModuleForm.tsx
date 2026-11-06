@@ -9,7 +9,7 @@ import {
 } from "../../domain/moduleTiers.ts";
 import type { GeometryFormProps } from "./RoofForm.tsx";
 import { GeometryForm } from "./GeometryForm.tsx";
-import { formatDecimal } from "../../domain/decimal.ts";
+import { formatDecimal, toPercent } from "../../domain/decimal.ts";
 import { __ } from "../../i18n.ts";
 
 const millimetres = (value: number) => String(Math.round(value * 1000));
@@ -78,7 +78,7 @@ export function ModuleForm({
 						[__("Rated power at STC", "linker-tools"), tier.stc_power_w, "W"],
 						[
 							__("Temperature coefficient of maximum power", "linker-tools"),
-							tier.gamma_pdc_per_c * 100,
+							toPercent(tier.gamma_pdc_per_c),
 							"%/°C",
 						],
 						[

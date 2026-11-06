@@ -26,6 +26,7 @@ from .report_capacity import capacity_section
 from .report_copy import TEXT, check_label, text
 from .report_numbers import comparison_values, percent
 from .report_numbers import number as number
+from .report_pv_components import pv_components_note
 from .report_pvlib import pvlib_sections
 
 
@@ -625,7 +626,8 @@ def build_report(source: Object) -> Report:
                 column_weights=[1, 3, 2],
             )
         else:
-            part_paragraphs = [text("pv_components_" + str(pv_parts["reason"]), locale)]
+            component_note = pv_components_note(pv_parts, locale)
+            part_paragraphs = [component_note] if component_note is not None else []
         sections.append(
             ReportSection(
                 id="pv-components",
@@ -819,36 +821,52 @@ def build_report(source: Object) -> Report:
                 )
             reference_table: ReportTable | None = None
             reference_paragraphs = [text("pvgis_roof_reference_scope", locale)]
-            if any("comparison_role" in use for use in reference_uses):
+            if any("comparison_role" in use for use in reference_uses) and isinstance(
+                roof_reference.get("pv_components"), dict
+            ):
                 reference_parts = cast(Object, roof_reference["pv_components"])
-                components = cast(list[Object], reference_parts["components"])
-                reference_paragraphs.append(text("pv_components_scope", locale))
-                reference_rows.append(
-                    row(
-                        "pv_components_capacity",
-                        number(reference_parts["nameplate_kwp"], locale, "kWp"),
-                    )
-                )
-                for component in components:
-                    citation = cast(Object, component["source"])
+                if "nameplate_kwp" in reference_parts:
+                    components = cast(list[Object], reference_parts["components"])
+                    reference_paragraphs.append(text("pv_components_scope", locale))
                     reference_rows.append(
-                        row("source", component["model"], cast(str, citation["url"]))
+                        row(
+                            "pv_components_capacity",
+                            number(reference_parts["nameplate_kwp"], locale, "kWp"),
+                        )
                     )
-                reference_table = ReportTable(
-                    columns=[
-                        text(key, locale)
-                        for key in ("quantity", "model", "pv_components_module_power")
-                    ],
-                    rows=[
-                        [
-                            number(component["quantity"], locale),
-                            str(component["model"]),
-                            number(component["stc_power_w"], locale, "W"),
-                        ]
-                        for component in components
-                    ],
-                    column_weights=[1, 3, 2],
-                )
+                    for component in components:
+                        citation = cast(Object, component["source"])
+                        reference_rows.append(
+                            ReportRow(
+                                label=text("source", locale)
+                                + f" · {text('page', locale)} {citation['page']}",
+                                value=str(component["model"]),
+                                href=cast(str, citation["url"]),
+                            )
+                        )
+                    reference_table = ReportTable(
+                        columns=[
+                            text(key, locale)
+                            for key in (
+                                "quantity",
+                                "model",
+                                "pv_components_module_power",
+                            )
+                        ],
+                        rows=[
+                            [
+                                number(component["quantity"], locale),
+                                str(component["model"]),
+                                number(component["stc_power_w"], locale, "W"),
+                            ]
+                            for component in components
+                        ],
+                        column_weights=[1, 3, 2],
+                    )
+                else:
+                    component_note = pv_components_note(reference_parts, locale)
+                    if component_note is not None:
+                        reference_paragraphs.append(component_note)
             sections.append(
                 ReportSection(
                     id=f"pvgis-roof-reference-{index}",

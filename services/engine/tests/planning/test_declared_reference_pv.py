@@ -62,7 +62,7 @@ def tier_spec(
 
 
 def tier_geometry(*, gamma: float | None = -0.0034) -> FixtureObject:
-    value = cast(FixtureObject, fixture_geometry())
+    value = fixture_geometry()
     value["module_specs"] = [tier_spec(gamma=gamma)]
     for array in cast(list[FixtureObject], value["arrays"]):
         array["module_spec_id"] = "module_tier"
@@ -71,7 +71,7 @@ def tier_geometry(*, gamma: float | None = -0.0034) -> FixtureObject:
 
 def tier_parameters(*, gamma: float | None = -0.0034) -> FixtureObject:
     """PV parameters a browser sends for that tier: its own coefficient."""
-    value = cast(FixtureObject, parameter_document())
+    value = parameter_document()
     value["modules"] = [
         {
             "module_spec_id": "module_tier",
@@ -174,11 +174,11 @@ def test_pv_parameters_cannot_claim_a_product_document(tmp_path: Path) -> None:
 def test_the_woo_module_path_is_unchanged(tmp_path: Path) -> None:
     """Regression guard: the product path still needs the maintained record."""
     products, basis, template = woo_template(tmp_path)
-    geometry = cast(FixtureObject, fixture_geometry())
+    geometry = fixture_geometry()
     geometry["module_specs"] = [
         {**cast(Object, template["specification"]), "id": "module"}
     ]
-    parameters = cast(FixtureObject, parameter_document())
+    parameters = parameter_document()
     parameters["modules"] = [
         {**cast(Object, template["parameters"]), "module_spec_id": "module"}
     ]
@@ -192,7 +192,7 @@ def test_the_woo_module_path_is_unchanged(tmp_path: Path) -> None:
             ProductSources.check_roof_inputs({"geometry": geometry})
         assert "woo_module_proof_missing" in str(raised.value)
         # An edited specification still fails against the published record.
-        edited = cast(FixtureObject, geometry)
+        edited = geometry
         edited["module_specs"][0]["stc_power_w"] = 495
         with pytest.raises(InvalidInput):
             ProductSources.check_roof_inputs({"geometry": edited}, basis)
@@ -203,7 +203,7 @@ def test_a_mixed_roof_judges_each_module_against_its_own_basis(
 ) -> None:
     """One array on the product module, one on a tier: both rules at once."""
     _, basis, template = woo_template(tmp_path)
-    geometry = cast(FixtureObject, fixture_geometry())
+    geometry = fixture_geometry()
     woo_spec = {**cast(Object, template["specification"]), "id": "module"}
     geometry["module_specs"] = [woo_spec, tier_spec("module_tier")]
     # Second array placed on the tier; the fixture's own array keeps the product.
@@ -211,7 +211,7 @@ def test_a_mixed_roof_judges_each_module_against_its_own_basis(
     tier_array.update(id="array_tier", module_spec_id="module_tier", origin_uv=[0, 0])
     geometry["arrays"] = [*cast(list[Object], geometry["arrays"]), tier_array]
 
-    parameters = cast(FixtureObject, parameter_document())
+    parameters = parameter_document()
     parameters["modules"] = [
         {**cast(Object, template["parameters"]), "module_spec_id": "module"},
         {
@@ -229,7 +229,7 @@ def test_a_mixed_roof_judges_each_module_against_its_own_basis(
     parameters["arrays"] = [
         *cast(list[Object], parameters["arrays"]),
         {
-            **cast(Object, cast(list[Object], parameters["arrays"])[0]),
+            **cast(list[Object], parameters["arrays"])[0],
             "array_id": "array_tier",
         },
     ]

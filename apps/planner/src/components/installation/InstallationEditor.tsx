@@ -15,7 +15,7 @@ import {
 	mountingBasisIsCurrent,
 } from "../../domain/installation.ts";
 import { sameJson } from "../../domain/draft.ts";
-import { formatDecimal } from "../../domain/decimal.ts";
+import { formatComputedDecimal } from "../../domain/decimal.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { JsonObject, Session } from "../../data/protocol.ts";
 import { ApiError } from "../../data/protocol.ts";
@@ -812,12 +812,12 @@ export function InstallationEditor({
 											<td>
 												{c.quantity === null
 													? "—"
-													: formatDecimal(c.quantity, locale)}
+													: formatComputedDecimal(c.quantity, locale)}
 											</td>
 											<td>
 												{c.reasons.length
 													? c.reasons.map(reason).join("; ")
-													: `${formatDecimal(c.route_length_m, locale)} + ${formatDecimal(c.extra_length_m, locale)}`}
+													: `${formatComputedDecimal(c.route_length_m, locale)} + ${formatComputedDecimal(c.extra_length_m, locale)}`}
 											</td>
 											<td>{conductorLabel(c.conductor, locale)}</td>
 										</tr>

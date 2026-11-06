@@ -1060,6 +1060,132 @@ def test_report_omits_comparison_location_and_private_note(
         row.label != text("pv_components_capacity", locale) for row in historical_rows
     )
     assert any(row.label == text("pvlib_array", locale) for row in historical_rows)
+
+    declared_projection: Object = {
+        **legacy_projection,
+        "pv_components": {
+            "status": "unavailable",
+            "reason": "declared_reference_module",
+        },
+    }
+    declared_section = pvlib_sections(
+        {"pvlib_references": [declared_projection]}, locale
+    )[0]
+    assert text("pv_components_declared_reference_module", locale) in (
+        declared_section.paragraphs
+    )
+    assert all(
+        row.label != text("pv_components_capacity", locale)
+        for row in declared_section.rows
+    )
+    assert any(
+        row.label == text("pvlib_array", locale) for row in declared_section.rows
+    )
+
+    reference_families = (
+        "pvgis_roof_ac_references",
+        "pvlib_references",
+        "geometric_pv_references",
+    )
+    section_ids = (
+        "pvgis-roof-reference-0",
+        "pvlib-reference-0",
+        "pvlib-reference-1",
+        "geometric-pv-reference-0",
+    )
+    for reason in (
+        "declared_reference_module",
+        "no_saved_layout",
+        "unknown_future_reason",
+    ):
+        unavailable_source = deepcopy(source)
+        for family in reference_families:
+            for reference in cast(list[Object], unavailable_source[family]):
+                reference["pv_components"] = {
+                    "status": "unavailable",
+                    "reason": reason,
+                }
+        unavailable_report = build_report(unavailable_source)
+        for identifier in section_ids:
+            section = next(
+                item for item in unavailable_report.sections if item.id == identifier
+            )
+            assert all(
+                row.label != text("pv_components_capacity", other_locale)
+                for row in section.rows
+            )
+            if reason != "unknown_future_reason":
+                assert (
+                    text("pv_components_" + reason, other_locale) in section.paragraphs
+                )
+
+    historical_source = deepcopy(source)
+    historical_roof = cast(list[Object], historical_source["pvgis_roof_ac_references"])[
+        0
+    ]
+    del historical_roof["pv_components"]
+    historical_report = build_report(historical_source)
+    historical_section = next(
+        item
+        for item in historical_report.sections
+        if item.id == "pvgis-roof-reference-0"
+    )
+    assert all(
+        row.label != text("pv_components_capacity", other_locale)
+        for row in historical_section.rows
+    )
+
+    shared_source = deepcopy(source)
+    shared_components: Object = {
+        "status": "unavailable",
+        "reason": "declared_reference_module",
+    }
+    shared_source["pv_components"] = shared_components
+    for reference in cast(list[Object], shared_source["pvlib_references"]):
+        reference["pv_components"] = deepcopy(shared_components)
+    shared_report = build_report(shared_source)
+    shared_note = text("pv_components_declared_reference_module", other_locale)
+    assert (
+        sum(
+            paragraph == shared_note
+            for section in shared_report.sections
+            for paragraph in section.paragraphs
+        )
+        == 1
+    )
+
+    cited_source = deepcopy(source)
+    cited_roof = cast(list[Object], cited_source["pvgis_roof_ac_references"])[0]
+    cited_roof["pv_components"] = {
+        "nameplate_kwp": 0.45,
+        "components": [
+            {
+                "model": "Cited module",
+                "quantity": 1,
+                "stc_power_w": 450,
+                "source": {
+                    "url": "https://example.invalid/module.pdf",
+                    "page": 2,
+                },
+            }
+        ],
+    }
+    cited_report = build_report(cited_source)
+    cited_section = next(
+        item for item in cited_report.sections if item.id == "pvgis-roof-reference-0"
+    )
+    citation_row = next(
+        row for row in cited_section.rows if row.value == "Cited module"
+    )
+    assert citation_row.label == (
+        text("source", other_locale) + " · " + text("page", other_locale) + " 2"
+    )
+    assert citation_row.href == "https://example.invalid/module.pdf"
+    assert any(
+        row.label == text("pv_components_capacity", other_locale)
+        for row in cited_section.rows
+    )
+
     localized = workspace.evaluate(
         owner, project.id, 1, context, key="localized-report", max_attempts=1
     )

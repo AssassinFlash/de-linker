@@ -15,6 +15,7 @@ from typing import Any, cast
 
 from .canonical import Json, Object, encode
 from .report_copy import text
+from .report_numbers import number
 
 
 def project_materials(source: Object) -> Object:
@@ -525,12 +526,7 @@ def material_quantity(line: Object, locale: str) -> str:
     value = line.get("quantity")
     if type(value) not in (int, float) or not math.isfinite(cast(float, value)):
         return "—"
-    shown = format(Decimal(str(value)), ",f")
-    if "." in shown:
-        shown = shown.rstrip("0").rstrip(".")
-    if locale == "de":
-        shown = shown.translate(str.maketrans(",.", ".,"))
-    return f"{shown} {material_unit(line, locale)}"
+    return number(value, locale, material_unit(line, locale))
 
 
 def _cell(value: Any) -> str:

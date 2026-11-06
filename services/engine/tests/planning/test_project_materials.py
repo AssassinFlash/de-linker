@@ -16,7 +16,11 @@ from pypdf import PdfReader
 from linker_engine import pdf
 from linker_engine.planning.canonical import Object
 from linker_engine.planning.equipment_facts import compile_product
-from linker_engine.planning.project_materials import materials_csv, project_materials
+from linker_engine.planning.project_materials import (
+    material_quantity,
+    materials_csv,
+    project_materials,
+)
 from linker_engine.planning.report_model import build_report
 
 
@@ -398,3 +402,9 @@ def test_en_and_de_reports_and_csv_use_the_same_material_model() -> None:
         )
         assert any('"quote":"PV terminals × 16"' in row[6] for row in rows[2:])
         assert any(condition in row[6] for row in rows[2:])
+
+
+def test_route_quantity_uses_report_display_precision() -> None:
+    line: Object = {"quantity": 12.36931687685298, "unit": "m"}
+    assert material_quantity(line, "en") == "12.369 m"
+    assert material_quantity(line, "de") == "12,369 m"

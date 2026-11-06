@@ -18,6 +18,7 @@ from pydantic import ValidationError
 from linker_engine.planning.errors import InvalidInput
 from linker_engine.planning.geometry import read_geometry
 from linker_engine.planning.geometry_documents import ModuleSource, ModuleSpec
+from linker_engine.planning.product_binding import WooReference
 from linker_engine.planning.product_sources import (
     DECLARED_REFERENCE_PREFIX,
     ProductSources,
@@ -114,9 +115,9 @@ def test_a_woo_module_still_needs_the_maintained_datasheet() -> None:
             document_sha256=None,
             url=None,
             page=None,
-            woo={
-                "product_id": 1,
-                "product_revision": "rev-1",
-                "reference_input_id": "trina_reference",
-            },
+            woo=WooReference(
+                product_id=1,
+                product_revision="rev-1",
+                reference_input_id="trina_reference",
+            ),
         )

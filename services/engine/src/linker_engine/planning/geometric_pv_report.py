@@ -14,7 +14,7 @@ from .pv_profile_artifacts import _object
 from .report_copy import text
 from .report_numbers import number, span
 from .report_pv_arrays import array_identities, placements_of
-from .report_pv_components import pv_components
+from .report_pv_components import pv_components, pv_components_note
 from .report_pvlib import PvReferenceParts, pvlib_rows
 from .storage import Blobs
 
@@ -273,6 +273,12 @@ def geometric_pv_sections(references: list[Json], locale: str) -> list[ReportSec
             )
             for usage in cast(list[Json], reference["used_by"])
         )
+        component_parts = reference.get("pv_components")
+        component_note = (
+            pv_components_note(component_parts, locale)
+            if isinstance(component_parts, dict)
+            else None
+        )
         result.append(
             ReportSection(
                 id=f"geometric-pv-reference-{index}",
@@ -308,6 +314,7 @@ def geometric_pv_sections(references: list[Json], locale: str) -> list[ReportSec
                         if "arrays" in reference
                         else []
                     ),
+                    *([component_note] if component_note is not None else []),
                 ],
                 rows=rows,
             )

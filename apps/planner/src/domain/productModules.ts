@@ -72,5 +72,7 @@ export function isCurrentRoofModule(
 ): boolean {
 	if (!specification) return false;
 	if (isDeclaredReferenceModule(specification)) return true;
-	return !!templates?.some((template) => matchesModule(specification, template));
+	return !!templates?.some((template) =>
+		matchesModule(specification, template),
+	);
 }
