@@ -32,8 +32,8 @@ def _declared_roof() -> tuple[FixtureObject, FixtureObject]:
     """The fixture roof with its one module replaced by a declared tier."""
     from .test_pv_generation import geometry as fixture_geometry
 
-    geometry = cast(FixtureObject, fixture_geometry())
-    parameters = cast(FixtureObject, parameter_document())
+    geometry = fixture_geometry()
+    parameters = parameter_document()
     note = (
         "declared_reference — Generic tier planning reference; unverified "
         "planning assumption, not a manufacturer datasheet value."
@@ -229,7 +229,7 @@ def test_the_woo_roof_still_prepares_and_still_binds_the_product(
         broken = cast(Object, project.inputs["pv_generation"])
         broken["modules"] = [
             {
-                **cast(Object, cast(list[Object], broken["modules"])[0]),
+                **cast(list[Object], broken["modules"])[0],
                 "gamma_pdc_per_c": -0.99,
             }
         ]
@@ -290,12 +290,7 @@ def test_declared_reference_module_passes_pv_string_assessment(
         result = json_object(assess_pv_strings(value, basis))
         assert result["assigned_modules"] == len(included_ids)
         assert result["included_modules"] == len(included_ids)
-        checks = {
-            str(cast(Object, c)["id"]): cast(Object, c)
-            for c in cast(list[Object], result["checks"])
-        }
+        checks = {str(c["id"]): c for c in cast(list[Object], result["checks"])}
         assert checks["pv_layout_coverage"]["status"] == "satisfied"
         assert checks["pv_nameplate_layout"]["status"] == "satisfied"
         assert checks["pv_cold_voc:string_1"]["status"] == "unresolved"
-
-

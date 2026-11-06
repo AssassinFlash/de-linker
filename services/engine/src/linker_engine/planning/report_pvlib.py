@@ -17,7 +17,7 @@ from .pv_profile_artifacts import model_dependencies, prepared_profile
 from .report_copy import text
 from .report_numbers import significant, span
 from .report_pv_arrays import array_identities, placements_of
-from .report_pv_components import pv_components
+from .report_pv_components import pv_components, pv_components_note
 from .storage import Blobs
 
 
@@ -345,7 +345,7 @@ def pvlib_rows(
     # A reference that recorded no component list predates component
     # retention. Its other rows stay exactly as saved, and no capacity is
     # invented from a current layout for it.
-    if components is not None:
+    if components is not None and "nameplate_kwp" in components:
         rows.append(
             one(
                 "pv_components_capacity",
@@ -472,9 +472,16 @@ def pvlib_sections(source: Object, locale: str) -> list[ReportSection]:
     sections = []
     for index, value in enumerate(references):
         reference = _object(value)
-        weather = _object(reference["weather"])
+        parts = PvReferenceParts.of(reference)
+        weather = parts.weather
         tmy = isinstance(weather.get("capture"), dict)
-        dc_group = isinstance(reference.get("converter_id"), str)
+        dc_group = parts.converter_id is not None
+        component_note = (
+            pv_components_note(parts.components, locale)
+            if parts.components is not None
+            and parts.components != source.get("pv_components")
+            else None
+        )
         sections.append(
             ReportSection(
                 id=f"pvlib-reference-{index}",
@@ -492,8 +499,9 @@ def pvlib_sections(source: Object, locale: str) -> list[ReportSection]:
                         if dc_group and not tmy
                         else []
                     ),
+                    *([component_note] if component_note is not None else []),
                 ],
-                rows=pvlib_rows(PvReferenceParts.of(reference), locale),
+                rows=pvlib_rows(parts, locale),
             )
         )
     return sections

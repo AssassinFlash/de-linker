@@ -4,6 +4,7 @@ import type {
 	InstallationCircuit,
 } from "../../domain/installation.ts";
 import { installationId } from "../../domain/installation.ts";
+import { formatComputedDecimal } from "../../domain/decimal.ts";
 import type {
 	ProtectionAssessment,
 	ProtectionComparison,
@@ -216,12 +217,8 @@ export function InstallationProtection({
 				"Thermische Kurzschlussfestigkeit der Ader",
 			),
 		})[section];
-	const numbers = new Intl.NumberFormat(locale, {
-		maximumSignificantDigits: 6,
-		useGrouping: false,
-	});
 	const n = (value: number | null | undefined) =>
-		value == null ? "—" : numbers.format(value);
+		value == null ? "—" : formatComputedDecimal(value, locale);
 	const displayValue = (value: unknown) =>
 		typeof value === "number" ? n(value) : String(value ?? "—");
 	const circuitLabel = (item: InstallationCircuit) =>

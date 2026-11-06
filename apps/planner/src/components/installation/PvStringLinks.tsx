@@ -8,7 +8,7 @@ import type {
 import { readInstallation } from "../../domain/installation.ts";
 import type { PvPlantStringPlan } from "../../domain/pvPlantStrings.ts";
 import type { PvString, PvStringPlan } from "../../domain/pvStrings.ts";
-import { formatDecimal } from "../../domain/decimal.ts";
+import { formatComputedDecimal } from "../../domain/decimal.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
 import {
@@ -390,7 +390,7 @@ export function PvStringLinks({
 													{row.cable_runs
 														.map(
 															(c) =>
-																`${c.name}: ${c.quantity === null ? "—" : formatDecimal(c.quantity, locale) + " m"} · ${conductorLabel(c.conductor, locale)}`,
+																`${c.name}: ${c.quantity === null ? "—" : formatComputedDecimal(c.quantity, locale) + " m"} · ${conductorLabel(c.conductor, locale)}`,
 														)
 														.join("; ") ||
 														__("No cable runs recorded", "linker-tools")}

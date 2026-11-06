@@ -1,4 +1,5 @@
 import type { ElectricalReview } from "../../domain/installationElectrical.ts";
+import { formatComputedDecimal } from "../../domain/decimal.ts";
 import { electricalText } from "./ElectricalConditionFields.tsx";
 import { CableSource, RevisionCode } from "./CableReferenceFacts.tsx";
 export function ElectricalResults({
@@ -9,13 +10,8 @@ export function ElectricalResults({
 	locale: string;
 }) {
 	const t = (en: string, de: string) => electricalText(locale, en, de);
-	// Match installation_electrical_report.py::_number (.6g): six significant
-	// digits for presentation only; frozen values and editable inputs stay exact.
-	const numbers = new Intl.NumberFormat(locale, {
-		maximumSignificantDigits: 6,
-		useGrouping: false,
-	});
-	const n = (v: number | null) => (v === null ? "—" : numbers.format(v));
+	const n = (v: number | null) =>
+		v === null ? "—" : formatComputedDecimal(v, locale);
 	const reasons: Record<string, string> = {
 		dc_condition_not_applicable: t(
 			"DC conditions do not apply to this circuit.",

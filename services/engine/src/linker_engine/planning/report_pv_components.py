@@ -23,6 +23,7 @@ from .pv_profile_artifacts import model_dependencies
 from .pv_profile_preparation import PROFILE_PURPOSE
 from .pvgis_reference_profile import PROFILE_PURPOSE as ROOF_AC_PURPOSE
 from .pvgis_reference_profile import reference_bundle
+from .report_copy import text
 from .storage import Blobs
 
 
@@ -30,6 +31,19 @@ def _object(value: Json) -> Object:
     if not isinstance(value, dict):
         raise VersionUnavailable("the saved PV component source is incomplete")
     return value
+
+
+def pv_components_note(parts: Object, locale: str) -> str | None:
+    if "nameplate_kwp" in parts:
+        return None
+    reason = parts.get("reason")
+    if reason not in {
+        "no_saved_layout",
+        "no_woo_module_proof",
+        "declared_reference_module",
+    }:
+        return None
+    return text("pv_components_" + reason, locale)
 
 
 def pv_components(

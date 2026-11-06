@@ -526,10 +526,7 @@ export function Workspace({
 						<h2 id="lp-projects-heading">
 							{__("Saved projects", "linker-tools")}
 						</h2>
-						<button
-							className="lp-button"
-							onClick={() => setQuickStart(true)}
-						>
+						<button className="lp-button" onClick={() => setQuickStart(true)}>
 							<Icon name="plus" />
 							{__("Start a solution", "linker-tools")}
 						</button>

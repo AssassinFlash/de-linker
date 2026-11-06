@@ -27,6 +27,18 @@ export function formatDecimal(value: number | null, locale: string): string {
 				maximumSignificantDigits: 21,
 			}).format(value);
 }
+// Matches installation_electrical_report.py::_number (.6g); display only.
+export function formatComputedDecimal(
+	value: number | null,
+	locale: string,
+): string {
+	return value === null
+		? ""
+		: new Intl.NumberFormat(locale, {
+				useGrouping: false,
+				maximumSignificantDigits: 6,
+			}).format(value);
+}
 export function parseDecimal(text: string, locale: string): number | null {
 	const raw = text.trim();
 	if (!raw) return null;

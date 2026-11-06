@@ -1,5 +1,6 @@
 import type { CableQuantity } from "../../domain/installation.ts";
 import type { ElectricalReview } from "../../domain/installationElectrical.ts";
+import { formatComputedDecimal } from "../../domain/decimal.ts";
 import { CableSource, RevisionCode } from "./CableReferenceFacts.tsx";
 import { electricalText } from "./ElectricalConditionFields.tsx";
 import { layingLabel } from "./ReferenceCurrentFields.tsx";
@@ -16,11 +17,7 @@ export function ReferenceCurrentResults({
 	const segments = review.reference_current_segments ?? [];
 	if (!segments.length) return null;
 	const t = (en: string, de: string) => electricalText(locale, en, de),
-		n = (value: number) =>
-			new Intl.NumberFormat(locale, {
-				maximumSignificantDigits: 6,
-				useGrouping: false,
-			}).format(value),
+		n = (value: number) => formatComputedDecimal(value, locale),
 		status = {
 			not_evaluated: t("Comparison unavailable", "Vergleich nicht möglich"),
 			below_reference: t("Below the listed current", "Unter dem Tabellenwert"),

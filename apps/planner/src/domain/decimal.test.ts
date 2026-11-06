@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
+	formatComputedDecimal,
 	formatDecimal,
 	parseDecimal,
 	toPercent,
@@ -18,6 +19,12 @@ test("EN/DE numeric input rejects grouping instead of silently changing magnitud
 	assert.throws(() => parseDecimal("1e100", "en-GB"));
 	assert.equal(formatDecimal(1234.5, "de-DE"), "1234,5");
 	assert.equal(formatDecimal(1234.5, "en-GB"), "1234.5");
+});
+
+test("computed measurements use the electrical report display precision", () => {
+	assert.equal(formatComputedDecimal(12.36931687685298, "en-GB"), "12.3693");
+	assert.equal(formatComputedDecimal(12.36931687685298, "de-DE"), "12,3693");
+	assert.equal(formatComputedDecimal(null, "en-GB"), "");
 });
 
 test("percent boundaries shift declared decimal digits without binary multiplication artifacts or hidden rounding", () => {
