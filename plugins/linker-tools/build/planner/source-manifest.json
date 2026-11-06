@@ -69,9 +69,9 @@
     "src/components/energy/DirectBeamSetup.tsx": "a86247abc1c20d4b6d6ebcf4d12578d0fb588eb74e546f016f042b8ebdbf0c9d",
     "src/components/energy/DraftTransferButton.tsx": "88650c0d2d3cd913cdf9740750232db4b58329149fb91f07e0e0a8f4c6f18a65",
     "src/components/energy/EnergyComparison.tsx": "043827a5588d55422a1862f7b38ef18249648d053b2ccd4472fb9e85f8708b21",
-    "src/components/energy/EnergyError.tsx": "a228131ef71d8476ff2e454eb59f4f400a0e33f1333764193e212e88f5a6de90",
+    "src/components/energy/EnergyError.tsx": "437ff8964cfeaaa423e7003590ea8f68772fb9a5df1a146e3d1b496ee76b2ba0",
     "src/components/energy/EnergyFlowChart.tsx": "6aea8bf01798fd6ec3f70e121f641a6f4f921dc36374161fa16d169ae03af519",
-    "src/components/energy/EnergyWorkspace.tsx": "6b944eb2f7d0d13454820fc63d507d3a2a2f938ad3f61654406783eb1274c1ea",
+    "src/components/energy/EnergyWorkspace.tsx": "36be25f6e52f2665f5432949422c1363f1177cd010e444b61c31171f5d55ed40",
     "src/components/energy/GeometricPvSetup.tsx": "4160faf71f9c2cd9a0c4e9390479dc588f8e2b3ed3b5afc2adfdfd488ab23203",
     "src/components/energy/InitialInventoryForm.tsx": "026e5e9c7c7a5f2fb4c10fa7818af2a5fb19a9f7d4a5914dc498980cdbe20c55",
     "src/components/energy/OperatingPeriodForm.tsx": "9f73acaed60f9474d76b35685ed66482972bac4c2d4875c6b86f8866b87fb0c7",
@@ -299,13 +299,13 @@
     "vite.config.ts": "124325835376cd0382f1a8c0652d2264597cb7ae6f054f05b7e1807bbf98916d"
   },
   "build": {
-    "assets/EnergyFlowChart-CHbAbRQC.js": "695bbaf064b6de584d2cd8b7ebf3e41d07a62101b79bdbaf40b8cb25f43ce010",
-    "assets/MapViewport-CXaS9ez9.js": "12b5ed750e5dc936ca1818ada34d47a5a036fb88f6273ce2190bd65591a0520f",
-    "assets/SceneViewport-CSpX-NeG.js": "bbf0ae677711258b93c2a7d6f5af11cf518c52f670047539d97bc97ce32fd3ac",
-    "assets/planner-core-BTd1vkKE.js": "2b783bc2e22a50547c60f0fb27179b977571e9e5070d1de66209cf9b8909cd60",
-    "assets/planner.js": "a0f46c1fdb9439c4f8f199f608ac31f4e36b56abc141fc362a76dcf149616974",
+    "assets/EnergyFlowChart-BsyhTjWs.js": "a82c91df38d51a476c0ce414102defc8e0f42ccbd66649ca1b1946f44fee459e",
+    "assets/MapViewport-B9hCA9aU.js": "c48d808c626ddffaea6b432bc58bfdae74a71b8f1f8218e61df2c45b0168cd14",
+    "assets/SceneViewport-Cig7qKuO.js": "df7d69679d1fb2d891f2c03d2bf07b0ef65f9225f176eba5ffa236c4f5e8b134",
+    "assets/planner-core--iUcr9H9.js": "a7431b51a7e2ae03ab1ad2e8a6bd92bb50a9c39a8f497e1453c07f20682cf729",
+    "assets/planner.js": "6db85d4d089f65dfb3922e1f5e88eb53ac4b0f405248084e3629142835cb27a0",
     "assets/rolldown-runtime-BWaJ3C7D.js": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
-    "vite-manifest.json": "ff51b9cfeb5503806459c649b4d4e68c9397f6d774c3013284feb1730c96b106",
+    "vite-manifest.json": "52cf09651094b43cc4d175943fc5c88d665d71dd94e8bbcaed8ee58e16f544ea",
     "windpress.scan.txt": "1f27ef0d3e3ea43c8c0218efc81d5ae27cc5041d6d36993d112634f52859ed1d"
   },
   "project_input_contracts": [

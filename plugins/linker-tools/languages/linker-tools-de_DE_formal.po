@@ -9308,6 +9308,11 @@ msgstr ""
 "Ein ausgewähltes Ergebnis passt nicht zu den gespeicherten Projekteingaben. "
 "Wählen Sie ein dazu passendes Ergebnis aus."
 
+#. Planning report: independent EN and formal DE copy review.
+#: build/planner/assets/planner.js
+msgid "Recalculate energy"
+msgstr "Energie neu berechnen"
+
 #: build/planner/assets/planner.js
 msgid "Add selected products to solution draft"
 msgstr "Ausgewählte Produkte zum Lösungsentwurf hinzufügen"
