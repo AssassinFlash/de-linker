@@ -126,9 +126,29 @@ Actor 与 run（全部 SUCCEEDED，资源已回收，见 §7）：
 
 **发布注意（609）**：本报告不改变任何已托管资料的公开状态；若日后取得可核验的 Annex/仿真模型，按 609 原件托管+版本记录流程入库，公开范围按产品-资料关联判定。
 
-## 8. 资源报告（AGENTS.md §0）
+## 9. 第三轮 · 2026-11-06（全新角度：模型指纹、中文索引、东方贸易渠道、厂商中国站目录）
+
+前两轮覆盖了西方索引、GoodWe en/de/tr/pl/kr/jp/br/vn 目录、第三方副本与 Wayback。本轮只走前两轮不存在的角度，全部负结果：
+
+| # | 角度 | 方法 | 结果 |
+| --- | --- | --- | --- |
+| 1 | 证书封面所载 DIgSILENT PowerFactory 2024 模型 MD5 `D0271364D1E5A49F96D5F558D1299C78` 作精确查询键 | Apify google-search-scraper，整串带引号 | **0 条**（该模型无任何公开索引副本） |
+| 2 | 中文 Google「固德威 GW100K-ET VDE 4110 证书 附件」 | Apify google-search-scraper (zh-CN) | 命中均为国内 CGC/CQC 证书副本、mg-solar-shop 标签页、已有 C10_C11 封面（senetic CDN）；无 VDE4110 Annex |
+| 3 | 阿里巴巴/中国制造网渠道 | Apify google-search-scraper `site:alibaba.com OR site:made-in-china.com` | 仅商品页营销文字（证书名罗列），无文档链接 |
+| 4 | GT 族 `230027RECO26`（封面自述 1 页 + 122 页 Anhang）公开副本探测 | Apify google-search-scraper (de) | **0 条** —— 同族 Anhang 同样无任何公开发布，进一步坐实 §1.4 的发布惯例 |
+| 5 | 百度索引（3 页 29 条） | Apify johnvc/Baidu-Search-Scraper | 无 VDE Annex；固德威中国站只为**国内**证书（CGC/CQC）发布附录文件 |
+| 6 | **GoodWe 中国站下载目录全量检索**（前两轮未枚举的厂商自有渠道） | 中国站自有端点 `POST /Cn/Index/getDownloads.html`（页面内联 JS 发现），`keys=证书` 翻 4 页 + `keys=VDE/4110/ET 100` | 证书条目清一色国内标准（NB/T32004、GB/T37408、PCCC、PICC、中国效率/中效领跑者）；**零 VDE、零 ET 条目**。中国站不承载出口证书体系 |
+
+**第三轮结论**：公开副本仍未取得，且新角度全部穷尽——西方索引（一/二轮）、中文索引、东方贸易渠道、厂商中国目录、模型指纹键均为负。剩余渠道与 §7 相同：SGS 官方交互目录（Cloudflare 人机验证墙，不绕）与厂商索取（禁止）。不得由任何现有材料外推 Annex 内容或工程放行。
+
+资源：本轮 Apify 5 个 run（1 MD5 + 3 Google + 1 Baidu）全部完成取证后 DELETE（204，逐项读回 not found）；无本地留存下载（仅服务端 HTML 探测，`/tmp` 中间文件已删）。
+
+
+
+## 8. 资源报告（第一/二轮，AGENTS.md §0）
 
 - **Apify**：本轮 9 个 run（5× google-search-scraper、1× website-content-crawler、1× bing、1× yandex、1× ddg）全部 SUCCEEDED；对应 9 run + 9 dataset + 9 KVS + 9 request queue = **36 个远端资源全部 DELETE（204）**。费用合计约 $0.5 以内。今日 11:13/12:04 的其他 run 属并行批次所有，未触碰。
+
 - **2026-11-05 补充接口核查**：新增 `SXiKdiA2uCWwUZpiK`（SGS 页面）与 `VkHIIDmwfAshYprNg`（详情 URL 反查）两个 run。取证后删除两个 run，读回均为 not found；关联 dataset、KVS 与 request queue 随 run 删除，后续逐项读回均为 not found。没有保留远端数据。
 - **本机**：全部下载与脚本在 `/tmp/sgs-annex-search`（含 Playwright venv），峰值约 90 MB；取证完成后**整目录已删除**。本次新增的 SGS HTML/JS 临时文件已逐项删除，目录查询标签页已关闭。无浏览器实例、无常驻进程、无凭据落盘（Apify token 仅从 `~/.config/terravolt-builder/apify.env` 读入环境）。
 - **仓库改动**：第二轮新增本报告；本次补充修正两轮报告的证据边界并纳入第一轮报告，未改 registry、代码、Woo 或生产。
