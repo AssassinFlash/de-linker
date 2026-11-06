@@ -1247,10 +1247,10 @@ export function EnergyWorkspace({
 			{Boolean(actionError) && (
 				<div ref={errorTarget} className="lp-focus-target" tabIndex={-1}>
 					<EnergyError
-					error={actionError}
-					openEquipment={showEquipment}
-					openScenario={() => chooseView("scenario")}
-				/>
+						error={actionError}
+						openEquipment={showEquipment}
+						openScenario={() => chooseView("scenario")}
+					/>
 				</div>
 			)}
 			{operations.storageFailed && (
