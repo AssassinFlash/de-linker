@@ -23,6 +23,8 @@ from linker_engine.planning.report_numbers import number, percent, significant, 
         (0.1805, "0.1805"),
         (0.9637, "0.9637"),
         (0.0001234, "0.0001234"),
+        (1e-5, "0.00001"),
+        (1e-6, "1e-06"),
         # Beyond what plain decimals can show, the exponent stays.
         (1e-12, "1e-12"),
     ],
