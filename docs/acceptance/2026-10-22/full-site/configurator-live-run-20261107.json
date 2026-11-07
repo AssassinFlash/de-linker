@@ -82,6 +82,11 @@
       "stage": "roof deep-chain automation boundary",
       "checks": "Definitive findings: (1) rev4 persisted north_reference=true_north + source binding (form values read back from saved document), anchor lat/lon empty - the map gate message is CORRECT for the persisted state; (2) earlier gate:false observations were Plan-view false negatives (notice renders only in map view); (3) GeometryNumber controlled inputs roll back native-setter/real-keyboard/fill automation (React onChange not reached) - tooling wall, not product defect (humans type normally); (4) form/import/drawing modes are mutually exclusive by design (!!form || importOpen || drawingOpen) - Import disabled while coordinate form open; (5) import GeoJSON path sets anchor from firstPoint + true_north (code-verified geometryImports.ts:151,217) - automation-friendly alternative documented",
       "result": "structure and semantics verified; canvas-level drawing verification deferred to the CU visual pass"
+    },
+    {
+      "stage": "planning report generation",
+      "checks": "Planning report view: result-inclusion selects (equipment checks rev3 runs), optional logo upload, Generate button (enabled after selecting a result via native change event; gated on save-first + at-least-one-result). Generate -> POST /wp-json/linker/v1/planner/rpc/runs/report (7.1s) -> 'Report ready 11/8/26 1:52 AM Revision 4' with 'Project planning report / Saved project inputs and selected calculation results / timestamp', Download PDF button, Download bill of materials (CSV) button, Add selected products to solution draft button with honest note 'Adding them does not replace any outstanding engineering checks'. Prior project (517eb745) report artifacts on disk prove the PDF/CSV download path works for a real report (r20 EN+DE PDF + CSV in ~/Downloads from Nov 7).",
+      "result": "pass (generation + UI); direct download of THIS report's PDF via automation produced no fetch/blob artifact (extension session swallowing downloads) - download machinery proven by prior artifacts"
     }
   ],
   "automation_notes": [
@@ -90,6 +95,7 @@
     "Equipment workbench step: requirement inputs (kWp/kWh/kW) resisted both value-set fill and ref-click+key_type within this session (values reset); needs a focused pass. QuickStart regeneration is the working path."
   ],
   "open": [
+    "INVESTIGATE: 'Add selected products to solution draft' click fired ZERO requests and cart remained empty - either the report had no selectable products (requirements-not-met check, no BOM rows) or another silent no-op; needs one clean-report retry with a requirements-met result",
     "Report PDF requires the energy calculation step (interval data) - by design; deep chain continues via workbench Energy inputs import or equipment selection -> draft add",
     "UX finding: navigating QuickStart -> workbench Equipment -> back resets the quick-start form selections and shows 'Unsaved changes' even though the pipeline ran at revision 2 - candidate state-persistence issue to verify with a clean run",
     "report PDF/CSV download",
