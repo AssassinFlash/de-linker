@@ -1,0 +1,17 @@
+{
+  "session": "account-endpoints-20261108",
+  "environment": "production",
+  "method": "Real Chrome approved-fixture session (native form login), wp-admin visit, account-details page",
+  "verified": [
+    {
+      "state": "account-details",
+      "checks": "/my-account/edit-account/ renders: First/Last/Display name*, Email*, password-change block with 'Leave blank to keep current' help, Save changes - Woo native form",
+      "result": "pass"
+    },
+    {
+      "state": "customer-admin-explanation",
+      "checks": "Customer hitting /wp-admin/ -> Woo protection redirects to a dedicated explanation page: 'You are signed in as verif-approved-207@example.test (customer account). The admin area is for Linker staff only.' + 'Sign out and sign in as staff' + 'Go to my account' - exactly the 2026-10-17 ruling (keep the redirect, add an explanation page)",
+      "result": "pass"
+    }
+  ]
+}
