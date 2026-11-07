@@ -572,3 +572,17 @@ PR #862 清理工作树时误删的 `docs/acceptance/2026-10-22/full-site/` 下 
   - **配置器 / Planner 状态门、表单回填与 ETR 导体对比全链打通（PR #868、PR #871、#548）**：`products/current` 顶层 `"prepared": true` 已随 planner release `08256b93...` 上线读回 200；PR #871 解决了搜索完成后残留 spinner 及刷新后 Equipment 表单未回填已存需求（`200 kWp / 61.4 kWh / 100 kW`）的问题；ETR 四机型（`6508–6511`）安装事实已落库并在生产配置器 UI 完整渲染 `Manufacturer conductor cross-section comparisons`（`50–70 mm²`）。
 - **Genie 知识索引 `epoch 77` 只读取证审计与跨行表头型号解析修复（PR #876）**（`docs/acceptance/2026-11-03/genie/audit.md`、`span-fix-report.md`）：VPS 生产索引 `epoch 77`（`20261103T071623Z-963760000`）实测确认历史 `epoch 62` 的 20 条缺证关联已 100% 补证放行（`609/610` 条关联有证，4 条英德生产真问 Turn `723/725/727/729` 读回通过）；唯一新增缺证项 `1954 × doc-0ee8a88e...`（GoodWe BAT-C 手册第 80–83 页跨行表头 `0.0841 pt` 行距截断）已由 PR #876 在 `extract.py` 与 `table_projection.py` 修复并通过 2,945 条单测。
 - **当前矩阵实时统计**：`{"page_views": 708, "visual_review": {"partially-verified": 236, "pending": 387, "not-applicable": 84, "partial-with-finding": 1}, "by_kind": {"page": {"partially-verified": 59, "pending": 40, "partial-with-finding": 1}, "post": {"partially-verified": 40}, "product": {"partially-verified": 67, "pending": 277, "not-applicable": 84}, "term": {"pending": 70, "partially-verified": 70}}, "state_rows": 1044, "state_status": {"partially-verified": 235, "not-applicable": 2, "pending": 771, "pass": 20, "passed": 16}, "templates": 31, "template_status": {"pending": 29, "partially-verified": 2}}`
+
+
+## 2026-11-07 · 交互轴结构层收口与剩余执行地图
+
+本会话（PR #976–#997，22 个连续合并）完成三矩阵 visual_review pending 归零（619 有证据验证 / 88 有据不适用 / 1 他线 finding），探针经 4 轮对抗性根因修复成为可复用工具（裁切可见性与 slide 上下文 / inline 排除 / focus 显形豁免 / URL 三形态解析），德语标题溢出与确认页无效 key 两个真实缺陷全链修复并生产实证（deploy `a052d6875` 复测通过）。
+
+交互轴（state-matrix）本轮新收口 286 行（comparison、document-library、dynamic-routes 公开子集、contact/content/home/global-navigation/product-archive/product/authentication/files-and-feedback/configurator/draft/inquiry 的结构可验状态）。剩余 556 pending 的执行地图（全部需要活链路运行，不以结构检查代替）：
+
+- **需要账号 fixture**（account 56、product/draft/files 的登录态 20+32+28、authentication 提交态 29）：真实测试账号 + 审批三态 + 跨用户隔离。
+- **需要配置器活运行**（project-brief 48、roof 44、configurator 计算/结果/报告 36）：备注链已实现并部署（`apps/planner/src/components/ProjectBriefStart.tsx`、`BriefForm.tsx`）；按 coverage-contract 的 brief-consumers 节逐消费者执行（note 逐字、修订冲突、PDF/CSV、claim、询盘选定修订）。
+- **需要 Genie 真实对话**（genie 108、marketing-genie-entry 32、home 的 answer/retry 12）：deepseek-flash 生产通道真问真答 + 服务端持久化读回。
+- **需要邮件纪律的提交运行**（contact/inquiry 提交态 16+40）：tester 单地址重写 + Outbox 队列断言。
+
+draft 加购链路疑点已定性：真实客户路径（CTA 点击→内联 Jev 校验→带凭证重放）在真实 Chrome 中加购/移除全程通畅；裸 URL 拒绝与自动 Chromium 挑战挂起均为防护设计本身（证据 `draft-family-states-20261107.json`）。
