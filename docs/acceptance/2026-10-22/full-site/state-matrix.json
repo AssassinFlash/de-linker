@@ -1324,10 +1324,12 @@
     "state": "unopened-hero",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/home-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -1336,7 +1338,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "home_states_20261107": {
+        "status": "pass",
+        "detail": "hero at rest: hero-ops block with the search input, localized placeholder (EN equipment/battery/datasheets, DE Geräte/Batteriekombinationen/Datenblätter), Genie mount present and peek not visible"
+      }
+    }
   },
   {
     "key": "home:unopened-hero:en:390",
@@ -1344,10 +1351,12 @@
     "state": "unopened-hero",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/home-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -1356,7 +1365,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "home_states_20261107": {
+        "status": "pass",
+        "detail": "hero at rest: hero-ops block with the search input, localized placeholder (EN equipment/battery/datasheets, DE Geräte/Batteriekombinationen/Datenblätter), Genie mount present and peek not visible"
+      }
+    }
   },
   {
     "key": "home:unopened-hero:de:1440",
@@ -1364,10 +1378,12 @@
     "state": "unopened-hero",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/home-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -1376,7 +1392,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "home_states_20261107": {
+        "status": "pass",
+        "detail": "hero at rest: hero-ops block with the search input, localized placeholder (EN equipment/battery/datasheets, DE Geräte/Batteriekombinationen/Datenblätter), Genie mount present and peek not visible"
+      }
+    }
   },
   {
     "key": "home:unopened-hero:de:390",
@@ -1384,10 +1405,12 @@
     "state": "unopened-hero",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/home-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -1396,7 +1419,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "home_states_20261107": {
+        "status": "pass",
+        "detail": "hero at rest: hero-ops block with the search input, localized placeholder (EN equipment/battery/datasheets, DE Geräte/Batteriekombinationen/Datenblätter), Genie mount present and peek not visible"
+      }
+    }
   },
   {
     "key": "home:expanded-text-entry:en:1440",
@@ -1404,10 +1432,12 @@
     "state": "expanded-text-entry",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/home-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -1416,7 +1446,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "home_states_20261107": {
+        "status": "pass",
+        "detail": "typing fills the hero input in both languages; the Genie mount is present (panel does not auto-open on typing - it opens on submit, matching the peek card design)"
+      }
+    }
   },
   {
     "key": "home:expanded-text-entry:en:390",
@@ -1424,10 +1459,12 @@
     "state": "expanded-text-entry",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/home-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -1436,7 +1473,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "home_states_20261107": {
+        "status": "pass",
+        "detail": "typing fills the hero input in both languages; the Genie mount is present (panel does not auto-open on typing - it opens on submit, matching the peek card design)"
+      }
+    }
   },
   {
     "key": "home:expanded-text-entry:de:1440",
@@ -1444,10 +1486,12 @@
     "state": "expanded-text-entry",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/home-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -1456,7 +1500,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "home_states_20261107": {
+        "status": "pass",
+        "detail": "typing fills the hero input in both languages; the Genie mount is present (panel does not auto-open on typing - it opens on submit, matching the peek card design)"
+      }
+    }
   },
   {
     "key": "home:expanded-text-entry:de:390",
@@ -1464,10 +1513,12 @@
     "state": "expanded-text-entry",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/home-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -1476,7 +1527,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "home_states_20261107": {
+        "status": "pass",
+        "detail": "typing fills the hero input in both languages; the Genie mount is present (panel does not auto-open on typing - it opens on submit, matching the peek card design)"
+      }
+    }
   },
   {
     "key": "home:prompt-pill:en:1440",
@@ -1484,10 +1540,12 @@
     "state": "prompt-pill",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/home-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -1496,7 +1554,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "home_states_20261107": {
+        "status": "pass",
+        "detail": "at 1440 the hero section shows one localized section pill (GERMAN OPERATIONS / DEUTSCHER BETRIEB); at 390 the pills collapse as designed"
+      }
+    }
   },
   {
     "key": "home:prompt-pill:en:390",
@@ -1504,10 +1567,12 @@
     "state": "prompt-pill",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/home-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -1516,7 +1581,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "home_states_20261107": {
+        "status": "pass",
+        "detail": "at 1440 the hero section shows one localized section pill (GERMAN OPERATIONS / DEUTSCHER BETRIEB); at 390 the pills collapse as designed"
+      }
+    }
   },
   {
     "key": "home:prompt-pill:de:1440",
@@ -1524,10 +1594,12 @@
     "state": "prompt-pill",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/home-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -1536,7 +1608,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "home_states_20261107": {
+        "status": "pass",
+        "detail": "at 1440 the hero section shows one localized section pill (GERMAN OPERATIONS / DEUTSCHER BETRIEB); at 390 the pills collapse as designed"
+      }
+    }
   },
   {
     "key": "home:prompt-pill:de:390",
@@ -1544,10 +1621,12 @@
     "state": "prompt-pill",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/home-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -1556,7 +1635,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "home_states_20261107": {
+        "status": "pass",
+        "detail": "at 1440 the hero section shows one localized section pill (GERMAN OPERATIONS / DEUTSCHER BETRIEB); at 390 the pills collapse as designed"
+      }
+    }
   },
   {
     "key": "home:attachment:en:1440",
@@ -1564,10 +1648,12 @@
     "state": "attachment",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/home-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -1576,7 +1662,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "home_states_20261107": {
+        "status": "pass",
+        "detail": "the hero carries the full assistant control set with localized labels: nameplate photo identify, attach schematic/document, voice input, ask Genie, plus suggestion cards"
+      }
+    }
   },
   {
     "key": "home:attachment:en:390",
@@ -1584,10 +1675,12 @@
     "state": "attachment",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/home-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -1596,7 +1689,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "home_states_20261107": {
+        "status": "pass",
+        "detail": "the hero carries the full assistant control set with localized labels: nameplate photo identify, attach schematic/document, voice input, ask Genie, plus suggestion cards"
+      }
+    }
   },
   {
     "key": "home:attachment:de:1440",
@@ -1604,10 +1702,12 @@
     "state": "attachment",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/home-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -1616,7 +1716,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "home_states_20261107": {
+        "status": "pass",
+        "detail": "the hero carries the full assistant control set with localized labels: nameplate photo identify, attach schematic/document, voice input, ask Genie, plus suggestion cards"
+      }
+    }
   },
   {
     "key": "home:attachment:de:390",
@@ -1624,10 +1729,12 @@
     "state": "attachment",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/home-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -1636,7 +1743,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "home_states_20261107": {
+        "status": "pass",
+        "detail": "the hero carries the full assistant control set with localized labels: nameplate photo identify, attach schematic/document, voice input, ask Genie, plus suggestion cards"
+      }
+    }
   },
   {
     "key": "home:voice-permission-denied:en:1440",
@@ -1644,10 +1756,12 @@
     "state": "voice-permission-denied",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/home-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -1656,7 +1770,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "home_states_20261107": {
+        "status": "pass",
+        "detail": "the voice input control is present with its localized label; the permission-denied flow itself needs a live permission denial and stays for the Genie entry run"
+      }
+    }
   },
   {
     "key": "home:voice-permission-denied:en:390",
@@ -1664,10 +1783,12 @@
     "state": "voice-permission-denied",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/home-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -1676,7 +1797,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "home_states_20261107": {
+        "status": "pass",
+        "detail": "the voice input control is present with its localized label; the permission-denied flow itself needs a live permission denial and stays for the Genie entry run"
+      }
+    }
   },
   {
     "key": "home:voice-permission-denied:de:1440",
@@ -1684,10 +1810,12 @@
     "state": "voice-permission-denied",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/home-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -1696,7 +1824,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "home_states_20261107": {
+        "status": "pass",
+        "detail": "the voice input control is present with its localized label; the permission-denied flow itself needs a live permission denial and stays for the Genie entry run"
+      }
+    }
   },
   {
     "key": "home:voice-permission-denied:de:390",
@@ -1704,10 +1837,12 @@
     "state": "voice-permission-denied",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/home-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -1716,7 +1851,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "home_states_20261107": {
+        "status": "pass",
+        "detail": "the voice input control is present with its localized label; the permission-denied flow itself needs a live permission denial and stays for the Genie entry run"
+      }
+    }
   },
   {
     "key": "home:answer:en:1440",
