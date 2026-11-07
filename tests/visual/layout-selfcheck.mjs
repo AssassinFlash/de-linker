@@ -269,30 +269,33 @@ const main = async () => {
 		// Exact paths are already language-specific records (for example a
 		// product-matrix batch); no alternate resolution may substitute for them.
 		const pages = values.paths
-			? values.paths.split(",").map((entry) => {
-					// Bare paths start with "/" and may carry a query string whose "="
-					// must not be read as a name separator; name=path form is for
-					// entries that do not start with "/" (shell-safe naming).
-					let pathValue;
-					let name;
-					if (entry.startsWith("/") || !entry.includes("=")) {
-						pathValue = entry;
-						name = path.basename(pathValue.split("?")[0]) || pathValue;
-					} else {
-						const separator = entry.indexOf("=");
-						name = entry.slice(0, separator);
-						pathValue = entry.slice(separator + 1);
-					}
-					if (/^https?:\/\//.test(pathValue)) {
-						const url = new URL(pathValue);
-						pathValue = url.pathname + url.search;
-					}
-					return {
-						name,
-						lang: /^\/de(?:[/?]|$)/.test(pathValue) ? "de" : "en",
-						path: pathValue,
-					};
-				})
+			? values.paths
+					.split(",")
+					.filter((entry) => entry.trim() !== "")
+					.map((entry) => {
+						// Bare paths start with "/" and may carry a query string whose "="
+						// must not be read as a name separator; name=path form is for
+						// entries that do not start with "/" (shell-safe naming).
+						let pathValue;
+						let name;
+						if (entry.startsWith("/") || !entry.includes("=")) {
+							pathValue = entry;
+							name = path.basename(pathValue.split("?")[0]) || pathValue;
+						} else {
+							const separator = entry.indexOf("=");
+							name = entry.slice(0, separator);
+							pathValue = entry.slice(separator + 1);
+						}
+						if (/^https?:\/\//.test(pathValue)) {
+							const url = new URL(pathValue);
+							pathValue = url.pathname + url.search;
+						}
+						return {
+							name,
+							lang: /^\/de(?:[/?]|$)/.test(pathValue) ? "de" : "en",
+							path: pathValue,
+						};
+					})
 			: [];
 		if (!values.paths) {
 			// Resolve the German twin of each page from the page's own hreflang

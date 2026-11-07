@@ -106,10 +106,19 @@
 	 * clipped by the disclosure's own overflow (measured live on a product
 	 * page: 49px closed with a 310px body, 359px once opened). That is a
 	 * hidden state the user opens, not lost content, so painted-geometry
-	 * rules skip everything inside a closed disclosure.
+	 * rules skip the closed disclosure's body. The summary itself stays
+	 * checked: it is the visible toggle (the stats-context summary's 20.1px
+	 * target is a real review finding while closed).
 	 */
-	const inClosedDetails = (element) =>
-		element.closest("details:not([open])") !== null;
+	const inClosedDetails = (element) => {
+		for (let node = element.parentElement; node; node = node.parentElement) {
+			if (node.tagName === "DETAILS" && !node.open) {
+				const summary = node.querySelector("summary");
+				if (!(summary && summary.contains(element))) return true;
+			}
+		}
+		return false;
+	};
 
 	/**
 	 * The frame that would contain a horizontal track: an ancestor clipping
