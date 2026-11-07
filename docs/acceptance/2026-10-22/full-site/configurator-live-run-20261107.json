@@ -47,6 +47,16 @@
       "stage": "second-run pipeline + per-check detail",
       "checks": "Second Generate (same inputs) re-ran the pipeline; equipment check reports per-requirement outcomes (Parallel arrangement / Sales unit / Continuous AC discharge power = Checked requirements met; Battery voltage / Usable energy / Battery discharge path = Further checks required; Country requirements not assessed); report layer honestly gated: 'The equipment result is ready; the PDF needs the energy result as well.'",
       "result": "pass"
+    },
+    {
+      "stage": "manual equipment selection saved to project",
+      "checks": "Equipment step manual path: inverter dropdown (full Woo list), battery dropdown; native-change selection (SAJ H2-25K-T3 + SAJ B2-10.0-HV1); manufacturer condition surfaced live ('The manufacturer specifies 2 internal battery modules per battery system.'); 'Number of battery systems' set to 1; Save project -> 'Saved · revision 2' (selection persisted into project revision)",
+      "result": "pass"
+    },
+    {
+      "stage": "unsaved-work protections",
+      "checks": "beforeunload dialog on navigation with unsaved changes; 'Unsaved work from this browser has been restored.' on reload (local recovery)",
+      "result": "pass"
     }
   ],
   "automation_notes": [
@@ -55,6 +65,7 @@
     "Equipment workbench step: requirement inputs (kWp/kWh/kW) resisted both value-set fill and ref-click+key_type within this session (values reset); needs a focused pass. QuickStart regeneration is the working path."
   ],
   "open": [
+    "INVESTIGATE: 'Check saved equipment selection' click produced no visible result and no network request after selection saved at revision 2 - verify with a human-speed interaction whether it needs different preconditions or is a defect",
     "Report PDF requires the energy calculation step (interval data) - by design; deep chain continues via workbench Energy inputs import or equipment selection -> draft add",
     "UX finding: navigating QuickStart -> workbench Equipment -> back resets the quick-start form selections and shows 'Unsaved changes' even though the pipeline ran at revision 2 - candidate state-persistence issue to verify with a clean run",
     "report PDF/CSV download",
