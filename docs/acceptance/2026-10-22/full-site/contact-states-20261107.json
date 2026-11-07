@@ -1,0 +1,66 @@
+[
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "privacy-link",
+  "found": true,
+  "href": "/privacy-policy/",
+  "text": "Privacy Policy"
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "privacy-link",
+  "found": true,
+  "href": "/privacy-policy/",
+  "text": "Privacy Policy"
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "privacy-link",
+  "found": true,
+  "href": "/de/datenschutz/",
+  "text": "Datenschutzerklärung"
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "privacy-link",
+  "found": true,
+  "href": "/de/datenschutz/",
+  "text": "Datenschutzerklärung"
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "validation",
+  "visibleErrors": 0,
+  "html5Invalid": 4,
+  "stillOnPage": true
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "validation",
+  "visibleErrors": 0,
+  "html5Invalid": 4,
+  "stillOnPage": true
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "validation",
+  "visibleErrors": 0,
+  "html5Invalid": 4,
+  "stillOnPage": true
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "validation",
+  "visibleErrors": 0,
+  "html5Invalid": 4,
+  "stillOnPage": true
+ }
+]

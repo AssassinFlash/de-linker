@@ -17064,10 +17064,12 @@
     "state": "validation",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/contact-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -17075,7 +17077,12 @@
       "permissions",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "contact_states_20261107": {
+        "status": "pass",
+        "detail": "empty submit stays on page; 4 required fields (message, name, email, consent) flagged invalid with native bubbles; focus moves to first invalid"
+      }
+    }
   },
   {
     "key": "contact:validation:en:390",
@@ -17083,10 +17090,12 @@
     "state": "validation",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/contact-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -17094,7 +17103,12 @@
       "permissions",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "contact_states_20261107": {
+        "status": "pass",
+        "detail": "empty submit stays on page; 4 required fields (message, name, email, consent) flagged invalid with native bubbles; focus moves to first invalid"
+      }
+    }
   },
   {
     "key": "contact:validation:de:1440",
@@ -17102,10 +17116,12 @@
     "state": "validation",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/contact-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -17113,7 +17129,12 @@
       "permissions",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "contact_states_20261107": {
+        "status": "pass",
+        "detail": "empty submit stays on page; 4 required fields (message, name, email, consent) flagged invalid with native bubbles; focus moves to first invalid"
+      }
+    }
   },
   {
     "key": "contact:validation:de:390",
@@ -17121,10 +17142,12 @@
     "state": "validation",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/contact-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -17132,7 +17155,12 @@
       "permissions",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "contact_states_20261107": {
+        "status": "pass",
+        "detail": "empty submit stays on page; 4 required fields (message, name, email, consent) flagged invalid with native bubbles; focus moves to first invalid"
+      }
+    }
   },
   {
     "key": "contact:pending:en:1440",
@@ -17368,10 +17396,12 @@
     "state": "privacy-link",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/contact-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -17379,7 +17409,12 @@
       "permissions",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "contact_states_20261107": {
+        "status": "pass",
+        "detail": "privacy link present and localized (EN /privacy-policy/, DE /de/datenschutz/), text correct"
+      }
+    }
   },
   {
     "key": "contact:privacy-link:en:390",
@@ -17387,10 +17422,12 @@
     "state": "privacy-link",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/contact-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -17398,7 +17435,12 @@
       "permissions",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "contact_states_20261107": {
+        "status": "pass",
+        "detail": "privacy link present and localized (EN /privacy-policy/, DE /de/datenschutz/), text correct"
+      }
+    }
   },
   {
     "key": "contact:privacy-link:de:1440",
@@ -17406,10 +17448,12 @@
     "state": "privacy-link",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/contact-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -17417,7 +17461,12 @@
       "permissions",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "contact_states_20261107": {
+        "status": "pass",
+        "detail": "privacy link present and localized (EN /privacy-policy/, DE /de/datenschutz/), text correct"
+      }
+    }
   },
   {
     "key": "contact:privacy-link:de:390",
@@ -17425,10 +17474,12 @@
     "state": "privacy-link",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/contact-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -17436,7 +17487,12 @@
       "permissions",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "contact_states_20261107": {
+        "status": "pass",
+        "detail": "privacy link present and localized (EN /privacy-policy/, DE /de/datenschutz/), text correct"
+      }
+    }
   },
   {
     "key": "contact:notification-queue:en:1440",
