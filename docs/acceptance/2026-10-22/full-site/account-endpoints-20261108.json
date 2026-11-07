@@ -17,6 +17,11 @@
       "state": "dynamic-routes account-direct-endpoint-and-refresh",
       "checks": "/my-account/inquiries/ opens directly AND survives a hard reload while signed in: workspace nav intact, 'Confirm email address to check for past orders and link them' notice, All inquiries / Open inquiries tabs, 'No inquiries yet.' empty state with Browse products CTA - direct deep link + refresh persistence verified",
       "result": "pass"
+    },
+    {
+      "state": "files-and-feedback signed-in-document-auth + file-url-and-source-language-consumer",
+      "checks": "Document routes: guest conversation-documents route 404 (no oracle); /my-account/documents/ for a guest renders the login form (auth wall before any document UI). File language pairing: DE-labeled EMEA datasheet (GW_BAT-C-208-261kWh_Datasheet_EMEA-DE_V1.1.pdf) opens and its extracted text is genuinely German ('Die Hochspannungs-Lithiumbatterien der BAT-C-Serie... GoodWe ET-Hybrid-Wechselrichter') - label matches content language, manufacturer wording preserved",
+      "result": "pass"
     }
   ]
 }
