@@ -1,0 +1,170 @@
+[
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "unopened-hero",
+  "heroSel": "hero-ops",
+  "hasInput": true,
+  "inputPlaceholder": "Search equipment models, battery pairings, or data",
+  "geniePresent": true,
+  "geniePeekVisible": false
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "prompt-pill",
+  "count": 1,
+  "texts": [
+   "GERMAN OPERATIONS"
+  ]
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "expanded-text-entry",
+  "hasInput": true,
+  "mountPresent": true,
+  "panelOpensOnType": false,
+  "typedValue": "Which battery for an EPC?"
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "attachment-voice-controls",
+  "buttons": [
+   "Identify by nameplate photo",
+   "Attach schematic or document",
+   "Voice input",
+   "Ask Genie",
+   "Close. Suggestion cards stay h",
+   "Tell me about the GoodWe ESA G",
+   "Compare SAJ and GoodWe hybrid ",
+   "Look up my device from a namep"
+  ]
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "unopened-hero",
+  "heroSel": "hero-ops",
+  "hasInput": true,
+  "inputPlaceholder": "Search equipment models, battery pairings, or data",
+  "geniePresent": true,
+  "geniePeekVisible": false
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "prompt-pill",
+  "count": 0,
+  "texts": []
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "expanded-text-entry",
+  "hasInput": true,
+  "mountPresent": true,
+  "panelOpensOnType": false,
+  "typedValue": "Which battery for an EPC?"
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "attachment-voice-controls",
+  "buttons": [
+   "Identify by nameplate photo",
+   "Attach schematic or document",
+   "Voice input",
+   "Ask Genie",
+   "Close. Suggestion cards stay h",
+   "Tell me about the GoodWe ESA G",
+   "Compare SAJ and GoodWe hybrid ",
+   "Look up my device from a namep"
+  ]
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "unopened-hero",
+  "heroSel": "hero-ops",
+  "hasInput": true,
+  "inputPlaceholder": "Gerätemodelle, Batteriekombinationen oder Datenblä",
+  "geniePresent": true,
+  "geniePeekVisible": false
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "prompt-pill",
+  "count": 1,
+  "texts": [
+   "DEUTSCHER BETRIEB"
+  ]
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "expanded-text-entry",
+  "hasInput": true,
+  "mountPresent": true,
+  "panelOpensOnType": false,
+  "typedValue": "Welche Batterie für EPC?"
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "attachment-voice-controls",
+  "buttons": [
+   "Gerät per Typenschild-Foto erk",
+   "Schaltplan oder Dokument anhän",
+   "Spracheingabe",
+   "Genie fragen",
+   "Schließen. Vorschlagskarten bl",
+   "GoodWe ESA GW10K-EHA-G20: Was ",
+   "Wie unterscheiden sich die Hyb",
+   "Welches Modell steht auf meine"
+  ]
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "unopened-hero",
+  "heroSel": "hero-ops",
+  "hasInput": true,
+  "inputPlaceholder": "Gerätemodelle, Batteriekombinationen oder Datenblä",
+  "geniePresent": true,
+  "geniePeekVisible": false
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "prompt-pill",
+  "count": 0,
+  "texts": []
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "expanded-text-entry",
+  "hasInput": true,
+  "mountPresent": true,
+  "panelOpensOnType": false,
+  "typedValue": "Welche Batterie für EPC?"
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "attachment-voice-controls",
+  "buttons": [
+   "Gerät per Typenschild-Foto erk",
+   "Schaltplan oder Dokument anhän",
+   "Spracheingabe",
+   "Genie fragen",
+   "Schließen. Vorschlagskarten bl",
+   "GoodWe ESA GW10K-EHA-G20: Was ",
+   "Wie unterscheiden sich die Hyb",
+   "Welches Modell steht auf meine"
+  ]
+ }
+]
