@@ -24809,10 +24809,12 @@
     "state": "calculation-pending",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "configurator-live-run-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
