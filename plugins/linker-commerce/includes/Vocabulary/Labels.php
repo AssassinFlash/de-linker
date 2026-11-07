@@ -43,11 +43,11 @@ final class Labels {
 	/**
 	 * The first line of the confirmation page.
 	 *
-	 * @param string|null           $text  Woo's default text, unused.
-	 * @param \WC_Order|false|null  $order The order; Woo passes false when the
-	 *                                     key did not match (it renders only
-	 *                                     this text then). Null means "no
-	 *                                     argument given".
+	 * @param string|null          $text  Woo's default text, unused.
+	 * @param \WC_Order|false|null $order The order; Woo passes false when the
+	 *                                    key did not match (it renders only
+	 *                                    this text then). Null means "no
+	 *                                    argument given".
 	 */
 	public function inquiry_received( $text = null, $order = null ): string {
 		if ( false === $order ) {
