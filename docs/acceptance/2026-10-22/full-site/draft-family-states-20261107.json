@@ -1,0 +1,150 @@
+[
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "empty",
+  "hasDraftArea": true,
+  "text": "Update the solution draft before sending your inquiry."
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "native-pdp-entry-consumed",
+  "urlClean": true,
+  "notice": null
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "guest-populated",
+  "rowCount": 0,
+  "snippet": ""
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "guest-price-gate",
+  "gated": true,
+  "showsNoAmount": true
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "continue-to-inquiry",
+  "hasContinue": true
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "empty",
+  "hasDraftArea": true,
+  "text": "Update the solution draft before sending your inquiry."
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "native-pdp-entry-consumed",
+  "urlClean": true,
+  "notice": null
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "guest-populated",
+  "rowCount": 0,
+  "snippet": ""
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "guest-price-gate",
+  "gated": false,
+  "showsNoAmount": true
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "continue-to-inquiry",
+  "hasContinue": true
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "empty",
+  "hasDraftArea": true,
+  "text": "Aktualisieren Sie den Lösungsentwurf, bevor Sie Ihre Anfrage senden."
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "native-pdp-entry-consumed",
+  "urlClean": true,
+  "notice": null
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "guest-populated",
+  "rowCount": 0,
+  "snippet": ""
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "guest-price-gate",
+  "gated": true,
+  "showsNoAmount": true
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "continue-to-inquiry",
+  "hasContinue": true
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "empty",
+  "hasDraftArea": true,
+  "text": "Aktualisieren Sie den Lösungsentwurf, bevor Sie Ihre Anfrage senden."
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "native-pdp-entry-consumed",
+  "urlClean": true,
+  "notice": null
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "guest-populated",
+  "rowCount": 0,
+  "snippet": ""
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "guest-price-gate",
+  "gated": false,
+  "showsNoAmount": true
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "continue-to-inquiry",
+  "hasContinue": true
+ },
+ {
+  "lang": "en",
+  "width": 0,
+  "state": "add-remove-real-chrome",
+  "evidence": "real Chrome session: bare-URL add populated the draft (item SAJ B2-5.0-HV1 visible with Log in for prices gate); UI Remove click completed after the inline Jev verification (~7s) leaving the draft empty - the real-customer add/remove chain works end to end; the error notice seen earlier came from a proof-less bare-URL request which is not the real UI path (protection.js attaches proof on click)"
+ },
+ {
+  "lang": "en",
+  "width": 0,
+  "state": "automated-chromium-note",
+  "evidence": "in automated Chromium the inline Jev verification stays in Checking state - the protection challenge against automation, consistent with PR #975 real-Chrome zero-blocking evidence; not a customer defect"
+ }
+]
