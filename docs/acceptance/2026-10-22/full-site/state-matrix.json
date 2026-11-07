@@ -5308,10 +5308,12 @@
     "state": "section-navigation",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (terms-of-sale / verkaufsbedingungen as the legal template representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/content-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5319,7 +5321,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "content_states_20261107": {
+        "status": "pass",
+        "detail": "two skip anchors (#legal-content, #lga-toc) and 12 numbered section ids in both languages and viewports; TOC CTA links all resolve to in-page section anchors"
+      }
+    }
   },
   {
     "key": "content:section-navigation:en:390",
@@ -5327,10 +5334,12 @@
     "state": "section-navigation",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (terms-of-sale / verkaufsbedingungen as the legal template representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/content-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5338,7 +5347,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "content_states_20261107": {
+        "status": "pass",
+        "detail": "two skip anchors (#legal-content, #lga-toc) and 12 numbered section ids in both languages and viewports; TOC CTA links all resolve to in-page section anchors"
+      }
+    }
   },
   {
     "key": "content:section-navigation:de:1440",
@@ -5346,10 +5360,12 @@
     "state": "section-navigation",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (terms-of-sale / verkaufsbedingungen as the legal template representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/content-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5357,7 +5373,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "content_states_20261107": {
+        "status": "pass",
+        "detail": "two skip anchors (#legal-content, #lga-toc) and 12 numbered section ids in both languages and viewports; TOC CTA links all resolve to in-page section anchors"
+      }
+    }
   },
   {
     "key": "content:section-navigation:de:390",
@@ -5365,10 +5386,12 @@
     "state": "section-navigation",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (terms-of-sale / verkaufsbedingungen as the legal template representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/content-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5376,7 +5399,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "content_states_20261107": {
+        "status": "pass",
+        "detail": "two skip anchors (#legal-content, #lga-toc) and 12 numbered section ids in both languages and viewports; TOC CTA links all resolve to in-page section anchors"
+      }
+    }
   },
   {
     "key": "content:accordion:en:1440",
@@ -5384,10 +5412,12 @@
     "state": "accordion",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (terms-of-sale / verkaufsbedingungen as the legal template representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/content-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5395,7 +5425,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "content_states_20261107": {
+        "status": "pass",
+        "detail": "sections render as visible h2 heads (not closed details); the section structure is flat and reachable"
+      }
+    }
   },
   {
     "key": "content:accordion:en:390",
@@ -5403,10 +5438,12 @@
     "state": "accordion",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (terms-of-sale / verkaufsbedingungen as the legal template representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/content-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5414,7 +5451,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "content_states_20261107": {
+        "status": "pass",
+        "detail": "sections render as visible h2 heads (not closed details); the section structure is flat and reachable"
+      }
+    }
   },
   {
     "key": "content:accordion:de:1440",
@@ -5422,10 +5464,12 @@
     "state": "accordion",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (terms-of-sale / verkaufsbedingungen as the legal template representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/content-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5433,7 +5477,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "content_states_20261107": {
+        "status": "pass",
+        "detail": "sections render as visible h2 heads (not closed details); the section structure is flat and reachable"
+      }
+    }
   },
   {
     "key": "content:accordion:de:390",
@@ -5441,10 +5490,12 @@
     "state": "accordion",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (terms-of-sale / verkaufsbedingungen as the legal template representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/content-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5452,7 +5503,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "content_states_20261107": {
+        "status": "pass",
+        "detail": "sections render as visible h2 heads (not closed details); the section structure is flat and reachable"
+      }
+    }
   },
   {
     "key": "content:cta-destination:en:1440",
@@ -5460,10 +5516,12 @@
     "state": "cta-destination",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (terms-of-sale / verkaufsbedingungen as the legal template representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/content-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5471,7 +5529,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "content_states_20261107": {
+        "status": "pass",
+        "detail": "every content CTA is an in-page anchor to its section (1..12); no off-page CTA on the legal template"
+      }
+    }
   },
   {
     "key": "content:cta-destination:en:390",
@@ -5479,10 +5542,12 @@
     "state": "cta-destination",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (terms-of-sale / verkaufsbedingungen as the legal template representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/content-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5490,7 +5555,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "content_states_20261107": {
+        "status": "pass",
+        "detail": "every content CTA is an in-page anchor to its section (1..12); no off-page CTA on the legal template"
+      }
+    }
   },
   {
     "key": "content:cta-destination:de:1440",
@@ -5498,10 +5568,12 @@
     "state": "cta-destination",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (terms-of-sale / verkaufsbedingungen as the legal template representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/content-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5509,7 +5581,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "content_states_20261107": {
+        "status": "pass",
+        "detail": "every content CTA is an in-page anchor to its section (1..12); no off-page CTA on the legal template"
+      }
+    }
   },
   {
     "key": "content:cta-destination:de:390",
@@ -5517,10 +5594,12 @@
     "state": "cta-destination",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (terms-of-sale / verkaufsbedingungen as the legal template representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/content-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5528,7 +5607,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "content_states_20261107": {
+        "status": "pass",
+        "detail": "every content CTA is an in-page anchor to its section (1..12); no off-page CTA on the legal template"
+      }
+    }
   },
   {
     "key": "content:long-german-text:en:1440",
@@ -5536,10 +5620,12 @@
     "state": "long-german-text",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (terms-of-sale / verkaufsbedingungen as the legal template representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/content-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5547,7 +5633,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "content_states_20261107": {
+        "status": "pass",
+        "detail": "overflow-wrap: break-word on the longest headings in both languages; no overflow defect at 390 (the page probe batch already passed these pages)"
+      }
+    }
   },
   {
     "key": "content:long-german-text:en:390",
@@ -5555,10 +5646,12 @@
     "state": "long-german-text",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (terms-of-sale / verkaufsbedingungen as the legal template representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/content-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5566,7 +5659,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "content_states_20261107": {
+        "status": "pass",
+        "detail": "overflow-wrap: break-word on the longest headings in both languages; no overflow defect at 390 (the page probe batch already passed these pages)"
+      }
+    }
   },
   {
     "key": "content:long-german-text:de:1440",
@@ -5574,10 +5672,12 @@
     "state": "long-german-text",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (terms-of-sale / verkaufsbedingungen as the legal template representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/content-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5585,7 +5685,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "content_states_20261107": {
+        "status": "pass",
+        "detail": "overflow-wrap: break-word on the longest headings in both languages; no overflow defect at 390 (the page probe batch already passed these pages)"
+      }
+    }
   },
   {
     "key": "content:long-german-text:de:390",
@@ -5593,10 +5698,12 @@
     "state": "long-german-text",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (terms-of-sale / verkaufsbedingungen as the legal template representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/content-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5604,7 +5711,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "content_states_20261107": {
+        "status": "pass",
+        "detail": "overflow-wrap: break-word on the longest headings in both languages; no overflow defect at 390 (the page probe batch already passed these pages)"
+      }
+    }
   },
   {
     "key": "content:embedded-media:en:1440",
@@ -5612,10 +5724,12 @@
     "state": "embedded-media",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (terms-of-sale / verkaufsbedingungen as the legal template representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/content-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5623,7 +5737,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "content_states_20261107": {
+        "status": "pass",
+        "detail": "the legal template embeds no iframes, videos or images; nothing to verify beyond absence"
+      }
+    }
   },
   {
     "key": "content:embedded-media:en:390",
@@ -5631,10 +5750,12 @@
     "state": "embedded-media",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (terms-of-sale / verkaufsbedingungen as the legal template representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/content-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5642,7 +5763,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "content_states_20261107": {
+        "status": "pass",
+        "detail": "the legal template embeds no iframes, videos or images; nothing to verify beyond absence"
+      }
+    }
   },
   {
     "key": "content:embedded-media:de:1440",
@@ -5650,10 +5776,12 @@
     "state": "embedded-media",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (terms-of-sale / verkaufsbedingungen as the legal template representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/content-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5661,7 +5789,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "content_states_20261107": {
+        "status": "pass",
+        "detail": "the legal template embeds no iframes, videos or images; nothing to verify beyond absence"
+      }
+    }
   },
   {
     "key": "content:embedded-media:de:390",
@@ -5669,10 +5802,12 @@
     "state": "embedded-media",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (terms-of-sale / verkaufsbedingungen as the legal template representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/content-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5680,7 +5815,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "content_states_20261107": {
+        "status": "pass",
+        "detail": "the legal template embeds no iframes, videos or images; nothing to verify beyond absence"
+      }
+    }
   },
   {
     "key": "content:forms-and-validation:en:1440",
