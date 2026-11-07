@@ -1,0 +1,298 @@
+[
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "section-navigation",
+  "skipCount": 2,
+  "skips": [
+   "#legal-content",
+   "#lga-toc"
+  ],
+  "sectionCount": 12,
+  "sections": [
+   "section-1",
+   "section-1-h",
+   "section-2",
+   "section-2-h",
+   "section-3",
+   "section-3-h"
+  ]
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "accordion-structure",
+  "hasSectionHead": true,
+  "isDetails": false,
+  "visible": true
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "cta-destination",
+  "ctas": [
+   {
+    "href": "#section-1",
+    "text": "1.Scope: business custome"
+   },
+   {
+    "href": "#section-2",
+    "text": "2.Ordering and contract"
+   },
+   {
+    "href": "#section-3",
+    "text": "3.Prices and VAT"
+   },
+   {
+    "href": "#section-4",
+    "text": "4.Payment"
+   },
+   {
+    "href": "#section-5",
+    "text": "5.Shipping and delivery"
+   },
+   {
+    "href": "#section-6",
+    "text": "6.Retention of title"
+   }
+  ]
+ },
+ {
+  "lang": "en-US",
+  "width": 1440,
+  "state": "long-text-handling",
+  "longestWords": "7. Warranty and product guarantees",
+  "overflowWrap": "break-word",
+  "wordBreak": "normal"
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "embedded-media",
+  "iframes": 0,
+  "videos": 0,
+  "images": 0
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "section-navigation",
+  "skipCount": 2,
+  "skips": [
+   "#legal-content",
+   "#lga-toc"
+  ],
+  "sectionCount": 12,
+  "sections": [
+   "section-1",
+   "section-1-h",
+   "section-2",
+   "section-2-h",
+   "section-3",
+   "section-3-h"
+  ]
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "accordion-structure",
+  "hasSectionHead": true,
+  "isDetails": false,
+  "visible": true
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "cta-destination",
+  "ctas": [
+   {
+    "href": "#section-1",
+    "text": "1.Scope: business custome"
+   },
+   {
+    "href": "#section-2",
+    "text": "2.Ordering and contract"
+   },
+   {
+    "href": "#section-3",
+    "text": "3.Prices and VAT"
+   },
+   {
+    "href": "#section-4",
+    "text": "4.Payment"
+   },
+   {
+    "href": "#section-5",
+    "text": "5.Shipping and delivery"
+   },
+   {
+    "href": "#section-6",
+    "text": "6.Retention of title"
+   }
+  ]
+ },
+ {
+  "lang": "en-US",
+  "width": 390,
+  "state": "long-text-handling",
+  "longestWords": "7. Warranty and product guarantees",
+  "overflowWrap": "break-word",
+  "wordBreak": "normal"
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "embedded-media",
+  "iframes": 0,
+  "videos": 0,
+  "images": 0
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "section-navigation",
+  "skipCount": 2,
+  "skips": [
+   "#legal-content",
+   "#lga-toc"
+  ],
+  "sectionCount": 12,
+  "sections": [
+   "section-1",
+   "section-1-h",
+   "section-2",
+   "section-2-h",
+   "section-3",
+   "section-3-h"
+  ]
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "accordion-structure",
+  "hasSectionHead": true,
+  "isDetails": false,
+  "visible": true
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "cta-destination",
+  "ctas": [
+   {
+    "href": "#section-1",
+    "text": "1.Geltungsbereich: nur Ge"
+   },
+   {
+    "href": "#section-2",
+    "text": "2.Bestellung und Vertrag"
+   },
+   {
+    "href": "#section-3",
+    "text": "3.Preise und Mehrwertsteu"
+   },
+   {
+    "href": "#section-4",
+    "text": "4.Zahlung"
+   },
+   {
+    "href": "#section-5",
+    "text": "5.Versand und Lieferung"
+   },
+   {
+    "href": "#section-6",
+    "text": "6.Eigentumsvorbehalt"
+   }
+  ]
+ },
+ {
+  "lang": "de-DE",
+  "width": 1440,
+  "state": "long-text-handling",
+  "longestWords": "1. Geltungsbereich: nur Geschäftskunden",
+  "overflowWrap": "break-word",
+  "wordBreak": "normal"
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "embedded-media",
+  "iframes": 0,
+  "videos": 0,
+  "images": 0
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "section-navigation",
+  "skipCount": 2,
+  "skips": [
+   "#legal-content",
+   "#lga-toc"
+  ],
+  "sectionCount": 12,
+  "sections": [
+   "section-1",
+   "section-1-h",
+   "section-2",
+   "section-2-h",
+   "section-3",
+   "section-3-h"
+  ]
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "accordion-structure",
+  "hasSectionHead": true,
+  "isDetails": false,
+  "visible": true
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "cta-destination",
+  "ctas": [
+   {
+    "href": "#section-1",
+    "text": "1.Geltungsbereich: nur Ge"
+   },
+   {
+    "href": "#section-2",
+    "text": "2.Bestellung und Vertrag"
+   },
+   {
+    "href": "#section-3",
+    "text": "3.Preise und Mehrwertsteu"
+   },
+   {
+    "href": "#section-4",
+    "text": "4.Zahlung"
+   },
+   {
+    "href": "#section-5",
+    "text": "5.Versand und Lieferung"
+   },
+   {
+    "href": "#section-6",
+    "text": "6.Eigentumsvorbehalt"
+   }
+  ]
+ },
+ {
+  "lang": "de-DE",
+  "width": 390,
+  "state": "long-text-handling",
+  "longestWords": "1. Geltungsbereich: nur Geschäftskunden",
+  "overflowWrap": "break-word",
+  "wordBreak": "normal"
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "embedded-media",
+  "iframes": 0,
+  "videos": 0,
+  "images": 0
+ }
+]
