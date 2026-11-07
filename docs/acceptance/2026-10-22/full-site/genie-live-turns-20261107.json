@@ -107,6 +107,11 @@
       "state": "human-handoff",
       "result": "pass",
       "evidence": "On unresolvable input Genie hands off to the human team: 'Please contact the Linker team at sales@de-linker.com.' (customer-facing address per rules)"
+    },
+    {
+      "state": "voice (entry states)",
+      "result": "pass",
+      "evidence": "Dictate button present with aria-pressed; click activates ('Stop dictation', pressed=true, recognition session started, no voice error); second click deactivates. Actual speech transcription not verifiable without a live microphone - entry/activation/deactivation states verified."
     }
   ],
   "open_items": [
