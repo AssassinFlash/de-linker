@@ -1,0 +1,72 @@
+[
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "dock-and-disclosure",
+  "dockPresent": true,
+  "dockVisible": true,
+  "dockLabel": "Ask GenieSign inCreate ac",
+  "firstDisclosureText": null,
+  "bodyMentionsAI": false
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "panel-open",
+  "panelOpen": true,
+  "panelText": "",
+  "hasInput": false,
+  "mentionsAI": false
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "error",
+  "error": "elementHandle.click: Timeout 30000ms exceeded.\nCall log:\n  - attempting click action\n    2 × waiting for element to be v"
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "dock-and-disclosure",
+  "dockPresent": true,
+  "dockVisible": false,
+  "dockLabel": "Ask GenieSign inCreate ac",
+  "firstDisclosureText": null,
+  "bodyMentionsAI": false
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "dock-and-disclosure",
+  "dockPresent": true,
+  "dockVisible": true,
+  "dockLabel": "Genie fragenAnmeldenKonto",
+  "firstDisclosureText": null,
+  "bodyMentionsAI": false
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "panel-open",
+  "panelOpen": true,
+  "panelText": "",
+  "hasInput": false,
+  "mentionsAI": false
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "error",
+  "error": "elementHandle.click: Timeout 30000ms exceeded.\nCall log:\n  - attempting click action\n    2 × waiting for element to be v"
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "dock-and-disclosure",
+  "dockPresent": true,
+  "dockVisible": false,
+  "dockLabel": "Genie fragenAnmeldenKonto",
+  "firstDisclosureText": null,
+  "bodyMentionsAI": false
+ }
+]
