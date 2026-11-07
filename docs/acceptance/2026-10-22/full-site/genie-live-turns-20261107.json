@@ -122,7 +122,12 @@
       "state": "cross-surface fresh-identity turn (final sweep)",
       "result": "pass-with-watch",
       "evidence": "After many login/logout cycles rotated the browser session: homepage dock first question dispatched with ZERO challenge (trust identity binding survived); honest out-of-range refusal for GW10K-ET ('This model is outside our current product range' + sales@ handoff - correct: we do not sell the ET series); second question answered with three page-level datasheet citations (ESA DE p.3, Lynx D G2 EN EMEA p.2, ESA EN p.3) - retrieval provenance intact.",
-      "notes": "WATCH: the second answer rendered citations but the prose text ('Here is what I found' then only source list) never streamed a kWh figure within ~3 min on this pass - needs one repeat on a fresh identity to judge whether it is a one-off slow stream or a truncation regression; recorded rather than assumed."
+      "notes": "RESOLVED: one repeat produced the FULL answer ('usable energy of 8 kWh; datasheet rated 8.32 kWh; usable below nominal') + page citation + product card (In stock/Add/Save) + Jump-to-latest on a 7-item thread. The citation-only pass was a one-off short model output, NOT a truncation regression. WATCH closed."
+    },
+    {
+      "state": "long-conversation-scroll",
+      "result": "pass",
+      "evidence": "Thread grew to 7 items across 3 turns; 'Jump to latest' affordance appears when scrolled away and clicking it works (scroll controller verified)"
     }
   ],
   "open_items": [
