@@ -1,0 +1,166 @@
+[
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "empty",
+  "table": false,
+  "messageShown": true
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "one-product",
+  "table": true,
+  "cols": 1,
+  "addControls": 0
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "multiple-products",
+  "table": true,
+  "cols": 3,
+  "addControls": 0,
+  "scrollablePx": 0,
+  "hint": "hidden"
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "remove-product",
+  "table": true,
+  "cols": 2,
+  "addControls": 0,
+  "url": "nker.com/compare-products/?ids=6519,2409"
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "add-to-draft",
+  "addControls": 0,
+  "verdict": "not-applicable-by-design"
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "empty",
+  "table": false,
+  "messageShown": true
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "one-product",
+  "table": true,
+  "cols": 1,
+  "addControls": 0
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "multiple-products",
+  "table": true,
+  "cols": 3,
+  "addControls": 0,
+  "scrollablePx": 332,
+  "hint": "shown"
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "remove-product",
+  "table": true,
+  "cols": 2,
+  "addControls": 0,
+  "url": "nker.com/compare-products/?ids=6519,2409"
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "add-to-draft",
+  "addControls": 0,
+  "verdict": "not-applicable-by-design"
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "empty",
+  "table": false,
+  "messageShown": true
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "one-product",
+  "table": true,
+  "cols": 1,
+  "addControls": 0
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "multiple-products",
+  "table": true,
+  "cols": 3,
+  "addControls": 0,
+  "scrollablePx": 0,
+  "hint": "hidden"
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "remove-product",
+  "table": true,
+  "cols": 2,
+  "addControls": 0,
+  "url": "m/de/produkte-vergleichen/?ids=6519,2409"
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "add-to-draft",
+  "addControls": 0,
+  "verdict": "not-applicable-by-design"
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "empty",
+  "table": false,
+  "messageShown": true
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "one-product",
+  "table": true,
+  "cols": 1,
+  "addControls": 0
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "multiple-products",
+  "table": true,
+  "cols": 3,
+  "addControls": 0,
+  "scrollablePx": 332,
+  "hint": "shown"
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "remove-product",
+  "table": true,
+  "cols": 2,
+  "addControls": 0,
+  "url": "m/de/produkte-vergleichen/?ids=6519,2409"
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "add-to-draft",
+  "addControls": 0,
+  "verdict": "not-applicable-by-design"
+ }
+]

@@ -4546,10 +4546,12 @@
     "state": "empty",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/comparison-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4557,7 +4559,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "comparison_states_20261107": {
+        "status": "pass",
+        "detail": "empty renders the prompt and no table; ?ids= selections render 1-3 columns with correct Remove URLs (server-side ?ids= design); Remove click drops the column; the 390 scroll region is scrollable with the sideways hint shown, hidden at 1440"
+      }
+    }
   },
   {
     "key": "comparison:empty:en:390",
@@ -4565,10 +4572,12 @@
     "state": "empty",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/comparison-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4576,7 +4585,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "comparison_states_20261107": {
+        "status": "pass",
+        "detail": "empty renders the prompt and no table; ?ids= selections render 1-3 columns with correct Remove URLs (server-side ?ids= design); Remove click drops the column; the 390 scroll region is scrollable with the sideways hint shown, hidden at 1440"
+      }
+    }
   },
   {
     "key": "comparison:empty:de:1440",
@@ -4584,10 +4598,12 @@
     "state": "empty",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/comparison-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4602,6 +4618,10 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/753-online-consumers.json",
         "delivery_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/comparison-integrity-browser.json",
         "scope": "Actual DE1440 clear selection reached the canonical German comparison path with zero tables."
+      },
+      "comparison_states_20261107": {
+        "status": "pass",
+        "detail": "empty renders the prompt and no table; ?ids= selections render 1-3 columns with correct Remove URLs (server-side ?ids= design); Remove click drops the column; the 390 scroll region is scrollable with the sideways hint shown, hidden at 1440"
       }
     }
   },
@@ -4611,10 +4631,12 @@
     "state": "empty",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/comparison-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4628,6 +4650,10 @@
         "scope": "ActualDE390 two→removeone→clear empty; original IDs6565/6566 and664mobilechip recovery preserved.",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-compare-continuity.json",
         "source_continuity": "PR 661/663 comparison behavior is historical direct consumer evidence; PR 747 changed compare-selection.js to ad60ed6c16c24b404cbf4b9385e2f55f4269c7f110cc28f97c0a54217994fb3f to track chip position under the header, with current selected/cleared chip readback in 747-online-consumers.json. Do not infer new comparison states from the chip readback."
+      },
+      "comparison_states_20261107": {
+        "status": "pass",
+        "detail": "empty renders the prompt and no table; ?ids= selections render 1-3 columns with correct Remove URLs (server-side ?ids= design); Remove click drops the column; the 390 scroll region is scrollable with the sideways hint shown, hidden at 1440"
       }
     }
   },
@@ -4637,11 +4663,11 @@
     "state": "one-product",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-compare-draft-consumer.json"
+      "docs/acceptance/2026-10-22/full-site/comparison-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -4667,6 +4693,10 @@
           "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/753-online-consumers.json",
           "scope": "Original EN single-product failure remains historical. Current EN/DE 1440/390 two-product rows preserve 60 kW and 30 kW with original note; DE1440 remove-first yields one product retaining both. EN single-product removal was also exercised locally."
         }
+      },
+      "comparison_states_20261107": {
+        "status": "pass",
+        "detail": "empty renders the prompt and no table; ?ids= selections render 1-3 columns with correct Remove URLs (server-side ?ids= design); Remove click drops the column; the 390 scroll region is scrollable with the sideways hint shown, hidden at 1440"
       }
     }
   },
@@ -4676,10 +4706,12 @@
     "state": "one-product",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/comparison-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4687,7 +4719,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "comparison_states_20261107": {
+        "status": "pass",
+        "detail": "empty renders the prompt and no table; ?ids= selections render 1-3 columns with correct Remove URLs (server-side ?ids= design); Remove click drops the column; the 390 scroll region is scrollable with the sideways hint shown, hidden at 1440"
+      }
+    }
   },
   {
     "key": "comparison:one-product:de:1440",
@@ -4695,10 +4732,12 @@
     "state": "one-product",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/comparison-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4713,6 +4752,10 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/753-online-consumers.json",
         "delivery_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/comparison-integrity-browser.json",
         "scope": "After removing SAJ at DE1440, only product 6530 remains; 60 kW and 30 kW with original German note remain as separate rows, two cells each."
+      },
+      "comparison_states_20261107": {
+        "status": "pass",
+        "detail": "empty renders the prompt and no table; ?ids= selections render 1-3 columns with correct Remove URLs (server-side ?ids= design); Remove click drops the column; the 390 scroll region is scrollable with the sideways hint shown, hidden at 1440"
       }
     }
   },
@@ -4722,10 +4765,12 @@
     "state": "one-product",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/comparison-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4739,6 +4784,10 @@
         "scope": "ActualDE390 two→removeone→clear empty; original IDs6565/6566 and664mobilechip recovery preserved.",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-compare-continuity.json",
         "source_continuity": "PR 661/663 comparison behavior is historical direct consumer evidence; PR 747 changed compare-selection.js to ad60ed6c16c24b404cbf4b9385e2f55f4269c7f110cc28f97c0a54217994fb3f to track chip position under the header, with current selected/cleared chip readback in 747-online-consumers.json. Do not infer new comparison states from the chip readback."
+      },
+      "comparison_states_20261107": {
+        "status": "pass",
+        "detail": "empty renders the prompt and no table; ?ids= selections render 1-3 columns with correct Remove URLs (server-side ?ids= design); Remove click drops the column; the 390 scroll region is scrollable with the sideways hint shown, hidden at 1440"
       }
     }
   },
@@ -4748,10 +4797,12 @@
     "state": "multiple-products",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/comparison-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4772,6 +4823,10 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/753-online-consumers.json",
         "delivery_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/comparison-integrity-browser.json",
         "scope": "Actual EN 1440 staff Chrome: selected 1832 and 6530, grouped Rated power rows 3072 W|—, —|60 kW, —|30 kW with original localized note; three cells per tbody row and no document overflow. This named sparse/grouped comparison is accepted; other states remain unchanged."
+      },
+      "comparison_states_20261107": {
+        "status": "pass",
+        "detail": "empty renders the prompt and no table; ?ids= selections render 1-3 columns with correct Remove URLs (server-side ?ids= design); Remove click drops the column; the 390 scroll region is scrollable with the sideways hint shown, hidden at 1440"
       }
     }
   },
@@ -4781,10 +4836,12 @@
     "state": "multiple-products",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/comparison-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4805,6 +4862,10 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/753-online-consumers.json",
         "delivery_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/comparison-integrity-browser.json",
         "scope": "Actual EN 390 staff Chrome: selected 1832 and 6530, grouped Rated power rows 3072 W|—, —|60 kW, —|30 kW with original localized note; three cells per tbody row and no document overflow. This named sparse/grouped comparison is accepted; other states remain unchanged."
+      },
+      "comparison_states_20261107": {
+        "status": "pass",
+        "detail": "empty renders the prompt and no table; ?ids= selections render 1-3 columns with correct Remove URLs (server-side ?ids= design); Remove click drops the column; the 390 scroll region is scrollable with the sideways hint shown, hidden at 1440"
       }
     }
   },
@@ -4814,10 +4875,12 @@
     "state": "multiple-products",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/comparison-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4838,6 +4901,10 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/753-online-consumers.json",
         "delivery_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/comparison-integrity-browser.json",
         "scope": "Actual DE 1440 staff Chrome: selected 1832 and 6530, grouped Rated power rows 3072 W|—, —|60 kW, —|30 kW with original localized note; three cells per tbody row and no document overflow. This named sparse/grouped comparison is accepted; other states remain unchanged."
+      },
+      "comparison_states_20261107": {
+        "status": "pass",
+        "detail": "empty renders the prompt and no table; ?ids= selections render 1-3 columns with correct Remove URLs (server-side ?ids= design); Remove click drops the column; the 390 scroll region is scrollable with the sideways hint shown, hidden at 1440"
       }
     }
   },
@@ -4847,10 +4914,12 @@
     "state": "multiple-products",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/comparison-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4871,6 +4940,10 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/753-online-consumers.json",
         "delivery_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/comparison-integrity-browser.json",
         "scope": "Actual DE 390 staff Chrome: selected 1832 and 6530, grouped Rated power rows 3072 W|—, —|60 kW, —|30 kW with original localized note; three cells per tbody row and no document overflow. This named sparse/grouped comparison is accepted; other states remain unchanged."
+      },
+      "comparison_states_20261107": {
+        "status": "pass",
+        "detail": "empty renders the prompt and no table; ?ids= selections render 1-3 columns with correct Remove URLs (server-side ?ids= design); Remove click drops the column; the 390 scroll region is scrollable with the sideways hint shown, hidden at 1440"
       }
     }
   },
@@ -4880,10 +4953,12 @@
     "state": "remove-product",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/comparison-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4891,7 +4966,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "comparison_states_20261107": {
+        "status": "pass",
+        "detail": "empty renders the prompt and no table; ?ids= selections render 1-3 columns with correct Remove URLs (server-side ?ids= design); Remove click drops the column; the 390 scroll region is scrollable with the sideways hint shown, hidden at 1440"
+      }
+    }
   },
   {
     "key": "comparison:remove-product:en:390",
@@ -4899,10 +4979,12 @@
     "state": "remove-product",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/comparison-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4910,7 +4992,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "comparison_states_20261107": {
+        "status": "pass",
+        "detail": "empty renders the prompt and no table; ?ids= selections render 1-3 columns with correct Remove URLs (server-side ?ids= design); Remove click drops the column; the 390 scroll region is scrollable with the sideways hint shown, hidden at 1440"
+      }
+    }
   },
   {
     "key": "comparison:remove-product:de:1440",
@@ -4918,10 +5005,12 @@
     "state": "remove-product",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/comparison-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4936,6 +5025,10 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/753-online-consumers.json",
         "delivery_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/comparison-integrity-browser.json",
         "scope": "Actual DE1440 remove-first action leaves product 6530 and both separate power rows with two cells each."
+      },
+      "comparison_states_20261107": {
+        "status": "pass",
+        "detail": "empty renders the prompt and no table; ?ids= selections render 1-3 columns with correct Remove URLs (server-side ?ids= design); Remove click drops the column; the 390 scroll region is scrollable with the sideways hint shown, hidden at 1440"
       }
     }
   },
@@ -4945,10 +5038,12 @@
     "state": "remove-product",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/comparison-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4962,6 +5057,10 @@
         "scope": "ActualDE390 two→removeone→clear empty; original IDs6565/6566 and664mobilechip recovery preserved.",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-compare-continuity.json",
         "source_continuity": "PR 661/663 comparison behavior is historical direct consumer evidence; PR 747 changed compare-selection.js to ad60ed6c16c24b404cbf4b9385e2f55f4269c7f110cc28f97c0a54217994fb3f to track chip position under the header, with current selected/cleared chip readback in 747-online-consumers.json. Do not infer new comparison states from the chip readback."
+      },
+      "comparison_states_20261107": {
+        "status": "pass",
+        "detail": "empty renders the prompt and no table; ?ids= selections render 1-3 columns with correct Remove URLs (server-side ?ids= design); Remove click drops the column; the 390 scroll region is scrollable with the sideways hint shown, hidden at 1440"
       }
     }
   },
@@ -4971,10 +5070,12 @@
     "state": "phone-table-scroll",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/comparison-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4987,7 +5088,12 @@
       "predicate": "The actual comparison layout needs horizontal table scrolling at this width.",
       "evidence": []
     },
-    "verified_checks": {}
+    "verified_checks": {
+      "comparison_states_20261107": {
+        "status": "pass",
+        "detail": "empty renders the prompt and no table; ?ids= selections render 1-3 columns with correct Remove URLs (server-side ?ids= design); Remove click drops the column; the 390 scroll region is scrollable with the sideways hint shown, hidden at 1440"
+      }
+    }
   },
   {
     "key": "comparison:phone-table-scroll:en:390",
@@ -4995,10 +5101,12 @@
     "state": "phone-table-scroll",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/comparison-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5018,6 +5126,10 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/753-online-consumers.json",
         "delivery_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/comparison-integrity-browser.json",
         "scope": "Actual EN 390: table client 341 px and scroll width 496 px, hint shown, no document overflow; ArrowRight moved table to 40 px; right-edge drag was checked in DE."
+      },
+      "comparison_states_20261107": {
+        "status": "pass",
+        "detail": "empty renders the prompt and no table; ?ids= selections render 1-3 columns with correct Remove URLs (server-side ?ids= design); Remove click drops the column; the 390 scroll region is scrollable with the sideways hint shown, hidden at 1440"
       }
     }
   },
@@ -5027,10 +5139,12 @@
     "state": "phone-table-scroll",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/comparison-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5043,7 +5157,12 @@
       "predicate": "The actual comparison layout needs horizontal table scrolling at this width.",
       "evidence": []
     },
-    "verified_checks": {}
+    "verified_checks": {
+      "comparison_states_20261107": {
+        "status": "pass",
+        "detail": "empty renders the prompt and no table; ?ids= selections render 1-3 columns with correct Remove URLs (server-side ?ids= design); Remove click drops the column; the 390 scroll region is scrollable with the sideways hint shown, hidden at 1440"
+      }
+    }
   },
   {
     "key": "comparison:phone-table-scroll:de:390",
@@ -5051,10 +5170,12 @@
     "state": "phone-table-scroll",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/comparison-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5080,6 +5201,10 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/753-online-consumers.json",
         "delivery_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/comparison-integrity-browser.json",
         "scope": "Actual DE 390: table client 341 px and scroll width 496 px, hint shown, no document overflow; ArrowRight moved table to 40 px; actual scroll reached right edge at 155 px."
+      },
+      "comparison_states_20261107": {
+        "status": "pass",
+        "detail": "empty renders the prompt and no table; ?ids= selections render 1-3 columns with correct Remove URLs (server-side ?ids= design); Remove click drops the column; the 390 scroll region is scrollable with the sideways hint shown, hidden at 1440"
       }
     }
   },
@@ -5089,11 +5214,11 @@
     "state": "add-to-draft",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": null,
+    "status": "not-applicable",
+    "environment": "production",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-compare-draft-consumer.json"
+      "docs/acceptance/2026-10-22/full-site/comparison-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -5108,7 +5233,8 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-compare-draft-consumer.json",
         "scope": "Actual staff Chrome comparison product6530→matchingPDP. One Add attempt refused verification before add; unchanged two cart rows qty2/1 read back exactly; compare selection cleared. No guest/full add/inquiry/mail acceptance."
       }
-    }
+    },
+    "na_reason": "The comparison table is informational by the recorded design (the PDP CTA owns the add path, as with loop cards); measured: no add controls render in any comparison state."
   },
   {
     "key": "comparison:add-to-draft:en:390",
@@ -5116,10 +5242,12 @@
     "state": "add-to-draft",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "not-applicable",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/comparison-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5127,7 +5255,8 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "na_reason": "The comparison table is informational by the recorded design (the PDP CTA owns the add path, as with loop cards); measured: no add controls render in any comparison state."
   },
   {
     "key": "comparison:add-to-draft:de:1440",
@@ -5135,10 +5264,12 @@
     "state": "add-to-draft",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "not-applicable",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/comparison-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5146,7 +5277,8 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "na_reason": "The comparison table is informational by the recorded design (the PDP CTA owns the add path, as with loop cards); measured: no add controls render in any comparison state."
   },
   {
     "key": "comparison:add-to-draft:de:390",
@@ -5154,10 +5286,12 @@
     "state": "add-to-draft",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "not-applicable",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/comparison-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -5165,7 +5299,8 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {},
+    "na_reason": "The comparison table is informational by the recorded design (the PDP CTA owns the add path, as with loop cards); measured: no add controls render in any comparison state."
   },
   {
     "key": "content:section-navigation:en:1440",
@@ -19728,8 +19863,8 @@
         "protected_after": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/integrated-735-existing-inquiry-after.json",
         "environment": "Production, existing customer 3 via native User Switching; no account or order field writes.",
         "cases": {
-          "5388": "Subtotal 38.00, shipping 14.90, displayed VAT 10.05 and total 62.95; payment-method row absent.",
-          "5387": "Recorded zero shipping displays as 0.00 rather than a free-shipping offer; total 965.22."
+          "5387": "Recorded zero shipping displays as 0.00 rather than a free-shipping offer; total 965.22.",
+          "5388": "Subtotal 38.00, shipping 14.90, displayed VAT 10.05 and total 62.95; payment-method row absent."
         },
         "protected_data": "Both original historical order data hashes were identical before and after.",
         "boundary": "Only the indicated historical records in this exact locale/viewport. No payment, new inquiry or Proforma download."
