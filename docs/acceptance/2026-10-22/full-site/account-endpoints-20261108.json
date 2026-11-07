@@ -12,6 +12,11 @@
       "state": "customer-admin-explanation",
       "checks": "Customer hitting /wp-admin/ -> Woo protection redirects to a dedicated explanation page: 'You are signed in as verif-approved-207@example.test (customer account). The admin area is for Linker staff only.' + 'Sign out and sign in as staff' + 'Go to my account' - exactly the 2026-10-17 ruling (keep the redirect, add an explanation page)",
       "result": "pass"
+    },
+    {
+      "state": "dynamic-routes account-direct-endpoint-and-refresh",
+      "checks": "/my-account/inquiries/ opens directly AND survives a hard reload while signed in: workspace nav intact, 'Confirm email address to check for past orders and link them' notice, All inquiries / Open inquiries tabs, 'No inquiries yet.' empty state with Browse products CTA - direct deep link + refresh persistence verified",
+      "result": "pass"
     }
   ]
 }
