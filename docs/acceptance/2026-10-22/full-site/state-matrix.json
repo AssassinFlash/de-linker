@@ -22201,10 +22201,12 @@
     "state": "workspace",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "genie-live-turns-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -22213,7 +22215,9 @@
       "marketing-entries",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "live-turn": true
+    }
   },
   {
     "key": "genie:workspace:en:390",
@@ -22241,10 +22245,12 @@
     "state": "workspace",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "genie-live-turns-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -22253,7 +22259,9 @@
       "marketing-entries",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "live-turn": true
+    }
   },
   {
     "key": "genie:workspace:de:390",
@@ -22389,10 +22397,12 @@
     "state": "home-hero",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "genie-live-turns-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -22401,7 +22411,9 @@
       "marketing-entries",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "live-turn": true
+    }
   },
   {
     "key": "genie:home-hero:en:390",
@@ -22469,10 +22481,12 @@
     "state": "first-ai-disclosure",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "genie-live-turns-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -22481,7 +22495,9 @@
       "marketing-entries",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "live-turn": true
+    }
   },
   {
     "key": "genie:first-ai-disclosure:en:390",
@@ -22509,10 +22525,12 @@
     "state": "first-ai-disclosure",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "genie-live-turns-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -22521,7 +22539,9 @@
       "marketing-entries",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "live-turn": true
+    }
   },
   {
     "key": "genie:first-ai-disclosure:de:390",
@@ -22549,10 +22569,12 @@
     "state": "thinking",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "genie-live-turns-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -22561,7 +22583,9 @@
       "marketing-entries",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "live-turn": true
+    }
   },
   {
     "key": "genie:thinking:en:390",
@@ -22629,10 +22653,12 @@
     "state": "answer-text",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "genie-live-turns-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -22641,7 +22667,9 @@
       "marketing-entries",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "live-turn": true
+    }
   },
   {
     "key": "genie:answer-text:en:390",
@@ -22669,10 +22697,12 @@
     "state": "answer-text",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "genie-live-turns-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -22681,7 +22711,9 @@
       "marketing-entries",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "live-turn": true
+    }
   },
   {
     "key": "genie:answer-text:de:390",
@@ -22709,10 +22741,12 @@
     "state": "product-card",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "genie-live-turns-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -22721,7 +22755,9 @@
       "marketing-entries",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "live-turn": true
+    }
   },
   {
     "key": "genie:product-card:en:390",
@@ -22749,10 +22785,12 @@
     "state": "product-card",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "genie-live-turns-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -22761,7 +22799,9 @@
       "marketing-entries",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "live-turn": true
+    }
   },
   {
     "key": "genie:product-card:de:390",
@@ -22869,10 +22909,12 @@
     "state": "product-add-pending",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "genie-live-turns-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -22881,7 +22923,9 @@
       "marketing-entries",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "live-turn": true
+    }
   },
   {
     "key": "genie:product-add-pending:en:390",
@@ -22949,10 +22993,12 @@
     "state": "product-add-success",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "genie-live-turns-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -22961,7 +23007,9 @@
       "marketing-entries",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "live-turn": true
+    }
   },
   {
     "key": "genie:product-add-success:en:390",
@@ -23189,10 +23237,12 @@
     "state": "save-pending-error-success",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "genie-live-turns-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -23201,7 +23251,9 @@
       "marketing-entries",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "live-turn": true
+    }
   },
   {
     "key": "genie:save-pending-error-success:en:390",
@@ -23589,10 +23641,12 @@
     "state": "copy-and-rating",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "genie-live-turns-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -23601,7 +23655,9 @@
       "marketing-entries",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "live-turn": true
+    }
   },
   {
     "key": "genie:copy-and-rating:en:390",
@@ -23829,10 +23885,12 @@
     "state": "history-and-restore",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "genie-live-turns-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -23849,7 +23907,9 @@
       "opposite-language-history",
       "failed-authority-clears-old-price"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "live-turn": true
+    }
   },
   {
     "key": "genie:history-and-restore:en:390",
@@ -23885,10 +23945,12 @@
     "state": "history-and-restore",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "genie-live-turns-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -23905,7 +23967,9 @@
       "opposite-language-history",
       "failed-authority-clears-old-price"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "live-turn": true
+    }
   },
   {
     "key": "genie:history-and-restore:de:390",
@@ -33427,10 +33491,12 @@
     "state": "consumer-draft-readback",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "genie-live-turns-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -33440,7 +33506,9 @@
       "marketing-entries",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "live-turn": true
+    }
   },
   {
     "key": "genie:consumer-draft-readback:en:390",
@@ -35725,10 +35793,12 @@
     "state": "dock-keyboard-focus-escape-and-return",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "genie-live-turns-20261107.json"
+    ],
     "findings": [
       "Home Continue to phone dock leaves focus in the background; native Escape does not close. Repair in current Batch A."
     ],
@@ -35754,7 +35824,9 @@
       "predicate": "Genie helper can be opened at this width; phone modal and desktop nonmodal boundaries are validated separately.",
       "evidence": []
     },
-    "verified_checks": {}
+    "verified_checks": {
+      "live-turn": true
+    }
   },
   {
     "key": "genie:dock-keyboard-focus-escape-and-return:en:390",

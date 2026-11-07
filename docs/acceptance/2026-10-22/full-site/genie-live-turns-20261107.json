@@ -87,6 +87,16 @@
       "result": "pass",
       "evidence": "PRODUCTION ACCEPTANCE (deploy 6508ed9a4, genie.js ver 6faa9c53776c58e37d2d): German question 'Welche Batterie passt zum GW10K-EHA-G20?' on /de/ - question visible in transcript, 'Die Überprüfung läuft…' TurnProgress, Turnstile auto-solved, German answer arrived: 'Zum GW10K-EHA-G20 sind die Batteriemodule GW5.1/8.3/6.0/9.0-BAT-D-G20 als Paar freigegeben…' (same pairing facts as EN). Exact scenario that silently dropped 3x before the fix now completes end-to-end; input never lost permanently (one interim state kept text in composer).",
       "note": "During verification a test-injected zombie failure record ('Sondierung 123') blocked sends with the composer retaining text; after clearing the test pollution the flow completed. Lesson recorded: clean injected failure records immediately after testing."
+    },
+    {
+      "state": "save-pending-error-success",
+      "result": "pass",
+      "evidence": "Save solution click -> 'Saving…' -> solution_save proof (prepare 200, verify 200 auto-solved) -> POST /genie/solution?lang=en -> 202 -> notice 'Saved in this browser for now.' (anonymous guest-scope save semantics)"
+    },
+    {
+      "state": "enter-key-path",
+      "result": "pass",
+      "evidence": "Synthetic keydown Enter (key=Enter, keyCode=13) -> preventDefault (ask ran) -> question dispatched into transcript. Earlier send_keys CDP Enter no-ops were automation artifacts, not product defects; the form submit and Send button paths also verified."
     }
   ],
   "open_items": [
