@@ -32,13 +32,32 @@
       "state": "rejected",
       "checks": "login REFUSED with 'Dieses Konto ist nicht zur Anmeldung freigegeben. Den Grund haben wir Ihnen per E-Mail geschickt. Schreiben Sie an sales@de-linker.com...' - no workspace, reason via email notice + recovery path",
       "result": "pass"
+    },
+    {
+      "state": "cross-user isolation (cart)",
+      "checks": "user A (53, approved) cart holds 1x GW8.3-BAT-D-G20 EUR 1,421.12 net + VAT 19% EUR 270.01 + Total EUR 1,691.13 with 'Continue to Proforma request'; logout -> user B (54, pending) login verified on my-account -> /cart/ empty, no A draft leak",
+      "result": "pass"
+    },
+    {
+      "state": "direct add-to-cart refusal",
+      "checks": "?add-to-cart=6528 direct URL refused by draft admission with visible notice 'Your request could not be processed. Please try again.' (Draft.php design: direct transports cannot bypass admission); Genie product-add channel works",
+      "result": "pass (designed refusal, visible)"
+    },
+    {
+      "state": "pending endpoints",
+      "checks": "Inquiries (empty state), Saved solutions ('Under review' + 'Solutions you save in the Solution Configurator appear here'), Documents, Company ('Under review' + company details prefill note + Add Company details) all render; pending session persists across pages",
+      "result": "pass"
+    },
+    {
+      "state": "old-session revocation on reject",
+      "checks": "with B (54) holding an ACTIVE session, real Approval::set(54,'rejected') via wp eval returned true; page reload -> session DEAD (login form, no user). Test mail mode (linker_commerce_test_mail_to -> chester@de-linker.com) was enabled for the decision emails and removed after; user restored to pending and read back",
+      "result": "pass"
     }
   ],
   "notes": "Reason strings display as authored by the team (fixture reason in English displays verbatim in DE UI - acceptable, reasons are team-written free text).",
   "open": [
     "cross-user isolation spot checks (user A cannot see user B drafts/saved solutions)",
     "account endpoint sweep on all three usable states (approved/pending/restricted x Overview/Inquiries/Saved solutions/Documents/Company)",
-    "old-session revocation on reject (requires an active session then admin reject)",
     "390 viewport pass"
   ]
 }
