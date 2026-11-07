@@ -37,13 +37,20 @@
       "stage": "honest-scoping statements",
       "checks": "'QuickStart planning assumption: storage window derived from declared annual consumption and chosen system goal. Not a product specification and not an engineering result.'; 'Country requirements: not assessed by this calculation.'; 'Battery discharge path: Further checks required'; 'Quantities are shown only when the product's sales unit and selected configuration are established.'; 'This calculation uses an earlier input snapshot.'",
       "result": "pass (matches the no-fake-engineering-release contract)"
+    },
+    {
+      "stage": "equipment workbench step (form layer)",
+      "checks": "Six-step workbench Equipment step renders requirement form (operating mode, grid connection, PV array kWp, required usable energy kWh, required AC discharge kW), 'Product properties come from Linker's product data. Each result records the product data and documents used.', product data reload control, manual selection affordance",
+      "result": "pass (form layer; combination search from this form pending)"
     }
   ],
   "automation_notes": [
     "Synthetic input value-set does not register in the configurator's React state; real key_type fills work",
-    "Generation requires postcode/town; without it Generate does nothing visible (validation silent) - candidate UX note"
+    "Generation requires postcode/town; without it Generate does nothing visible (validation silent) - candidate UX note",
+    "Equipment workbench step: requirement inputs (kWp/kWh/kW) resisted both value-set fill and ref-click+key_type within this session (values reset); needs a focused pass. QuickStart regeneration is the working path."
   ],
   "open": [
+    "UX finding: navigating QuickStart -> workbench Equipment -> back resets the quick-start form selections and shows 'Unsaved changes' even though the pipeline ran at revision 2 - candidate state-persistence issue to verify with a clean run",
     "report PDF/CSV download",
     "add-to-solution-draft from workbench Equipment step",
     "roof design entry (canvas) and interval data import",
