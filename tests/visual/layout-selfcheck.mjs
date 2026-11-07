@@ -205,6 +205,7 @@ const runSelftest = async (browser) => {
 		"#control-closed-details-body",
 		"#control-wrapped-inline-a",
 		"#control-wrapped-inline-b",
+		"#control-focus-reveal",
 		"#control-grid-fill",
 		"#control-flex",
 		"#control-wrapping",

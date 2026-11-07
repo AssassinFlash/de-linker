@@ -185,6 +185,17 @@
 				"
 				>screen-reader-text pattern</a
 			>
+			<!-- Progressive disclosure: the copy-button pattern stays
+			     transparent until it receives focus. -->
+			<button
+				id="control-focus-reveal"
+				type="button"
+				onfocus="this.style.opacity = 1"
+				onblur="this.style.opacity = 0"
+				style="opacity: 0; width: 32px; height: 32px"
+			>
+				C
+			</button>
 			<button id="planted-tiny" type="button" style="width: 12px; height: 12px">
 				x
 			</button>
