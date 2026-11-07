@@ -14684,11 +14684,11 @@
     "state": "guest-empty",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json"
+      "docs/acceptance/2026-10-22/full-site/inquiry-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -14719,6 +14719,10 @@
           "url": "https://de-linker.com/proforma-request/",
           "width": 1440
         }
+      },
+      "inquiry_states_20261107": {
+        "status": "pass",
+        "detail": "the guest inquiry form renders open (email, name required; message textarea; company optional; consent checkbox required; no country field) matching the inquiry-open-to-all ruling, plus the honeypot website field - in both languages and viewports"
       }
     }
   },
@@ -14728,10 +14732,12 @@
     "state": "guest-empty",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/inquiry-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -14741,7 +14747,12 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "inquiry_states_20261107": {
+        "status": "pass",
+        "detail": "the guest inquiry form renders open (email, name required; message textarea; company optional; consent checkbox required; no country field) matching the inquiry-open-to-all ruling, plus the honeypot website field - in both languages and viewports"
+      }
+    }
   },
   {
     "key": "inquiry:guest-empty:de:1440",
@@ -14749,10 +14760,12 @@
     "state": "guest-empty",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/inquiry-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -14762,7 +14775,12 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "inquiry_states_20261107": {
+        "status": "pass",
+        "detail": "the guest inquiry form renders open (email, name required; message textarea; company optional; consent checkbox required; no country field) matching the inquiry-open-to-all ruling, plus the honeypot website field - in both languages and viewports"
+      }
+    }
   },
   {
     "key": "inquiry:guest-empty:de:390",
@@ -14770,11 +14788,11 @@
     "state": "guest-empty",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json"
+      "docs/acceptance/2026-10-22/full-site/inquiry-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -14807,6 +14825,10 @@
           "url": "https://de-linker.com/de/proforma-anfrage/",
           "width": 390
         }
+      },
+      "inquiry_states_20261107": {
+        "status": "pass",
+        "detail": "the guest inquiry form renders open (email, name required; message textarea; company optional; consent checkbox required; no country field) matching the inquiry-open-to-all ruling, plus the honeypot website field - in both languages and viewports"
       }
     }
   },
@@ -15063,11 +15085,11 @@
     "state": "invalid-fields",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "local",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json"
+      "docs/acceptance/2026-10-22/full-site/inquiry-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -15110,6 +15132,10 @@
             }
           ]
         }
+      },
+      "inquiry_states_20261107": {
+        "status": "pass",
+        "detail": "empty submit stays on the page with three HTML5-invalid fields (name, email, consent) in every combination"
       }
     }
   },
@@ -15119,10 +15145,12 @@
     "state": "invalid-fields",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/inquiry-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -15132,7 +15160,12 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "inquiry_states_20261107": {
+        "status": "pass",
+        "detail": "empty submit stays on the page with three HTML5-invalid fields (name, email, consent) in every combination"
+      }
+    }
   },
   {
     "key": "inquiry:invalid-fields:de:1440",
@@ -15140,10 +15173,12 @@
     "state": "invalid-fields",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/inquiry-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -15153,7 +15188,12 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "inquiry_states_20261107": {
+        "status": "pass",
+        "detail": "empty submit stays on the page with three HTML5-invalid fields (name, email, consent) in every combination"
+      }
+    }
   },
   {
     "key": "inquiry:invalid-fields:de:390",
@@ -15161,10 +15201,12 @@
     "state": "invalid-fields",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/inquiry-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -15174,7 +15216,12 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "inquiry_states_20261107": {
+        "status": "pass",
+        "detail": "empty submit stays on the page with three HTML5-invalid fields (name, email, consent) in every combination"
+      }
+    }
   },
   {
     "key": "inquiry:fields-retained-after-draft-edit:en:1440",

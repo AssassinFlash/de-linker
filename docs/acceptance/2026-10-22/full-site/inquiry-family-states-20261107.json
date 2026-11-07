@@ -1,0 +1,226 @@
+[
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "guest-empty",
+  "hasForm": true,
+  "fields": [
+   {
+    "name": "website",
+    "type": "text",
+    "required": false
+   },
+   {
+    "name": "message",
+    "type": "textarea",
+    "required": false
+   },
+   {
+    "name": "name",
+    "type": "text",
+    "required": true
+   },
+   {
+    "name": "email",
+    "type": "email",
+    "required": true
+   },
+   {
+    "name": "company",
+    "type": "text",
+    "required": false
+   },
+   {
+    "name": "consent",
+    "type": "checkbox",
+    "required": true
+   }
+  ],
+  "hasEmail": true,
+  "hasOpenMessage": true,
+  "loginNoteVisible": false
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "error",
+  "error": "page.evaluate: ReferenceError: lang is not defined\n    at eval (eval at evaluate (:370:30), <anonymous>:3:51)\n    at UtilityScript"
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "guest-empty",
+  "hasForm": true,
+  "fields": [
+   {
+    "name": "website",
+    "type": "text",
+    "required": false
+   },
+   {
+    "name": "message",
+    "type": "textarea",
+    "required": false
+   },
+   {
+    "name": "name",
+    "type": "text",
+    "required": true
+   },
+   {
+    "name": "email",
+    "type": "email",
+    "required": true
+   },
+   {
+    "name": "company",
+    "type": "text",
+    "required": false
+   },
+   {
+    "name": "consent",
+    "type": "checkbox",
+    "required": true
+   }
+  ],
+  "hasEmail": true,
+  "hasOpenMessage": true,
+  "loginNoteVisible": false
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "error",
+  "error": "page.evaluate: ReferenceError: lang is not defined\n    at eval (eval at evaluate (:370:30), <anonymous>:3:51)\n    at UtilityScript"
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "guest-empty",
+  "hasForm": true,
+  "fields": [
+   {
+    "name": "website",
+    "type": "text",
+    "required": false
+   },
+   {
+    "name": "message",
+    "type": "textarea",
+    "required": false
+   },
+   {
+    "name": "name",
+    "type": "text",
+    "required": true
+   },
+   {
+    "name": "email",
+    "type": "email",
+    "required": true
+   },
+   {
+    "name": "company",
+    "type": "text",
+    "required": false
+   },
+   {
+    "name": "consent",
+    "type": "checkbox",
+    "required": true
+   }
+  ],
+  "hasEmail": true,
+  "hasOpenMessage": true,
+  "loginNoteVisible": false
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "error",
+  "error": "page.evaluate: ReferenceError: lang is not defined\n    at eval (eval at evaluate (:370:30), <anonymous>:3:51)\n    at UtilityScript"
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "guest-empty",
+  "hasForm": true,
+  "fields": [
+   {
+    "name": "website",
+    "type": "text",
+    "required": false
+   },
+   {
+    "name": "message",
+    "type": "textarea",
+    "required": false
+   },
+   {
+    "name": "name",
+    "type": "text",
+    "required": true
+   },
+   {
+    "name": "email",
+    "type": "email",
+    "required": true
+   },
+   {
+    "name": "company",
+    "type": "text",
+    "required": false
+   },
+   {
+    "name": "consent",
+    "type": "checkbox",
+    "required": true
+   }
+  ],
+  "hasEmail": true,
+  "hasOpenMessage": true,
+  "loginNoteVisible": false
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "error",
+  "error": "page.evaluate: ReferenceError: lang is not defined\n    at eval (eval at evaluate (:370:30), <anonymous>:3:51)\n    at UtilityScript"
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "invalid-fields+copy",
+  "html5Invalid": 3,
+  "stillOnPage": true,
+  "mentionsOneDay": true,
+  "mentionsProforma": false
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "invalid-fields+copy",
+  "html5Invalid": 3,
+  "stillOnPage": true,
+  "mentionsOneDay": true,
+  "mentionsProforma": false
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "invalid-fields+copy",
+  "html5Invalid": 3,
+  "stillOnPage": true,
+  "mentionsOneDay": false,
+  "mentionsProforma": false
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "invalid-fields+copy",
+  "html5Invalid": 3,
+  "stillOnPage": true,
+  "mentionsOneDay": false,
+  "mentionsProforma": false
+ }
+]
