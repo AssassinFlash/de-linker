@@ -10166,7 +10166,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -10240,7 +10241,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-10k0-s2-10-kw-three-phase-hybrid-2026-flagship/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-10k0-s2-10-kw-three-phase-hybrid-2026-flagship/@390",
@@ -10255,7 +10257,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -10329,7 +10332,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-10k0-s2-10-kw-three-phase-hybrid-2026-flagship/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one/@1440",
@@ -10886,7 +10890,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -10960,7 +10965,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-6k0-s2-6-kw-three-phase-hybrid-2026-flagship/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-6k0-s2-6-kw-three-phase-hybrid-2026-flagship/@390",
@@ -10975,7 +10981,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -11049,7 +11056,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-6k0-s2-6-kw-three-phase-hybrid-2026-flagship/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-three-phase-hybrid-2026-flagship/@1440",
@@ -11064,7 +11072,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -11138,7 +11147,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-three-phase-hybrid-2026-flagship/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-three-phase-hybrid-2026-flagship/@390",
@@ -11153,7 +11163,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -11227,7 +11238,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-three-phase-hybrid-2026-flagship/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-12k0-s2-12-kw-three-phase-hybrid-2026-flagship/@1440",
@@ -11242,7 +11254,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -11316,7 +11329,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-12k0-s2-12-kw-three-phase-hybrid-2026-flagship/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-12k0-s2-12-kw-three-phase-hybrid-2026-flagship/@390",
@@ -11331,7 +11345,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -11405,7 +11420,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-12k0-s2-12-kw-three-phase-hybrid-2026-flagship/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k0-s2-6-kw-single-phase-hybrid-2026-flagship/@1440",
@@ -11420,7 +11436,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -11494,7 +11511,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k0-s2-6-kw-single-phase-hybrid-2026-flagship/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k0-s2-6-kw-single-phase-hybrid-2026-flagship/@390",
@@ -11509,7 +11527,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -11583,7 +11602,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k0-s2-6-kw-single-phase-hybrid-2026-flagship/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-8k0-s2-8-kw-single-phase-hybrid-2026-flagship/@1440",
@@ -11598,7 +11618,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -11672,7 +11693,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-8k0-s2-8-kw-single-phase-hybrid-2026-flagship/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-8k0-s2-8-kw-single-phase-hybrid-2026-flagship/@390",
@@ -11687,7 +11709,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -11761,7 +11784,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-8k0-s2-8-kw-single-phase-hybrid-2026-flagship/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-10k0-s2-10-kw-single-phase-hybrid-2026-flagship/@1440",
@@ -11776,7 +11800,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -11850,7 +11875,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-10k0-s2-10-kw-single-phase-hybrid-2026-flagship/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-10k0-s2-10-kw-single-phase-hybrid-2026-flagship/@390",
@@ -11865,7 +11891,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -11939,7 +11966,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-10k0-s2-10-kw-single-phase-hybrid-2026-flagship/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-12k0-s2-12-kw-single-phase-hybrid-2026-flagship/@1440",
@@ -11954,7 +11982,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -12028,7 +12057,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-12k0-s2-12-kw-single-phase-hybrid-2026-flagship/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-12k0-s2-12-kw-single-phase-hybrid-2026-flagship/@390",
@@ -12043,7 +12073,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -12117,7 +12148,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-12k0-s2-12-kw-single-phase-hybrid-2026-flagship/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2/@1440",
@@ -12132,7 +12164,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -12206,7 +12239,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2/@390",
@@ -12221,7 +12255,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -12295,7 +12330,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2/@1440",
@@ -12310,7 +12346,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -12384,7 +12421,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2/@390",
@@ -12399,7 +12437,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -12473,7 +12512,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/goodwe-esa-gw8k-eta-g20-8-kw-three-phase-all-in-one/@1440",
@@ -13187,7 +13227,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -13261,7 +13302,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-lfp-battery-base/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-lfp-battery-base/@390",
@@ -13276,7 +13318,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -13350,7 +13393,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-lfp-battery-base/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-battery-stack-bridge/@1440",
@@ -13365,7 +13409,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -13439,7 +13484,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-battery-stack-bridge/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-battery-stack-bridge/@390",
@@ -13454,7 +13500,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -13528,7 +13575,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-battery-stack-bridge/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/goodwe-gw6-0-bat-d-g20-esa-battery-module-6-0-kwh/@1440",
@@ -15424,7 +15472,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -15498,7 +15547,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-5k0-s2-5-kw-three-phase-hybrid/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-5k0-s2-5-kw-three-phase-hybrid/@390",
@@ -15513,7 +15563,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -15587,7 +15638,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-5k0-s2-5-kw-three-phase-hybrid/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-15k-g2-15-kw-three-phase-hybrid/@1440",
@@ -15602,7 +15654,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -15676,7 +15729,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-15k-g2-15-kw-three-phase-hybrid/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-15k-g2-15-kw-three-phase-hybrid/@390",
@@ -15691,7 +15745,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -15765,7 +15820,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-15k-g2-15-kw-three-phase-hybrid/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-15k-g2f-15-kw-three-phase-hybrid/@1440",
@@ -15780,7 +15836,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -15854,7 +15911,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-15k-g2f-15-kw-three-phase-hybrid/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-15k-g2f-15-kw-three-phase-hybrid/@390",
@@ -15869,7 +15927,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -15943,7 +16002,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-15k-g2f-15-kw-three-phase-hybrid/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k-s2-3-kw-single-phase-hybrid/@1440",
@@ -15958,7 +16018,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -16032,7 +16093,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k-s2-3-kw-single-phase-hybrid/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k-s2-3-kw-single-phase-hybrid/@390",
@@ -16047,7 +16109,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -16121,7 +16184,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k-s2-3-kw-single-phase-hybrid/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-single-phase-hybrid/@1440",
@@ -16136,7 +16200,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -16210,7 +16275,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-single-phase-hybrid/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-single-phase-hybrid/@390",
@@ -16225,7 +16291,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -16299,7 +16366,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-single-phase-hybrid/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-4k6-s2-4-6-kw-single-phase-hybrid/@1440",
@@ -16314,7 +16382,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -16388,7 +16457,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-4k6-s2-4-6-kw-single-phase-hybrid/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-4k6-s2-4-6-kw-single-phase-hybrid/@390",
@@ -16403,7 +16473,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -16477,7 +16548,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-4k6-s2-4-6-kw-single-phase-hybrid/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k-s2-5-kw-single-phase-hybrid/@1440",
@@ -16492,7 +16564,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -16566,7 +16639,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k-s2-5-kw-single-phase-hybrid/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k-s2-5-kw-single-phase-hybrid/@390",
@@ -16581,7 +16655,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -16655,7 +16730,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k-s2-5-kw-single-phase-hybrid/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k75-s2-5-75-kw-single-phase-hybrid/@1440",
@@ -16670,7 +16746,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -16744,7 +16821,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k75-s2-5-75-kw-single-phase-hybrid/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k75-s2-5-75-kw-single-phase-hybrid/@390",
@@ -16759,7 +16837,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -16833,7 +16912,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k75-s2-5-75-kw-single-phase-hybrid/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k-s2-6-kw-single-phase-hybrid/@1440",
@@ -16848,7 +16928,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -16922,7 +17003,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k-s2-6-kw-single-phase-hybrid/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k-s2-6-kw-single-phase-hybrid/@390",
@@ -16937,7 +17019,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [
       {
@@ -17011,7 +17094,8 @@
         "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k-s2-6-kw-single-phase-hybrid/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/goodwe-gw75k-et-g10/@1440",
@@ -22772,7 +22856,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -22837,7 +22922,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-6k-s2-6-kw-einphasiger-hybridwechselrichter/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-6k-s2-6-kw-einphasiger-hybridwechselrichter/@390",
@@ -22852,7 +22938,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -22917,7 +23004,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-6k-s2-6-kw-einphasiger-hybridwechselrichter/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-5k75-s2-5-75-kw-einphasiger-hybridwechselrichter/@1440",
@@ -22932,7 +23020,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -22997,7 +23086,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-5k75-s2-5-75-kw-einphasiger-hybridwechselrichter/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-5k75-s2-5-75-kw-einphasiger-hybridwechselrichter/@390",
@@ -23012,7 +23102,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -23077,7 +23168,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-5k75-s2-5-75-kw-einphasiger-hybridwechselrichter/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-5k-s2-5-kw-einphasiger-hybridwechselrichter/@1440",
@@ -23092,7 +23184,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -23157,7 +23250,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-5k-s2-5-kw-einphasiger-hybridwechselrichter/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-5k-s2-5-kw-einphasiger-hybridwechselrichter/@390",
@@ -23172,7 +23266,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -23237,7 +23332,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-5k-s2-5-kw-einphasiger-hybridwechselrichter/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-4k6-s2-4-6-kw-einphasiger-hybridwechselrichter/@1440",
@@ -23252,7 +23348,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -23317,7 +23414,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-4k6-s2-4-6-kw-einphasiger-hybridwechselrichter/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-4k6-s2-4-6-kw-einphasiger-hybridwechselrichter/@390",
@@ -23332,7 +23430,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -23397,7 +23496,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-4k6-s2-4-6-kw-einphasiger-hybridwechselrichter/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-einphasiger-hybridwechselrichter/@1440",
@@ -23412,7 +23512,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -23477,7 +23578,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-einphasiger-hybridwechselrichter/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-einphasiger-hybridwechselrichter/@390",
@@ -23492,7 +23594,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -23557,7 +23660,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-einphasiger-hybridwechselrichter/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-3k-s2-3-kw-einphasiger-hybridwechselrichter/@1440",
@@ -23572,7 +23676,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -23637,7 +23742,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-3k-s2-3-kw-einphasiger-hybridwechselrichter/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-3k-s2-3-kw-einphasiger-hybridwechselrichter/@390",
@@ -23652,7 +23758,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -23717,7 +23824,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-3k-s2-3-kw-einphasiger-hybridwechselrichter/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-15k-g2f-15-kw-dreiphasiger-hybridwechselrichter/@1440",
@@ -23732,7 +23840,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -23797,7 +23906,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-15k-g2f-15-kw-dreiphasiger-hybridwechselrichter/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-15k-g2f-15-kw-dreiphasiger-hybridwechselrichter/@390",
@@ -23812,7 +23922,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -23877,7 +23988,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-15k-g2f-15-kw-dreiphasiger-hybridwechselrichter/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-15k-g2-15-kw-dreiphasiger-hybridwechselrichter/@1440",
@@ -23892,7 +24004,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -23957,7 +24070,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-15k-g2-15-kw-dreiphasiger-hybridwechselrichter/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-15k-g2-15-kw-dreiphasiger-hybridwechselrichter/@390",
@@ -23972,7 +24086,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -24037,7 +24152,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-15k-g2-15-kw-dreiphasiger-hybridwechselrichter/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-5k0-s2-5-kw-dreiphasiger-hybridwechselrichter/@1440",
@@ -24052,7 +24168,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -24117,7 +24234,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-5k0-s2-5-kw-dreiphasiger-hybridwechselrichter/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-5k0-s2-5-kw-dreiphasiger-hybridwechselrichter/@390",
@@ -24132,7 +24250,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -24197,7 +24316,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-5k0-s2-5-kw-dreiphasiger-hybridwechselrichter/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/goodwe-esa-gw125-261-esa-lcn-g10/@1440",
@@ -26264,7 +26384,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -26329,7 +26450,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-verbinder-fuer-batteriestapel/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-verbinder-fuer-batteriestapel/@390",
@@ -26344,7 +26466,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -26409,7 +26532,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-verbinder-fuer-batteriestapel/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-lfp-batteriesockel/@1440",
@@ -26424,7 +26548,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -26486,7 +26611,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-lfp-batteriesockel/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-lfp-batteriesockel/@390",
@@ -26501,7 +26627,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -26563,7 +26690,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-lfp-batteriesockel/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/goodwe-etr-125-kw-ci-dreiphasiger-hybridwechselrichter-1000v/@1440",
@@ -27277,7 +27405,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -27342,7 +27471,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-batterie-8-0-kwh-ef-bd-8-s2/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-batterie-8-0-kwh-ef-bd-8-s2/@390",
@@ -27357,7 +27487,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -27422,7 +27553,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-batterie-8-0-kwh-ef-bd-8-s2/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-batterie-5-02-kwh-ef-bd-5-s2/@1440",
@@ -27437,7 +27569,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -27502,7 +27635,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-batterie-5-02-kwh-ef-bd-5-s2/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-batterie-5-02-kwh-ef-bd-5-s2/@390",
@@ -27517,7 +27651,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -27582,7 +27717,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-batterie-5-02-kwh-ef-bd-5-s2/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-12k0-s2-12-kw-einphasiger-hybridwechselrichter-2026-spitzenmodell/@1440",
@@ -27597,7 +27733,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -27659,7 +27796,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-12k0-s2-12-kw-einphasiger-hybridwechselrichter-2026-spitzenmodell/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-12k0-s2-12-kw-einphasiger-hybridwechselrichter-2026-spitzenmodell/@390",
@@ -27674,7 +27812,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -27736,7 +27875,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-12k0-s2-12-kw-einphasiger-hybridwechselrichter-2026-spitzenmodell/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-10k0-s2-10-kw-einphasiger-hybridwechselrichter-2026-spitzenmodell/@1440",
@@ -27751,7 +27891,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -27816,7 +27957,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-10k0-s2-10-kw-einphasiger-hybridwechselrichter-2026-spitzenmodell/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-10k0-s2-10-kw-einphasiger-hybridwechselrichter-2026-spitzenmodell/@390",
@@ -27831,7 +27973,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -27896,7 +28039,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-10k0-s2-10-kw-einphasiger-hybridwechselrichter-2026-spitzenmodell/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-8k0-s2-8-kw-einphasiger-hybridwechselrichter-2026-spitzenmodell/@1440",
@@ -27911,7 +28055,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -27976,7 +28121,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-8k0-s2-8-kw-einphasiger-hybridwechselrichter-2026-spitzenmodell/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-8k0-s2-8-kw-einphasiger-hybridwechselrichter-2026-spitzenmodell/@390",
@@ -27991,7 +28137,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -28056,7 +28203,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-8k0-s2-8-kw-einphasiger-hybridwechselrichter-2026-spitzenmodell/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-6k0-s2-6-kw-einphasiger-hybridwechselrichter-2026-spitzenmodell/@1440",
@@ -28071,7 +28219,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -28136,7 +28285,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-6k0-s2-6-kw-einphasiger-hybridwechselrichter-2026-spitzenmodell/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-6k0-s2-6-kw-einphasiger-hybridwechselrichter-2026-spitzenmodell/@390",
@@ -28151,7 +28301,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -28216,7 +28367,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p1-6k0-s2-6-kw-einphasiger-hybridwechselrichter-2026-spitzenmodell/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-12k0-s2-12-kw-dreiphasiger-hybridwechselrichter-2026-spitzenmodell/@1440",
@@ -28231,7 +28383,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -28296,7 +28449,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-12k0-s2-12-kw-dreiphasiger-hybridwechselrichter-2026-spitzenmodell/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-12k0-s2-12-kw-dreiphasiger-hybridwechselrichter-2026-spitzenmodell/@390",
@@ -28311,7 +28465,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -28376,7 +28531,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-12k0-s2-12-kw-dreiphasiger-hybridwechselrichter-2026-spitzenmodell/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-dreiphasiger-hybridwechselrichter-2026-spitzenmodell/@1440",
@@ -28391,7 +28547,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -28456,7 +28613,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-dreiphasiger-hybridwechselrichter-2026-spitzenmodell/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-dreiphasiger-hybridwechselrichter-2026-spitzenmodell/@390",
@@ -28471,7 +28629,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -28536,7 +28695,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-dreiphasiger-hybridwechselrichter-2026-spitzenmodell/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-6k0-s2-6-kw-dreiphasiger-hybridwechselrichter-2026-spitzenmodell/@1440",
@@ -28551,7 +28711,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -28616,7 +28777,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-6k0-s2-6-kw-dreiphasiger-hybridwechselrichter-2026-spitzenmodell/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-6k0-s2-6-kw-dreiphasiger-hybridwechselrichter-2026-spitzenmodell/@390",
@@ -28631,7 +28793,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -28696,7 +28859,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-6k0-s2-6-kw-dreiphasiger-hybridwechselrichter-2026-spitzenmodell/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/saj-esolar-aio3-datensammler-wifi-lan-bluetooth/@1440",
@@ -29261,7 +29425,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -29326,7 +29491,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-10k0-s2-10-kw-dreiphasiger-hybridwechselrichter-2026-spitzenmodell/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-10k0-s2-10-kw-dreiphasiger-hybridwechselrichter-2026-spitzenmodell/@390",
@@ -29341,7 +29507,8 @@
     "visual_review": "not-applicable",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json"
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -29406,7 +29573,8 @@
         "final_url": "https://de-linker.com/de/produkt/ecoflow-ocean-2-hd-p3-10k0-s2-10-kw-dreiphasiger-hybridwechselrichter-2026-spitzenmodell/",
         "scope": "ActualexactURLnonpublicresult and retainedWoo draft; not a currentPDPbodyorprivatepreview200."
       }
-    }
+    },
+    "na_reason_20261107": "Product is a draft in production (post_status=draft read via WP-CLI, EcoFlow Ocean-2 2026 flagship series); drafts 404 for visitors - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/loesungskonfigurator/@1440",
@@ -55797,11 +55965,12 @@
     "title": "Trina Solar TSM-460NEG9R.28",
     "url": "https://de-linker.com/product/trina-solar-tsm-460neg9r-28/",
     "width": 1440,
-    "render": "pending",
+    "render": "not-applicable",
     "interaction": "pending",
-    "visual_review": "partially-verified",
+    "visual_review": "not-applicable",
     "evidence": [
-      "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-20261107.json"
+      "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -55839,7 +56008,8 @@
       "boundary": "Customer scope uses existing Visibility sales_product; role-only references remain published for engineering. Original render/visual/interaction evidence retained; no HTTP acceptance inferred.",
       "engineering_role": "reference_pv_module",
       "exclusion": "Existing reference_pv_module role;EN/DEcustomer URLs404. Keep engineering publication; customer-PDP review not required while role unchanged."
-    }
+    },
+    "na_reason_20261107": "Engineering reference PV module (role reference_pv_module read via WP-CLI); Publication excludes references from the customer surface by design - no customer page exists."
   },
   {
     "key": "https://de-linker.com/product/trina-solar-tsm-460neg9r-28/@390",
@@ -55849,11 +56019,12 @@
     "title": "Trina Solar TSM-460NEG9R.28",
     "url": "https://de-linker.com/product/trina-solar-tsm-460neg9r-28/",
     "width": 390,
-    "render": "pending",
+    "render": "not-applicable",
     "interaction": "pending",
-    "visual_review": "partially-verified",
+    "visual_review": "not-applicable",
     "evidence": [
-      "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-20261107.json"
+      "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -55891,7 +56062,8 @@
       "boundary": "Customer scope uses existing Visibility sales_product; role-only references remain published for engineering. Original render/visual/interaction evidence retained; no HTTP acceptance inferred.",
       "engineering_role": "reference_pv_module",
       "exclusion": "Existing reference_pv_module role;EN/DEcustomer URLs404. Keep engineering publication; customer-PDP review not required while role unchanged."
-    }
+    },
+    "na_reason_20261107": "Engineering reference PV module (role reference_pv_module read via WP-CLI); Publication excludes references from the customer surface by design - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/trina-solar-tsm-460neg9r-28/@1440",
@@ -55901,11 +56073,12 @@
     "title": "Trina Solar TSM-460NEG9R.28",
     "url": "https://de-linker.com/de/produkt/trina-solar-tsm-460neg9r-28/",
     "width": 1440,
-    "render": "pending",
+    "render": "not-applicable",
     "interaction": "pending",
-    "visual_review": "partially-verified",
+    "visual_review": "not-applicable",
     "evidence": [
-      "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-20261107.json"
+      "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -55943,7 +56116,8 @@
       "boundary": "Customer scope uses existing Visibility sales_product; role-only references remain published for engineering. Original render/visual/interaction evidence retained; no HTTP acceptance inferred.",
       "engineering_role": "reference_pv_module",
       "exclusion": "Existing reference_pv_module role;EN/DEcustomer URLs404. Keep engineering publication; customer-PDP review not required while role unchanged."
-    }
+    },
+    "na_reason_20261107": "Engineering reference PV module (role reference_pv_module read via WP-CLI); Publication excludes references from the customer surface by design - no customer page exists."
   },
   {
     "key": "https://de-linker.com/de/produkt/trina-solar-tsm-460neg9r-28/@390",
@@ -55953,11 +56127,12 @@
     "title": "Trina Solar TSM-460NEG9R.28",
     "url": "https://de-linker.com/de/produkt/trina-solar-tsm-460neg9r-28/",
     "width": 390,
-    "render": "pending",
+    "render": "not-applicable",
     "interaction": "pending",
-    "visual_review": "partially-verified",
+    "visual_review": "not-applicable",
     "evidence": [
-      "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-20261107.json"
+      "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -55995,6 +56170,7 @@
       "boundary": "Customer scope uses existing Visibility sales_product; role-only references remain published for engineering. Original render/visual/interaction evidence retained; no HTTP acceptance inferred.",
       "engineering_role": "reference_pv_module",
       "exclusion": "Existing reference_pv_module role;EN/DEcustomer URLs404. Keep engineering publication; customer-PDP review not required while role unchanged."
-    }
+    },
+    "na_reason_20261107": "Engineering reference PV module (role reference_pv_module read via WP-CLI); Publication excludes references from the customer surface by design - no customer page exists."
   }
 ]
