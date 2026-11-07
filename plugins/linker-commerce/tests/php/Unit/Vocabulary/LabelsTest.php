@@ -65,6 +65,8 @@ final class LabelsTest extends TestCase {
 
 		$this->assertSame( 'Request Proforma', $labels->send_inquiry() );
 		$this->assertSame( 'Thank you. Your inquiry has been received.', $labels->inquiry_received() );
+		$this->assertSame( 'Thank you. Your inquiry has been received.', $labels->inquiry_received( null, new \WC_Order( 1 ) ) );
+		$this->assertStringContainsString( 'confirmation link did not open', $labels->inquiry_received( null, false ) );
 		$this->assertStringContainsString( 'request a Proforma invoice', $labels->log_in_to_send() );
 	}
 

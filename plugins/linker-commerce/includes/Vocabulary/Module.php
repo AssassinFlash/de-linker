@@ -40,7 +40,7 @@ final class Module {
 		add_filter( 'woocommerce_product_single_add_to_cart_text', array( $this->labels, 'add_to_draft' ) );
 		add_filter( 'woocommerce_product_add_to_cart_text', array( $this->labels, 'add_to_draft' ), 10, 2 );
 		add_filter( 'woocommerce_order_button_text', array( $this->labels, 'send_inquiry' ) );
-		add_filter( 'woocommerce_thankyou_order_received_text', array( $this->labels, 'inquiry_received' ) );
+		add_filter( 'woocommerce_thankyou_order_received_text', array( $this->labels, 'inquiry_received' ), 10, 2 );
 		add_filter( 'woocommerce_checkout_must_be_logged_in_message', array( $this->labels, 'log_in_to_send' ) );
 		add_filter( 'woocommerce_get_privacy_policy_text', array( $this->labels, 'privacy_text' ), 10, 2 );
 		add_filter( 'the_title', array( $this->labels, 'page_title' ), 5, 2 );

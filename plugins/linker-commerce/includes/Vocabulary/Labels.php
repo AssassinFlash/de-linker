@@ -42,8 +42,17 @@ final class Labels {
 
 	/**
 	 * The first line of the confirmation page.
+	 *
+	 * @param string|null          $text  Woo's default text, unused.
+	 * @param \WC_Order|false|null $order The order; Woo passes false when the
+	 *                                    key did not match (it renders only
+	 *                                    this text then). Null means "no
+	 *                                    argument given".
 	 */
-	public function inquiry_received(): string {
+	public function inquiry_received( $text = null, $order = null ): string {
+		if ( false === $order ) {
+			return __( 'This confirmation link did not open. Please use the link from your inquiry confirmation email, or write to sales@de-linker.com and we will send it again.', 'linker-commerce' );
+		}
 		return __( 'Thank you. Your inquiry has been received.', 'linker-commerce' );
 	}
 
