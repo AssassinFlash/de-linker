@@ -25,7 +25,8 @@
 		<!-- 1. overflow-x-visible -->
 		<section>
 			<div id="planted-overflow" style="width: 180px; white-space: nowrap">
-				This sentence is deliberately far wider than its one-hundred-and-eighty-pixel box and nothing clips it.
+				This sentence is deliberately far wider than its
+				one-hundred-and-eighty-pixel box and nothing clips it.
 			</div>
 			<div
 				id="control-overflow-clipped"
@@ -51,15 +52,45 @@
 				class="control-scroller"
 				style="width: 200px; overflow-x: auto"
 			>
-				<div style="width: 320px; height: 30px">scrollable content stays reachable</div>
+				<div style="width: 320px; height: 30px">
+					scrollable content stays reachable
+				</div>
 			</div>
+			<!-- A vertical stack whose one child is too wide, inside a clipping
+			     section: the product feature band's signature; a defect, not a
+			     carousel. -->
+			<section style="width: 200px; overflow: hidden">
+				<div id="planted-stack-spill" style="width: 200px">
+					<h4 style="width: 320px; margin: 0">
+						headline wider than its stacked column
+					</h4>
+					<p style="margin: 4px 0 0">stacked sibling below the headline</p>
+				</div>
+			</section>
+			<details
+				id="control-closed-details"
+				style="width: 200px; overflow: hidden"
+			>
+				<summary>closed disclosure</summary>
+				<div
+					id="control-closed-details-body"
+					style="width: 320px; height: 30px"
+				>
+					body laid out past the closed disclosure's clip until opened
+				</div>
+			</details>
 		</section>
 
 		<!-- 3. opt-out-of-centering (the confirmation-page signature) -->
 		<section>
 			<div
 				id="planted-grid"
-				style="display: grid; justify-items: center; width: 400px; border: 1px solid #ccc"
+				style="
+					display: grid;
+					justify-items: center;
+					width: 400px;
+					border: 1px solid #ccc;
+				"
 			>
 				<h2 style="margin: 0">Inquiry received</h2>
 				<p style="margin: 0">We reply within one business day.</p>
@@ -92,7 +123,9 @@
 				style="display: flex; justify-content: center; align-items: center"
 			>
 				<span>flex item</span>
-				<span style="align-self: flex-start">flex-start is legal for a flex item</span>
+				<span style="align-self: flex-start"
+					>flex-start is legal for a flex item</span
+				>
 			</div>
 		</section>
 
@@ -118,10 +151,7 @@
 
 		<!-- 5. focusable-invisible and small-target -->
 		<section>
-			<a
-				id="planted-hidden-link"
-				href="#top"
-				style="display: block; opacity: 0"
+			<a id="planted-hidden-link" href="#top" style="display: block; opacity: 0"
 				>invisible opacity link that still takes focus</a
 			>
 			<a
@@ -144,7 +174,9 @@
 				"
 				>screen-reader-text pattern</a
 			>
-			<button id="planted-tiny" type="button" style="width: 12px; height: 12px">x</button>
+			<button id="planted-tiny" type="button" style="width: 12px; height: 12px">
+				x
+			</button>
 			<p>
 				A normal paragraph with
 				<a id="control-inline-link" href="#top">an inline link</a>
@@ -157,13 +189,23 @@
 
 		<!-- 6. image-broken -->
 		<section>
-			<img id="planted-broken-img" src="./missing-file-for-selftest.png" width="48" height="48" alt="" />
-			<svg id="control-inline-svg" width="24" height="24"><circle cx="12" cy="12" r="10" /></svg>
+			<img
+				id="planted-broken-img"
+				src="./missing-file-for-selftest.png"
+				width="48"
+				height="48"
+				alt=""
+			/>
+			<svg id="control-inline-svg" width="24" height="24">
+				<circle cx="12" cy="12" r="10" />
+			</svg>
 		</section>
 
 		<!-- 7. overlap -->
 		<section>
-			<div id="planted-overlap-a" style="height: 80px; background: #eee">block A</div>
+			<div id="planted-overlap-a" style="height: 80px; background: #eee">
+				block A
+			</div>
 			<div
 				id="planted-overlap-b"
 				style="height: 80px; margin-top: -70px; background: #ddd"
@@ -171,11 +213,20 @@
 				block B pulled up over block A
 			</div>
 			<div style="position: relative; height: 60px">
-				<div id="control-badge-base" style="height: 60px; background: #f6f6f6">card</div>
+				<div id="control-badge-base" style="height: 60px; background: #f6f6f6">
+					card
+				</div>
 				<span
 					id="control-badge"
 					class="control-badge"
-					style="position: absolute; top: 4px; right: 4px; padding: 2px 6px; background: #333; color: #fff"
+					style="
+						position: absolute;
+						top: 4px;
+						right: 4px;
+						padding: 2px 6px;
+						background: #333;
+						color: #fff;
+					"
 					>badge</span
 				>
 			</div>
@@ -183,7 +234,10 @@
 
 		<!-- 8. horizontal-scroll: a block wider than any viewport -->
 		<section>
-			<div id="planted-wide" style="width: 1600px; height: 8px; background: #c00"></div>
+			<div
+				id="planted-wide"
+				style="width: 1600px; height: 8px; background: #c00"
+			></div>
 		</section>
 	</body>
 </html>

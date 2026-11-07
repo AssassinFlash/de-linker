@@ -42,18 +42,25 @@
 						(child) => child.tagName === node.tagName,
 					)
 				: [node];
-			const index = sameType.length > 1 ? `:nth-of-type(${sameType.indexOf(node) + 1})` : "";
-			parts.unshift(`${tag}${classes.map((name) => `.${name}`).join("")}${index}`);
+			const index =
+				sameType.length > 1
+					? `:nth-of-type(${sameType.indexOf(node) + 1})`
+					: "";
+			parts.unshift(
+				`${tag}${classes.map((name) => `.${name}`).join("")}${index}`,
+			);
 			node = node.parentElement;
 		}
 		return parts.join(" > ");
 	};
 
 	const label = (element) =>
-		(element.getAttribute("aria-label") ||
+		(
+			element.getAttribute("aria-label") ||
 			element.textContent ||
 			element.getAttribute("alt") ||
-			"")
+			""
+		)
 			.replace(/\s+/g, " ")
 			.trim()
 			.slice(0, 70);
@@ -95,24 +102,113 @@
 	};
 
 	/**
-	 * A laid-out row wider than the frame that clips it is a carousel track, not
-	 * a spill: the confirmation page's failure has no such ancestor. Returns the
-	 * track's selector, or null.
+	 * Chrome's closed <details> keeps its children laid out below the summary,
+	 * clipped by the disclosure's own overflow (measured live on a product
+	 * page: 49px closed with a 310px body, 359px once opened). That is a
+	 * hidden state the user opens, not lost content, so painted-geometry
+	 * rules skip the closed disclosure's body. The summary itself stays
+	 * checked: it is the visible toggle (the stats-context summary's 20.1px
+	 * target is a real review finding while closed).
 	 */
-	const overflowingTrack = (element) => {
-		let node = element.parentElement;
-		for (let depth = 0; node && node !== document.documentElement && depth < 8; depth++) {
-			const style = CSS(node);
-			if (style.overflowX !== "visible") return null;
+	const inClosedDetails = (element) => {
+		for (let node = element.parentElement; node; node = node.parentElement) {
+			if (node.tagName === "DETAILS" && !node.open) {
+				const summary = node.querySelector("summary");
+				if (!(summary && summary.contains(element))) return true;
+			}
+		}
+		return false;
+	};
+
+	/**
+	 * The frame that would contain a horizontal track: an ancestor clipping
+	 * the X axis. A Y-only clipper does not turn an X spill into a carousel.
+	 * Depth bound 8 matches the probe's other ancestor walks: a track and its
+	 * frame live within one component.
+	 */
+	const xClippingFrame = (node) => {
+		let parent = node.parentElement;
+		for (
+			let depth = 0;
+			parent && parent !== document.documentElement && depth < 8;
+			depth++
+		) {
+			const style = CSS(parent);
+			if (style.overflowX === "hidden" || style.overflowX === "clip")
+				return parent;
+			parent = parent.parentElement;
+		}
+		return null;
+	};
+
+	/**
+	 * The horizontal overflow comes from a row of laid-out items running past
+	 * the frame's right edge: two non-inline in-flow siblings side by side,
+	 * at least one beyond the frame. Measured shapes: the home gallery's
+	 * photo buttons and the stories' cards qualify; the product feature
+	 * band's stacked copy column (one over-wide headline) does not. The 300
+	 * descendant cap bounds the walk to one component's subtree (the largest
+	 * measured track, the home stories, holds ~160 nodes).
+	 */
+	const rowRunsPastFrame = (node, frame) => {
+		const frameRight = frame.getBoundingClientRect().right;
+		const descendants = node.querySelectorAll("*");
+		const cap = Math.min(descendants.length, 300);
+		for (let i = 0; i < cap; i++) {
+			const el = descendants[i];
+			const prev = el.previousElementSibling;
+			if (!prev) continue;
+			const se = CSS(el);
+			const sp = CSS(prev);
+			if (se.display === "none" || sp.display === "none") continue;
+			if (se.display === "inline" || sp.display === "inline") continue;
 			if (
-				node.scrollWidth - node.clientWidth > 1 &&
-				[...node.children].length > 1 &&
-				[...node.children].some((child) => {
-					const childStyle = CSS(child);
-					return childStyle.position !== "absolute" && childStyle.position !== "fixed";
-				})
+				se.position === "absolute" ||
+				se.position === "fixed" ||
+				sp.position === "absolute" ||
+				sp.position === "fixed"
 			)
-				return path(node);
+				continue;
+			const re = el.getBoundingClientRect();
+			const rp = prev.getBoundingClientRect();
+			const vOverlap =
+				Math.min(re.bottom, rp.bottom) - Math.max(re.top, rp.top);
+			const hOverlap =
+				Math.min(re.right, rp.right) - Math.max(re.left, rp.left);
+			if (hOverlap > 0) continue;
+			if (vOverlap <= Math.min(re.height, rp.height) / 2) continue;
+			if (Math.max(re.right, rp.right) > frameRight + 1) return true;
+		}
+		return false;
+	};
+
+	/**
+	 * A laid-out row wider than the frame that clips it is a carousel track,
+	 * not a spill: the confirmation page's failure has no such frame. The
+	 * track only counts when an X-clipping ancestor frames it and a row of
+	 * items runs past that frame; otherwise the spill stays a defect.
+	 * Returns the track's selector, or null.
+	 */
+	const isLaidOutTrack = (node) => {
+		const style = CSS(node);
+		if (style.overflowX !== "visible") return false;
+		if (node.scrollWidth - node.clientWidth <= 1) return false;
+		if ([...node.children].length <= 1) return false;
+		const frame = xClippingFrame(node);
+		if (!frame) return false;
+		return rowRunsPastFrame(node, frame);
+	};
+
+	const overflowingTrack = (element) => {
+		if (isLaidOutTrack(element)) return path(element);
+		let node = element.parentElement;
+		for (
+			let depth = 0;
+			node && node !== document.documentElement && depth < 8;
+			depth++
+		) {
+			if (isLaidOutTrack(node)) return path(node);
+			if (CSS(node).overflowX !== "visible") return null;
 			node = node.parentElement;
 		}
 		return null;
@@ -120,16 +216,72 @@
 
 	const elements = [...document.body.querySelectorAll("*")];
 
-	// 1. Horizontal content overflow an element does not clip. Innermost only:
-	// an ancestor whose overflow comes from a descendant is reported once, at
-	// the descendant that actually spills. Severity depends on the consequence:
-	// the page scrolling sideways or an ancestor cutting the content off is a
-	// defect; content that simply sits outside a smaller box but stays fully
-	// visible is a review item.
+	// 1. Horizontal content overflow an element does not clip itself. Innermost
+	// only: an ancestor whose overflow comes from a descendant is reported
+	// once, at the descendant that actually spills. Severity follows the
+	// consequence, measured on the pages that shaped the rule: a spill no
+	// clipper contains stays visible and is a defect (the product feature
+	// band's headline jutting over the panel); a spill an ancestor actually
+	// cuts is truncation — a review item when the cutting box is a slide in a
+	// horizontal row or the content is a row of slides (the home gallery's
+	// caption boxes, the stories' cards), a defect when plain content is cut
+	// (the confirmation page's lost CTA).
+	const contentRight = (element) =>
+		element.getBoundingClientRect().left + element.scrollWidth;
+	const cuttingClipper = (element) => {
+		const right = contentRight(element);
+		let node = element.parentElement;
+		while (node && node !== document.documentElement) {
+			if (isOverlay(node)) return null;
+			const style = CSS(node);
+			if (style.overflowX === "auto" || style.overflowX === "scroll")
+				return { node, reachable: true };
+			if (style.overflowX === "hidden" || style.overflowX === "clip") {
+				const rect = node.getBoundingClientRect();
+				if (
+					style.position === "absolute" &&
+					rect.width <= 1 &&
+					rect.height <= 1
+				)
+					return null;
+				if (rect.right < right - 1) return { node, reachable: false };
+				return null;
+			}
+			node = node.parentElement;
+		}
+		return null;
+	};
+	const sideBySide = (a, b) => {
+		const ra = a.getBoundingClientRect();
+		const rb = b.getBoundingClientRect();
+		const vOverlap = Math.min(ra.bottom, rb.bottom) - Math.max(ra.top, rb.top);
+		const hOverlap = Math.min(ra.right, rb.right) - Math.max(ra.left, rb.left);
+		return hOverlap <= 0 && vOverlap > Math.min(ra.height, rb.height) / 2;
+	};
+	const inRowWithSiblings = (node) => {
+		if (!node.parentElement) return false;
+		return [...node.parentElement.children].some(
+			(sibling) => sibling !== node && sideBySide(sibling, node),
+		);
+	};
+	/** Nearest ancestor that is itself a slide: in a horizontal row with its
+	 * siblings. Everything inside it is slider content, cut or not (the home
+	 * gallery's English captions are cut by their 59px slide, the German ones
+	 * only spill inside it — same design, same verdict). Depth 8 matches the
+	 * probe's other ancestor walks. */
+	const rowAncestor = (element) => {
+		let node = element.parentElement;
+		for (let depth = 0; node && depth < 8; depth++) {
+			if (inRowWithSiblings(node)) return node;
+			node = node.parentElement;
+		}
+		return null;
+	};
 	for (const element of elements) {
 		const style = CSS(element);
 		if (style.display === "inline" || style.display === "contents") continue;
 		if (style.overflowX !== "visible") continue;
+		if (inClosedDetails(element)) continue;
 		const overflow = element.scrollWidth - element.clientWidth;
 		if (overflow <= 1) continue;
 		if (element.clientWidth === 0) continue;
@@ -139,7 +291,28 @@
 			return child.scrollWidth - child.clientWidth >= overflow - 1;
 		});
 		if (childOverflow) continue;
-		const track = overflowingTrack(element);
+		const cut = cuttingClipper(element);
+		if (cut?.reachable) continue;
+		const slide = rowAncestor(element);
+		if (slide || (cut && rowRunsPastFrame(element, cut.node))) {
+			report(
+				"overflow-x-visible",
+				element,
+				{
+					scrollWidth: element.scrollWidth,
+					clientWidth: element.clientWidth,
+					overflowPx: overflow,
+					overflowX: style.overflowX,
+					...(cut ? { clipper: path(cut.node) } : {}),
+					...(slide ? { slide: path(slide) } : {}),
+				},
+				{
+					severity: "review",
+					note: `slider content (${slide ? `inside slide ${path(slide)}` : `a row of items past ${path(cut.node)}`}); verdict follows the design`,
+				},
+			);
+			continue;
+		}
 		report(
 			"overflow-x-visible",
 			element,
@@ -148,21 +321,25 @@
 				clientWidth: element.clientWidth,
 				overflowPx: overflow,
 				overflowX: style.overflowX,
+				...(cut ? { clipper: path(cut.node) } : {}),
 			},
-			track
+			cut
 				? {
-						severity: "review",
-						note: `inside a laid-out track wider than its clipping frame (${track}); treated as a carousel, not a spill`,
-						carousel: track,
+						note: `cut by a clipping ancestor (${path(cut.node)}); the content is lost`,
 					}
-				: { note: "content wider than the box, nothing in its own overflow clips it" },
+				: {
+						note: "content wider than the box and no clip contains it; the spill is visible",
+					},
 		);
 	}
 
 	// 2. Element painted outside a clipping (overflow: hidden|clip) ancestor's
-	// visible box. Scrollable ancestors are skipped on purpose: content beyond
-	// an auto/scroll container is reachable, not lost.
+	// visible box. Scrollability is handled per axis: content beyond an
+	// auto/scroll ancestor is reachable on that axis and never reported, while
+	// the other axis may still be clipped and lost.
 	const clippingBox = (element) => {
+		let reachableX = false;
+		let reachableY = false;
 		let node = element.parentElement;
 		while (node && node !== document.documentElement) {
 			if (isOverlay(node)) return null;
@@ -171,16 +348,38 @@
 			const clipsY = style.overflowY === "hidden" || style.overflowY === "clip";
 			if (clipsX || clipsY) {
 				const rect = node.getBoundingClientRect();
+				// The sr-only clip convention is a 1px absolute box (see rule 4's
+				// SKIP_SR_SELECTOR); its "clipping" is the pattern, not a defect.
+				if (
+					style.position === "absolute" &&
+					rect.width <= 1 &&
+					rect.height <= 1
+				)
+					return null;
 				return {
 					node,
-					clipsX,
-					clipsY,
+					clipsX: clipsX && !reachableX,
+					clipsY: clipsY && !reachableY,
 					left: rect.left + node.clientLeft,
 					top: rect.top + node.clientTop,
 					width: node.clientWidth,
 					height: node.clientHeight,
 				};
 			}
+			// An auto/scroll axis only reaches content when it really
+			// overflows (the spec also computes the other axis to auto when
+			// just one is set, so check the actual scroll extent, not the
+			// computed value alone).
+			if (
+				(style.overflowX === "auto" || style.overflowX === "scroll") &&
+				node.scrollWidth - node.clientWidth > 1
+			)
+				reachableX = true;
+			if (
+				(style.overflowY === "auto" || style.overflowY === "scroll") &&
+				node.scrollHeight - node.clientHeight > 1
+			)
+				reachableY = true;
 			node = node.parentElement;
 		}
 		return null;
@@ -192,6 +391,7 @@
 		if (!isRendered(element)) continue;
 		if (isOverlay(element)) continue;
 		if (element.ownerSVGElement) continue;
+		if (inClosedDetails(element)) continue;
 		const box = clippingBox(element);
 		if (!box) continue;
 		const rect = element.getBoundingClientRect();
@@ -222,7 +422,9 @@
 						severity: "review",
 						note: `sits in a track wider than its frame (${track}); a carousel slide, not lost content`,
 					}
-				: { note: "painted outside a hidden/clip ancestor; the part is unreachable" },
+				: {
+						note: "painted outside a hidden/clip ancestor; the part is unreachable",
+					},
 		);
 	}
 
@@ -234,6 +436,7 @@
 	for (const container of elements) {
 		const style = CSS(container);
 		if (!/grid/.test(style.display)) continue;
+		if (inClosedDetails(container)) continue;
 		const justify = style.justifyItems;
 		const align = style.alignItems;
 		if (justify !== "center" && align !== "center") continue;
@@ -280,7 +483,8 @@
 			}
 			if (
 				align === "center" &&
-				(itemStyle.alignSelf === "start" || itemStyle.alignSelf === "flex-start")
+				(itemStyle.alignSelf === "start" ||
+					itemStyle.alignSelf === "flex-start")
 			) {
 				const hugTop = Math.abs(rect.top - contentTop);
 				const shorter = contentHeight - rect.height;
@@ -315,10 +519,12 @@
 		if (text.length < 2) continue;
 		if (style.display === "none" || style.visibility === "hidden") continue;
 		if (element.matches(SKIP_SR_SELECTOR)) continue;
+		if (inClosedDetails(element)) continue;
 		if (element.clientWidth <= 1 || element.clientHeight <= 1) continue;
 		const clipY = style.overflowY === "hidden" || style.overflowY === "clip";
 		const clamp = style.webkitLineClamp;
-		const singleLine = style.whiteSpace === "nowrap" || (clamp !== "none" && clamp !== "");
+		const singleLine =
+			style.whiteSpace === "nowrap" || (clamp !== "none" && clamp !== "");
 		const verticalCut = element.scrollHeight - element.clientHeight;
 		if (singleLine && clipY && verticalCut > 1) {
 			report(
@@ -355,6 +561,9 @@
 		if (style.display === "none") continue;
 		if (isOverlay(element)) continue;
 		if (element.closest("[aria-hidden='true']")) continue;
+		// A closed disclosure's controls are neither visible nor tab stops
+		// until it opens (see inClosedDetails).
+		if (inClosedDetails(element)) continue;
 		const focusable =
 			element.tabIndex >= 0 &&
 			!element.hasAttribute("disabled") &&
@@ -418,7 +627,9 @@
 		// Elements inside a clipping ancestor may be deliberately inset: the
 		// painted box is what a pointer can reach, but a parent button with a
 		// larger hit area already owns the click.
-		const owner = element.parentElement?.closest(interactiveSelector.split(",").join(","));
+		const owner = element.parentElement?.closest(
+			interactiveSelector.split(",").join(","),
+		);
 		if (owner && owner !== element) continue;
 		const inlineInText =
 			style.display === "inline" &&
@@ -484,7 +695,8 @@
 		const offenders = elements
 			.filter((element) => {
 				const style = CSS(element);
-				if (style.position === "fixed" || style.display === "inline") return false;
+				if (style.position === "fixed" || style.display === "inline")
+					return false;
 				if (!isRendered(element) || isOverlay(element)) return false;
 				return element.getBoundingClientRect().right - viewWidth > 1;
 			})
@@ -499,7 +711,11 @@
 			selector: "html",
 			text: document.title.slice(0, 70),
 			rect: null,
-			metrics: { scrollWidth: docWidth, clientWidth: viewWidth, deltaPx: docWidth - viewWidth },
+			metrics: {
+				scrollWidth: docWidth,
+				clientWidth: viewWidth,
+				deltaPx: docWidth - viewWidth,
+			},
 			offenders,
 			note: "document wider than the viewport; the page scrolls sideways",
 		});
@@ -516,8 +732,10 @@
 		const blocks = children.filter((child) => {
 			if (child.ownerSVGElement || child instanceof SVGElement) return false;
 			const style = CSS(child);
-			if (style.display === "none" || style.visibility === "hidden") return false;
-			if (style.position !== "static" && style.position !== "relative") return false;
+			if (style.display === "none" || style.visibility === "hidden")
+				return false;
+			if (style.position !== "static" && style.position !== "relative")
+				return false;
 			if (Number(style.opacity) === 0) return false;
 			if (isOverlay(child)) return false;
 			const rect = child.getBoundingClientRect();
@@ -533,7 +751,10 @@
 					Math.min(one.bottom, two.bottom) - Math.max(one.top, two.top);
 				if (overlapX <= 0 || overlapY <= 0) continue;
 				const area = overlapX * overlapY;
-				const smaller = Math.min(one.width * one.height, two.width * two.height);
+				const smaller = Math.min(
+					one.width * one.height,
+					two.width * two.height,
+				);
 				if (smaller === 0) continue;
 				const ratio = area / smaller;
 				if (ratio <= 0.4) continue;
