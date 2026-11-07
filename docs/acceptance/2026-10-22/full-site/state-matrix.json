@@ -23725,10 +23725,12 @@
     "state": "attachments-image-pdf",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "genie-live-turns-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -24165,10 +24167,12 @@
     "state": "human-handoff",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "genie-live-turns-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [

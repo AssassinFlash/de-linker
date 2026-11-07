@@ -97,6 +97,16 @@
       "state": "enter-key-path",
       "result": "pass",
       "evidence": "Synthetic keydown Enter (key=Enter, keyCode=13) -> preventDefault (ask ran) -> question dispatched into transcript. Earlier send_keys CDP Enter no-ops were automation artifacts, not product defects; the form submit and Send button paths also verified."
+    },
+    {
+      "state": "attachments-image-pdf (PDF side)",
+      "result": "pass",
+      "evidence": "Real PDF bytes via DataTransfer into dock attach input -> file chip shown -> question 'What does the attached PDF describe?' sent -> 'Attached: verify-pairing.pdf' rides the turn in the transcript -> parse chain ran -> honest answer: 'I could not verify a current product for this file.'"
+    },
+    {
+      "state": "human-handoff",
+      "result": "pass",
+      "evidence": "On unresolvable input Genie hands off to the human team: 'Please contact the Linker team at sales@de-linker.com.' (customer-facing address per rules)"
     }
   ],
   "open_items": [
