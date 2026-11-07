@@ -1,0 +1,37 @@
+[
+ {
+  "name": "wrong-key-en",
+  "noticeVisible": true,
+  "noticeText": "This confirmation link did not open. Please use the link from your inquiry confi",
+  "hasGate": false,
+  "mainSnippet": "This confirmation link did not open. Please use the link from your inquiry confirmation email, or write to sales@de-linker.com and we will send it aga"
+ },
+ {
+  "name": "wrong-key-de",
+  "noticeVisible": true,
+  "noticeText": "Dieser Bestätigungslink ließ sich nicht öffnen. Bitte verwenden Sie den Link aus",
+  "hasGate": false,
+  "mainSnippet": "Dieser Bestätigungslink ließ sich nicht öffnen. Bitte verwenden Sie den Link aus Ihrer Anfragebestätigung, oder schreiben Sie an sales@de-linker.com. "
+ },
+ {
+  "name": "no-key-en",
+  "noticeVisible": true,
+  "noticeText": "This confirmation link did not open. Please use the link from your inquiry confi",
+  "hasGate": false,
+  "mainSnippet": "This confirmation link did not open. Please use the link from your inquiry confirmation email, or write to sales@de-linker.com and we will send it aga"
+ },
+ {
+  "name": "correct-key-en",
+  "noticeVisible": false,
+  "noticeText": "This confirmation link did not open. Please use the link from your inquiry confi",
+  "hasGate": true,
+  "mainSnippet": "To view this page, you must either login or verify the email address associated with the order. Email address * Verify"
+ },
+ {
+  "name": "correct-key-de",
+  "noticeVisible": false,
+  "noticeText": "Dieser Bestätigungslink ließ sich nicht öffnen. Bitte verwenden Sie den Link aus",
+  "hasGate": true,
+  "mainSnippet": "Um diese Seite anzuzeigen, müssen Sie sich entweder anmelden oder die E-Mail-Adresse verifizieren, die mit der Bestellung verknüpft ist. E-Mail-Adress"
+ }
+]

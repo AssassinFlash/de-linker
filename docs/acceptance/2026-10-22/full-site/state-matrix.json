@@ -29848,10 +29848,12 @@
     "state": "inquiry-detail-and-received-key",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/inquiry-received-key-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29861,7 +29863,12 @@
       "permissions",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "received_key_states_20261107": {
+        "status": "pass",
+        "detail": "after fix deploy a052d6875: wrong key and no key render the visible honest fallback (EN + DE); correct key still shows Woo verification gate in both languages"
+      }
+    }
   },
   {
     "key": "dynamic-routes:inquiry-detail-and-received-key:en:390",
@@ -29869,10 +29876,12 @@
     "state": "inquiry-detail-and-received-key",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/inquiry-received-key-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29882,7 +29891,12 @@
       "permissions",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "received_key_states_20261107": {
+        "status": "pass",
+        "detail": "after fix deploy a052d6875: wrong key and no key render the visible honest fallback (EN + DE); correct key still shows Woo verification gate in both languages"
+      }
+    }
   },
   {
     "key": "dynamic-routes:inquiry-detail-and-received-key:de:1440",
@@ -29890,10 +29904,12 @@
     "state": "inquiry-detail-and-received-key",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/inquiry-received-key-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29903,7 +29919,12 @@
       "permissions",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "received_key_states_20261107": {
+        "status": "pass",
+        "detail": "after fix deploy a052d6875: wrong key and no key render the visible honest fallback (EN + DE); correct key still shows Woo verification gate in both languages"
+      }
+    }
   },
   {
     "key": "dynamic-routes:inquiry-detail-and-received-key:de:390",
@@ -29911,10 +29932,12 @@
     "state": "inquiry-detail-and-received-key",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/inquiry-received-key-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29924,7 +29947,12 @@
       "permissions",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "received_key_states_20261107": {
+        "status": "pass",
+        "detail": "after fix deploy a052d6875: wrong key and no key render the visible honest fallback (EN + DE); correct key still shows Woo verification gate in both languages"
+      }
+    }
   },
   {
     "key": "dynamic-routes:password-reset-token-states:en:1440",
@@ -30016,11 +30044,11 @@
     "state": "public-search-query-and-pagination",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      "docs/acceptance/2026-10-22/full-site/dynamic-routes-20261107.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -30113,6 +30141,10 @@
         "source_body_sha256": "c55eed917ac435664ae6726bb9f20c6babb9e38028533480bd68112846f5104f",
         "matrix_width": 1440,
         "fresh_online_exact_viewport_proof": false
+      },
+      "search_pagination_20261107": {
+        "status": "pass",
+        "detail": "?s= 200 for real query, empty result and page 2; out-of-bounds page 99 404; DE search 200"
       }
     },
     "remaining_scope": "Existing guest query/page/language/consumer proofs plus this staff-context native edge/recovery are retained. Other widths of the edge state, anonymous edge recovery, unpublished-product permission fixtures and independent product/journal/library filters remain open."
@@ -30123,11 +30155,11 @@
     "state": "public-search-query-and-pagination",
     "lang": "en",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      "docs/acceptance/2026-10-22/full-site/dynamic-routes-20261107.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -30179,6 +30211,10 @@
         "source_body_sha256": "c55eed917ac435664ae6726bb9f20c6babb9e38028533480bd68112846f5104f",
         "matrix_width": 390,
         "fresh_online_exact_viewport_proof": false
+      },
+      "search_pagination_20261107": {
+        "status": "pass",
+        "detail": "?s= 200 for real query, empty result and page 2; out-of-bounds page 99 404; DE search 200"
       }
     },
     "remaining_scope": "Named679 checks only; retained prior results, whole content/query/permission/edge-state contracts remain open unless separately proved."
@@ -30189,11 +30225,11 @@
     "state": "public-search-query-and-pagination",
     "lang": "de",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      "docs/acceptance/2026-10-22/full-site/dynamic-routes-20261107.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -30245,6 +30281,10 @@
         "source_body_sha256": "f78abafb3b86a3368176b95cd4e505bf0a72018150670fb8277346a1358f1982",
         "matrix_width": 1440,
         "fresh_online_exact_viewport_proof": false
+      },
+      "search_pagination_20261107": {
+        "status": "pass",
+        "detail": "?s= 200 for real query, empty result and page 2; out-of-bounds page 99 404; DE search 200"
       }
     },
     "remaining_scope": "Named679 checks only; retained prior results, whole content/query/permission/edge-state contracts remain open unless separately proved."
@@ -30255,11 +30295,11 @@
     "state": "public-search-query-and-pagination",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      "docs/acceptance/2026-10-22/full-site/dynamic-routes-20261107.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -30341,6 +30381,10 @@
         "source_body_sha256": "f78abafb3b86a3368176b95cd4e505bf0a72018150670fb8277346a1358f1982",
         "matrix_width": 390,
         "fresh_online_exact_viewport_proof": true
+      },
+      "search_pagination_20261107": {
+        "status": "pass",
+        "detail": "?s= 200 for real query, empty result and page 2; out-of-bounds page 99 404; DE search 200"
       }
     },
     "remaining_scope": "Existing guest query/page/language/consumer proofs plus this staff-context native edge/recovery are retained. Other widths of the edge state, anonymous edge recovery, unpublished-product permission fixtures and independent product/journal/library filters remain open."
@@ -30351,10 +30395,12 @@
     "state": "404-unknown-route-and-locale",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/dynamic-routes-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -30364,7 +30410,12 @@
       "permissions",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "route_404_20261107": {
+        "status": "pass",
+        "detail": "confirmed-unused paths 404 with no redirect in EN and DE"
+      }
+    }
   },
   {
     "key": "dynamic-routes:404-unknown-route-and-locale:en:390",
@@ -30372,11 +30423,11 @@
     "state": "404-unknown-route-and-locale",
     "lang": "en",
     "width": 390,
-    "status": "pass",
-    "environment": "production",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous",
     "url": "https://de-linker.com/experience-review-missing-20261028/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json#missing_route_followup"
+      "docs/acceptance/2026-10-22/full-site/dynamic-routes-20261107.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -30410,7 +30461,12 @@
       },
       "boundary": "Staff/public-route behavior only; broader guest permissions and other404routes not inferred. Historical tool-dispatch failure retained in Q; this native consumer now passed."
     },
-    "verified_checks": {}
+    "verified_checks": {
+      "route_404_20261107": {
+        "status": "pass",
+        "detail": "confirmed-unused paths 404 with no redirect in EN and DE"
+      }
+    }
   },
   {
     "key": "dynamic-routes:404-unknown-route-and-locale:de:1440",
@@ -30418,11 +30474,11 @@
     "state": "404-unknown-route-and-locale",
     "lang": "de",
     "width": 1440,
-    "status": "pass",
-    "environment": "production",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous",
     "url": "https://de-linker.com/de/experience-review-missing-20261028/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json#missing_route_followup"
+      "docs/acceptance/2026-10-22/full-site/dynamic-routes-20261107.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -30448,7 +30504,12 @@
       },
       "boundary": "Only unknown-route/locale and named return consumer; whole404visual/alllinks/privatefile404/otherroles notclosed"
     },
-    "verified_checks": {}
+    "verified_checks": {
+      "route_404_20261107": {
+        "status": "pass",
+        "detail": "confirmed-unused paths 404 with no redirect in EN and DE"
+      }
+    }
   },
   {
     "key": "dynamic-routes:404-unknown-route-and-locale:de:390",
@@ -30456,11 +30517,11 @@
     "state": "404-unknown-route-and-locale",
     "lang": "de",
     "width": 390,
-    "status": "pass",
-    "environment": "production",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous",
     "url": "https://de-linker.com/de/experience-review-missing-20261028/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json#missing_route_followup"
+      "docs/acceptance/2026-10-22/full-site/dynamic-routes-20261107.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -30481,7 +30542,12 @@
       "result": "correct German404 title/body/routes,52pxinput/44pxsearchbutton,actual native search and localized PDPconsumer",
       "boundary": "This unknown-route/locale state only; whole404visual/everyexit/privatefile404/otherroles not closed"
     },
-    "verified_checks": {}
+    "verified_checks": {
+      "route_404_20261107": {
+        "status": "pass",
+        "detail": "confirmed-unused paths 404 with no redirect in EN and DE"
+      }
+    }
   },
   {
     "key": "dynamic-routes:retired-alias-redirect-and-language:en:1440",
@@ -30573,10 +30639,12 @@
     "state": "public-archive-discovery-and-applicability",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/dynamic-routes-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -30586,7 +30654,12 @@
       "permissions",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "archive_discovery_20261107": {
+        "status": "pass",
+        "detail": "no public author archive (404), year archive /2026/ redirects home, month 404, tag base 404: no unintended public archives exposed"
+      }
+    }
   },
   {
     "key": "dynamic-routes:public-archive-discovery-and-applicability:en:390",
@@ -30594,10 +30667,12 @@
     "state": "public-archive-discovery-and-applicability",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/dynamic-routes-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -30607,7 +30682,12 @@
       "permissions",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "archive_discovery_20261107": {
+        "status": "pass",
+        "detail": "no public author archive (404), year archive /2026/ redirects home, month 404, tag base 404: no unintended public archives exposed"
+      }
+    }
   },
   {
     "key": "dynamic-routes:public-archive-discovery-and-applicability:de:1440",
@@ -30615,10 +30695,12 @@
     "state": "public-archive-discovery-and-applicability",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/dynamic-routes-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -30628,7 +30710,12 @@
       "permissions",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "archive_discovery_20261107": {
+        "status": "pass",
+        "detail": "no public author archive (404), year archive /2026/ redirects home, month 404, tag base 404: no unintended public archives exposed"
+      }
+    }
   },
   {
     "key": "dynamic-routes:public-archive-discovery-and-applicability:de:390",
@@ -30636,10 +30723,12 @@
     "state": "public-archive-discovery-and-applicability",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/dynamic-routes-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -30649,7 +30738,12 @@
       "permissions",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "archive_discovery_20261107": {
+        "status": "pass",
+        "detail": "no public author archive (404), year archive /2026/ redirects home, month 404, tag base 404: no unintended public archives exposed"
+      }
+    }
   },
   {
     "key": "global-navigation:language-switch-query-filter-pagination:en:1440",
