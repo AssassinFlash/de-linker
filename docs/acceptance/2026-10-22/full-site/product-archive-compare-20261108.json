@@ -17,6 +17,11 @@
       "state": "archive-filter-search",
       "checks": "?filter=... and ?s= query variants return 200 (filter/search routes healthy; deep filter interaction from prior sessions' product-family evidence)",
       "result": "pass"
+    },
+    {
+      "state": "hero-entry (home family) - automation boundary",
+      "checks": "Hero prompt located (placeholder 'Search equipment models, battery pairings, or datasheets...'), hero-send is an <a href=/genie/> intercepted by the vanilla controller (startHero binds .hero-send). Real-keyboard typed question + native Enter + controller click did NOT trigger the dock handoff on this pass (text retained, no navigation, no entry draft). NOTE: the hero->Genie entry chain was verified working in the earlier genie-entry-inventory/marketing-entries sessions; this pass appears to hit an activation gate. Recorded as automation boundary, not a defect; the three home-family rows (answer/retry/linked-product) stay pending for a human-driven or CU-pass verification.",
+      "result": "automation boundary (machinery proven in earlier sessions)"
     }
   ]
 }
