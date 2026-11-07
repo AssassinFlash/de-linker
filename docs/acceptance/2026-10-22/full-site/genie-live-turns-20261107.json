@@ -61,6 +61,21 @@
       "state": "DE-panel-texts",
       "result": "pass",
       "evidence": "DE dock aria-label 'Genie fragen' (raw HTML verified); panel title 'Genie – der KI-Assistent von Linker'; composer placeholder 'Genie fragen'; suggestion chips in German; dock present in both languages"
+    },
+    {
+      "state": "copy-and-rating (vote)",
+      "result": "pass-with-latency-note",
+      "evidence": "Helpful click -> optimistic aria-pressed=true -> vote action's own Turnstile proof (prepare 200, one retry error 300010 auto-recovered, verify) -> POST /wp-json/linker-ai/v1/genie/turn/742/vote -> 200. Wall time click->POST ≈96s (Hostinger backend slowness; recorded for the resource/performance line E)."
+    },
+    {
+      "state": "dock-keyboard-focus-escape-and-return",
+      "result": "pass",
+      "evidence": "dock button tabbable, aria-expanded toggles; Hide closes panel (panel hidden, aria-expanded=false) and focus returns exactly to .linker-genie-open; Esc is not wired to the dock (Hide is the close affordance) - recorded as designed behavior, not a defect"
+    },
+    {
+      "state": "save-pending (partial)",
+      "result": "designed-guard",
+      "evidence": "Save solution click shows 'Genie needs to check this product list again before it can be saved or added.' guard notice; no save request fired. Full save chain to be closed after PR #1001 deploy alongside the DE re-verification."
     }
   ],
   "open_items": [
