@@ -76,6 +76,11 @@
       "state": "save-pending (partial)",
       "result": "designed-guard",
       "evidence": "Save solution click shows 'Genie needs to check this product list again before it can be saved or added.' guard notice; no save request fired. Full save chain to be closed after PR #1001 deploy alongside the DE re-verification."
+    },
+    {
+      "state": "attachments (partial)",
+      "result": "accepted-ui-dispatch-pending-fix",
+      "evidence": "Real PDF bytes injected via DataTransfer into the dock's file input: file accepted, 'genie-attach-test.pdf' displayed in composer area, accept list covers images/heic/pdf/csv/xlsx. Ask with attachment on CURRENT (pre-fix) production consumed the composer without appending the turn - same silent-drop family PR #1001 fixes; a stale unsent-draft record also surfaced the 'Current unsent draft / Restore unsent draft' recovery UI (visible affordance). Full attachment turn (parse + answer citing file) to verify after deploy."
     }
   ],
   "open_items": [
