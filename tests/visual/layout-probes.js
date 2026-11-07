@@ -42,18 +42,25 @@
 						(child) => child.tagName === node.tagName,
 					)
 				: [node];
-			const index = sameType.length > 1 ? `:nth-of-type(${sameType.indexOf(node) + 1})` : "";
-			parts.unshift(`${tag}${classes.map((name) => `.${name}`).join("")}${index}`);
+			const index =
+				sameType.length > 1
+					? `:nth-of-type(${sameType.indexOf(node) + 1})`
+					: "";
+			parts.unshift(
+				`${tag}${classes.map((name) => `.${name}`).join("")}${index}`,
+			);
 			node = node.parentElement;
 		}
 		return parts.join(" > ");
 	};
 
 	const label = (element) =>
-		(element.getAttribute("aria-label") ||
+		(
+			element.getAttribute("aria-label") ||
 			element.textContent ||
 			element.getAttribute("alt") ||
-			"")
+			""
+		)
 			.replace(/\s+/g, " ")
 			.trim()
 			.slice(0, 70);
@@ -95,24 +102,67 @@
 	};
 
 	/**
-	 * A laid-out row wider than the frame that clips it is a carousel track, not
-	 * a spill: the confirmation page's failure has no such ancestor. Returns the
-	 * track's selector, or null.
+	 * Chrome's closed <details> keeps its children laid out below the summary,
+	 * clipped by the disclosure's own overflow (measured live on a product
+	 * page: 49px closed with a 310px body, 359px once opened). That is a
+	 * hidden state the user opens, not lost content, so painted-geometry
+	 * rules skip everything inside a closed disclosure.
 	 */
-	const overflowingTrack = (element) => {
-		let node = element.parentElement;
-		for (let depth = 0; node && node !== document.documentElement && depth < 8; depth++) {
-			const style = CSS(node);
-			if (style.overflowX !== "visible") return null;
+	const inClosedDetails = (element) =>
+		element.closest("details:not([open])") !== null;
+
+	/**
+	 * A laid-out row wider than the frame that clips it is a carousel track, not
+	 * a spill: the confirmation page's failure has no such ancestor. The track
+	 * only counts when an ancestor actually clips it (overflow hidden/clip);
+	 * without a clipping frame the spill stays reachable proof of a defect.
+	 * Returns the track's selector, or null.
+	 */
+	const clipsTrack = (node) => {
+		let parent = node.parentElement;
+		for (
+			let depth = 0;
+			parent && parent !== document.documentElement && depth < 8;
+			depth++
+		) {
+			const style = CSS(parent);
 			if (
-				node.scrollWidth - node.clientWidth > 1 &&
-				[...node.children].length > 1 &&
-				[...node.children].some((child) => {
-					const childStyle = CSS(child);
-					return childStyle.position !== "absolute" && childStyle.position !== "fixed";
-				})
+				style.overflowX === "hidden" ||
+				style.overflowX === "clip" ||
+				style.overflowY === "hidden" ||
+				style.overflowY === "clip"
 			)
-				return path(node);
+				return true;
+			parent = parent.parentElement;
+		}
+		return false;
+	};
+	const isLaidOutTrack = (node) => {
+		const style = CSS(node);
+		return (
+			style.overflowX === "visible" &&
+			node.scrollWidth - node.clientWidth > 1 &&
+			[...node.children].length > 1 &&
+			[...node.children].some((child) => {
+				const childStyle = CSS(child);
+				return (
+					childStyle.position !== "absolute" && childStyle.position !== "fixed"
+				);
+			}) &&
+			clipsTrack(node)
+		);
+	};
+
+	const overflowingTrack = (element) => {
+		if (isLaidOutTrack(element)) return path(element);
+		let node = element.parentElement;
+		for (
+			let depth = 0;
+			node && node !== document.documentElement && depth < 8;
+			depth++
+		) {
+			if (isLaidOutTrack(node)) return path(node);
+			if (CSS(node).overflowX !== "visible") return null;
 			node = node.parentElement;
 		}
 		return null;
@@ -130,6 +180,7 @@
 		const style = CSS(element);
 		if (style.display === "inline" || style.display === "contents") continue;
 		if (style.overflowX !== "visible") continue;
+		if (inClosedDetails(element)) continue;
 		const overflow = element.scrollWidth - element.clientWidth;
 		if (overflow <= 1) continue;
 		if (element.clientWidth === 0) continue;
@@ -155,14 +206,19 @@
 						note: `inside a laid-out track wider than its clipping frame (${track}); treated as a carousel, not a spill`,
 						carousel: track,
 					}
-				: { note: "content wider than the box, nothing in its own overflow clips it" },
+				: {
+						note: "content wider than the box, nothing in its own overflow clips it",
+					},
 		);
 	}
 
 	// 2. Element painted outside a clipping (overflow: hidden|clip) ancestor's
-	// visible box. Scrollable ancestors are skipped on purpose: content beyond
-	// an auto/scroll container is reachable, not lost.
+	// visible box. Scrollability is handled per axis: content beyond an
+	// auto/scroll ancestor is reachable on that axis and never reported, while
+	// the other axis may still be clipped and lost.
 	const clippingBox = (element) => {
+		let reachableX = false;
+		let reachableY = false;
 		let node = element.parentElement;
 		while (node && node !== document.documentElement) {
 			if (isOverlay(node)) return null;
@@ -171,16 +227,26 @@
 			const clipsY = style.overflowY === "hidden" || style.overflowY === "clip";
 			if (clipsX || clipsY) {
 				const rect = node.getBoundingClientRect();
+				if (
+					style.position === "absolute" &&
+					rect.width <= 1 &&
+					rect.height <= 1
+				)
+					return null;
 				return {
 					node,
-					clipsX,
-					clipsY,
+					clipsX: clipsX && !reachableX,
+					clipsY: clipsY && !reachableY,
 					left: rect.left + node.clientLeft,
 					top: rect.top + node.clientTop,
 					width: node.clientWidth,
 					height: node.clientHeight,
 				};
 			}
+			if (style.overflowX === "auto" || style.overflowX === "scroll")
+				reachableX = true;
+			if (style.overflowY === "auto" || style.overflowY === "scroll")
+				reachableY = true;
 			node = node.parentElement;
 		}
 		return null;
@@ -192,6 +258,7 @@
 		if (!isRendered(element)) continue;
 		if (isOverlay(element)) continue;
 		if (element.ownerSVGElement) continue;
+		if (inClosedDetails(element)) continue;
 		const box = clippingBox(element);
 		if (!box) continue;
 		const rect = element.getBoundingClientRect();
@@ -222,7 +289,9 @@
 						severity: "review",
 						note: `sits in a track wider than its frame (${track}); a carousel slide, not lost content`,
 					}
-				: { note: "painted outside a hidden/clip ancestor; the part is unreachable" },
+				: {
+						note: "painted outside a hidden/clip ancestor; the part is unreachable",
+					},
 		);
 	}
 
@@ -234,6 +303,7 @@
 	for (const container of elements) {
 		const style = CSS(container);
 		if (!/grid/.test(style.display)) continue;
+		if (inClosedDetails(container)) continue;
 		const justify = style.justifyItems;
 		const align = style.alignItems;
 		if (justify !== "center" && align !== "center") continue;
@@ -280,7 +350,8 @@
 			}
 			if (
 				align === "center" &&
-				(itemStyle.alignSelf === "start" || itemStyle.alignSelf === "flex-start")
+				(itemStyle.alignSelf === "start" ||
+					itemStyle.alignSelf === "flex-start")
 			) {
 				const hugTop = Math.abs(rect.top - contentTop);
 				const shorter = contentHeight - rect.height;
@@ -315,10 +386,12 @@
 		if (text.length < 2) continue;
 		if (style.display === "none" || style.visibility === "hidden") continue;
 		if (element.matches(SKIP_SR_SELECTOR)) continue;
+		if (inClosedDetails(element)) continue;
 		if (element.clientWidth <= 1 || element.clientHeight <= 1) continue;
 		const clipY = style.overflowY === "hidden" || style.overflowY === "clip";
 		const clamp = style.webkitLineClamp;
-		const singleLine = style.whiteSpace === "nowrap" || (clamp !== "none" && clamp !== "");
+		const singleLine =
+			style.whiteSpace === "nowrap" || (clamp !== "none" && clamp !== "");
 		const verticalCut = element.scrollHeight - element.clientHeight;
 		if (singleLine && clipY && verticalCut > 1) {
 			report(
@@ -418,7 +491,9 @@
 		// Elements inside a clipping ancestor may be deliberately inset: the
 		// painted box is what a pointer can reach, but a parent button with a
 		// larger hit area already owns the click.
-		const owner = element.parentElement?.closest(interactiveSelector.split(",").join(","));
+		const owner = element.parentElement?.closest(
+			interactiveSelector.split(",").join(","),
+		);
 		if (owner && owner !== element) continue;
 		const inlineInText =
 			style.display === "inline" &&
@@ -484,7 +559,8 @@
 		const offenders = elements
 			.filter((element) => {
 				const style = CSS(element);
-				if (style.position === "fixed" || style.display === "inline") return false;
+				if (style.position === "fixed" || style.display === "inline")
+					return false;
 				if (!isRendered(element) || isOverlay(element)) return false;
 				return element.getBoundingClientRect().right - viewWidth > 1;
 			})
@@ -499,7 +575,11 @@
 			selector: "html",
 			text: document.title.slice(0, 70),
 			rect: null,
-			metrics: { scrollWidth: docWidth, clientWidth: viewWidth, deltaPx: docWidth - viewWidth },
+			metrics: {
+				scrollWidth: docWidth,
+				clientWidth: viewWidth,
+				deltaPx: docWidth - viewWidth,
+			},
 			offenders,
 			note: "document wider than the viewport; the page scrolls sideways",
 		});
@@ -516,8 +596,10 @@
 		const blocks = children.filter((child) => {
 			if (child.ownerSVGElement || child instanceof SVGElement) return false;
 			const style = CSS(child);
-			if (style.display === "none" || style.visibility === "hidden") return false;
-			if (style.position !== "static" && style.position !== "relative") return false;
+			if (style.display === "none" || style.visibility === "hidden")
+				return false;
+			if (style.position !== "static" && style.position !== "relative")
+				return false;
 			if (Number(style.opacity) === 0) return false;
 			if (isOverlay(child)) return false;
 			const rect = child.getBoundingClientRect();
@@ -533,7 +615,10 @@
 					Math.min(one.bottom, two.bottom) - Math.max(one.top, two.top);
 				if (overlapX <= 0 || overlapY <= 0) continue;
 				const area = overlapX * overlapY;
-				const smaller = Math.min(one.width * one.height, two.width * two.height);
+				const smaller = Math.min(
+					one.width * one.height,
+					two.width * two.height,
+				);
 				if (smaller === 0) continue;
 				const ratio = area / smaller;
 				if (ratio <= 0.4) continue;

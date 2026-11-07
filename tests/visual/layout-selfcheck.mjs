@@ -26,6 +26,7 @@ const { values } = parseArgs({
 		widths: { type: "string", default: "1440,390" },
 		heights: { type: "string", default: "900,844" },
 		only: { type: "string" },
+		paths: { type: "string" },
 		selftest: { type: "boolean", default: false },
 		fixture: { type: "string" },
 		quiet: { type: "boolean", default: false },
@@ -109,7 +110,8 @@ const check = async ({ browser, base, page: spec, width, height, index }) => {
 	const tab = await context.newPage();
 	const consoleErrors = [];
 	tab.on("console", (message) => {
-		if (message.type() === "error") consoleErrors.push(message.text().slice(0, 200));
+		if (message.type() === "error")
+			consoleErrors.push(message.text().slice(0, 200));
 	});
 	try {
 		const response = await tab.goto(base + spec.path, {
@@ -153,7 +155,8 @@ const check = async ({ browser, base, page: spec, width, height, index }) => {
 
 /** Opens the fixture from disk at every viewport and checks the verdict. */
 const runSelftest = async (browser) => {
-	const fileUrl = "file://" + (values.fixture ?? path.join(here, "layout-fixture.html"));
+	const fileUrl =
+		"file://" + (values.fixture ?? path.join(here, "layout-fixture.html"));
 	const results = [];
 	for (const [index, width] of widths.entries()) {
 		const context = await browser.newContext({
@@ -162,11 +165,15 @@ const runSelftest = async (browser) => {
 		});
 		const tab = await context.newPage();
 		await tab.goto(fileUrl, { waitUntil: "load" });
-		const result = await tab.evaluate(probe, { overlaySelectors: OVERLAY_SELECTORS });
+		const result = await tab.evaluate(probe, {
+			overlaySelectors: OVERLAY_SELECTORS,
+		});
 		results.push({ viewport: `${width}x${heights[index]}`, ...result });
 		await context.close();
 	}
-	const found = new Set(results.flatMap((row) => row.issues.map((i) => i.type)));
+	const found = new Set(
+		results.flatMap((row) => row.issues.map((i) => i.type)),
+	);
 	const selectors = new Set(
 		results.flatMap((row) => row.issues.map((i) => i.selector)),
 	);
@@ -194,6 +201,7 @@ const runSelftest = async (browser) => {
 	const expectMiss = [
 		"#control-overflow-clipped",
 		"#control-scroller",
+		"#control-closed-details-body",
 		"#control-grid-fill",
 		"#control-flex",
 		"#control-wrapping",
@@ -207,9 +215,11 @@ const runSelftest = async (browser) => {
 	for (const type of expectedTypes)
 		if (!found.has(type)) problems.push(`missed defect type: ${type}`);
 	for (const selector of expectHit)
-		if (!selectors.has(selector)) problems.push(`missed planted defect: ${selector}`);
+		if (!selectors.has(selector))
+			problems.push(`missed planted defect: ${selector}`);
 	for (const selector of expectMiss)
-		if (selectors.has(selector)) problems.push(`reported a control: ${selector}`);
+		if (selectors.has(selector))
+			problems.push(`reported a control: ${selector}`);
 	return { results, problems };
 };
 
@@ -226,14 +236,18 @@ const main = async () => {
 	try {
 		if (values.selftest) {
 			const { results, problems } = await runSelftest(browser);
-			const out = values.out ?? path.join(here, "../../.scratch/visual-selfcheck/selftest");
+			const out =
+				values.out ??
+				path.join(here, "../../.scratch/visual-selfcheck/selftest");
 			fs.mkdirSync(out, { recursive: true });
 			fs.writeFileSync(
 				path.join(out, "selftest.json"),
 				JSON.stringify({ results, problems }, null, 2) + "\n",
 			);
 			if (problems.length) {
-				console.error("self-test FAILED\n" + problems.map((p) => "  - " + p).join("\n"));
+				console.error(
+					"self-test FAILED\n" + problems.map((p) => "  - " + p).join("\n"),
+				);
 				if (!values.quiet)
 					for (const row of results)
 						console.error(row.viewport, JSON.stringify(row.counts));
@@ -251,34 +265,62 @@ const main = async () => {
 			values.out ?? path.join(here, "../../.scratch/visual-selfcheck/run");
 		fs.mkdirSync(out, { recursive: true });
 
-		// Resolve the German twin of each page from the page's own hreflang
-		// alternates, so a changed permalink does not silently test English
-		// twice.
-		const pages = [];
-		for (const spec of PRODUCTION_PAGES) {
-			if (values.only && !spec.name.includes(values.only)) continue;
-			pages.push({ ...spec, lang: "en", path: spec.en });
-			const context = await browser.newContext();
-			const tab = await context.newPage();
-			let german = null;
-			try {
-				await tab.goto(values.base + spec.en, {
-					waitUntil: "domcontentloaded",
-					timeout: 120000,
-				});
-				german = await tab.evaluate(() => {
-					const link = document.querySelector('link[hreflang="de"]');
-					if (!link) return null;
-					const url = new URL(link.href);
-					return url.pathname + url.search;
-				});
-			} catch {
-				german = null;
-			} finally {
-				await context.close();
+		// Exact paths are already language-specific records (for example a
+		// product-matrix batch); no alternate resolution may substitute for them.
+		const pages = values.paths
+			? values.paths.split(",").map((entry) => {
+					// Bare paths start with "/" and may carry a query string whose "="
+					// must not be read as a name separator; name=path form is for
+					// entries that do not start with "/" (shell-safe naming).
+					let pathValue;
+					let name;
+					if (entry.startsWith("/") || !entry.includes("=")) {
+						pathValue = entry;
+						name = path.basename(pathValue.split("?")[0]) || pathValue;
+					} else {
+						const separator = entry.indexOf("=");
+						name = entry.slice(0, separator);
+						pathValue = entry.slice(separator + 1);
+					}
+					if (/^https?:\/\//.test(pathValue)) {
+						const url = new URL(pathValue);
+						pathValue = url.pathname + url.search;
+					}
+					return {
+						name,
+						lang: /^\/de(?:[/?]|$)/.test(pathValue) ? "de" : "en",
+						path: pathValue,
+					};
+				})
+			: [];
+		if (!values.paths) {
+			// Resolve the German twin of each page from the page's own hreflang
+			// alternates, so a changed permalink does not silently test English twice.
+			for (const spec of PRODUCTION_PAGES) {
+				if (values.only && !spec.name.includes(values.only)) continue;
+				pages.push({ ...spec, lang: "en", path: spec.en });
+				const context = await browser.newContext();
+				const tab = await context.newPage();
+				let german = null;
+				try {
+					await tab.goto(values.base + spec.en, {
+						waitUntil: "domcontentloaded",
+						timeout: 120000,
+					});
+					german = await tab.evaluate(() => {
+						const link = document.querySelector('link[hreflang="de"]');
+						if (!link) return null;
+						const url = new URL(link.href);
+						return url.pathname + url.search;
+					});
+				} catch {
+					german = null;
+				} finally {
+					await context.close();
+				}
+				if (!german) throw new Error(`no German alternate on ${spec.en}`);
+				pages.push({ ...spec, name: `${spec.name}`, lang: "de", path: german });
 			}
-			if (!german) throw new Error(`no German alternate on ${spec.en}`);
-			pages.push({ ...spec, name: `${spec.name}`, lang: "de", path: german });
 		}
 
 		const rows = [];
@@ -295,7 +337,13 @@ const main = async () => {
 				if (!values.quiet) {
 					const total = row.issues?.length ?? 0;
 					console.log(
-						`${row.viewport} ${row.lang} ${row.name} ${row.path} -> ${total} (${row.failed ? "FAILED " + row.failed : Object.keys(row.counts ?? {}).map((k) => `${k}:${row.counts[k]}`).join(" ")})`,
+						`${row.viewport} ${row.lang} ${row.name} ${row.path} -> ${total} (${
+							row.failed
+								? "FAILED " + row.failed
+								: Object.keys(row.counts ?? {})
+										.map((k) => `${k}:${row.counts[k]}`)
+										.join(" ")
+						})`,
 					);
 				}
 			}
@@ -304,12 +352,24 @@ const main = async () => {
 		const defects = rows.flatMap((row) =>
 			(row.issues ?? [])
 				.filter((issue) => issue.severity === "defect")
-				.map((issue) => ({ ...issue, name: row.name, lang: row.lang, viewport: row.viewport, path: row.path })),
+				.map((issue) => ({
+					...issue,
+					name: row.name,
+					lang: row.lang,
+					viewport: row.viewport,
+					path: row.path,
+				})),
 		);
 		const reviews = rows.flatMap((row) =>
 			(row.issues ?? [])
 				.filter((issue) => issue.severity !== "defect")
-				.map((issue) => ({ ...issue, name: row.name, lang: row.lang, viewport: row.viewport, path: row.path })),
+				.map((issue) => ({
+					...issue,
+					name: row.name,
+					lang: row.lang,
+					viewport: row.viewport,
+					path: row.path,
+				})),
 		);
 		fs.writeFileSync(
 			path.join(out, "layout-selfcheck.json"),

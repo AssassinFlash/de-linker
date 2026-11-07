@@ -136,24 +136,43 @@ The six production pages are `home`, `products`, `proforma-request`, `cart`,
 resolved from its own `<link rel="alternate" hreflang="de">` at run time, so a
 changed permalink does not silently test English twice.
 
+For an already language-specific batch (for example product-matrix
+representatives), pass exact paths instead. `name=path` gives the report a
+stable name; the value may be a bare path (starting with `/`, may carry a
+query string whose `=` is not a separator) or an absolute URL whose origin is
+stripped. German is inferred from an exact `/de` or `/de/` prefix, and no
+alternate resolution may substitute another record:
+
+```sh
+node tests/visual/layout-selfcheck.mjs \
+  --base https://de-linker.com --out .scratch/visual-selfcheck/products \
+  --widths 1440,390 --heights 900,844 \
+  --paths 'gw3k=/product/goodwe-esa-gw3k-eha-g20-3-kw-single-phase-power-module/,gw10k=/de/produkt/goodwe-esa-gw10k-eha-g20-10-kw-einphasiges-leistungsmodul/'
+```
+
 What it checks, all from `getComputedStyle` and `getBoundingClientRect`:
 
-| type | rule |
-| --- | --- |
-| `overflow-x-visible` | `scrollWidth - clientWidth > 1` while `overflow-x: visible`, reported once at the innermost element that spills |
-| `clipped-by-ancestor` | element extends past the padding box of a `hidden`/`clip` ancestor (scrollable ancestors are skipped: that content is reachable) |
-| `opt-out-of-centering` | grid container with `justify-items: center` (or `align-items: center`) whose child sets `justify-self`/`align-self` to start/end and measurably hugs that edge while narrower than the container — the confirmation-page CTA signature |
-| `text-clipped` | single-line text (`nowrap` or a line clamp) whose `scrollHeight` exceeds `clientHeight` under a clipping `overflow-y` |
-| `focusable-invisible` | `a`/`button`/`[role=button]`/`[tabindex]` in the tab order while `visibility: hidden`, `opacity: 0` or clipped to 1px |
-| `small-target` | an in-flow interactive element smaller than 24px in either axis (WCAG 2.2 inline-text and screen-reader-text exceptions applied) |
-| `image-broken` | a complete `img` with a source and zero `naturalWidth` |
-| `font-error` | a `document.fonts` face whose status is `error` |
-| `horizontal-scroll` | `documentElement.scrollWidth > clientWidth`, with the offending elements listed |
-| `overlap` | two in-flow sibling blocks whose intersection exceeds 40% of the smaller one (fixed/absolute/sticky layers excluded) |
+| type                   | rule                                                                                                                                                                                                                                                                           |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `overflow-x-visible`   | `scrollWidth - clientWidth > 1` while `overflow-x: visible`, reported once at the innermost element that spills                                                                                                                                                                |
+| `clipped-by-ancestor`  | element extends past the padding box of a `hidden`/`clip` ancestor; an `auto`/`scroll` ancestor makes that axis reachable (content beyond it is scrollable), the other axis can still be reported; content inside a closed `<details>` is a hidden state and is never reported |
+| `opt-out-of-centering` | grid container with `justify-items: center` (or `align-items: center`) whose child sets `justify-self`/`align-self` to start/end and measurably hugs that edge while narrower than the container — the confirmation-page CTA signature                                         |
+| `text-clipped`         | single-line text (`nowrap` or a line clamp) whose `scrollHeight` exceeds `clientHeight` under a clipping `overflow-y`                                                                                                                                                          |
+| `focusable-invisible`  | `a`/`button`/`[role=button]`/`[tabindex]` in the tab order while `visibility: hidden`, `opacity: 0` or clipped to 1px                                                                                                                                                          |
+| `small-target`         | an in-flow interactive element smaller than 24px in either axis (WCAG 2.2 inline-text and screen-reader-text exceptions applied)                                                                                                                                               |
+| `image-broken`         | a complete `img` with a source and zero `naturalWidth`                                                                                                                                                                                                                         |
+| `font-error`           | a `document.fonts` face whose status is `error`                                                                                                                                                                                                                                |
+| `horizontal-scroll`    | `documentElement.scrollWidth > clientWidth`, with the offending elements listed                                                                                                                                                                                                |
+| `overlap`              | two in-flow sibling blocks whose intersection exceeds 40% of the smaller one (fixed/absolute/sticky layers excluded)                                                                                                                                                           |
 
-`opt-out-of-centering-vertical` and `small-target` carry `review` severity:
-they are real measurements but the verdict can legitimately be "intended".
-Everything else is `defect` severity and makes the command exit 1.
+A hit that instead sits inside a laid-out track wider than its clipping frame
+(the metrics carry `carousel`) is a carousel slide, not lost content, so
+`overflow-x-visible` and `clipped-by-ancestor` report it at `review` severity;
+the track only counts when an ancestor actually clips it, otherwise the spill
+stays a defect. `opt-out-of-centering-vertical` and `small-target` also carry
+`review` severity: they are real measurements but the verdict can legitimately
+be "intended". Everything else is `defect` severity and makes the command
+exit 1.
 
 Overlay exceptions are declared in `OVERLAY_SELECTORS` in the runner (cookie
 banner, Genie button and panel, Woo store notice, skip links); their overlap is
