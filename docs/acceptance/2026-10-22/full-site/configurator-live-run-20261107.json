@@ -70,7 +70,7 @@
     },
     {
       "stage": "roof step structure + map gate (partial)",
-      "checks": "Roof design step: Plan/Map/3D views, Add roof face / Add module specification / Import roof geometry, coordinate references form (north reference: unreferenced/user-declared/true-north; origin lat/lon with WGS84 help; anchor source), Layout check; map canvas correctly GATED until geographic origin AND true-north reference exist (mapGeometry.ts throws map_geographic_reference_required; the on-page message states exactly this); map module URL correctly served in planner config (MapViewport-COGFglIA.js); lazy chunk loads; 'Roof editing in progress' state after Start roof drawing",
+      "checks": "Roof design step: Plan/Map/3D views, Add roof face / Add module specification / Import roof geometry, coordinate references form (north reference: unreferenced/user-declared/true-north; origin lat/lon with WGS84 help; anchor source), Layout check; map canvas correctly GATED until geographic origin AND true-north reference exist (mapGeometry.ts throws map_geographic_reference_required; the on-page message states exactly this); map module URL correctly served in planner config (MapViewport-COGFglIA.js); lazy chunk loads; 'Roof editing in progress' state after Start roof drawing; Apply properties with an invalid/empty north-source shows a VISIBLE error ('This edit could not be applied. Some values or references may be invalid or may have changed. The current design is unchanged.') - no silent no-op on the apply path",
       "result": "pass (structure+gate); interactive map completion needs Sources record -> true_north -> map (documented next)"
     }
   ],
