@@ -26458,11 +26458,13 @@
     "state": "initial-faq-and-documents",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production587.json"
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -26486,6 +26488,10 @@
         "width": 1440,
         "lang": "en",
         "observerNote": "Error: Timed out waiting for tab 3 to navigate to https://de-linker.com/faq-download/."
+      },
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
       }
     },
     "remaining_scope": "587 proves specified control geometry, wrap, count or search/clear only for the named route/input. No complete product/data/library/permission contract closure. Reuse this proof when related conditions are unchanged."
@@ -26496,11 +26502,13 @@
     "state": "initial-faq-and-documents",
     "lang": "en",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production587.json"
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -26524,6 +26532,10 @@
         "width": 390,
         "lang": "en",
         "observerNote": null
+      },
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
       }
     },
     "remaining_scope": "587 proves specified control geometry, wrap, count or search/clear only for the named route/input. No complete product/data/library/permission contract closure. Reuse this proof when related conditions are unchanged."
@@ -26534,11 +26546,13 @@
     "state": "initial-faq-and-documents",
     "lang": "de",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production587.json"
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -26562,6 +26576,10 @@
         "width": 1440,
         "lang": "de",
         "observerNote": "Error: Timed out waiting for tab 3 to navigate to https://de-linker.com/de/faq-dokumente/."
+      },
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
       }
     },
     "remaining_scope": "587 proves specified control geometry, wrap, count or search/clear only for the named route/input. No complete product/data/library/permission contract closure. Reuse this proof when related conditions are unchanged."
@@ -26572,11 +26590,13 @@
     "state": "initial-faq-and-documents",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production587.json"
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -26599,6 +26619,10 @@
         "url": "https://de-linker.com/de/faq-dokumente/",
         "width": 390,
         "lang": "de"
+      },
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
       }
     },
     "remaining_scope": "587 proves specified control geometry, wrap, count or search/clear only for the named route/input. No complete product/data/library/permission contract closure. Reuse this proof when related conditions are unchanged."
@@ -26609,10 +26633,14 @@
     "state": "switch-tabs-and-keyboard",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -26627,6 +26655,10 @@
         "status": "historical-direct-guest-readback",
         "evidence": "/Users/chesterjohn/Documents/de-linker/docs/acceptance/2026-10-22/full-site/marketing-library-online/navigation-online-cua-summary.json",
         "scope": "PR 528 online guest EN/DE 1440/390: a keyboard-selected SAJ suggestion focused its actual question and category marker. Later 660/731 changed library-ui.js; this earlier action is context, not proof of current Arrow/Enter/Escape behavior."
+      },
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
       }
     }
   },
@@ -26636,10 +26668,14 @@
     "state": "switch-tabs-and-keyboard",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -26654,6 +26690,10 @@
         "status": "historical-direct-guest-readback",
         "evidence": "/Users/chesterjohn/Documents/de-linker/docs/acceptance/2026-10-22/full-site/marketing-library-online/navigation-online-cua-summary.json",
         "scope": "PR 528 online guest EN/DE 1440/390: a keyboard-selected SAJ suggestion focused its actual question and category marker. Later 660/731 changed library-ui.js; this earlier action is context, not proof of current Arrow/Enter/Escape behavior."
+      },
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
       }
     }
   },
@@ -26663,10 +26703,14 @@
     "state": "switch-tabs-and-keyboard",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -26681,6 +26725,10 @@
         "status": "historical-direct-guest-readback",
         "evidence": "/Users/chesterjohn/Documents/de-linker/docs/acceptance/2026-10-22/full-site/marketing-library-online/navigation-online-cua-summary.json",
         "scope": "PR 528 online guest EN/DE 1440/390: a keyboard-selected SAJ suggestion focused its actual question and category marker. Later 660/731 changed library-ui.js; this earlier action is context, not proof of current Arrow/Enter/Escape behavior."
+      },
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
       }
     }
   },
@@ -26690,10 +26738,14 @@
     "state": "switch-tabs-and-keyboard",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -26708,6 +26760,10 @@
         "status": "historical-direct-guest-readback",
         "evidence": "/Users/chesterjohn/Documents/de-linker/docs/acceptance/2026-10-22/full-site/marketing-library-online/navigation-online-cua-summary.json",
         "scope": "PR 528 online guest EN/DE 1440/390: a keyboard-selected SAJ suggestion focused its actual question and category marker. Later 660/731 changed library-ui.js; this earlier action is context, not proof of current Arrow/Enter/Escape behavior."
+      },
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
       }
     }
   },
@@ -26717,10 +26773,14 @@
     "state": "search-results-and-live-count",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -26736,6 +26796,10 @@
         "scope": "Actual PR 660 associated model search: FAQ 3/documents 4, four original URLs and 44px targets. PR 731 later verified language continuity separately.",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-library-model-search.json",
         "source_continuity": "PR 660 associated search is earlier bounded consumer evidence. PR 731 subsequently changed library language-state handling and accepted the separate EN→DE→EN filtered state in integrated-731-library-online.json; no whole-library or anonymous-permission pass follows."
+      },
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
       }
     }
   },
@@ -26745,10 +26809,14 @@
     "state": "search-results-and-live-count",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -26758,7 +26826,12 @@
       "search-pagination",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
+      }
+    }
   },
   {
     "key": "document-library:search-results-and-live-count:de:1440",
@@ -26766,10 +26839,14 @@
     "state": "search-results-and-live-count",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -26779,7 +26856,12 @@
       "search-pagination",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
+      }
+    }
   },
   {
     "key": "document-library:search-results-and-live-count:de:390",
@@ -26787,11 +26869,13 @@
     "state": "search-results-and-live-count",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production587.json"
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -26816,6 +26900,10 @@
         "scope": "Actual PR 660 associated model search: FAQ 3/documents 4, four original URLs and 44px targets. PR 731 later verified language continuity separately.",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-library-model-search.json",
         "source_continuity": "PR 660 associated search is earlier bounded consumer evidence. PR 731 subsequently changed library language-state handling and accepted the separate EN→DE→EN filtered state in integrated-731-library-online.json; no whole-library or anonymous-permission pass follows."
+      },
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
       }
     },
     "remaining_scope": "587 proves specified control geometry, wrap, count or search/clear only for the named route/input. No complete product/data/library/permission contract closure. Reuse this proof when related conditions are unchanged."
@@ -26826,10 +26914,14 @@
     "state": "search-empty-and-clear",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -26839,7 +26931,12 @@
       "search-pagination",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
+      }
+    }
   },
   {
     "key": "document-library:search-empty-and-clear:en:390",
@@ -26847,10 +26944,14 @@
     "state": "search-empty-and-clear",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -26860,7 +26961,12 @@
       "search-pagination",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
+      }
+    }
   },
   {
     "key": "document-library:search-empty-and-clear:de:1440",
@@ -26868,10 +26974,14 @@
     "state": "search-empty-and-clear",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -26881,7 +26991,12 @@
       "search-pagination",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
+      }
+    }
   },
   {
     "key": "document-library:search-empty-and-clear:de:390",
@@ -26889,11 +27004,13 @@
     "state": "search-empty-and-clear",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production587.json"
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -26909,6 +27026,10 @@
         "count": "344 Einträge hinterlegt",
         "focused": "linker-library-q",
         "query": ""
+      },
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
       }
     },
     "remaining_scope": "587 proves specified control geometry, wrap, count or search/clear only for the named route/input. No complete product/data/library/permission contract closure. Reuse this proof when related conditions are unchanged."
@@ -26919,11 +27040,13 @@
     "state": "suggestions-keyboard-selection-and-escape",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production-staff-Chrome",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": "https://de-linker.com/faq-download/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-library-keyboard.json"
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -26944,6 +27067,10 @@
         "status": "pass-named-staff-consumer",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-library-keyboard.json",
         "scope": "Actual current production library: GW6.0, ArrowDown active first real option, Escape list closed/active cleared/query and input focus retained; reopen+Enter opens matched FAQ and focuses summary. One EN1440 and DE390 observed; no guest permission/download/model claim."
+      },
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
       }
     }
   },
@@ -26953,10 +27080,14 @@
     "state": "suggestions-keyboard-selection-and-escape",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -26971,6 +27102,10 @@
         "status": "historical-direct-guest-readback",
         "evidence": "/Users/chesterjohn/Documents/de-linker/docs/acceptance/2026-10-22/full-site/marketing-library-online/navigation-online-cua-summary.json",
         "scope": "PR 528 online guest EN/DE 1440/390: a keyboard-selected SAJ suggestion focused its actual question and category marker. Later 660/731 changed library-ui.js; this earlier action is context, not proof of current Arrow/Enter/Escape behavior."
+      },
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
       }
     }
   },
@@ -26980,10 +27115,14 @@
     "state": "suggestions-keyboard-selection-and-escape",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -26998,6 +27137,10 @@
         "status": "historical-direct-guest-readback",
         "evidence": "/Users/chesterjohn/Documents/de-linker/docs/acceptance/2026-10-22/full-site/marketing-library-online/navigation-online-cua-summary.json",
         "scope": "PR 528 online guest EN/DE 1440/390: a keyboard-selected SAJ suggestion focused its actual question and category marker. Later 660/731 changed library-ui.js; this earlier action is context, not proof of current Arrow/Enter/Escape behavior."
+      },
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
       }
     }
   },
@@ -27007,11 +27150,13 @@
     "state": "suggestions-keyboard-selection-and-escape",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-staff-Chrome",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": "https://de-linker.com/de/faq-dokumente/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-library-keyboard.json"
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -27032,6 +27177,10 @@
         "status": "pass-named-staff-consumer",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-library-keyboard.json",
         "scope": "Actual current production library: GW6.0, ArrowDown active first real option, Escape list closed/active cleared/query and input focus retained; reopen+Enter opens matched FAQ and focuses summary. One EN1440 and DE390 observed; no guest permission/download/model claim."
+      },
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
       }
     }
   },
@@ -27041,10 +27190,14 @@
     "state": "rail-and-mobile-chips",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -27059,7 +27212,12 @@
       "predicate": "Use the actual visible rail/chips branch at this width.",
       "evidence": []
     },
-    "verified_checks": {}
+    "verified_checks": {
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
+      }
+    }
   },
   {
     "key": "document-library:rail-and-mobile-chips:en:390",
@@ -27067,10 +27225,14 @@
     "state": "rail-and-mobile-chips",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -27085,7 +27247,12 @@
       "predicate": "Use the actual visible rail/chips branch at this width.",
       "evidence": []
     },
-    "verified_checks": {}
+    "verified_checks": {
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
+      }
+    }
   },
   {
     "key": "document-library:rail-and-mobile-chips:de:1440",
@@ -27093,10 +27260,14 @@
     "state": "rail-and-mobile-chips",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -27111,7 +27282,12 @@
       "predicate": "Use the actual visible rail/chips branch at this width.",
       "evidence": []
     },
-    "verified_checks": {}
+    "verified_checks": {
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
+      }
+    }
   },
   {
     "key": "document-library:rail-and-mobile-chips:de:390",
@@ -27119,10 +27295,14 @@
     "state": "rail-and-mobile-chips",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -27143,6 +27323,10 @@
         "at": "2026-11-03T17:15:04.661122+00:00",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/public-file-coverage.json",
         "scope": "Actual Garantie7 button selected, seven current results/44px PDF links/no horizontal overflow. Does not close every chip, actual download/open/anchor or keyboard path."
+      },
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
       }
     }
   },
@@ -27152,10 +27336,14 @@
     "state": "document-open-file-and-anchor",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -27170,6 +27358,10 @@
         "status": "bounded-production-readback",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-library-model-search.json",
         "scope": "Actual EN1440 associated datasheet download opened original PDF; browser rendered page 1/3 and three thumbnails. Not every document or anchor."
+      },
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
       }
     }
   },
@@ -27179,10 +27371,14 @@
     "state": "document-open-file-and-anchor",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -27192,7 +27388,12 @@
       "search-pagination",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
+      }
+    }
   },
   {
     "key": "document-library:document-open-file-and-anchor:de:1440",
@@ -27200,10 +27401,14 @@
     "state": "document-open-file-and-anchor",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -27213,7 +27418,12 @@
       "search-pagination",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
+      }
+    }
   },
   {
     "key": "document-library:document-open-file-and-anchor:de:390",
@@ -27221,10 +27431,14 @@
     "state": "document-open-file-and-anchor",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -27245,6 +27459,10 @@
         "status": "bounded-production-readback",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-document-gate.json",
         "scope": "Guest DE390 Documents→STS search→44px original PDF link; original PDF opened and rendered as two pages in desktop browser. Does not assert phone-native PDF reader or every page anchor."
+      },
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
       }
     }
   },
@@ -27254,10 +27472,14 @@
     "state": "filtered-results-language-switch",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -27274,6 +27496,10 @@
         "release_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-library-model-search.json",
         "receipt_key": "language_selection_followup.production_native_731",
         "scope": "Existing staff session: native EN→DE→EN with GW10K-EHA-G20, documents tab and manual type retained; the resulting EN/DE views were read at 1440 and 390, then Clear removed q while retaining tab/type. These are two language actions plus four viewport readbacks, not four independent switch actions; anonymous permissions and whole-page acceptance remain open."
+      },
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
       }
     }
   },
@@ -27283,10 +27509,14 @@
     "state": "filtered-results-language-switch",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -27303,6 +27533,10 @@
         "release_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-library-model-search.json",
         "receipt_key": "language_selection_followup.production_native_731",
         "scope": "Existing staff session: native EN→DE→EN with GW10K-EHA-G20, documents tab and manual type retained; the resulting EN/DE views were read at 1440 and 390, then Clear removed q while retaining tab/type. These are two language actions plus four viewport readbacks, not four independent switch actions; anonymous permissions and whole-page acceptance remain open."
+      },
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
       }
     }
   },
@@ -27312,10 +27546,14 @@
     "state": "filtered-results-language-switch",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -27332,6 +27570,10 @@
         "release_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-library-model-search.json",
         "receipt_key": "language_selection_followup.production_native_731",
         "scope": "Existing staff session: native EN→DE→EN with GW10K-EHA-G20, documents tab and manual type retained; the resulting EN/DE views were read at 1440 and 390, then Clear removed q while retaining tab/type. These are two language actions plus four viewport readbacks, not four independent switch actions; anonymous permissions and whole-page acceptance remain open."
+      },
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
       }
     }
   },
@@ -27341,10 +27583,14 @@
     "state": "filtered-results-language-switch",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/library-states-batch1-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-deep-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/library-states-escape-lang-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -27361,6 +27607,10 @@
         "release_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-library-model-search.json",
         "receipt_key": "language_selection_followup.production_native_731",
         "scope": "Existing staff session: native EN→DE→EN with GW10K-EHA-G20, documents tab and manual type retained; the resulting EN/DE views were read at 1440 and 390, then Clear removed q while retaining tab/type. These are two language actions plus four viewport readbacks, not four independent switch actions; anonymous permissions and whole-page acceptance remain open."
+      },
+      "library_states_20261107": {
+        "status": "pass",
+        "detail": "initial tabs/panels/cards (7 tabs, 39 cards, EN/DE symmetric); tab switch writes ?tab=; live search splits tab counts (203 hits battery/batterie); empty notice + clear restores 39; rail chips 49; ArrowDown drives aria-activedescendant linker-library-sug-0 and highlights the first suggestion; Escape dismisses the visible listbox and keeps the query; the hreflang switch carries the query (?q=storage<->?q=speicher) with symmetric card counts; document links HEAD 200 application/pdf and zone anchors land in view"
       }
     }
   },
