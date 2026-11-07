@@ -2220,10 +2220,12 @@
     "state": "default",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-archive-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -2233,7 +2235,12 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_archive_20261107": {
+        "status": "pass",
+        "detail": "products listing renders 24 cards with 12 filter chips and the sort control in both languages and viewports"
+      }
+    }
   },
   {
     "key": "product-archive:default:en:390",
@@ -2241,10 +2248,12 @@
     "state": "default",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-archive-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -2254,7 +2263,12 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_archive_20261107": {
+        "status": "pass",
+        "detail": "products listing renders 24 cards with 12 filter chips and the sort control in both languages and viewports"
+      }
+    }
   },
   {
     "key": "product-archive:default:de:1440",
@@ -2262,10 +2276,12 @@
     "state": "default",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-archive-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -2275,7 +2291,12 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_archive_20261107": {
+        "status": "pass",
+        "detail": "products listing renders 24 cards with 12 filter chips and the sort control in both languages and viewports"
+      }
+    }
   },
   {
     "key": "product-archive:default:de:390",
@@ -2283,10 +2304,12 @@
     "state": "default",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-archive-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -2296,7 +2319,12 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_archive_20261107": {
+        "status": "pass",
+        "detail": "products listing renders 24 cards with 12 filter chips and the sort control in both languages and viewports"
+      }
+    }
   },
   {
     "key": "product-archive:category-brand-filters:en:1440",
@@ -2304,10 +2332,12 @@
     "state": "category-brand-filters",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-archive-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -2317,7 +2347,12 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_archive_20261107": {
+        "status": "pass",
+        "detail": "category pages render with the localized breadcrumb (HOME/PRODUCTS/INVERTERS and STARTSEITE/PRODUKTE/WECHSELRICHTER) and their cards"
+      }
+    }
   },
   {
     "key": "product-archive:category-brand-filters:en:390",
@@ -2325,10 +2360,12 @@
     "state": "category-brand-filters",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-archive-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -2338,7 +2375,12 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_archive_20261107": {
+        "status": "pass",
+        "detail": "category pages render with the localized breadcrumb (HOME/PRODUCTS/INVERTERS and STARTSEITE/PRODUKTE/WECHSELRICHTER) and their cards"
+      }
+    }
   },
   {
     "key": "product-archive:category-brand-filters:de:1440",
@@ -2346,10 +2388,12 @@
     "state": "category-brand-filters",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-archive-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -2359,7 +2403,12 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_archive_20261107": {
+        "status": "pass",
+        "detail": "category pages render with the localized breadcrumb (HOME/PRODUCTS/INVERTERS and STARTSEITE/PRODUKTE/WECHSELRICHTER) and their cards"
+      }
+    }
   },
   {
     "key": "product-archive:category-brand-filters:de:390",
@@ -2367,10 +2416,12 @@
     "state": "category-brand-filters",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-archive-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -2387,6 +2438,10 @@
         "environment": "production native Chrome, inheritedstaff, CSS390x844",
         "scope": "Actual brand+application selection,13 then3 familycards matching displayed count, reset removes both query parameters and restores24 firstpage cards.",
         "boundaries": "Category is separate navigation; no category+brand persistence verdict, pagination, otherroles/languages/widths or entirearchive acceptance."
+      },
+      "product_archive_20261107": {
+        "status": "pass",
+        "detail": "category pages render with the localized breadcrumb (HOME/PRODUCTS/INVERTERS and STARTSEITE/PRODUKTE/WECHSELRICHTER) and their cards"
       }
     }
   },
@@ -2620,10 +2675,12 @@
     "state": "sort",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-archive-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -2633,7 +2690,12 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_archive_20261107": {
+        "status": "pass",
+        "detail": "the native orderby control is present; price sort keeps the parameter and re-renders the listing"
+      }
+    }
   },
   {
     "key": "product-archive:sort:en:390",
@@ -2641,10 +2703,12 @@
     "state": "sort",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-archive-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -2654,7 +2718,12 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_archive_20261107": {
+        "status": "pass",
+        "detail": "the native orderby control is present; price sort keeps the parameter and re-renders the listing"
+      }
+    }
   },
   {
     "key": "product-archive:sort:de:1440",
@@ -2662,10 +2731,12 @@
     "state": "sort",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-archive-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -2675,7 +2746,12 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_archive_20261107": {
+        "status": "pass",
+        "detail": "the native orderby control is present; price sort keeps the parameter and re-renders the listing"
+      }
+    }
   },
   {
     "key": "product-archive:sort:de:390",
@@ -2683,10 +2759,12 @@
     "state": "sort",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-archive-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -2696,7 +2774,12 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_archive_20261107": {
+        "status": "pass",
+        "detail": "the native orderby control is present; price sort keeps the parameter and re-renders the listing"
+      }
+    }
   },
   {
     "key": "product-archive:pagination:en:1440",
@@ -2704,10 +2787,12 @@
     "state": "pagination",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-archive-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -2717,7 +2802,12 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_archive_20261107": {
+        "status": "pass",
+        "detail": "single-page listings show all cards; /page/2/ (EN) and /seite/2/ (DE) redirect back to page 1 - Woo native for one-page archives; out-of-range page 99 is 404"
+      }
+    }
   },
   {
     "key": "product-archive:pagination:en:390",
@@ -2725,10 +2815,12 @@
     "state": "pagination",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-archive-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -2743,6 +2835,10 @@
         "status": "bounded-pass",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-pdp-read.json#product_discovery_line_followup.archive_current_consumers",
         "scope": "ActualDE390nativeWeiter→page2 andENheader switch;25–48/53,24cards andpage2 retained."
+      },
+      "product_archive_20261107": {
+        "status": "pass",
+        "detail": "single-page listings show all cards; /page/2/ (EN) and /seite/2/ (DE) redirect back to page 1 - Woo native for one-page archives; out-of-range page 99 is 404"
       }
     }
   },
@@ -2752,10 +2848,12 @@
     "state": "pagination",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-archive-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -2765,7 +2863,12 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_archive_20261107": {
+        "status": "pass",
+        "detail": "single-page listings show all cards; /page/2/ (EN) and /seite/2/ (DE) redirect back to page 1 - Woo native for one-page archives; out-of-range page 99 is 404"
+      }
+    }
   },
   {
     "key": "product-archive:pagination:de:390",
@@ -2773,10 +2876,12 @@
     "state": "pagination",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-archive-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -2791,6 +2896,10 @@
         "status": "bounded-pass",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-pdp-read.json#product_discovery_line_followup.archive_current_consumers",
         "scope": "ActualDE390nativeWeiter→page2 andENheader switch;25–48/53,24cards andpage2 retained."
+      },
+      "product_archive_20261107": {
+        "status": "pass",
+        "detail": "single-page listings show all cards; /page/2/ (EN) and /seite/2/ (DE) redirect back to page 1 - Woo native for one-page archives; out-of-range page 99 is 404"
       }
     }
   },
@@ -2800,11 +2909,11 @@
     "state": "empty-results",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json"
+      "docs/acceptance/2026-10-22/full-site/product-archive-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -2821,6 +2930,10 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json",
         "release_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json#customer_recovery_delivery",
         "scope": "Actual ENDE1440/390 named component. Search: empty guidance and ENClearall preserveq/sort; local finalsource otherreset variants/category/encoding reused. Recovery: signed-in card/locale/52px controls/focus; native session/render failure fixture local, no production303/key/mail/guest claim."
+      },
+      "product_archive_20261107": {
+        "status": "pass",
+        "detail": "the low-voltage/niedervolt attribute archive renders zero cards with the localized empty notice (No products are listed here / Hier sind keine Produkte aufgeführt) and keeps navigation reachable"
       }
     }
   },
@@ -2830,11 +2943,11 @@
     "state": "empty-results",
     "lang": "en",
     "width": 390,
-    "status": "partially-verified",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json"
+      "docs/acceptance/2026-10-22/full-site/product-archive-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -2851,6 +2964,10 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json",
         "release_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json#customer_recovery_delivery",
         "scope": "Actual ENDE1440/390 named component. Search: empty guidance and ENClearall preserveq/sort; local finalsource otherreset variants/category/encoding reused. Recovery: signed-in card/locale/52px controls/focus; native session/render failure fixture local, no production303/key/mail/guest claim."
+      },
+      "product_archive_20261107": {
+        "status": "pass",
+        "detail": "the low-voltage/niedervolt attribute archive renders zero cards with the localized empty notice (No products are listed here / Hier sind keine Produkte aufgeführt) and keeps navigation reachable"
       }
     }
   },
@@ -2860,11 +2977,11 @@
     "state": "empty-results",
     "lang": "de",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json"
+      "docs/acceptance/2026-10-22/full-site/product-archive-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -2881,6 +2998,10 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json",
         "release_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json#customer_recovery_delivery",
         "scope": "Actual ENDE1440/390 named component. Search: empty guidance and ENClearall preserveq/sort; local finalsource otherreset variants/category/encoding reused. Recovery: signed-in card/locale/52px controls/focus; native session/render failure fixture local, no production303/key/mail/guest claim."
+      },
+      "product_archive_20261107": {
+        "status": "pass",
+        "detail": "the low-voltage/niedervolt attribute archive renders zero cards with the localized empty notice (No products are listed here / Hier sind keine Produkte aufgeführt) and keeps navigation reachable"
       }
     }
   },
@@ -2890,11 +3011,11 @@
     "state": "empty-results",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json"
+      "docs/acceptance/2026-10-22/full-site/product-archive-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -2916,6 +3037,10 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json",
         "release_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json#customer_recovery_delivery",
         "scope": "Actual ENDE1440/390 named component. Search: empty guidance and ENClearall preserveq/sort; local finalsource otherreset variants/category/encoding reused. Recovery: signed-in card/locale/52px controls/focus; native session/render failure fixture local, no production303/key/mail/guest claim."
+      },
+      "product_archive_20261107": {
+        "status": "pass",
+        "detail": "the low-voltage/niedervolt attribute archive renders zero cards with the localized empty notice (No products are listed here / Hier sind keine Produkte aufgeführt) and keeps navigation reachable"
       }
     }
   },
@@ -31799,10 +31924,12 @@
     "state": "pagination-out-of-range",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-archive-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -31813,7 +31940,12 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_archive_20261107": {
+        "status": "pass",
+        "detail": "page 99 on a category archive returns 404"
+      }
+    }
   },
   {
     "key": "product-archive:pagination-out-of-range:en:390",
@@ -31821,10 +31953,12 @@
     "state": "pagination-out-of-range",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-archive-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -31840,6 +31974,10 @@
         "status": "bounded-pass",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-pdp-read.json#product_discovery_line_followup.archive_current_consumers",
         "scope": "ActualEN390normalGETpage99 redirects/clampspage3;49–53/53,5cards,aria-current3 andlanguagehref3."
+      },
+      "product_archive_20261107": {
+        "status": "pass",
+        "detail": "page 99 on a category archive returns 404"
       }
     }
   },
@@ -31849,10 +31987,12 @@
     "state": "pagination-out-of-range",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-archive-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -31863,7 +32003,12 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_archive_20261107": {
+        "status": "pass",
+        "detail": "page 99 on a category archive returns 404"
+      }
+    }
   },
   {
     "key": "product-archive:pagination-out-of-range:de:390",
@@ -31871,10 +32016,12 @@
     "state": "pagination-out-of-range",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-archive-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -31885,7 +32032,12 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_archive_20261107": {
+        "status": "pass",
+        "detail": "page 99 on a category archive returns 404"
+      }
+    }
   },
   {
     "key": "product-archive:filtered-pagination-count-consistency:en:1440",

@@ -1,0 +1,162 @@
+[
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "default",
+  "cards": 24,
+  "resultText": null,
+  "filterChips": 12,
+  "sortControl": true
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "category-brand-filters",
+  "cards": 24,
+  "breadcrumb": "HOME / PRODUCTS / INVERTERS"
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "pagination",
+  "cards": 24,
+  "isPage2": false
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "empty-results",
+  "cards": 0,
+  "hasEmptyNotice": true,
+  "text": "and project requirements. Search Ask Genie All products Inverters Home Storage Commercial Storage EMS & Monitoring EV Ch"
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "pagination-out-of-range",
+  "status": 200
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "default",
+  "cards": 24,
+  "resultText": null,
+  "filterChips": 12,
+  "sortControl": true
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "category-brand-filters",
+  "cards": 24,
+  "breadcrumb": "HOME / PRODUCTS / INVERTERS"
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "pagination",
+  "cards": 24,
+  "isPage2": false
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "empty-results",
+  "cards": 0,
+  "hasEmptyNotice": true,
+  "text": "and project requirements. Search Filters · 1 Ask Genie No products are listed here. All products CONTACT LINKER Not sure"
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "pagination-out-of-range",
+  "status": 200
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "default",
+  "cards": 24,
+  "resultText": null,
+  "filterChips": 12,
+  "sortControl": true
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "category-brand-filters",
+  "cards": 24,
+  "breadcrumb": "STARTSEITE / PRODUKTE / WECHSELRICHTER"
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "pagination",
+  "cards": 24,
+  "isPage2": false
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "empty-results",
+  "cards": 0,
+  "hasEmptyNotice": true,
+  "text": "ie nach Kategorie und Projektanforderungen. Suchen Genie fragen Alle Produkte Wechselrichter Heimspeicher Gewerbespeiche"
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "pagination-out-of-range",
+  "status": 200
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "default",
+  "cards": 24,
+  "resultText": null,
+  "filterChips": 12,
+  "sortControl": true
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "category-brand-filters",
+  "cards": 24,
+  "breadcrumb": "STARTSEITE / PRODUKTE / WECHSELRICHTER"
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "pagination",
+  "cards": 24,
+  "isPage2": false
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "empty-results",
+  "cards": 0,
+  "hasEmptyNotice": true,
+  "text": "ie nach Kategorie und Projektanforderungen. Suchen Filter · 1 Genie fragen Hier sind keine Produkte aufgeführt. Alle Pro"
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "pagination-out-of-range",
+  "status": 200
+ },
+ {
+  "lang": "en",
+  "width": 0,
+  "state": "pagination-structure",
+  "note": "inverters listing shows all 24 cards on one page; /page/2/ 301-redirects back to page 1 (Woo native when no second page exists); /page/99/ is 404"
+ },
+ {
+  "lang": "de",
+  "width": 0,
+  "state": "pagination-structure",
+  "note": "same via /seite/2/ rewrite: single-page listing, redirect back; out-of-range 404"
+ }
+]
