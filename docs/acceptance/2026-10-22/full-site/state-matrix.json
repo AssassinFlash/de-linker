@@ -29307,10 +29307,12 @@
     "state": "typed-question-consumed-once",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29319,7 +29321,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:typed-question-consumed-once:en:390",
@@ -29327,10 +29335,12 @@
     "state": "typed-question-consumed-once",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29339,7 +29349,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:typed-question-consumed-once:de:1440",
@@ -29347,10 +29363,12 @@
     "state": "typed-question-consumed-once",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29359,7 +29377,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:typed-question-consumed-once:de:390",
@@ -29367,10 +29391,12 @@
     "state": "typed-question-consumed-once",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29379,7 +29405,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:suggestion-prefill-edit-send:en:1440",
@@ -29387,10 +29419,12 @@
     "state": "suggestion-prefill-edit-send",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29399,7 +29433,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:suggestion-prefill-edit-send:en:390",
@@ -29407,10 +29447,12 @@
     "state": "suggestion-prefill-edit-send",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29419,7 +29461,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:suggestion-prefill-edit-send:de:1440",
@@ -29427,10 +29475,12 @@
     "state": "suggestion-prefill-edit-send",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29439,7 +29489,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:suggestion-prefill-edit-send:de:390",
@@ -29447,10 +29503,12 @@
     "state": "suggestion-prefill-edit-send",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29459,7 +29517,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:cold-warm-boot-failure-retry:en:1440",
@@ -29467,10 +29531,12 @@
     "state": "cold-warm-boot-failure-retry",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29479,7 +29545,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:cold-warm-boot-failure-retry:en:390",
@@ -29487,10 +29559,12 @@
     "state": "cold-warm-boot-failure-retry",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29499,7 +29573,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:cold-warm-boot-failure-retry:de:1440",
@@ -29507,10 +29587,12 @@
     "state": "cold-warm-boot-failure-retry",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29519,7 +29601,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:cold-warm-boot-failure-retry:de:390",
@@ -29527,10 +29615,12 @@
     "state": "cold-warm-boot-failure-retry",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29539,7 +29629,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:ime-enter-shift-enter:en:1440",
@@ -29547,10 +29643,12 @@
     "state": "ime-enter-shift-enter",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29559,7 +29657,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:ime-enter-shift-enter:en:390",
@@ -29567,10 +29671,12 @@
     "state": "ime-enter-shift-enter",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29579,7 +29685,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:ime-enter-shift-enter:de:1440",
@@ -29587,10 +29699,12 @@
     "state": "ime-enter-shift-enter",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29599,7 +29713,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:ime-enter-shift-enter:de:390",
@@ -29607,10 +29727,12 @@
     "state": "ime-enter-shift-enter",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29619,7 +29741,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:attachment-text-cancel-refuse-recover:en:1440",
@@ -29627,10 +29755,12 @@
     "state": "attachment-text-cancel-refuse-recover",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29639,7 +29769,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:attachment-text-cancel-refuse-recover:en:390",
@@ -29647,10 +29783,12 @@
     "state": "attachment-text-cancel-refuse-recover",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29659,7 +29797,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:attachment-text-cancel-refuse-recover:de:1440",
@@ -29667,10 +29811,12 @@
     "state": "attachment-text-cancel-refuse-recover",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29679,7 +29825,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:attachment-text-cancel-refuse-recover:de:390",
@@ -29687,10 +29839,12 @@
     "state": "attachment-text-cancel-refuse-recover",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29699,7 +29853,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:voice-text-denied-unsupported-stop:en:1440",
@@ -29707,10 +29867,12 @@
     "state": "voice-text-denied-unsupported-stop",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29719,7 +29881,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:voice-text-denied-unsupported-stop:en:390",
@@ -29727,10 +29895,12 @@
     "state": "voice-text-denied-unsupported-stop",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29739,7 +29909,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:voice-text-denied-unsupported-stop:de:1440",
@@ -29747,10 +29923,12 @@
     "state": "voice-text-denied-unsupported-stop",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29759,7 +29937,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:voice-text-denied-unsupported-stop:de:390",
@@ -29767,10 +29951,12 @@
     "state": "voice-text-denied-unsupported-stop",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29779,7 +29965,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:existing-busy-draft-conflict-and-dedup:en:1440",
@@ -29787,10 +29979,12 @@
     "state": "existing-busy-draft-conflict-and-dedup",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29799,7 +29993,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:existing-busy-draft-conflict-and-dedup:en:390",
@@ -29807,10 +30007,12 @@
     "state": "existing-busy-draft-conflict-and-dedup",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29819,7 +30021,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:existing-busy-draft-conflict-and-dedup:de:1440",
@@ -29827,10 +30035,12 @@
     "state": "existing-busy-draft-conflict-and-dedup",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29839,7 +30049,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:existing-busy-draft-conflict-and-dedup:de:390",
@@ -29847,10 +30063,12 @@
     "state": "existing-busy-draft-conflict-and-dedup",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29859,7 +30077,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:close-refresh-back-scoped-recovery:en:1440",
@@ -29867,10 +30091,12 @@
     "state": "close-refresh-back-scoped-recovery",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29879,7 +30105,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:close-refresh-back-scoped-recovery:en:390",
@@ -29887,10 +30119,12 @@
     "state": "close-refresh-back-scoped-recovery",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29899,7 +30133,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:close-refresh-back-scoped-recovery:de:1440",
@@ -29907,10 +30147,12 @@
     "state": "close-refresh-back-scoped-recovery",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29919,7 +30161,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "marketing-genie-entry:close-refresh-back-scoped-recovery:de:390",
@@ -29927,10 +30175,12 @@
     "state": "close-refresh-back-scoped-recovery",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (entries render; the turn-level states need live Genie runs)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/marketing-genie-entry-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -29939,7 +30189,13 @@
       "consumer-readback",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "mkt_entry_20261107": {
+        "status": "entry-verified",
+        "detail": "all six marketing entries render their localized input with domain placeholder and their entry CTA (Plan with Linker / Genie fragen; Installer desktop Plan routes to the configurator per contract, Genie on mobile), Genie mount present on every page and viewport combination measured",
+        "note": "typed-question/suggestion/retry/IME/attachment/voice/busy-draft/close-recovery states consume a live Genie turn and stay for the Genie consumer run"
+      }
+    }
   },
   {
     "key": "project-brief:source-stage-readback-and-note-scope:en:1440",
