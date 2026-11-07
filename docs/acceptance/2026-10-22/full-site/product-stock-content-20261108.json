@@ -17,6 +17,11 @@
       "state": "language-switch-account-endpoint-and-fragment",
       "checks": "On PDP with #specification fragment, clicking DE in the header navigates to the DE canonical slug (/de/produkt/goodwe-esa-gw10k-eha-g20-10-kw-einphasiges-leistungsmodul/) with localized title - language switch routes to the paired DE product URL (Polylang pairing through the narrow plugin); fragment dropped on cross-language PDP switch (canonical navigation), which matches the earlier verified alias behavior",
       "result": "pass"
+    },
+    {
+      "state": "actual-file-manifest-open-and-content",
+      "checks": "/faq-download/ (header 'FAQ & Documents') renders 143 PDF links (datasheets DE+EN, manuals, catalogs). Live-manifest samples open correctly: chint_dtsu666_catalog_en.pdf 200 application/pdf 505KB; delinker-goodwe_batc208-datasheet.pdf 200 532KB; chint_dtsu666_dssu666_user_manual_en.pdf 200 1.2MB; H2-10-30K-T2T3-datasheet-EN-BEU.pdf 200 430KB (linked from PDP). One URL NOT in the live manifest (goodwe-esa-3-10kw-eha-g20-datasheet-en.pdf) returns 410 Gone = spec-609 publication semantics for withdrawn files (no existence oracle), correct behavior",
+      "result": "pass"
     }
   ]
 }
