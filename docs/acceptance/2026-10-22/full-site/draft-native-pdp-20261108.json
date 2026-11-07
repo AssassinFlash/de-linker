@@ -1,0 +1,32 @@
+{
+  "session": "draft-native-pdp-20261108",
+  "environment": "production",
+  "method": "Real Chrome PDP native entry: product page Add link -> notice -> draft page; quantity spinbutton edits; hard reloads",
+  "verified": [
+    {
+      "state": "native-pdp-entry-add",
+      "checks": "PDP 'Add to solution draft' link click -> '\"GoodWe ESA GW10K-EHA-G20...\" has been added to your solution draft.' notice + View solution draft + full draft page with inquiry left column (message optional/name/email/company optional/consent) matching the 2026-10-17 ruling form",
+      "result": "pass"
+    },
+    {
+      "state": "quantity-edit",
+      "checks": "Quantity spinbutton 1 -> 2 -> Update solution draft -> cart readback qty=2 (single item)",
+      "result": "pass"
+    },
+    {
+      "state": "quantity-zero-delete",
+      "checks": "qty 0 -> Update -> draft_write Turnstile honest status ('Checking verification. No request has been sent in this attempt.') -> ~60s -> product removed, items=0; re-add + hard reload shows empty cart (deletion persisted server-side, no ghost rows)",
+      "result": "pass"
+    },
+    {
+      "state": "update-verification-feedback",
+      "checks": "qty0 update path shows the visible verification status inline - no silent no-op",
+      "result": "pass"
+    }
+  ],
+  "open": [
+    "Undo after remove (needs notice timing)",
+    "Send disabled while update pending",
+    "product-hover-focus (CU visual pass)"
+  ]
+}
