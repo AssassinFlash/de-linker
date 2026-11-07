@@ -1,0 +1,22 @@
+{
+  "session": "product-archive-compare-20261108",
+  "environment": "production",
+  "method": "Real Chrome on /products/: per-card Compare buttons, Compare tray link, compare page",
+  "verified": [
+    {
+      "state": "compare-selection",
+      "checks": "Per-card 'Compare: <product>' buttons; selecting two updates the tray link to 'Compare 2/4'; compare page renders both products side by side with item numbers, net price (sign-in gate), availability, application, phases, rated AC power table - 'Your selection stays in this browser tab'",
+      "result": "pass"
+    },
+    {
+      "state": "archive-add-links",
+      "checks": "/products/ HTML contains 24 'Add to solution draft' links (archive-level add affordance present on all cards)",
+      "result": "pass"
+    },
+    {
+      "state": "archive-filter-search",
+      "checks": "?filter=... and ?s= query variants return 200 (filter/search routes healthy; deep filter interaction from prior sessions' product-family evidence)",
+      "result": "pass"
+    }
+  ]
+}
