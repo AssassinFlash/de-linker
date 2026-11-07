@@ -70,3 +70,34 @@ Staging metal-divider intentionally has neither visitor nor external cron.**
   backlog. No such runner was created.
 - The pre-existing `/home/u388076051/.api_token` file was not read; its mode
   was tightened from 0644 to 0600 and read back.
+
+## Metal-divider orphan Action Scheduler cleanup (2026-11-07)
+
+- Production readback found 14 failed actions: one 2026-10-25
+  `action_scheduler/migration_hook` and thirteen daily
+  `hostinger-reach/jobs/cleanup_carts/start` occurrences. The logs named the
+  exact cause on the newest and oldest entries: no callback is registered for
+  that hook. No copy of the hook exists in the active plugin tree, and one
+  future occurrence was still pending, so the schedule was orphaned and would
+  continue accumulating one failed row per day.
+- Before the write, a full metal-divider database export was taken through
+  WP-CLI: 42,923,382 SQL bytes, locally compressed to 7,242,691 bytes, SHA256
+  `1b9d577bd1b6679e8ccec51bbc504f15c12c9397757b4d1cc8ba57fd421b7ad9`. The
+  temporary remote export and this single recovery copy were removed only after
+  the queue and site readbacks below passed.
+- Hostinger disables PHP `exec()`, which made the stock WP-CLI 2.12 `db export`
+  command exit 255 silently because its option probe calls `exec()` before
+  starting `mysqldump`. A temporary `/tmp` copy of the official phar changed
+  only that probe to `false`; passing the documented `--no-tablespaces` flag a
+  second time was also refused by MariaDB, so the export used the command's own
+  default. The patched phar, remote SQL file, and local WP-CLI source scratch
+  file were all deleted and verified absent. No database credential was read or
+  logged.
+- The orphan hook's scheduled actions were cancelled with Action Scheduler's
+  native CLI, and the 14 backed-up failed rows were deleted
+  (`Deleted 14 actions, 0 failures`).
+- After-state: failed = 0 and pending occurrences of the orphan hook = 0. The
+  remaining 13 pending actions are ordinary future WooCommerce/Action Scheduler
+  jobs (first at 02:26 UTC); `https://metal-divider.com/` returned 200 in
+  5.35 s. The production cron logs remain empty and no test inquiry or email
+  was created.
