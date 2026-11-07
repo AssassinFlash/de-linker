@@ -62,6 +62,11 @@
       "stage": "check-button precondition root cause",
       "checks": "Source analysis: button disabled until operating_mode set (EquipmentSetup.tsx:587); with mode+grid+inverter+battery+count selected and saved (revision advanced), button enabled; clicks fire zero requests due to start() guard returns",
       "result": "root-caused (fix pending)"
+    },
+    {
+      "stage": "check-button fix production acceptance (PR #1002, deploy 9715cbac1)",
+      "checks": "Post-deploy (planner-core-2Z6ONk9y.js serves inputs_not_ready x2): enabled 'Check saved equipment selection' click -> new equipment check RUN recorded (12:27 AM, Input revision 3) -> view auto-navigated to run results (#lp-calculations, run=1b7c961d) -> honest result 'Requirements not met / Further assessment of the complete system is required' with calculation history (3 runs). Pre-fix the same click was a total silent no-op (2x verified). Silent-no-op defect class closed in planner like in Genie (PR #1001).",
+      "result": "pass"
     }
   ],
   "automation_notes": [
@@ -70,7 +75,6 @@
     "Equipment workbench step: requirement inputs (kWp/kWh/kW) resisted both value-set fill and ref-click+key_type within this session (values reset); needs a focused pass. QuickStart regeneration is the working path."
   ],
   "open": [
-    "DEFECT-CANDIDATE: EquipmentWorkspace.start() (energy/EnergyWorkspace.tsx ~950-1015) silently early-returns on state mismatches (sameJson guards) with no user-visible feedback - an ENABLED 'Check saved equipment selection' button can do nothing observable (verified twice: real clicks, zero fetches, zero UI change). Same silent-no-op class as the Genie PR #1001 fix. Root-cause fix should surface which precondition failed",
     "Report PDF requires the energy calculation step (interval data) - by design; deep chain continues via workbench Energy inputs import or equipment selection -> draft add",
     "UX finding: navigating QuickStart -> workbench Equipment -> back resets the quick-start form selections and shows 'Unsaved changes' even though the pipeline ran at revision 2 - candidate state-persistence issue to verify with a clean run",
     "report PDF/CSV download",
