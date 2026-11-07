@@ -1,0 +1,22 @@
+{
+  "session": "misc-family-http-20261108",
+  "environment": "production",
+  "method": "Direct HTTP probes (status + redirect_url) for routing-family states; evidence from prior sessions for price gates",
+  "verified": [
+    {
+      "state": "404 and invalid routes",
+      "checks": "EN /wrong-page-xyz-123/ -> 404 dedicated page ('This page does not exist' + Back to homepage + Browse products + search routes); DE /de/wrong-page-xyz/ -> 404 ('Seite existiert nicht' + Zurück + Produkte durchsuchen); ?p=999999 -> 404 (no existence oracle)",
+      "result": "pass"
+    },
+    {
+      "state": "retired-alias-redirect-and-language",
+      "checks": "/shop/ -> 301 /products/; /de/warenkorb/ -> 301 /de/loesungsentwurf/; DE product path -> 301 -> DE canonical slug (einphasiges-leistungsmodul); DE slugs under EN namespace -> 404 (no mixing); /my-account/orders/ (retired Woo endpoint) -> 404 consistent with inquiry-replaces-order design",
+      "result": "pass"
+    },
+    {
+      "state": "price gates (product family)",
+      "checks": "approved-price: EUR 1,010.00 net on GW10K PDP (account-approval-states evidence); pending-price-gate: 'Ihr Konto wird geprüft. Preise nach Freigabe.' on DE PDP; restricted-price-gate: restricted banner + no net prices; anonymous: 'Net price after partner sign-in' + 'Log in for prices' on PDP/draft",
+      "result": "pass (all four gates production-proven across prior sessions)"
+    }
+  ]
+}

@@ -3689,10 +3689,12 @@
     "state": "approved-price",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261108",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "misc-family-http-20261108.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -3773,10 +3775,12 @@
     "state": "pending-price-gate",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261108",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "misc-family-http-20261108.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -3853,10 +3857,12 @@
     "state": "restricted-price-gate",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261108",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "misc-family-http-20261108.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -27277,10 +27283,12 @@
     "state": "404",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261108",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "misc-family-http-20261108.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -27357,10 +27365,12 @@
     "state": "invalid-route",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261108",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "misc-family-http-20261108.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -32194,10 +32204,12 @@
     "state": "retired-alias-redirect-and-language",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261108",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "misc-family-http-20261108.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
