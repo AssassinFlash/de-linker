@@ -72,6 +72,11 @@
       "stage": "roof step structure + map gate (partial)",
       "checks": "Roof design step: Plan/Map/3D views, Add roof face / Add module specification / Import roof geometry, coordinate references form (north reference: unreferenced/user-declared/true-north; origin lat/lon with WGS84 help; anchor source), Layout check; map canvas correctly GATED until geographic origin AND true-north reference exist (mapGeometry.ts throws map_geographic_reference_required; the on-page message states exactly this); map module URL correctly served in planner config (MapViewport-COGFglIA.js); lazy chunk loads; 'Roof editing in progress' state after Start roof drawing; Apply properties with an invalid/empty north-source shows a VISIBLE error ('This edit could not be applied. Some values or references may be invalid or may have changed. The current design is unchanged.') - no silent no-op on the apply path",
       "result": "pass (structure+gate); interactive map completion needs Sources record -> true_north -> map (documented next)"
+    },
+    {
+      "stage": "roof face + source + true-north full chain",
+      "checks": "Add roof face form (fields incl. required rights checkbox - browser-native validation visible when unchecked) -> South roof 8x5m/35deg/180deg created WITH auto-generated measurement source; coordinate form true_north + source binding + Berlin origin -> Apply (no error) -> gate message gone; Plan view renders roof plane (NORTH UNREFERENCED badge gone after apply); saved revision 4",
+      "result": "pass"
     }
   ],
   "automation_notes": [
@@ -80,7 +85,7 @@
     "Equipment workbench step: requirement inputs (kWp/kWh/kW) resisted both value-set fill and ref-click+key_type within this session (values reset); needs a focused pass. QuickStart regeneration is the working path."
   ],
   "open": [
-    "roof interactive chain remaining: add a Sources record, set north reference source to it, apply + save -> maplibre canvas + tiles should load; then outline-draw/obstacles/undo-redo/save-return states",
+    "map canvas mount still not observed: canStartDrawing=false blocks Start roof drawing + Edit boundary (candidates: mapProps.disabled from DesignEditor, or journal.checking) - next session to read the exact flag from component state; tile service tiles.openfreemap.org verified reachable (200)",
     "Report PDF requires the energy calculation step (interval data) - by design; deep chain continues via workbench Energy inputs import or equipment selection -> draft add",
     "UX finding: navigating QuickStart -> workbench Equipment -> back resets the quick-start form selections and shows 'Unsaved changes' even though the pipeline ran at revision 2 - candidate state-persistence issue to verify with a clean run",
     "report PDF/CSV download",
