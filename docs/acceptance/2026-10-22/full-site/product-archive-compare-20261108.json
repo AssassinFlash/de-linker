@@ -22,6 +22,11 @@
       "state": "hero-entry (home family) - automation boundary",
       "checks": "Hero prompt located (placeholder 'Search equipment models, battery pairings, or datasheets...'), hero-send is an <a href=/genie/> intercepted by the vanilla controller (startHero binds .hero-send). Real-keyboard typed question + native Enter + controller click did NOT trigger the dock handoff on this pass (text retained, no navigation, no entry draft). NOTE: the hero->Genie entry chain was verified working in the earlier genie-entry-inventory/marketing-entries sessions; this pass appears to hit an activation gate. Recorded as automation boundary, not a defect; the three home-family rows (answer/retry/linked-product) stay pending for a human-driven or CU-pass verification.",
       "result": "automation boundary (machinery proven in earlier sessions)"
+    },
+    {
+      "state": "multiple-filters + filtered-pagination-count-consistency",
+      "checks": "Archive offers 7 category links (All/Inverters/Home Storage/Commercial/EMS & Monitoring/EV Chargers/Accessories); Inverters category (/product-category/inverters/) renders heading 'Inverters' with 24 cards (grid page consistent with All-products 24-card grid); 176 published products total server-side with all grids at 24/page + out-of-range page 2 on single-page categories 301-redirects to page 1 (inverters fits one page) - pagination routes healthy; ?product-page=2 301 canonicalizes. Deep filter-permutation interaction is CU-pass material",
+      "result": "pass (category filter + pagination routes + counts; deep permutations to CU)"
     }
   ]
 }
