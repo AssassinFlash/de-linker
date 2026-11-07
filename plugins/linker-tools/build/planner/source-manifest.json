@@ -72,7 +72,7 @@
     "src/components/energy/EnergyComparison.tsx": "043827a5588d55422a1862f7b38ef18249648d053b2ccd4472fb9e85f8708b21",
     "src/components/energy/EnergyError.tsx": "ec40f00789e0f61724f30ba86a3233c69779d683d3c47154b48c7a98a7470028",
     "src/components/energy/EnergyFlowChart.tsx": "6aea8bf01798fd6ec3f70e121f641a6f4f921dc36374161fa16d169ae03af519",
-    "src/components/energy/EnergyWorkspace.tsx": "fc32ddc2f0082a609b1ebb7a6ed2b6b0629b2019c03ee1085c7731f4395c375b",
+    "src/components/energy/EnergyWorkspace.tsx": "8130364b77e2e354c233fccd96c736ecb688a1c62b793541f36add2a001615e7",
     "src/components/energy/GeometricPvSetup.tsx": "c7eda225bd1c652e1cae1846c3ad796a1934610029329a4ee611da3bef8bbabb",
     "src/components/energy/InitialInventoryForm.tsx": "026e5e9c7c7a5f2fb4c10fa7818af2a5fb19a9f7d4a5914dc498980cdbe20c55",
     "src/components/energy/OperatingPeriodForm.tsx": "9f73acaed60f9474d76b35685ed66482972bac4c2d4875c6b86f8866b87fb0c7",
