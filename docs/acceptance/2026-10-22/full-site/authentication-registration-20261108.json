@@ -1,0 +1,22 @@
+{
+  "session": "authentication-registration-20261108",
+  "environment": "production",
+  "method": "Real Chrome native two-step registration form (fill + radio click + native change events); TestMode mail rewrite ON during registration, removed after (zero real-recipient emails)",
+  "verified": [
+    {
+      "state": "two-step-form",
+      "checks": "Step 1 of 2 'Your company': Company name*, Business type* (radio: Installer/EPC contractor/Distributor), Country/Region* (250 countries, Germany first - Europe-focus per ruling), optional website + VAT ID (inline aria-invalid validation with 'Please complete the required fields.' visible notice when invalid); Step 2 of 2 'You and your sign-in': First/Last name*, Email* ('We send the approval to this email'), password",
+      "result": "pass"
+    },
+    {
+      "state": "registration-success-pending-stay-logged-in",
+      "checks": "Register -> account created (ID 57, verif-register-208@example.test, linker_approval_status=pending server readback) AND the new user stays LOGGED IN: 'Welcome back Erika' + full workspace + 'Under review - Your account is under review... You can send inquiries now; approval opens net prices.' - the 2026-10-17 ruling behavior exactly",
+      "result": "pass"
+    },
+    {
+      "state": "validation-feedback",
+      "checks": "Invalid website/VAT inline aria-invalid + required-fields notice - visible, no silent no-op",
+      "result": "pass"
+    }
+  ]
+}

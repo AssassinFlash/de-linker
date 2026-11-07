@@ -19406,10 +19406,12 @@
     "state": "pending-submit",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261108",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "authentication-registration-20261108.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -19486,10 +19488,12 @@
     "state": "registration-success",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261108",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "authentication-registration-20261108.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
