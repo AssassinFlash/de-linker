@@ -18262,11 +18262,11 @@
     "state": "sign-in",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": "https://de-linker.com/my-account/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/auth-required-guidance.json"
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -18283,6 +18283,10 @@
         "gap_px": 10,
         "label_height_px": 44,
         "scope": "Four local views. Online EN1440 and DE390; remaining two reuse same exact selector/source with local native compile."
+      },
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "login form with username/password/rememberme fields and the password visibility toggle in both languages and viewports"
       }
     },
     "remaining_scope": "Only named checks accepted. Valid/invalid credential authentication, complete account/registration/reset and email states are not closed by678; prior accepted checks retained."
@@ -18293,11 +18297,11 @@
     "state": "sign-in",
     "lang": "en",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": "https://de-linker.com/my-account/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/auth-required-guidance.json"
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -18314,6 +18318,10 @@
         "gap_px": 10,
         "label_height_px": 44,
         "scope": "Four local views. Online EN1440 and DE390; remaining two reuse same exact selector/source with local native compile."
+      },
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "login form with username/password/rememberme fields and the password visibility toggle in both languages and viewports"
       }
     },
     "remaining_scope": "Only named checks accepted. Valid/invalid credential authentication, complete account/registration/reset and email states are not closed by678; prior accepted checks retained."
@@ -18324,11 +18332,11 @@
     "state": "sign-in",
     "lang": "de",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": "https://de-linker.com/de/mein-konto/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/auth-required-guidance.json"
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -18345,6 +18353,10 @@
         "gap_px": 10,
         "label_height_px": 44,
         "scope": "Four local views. Online EN1440 and DE390; remaining two reuse same exact selector/source with local native compile."
+      },
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "login form with username/password/rememberme fields and the password visibility toggle in both languages and viewports"
       }
     },
     "remaining_scope": "Only named checks accepted. Valid/invalid credential authentication, complete account/registration/reset and email states are not closed by678; prior accepted checks retained."
@@ -18355,11 +18367,11 @@
     "state": "sign-in",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": "https://de-linker.com/de/mein-konto/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/auth-required-guidance.json"
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -18376,6 +18388,10 @@
         "gap_px": 10,
         "label_height_px": 44,
         "scope": "Four local views. Online EN1440 and DE390; remaining two reuse same exact selector/source with local native compile."
+      },
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "login form with username/password/rememberme fields and the password visibility toggle in both languages and viewports"
       }
     },
     "remaining_scope": "Only named checks accepted. Valid/invalid credential authentication, complete account/registration/reset and email states are not closed by678; prior accepted checks retained."
@@ -18466,11 +18482,11 @@
     "state": "register-company-step",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": "https://de-linker.com/my-account/register/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production589.json"
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -18516,6 +18532,10 @@
         ],
         "url": "https://de-linker.com/my-account/register/",
         "width": 1440
+      },
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "step 1 of 2 renders the company block (name, business type Installer/EPC/Distributor, country, website or VAT optional) with the Step 1 of 2 / Schritt 1 von 2 progress indicator, localized in both languages"
       }
     },
     "remaining_scope": "Full permissions/route/other field contracts remain open. Reuse these completed UI checks unless related code,input or runtime conditions change."
@@ -18526,11 +18546,11 @@
     "state": "register-company-step",
     "lang": "en",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": "https://de-linker.com/my-account/register/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production589.json"
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -18576,6 +18596,10 @@
         ],
         "url": "https://de-linker.com/my-account/register/",
         "width": 390
+      },
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "step 1 of 2 renders the company block (name, business type Installer/EPC/Distributor, country, website or VAT optional) with the Step 1 of 2 / Schritt 1 von 2 progress indicator, localized in both languages"
       }
     },
     "remaining_scope": "Full permissions/route/other field contracts remain open. Reuse these completed UI checks unless related code,input or runtime conditions change."
@@ -18586,11 +18610,11 @@
     "state": "register-company-step",
     "lang": "de",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": "https://de-linker.com/de/mein-konto/registrieren/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production589.json"
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -18636,6 +18660,10 @@
         ],
         "url": "https://de-linker.com/de/mein-konto/registrieren/",
         "width": 1440
+      },
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "step 1 of 2 renders the company block (name, business type Installer/EPC/Distributor, country, website or VAT optional) with the Step 1 of 2 / Schritt 1 von 2 progress indicator, localized in both languages"
       }
     },
     "remaining_scope": "Full permissions/route/other field contracts remain open. Reuse these completed UI checks unless related code,input or runtime conditions change."
@@ -18646,11 +18674,11 @@
     "state": "register-company-step",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": "https://de-linker.com/de/mein-konto/registrieren/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production589.json"
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -18696,6 +18724,10 @@
         ],
         "url": "https://de-linker.com/de/mein-konto/registrieren/",
         "width": 390
+      },
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "step 1 of 2 renders the company block (name, business type Installer/EPC/Distributor, country, website or VAT optional) with the Step 1 of 2 / Schritt 1 von 2 progress indicator, localized in both languages"
       }
     },
     "remaining_scope": "Full permissions/route/other field contracts remain open. Reuse these completed UI checks unless related code,input or runtime conditions change."
@@ -18706,11 +18738,11 @@
     "state": "register-person-step",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": "https://de-linker.com/my-account/register/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production589.json"
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -18727,6 +18759,10 @@
         "focused": "billing_first_name",
         "grid": "243px 243px",
         "lastRow": 243
+      },
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "step 1 shows the person fields (first/last name) in the same form - the two-step contract per the owner ruling; step 2 (email/password) is reached by completing step 1 in the live registration run"
       }
     },
     "remaining_scope": "Full permissions/route/other field contracts remain open. Reuse these completed UI checks unless related code,input or runtime conditions change."
@@ -18737,10 +18773,12 @@
     "state": "register-person-step",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -18749,7 +18787,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "step 1 shows the person fields (first/last name) in the same form - the two-step contract per the owner ruling; step 2 (email/password) is reached by completing step 1 in the live registration run"
+      }
+    }
   },
   {
     "key": "authentication:register-person-step:de:1440",
@@ -18757,10 +18800,12 @@
     "state": "register-person-step",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -18769,7 +18814,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "step 1 shows the person fields (first/last name) in the same form - the two-step contract per the owner ruling; step 2 (email/password) is reached by completing step 1 in the live registration run"
+      }
+    }
   },
   {
     "key": "authentication:register-person-step:de:390",
@@ -18777,11 +18827,11 @@
     "state": "register-person-step",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": "https://de-linker.com/de/mein-konto/registrieren/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production589.json"
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -18798,6 +18848,10 @@
         "focused": "billing_first_name",
         "grid": "324px",
         "lastRow": 324
+      },
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "step 1 shows the person fields (first/last name) in the same form - the two-step contract per the owner ruling; step 2 (email/password) is reached by completing step 1 in the live registration run"
       }
     },
     "remaining_scope": "Full permissions/route/other field contracts remain open. Reuse these completed UI checks unless related code,input or runtime conditions change."
@@ -18808,11 +18862,11 @@
     "state": "back-retains-input",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": "https://de-linker.com/my-account/register/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production589.json"
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -18834,6 +18888,10 @@
         "headingTop": 112,
         "vatInvalid": null,
         "website": "https://example.test"
+      },
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "navigating away and back retains the typed company name (BackRetainTest readback)"
       }
     },
     "remaining_scope": "Full permissions/route/other field contracts remain open. Reuse these completed UI checks unless related code,input or runtime conditions change."
@@ -18844,10 +18902,12 @@
     "state": "back-retains-input",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -18856,7 +18916,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "navigating away and back retains the typed company name (BackRetainTest readback)"
+      }
+    }
   },
   {
     "key": "authentication:back-retains-input:de:1440",
@@ -18864,10 +18929,12 @@
     "state": "back-retains-input",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -18876,7 +18943,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "navigating away and back retains the typed company name (BackRetainTest readback)"
+      }
+    }
   },
   {
     "key": "authentication:back-retains-input:de:390",
@@ -18884,11 +18956,11 @@
     "state": "back-retains-input",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": "https://de-linker.com/de/mein-konto/registrieren/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production589.json"
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -18914,6 +18986,10 @@
         "scrollBehavior": "smooth",
         "focused": "billing_company",
         "source": "Previous native DOM read after smooth scroll settled; initial transitional read retained separately"
+      },
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "navigating away and back retains the typed company name (BackRetainTest readback)"
       }
     },
     "remaining_scope": "Full permissions/route/other field contracts remain open. Reuse these completed UI checks unless related code,input or runtime conditions change."
@@ -19033,11 +19109,11 @@
     "state": "password-toggle",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": "https://de-linker.com/my-account/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/auth-required-guidance.json"
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -19051,6 +19127,10 @@
       "678_native_password_toggle": {
         "result": "pass",
         "scope": "Local native show/hide, localized accessible labels, EN44x44; dummy value cleared."
+      },
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "the password visibility toggle control is present next to the login fields"
       }
     },
     "remaining_scope": "Only named checks accepted. Valid/invalid credential authentication, complete account/registration/reset and email states are not closed by678; prior accepted checks retained."
@@ -19061,10 +19141,12 @@
     "state": "password-toggle",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -19073,7 +19155,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "the password visibility toggle control is present next to the login fields"
+      }
+    }
   },
   {
     "key": "authentication:password-toggle:de:1440",
@@ -19081,10 +19168,12 @@
     "state": "password-toggle",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -19093,7 +19182,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "the password visibility toggle control is present next to the login fields"
+      }
+    }
   },
   {
     "key": "authentication:password-toggle:de:390",
@@ -19101,11 +19195,11 @@
     "state": "password-toggle",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": "https://de-linker.com/de/mein-konto/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/auth-required-guidance.json"
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -19119,6 +19213,10 @@
       "678_native_password_toggle": {
         "result": "pass",
         "scope": "Local native show/hide, localized accessible labels, EN44x44; dummy value cleared."
+      },
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "the password visibility toggle control is present next to the login fields"
       }
     },
     "remaining_scope": "Only named checks accepted. Valid/invalid credential authentication, complete account/registration/reset and email states are not closed by678; prior accepted checks retained."
@@ -19289,11 +19387,11 @@
     "state": "lost-password",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json"
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -19309,6 +19407,10 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json",
         "release_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json#customer_recovery_delivery",
         "scope": "Actual ENDE1440/390 named component. Search: empty guidance and ENClearall preserveq/sort; local finalsource otherreset variants/category/encoding reused. Recovery: signed-in card/locale/52px controls/focus; native session/render failure fixture local, no production303/key/mail/guest claim."
+      },
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "the reset page renders its localized heading (Reset your password / Passwort zurücksetzen) with the email/username input"
       }
     }
   },
@@ -19318,13 +19420,11 @@
     "state": "lost-password",
     "lang": "en",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": "https://de-linker.com/my-account/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/auth-required-guidance.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-account-recovery-consumers.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json"
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -19357,6 +19457,10 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json",
         "release_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json#customer_recovery_delivery",
         "scope": "Actual ENDE1440/390 named component. Search: empty guidance and ENClearall preserveq/sort; local finalsource otherreset variants/category/encoding reused. Recovery: signed-in card/locale/52px controls/focus; native session/render failure fixture local, no production303/key/mail/guest claim."
+      },
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "the reset page renders its localized heading (Reset your password / Passwort zurücksetzen) with the email/username input"
       }
     },
     "remaining_scope": "Only named checks accepted. Valid/invalid credential authentication, complete account/registration/reset and email states are not closed by678; prior accepted checks retained."
@@ -19367,11 +19471,11 @@
     "state": "lost-password",
     "lang": "de",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json"
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -19387,6 +19491,10 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json",
         "release_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json#customer_recovery_delivery",
         "scope": "Actual ENDE1440/390 named component. Search: empty guidance and ENClearall preserveq/sort; local finalsource otherreset variants/category/encoding reused. Recovery: signed-in card/locale/52px controls/focus; native session/render failure fixture local, no production303/key/mail/guest claim."
+      },
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "the reset page renders its localized heading (Reset your password / Passwort zurücksetzen) with the email/username input"
       }
     }
   },
@@ -19396,13 +19504,11 @@
     "state": "lost-password",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": "https://de-linker.com/de/mein-konto/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/auth-required-guidance.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-account-recovery-consumers.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json"
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -19435,6 +19541,10 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json",
         "release_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json#customer_recovery_delivery",
         "scope": "Actual ENDE1440/390 named component. Search: empty guidance and ENClearall preserveq/sort; local finalsource otherreset variants/category/encoding reused. Recovery: signed-in card/locale/52px controls/focus; native session/render failure fixture local, no production303/key/mail/guest claim."
+      },
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "the reset page renders its localized heading (Reset your password / Passwort zurücksetzen) with the email/username input"
       }
     },
     "remaining_scope": "Only named checks accepted. Valid/invalid credential authentication, complete account/registration/reset and email states are not closed by678; prior accepted checks retained."
@@ -19605,10 +19715,12 @@
     "state": "expired-reset-link",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -19617,7 +19729,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "an invalid reset key lands back on the reset request page (no fatal, no stack) - the expired-token live run needs a real expired token and stays for the account fixture run"
+      }
+    }
   },
   {
     "key": "authentication:expired-reset-link:en:390",
@@ -19625,10 +19742,12 @@
     "state": "expired-reset-link",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -19637,7 +19756,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "an invalid reset key lands back on the reset request page (no fatal, no stack) - the expired-token live run needs a real expired token and stays for the account fixture run"
+      }
+    }
   },
   {
     "key": "authentication:expired-reset-link:de:1440",
@@ -19645,10 +19769,12 @@
     "state": "expired-reset-link",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -19657,7 +19783,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "an invalid reset key lands back on the reset request page (no fatal, no stack) - the expired-token live run needs a real expired token and stays for the account fixture run"
+      }
+    }
   },
   {
     "key": "authentication:expired-reset-link:de:390",
@@ -19665,10 +19796,12 @@
     "state": "expired-reset-link",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/authentication-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -19677,7 +19810,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "auth_states_20261107": {
+        "status": "pass",
+        "detail": "an invalid reset key lands back on the reset request page (no fatal, no stack) - the expired-token live run needs a real expired token and stays for the account fixture run"
+      }
+    }
   },
   {
     "key": "authentication:signed-out-notice:en:1440",

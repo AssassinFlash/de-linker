@@ -1,0 +1,126 @@
+[
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "sign-in",
+  "hasLoginForm": true,
+  "hasPasswordToggle": true,
+  "fields": [
+   "username",
+   "password",
+   "rememberme"
+  ]
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "sign-in",
+  "hasLoginForm": true,
+  "hasPasswordToggle": true,
+  "fields": [
+   "username",
+   "password",
+   "rememberme"
+  ]
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "sign-in",
+  "hasLoginForm": true,
+  "hasPasswordToggle": true,
+  "fields": [
+   "username",
+   "password",
+   "rememberme"
+  ]
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "sign-in",
+  "hasLoginForm": true,
+  "hasPasswordToggle": true,
+  "fields": [
+   "username",
+   "password",
+   "rememberme"
+  ]
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "register-company-step",
+  "stepIndicator": "Step 1 of 2",
+  "labels": [
+   "Company name",
+   "Business type (Installer/EPC/Distributor)",
+   "Country / Region",
+   "Company website (opt)",
+   "VAT ID (opt)",
+   "First name",
+   "Last name"
+  ]
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "register-company-step",
+  "stepIndicator": "Step 1 of 2"
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "register-company-step",
+  "stepIndicator": "Schritt 1 von 2",
+  "labels": [
+   "Firmenname",
+   "Unternehmensart (Installationsbetrieb/EPC-Unternehmen/Händler)",
+   "Land/Region",
+   "Unternehmenswebsite (opt)",
+   "USt-IdNr. (opt)",
+   "Vorname",
+   "Nachname"
+  ]
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "register-company-step",
+  "stepIndicator": "Schritt 1 von 2",
+  "labels": [
+   "Firmenname",
+   "Unternehmensart",
+   "Land/Region",
+   "Vorname",
+   "Nachname"
+  ]
+ },
+ {
+  "lang": "en",
+  "width": 0,
+  "state": "lost-password",
+  "heading": "Reset your password",
+  "hasEmailInput": true
+ },
+ {
+  "lang": "de",
+  "width": 0,
+  "state": "lost-password",
+  "heading": "Passwort zurücksetzen",
+  "hasEmailInput": true
+ },
+ {
+  "lang": "en",
+  "width": 0,
+  "state": "invalid-reset-key",
+  "notice": null,
+  "mainSnippet": "Reset your password Lost your password? Please enter your username or email address..."
+ },
+ {
+  "lang": "en",
+  "width": 0,
+  "state": "back-retains-input",
+  "retained": "BackRetainTest"
+ }
+]
