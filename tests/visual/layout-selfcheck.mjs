@@ -191,6 +191,7 @@ const runSelftest = async (browser) => {
 	const expectHit = [
 		"#planted-overflow",
 		"#planted-clipped",
+		"#planted-stack-spill",
 		"#planted-cta",
 		"#planted-clipped-text",
 		"#planted-hidden-link",
@@ -349,28 +350,17 @@ const main = async () => {
 			}
 		}
 
-		const defects = rows.flatMap((row) =>
-			(row.issues ?? [])
-				.filter((issue) => issue.severity === "defect")
-				.map((issue) => ({
-					...issue,
-					name: row.name,
-					lang: row.lang,
-					viewport: row.viewport,
-					path: row.path,
-				})),
+		const enriched = rows.flatMap((row) =>
+			(row.issues ?? []).map((issue) => ({
+				...issue,
+				name: row.name,
+				lang: row.lang,
+				viewport: row.viewport,
+				path: row.path,
+			})),
 		);
-		const reviews = rows.flatMap((row) =>
-			(row.issues ?? [])
-				.filter((issue) => issue.severity !== "defect")
-				.map((issue) => ({
-					...issue,
-					name: row.name,
-					lang: row.lang,
-					viewport: row.viewport,
-					path: row.path,
-				})),
-		);
+		const defects = enriched.filter((issue) => issue.severity === "defect");
+		const reviews = enriched.filter((issue) => issue.severity !== "defect");
 		fs.writeFileSync(
 			path.join(out, "layout-selfcheck.json"),
 			JSON.stringify(

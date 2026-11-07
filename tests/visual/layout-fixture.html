@@ -56,6 +56,17 @@
 					scrollable content stays reachable
 				</div>
 			</div>
+			<!-- A vertical stack whose one child is too wide, inside a clipping
+			     section: the product feature band's signature; a defect, not a
+			     carousel. -->
+			<section style="width: 200px; overflow: hidden">
+				<div id="planted-stack-spill" style="width: 200px">
+					<h4 style="width: 320px; margin: 0">
+						headline wider than its stacked column
+					</h4>
+					<p style="margin: 4px 0 0">stacked sibling below the headline</p>
+				</div>
+			</section>
 			<details
 				id="control-closed-details"
 				style="width: 200px; overflow: hidden"
