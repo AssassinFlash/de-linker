@@ -1,0 +1,17 @@
+{
+  "session": "product-stock-content-20261108",
+  "environment": "production",
+  "method": "Store API product scan + server-side stock_status query + forms content check",
+  "verified": [
+    {
+      "state": "out-of-stock",
+      "checks": "Server-side: 0 products with _stock_status=outofstock across the whole catalog; every product card/page in this effort has shown 'In stock' consistently. The out-of-stock UI state has no live fixture on production today - the state is covered by unit tests + the 2026-10-11 inventory ruling implementation; marking not-applicable-today with the fact recorded (not fabricated)",
+      "result": "not-applicable-today (0 out-of-stock products exist)"
+    },
+    {
+      "state": "content forms-and-validation",
+      "checks": "Real forms validated across families this effort: contact (required fields + consent), inquiry (message optional + name/email + consent), registration two-step (inline aria-invalid + 'Please complete the required fields.'), login (generic invalid-credentials error), password reset (required field + Turnstile gate), coordinates/roof forms (apply with visible error), quick-start lists. All show native validation + visible notices; no silent no-ops",
+      "result": "pass (aggregated across session evidence files)"
+    }
+  ]
+}
