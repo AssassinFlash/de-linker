@@ -1,0 +1,182 @@
+[
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "initial-faq-and-documents",
+  "tabs": [
+   "FAQ 202",
+   "Documents 143",
+   "Solutions",
+   "Services",
+   "Plan with Linker",
+   "Account",
+   "Contact Linker"
+  ],
+  "panels": 7,
+  "cards": 39,
+  "searchInput": true
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "switch-tabs",
+  "url": "?tab=documents",
+  "activeTab": "Documents 143"
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "search-results-and-live-count",
+  "count": "Create account",
+  "hits": 203
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "search-empty-and-clear",
+  "emptyNotice": true,
+  "text": "no-echo",
+  "restoredCount": 39
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "rail-and-mobile-chips",
+  "railChips": 49
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "initial-faq-and-documents",
+  "tabs": [
+   "FAQ 202",
+   "Documents 143",
+   "Solutions",
+   "Services",
+   "Plan with Linker",
+   "Account",
+   "Contact Linker"
+  ],
+  "panels": 7,
+  "cards": 39,
+  "searchInput": true
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "switch-tabs",
+  "url": "?tab=documents",
+  "activeTab": "Documents 143"
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "search-results-and-live-count",
+  "count": "Create account",
+  "hits": 203
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "search-empty-and-clear",
+  "emptyNotice": true,
+  "text": "no-echo",
+  "restoredCount": 39
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "rail-and-mobile-chips",
+  "railChips": 49
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "initial-faq-and-documents",
+  "tabs": [
+   "FAQ 202",
+   "Dokumente 143",
+   "Lösungen",
+   "Dienstleistungen",
+   "Planen mit Linker",
+   "Konto",
+   "Linker kontaktieren"
+  ],
+  "panels": 7,
+  "cards": 39,
+  "searchInput": true
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "switch-tabs",
+  "url": "?tab=documents",
+  "activeTab": "Dokumente 143"
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "search-results-and-live-count",
+  "count": "Konto erstellen",
+  "hits": 203
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "search-empty-and-clear",
+  "emptyNotice": true,
+  "text": "no-echo",
+  "restoredCount": 39
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "rail-and-mobile-chips",
+  "railChips": 49
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "initial-faq-and-documents",
+  "tabs": [
+   "FAQ 202",
+   "Dokumente 143",
+   "Lösungen",
+   "Dienstleistungen",
+   "Planen mit Linker",
+   "Konto",
+   "Linker kontaktieren"
+  ],
+  "panels": 7,
+  "cards": 39,
+  "searchInput": true
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "switch-tabs",
+  "url": "?tab=documents",
+  "activeTab": "Dokumente 143"
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "search-results-and-live-count",
+  "count": "Konto erstellen",
+  "hits": 203
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "search-empty-and-clear",
+  "emptyNotice": true,
+  "text": "no-echo",
+  "restoredCount": 39
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "rail-and-mobile-chips",
+  "railChips": 49
+ }
+]

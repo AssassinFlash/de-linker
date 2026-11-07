@@ -1,0 +1,72 @@
+[
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "document-open-file-and-anchor",
+  "found": false,
+  "count": 0,
+  "firstHref": null
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "filtered-results-language-switch",
+  "filteredCounts": {
+   "cards": 39
+  },
+  "switchState": {
+   "found": true,
+   "target": "er.com/faq-download/?q=storage",
+   "landedOn": "er.com/faq-download/?q=storage",
+   "cardsAfter": 39
+  }
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "escape-recheck-visible",
+  "esc": {
+   "before": true,
+   "activeId": null
+  },
+  "escAfter": {
+   "after": false,
+   "query": "batt"
+  }
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "document-open-file-and-anchor",
+  "found": false,
+  "count": 0,
+  "firstHref": null
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "filtered-results-language-switch",
+  "filteredCounts": {
+   "cards": 39
+  },
+  "switchState": {
+   "found": true,
+   "target": "r.com/faq-download/?q=speicher",
+   "landedOn": "r.com/faq-download/?q=speicher",
+   "cardsAfter": 39
+  }
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "escape-recheck-visible",
+  "esc": {
+   "before": true,
+   "activeId": null
+  },
+  "escAfter": {
+   "after": false,
+   "query": "batt"
+  }
+ }
+]

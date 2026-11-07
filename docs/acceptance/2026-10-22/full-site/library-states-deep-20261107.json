@@ -1,0 +1,94 @@
+[
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "suggestions-keyboard-selection-and-escape",
+  "beforeKeys": {
+   "activeDescendant": null,
+   "listbox": true
+  },
+  "afterDown": {
+   "activeDescendant": "linker-library-sug-0",
+   "highlighted": "How are lithium battery system"
+  },
+  "afterEsc": {
+   "suggestionsGone": false,
+   "queryKept": "batt"
+  }
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "error",
+  "error": "elementHandle.click: Timeout 30000ms exceeded.\nCall log:\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n   "
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "suggestions-keyboard-selection-and-escape",
+  "beforeKeys": {
+   "activeDescendant": null,
+   "listbox": true
+  },
+  "afterDown": {
+   "activeDescendant": "linker-library-sug-0",
+   "highlighted": "How are lithium battery system"
+  },
+  "afterEsc": {
+   "suggestionsGone": false,
+   "queryKept": "batt"
+  }
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "error",
+  "error": "elementHandle.click: Timeout 30000ms exceeded.\nCall log:\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n   "
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "suggestions-keyboard-selection-and-escape",
+  "beforeKeys": {
+   "activeDescendant": null,
+   "listbox": true
+  },
+  "afterDown": {
+   "activeDescendant": "linker-library-sug-0",
+   "highlighted": "Wie werden Lithium-Batteriespe"
+  },
+  "afterEsc": {
+   "suggestionsGone": false,
+   "queryKept": "batt"
+  }
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "error",
+  "error": "elementHandle.click: Timeout 30000ms exceeded.\nCall log:\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n   "
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "suggestions-keyboard-selection-and-escape",
+  "beforeKeys": {
+   "activeDescendant": null,
+   "listbox": true
+  },
+  "afterDown": {
+   "activeDescendant": "linker-library-sug-0",
+   "highlighted": "Wie werden Lithium-Batteriespe"
+  },
+  "afterEsc": {
+   "suggestionsGone": false,
+   "queryKept": "batt"
+  }
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "error",
+  "error": "elementHandle.click: Timeout 30000ms exceeded.\nCall log:\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n   "
+ }
+]
