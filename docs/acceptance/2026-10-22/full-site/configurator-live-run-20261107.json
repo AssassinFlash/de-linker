@@ -67,6 +67,11 @@
       "stage": "check-button fix production acceptance (PR #1002, deploy 9715cbac1)",
       "checks": "Post-deploy (planner-core-2Z6ONk9y.js serves inputs_not_ready x2): enabled 'Check saved equipment selection' click -> new equipment check RUN recorded (12:27 AM, Input revision 3) -> view auto-navigated to run results (#lp-calculations, run=1b7c961d) -> honest result 'Requirements not met / Further assessment of the complete system is required' with calculation history (3 runs). Pre-fix the same click was a total silent no-op (2x verified). Silent-no-op defect class closed in planner like in Genie (PR #1001).",
       "result": "pass"
+    },
+    {
+      "stage": "roof step structure + map gate (partial)",
+      "checks": "Roof design step: Plan/Map/3D views, Add roof face / Add module specification / Import roof geometry, coordinate references form (north reference: unreferenced/user-declared/true-north; origin lat/lon with WGS84 help; anchor source), Layout check; map canvas correctly GATED until geographic origin AND true-north reference exist (mapGeometry.ts throws map_geographic_reference_required; the on-page message states exactly this); map module URL correctly served in planner config (MapViewport-COGFglIA.js); lazy chunk loads; 'Roof editing in progress' state after Start roof drawing",
+      "result": "pass (structure+gate); interactive map completion needs Sources record -> true_north -> map (documented next)"
     }
   ],
   "automation_notes": [
@@ -75,6 +80,7 @@
     "Equipment workbench step: requirement inputs (kWp/kWh/kW) resisted both value-set fill and ref-click+key_type within this session (values reset); needs a focused pass. QuickStart regeneration is the working path."
   ],
   "open": [
+    "roof interactive chain remaining: add a Sources record, set north reference source to it, apply + save -> maplibre canvas + tiles should load; then outline-draw/obstacles/undo-redo/save-return states",
     "Report PDF requires the energy calculation step (interval data) - by design; deep chain continues via workbench Energy inputs import or equipment selection -> draft add",
     "UX finding: navigating QuickStart -> workbench Equipment -> back resets the quick-start form selections and shows 'Unsaved changes' even though the pipeline ran at revision 2 - candidate state-persistence issue to verify with a clean run",
     "report PDF/CSV download",
