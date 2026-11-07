@@ -1,0 +1,98 @@
+[
+ {
+  "lang": "en",
+  "width": 1440,
+  "page": "residential-storage/",
+  "hasInput": true,
+  "placeholder": "Search residential systems, battery compatibi",
+  "genieMount": true,
+  "hasEntryCTA": true,
+  "ctaText": "Plan with Linker",
+  "mentionsGenie": false,
+  "title": "Home Storage Systems for Insta"
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "page": "residential-storage/",
+  "hasInput": true,
+  "placeholder": "Search residential systems, battery compatibi",
+  "genieMount": true,
+  "hasEntryCTA": true,
+  "ctaText": "Plan with Linker",
+  "mentionsGenie": false,
+  "title": "Home Storage Systems for Insta"
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "page": "heimspeicher/",
+  "hasInput": true,
+  "placeholder": "Suchen Sie nach Heimspeichersystemen, Batteri",
+  "genieMount": true,
+  "hasEntryCTA": true,
+  "ctaText": "Genie fragen",
+  "mentionsGenie": true,
+  "title": "Heimspeichersysteme für Instal"
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "page": "heimspeicher/",
+  "hasInput": true,
+  "placeholder": "Suchen Sie nach Heimspeichersystemen, Batteri",
+  "genieMount": true,
+  "hasEntryCTA": true,
+  "ctaText": "Genie fragen",
+  "mentionsGenie": true,
+  "title": "Heimspeichersysteme für Instal"
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "page": "commercial-storage/",
+  "hasInput": true,
+  "placeholder": "Search outdoor cabinets, peak-shaving, or dat",
+  "genieMount": true,
+  "hasEntryCTA": true,
+  "ctaText": "Plan with Linker",
+  "mentionsGenie": false,
+  "title": "C&I Storage for Installers and"
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "page": "commercial-storage/",
+  "hasInput": true,
+  "placeholder": "Search outdoor cabinets, peak-shaving, or dat",
+  "genieMount": true,
+  "hasEntryCTA": true,
+  "ctaText": "Plan with Linker",
+  "mentionsGenie": false,
+  "title": "C&I Storage for Installers and"
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "page": "for-installer/",
+  "hasInput": true,
+  "placeholder": "Search by inverter model, battery capacity, b",
+  "genieMount": true,
+  "hasEntryCTA": true,
+  "ctaText": "Plan with Linker",
+  "mentionsGenie": true,
+  "title": "Storage Solution Partner for I"
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "page": "fuer-installateur/",
+  "hasInput": true,
+  "placeholder": "Suche nach Wechselrichtermodell, Batteriekapa",
+  "genieMount": true,
+  "hasEntryCTA": true,
+  "ctaText": "Genie fragen",
+  "mentionsGenie": true,
+  "title": "Speicherpartner für Installate"
+ }
+]
