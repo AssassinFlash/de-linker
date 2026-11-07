@@ -734,6 +734,11 @@
 			const style = CSS(child);
 			if (style.display === "none" || style.visibility === "hidden")
 				return false;
+			// A wrapped inline element's bounding rect is the union of its line
+			// boxes, so a long breadcrumb tail reads as covering its sibling
+			// anchors on earlier lines (measured on the category pages' last
+			// crumb). Inline flow is outside this rule's purpose.
+			if (style.display === "inline") return false;
 			if (style.position !== "static" && style.position !== "relative")
 				return false;
 			if (Number(style.opacity) === 0) return false;
