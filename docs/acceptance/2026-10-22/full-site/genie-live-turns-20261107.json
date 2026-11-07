@@ -117,6 +117,12 @@
       "state": "DE-390-mobile-surface",
       "result": "pass",
       "evidence": "390x844 responsive: mobile Genie renders as a side drawer ('In der Seitenleiste fortsetzen' + close), German AI disclosure ('Antworten stammen aus unseren Produktdaten und Dokumenten und kunnen trotzdem falsch sein'), unsent-draft recovery WORKS on mobile (restore button returned the old EN question verbatim), all three mobile input entries in German (Typenschild-Foto/Schaltplan/Spracheingabe), nameplate/photo chip visible. DE question send consumed the composer and hit the built-in browser's challenge-timeout HONEST failure state with visible retry + 'Anfrage senden' fallback link (same recovery design as desktop; zero silent loss)."
+    },
+    {
+      "state": "cross-surface fresh-identity turn (final sweep)",
+      "result": "pass-with-watch",
+      "evidence": "After many login/logout cycles rotated the browser session: homepage dock first question dispatched with ZERO challenge (trust identity binding survived); honest out-of-range refusal for GW10K-ET ('This model is outside our current product range' + sales@ handoff - correct: we do not sell the ET series); second question answered with three page-level datasheet citations (ESA DE p.3, Lynx D G2 EN EMEA p.2, ESA EN p.3) - retrieval provenance intact.",
+      "notes": "WATCH: the second answer rendered citations but the prose text ('Here is what I found' then only source list) never streamed a kWh figure within ~3 min on this pass - needs one repeat on a fresh identity to judge whether it is a one-off slow stream or a truncation regression; recorded rather than assumed."
     }
   ],
   "open_items": [
