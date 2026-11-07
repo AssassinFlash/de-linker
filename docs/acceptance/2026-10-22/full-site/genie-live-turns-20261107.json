@@ -1,0 +1,109 @@
+{
+  "session": "genie-live-turn-verification-20261107",
+  "environment": "production",
+  "url": "https://de-linker.com/",
+  "method": "Real Chrome (owner browser via WebBridge, 127.0.0.1:10086) + Kimi built-in browser cross-check; DOM/AX text evidence, no mock",
+  "captured_at_local": "2026-11-07 Asia/Shanghai",
+  "identity_context": "anonymous (panel header shows Sign in / Create account); linker_public_browser cookie identity; DB trust rows inspected",
+  "findings": [
+    {
+      "state": "workspace",
+      "result": "pass",
+      "evidence": "dock button 'Ask Genie' opens dialog titled \"Genie - Linker's AI assistant\"; header, suggestion chips, composer present (elements snapshot e1 dialog)"
+    },
+    {
+      "state": "first-ai-disclosure",
+      "result": "pass",
+      "evidence": "first assistant message: \"Hi, I'm Genie, Linker's AI assistant. You're chatting with an AI system.\" plus persistent footer 'Genie is an AI assistant. Help & privacy'"
+    },
+    {
+      "state": "thinking",
+      "result": "pass",
+      "evidence": "'One moment…' status during first turn; TurnProgress 'Genie is thinking…' component (source TurnProgress.tsx) present in waiting phase"
+    },
+    {
+      "state": "answer-text",
+      "result": "pass",
+      "evidence": "Q1 'I need a battery for a 10 kW residential system with a GoodWe inverter. What do you recommend?' answered: rated AC output 10 kW + documented pairing GW5.1/8.3/6.0/9.0-BAT-D-G20 for GW3K–10K-EHA-G20 (G21 not in pairing table), capacity question correctly routed to Solution Configurator"
+    },
+    {
+      "state": "product-card",
+      "result": "pass",
+      "evidence": "chip question 'Tell me about the GoodWe ESA GW10K-EHA-G20' answer includes PRODUCT card: model GW10K-EHA-G20, 'Net price after partner sign-in' (price gate for anonymous), 'In stock', 'Add to solution draft' + 'Save solution' actions, datasheet citation 'GW10K-EHA-G20 · Datasheet (EN) · pp. 1, 2'"
+    },
+    {
+      "state": "challenge-flow (session verification)",
+      "result": "pass-with-notes",
+      "evidence": "fresh anonymous identity Q1 attempt1: proofless probe refused (linker_admission_proof) -> Turnstile challenge; went interactive in both built-in browser AND owner real Chrome; 120s no interaction -> 'Verification could not be completed. No request has been sent in this attempt. Please try again.' banner + 'Send an inquiry' fallback link; composer text preserved on failure. attempt2 (immediate resend): challenge auto-solved non-interactively, proof verified, turn dispatched, answer arrived",
+      "notes": "mode=enforce (window.linkerPublicProtectionConfig.mode). Trust row granted on proof: wp_options linker_commerce_trust_genie.44ce31e882fa.0000041528 until 1794094877 (12h WINDOW per Trust.php). Subsequent questions (Q2 chip, Q4) show 'Checking verification…' TurnProgress only as proofless-probe phase UI; verifState stays container-only (no widget events) - trust admission avoids fresh challenge. DE + 390 viewport passes still pending."
+    },
+    {
+      "state": "suggestion-chip-consumption",
+      "result": "pass",
+      "evidence": "chip 'Tell me about the GoodWe ESA GW10K-EHA-G20' click sent the full chip text as exactly one user turn; composer empty after; answer arrived with product card"
+    },
+    {
+      "state": "history-and-restore (partial)",
+      "result": "partial",
+      "evidence": "older turns from previous sessions restored in transcript (two GW10K-EHA-G20 rated-output Q/A pairs); full reload/restore verification still pending"
+    },
+    {
+      "state": "consumer-draft-readback",
+      "result": "pass",
+      "evidence": "product-card 'Add to solution draft' (GW8.3-BAT-D-G20) -> draft_write action's own Turnstile proof (prepare 0.66s + verify 0.64s, auto-solved) -> POST /genie/draft (6.2s) -> /cart/ shows real Woo item 'GoodWe GW8.3-BAT-D-G20 (ESA battery module, 8.32 kWh)' with 'Log in for prices' gate for anonymous; notice 'In your solution draft.'"
+    },
+    {
+      "state": "history-and-restore",
+      "result": "pass",
+      "evidence": "full page reload + dock reopen restores all 4 turns (2 old + battery Q + chip Q + smart-meter Q); rating buttons (Copy response x5, Helpful/Not helpful) present; locale switch EN->DE keeps thread, cards re-localize (In stock -> Auf Lager)"
+    },
+    {
+      "state": "DE-panel-texts",
+      "result": "pass",
+      "evidence": "DE dock aria-label 'Genie fragen' (raw HTML verified); panel title 'Genie – der KI-Assistent von Linker'; composer placeholder 'Genie fragen'; suggestion chips in German; dock present in both languages"
+    },
+    {
+      "state": "copy-and-rating (vote)",
+      "result": "pass-with-latency-note",
+      "evidence": "Helpful click -> optimistic aria-pressed=true -> vote action's own Turnstile proof (prepare 200, one retry error 300010 auto-recovered, verify) -> POST /wp-json/linker-ai/v1/genie/turn/742/vote -> 200. Wall time click->POST ≈96s (Hostinger backend slowness; recorded for the resource/performance line E)."
+    },
+    {
+      "state": "dock-keyboard-focus-escape-and-return",
+      "result": "pass",
+      "evidence": "dock button tabbable, aria-expanded toggles; Hide closes panel (panel hidden, aria-expanded=false) and focus returns exactly to .linker-genie-open; Esc is not wired to the dock (Hide is the close affordance) - recorded as designed behavior, not a defect"
+    },
+    {
+      "state": "save-pending (partial)",
+      "result": "designed-guard",
+      "evidence": "Save solution click shows 'Genie needs to check this product list again before it can be saved or added.' guard notice; no save request fired. Full save chain to be closed after PR #1001 deploy alongside the DE re-verification."
+    },
+    {
+      "state": "attachments (partial)",
+      "result": "accepted-ui-dispatch-pending-fix",
+      "evidence": "Real PDF bytes injected via DataTransfer into the dock's file input: file accepted, 'genie-attach-test.pdf' displayed in composer area, accept list covers images/heic/pdf/csv/xlsx. Ask with attachment on CURRENT (pre-fix) production consumed the composer without appending the turn - same silent-drop family PR #1001 fixes; a stale unsent-draft record also surfaced the 'Current unsent draft / Restore unsent draft' recovery UI (visible affordance). Full attachment turn (parse + answer citing file) to verify after deploy."
+    }
+  ],
+  "open_items": [
+    "copy-and-rating, human-handoff, voice, attachments, long-conversation-scroll, dock-keyboard-focus-escape",
+    "save-pending-error-success, ordinary-draft-failure-owner-isolation",
+    "DE language pass + 390 viewport functional pass",
+    "server-side persistence readback via VPS"
+  ],
+  "defects_found": [
+    {
+      "id": "genie-turn-latency",
+      "severity": "perf",
+      "detail": "First turn for a fresh identity: probe(400) + prepare + turnstile script + widget auto-solve + verify + resend + model answer ≈ 60-130s total wall time observed (click 1794051653 -> answer by 1794051786, bounded by poll granularity). Even trust-admitted turns wait on Hostinger backend (entry-context 0.8-3.3s, conversation 1.9s)."
+    },
+    {
+      "id": "interactive-challenge-real-chrome",
+      "severity": "watch",
+      "detail": "Cloudflare Turnstile chose INTERACTIVE widget for owner's real Chrome on first attempt (before-interactive-callback observed). If common for real visitors, first question requires one checkbox click; owner ruling 2026-11-04 demands real humans not be blocked. Attempt2 auto-solved; frequency unknown - needs broader sampling before treating as defect."
+    },
+    {
+      "id": "genie-first-ask-silent-drop",
+      "severity": "critical",
+      "detail": "Window focus/pageshow re-verify cleared composer and swallowed send (3 clean reproductions, real Chrome). Fixed in PR #1001; dossier genie-first-ask-silent-drop-20261107.md; production re-verification pending deploy."
+    }
+  ]
+}

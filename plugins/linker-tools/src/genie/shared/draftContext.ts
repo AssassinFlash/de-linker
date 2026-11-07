@@ -119,12 +119,22 @@ export class DraftContext {
 
 	/**
 	 * Revalidation quarantines already mounted text, filenames and bytes until authority returns.
+	 *
+	 * A transient re-verification keeps the established identity authoritative:
+	 * blanking every phase-gated surface for a same-owner verify window cleared
+	 * the visitor's live composer text and swallowed their Enter (production
+	 * 2026-11-07, window focus/pageshow re-verify). The scope-change branch
+	 * below still parks the editor and bumps the epoch when authority actually
+	 * moves, and a failed verify still marks the context unavailable.
+	 *
 	 * @param fresh Always request a new native identity when true.
 	 */
 	verify( fresh = true ): Promise< NativeScope > {
 		this.preserveEditor();
 		const generation = ++this.generation;
-		this.phase = 'loading';
+		if ( ! this.identityValue ) {
+			this.phase = 'loading';
+		}
 		this.notify();
 		const read = nativeScope( this.config, fresh )
 			.then(
