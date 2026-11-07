@@ -43,7 +43,17 @@
 
 - `.pdp-stats-context summary`（产品页技术数据出处折叠标题）：高 20.1px，低于 24px 触靶线（WCAG 2.5.8）。裁定接受：控件为全宽行（390 视口下 350px 宽），实际易点，无客户受阻证据；为 4px 修改生产 CSS 需走产品页像素门变更台账，收益不成比例。如业主要求 WCAG 打磨，修复为 `pdp.css` 一行 `min-height: 24px`。
 
+## 数据级核对（2026-11-07，生产实测）
+
+对矩阵全部 214 条产品记录（107 个 slug）在生产做只读数据提取（页面渲染数据不变量）并与 WP-CLI 权威商品状态对账（`post list --post_type=product`，538 商品：176 publish / 362 draft）。证据：`product-data-check-20261107.json`。
+
+- **170 条客户可见记录（85 EN/DE SKU 对）**：H1、SKU、库存状态词（85 "In stock" + 85 "Auf Lager"，0 wait 态——与业主"库存只说状态"裁定一致）、关键数据行 1–4、文档链接 ≥2、project-check 工具入口全部齐备；按 SKU 配对 85 对，specRows/docs/statCards/库存态/工具入口 **EN/DE 零不一致**。
+- **44 条非客户页，矩阵改为 not-applicable（88 个视图条目，含原因字段）**：
+  - 42 条 EcoFlow Ocean-2 "2026 flagship" 系列：生产 `post_status=draft`（WP-CLI 读回），草稿对访客 404 属 Woo 正常行为；
+  - 2 条 Trina TSM-460NEG9R.28（EN 8349 带 `reference_pv_module` role，DE 8350 经 canonical 映射同 role）：`Publication` 有意把工程参考件排除出客户发布面（includes/Products/Publication.php 的 `! EngineeringReference::is_reference`）——404 是设计行为。
+- 另核实 2 个矩阵外新发布商品（Nexans 电缆 8469/8470，publish）URL 亦 404：属分阶段发布机制（`published_in_current_read` 未放行），与设计一致；发布放行后需进入矩阵。
+
 ## 剩余核对范围
 
-- 71 个物理型号的数据级核对（facts 呈现、文档链接、库存状态词）未由本批次覆盖；代表页通过不外推到未检查的独有内容。
-- review 项逐条判定记录见上；无 defect 才可把 36 个签名对应矩阵条目标为机械视觉通过。
+- ~~71 个物理型号的数据级核对~~ 已完成（见上节）：85 SKU 对零不一致，44 条非客户页改 not-applicable。
+- 71 个物理型号的 Computer Use 视觉走查（代表页机械探针通过 ≠ 人工视觉验收）仍待执行；产品页工具入口（project-check 按钮的 Genie 消费）不在数据级范围内，由 genie-entry-inventory 族覆盖。
