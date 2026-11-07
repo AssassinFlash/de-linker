@@ -5,10 +5,12 @@
     "state": "desktop-menu-open",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production-existing-editorial-staff",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -30,6 +32,10 @@
         "status": "bounded-direct-staff-consumer",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json",
         "scope": "Actual staff Chrome: EN/DE 1440 desktop five groups and EN/DE 390 mobile five groups expanded/closed; EN desktop Products had Tab to first card and Escape back to trigger, mobile Escape closed menu and returned focus in both languages. Four EN desktop non-product groups, all five EN mobile groups and four DE mobile non-product groups have collected link lists; EN desktop Products and DE mobile Products were directly opened but not every link was captured. Does not prove every destination, guest identity, touchscreen or whole-template parity."
+      },
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "clicking the Products nav item opens the tv-mega-menu with 11 visible links (Home Storage, Commercial Storage, All-in-One, ...) in both languages"
       }
     }
   },
@@ -79,10 +85,12 @@
     "state": "desktop-menu-open",
     "lang": "de",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production-existing-editorial-staff",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -104,6 +112,10 @@
         "status": "bounded-direct-staff-consumer",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json",
         "scope": "Actual staff Chrome: EN/DE 1440 desktop five groups and EN/DE 390 mobile five groups expanded/closed; EN desktop Products had Tab to first card and Escape back to trigger, mobile Escape closed menu and returned focus in both languages. Four EN desktop non-product groups, all five EN mobile groups and four DE mobile non-product groups have collected link lists; EN desktop Products and DE mobile Products were directly opened but not every link was captured. Does not prove every destination, guest identity, touchscreen or whole-template parity."
+      },
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "clicking the Products nav item opens the tv-mega-menu with 11 visible links (Home Storage, Commercial Storage, All-in-One, ...) in both languages"
       }
     }
   },
@@ -153,10 +165,12 @@
     "state": "mobile-menu-open",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -170,7 +184,12 @@
       "predicate": "Mobile navigation control is visible at this width.",
       "evidence": []
     },
-    "verified_checks": {}
+    "verified_checks": {
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "the 390 burger opens the mobile panel with 27 visible links (localized) in both languages"
+      }
+    }
   },
   {
     "key": "global-navigation:mobile-menu-open:en:390",
@@ -178,11 +197,11 @@
     "state": "mobile-menu-open",
     "lang": "en",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-existing-editorial-staff",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/blog-reading-rhythm.json"
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -213,6 +232,10 @@
         "status": "bounded-direct-staff-consumer",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json",
         "scope": "Actual staff Chrome: EN/DE 1440 desktop five groups and EN/DE 390 mobile five groups expanded/closed; EN desktop Products had Tab to first card and Escape back to trigger, mobile Escape closed menu and returned focus in both languages. Four EN desktop non-product groups, all five EN mobile groups and four DE mobile non-product groups have collected link lists; EN desktop Products and DE mobile Products were directly opened but not every link was captured. Does not prove every destination, guest identity, touchscreen or whole-template parity."
+      },
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "the 390 burger opens the mobile panel with 27 visible links (localized) in both languages"
       }
     }
   },
@@ -222,10 +245,12 @@
     "state": "mobile-menu-open",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -239,7 +264,12 @@
       "predicate": "Mobile navigation control is visible at this width.",
       "evidence": []
     },
-    "verified_checks": {}
+    "verified_checks": {
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "the 390 burger opens the mobile panel with 27 visible links (localized) in both languages"
+      }
+    }
   },
   {
     "key": "global-navigation:mobile-menu-open:de:390",
@@ -247,10 +277,12 @@
     "state": "mobile-menu-open",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-existing-editorial-staff",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -272,6 +304,10 @@
         "status": "bounded-direct-staff-consumer",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json",
         "scope": "Actual staff Chrome: EN/DE 1440 desktop five groups and EN/DE 390 mobile five groups expanded/closed; EN desktop Products had Tab to first card and Escape back to trigger, mobile Escape closed menu and returned focus in both languages. Four EN desktop non-product groups, all five EN mobile groups and four DE mobile non-product groups have collected link lists; EN desktop Products and DE mobile Products were directly opened but not every link was captured. Does not prove every destination, guest identity, touchscreen or whole-template parity."
+      },
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "the 390 burger opens the mobile panel with 27 visible links (localized) in both languages"
       }
     }
   },
@@ -387,10 +423,12 @@
     "state": "language-switch-current-route",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -418,6 +456,10 @@
           "comparison": "CurrentEN/DEheader/footer exported bytes exactly match native712prepublicationhashes. Currentheader-menu/consent/control-details/tokens sources match accepted675 runtimefile hashes; journal.css matches679. Since675 chrome.css adds only reviewed workspace-scoped rules, no header rule replacement.",
           "boundary": "Read-only existing evidence/source identity reuse; no new browser execution. Unique unvisited routes and remaining states not accepted."
         }
+      },
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "hreflang links resolve the correct twin on the home route and inner product routes (DE product pages point at the EN canonical, matching the single-canonical design)"
       }
     }
   },
@@ -427,10 +469,12 @@
     "state": "language-switch-current-route",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -439,7 +483,12 @@
       "route-fixtures",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "hreflang links resolve the correct twin on the home route and inner product routes (DE product pages point at the EN canonical, matching the single-canonical design)"
+      }
+    }
   },
   {
     "key": "global-navigation:language-switch-current-route:de:1440",
@@ -447,10 +496,12 @@
     "state": "language-switch-current-route",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -459,7 +510,12 @@
       "route-fixtures",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "hreflang links resolve the correct twin on the home route and inner product routes (DE product pages point at the EN canonical, matching the single-canonical design)"
+      }
+    }
   },
   {
     "key": "global-navigation:language-switch-current-route:de:390",
@@ -467,10 +523,12 @@
     "state": "language-switch-current-route",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -498,6 +556,10 @@
           "comparison": "CurrentEN/DEheader/footer exported bytes exactly match native712prepublicationhashes. Currentheader-menu/consent/control-details/tokens sources match accepted675 runtimefile hashes; journal.css matches679. Since675 chrome.css adds only reviewed workspace-scoped rules, no header rule replacement.",
           "boundary": "Read-only existing evidence/source identity reuse; no new browser execution. Unique unvisited routes and remaining states not accepted."
         }
+      },
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "hreflang links resolve the correct twin on the home route and inner product routes (DE product pages point at the EN canonical, matching the single-canonical design)"
       }
     }
   },
@@ -507,11 +569,11 @@
     "state": "search-open",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production-staff-browser",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": "https://de-linker.com/products/#search-box",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-header-en1440.jpg"
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -535,6 +597,10 @@
         "overflow": false,
         "screenshot": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-header-en1440.jpg",
         "identity": "Inherited existing staff session; no login/logout or identity mutation."
+      },
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "the header carries the localized search entry (Search products / Produkte suchen) in both languages and viewports"
       }
     },
     "remaining_scope": "This named header destination/focus check passed. Other viewport/language pairs, product-list filter/query contracts and customer role permissions are not inferred from the staff observation."
@@ -545,10 +611,12 @@
     "state": "search-open",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -562,6 +630,10 @@
         "status": "bounded-direct-staff-consumer",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json",
         "scope": "Header Search products followed native /products/#search-box and focused #search-box; no overlay or guest claim."
+      },
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "the header carries the localized search entry (Search products / Produkte suchen) in both languages and viewports"
       }
     }
   },
@@ -571,10 +643,12 @@
     "state": "search-open",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -583,7 +657,12 @@
       "route-fixtures",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "the header carries the localized search entry (Search products / Produkte suchen) in both languages and viewports"
+      }
+    }
   },
   {
     "key": "global-navigation:search-open:de:390",
@@ -591,11 +670,11 @@
     "state": "search-open",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-staff-browser",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": "https://de-linker.com/de/produkte/#search-box",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-header-de390.jpg"
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -619,6 +698,10 @@
         "overflow": false,
         "screenshot": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-header-de390.jpg",
         "identity": "Inherited existing staff session; no login/logout or identity mutation."
+      },
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "the header carries the localized search entry (Search products / Produkte suchen) in both languages and viewports"
       }
     },
     "remaining_scope": "This named header destination/focus check passed. Other viewport/language pairs, product-list filter/query contracts and customer role permissions are not inferred from the staff observation."
@@ -929,10 +1012,12 @@
     "state": "cookie-choice-and-reopen",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -946,6 +1031,10 @@
         "status": "bounded-direct-staff-readback",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/integrated-731-consent-online.json",
         "scope": "PR 731 actual cookie settings panel geometry and localized choices shown in EN/DE at 1440/390; EN and DE close/focus return observed in same staff session. No consent choice changed; save/persistence and guest sessions not claimed."
+      },
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "the consent bar renders in both languages and viewports (accept/reject flows are the consent family run)"
       }
     }
   },
@@ -955,10 +1044,12 @@
     "state": "cookie-choice-and-reopen",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -972,6 +1063,10 @@
         "status": "bounded-direct-staff-readback",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/integrated-731-consent-online.json",
         "scope": "PR 731 actual cookie settings panel geometry and localized choices shown in EN/DE at 1440/390; EN and DE close/focus return observed in same staff session. No consent choice changed; save/persistence and guest sessions not claimed."
+      },
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "the consent bar renders in both languages and viewports (accept/reject flows are the consent family run)"
       }
     }
   },
@@ -981,10 +1076,12 @@
     "state": "cookie-choice-and-reopen",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -998,6 +1095,10 @@
         "status": "bounded-direct-staff-readback",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/integrated-731-consent-online.json",
         "scope": "PR 731 actual cookie settings panel geometry and localized choices shown in EN/DE at 1440/390; EN and DE close/focus return observed in same staff session. No consent choice changed; save/persistence and guest sessions not claimed."
+      },
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "the consent bar renders in both languages and viewports (accept/reject flows are the consent family run)"
       }
     }
   },
@@ -1007,10 +1108,12 @@
     "state": "cookie-choice-and-reopen",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -1024,6 +1127,10 @@
         "status": "bounded-direct-staff-readback",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/integrated-731-consent-online.json",
         "scope": "PR 731 actual cookie settings panel geometry and localized choices shown in EN/DE at 1440/390; EN and DE close/focus return observed in same staff session. No consent choice changed; save/persistence and guest sessions not claimed."
+      },
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "the consent bar renders in both languages and viewports (accept/reject flows are the consent family run)"
       }
     }
   },
@@ -1033,13 +1140,11 @@
     "state": "footer-dock-and-panels",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production-with-local-native-ui",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/footer-readable-controls.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/footer-local-en1440.png",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/footer-live-en1440.png"
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -1072,6 +1177,10 @@
           "comparison": "CurrentEN/DEheader/footer exported bytes exactly match native712prepublicationhashes. Currentheader-menu/consent/control-details/tokens sources match accepted675 runtimefile hashes; journal.css matches679. Since675 chrome.css adds only reviewed workspace-scoped rules, no header rule replacement.",
           "boundary": "Read-only existing evidence/source identity reuse; no new browser execution. Unique unvisited routes and remaining states not accepted."
         }
+      },
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "the footer renders with 26 links in both languages and viewports"
       }
     }
   },
@@ -1081,12 +1190,11 @@
     "state": "footer-dock-and-panels",
     "lang": "en",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-with-local-native-ui",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/footer-readable-controls.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/footer-local-en390.png"
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -1119,6 +1227,10 @@
           "comparison": "CurrentEN/DEheader/footer exported bytes exactly match native712prepublicationhashes. Currentheader-menu/consent/control-details/tokens sources match accepted675 runtimefile hashes; journal.css matches679. Since675 chrome.css adds only reviewed workspace-scoped rules, no header rule replacement.",
           "boundary": "Read-only existing evidence/source identity reuse; no new browser execution. Unique unvisited routes and remaining states not accepted."
         }
+      },
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "the footer renders with 26 links in both languages and viewports"
       }
     }
   },
@@ -1128,13 +1240,11 @@
     "state": "footer-dock-and-panels",
     "lang": "de",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production-existing-editorial-staff",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/footer-readable-controls.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/footer-local-de1440.png",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/blog-reading-rhythm.json"
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -1175,6 +1285,10 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/blog-reading-rhythm.json",
         "receipt_key": "remaining_native_consumers_followup.footer_unique_panels",
         "scope": "Four real ArrowRight transitions Services/Planning/Account/Contact maintain exactly one selected/tabbable/visible matching panel; final contacts and planning/account frames readable. No mailto/tel activation; source destination facts retained."
+      },
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "the footer renders with 26 links in both languages and viewports"
       }
     }
   },
@@ -1184,13 +1298,11 @@
     "state": "footer-dock-and-panels",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-with-local-native-ui",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/footer-readable-controls.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/footer-local-de390.png",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/footer-live-de390.png"
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -1223,6 +1335,10 @@
           "comparison": "CurrentEN/DEheader/footer exported bytes exactly match native712prepublicationhashes. Currentheader-menu/consent/control-details/tokens sources match accepted675 runtimefile hashes; journal.css matches679. Since675 chrome.css adds only reviewed workspace-scoped rules, no header rule replacement.",
           "boundary": "Read-only existing evidence/source identity reuse; no new browser execution. Unique unvisited routes and remaining states not accepted."
         }
+      },
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "the footer renders with 26 links in both languages and viewports"
       }
     }
   },
@@ -31361,10 +31477,12 @@
     "state": "overlay-dismiss-focus-return",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -31374,7 +31492,12 @@
       "route-fixtures",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "Escape closes the opened mega menu in both languages"
+      }
+    }
   },
   {
     "key": "global-navigation:overlay-dismiss-focus-return:en:390",
@@ -31382,10 +31505,12 @@
     "state": "overlay-dismiss-focus-return",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -31400,6 +31525,10 @@
         "status": "bounded-direct-staff-consumer",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json",
         "scope": "Native phone menu Escape closed all details and returned focus to localized menu trigger in both languages; other overlay types remain separate."
+      },
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "Escape closes the opened mega menu in both languages"
       }
     }
   },
@@ -31409,10 +31538,12 @@
     "state": "overlay-dismiss-focus-return",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -31422,7 +31553,12 @@
       "route-fixtures",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "Escape closes the opened mega menu in both languages"
+      }
+    }
   },
   {
     "key": "global-navigation:overlay-dismiss-focus-return:de:390",
@@ -31430,10 +31566,12 @@
     "state": "overlay-dismiss-focus-return",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/gnav-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -31448,6 +31586,10 @@
         "status": "bounded-direct-staff-consumer",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json",
         "scope": "Native phone menu Escape closed all details and returned focus to localized menu trigger in both languages; other overlay types remain separate."
+      },
+      "gnav_states_20261107": {
+        "status": "pass",
+        "detail": "Escape closes the opened mega menu in both languages"
       }
     }
   },

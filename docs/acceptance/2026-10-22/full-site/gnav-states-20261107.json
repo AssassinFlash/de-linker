@@ -1,0 +1,206 @@
+[
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "menu-open",
+  "opened": false,
+  "linkCount": 0,
+  "firstLinks": []
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "language-switch",
+  "target": "https://de-linker.com/"
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "search-controls",
+  "candidates": [
+   {
+    "tag": "A",
+    "label": "Search products"
+   }
+  ]
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "cookie-banner",
+  "bannerPresent": true
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "footer-dock",
+  "footerPresent": true,
+  "linkCount": 26
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "menu-open",
+  "opened": true,
+  "linkCount": 27,
+  "firstLinks": [
+   "Home StorageHome bat",
+   "Commercial StorageCo",
+   "All-in-One Systems",
+   "Battery Systems",
+   "Inverters"
+  ]
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "language-switch",
+  "target": "https://de-linker.com/"
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "search-controls",
+  "candidates": [
+   {
+    "tag": "A",
+    "label": "Search products"
+   }
+  ]
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "cookie-banner",
+  "bannerPresent": true
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "footer-dock",
+  "footerPresent": true,
+  "linkCount": 26
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "menu-open",
+  "opened": false,
+  "linkCount": 0,
+  "firstLinks": []
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "language-switch",
+  "target": "https://de-linker.com/"
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "search-controls",
+  "candidates": [
+   {
+    "tag": "A",
+    "label": "Produkte suchen"
+   }
+  ]
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "cookie-banner",
+  "bannerPresent": true
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "footer-dock",
+  "footerPresent": true,
+  "linkCount": 26
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "menu-open",
+  "opened": true,
+  "linkCount": 27,
+  "firstLinks": [
+   "HeimspeicherHeimspei",
+   "GewerbespeicherGewer",
+   "All-in-One-Systeme",
+   "Batteriesysteme",
+   "Wechselrichter"
+  ]
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "language-switch",
+  "target": "https://de-linker.com/"
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "search-controls",
+  "candidates": [
+   {
+    "tag": "A",
+    "label": "Produkte suchen"
+   }
+  ]
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "cookie-banner",
+  "bannerPresent": true
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "footer-dock",
+  "footerPresent": true,
+  "linkCount": 26
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "desktop-menu-open",
+  "open": true,
+  "links": 11,
+  "mechanism": "click on .tv-nav-item opens tv-mega-menu"
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "desktop-menu-open",
+  "open": true,
+  "links": 11,
+  "mechanism": "click on .tv-nav-item opens tv-mega-menu"
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "overlay-dismiss",
+  "closedByEscape": true
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "overlay-dismiss",
+  "closedByEscape": true
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "language-switch-inner-route",
+  "hreflangTarget": "product/saj-b2-5-0-hv1"
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "language-switch-inner-route",
+  "hreflangTarget": "product/saj-b2-5-0-hv1 (EN canonical)"
+ }
+]
