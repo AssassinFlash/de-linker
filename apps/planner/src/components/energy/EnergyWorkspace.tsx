@@ -921,6 +921,7 @@ export function EnergyWorkspace({
 			| "runs/geometric-pv"
 			| "runs/equipment"
 			| "runs/equipment-search",
+		user = false,
 	) {
 		if (
 			dirty ||
@@ -933,8 +934,20 @@ export function EnergyWorkspace({
 			operations.checking ||
 			operations.storageFailed ||
 			unconfirmed.length
-		)
+		) {
+			// The pipeline calls silently (skipping is its dedup), but a
+			// visitor clicking an enabled button must never see a silent
+			// no-op (production 2026-11-07: enabled "Check saved equipment
+			// selection" did nothing observable).
+			if (user)
+				setError(
+					new ApiError(
+						409,
+						"inputs_not_ready",
+					),
+				);
 			return;
+		}
 		try {
 			const inputs = draft.baseline.inputs;
 			const setup =
@@ -1519,8 +1532,8 @@ export function EnergyWorkspace({
 					}
 					onValidity={setEquipmentValid}
 					onError={setError}
-					start={() => void startSolar("runs/equipment")}
-					search={() => void startSolar("runs/equipment-search")}
+					start={() => void startSolar("runs/equipment", true)}
+					search={() => void startSolar("runs/equipment-search", true)}
 					searchEnabled={
 						hasPlant(draft.history.current)
 							? session.runtime.models.equipment_plant_search ===

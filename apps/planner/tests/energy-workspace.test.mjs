@@ -5,7 +5,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { IDBFactory } from "fake-indexeddb";
 import { setupDom, until, enter, deferred } from "./dom-fixture.mjs";
 import { EnergyWorkspace } from "../src/components/energy/EnergyWorkspace.tsx";
-import { EnergyError } from "../src/components/energy/EnergyError.tsx";
+import {
+	EnergyError,
+	energyErrorText,
+} from "../src/components/energy/EnergyError.tsx";
 import {
 	beginDraft,
 	editDraft,
@@ -380,4 +383,24 @@ test("actual scenario controls retain raw input, require confirmed save, use one
 		"late asset response cannot overwrite the restored scenario",
 	);
 	assert.equal(current.history.current.energy_scenario.battery.charge_ac_kw, 7);
+});
+
+test("a user-initiated calculation blocked by the readiness guard explains itself", () => {
+	const previousWindow = globalThis.window;
+	globalThis.window = {
+		wp: { i18n: { __: (message) => message, sprintf: () => "" } },
+	};
+	try {
+		// The pipeline's silent skip stays silent; a visitor's click on an
+		// enabled button must surface why nothing started (production
+		// 2026-11-07: "Check saved equipment selection" did nothing
+		// observable).
+		assert.match(
+			energyErrorText(new ApiError(409, "inputs_not_ready")),
+			/not ready to calculate yet/,
+		);
+	} finally {
+		if (previousWindow) globalThis.window = previousWindow;
+		else delete globalThis.window;
+	}
 });

@@ -74,6 +74,11 @@ export function energyErrorText(error: unknown): string {
 			? error.code
 			: "";
 	switch (code) {
+		case "inputs_not_ready":
+			return __(
+				"The project is not ready to calculate yet. Check the highlighted fields in the steps of this project, then try again.",
+				"linker-tools",
+			);
 		case "geometric_pv_inputs_invalid":
 			return __(
 				"The PV reference needs a retained weather source, two ordered sampling grids and complete PV model parameters.",
