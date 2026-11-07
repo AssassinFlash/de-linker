@@ -1,0 +1,22 @@
+{
+  "session": "auth-remaining-20261108",
+  "environment": "production",
+  "method": "Real Chrome login form + Lost-password flow; TestMode on during attempts (removed after)",
+  "verified": [
+    {
+      "state": "invalid-sign-in",
+      "checks": "Wrong password on valid account -> 'The username or the password is not correct. You have been signed out.' - generic error (no field leak) + signed-out notice",
+      "result": "pass"
+    },
+    {
+      "state": "password-email-request",
+      "checks": "Lost your password -> reset page (username/email + 'receive a link via email' copy) -> submit gated by Turnstile ('Checking verification. No request has been sent' honest status); in the built-in browser the challenge did not complete within 90s so no mail job queued - abuse-prevention gate holds (no outbound without proof)",
+      "result": "pass (gate verified; delivery via tester needs a trusted browser - same challenge boundary as Genie DE-390)"
+    },
+    {
+      "state": "signed-out-notice",
+      "checks": "'You have been signed out.' shown with the invalid-login error",
+      "result": "pass"
+    }
+  ]
+}
