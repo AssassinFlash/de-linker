@@ -939,13 +939,7 @@ export function EnergyWorkspace({
 			// visitor clicking an enabled button must never see a silent
 			// no-op (production 2026-11-07: enabled "Check saved equipment
 			// selection" did nothing observable).
-			if (user)
-				setError(
-					new ApiError(
-						409,
-						"inputs_not_ready",
-					),
-				);
+			if (user) setError(new ApiError(409, "inputs_not_ready"));
 			return;
 		}
 		try {
