@@ -1,0 +1,44 @@
+{
+  "session": "account-approval-states-20261107",
+  "environment": "production",
+  "method": "Real Chrome (owner browser via WebBridge), real login form fills, DE locale",
+  "fixtures": {
+    "created": "wp user create via SSH wp-cli (no emails sent; direct meta writes bypass decision emails per test mail discipline)",
+    "users": {
+      "53": "verif-approved-207@example.test approved",
+      "54": "verif-pending-207@example.test pending",
+      "55": "verif-restricted-207@example.test restricted + reason",
+      "56": "verif-rejected-207@example.test rejected + reason"
+    },
+    "rollback": "wp user delete 53 54 55 56 (after account-family verification completes)"
+  },
+  "verified": [
+    {
+      "state": "approved",
+      "checks": "login -> workspace (Overview/Inquiries/Saved solutions/Documents/Company/Account details/Log out), 'Welcome back Verif Approved 207', four-state inquiry board (Inquiry received/Proforma invoice issued/Completed/Cancelled, all 0), product page shows net price EUR 1,010.00 for GW10K-EHA-G20",
+      "result": "pass"
+    },
+    {
+      "state": "pending",
+      "checks": "login succeeds and STAYS signed in (2026-10-17 ruling), 'In Pruefung - Ihr Konto wird geprueft' state shown, full workspace nav present, product page shows no prices with 'Ihr Konto wird geprueft. Preise nach Freigabe.'",
+      "result": "pass"
+    },
+    {
+      "state": "restricted",
+      "checks": "login succeeds, 'Eingeschraenkt - Zugriff derzeit eingeschraenkt', explicit 'Sie koennen Anfragen senden... keine Nettopreise angezeigt', REASON VISIBLE to customer: 'Unser Grund: Verification test: company details incomplete (fixture)', sales@ guidance",
+      "result": "pass"
+    },
+    {
+      "state": "rejected",
+      "checks": "login REFUSED with 'Dieses Konto ist nicht zur Anmeldung freigegeben. Den Grund haben wir Ihnen per E-Mail geschickt. Schreiben Sie an sales@de-linker.com...' - no workspace, reason via email notice + recovery path",
+      "result": "pass"
+    }
+  ],
+  "notes": "Reason strings display as authored by the team (fixture reason in English displays verbatim in DE UI - acceptable, reasons are team-written free text).",
+  "open": [
+    "cross-user isolation spot checks (user A cannot see user B drafts/saved solutions)",
+    "account endpoint sweep on all three usable states (approved/pending/restricted x Overview/Inquiries/Saved solutions/Documents/Company)",
+    "old-session revocation on reject (requires an active session then admin reject)",
+    "390 viewport pass"
+  ]
+}
