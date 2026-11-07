@@ -20078,10 +20078,12 @@
     "state": "overview-pending",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261108",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "account-approval-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -20162,10 +20164,12 @@
     "state": "overview-restricted",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261108",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "account-approval-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -20334,10 +20338,12 @@
     "state": "overview-approved",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261108",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "account-approval-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -20422,10 +20428,12 @@
     "state": "inquiries-empty",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261108",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "account-approval-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -20933,10 +20941,12 @@
     "state": "saved-solutions-empty",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261108",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "account-approval-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -21497,10 +21507,12 @@
     "state": "documents-empty",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261108",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "account-approval-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -22041,10 +22053,12 @@
     "state": "logout",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261108",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "account-approval-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -33425,10 +33439,12 @@
     "state": "owner-other-customer-guest-access",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261108",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "account-approval-states-20261107.json"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
