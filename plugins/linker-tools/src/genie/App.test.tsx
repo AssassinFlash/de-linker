@@ -3726,14 +3726,14 @@ test( 'a window-focus re-verification keeps the composer text and the send still
 				return Promise.resolve( {
 					ok: true,
 					json: async () => ( { scope: NATIVE_SCOPE } ),
-				} );
+				} as Response );
 			}
 			return new Promise( ( resolve ) => {
 				releaseVerifyAll.push( () =>
 					resolve( {
 						ok: true,
 						json: async () => ( { scope: NATIVE_SCOPE } ),
-					} )
+					} as Response )
 				);
 			} );
 		} ) as typeof fetch )

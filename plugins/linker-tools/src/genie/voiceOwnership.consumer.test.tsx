@@ -730,9 +730,9 @@ test( 'a second delivered phrase cannot overwrite a later accepted revision or i
 	const stored = JSON.parse(
 		sessionStorage.getItem( failureBucketKey( scopeA ) )!
 	);
-	const texts = Object.values( stored.records ).map(
-		( record: { record: { text: string } } ) => record.record.text
-	);
+	const texts = ( Object.values( stored.records ) as unknown as Array< {
+		record: { text: string };
+	} > ).map( ( record ) => record.record.text );
 	expect( texts ).toEqual( [ 'Later accepted revision' ] );
 	expect( field() ).toHaveValue(
 		'Original delivered phrase Second queued phrase'
