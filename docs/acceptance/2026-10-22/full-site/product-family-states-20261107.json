@@ -1,0 +1,226 @@
+[
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "in-stock-guest",
+  "priceAreaText": "Net price after partner sign-inCreate account",
+  "hasLoginPrompt": true,
+  "availText": "In stock"
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "technical-data",
+  "statCards": 4,
+  "specRows": 4
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "documents-and-pdf",
+  "docLinks": 6
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "faq-accordion",
+  "count": 9,
+  "toggleWorks": true
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "related-products",
+  "cards": 4
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "genie-context",
+  "projectCheck": true,
+  "askButtons": 4
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "compare",
+  "present": true,
+  "pressed": "false"
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "quantity-add",
+  "hasQtyInput": false,
+  "hasAddBtn": false,
+  "addToDraftText": "Add to solution draft"
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "in-stock-guest",
+  "priceAreaText": "Net price after partner sign-inCreate account",
+  "hasLoginPrompt": true,
+  "availText": "In stock"
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "technical-data",
+  "statCards": 4,
+  "specRows": 4
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "documents-and-pdf",
+  "docLinks": 6
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "faq-accordion",
+  "count": 9,
+  "toggleWorks": true
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "related-products",
+  "cards": 4
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "genie-context",
+  "projectCheck": true,
+  "askButtons": 4
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "compare",
+  "present": true,
+  "pressed": "false"
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "quantity-add",
+  "hasQtyInput": false,
+  "hasAddBtn": false,
+  "addToDraftText": "Add to solution draft"
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "in-stock-guest",
+  "priceAreaText": "Nettopreis nach Partner-AnmeldungKonto erstellen",
+  "hasLoginPrompt": true,
+  "availText": "Auf Lager"
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "technical-data",
+  "statCards": 4,
+  "specRows": 4
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "documents-and-pdf",
+  "docLinks": 6
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "faq-accordion",
+  "count": 9,
+  "toggleWorks": true
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "related-products",
+  "cards": 4
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "genie-context",
+  "projectCheck": true,
+  "askButtons": 4
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "compare",
+  "present": true,
+  "pressed": "false"
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "quantity-add",
+  "hasQtyInput": false,
+  "hasAddBtn": false,
+  "addToDraftText": "Zum Lösungsentwurf hinzufügen"
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "in-stock-guest",
+  "priceAreaText": "Nettopreis nach Partner-AnmeldungKonto erstellen",
+  "hasLoginPrompt": true,
+  "availText": "Auf Lager"
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "technical-data",
+  "statCards": 4,
+  "specRows": 4
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "documents-and-pdf",
+  "docLinks": 6
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "faq-accordion",
+  "count": 9,
+  "toggleWorks": true
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "related-products",
+  "cards": 4
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "genie-context",
+  "projectCheck": true,
+  "askButtons": 4
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "compare",
+  "present": true,
+  "pressed": "false"
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "quantity-add",
+  "hasQtyInput": false,
+  "hasAddBtn": false,
+  "addToDraftText": "Zum Lösungsentwurf hinzufügen"
+ }
+]

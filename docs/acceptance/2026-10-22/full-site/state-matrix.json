@@ -3312,11 +3312,11 @@
     "state": "in-stock-guest",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production587.json"
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -3372,6 +3372,10 @@
         "url": "https://de-linker.com/product/saj-esolar-aio3-data-collector-wifi-lan-bluetooth/",
         "width": 1440,
         "lang": "en"
+      },
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "guest view shows the partner sign-in price prompt (Net price after partner sign-in / Nettopreis nach Partner-Anmeldung with the account link) and the localized stock word (In stock / Auf Lager) - the price gate itself, quantities and states only for signed-in fixtures"
       }
     },
     "remaining_scope": "587 proves specified control geometry, wrap, count or search/clear only for the named route/input. No complete product/data/library/permission contract closure. Reuse this proof when related conditions are unchanged."
@@ -3382,11 +3386,11 @@
     "state": "in-stock-guest",
     "lang": "en",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production587.json"
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -3443,6 +3447,10 @@
         "width": 390,
         "lang": "en",
         "observerNote": "Error: Timed out waiting for tab 3 to navigate to https://de-linker.com/product/saj-esolar-aio3-data-collector-wifi-lan-bluetooth/."
+      },
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "guest view shows the partner sign-in price prompt (Net price after partner sign-in / Nettopreis nach Partner-Anmeldung with the account link) and the localized stock word (In stock / Auf Lager) - the price gate itself, quantities and states only for signed-in fixtures"
       }
     },
     "remaining_scope": "587 proves specified control geometry, wrap, count or search/clear only for the named route/input. No complete product/data/library/permission contract closure. Reuse this proof when related conditions are unchanged."
@@ -3453,11 +3461,11 @@
     "state": "in-stock-guest",
     "lang": "de",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production587.json"
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -3513,6 +3521,10 @@
         "url": "https://de-linker.com/de/produkt/saj-esolar-aio3-datensammler-wifi-lan-bluetooth/",
         "width": 1440,
         "lang": "de"
+      },
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "guest view shows the partner sign-in price prompt (Net price after partner sign-in / Nettopreis nach Partner-Anmeldung with the account link) and the localized stock word (In stock / Auf Lager) - the price gate itself, quantities and states only for signed-in fixtures"
       }
     },
     "remaining_scope": "587 proves specified control geometry, wrap, count or search/clear only for the named route/input. No complete product/data/library/permission contract closure. Reuse this proof when related conditions are unchanged."
@@ -3523,11 +3535,11 @@
     "state": "in-stock-guest",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production587.json"
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -3583,6 +3595,10 @@
         "url": "https://de-linker.com/de/produkt/saj-esolar-aio3-datensammler-wifi-lan-bluetooth/",
         "width": 390,
         "lang": "de"
+      },
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "guest view shows the partner sign-in price prompt (Net price after partner sign-in / Nettopreis nach Partner-Anmeldung with the account link) and the localized stock word (In stock / Auf Lager) - the price gate itself, quantities and states only for signed-in fixtures"
       }
     },
     "remaining_scope": "587 proves specified control geometry, wrap, count or search/clear only for the named route/input. No complete product/data/library/permission contract closure. Reuse this proof when related conditions are unchanged."
@@ -3917,10 +3933,12 @@
     "state": "quantity-validation",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -3929,7 +3947,12 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "guest view shows the Add-to-solution-draft CTA (localized) with no quantity input or add-to-cart (the draft consumer run owns the signed-in flow)"
+      }
+    }
   },
   {
     "key": "product:quantity-validation:en:390",
@@ -3937,10 +3960,12 @@
     "state": "quantity-validation",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -3949,7 +3974,12 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "guest view shows the Add-to-solution-draft CTA (localized) with no quantity input or add-to-cart (the draft consumer run owns the signed-in flow)"
+      }
+    }
   },
   {
     "key": "product:quantity-validation:de:1440",
@@ -3957,10 +3987,12 @@
     "state": "quantity-validation",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -3969,7 +4001,12 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "guest view shows the Add-to-solution-draft CTA (localized) with no quantity input or add-to-cart (the draft consumer run owns the signed-in flow)"
+      }
+    }
   },
   {
     "key": "product:quantity-validation:de:390",
@@ -3977,10 +4014,12 @@
     "state": "quantity-validation",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -3989,7 +4028,12 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "guest view shows the Add-to-solution-draft CTA (localized) with no quantity input or add-to-cart (the draft consumer run owns the signed-in flow)"
+      }
+    }
   },
   {
     "key": "product:add-pending-success-error:en:1440",
@@ -4077,12 +4121,11 @@
     "state": "technical-data",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production587.json",
-      "docs/acceptance/2026-11-03/548/INDEX.md"
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -4144,6 +4187,10 @@
         "pr": "https://github.com/AssassinFlash/de-linker/pull/874",
         "evidence": "docs/acceptance/2026-11-03/548/INDEX.md#L182-L190",
         "scope": "O2 PDP tablist ARIA semantics fixed in PR #874 and verified in production: active tab sets aria-selected='true' and inactive tabs 'false'."
+      },
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "four spec cards with four key-figure rows render in both languages and viewports"
       }
     },
     "remaining_scope": "587 proves specified control geometry, wrap, count or search/clear only for the named route/input. No complete product/data/library/permission contract closure. Reuse this proof when related conditions are unchanged."
@@ -4154,12 +4201,11 @@
     "state": "technical-data",
     "lang": "en",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production587.json",
-      "docs/acceptance/2026-11-03/548/INDEX.md"
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -4222,6 +4268,10 @@
         "pr": "https://github.com/AssassinFlash/de-linker/pull/874",
         "evidence": "docs/acceptance/2026-11-03/548/INDEX.md#L182-L190",
         "scope": "O2 PDP tablist ARIA semantics fixed in PR #874 and verified in production: active tab sets aria-selected='true' and inactive tabs 'false'."
+      },
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "four spec cards with four key-figure rows render in both languages and viewports"
       }
     },
     "remaining_scope": "587 proves specified control geometry, wrap, count or search/clear only for the named route/input. No complete product/data/library/permission contract closure. Reuse this proof when related conditions are unchanged."
@@ -4232,12 +4282,11 @@
     "state": "technical-data",
     "lang": "de",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production587.json",
-      "docs/acceptance/2026-11-03/548/INDEX.md"
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -4299,6 +4348,10 @@
         "pr": "https://github.com/AssassinFlash/de-linker/pull/874",
         "evidence": "docs/acceptance/2026-11-03/548/INDEX.md#L182-L190",
         "scope": "O2 PDP tablist ARIA semantics fixed in PR #874 and verified in production: active tab sets aria-selected='true' and inactive tabs 'false'."
+      },
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "four spec cards with four key-figure rows render in both languages and viewports"
       }
     },
     "remaining_scope": "587 proves specified control geometry, wrap, count or search/clear only for the named route/input. No complete product/data/library/permission contract closure. Reuse this proof when related conditions are unchanged."
@@ -4309,12 +4362,11 @@
     "state": "technical-data",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production-with-local-integration",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production587.json",
-      "docs/acceptance/2026-11-03/548/INDEX.md"
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -4376,6 +4428,10 @@
         "pr": "https://github.com/AssassinFlash/de-linker/pull/874",
         "evidence": "docs/acceptance/2026-11-03/548/INDEX.md#L182-L190",
         "scope": "O2 PDP tablist ARIA semantics fixed in PR #874 and verified in production: active tab sets aria-selected='true' and inactive tabs 'false'."
+      },
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "four spec cards with four key-figure rows render in both languages and viewports"
       }
     },
     "remaining_scope": "587 proves specified control geometry, wrap, count or search/clear only for the named route/input. No complete product/data/library/permission contract closure. Reuse this proof when related conditions are unchanged."
@@ -4386,12 +4442,11 @@
     "state": "documents-and-pdf",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/publication-native-batch.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/public-file-coverage.json"
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -4417,6 +4472,10 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/public-file-coverage.json",
         "scope": "EN/DE library actual public URL and page-reference sets match. All142 unique public PDF originals fully read anonymously, exact native hashes and MIME, no parse warnings; all186 linked page references exist. Temporary file bytes removed. This does not accept every PDF page layout/specification, product download interaction, private files or the whole page.",
         "source_revision": "61f7dc30cd2bd7e5d73cb45854e221757bb2dce162aaa410ef50639484eb0b5e"
+      },
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "six document links render (HEAD 200 application/pdf verified in the library run)"
       }
     }
   },
@@ -4426,12 +4485,11 @@
     "state": "documents-and-pdf",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/publication-native-batch.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/public-file-coverage.json"
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -4457,6 +4515,10 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/public-file-coverage.json",
         "scope": "EN/DE library actual public URL and page-reference sets match. All142 unique public PDF originals fully read anonymously, exact native hashes and MIME, no parse warnings; all186 linked page references exist. Temporary file bytes removed. This does not accept every PDF page layout/specification, product download interaction, private files or the whole page.",
         "source_revision": "61f7dc30cd2bd7e5d73cb45854e221757bb2dce162aaa410ef50639484eb0b5e"
+      },
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "six document links render (HEAD 200 application/pdf verified in the library run)"
       }
     }
   },
@@ -4466,12 +4528,11 @@
     "state": "documents-and-pdf",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/publication-native-batch.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/public-file-coverage.json"
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -4497,6 +4558,10 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/public-file-coverage.json",
         "scope": "EN/DE library actual public URL and page-reference sets match. All142 unique public PDF originals fully read anonymously, exact native hashes and MIME, no parse warnings; all186 linked page references exist. Temporary file bytes removed. This does not accept every PDF page layout/specification, product download interaction, private files or the whole page.",
         "source_revision": "61f7dc30cd2bd7e5d73cb45854e221757bb2dce162aaa410ef50639484eb0b5e"
+      },
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "six document links render (HEAD 200 application/pdf verified in the library run)"
       }
     }
   },
@@ -4506,13 +4571,11 @@
     "state": "documents-and-pdf",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/publication-native-batch.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/publication-batch-live-de390.png",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/public-file-coverage.json"
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -4538,6 +4601,10 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/public-file-coverage.json",
         "scope": "EN/DE library actual public URL and page-reference sets match. All142 unique public PDF originals fully read anonymously, exact native hashes and MIME, no parse warnings; all186 linked page references exist. Temporary file bytes removed. This does not accept every PDF page layout/specification, product download interaction, private files or the whole page.",
         "source_revision": "61f7dc30cd2bd7e5d73cb45854e221757bb2dce162aaa410ef50639484eb0b5e"
+      },
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "six document links render (HEAD 200 application/pdf verified in the library run)"
       }
     }
   },
@@ -4547,11 +4614,11 @@
     "state": "faq-accordion",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/publication-native-batch.json"
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -4571,6 +4638,10 @@
         "production": "Current exact source deployed. Actual DE390 original six PDF metadata cards and native FAQ click/answer preserved; other widths/language visual and original-PDF-gate proofs reused unchanged.",
         "performance": "Native paired product read244.97ms/799queries to144.29ms/292queries. One ordinary HTTP5.3166s to8.5458sTTFB; TLS2.9073s to6.4353s. Post-handshake wait2.4092s to2.1104s. Network variability; no whole-page speed claim or repeated sampling.",
         "remaining_scope": "Complete individual product-page interactions, PDFs and full site goal retain uncovered states; do not broaden this mechanism result."
+      },
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "nine FAQ disclosures toggle open/closed programmatically in both languages"
       }
     }
   },
@@ -4580,11 +4651,11 @@
     "state": "faq-accordion",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/publication-native-batch.json"
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -4604,6 +4675,10 @@
         "production": "Current exact source deployed. Actual DE390 original six PDF metadata cards and native FAQ click/answer preserved; other widths/language visual and original-PDF-gate proofs reused unchanged.",
         "performance": "Native paired product read244.97ms/799queries to144.29ms/292queries. One ordinary HTTP5.3166s to8.5458sTTFB; TLS2.9073s to6.4353s. Post-handshake wait2.4092s to2.1104s. Network variability; no whole-page speed claim or repeated sampling.",
         "remaining_scope": "Complete individual product-page interactions, PDFs and full site goal retain uncovered states; do not broaden this mechanism result."
+      },
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "nine FAQ disclosures toggle open/closed programmatically in both languages"
       }
     }
   },
@@ -4613,11 +4688,11 @@
     "state": "faq-accordion",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/publication-native-batch.json"
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -4637,6 +4712,10 @@
         "production": "Current exact source deployed. Actual DE390 original six PDF metadata cards and native FAQ click/answer preserved; other widths/language visual and original-PDF-gate proofs reused unchanged.",
         "performance": "Native paired product read244.97ms/799queries to144.29ms/292queries. One ordinary HTTP5.3166s to8.5458sTTFB; TLS2.9073s to6.4353s. Post-handshake wait2.4092s to2.1104s. Network variability; no whole-page speed claim or repeated sampling.",
         "remaining_scope": "Complete individual product-page interactions, PDFs and full site goal retain uncovered states; do not broaden this mechanism result."
+      },
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "nine FAQ disclosures toggle open/closed programmatically in both languages"
       }
     }
   },
@@ -4646,12 +4725,11 @@
     "state": "faq-accordion",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/publication-native-batch.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/publication-batch-live-de390.png"
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -4671,6 +4749,10 @@
         "production": "Current exact source deployed. Actual DE390 original six PDF metadata cards and native FAQ click/answer preserved; other widths/language visual and original-PDF-gate proofs reused unchanged.",
         "performance": "Native paired product read244.97ms/799queries to144.29ms/292queries. One ordinary HTTP5.3166s to8.5458sTTFB; TLS2.9073s to6.4353s. Post-handshake wait2.4092s to2.1104s. Network variability; no whole-page speed claim or repeated sampling.",
         "remaining_scope": "Complete individual product-page interactions, PDFs and full site goal retain uncovered states; do not broaden this mechanism result."
+      },
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "nine FAQ disclosures toggle open/closed programmatically in both languages"
       }
     }
   },
@@ -4680,10 +4762,12 @@
     "state": "related-products",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4692,7 +4776,12 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "four related cards render"
+      }
+    }
   },
   {
     "key": "product:related-products:en:390",
@@ -4700,10 +4789,12 @@
     "state": "related-products",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4712,7 +4803,12 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "four related cards render"
+      }
+    }
   },
   {
     "key": "product:related-products:de:1440",
@@ -4720,10 +4816,12 @@
     "state": "related-products",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4732,7 +4830,12 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "four related cards render"
+      }
+    }
   },
   {
     "key": "product:related-products:de:390",
@@ -4740,10 +4843,12 @@
     "state": "related-products",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4752,7 +4857,12 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "four related cards render"
+      }
+    }
   },
   {
     "key": "product:compare:en:1440",
@@ -4760,10 +4870,12 @@
     "state": "compare",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4772,7 +4884,12 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "the compare toggle button is present with aria-pressed=false at rest"
+      }
+    }
   },
   {
     "key": "product:compare:en:390",
@@ -4780,10 +4897,12 @@
     "state": "compare",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4792,7 +4911,12 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "the compare toggle button is present with aria-pressed=false at rest"
+      }
+    }
   },
   {
     "key": "product:compare:de:1440",
@@ -4800,10 +4924,12 @@
     "state": "compare",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4812,7 +4938,12 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "the compare toggle button is present with aria-pressed=false at rest"
+      }
+    }
   },
   {
     "key": "product:compare:de:390",
@@ -4820,10 +4951,12 @@
     "state": "compare",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4838,6 +4971,10 @@
         "scope": "ActualDE390 product6565 compare false/true selected64pxcontrol and list synchronization; no businessadd.",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-compare-continuity.json",
         "source_continuity": "Current compare-selection.js44e588/product-family.jscc5d076/products.cssc88bd7/faq.csscb1a561/ENDEcompareLC exact accepted663/664 hashes; libraryspecificURLdelta under currentcandidate, search rendering unchanged andexisting44JSmodulechecks passed."
+      },
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "the compare toggle button is present with aria-pressed=false at rest"
       }
     }
   },
@@ -4847,10 +4984,12 @@
     "state": "genie-context",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4859,7 +4998,12 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "the project-check disclosure and four ask entry points (tool row + project choices) render"
+      }
+    }
   },
   {
     "key": "product:genie-context:en:390",
@@ -4867,10 +5011,12 @@
     "state": "genie-context",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4879,7 +5025,12 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "the project-check disclosure and four ask entry points (tool row + project choices) render"
+      }
+    }
   },
   {
     "key": "product:genie-context:de:1440",
@@ -4887,10 +5038,12 @@
     "state": "genie-context",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4899,7 +5052,12 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "the project-check disclosure and four ask entry points (tool row + project choices) render"
+      }
+    }
   },
   {
     "key": "product:genie-context:de:390",
@@ -4907,10 +5065,12 @@
     "state": "genie-context",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (SAJ B2-5.0-HV1 representative)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/product-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -4919,7 +5079,12 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "product_states_20261107": {
+        "status": "pass",
+        "detail": "the project-check disclosure and four ask entry points (tool row + project choices) render"
+      }
+    }
   },
   {
     "key": "comparison:empty:en:1440",
