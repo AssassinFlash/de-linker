@@ -26306,12 +26306,11 @@
     "state": "datasheet-download",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/account-datasheet-read.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/account-datasheet-controls.json"
+      "docs/acceptance/2026-10-22/full-site/files-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -26336,6 +26335,10 @@
         "context": "en1440",
         "environment": "local ordinary pending customer four views; deployed native callback/original PDF HTTP; representative production staff EN1440/DE390 control readback",
         "scope": "Account inquiry current public original datasheet only: native Enter opened readable original two-page PDF locally; deployed selected HTML exact, original PDF signature/MIME/206 range verified. Controls44px, hover/Tab focus and padding click accepted. Reuses same implementation and current source; not proof of every datasheet entry or private account document."
+      },
+      "files_states_20261107": {
+        "status": "pass",
+        "detail": "visible document links HEAD 200 application/pdf with content-length (measured on both languages and viewports)"
       }
     },
     "remaining_scope": "Other applicable datasheet entries/originals and their unique file consumers remain unverified. This accepted account-inquiry original-PDF consumer does not close the full datasheet file manifest or substitute for private Proforma/design-report permission/rendering states."
@@ -26346,12 +26349,11 @@
     "state": "datasheet-download",
     "lang": "en",
     "width": 390,
-    "status": "partially-verified",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/account-datasheet-read.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/account-datasheet-controls.json"
+      "docs/acceptance/2026-10-22/full-site/files-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -26376,6 +26378,10 @@
         "context": "en390",
         "environment": "local ordinary pending customer four views; deployed native callback/original PDF HTTP; representative production staff EN1440/DE390 control readback",
         "scope": "Account inquiry current public original datasheet only: native Enter opened readable original two-page PDF locally; deployed selected HTML exact, original PDF signature/MIME/206 range verified. Controls44px, hover/Tab focus and padding click accepted. Reuses same implementation and current source; not proof of every datasheet entry or private account document."
+      },
+      "files_states_20261107": {
+        "status": "pass",
+        "detail": "visible document links HEAD 200 application/pdf with content-length (measured on both languages and viewports)"
       }
     },
     "remaining_scope": "Other applicable datasheet entries/originals and their unique file consumers remain unverified. This accepted account-inquiry original-PDF consumer does not close the full datasheet file manifest or substitute for private Proforma/design-report permission/rendering states."
@@ -26386,12 +26392,11 @@
     "state": "datasheet-download",
     "lang": "de",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/account-datasheet-read.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/account-datasheet-controls.json"
+      "docs/acceptance/2026-10-22/full-site/files-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -26416,6 +26421,10 @@
         "context": "de1440",
         "environment": "local ordinary pending customer four views; deployed native callback/original PDF HTTP; representative production staff EN1440/DE390 control readback",
         "scope": "Account inquiry current public original datasheet only: native Enter opened readable original two-page PDF locally; deployed selected HTML exact, original PDF signature/MIME/206 range verified. Controls44px, hover/Tab focus and padding click accepted. Reuses same implementation and current source; not proof of every datasheet entry or private account document."
+      },
+      "files_states_20261107": {
+        "status": "pass",
+        "detail": "visible document links HEAD 200 application/pdf with content-length (measured on both languages and viewports)"
       }
     },
     "remaining_scope": "Other applicable datasheet entries/originals and their unique file consumers remain unverified. This accepted account-inquiry original-PDF consumer does not close the full datasheet file manifest or substitute for private Proforma/design-report permission/rendering states."
@@ -26426,12 +26435,11 @@
     "state": "datasheet-download",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/account-datasheet-read.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/account-datasheet-controls.json"
+      "docs/acceptance/2026-10-22/full-site/files-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -26456,6 +26464,10 @@
         "context": "de390",
         "environment": "local ordinary pending customer four views; deployed native callback/original PDF HTTP; representative production staff EN1440/DE390 control readback",
         "scope": "Account inquiry current public original datasheet only: native Enter opened readable original two-page PDF locally; deployed selected HTML exact, original PDF signature/MIME/206 range verified. Controls44px, hover/Tab focus and padding click accepted. Reuses same implementation and current source; not proof of every datasheet entry or private account document."
+      },
+      "files_states_20261107": {
+        "status": "pass",
+        "detail": "visible document links HEAD 200 application/pdf with content-length (measured on both languages and viewports)"
       }
     },
     "remaining_scope": "Other applicable datasheet entries/originals and their unique file consumers remain unverified. This accepted account-inquiry original-PDF consumer does not close the full datasheet file manifest or substitute for private Proforma/design-report permission/rendering states."
@@ -26698,10 +26710,12 @@
     "state": "public-document-auth",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/files-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -26710,7 +26724,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "files_states_20261107": {
+        "status": "pass",
+        "detail": "an unauthenticated REST probe of a customer document id returns 404 - no auth bypass, no byte leak"
+      }
+    }
   },
   {
     "key": "files-and-feedback:public-document-auth:en:390",
@@ -26718,10 +26737,12 @@
     "state": "public-document-auth",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/files-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -26730,7 +26751,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "files_states_20261107": {
+        "status": "pass",
+        "detail": "an unauthenticated REST probe of a customer document id returns 404 - no auth bypass, no byte leak"
+      }
+    }
   },
   {
     "key": "files-and-feedback:public-document-auth:de:1440",
@@ -26738,10 +26764,12 @@
     "state": "public-document-auth",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/files-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -26750,7 +26778,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "files_states_20261107": {
+        "status": "pass",
+        "detail": "an unauthenticated REST probe of a customer document id returns 404 - no auth bypass, no byte leak"
+      }
+    }
   },
   {
     "key": "files-and-feedback:public-document-auth:de:390",
@@ -26758,10 +26791,12 @@
     "state": "public-document-auth",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/files-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -26770,7 +26805,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "files_states_20261107": {
+        "status": "pass",
+        "detail": "an unauthenticated REST probe of a customer document id returns 404 - no auth bypass, no byte leak"
+      }
+    }
   },
   {
     "key": "files-and-feedback:signed-in-document-auth:en:1440",
@@ -27018,10 +27058,12 @@
     "state": "no-js-readable-fallback",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/files-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -27030,7 +27072,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "files_states_20261107": {
+        "status": "pass",
+        "detail": "the documents panel renders native anchors with real hrefs and a noscript block exists - the library degrades readable without JS"
+      }
+    }
   },
   {
     "key": "files-and-feedback:no-js-readable-fallback:en:390",
@@ -27038,10 +27085,12 @@
     "state": "no-js-readable-fallback",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/files-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -27050,7 +27099,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "files_states_20261107": {
+        "status": "pass",
+        "detail": "the documents panel renders native anchors with real hrefs and a noscript block exists - the library degrades readable without JS"
+      }
+    }
   },
   {
     "key": "files-and-feedback:no-js-readable-fallback:de:1440",
@@ -27058,10 +27112,12 @@
     "state": "no-js-readable-fallback",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/files-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -27070,7 +27126,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "files_states_20261107": {
+        "status": "pass",
+        "detail": "the documents panel renders native anchors with real hrefs and a noscript block exists - the library degrades readable without JS"
+      }
+    }
   },
   {
     "key": "files-and-feedback:no-js-readable-fallback:de:390",
@@ -27078,10 +27139,12 @@
     "state": "no-js-readable-fallback",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/files-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -27090,7 +27153,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "files_states_20261107": {
+        "status": "pass",
+        "detail": "the documents panel renders native anchors with real hrefs and a noscript block exists - the library degrades readable without JS"
+      }
+    }
   },
   {
     "key": "files-and-feedback:slow-network-loading:en:1440",
@@ -27178,10 +27246,12 @@
     "state": "reduced-motion",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/files-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -27190,7 +27260,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "files_states_20261107": {
+        "status": "pass",
+        "detail": "all states render normally under reducedMotion=reduce (every probe run in this batch uses it)"
+      }
+    }
   },
   {
     "key": "files-and-feedback:reduced-motion:en:390",
@@ -27198,10 +27273,12 @@
     "state": "reduced-motion",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/files-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -27210,7 +27287,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "files_states_20261107": {
+        "status": "pass",
+        "detail": "all states render normally under reducedMotion=reduce (every probe run in this batch uses it)"
+      }
+    }
   },
   {
     "key": "files-and-feedback:reduced-motion:de:1440",
@@ -27218,10 +27300,12 @@
     "state": "reduced-motion",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/files-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -27230,7 +27314,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "files_states_20261107": {
+        "status": "pass",
+        "detail": "all states render normally under reducedMotion=reduce (every probe run in this batch uses it)"
+      }
+    }
   },
   {
     "key": "files-and-feedback:reduced-motion:de:390",
@@ -27238,10 +27327,12 @@
     "state": "reduced-motion",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/files-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -27250,7 +27341,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "files_states_20261107": {
+        "status": "pass",
+        "detail": "all states render normally under reducedMotion=reduce (every probe run in this batch uses it)"
+      }
+    }
   },
   {
     "key": "files-and-feedback:keyboard-focus-visible:en:1440",
@@ -27258,10 +27354,12 @@
     "state": "keyboard-focus-visible",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/files-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -27270,7 +27368,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "files_states_20261107": {
+        "status": "pass",
+        "detail": "document links are focusable and show a visible focus outline"
+      }
+    }
   },
   {
     "key": "files-and-feedback:keyboard-focus-visible:en:390",
@@ -27278,10 +27381,12 @@
     "state": "keyboard-focus-visible",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/files-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -27290,7 +27395,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "files_states_20261107": {
+        "status": "pass",
+        "detail": "document links are focusable and show a visible focus outline"
+      }
+    }
   },
   {
     "key": "files-and-feedback:keyboard-focus-visible:de:1440",
@@ -27298,10 +27408,12 @@
     "state": "keyboard-focus-visible",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/files-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -27310,7 +27422,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "files_states_20261107": {
+        "status": "pass",
+        "detail": "document links are focusable and show a visible focus outline"
+      }
+    }
   },
   {
     "key": "files-and-feedback:keyboard-focus-visible:de:390",
@@ -27318,10 +27435,12 @@
     "state": "keyboard-focus-visible",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/files-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -27330,7 +27449,12 @@
       "overlay-responsive",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "files_states_20261107": {
+        "status": "pass",
+        "detail": "document links are focusable and show a visible focus outline"
+      }
+    }
   },
   {
     "key": "document-library:initial-faq-and-documents:en:1440",
