@@ -1124,8 +1124,15 @@ export function App( { config }: { config: GenieConfig } ) {
 
 	const ask = useCallback(
 		async ( text: string, entryId?: string, entryScope?: string ) => {
-			const lease = draftContext.capture();
+			let lease = draftContext.capture();
 			if ( ! lease ) {
+				// A send that arrives while a cold verification is still in
+				// flight waits it out once; a silent no-op swallowed the
+				// visitor's Enter (production 2026-11-07).
+				lease = await draftContext.ready();
+			}
+			if ( ! lease ) {
+				setRefused( failureText() );
 				return false;
 			}
 			const uploads = entryId ? [] : files.uploads;
@@ -1194,9 +1201,9 @@ export function App( { config }: { config: GenieConfig } ) {
 				const stored = await loadThread();
 				if ( ! ( await draftContext.settle( lease ) ) ) {
 					retainUnverifiedTurn( lease, draft );
-					if ( draftContext.owns( lease ) ) {
-						sending.current = false;
-					}
+					// The send mutex is app-level: a lost lease must not
+					// leave it stuck and swallow every later send.
+					sending.current = false;
 					return;
 				}
 				let before = currentThread.current;
@@ -1264,9 +1271,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					} );
 					if ( ! ( await draftContext.settle( lease ) ) ) {
 						retainUnverifiedTurn( lease, draft );
-						if ( draftContext.owns( lease ) ) {
-							sending.current = false;
-						}
+						sending.current = false;
 						return;
 					}
 					if ( ! entryId && ! draftContext.editor ) {
@@ -1304,9 +1309,7 @@ export function App( { config }: { config: GenieConfig } ) {
 						retainUnverifiedTurn( lease, draft );
 					}
 				} finally {
-					if ( draftContext.owns( lease ) ) {
-						sending.current = false;
-					}
+					sending.current = false;
 				}
 			} ).then( () => true );
 		},
@@ -1449,9 +1452,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				} );
 				if ( ! ( await draftContext.settle( lease ) ) ) {
 					retainUnverifiedTurn( lease, draft );
-					if ( draftContext.owns( lease ) ) {
-						sending.current = false;
-					}
+					sending.current = false;
 					return;
 				}
 				if ( ! draftContext.editor ) {
@@ -1471,9 +1472,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			} catch ( error ) {
 				if ( ! ( await draftContext.settle( lease ) ) ) {
 					retainUnverifiedTurn( lease, draft );
-					if ( draftContext.owns( lease ) ) {
-						sending.current = false;
-					}
+					sending.current = false;
 					return;
 				}
 				await onTurnError(
@@ -1490,9 +1489,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					postedPage
 				);
 			} finally {
-				if ( draftContext.owns( lease ) ) {
-					sending.current = false;
-				}
+				sending.current = false;
 			}
 		} );
 	}, [

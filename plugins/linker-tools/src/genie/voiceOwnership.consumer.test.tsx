@@ -318,12 +318,15 @@ async function pendingCheck() {
 		return original( url, options );
 	} );
 	await act( async () => window.dispatchEvent( new Event( 'focus' ) ) );
-	await waitFor( () => expect( field() ).toBeDisabled() );
-	expect( held ).toBe( true );
+	await waitFor( () => expect( held ).toBe( true ) );
+	// A transient re-verification keeps the composer usable: authority is
+	// quarantined on an actual owner change, not on every focus check
+	// (production 2026-11-07 — the disabled window ate live input).
+	expect( field() ).toBeEnabled();
 	return async () => act( async () => release() );
 }
 for ( const ended of [ false, true ] ) {
-	test( `an accepted transcript waits for native same-owner verification${ ended ? ' even if recognition naturally ends first' : '' }`, async () => {
+	test( `an accepted transcript delivers under its accepted owner while a same-owner check is pending${ ended ? ' even if recognition naturally ends first' : '' }`, async () => {
 		await mount();
 		const voice = await startVoice();
 		const release = await pendingCheck();
@@ -335,7 +338,10 @@ for ( const ended of [ false, true ] ) {
 				voice.onend?.();
 			}
 		} );
-		expect( field() ).toHaveValue( '' );
+		// Same owner: the phrases are the visitor's own words and stay visible.
+		expect( field() ).toHaveValue(
+			'First pending phrase Second pending phrase'
+		);
 		await release();
 		await waitFor( () => expect( field() ).not.toBeDisabled() );
 		expect( field() ).toHaveValue(
@@ -349,42 +355,51 @@ for ( const ended of [ false, true ] ) {
 		expect( sendTurn ).not.toHaveBeenCalled();
 	} );
 }
-for ( const action of [
-	'Stop dictation',
-	'Close',
-	'New conversation',
-	'different native owner',
-] ) {
-	test( `${ action } cancels queued voice bytes before native verification returns`, async () => {
+for ( const action of [ 'Stop dictation', 'Close', 'New conversation' ] ) {
+	test( `${ action } keeps already delivered voice with its owner while a native check is pending`, async () => {
 		await mount();
 		const voice = await startVoice();
 		const release = await pendingCheck();
 		await hear( voice, 'Canceled private pending phrase' );
+		// Delivered same-owner words are the visitor's visible text.
+		expect( field() ).toHaveValue( 'Canceled private pending phrase' );
 		await act( async () => {
-			if ( action === 'different native owner' ) {
-				principal = 'B';
-			} else {
-				fireEvent.click(
-					screen.getByRole( 'button', { name: action } )
-				);
-			}
+			fireEvent.click( screen.getByRole( 'button', { name: action } ) );
 		} );
 		await release();
 		await act( async () =>
 			window.dispatchEvent( new CustomEvent( 'linker-genie-open' ) )
 		);
 		await waitFor( () => expect( field() ).not.toBeDisabled() );
-		expect( field() ).toHaveValue( '' );
-		await checkpoint();
-		expect(
-			candidate( principal === 'B' ? scopeB : scopeA )
-		).toBeUndefined();
+		expect( candidate( scopeB ) ).toBeUndefined();
 		expect( sendTurn ).not.toHaveBeenCalled();
 	} );
 }
 
+test( 'a native owner switch clears delivered voice and never hands it to B', async () => {
+	await mount();
+	const voice = await startVoice();
+	const release = await pendingCheck();
+	await hear( voice, 'Canceled private pending phrase' );
+	expect( field() ).toHaveValue( 'Canceled private pending phrase' );
+	await act( async () => {
+		principal = 'B';
+	} );
+	await release();
+	await act( async () =>
+		window.dispatchEvent( new CustomEvent( 'linker-genie-open' ) )
+	);
+	await waitFor( () => expect( field() ).not.toBeDisabled() );
+	expect( field() ).toHaveValue( '' );
+	expect(
+		screen.queryByText( 'Canceled private pending phrase' )
+	).not.toBeInTheDocument();
+	expect( candidate( scopeB ) ).toBeUndefined();
+	expect( sendTurn ).not.toHaveBeenCalled();
+} );
+
 for ( const ended of [ false, true ] ) {
-	test( `pending accepted voice survives pagehide and a fresh A remount${ ended ? ' after natural recognition end' : '' } without an automatic turn`, async () => {
+	test( `delivered voice survives pagehide and a fresh A remount${ ended ? ' after natural recognition end' : '' } without an automatic turn`, async () => {
 		await mount();
 		const voice = await startVoice();
 		const release = await pendingCheck();
@@ -392,7 +407,7 @@ for ( const ended of [ false, true ] ) {
 		if ( ended ) {
 			await act( async () => voice.onend?.() );
 		}
-		expect( field() ).toHaveValue( '' );
+		expect( field() ).toHaveValue( words );
 		await checkpoint();
 		await act( async () => stop() );
 		stop = () => {};
@@ -410,11 +425,13 @@ for ( const ended of [ false, true ] ) {
 	} );
 }
 
-test( 'pending heard A words remain quarantined in B and are explicitly restorable only after fresh A', async () => {
+test( 'delivered A words remain quarantined from B and are explicitly restorable only after fresh A', async () => {
 	await mount();
 	const voice = await startVoice();
 	const release = await pendingCheck();
 	await hear( voice, words );
+	expect( field() ).toHaveValue( words );
+	await checkpoint();
 	principal = 'B';
 	await release();
 	await waitFor( () => expect( field() ).not.toBeDisabled() );
@@ -436,7 +453,7 @@ test( 'pending heard A words remain quarantined in B and are explicitly restorab
 	expect( sendTurn ).not.toHaveBeenCalled();
 } );
 
-test( 'A1 success consumes only A1 after A2 pending voice synchronously checkpoints', async () => {
+test( 'A1 success consumes only A1 after A2 delivered voice synchronously checkpoints', async () => {
 	let answer!: ( value: Awaited< ReturnType< typeof sendTurn > > ) => void;
 	vi.mocked( sendTurn ).mockImplementationOnce(
 		() =>
@@ -497,7 +514,7 @@ async function attachPdf() {
 	);
 }
 
-test( 'pagehide retains prepared PDF and displayed text together with pending voice under the original attempt', async () => {
+test( 'pagehide retains prepared PDF and displayed text together with delivered voice under the original attempt', async () => {
 	await mount();
 	fireEvent.input( field(), { target: { value: 'Displayed project text' } } );
 	await attachPdf();
@@ -523,7 +540,7 @@ test( 'pagehide retains prepared PDF and displayed text together with pending vo
 	expect( sendTurn ).not.toHaveBeenCalled();
 } );
 
-test( 'explicit Stop removes only undisplayed voice and preserves displayed text plus the prepared PDF', async () => {
+test( 'explicit Stop preserves delivered voice together with displayed text and the prepared PDF', async () => {
 	await mount();
 	fireEvent.input( field(), {
 		target: { value: 'Keep displayed project text' },
@@ -531,7 +548,7 @@ test( 'explicit Stop removes only undisplayed voice and preserves displayed text
 	await attachPdf();
 	const voice = await startVoice();
 	const release = await pendingCheck();
-	await hear( voice, 'Remove queued phrase' );
+	await hear( voice, 'Heard live phrase' );
 	await act( async () =>
 		fireEvent.click(
 			screen.getByRole( 'button', { name: 'Stop dictation' } )
@@ -539,14 +556,14 @@ test( 'explicit Stop removes only undisplayed voice and preserves displayed text
 	);
 	await release();
 	await checkpoint();
-	expect( field() ).toHaveValue( 'Keep displayed project text' );
+	// Delivered words are visible text: stopping recognition keeps them.
+	expect( field() ).toHaveValue(
+		'Keep displayed project text Heard live phrase'
+	);
 	expect( candidate() ).toMatchObject( {
-		text: 'Keep displayed project text',
+		text: 'Keep displayed project text Heard live phrase',
 	} );
 	expect( candidate()?.uploads ).toHaveLength( 1 );
-	expect( JSON.stringify( candidate() ) ).not.toContain(
-		'Remove queued phrase'
-	);
 	expect( sendTurn ).not.toHaveBeenCalled();
 } );
 
@@ -554,7 +571,8 @@ test( 'Stop cannot overwrite a later revision of the same attempt', async () => 
 	await mount();
 	const voice = await startVoice();
 	const release = await pendingCheck();
-	await hear( voice, 'Original queued phrase' );
+	await hear( voice, 'Original delivered phrase' );
+	await checkpoint();
 	const journal = new FailureJournal( sessionStorage, {
 		scope: scopeA,
 		persistent: true,
@@ -619,6 +637,7 @@ test( 'explicit Stop preserves an existing reselection name without keeping the 
 	const voice = await startVoice();
 	const release = await pendingCheck();
 	await hear( voice, 'Undisplayed phrase' );
+	await checkpoint();
 	await act( async () =>
 		fireEvent.click(
 			screen.getByRole( 'button', { name: 'Stop dictation' } )
@@ -627,13 +646,10 @@ test( 'explicit Stop preserves an existing reselection name without keeping the 
 	await release();
 	expect( candidate() ).toMatchObject( {
 		editing: true,
-		text: '',
-		question: 'missing-schematic.pdf',
+		question: 'Undisplayed phrase',
 		omitted: [ 'missing-schematic.pdf' ],
 	} );
-	expect( JSON.stringify( candidate() ) ).not.toContain(
-		'Undisplayed phrase'
-	);
+	expect( candidate()?.text ).toContain( 'Undisplayed phrase' );
 	expect( sendTurn ).not.toHaveBeenCalled();
 } );
 
@@ -678,11 +694,12 @@ test( 'a pending voice storage failure retains only original A memory ownership 
 	expect( sendTurn ).not.toHaveBeenCalled();
 } );
 
-test( 'a second pending phrase cannot overwrite a later accepted revision or its reselection names, including after verification and pagehide', async () => {
+test( 'a second delivered phrase cannot overwrite a later accepted revision or its reselection names, including after verification and pagehide', async () => {
 	await mount();
 	const voice = await startVoice();
 	const release = await pendingCheck();
-	await hear( voice, 'Original queued phrase' );
+	await hear( voice, 'Original delivered phrase' );
+	await checkpoint();
 	const journal = new FailureJournal( sessionStorage, {
 		scope: scopeA,
 		persistent: true,
@@ -708,13 +725,18 @@ test( 'a second pending phrase cannot overwrite a later accepted revision or its
 	expect( sessionStorage.getItem( failureBucketKey( scopeA ) ) ).toBe( raw );
 	await release();
 	await checkpoint();
-	expect( sessionStorage.getItem( failureBucketKey( scopeA ) ) ).toBe( raw );
-	expect( candidate() ).toMatchObject( {
-		text: 'Later accepted revision',
-		omitted: [ 'later-schematic.pdf' ],
-	} );
-	expect( field() ).toHaveValue( '' );
-	expect( voice.stop ).toHaveBeenCalledTimes( 1 );
+	// The stale editor cannot overwrite the later revision; its delivered
+	// words stay with the visitor's field instead of the journal.
+	const stored = JSON.parse(
+		sessionStorage.getItem( failureBucketKey( scopeA ) )!
+	);
+	const texts = Object.values( stored.records ).map(
+		( record: { record: { text: string } } ) => record.record.text
+	);
+	expect( texts ).toEqual( [ 'Later accepted revision' ] );
+	expect( field() ).toHaveValue(
+		'Original delivered phrase Second queued phrase'
+	);
 	expect( sendTurn ).not.toHaveBeenCalled();
 } );
 
@@ -723,6 +745,7 @@ test( 'pending voice continues across a different retained attempt without repla
 	const voice = await startVoice();
 	const release = await pendingCheck();
 	await hear( voice, 'Original queued phrase' );
+	await checkpoint();
 	const journal = new FailureJournal( sessionStorage, {
 		scope: scopeA,
 		persistent: true,
@@ -752,10 +775,16 @@ test( 'pending voice continues across a different retained attempt without repla
 	const records = JSON.parse(
 		sessionStorage.getItem( failureBucketKey( scopeA ) )!
 	).records;
+	// The externally rebuilt bucket refuses the second phrase's checkpoint;
+	// the delivered words stay in the field, the first phrase's record and
+	// the other draft remain untouched.
 	expect( records[ own.cursor.owner.attempt ].record.text ).toBe(
-		'Original queued phrase Second accepted phrase'
+		'Original queued phrase'
 	);
 	expect( records[ other.cursor.owner.attempt ] ).toEqual( otherRecord );
+	expect( field() ).toHaveValue(
+		'Original queued phrase Second accepted phrase'
+	);
 	expect( voice.stop ).not.toHaveBeenCalled();
 	expect( sendTurn ).not.toHaveBeenCalled();
 } );
@@ -779,6 +808,7 @@ test( 'pending voice continues when an earlier distinct attempt is successfully 
 	const voice = await startVoice();
 	const release = await pendingCheck();
 	await hear( voice, 'Original queued phrase' );
+	await checkpoint();
 	const own = journal.candidate()!;
 	const earlier = journal.rebase( other.cursor )!;
 	expect( journal.consume( earlier.cursor ) ).toBe( true );
@@ -792,76 +822,118 @@ test( 'pending voice continues when an earlier distinct attempt is successfully 
 	).records;
 	expect( Object.keys( records ) ).toEqual( [ own.cursor.owner.attempt ] );
 	expect( records[ own.cursor.owner.attempt ].record.text ).toBe(
+		'Original queued phrase'
+	);
+	expect( field() ).toHaveValue(
 		'Original queued phrase Second accepted phrase'
 	);
 	expect( voice.stop ).not.toHaveBeenCalled();
 	expect( sendTurn ).not.toHaveBeenCalled();
 } );
 
-for ( const prefix of [ false, true ] ) {
-	test( `Stop after another attempt changes the bucket cancels only queued words${ prefix ? ' and retains displayed text and PDF' : '' }`, async () => {
-		await mount();
-		if ( prefix ) {
-			fireEvent.input( field(), {
-				target: { value: 'Keep accepted prefix' },
-			} );
-			await attachPdf();
-		}
-		const voice = await startVoice();
-		const release = await pendingCheck();
-		await hear( voice, 'Cancel pending words' );
-		const journal = new FailureJournal( sessionStorage, {
-			scope: scopeA,
-			persistent: true,
-		} );
-		const own = journal.candidate()!;
-		const other = journal.begin( {
-			phase: 'editing',
-			kind: null,
-			draft: {
-				editing: true,
-				text: 'Other accepted draft',
-				question: 'Other accepted draft',
-				uploads: [],
-				omitted: [ 'other-schematic.pdf' ],
-			},
-		} );
-		const otherRecord = JSON.parse(
-			sessionStorage.getItem( failureBucketKey( scopeA ) )!
-		).records[ other.cursor.owner.attempt ];
-		await act( async () =>
-			fireEvent.click(
-				screen.getByRole( 'button', { name: 'Stop dictation' } )
-			)
-		);
-		await release();
-		const records = JSON.parse(
-			sessionStorage.getItem( failureBucketKey( scopeA ) )!
-		).records;
-		expect( records[ other.cursor.owner.attempt ] ).toEqual( otherRecord );
-		const expectedPrefix = expect.objectContaining( {
-			text: 'Keep accepted prefix',
+test( 'Stop after another attempt changes the bucket keeps the delivered words and prefix draft', async () => {
+	await mount();
+	fireEvent.input( field(), {
+		target: { value: 'Keep accepted prefix' },
+	} );
+	await attachPdf();
+	const voice = await startVoice();
+	const release = await pendingCheck();
+	await hear( voice, 'Cancel pending words' );
+	await checkpoint();
+	const journal = new FailureJournal( sessionStorage, {
+		scope: scopeA,
+		persistent: true,
+	} );
+	const own = journal.candidate()!;
+	const other = journal.begin( {
+		phase: 'editing',
+		kind: null,
+		draft: {
+			editing: true,
+			text: 'Other accepted draft',
+			question: 'Other accepted draft',
+			uploads: [],
+			omitted: [ 'other-schematic.pdf' ],
+		},
+	} );
+	const otherRecord = JSON.parse(
+		sessionStorage.getItem( failureBucketKey( scopeA ) )!
+	).records[ other.cursor.owner.attempt ];
+	await act( async () =>
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Stop dictation' } )
+		)
+	);
+	await release();
+	const records = JSON.parse(
+		sessionStorage.getItem( failureBucketKey( scopeA ) )!
+	).records;
+	expect( records[ other.cursor.owner.attempt ] ).toEqual( otherRecord );
+	expect( records[ own.cursor.owner.attempt ]?.record ).toEqual(
+		expect.objectContaining( {
+			text: 'Keep accepted prefix Cancel pending words',
 			uploads: [
 				expect.objectContaining( { name: 'voice-project.pdf' } ),
 			],
-		} );
-		expect( records[ own.cursor.owner.attempt ]?.record ).toEqual(
-			prefix ? expectedPrefix : undefined
-		);
-		expect( JSON.stringify( records ) ).not.toContain(
-			'Cancel pending words'
-		);
-		expect( field() ).toHaveValue( prefix ? 'Keep accepted prefix' : '' );
-		expect( voice.stop ).toHaveBeenCalledTimes( 1 );
-		expect( sendTurn ).not.toHaveBeenCalled();
+		} )
+	);
+	expect( field() ).toHaveValue(
+		'Keep accepted prefix Cancel pending words'
+	);
+	expect( voice.stop ).toHaveBeenCalledTimes( 1 );
+	expect( sendTurn ).not.toHaveBeenCalled();
+} );
+
+test( 'Stop after another attempt changes the bucket keeps bare delivered words', async () => {
+	await mount();
+	const voice = await startVoice();
+	const release = await pendingCheck();
+	await hear( voice, 'Cancel pending words' );
+	await checkpoint();
+	const journal = new FailureJournal( sessionStorage, {
+		scope: scopeA,
+		persistent: true,
 	} );
-}
+	const own = journal.candidate()!;
+	const other = journal.begin( {
+		phase: 'editing',
+		kind: null,
+		draft: {
+			editing: true,
+			text: 'Other accepted draft',
+			question: 'Other accepted draft',
+			uploads: [],
+			omitted: [ 'other-schematic.pdf' ],
+		},
+	} );
+	const otherRecord = JSON.parse(
+		sessionStorage.getItem( failureBucketKey( scopeA ) )!
+	).records[ other.cursor.owner.attempt ];
+	await act( async () =>
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Stop dictation' } )
+		)
+	);
+	await release();
+	const records = JSON.parse(
+		sessionStorage.getItem( failureBucketKey( scopeA ) )!
+	).records;
+	expect( records[ other.cursor.owner.attempt ] ).toEqual( otherRecord );
+	expect( records[ own.cursor.owner.attempt ]?.record ).toEqual(
+		expect.objectContaining( { text: 'Cancel pending words' } )
+	);
+	expect( field() ).toHaveValue( 'Cancel pending words' );
+	expect( voice.stop ).toHaveBeenCalledTimes( 1 );
+	expect( sendTurn ).not.toHaveBeenCalled();
+} );
 
 test( 'a target whose bytes changed without a revision bump is not a safe independent-attempt rebase', async () => {
 	await mount();
 	const voice = await startVoice();
 	const release = await pendingCheck();
 	await hear( voice, 'Original queued phrase' );
+	await checkpoint();
 	const raw = sessionStorage.getItem( failureBucketKey( scopeA ) )!;
 	const bucket = JSON.parse( raw );
 	const attempt = Object.keys( bucket.records )[ 0 ];
@@ -875,7 +947,9 @@ test( 'a target whose bytes changed without a revision bump is not a safe indepe
 	expect( sessionStorage.getItem( failureBucketKey( scopeA ) ) ).toBe(
 		changed
 	);
-	expect( field() ).toHaveValue( '' );
+	expect( field() ).toHaveValue(
+		'Original queued phrase A later stale phrase'
+	);
 	expect( sendTurn ).not.toHaveBeenCalled();
 } );
 
@@ -903,14 +977,13 @@ test( 'a temporarily unreadable checkpoint retains the next heard phrase under o
 		'First accepted phrase Second accepted phrase'
 	);
 	await checkpoint();
+	// The read failure hit the delivery window's save; the words survive in
+	// the editor's own memory record and restore with the same warning.
 	expect( candidate() ).toMatchObject( {
 		editing: true,
 		text: 'First accepted phrase Second accepted phrase',
 	} );
 	expect( candidate( scopeB ) ).toBeUndefined();
-	await screen.findByText(
-		'This question could not be saved. It may be lost if you refresh or leave this page.'
-	);
 	expect( voice.stop ).not.toHaveBeenCalled();
 	await act( async () => stop() );
 	stop = () => {};
@@ -943,6 +1016,9 @@ async function divergentVoiceCopies() {
 	const voice = await startVoice();
 	const release = await pendingCheck();
 	await hear( voice, 'First accepted phrase' );
+	// The delivery window no longer checkpoints per phrase: park the first
+	// phrase explicitly, then let the spy interrupt the next checkpoint.
+	await act( async () => window.dispatchEvent( new Event( 'pagehide' ) ) );
 	const journal = new FailureJournal( sessionStorage, {
 		scope: scopeA,
 		persistent: true,
@@ -980,6 +1056,7 @@ async function divergentVoiceCopies() {
 			return original.call( this, key );
 		} );
 	await hear( voice, 'Second accepted phrase' );
+	await act( async () => window.dispatchEvent( new Event( 'pagehide' ) ) );
 	unavailable.mockRestore();
 	await release();
 	return { journal, laterRaw, voice };

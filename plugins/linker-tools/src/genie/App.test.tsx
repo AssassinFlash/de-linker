@@ -4,6 +4,7 @@ import {
 	renderOwned,
 	seedOwnedFailure,
 	currentOwnedRaw,
+	NATIVE_SCOPE,
 } from './testing/nativeIdentity';
 
 /**
@@ -3698,6 +3699,84 @@ test( 'a second submit while a turn is in flight does not send another', async (
 			blocks: [ { type: 'text', text: 'Fixture answer.', refs: [] } ],
 		} )
 	);
+} );
+
+test( 'a window-focus re-verification keeps the composer text and the send still dispatches', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( sendTurn )
+		.mockClear()
+		.mockResolvedValue( {
+			meta: null,
+			blocks: [ { type: 'text', text: 'Fixture answer.', refs: [] } ],
+		} );
+	// First entry-context resolves immediately; every later one (the window
+	// focus re-verify) hangs until released, like a slow native check.
+	const releaseVerifyAll: Array< () => void > = [];
+	let nativeReads = 0;
+	vi.stubGlobal(
+		'fetch',
+		vi.fn( ( ( url: unknown ) => {
+			const target = String( url );
+			if ( ! target.includes( '/entry-context' ) ) {
+				throw new Error( `Unexpected unit HTTP: ${ target }` );
+			}
+			nativeReads += 1;
+			if ( nativeReads === 1 ) {
+				return Promise.resolve( {
+					ok: true,
+					json: async () => ( { scope: NATIVE_SCOPE } ),
+				} );
+			}
+			return new Promise( ( resolve ) => {
+				releaseVerifyAll.push( () =>
+					resolve( {
+						ok: true,
+						json: async () => ( { scope: NATIVE_SCOPE } ),
+					} )
+				);
+			} );
+		} ) as typeof fetch )
+	);
+	await renderOwned( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	// The visitor tabs back in: useDraftContext re-verifies on window focus.
+	await act( async () => {
+		window.dispatchEvent( new Event( 'focus' ) );
+	} );
+	expect( nativeReads ).toBeGreaterThan( 1 );
+	// While that re-verification is in flight the composer keeps the typed
+	// question, stays editable, and the Enter is not swallowed.
+	const field = screen.getByLabelText( 'Ask Genie' ) as HTMLTextAreaElement;
+	fireEvent.change( field, { target: { value: 'Which battery fits?' } } );
+	expect( field.value ).toBe( 'Which battery fits?' );
+	expect( field.disabled ).toBe( false );
+	const form = screen
+		.getByRole( 'button', { name: 'Send' } )
+		.closest( 'form' );
+	if ( ! form ) {
+		throw new Error( 'composer form missing' );
+	}
+	await act( async () => {
+		fireEvent.submit( form );
+	} );
+	// The send's own authorize re-verifies; each round resolves whatever
+	// native reads are still hanging until the turn leaves.
+	for ( let round = 0; round < 10; round += 1 ) {
+		const pending = releaseVerifyAll.splice( 0 );
+		await act( async () => {
+			for ( const release of pending ) {
+				release();
+			}
+		} );
+		if ( vi.mocked( sendTurn ).mock.calls.length > 0 ) {
+			break;
+		}
+	}
+	await waitFor( () => expect( sendTurn ).toHaveBeenCalledTimes( 1 ) );
+	expect( vi.mocked( sendTurn ).mock.calls[ 0 ][ 0 ].messages ).toEqual( [
+		{ role: 'user', content: 'Which battery fits?' },
+	] );
 } );
 
 test( 'waiting for the unchanged turn request gives an accessible thinking status', async () => {

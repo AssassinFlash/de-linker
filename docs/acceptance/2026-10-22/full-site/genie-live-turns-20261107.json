@@ -1,0 +1,71 @@
+{
+  "session": "genie-live-turn-verification-20261107",
+  "environment": "production",
+  "url": "https://de-linker.com/",
+  "method": "Real Chrome (owner browser via WebBridge, 127.0.0.1:10086) + Kimi built-in browser cross-check; DOM/AX text evidence, no mock",
+  "captured_at_local": "2026-11-07 Asia/Shanghai",
+  "identity_context": "anonymous (panel header shows Sign in / Create account); linker_public_browser cookie identity; DB trust rows inspected",
+  "findings": [
+    {
+      "state": "workspace",
+      "result": "pass",
+      "evidence": "dock button 'Ask Genie' opens dialog titled \"Genie - Linker's AI assistant\"; header, suggestion chips, composer present (elements snapshot e1 dialog)"
+    },
+    {
+      "state": "first-ai-disclosure",
+      "result": "pass",
+      "evidence": "first assistant message: \"Hi, I'm Genie, Linker's AI assistant. You're chatting with an AI system.\" plus persistent footer 'Genie is an AI assistant. Help & privacy'"
+    },
+    {
+      "state": "thinking",
+      "result": "pass",
+      "evidence": "'One moment…' status during first turn; TurnProgress 'Genie is thinking…' component (source TurnProgress.tsx) present in waiting phase"
+    },
+    {
+      "state": "answer-text",
+      "result": "pass",
+      "evidence": "Q1 'I need a battery for a 10 kW residential system with a GoodWe inverter. What do you recommend?' answered: rated AC output 10 kW + documented pairing GW5.1/8.3/6.0/9.0-BAT-D-G20 for GW3K–10K-EHA-G20 (G21 not in pairing table), capacity question correctly routed to Solution Configurator"
+    },
+    {
+      "state": "product-card",
+      "result": "pass",
+      "evidence": "chip question 'Tell me about the GoodWe ESA GW10K-EHA-G20' answer includes PRODUCT card: model GW10K-EHA-G20, 'Net price after partner sign-in' (price gate for anonymous), 'In stock', 'Add to solution draft' + 'Save solution' actions, datasheet citation 'GW10K-EHA-G20 · Datasheet (EN) · pp. 1, 2'"
+    },
+    {
+      "state": "challenge-flow (session verification)",
+      "result": "pass-with-notes",
+      "evidence": "fresh anonymous identity Q1 attempt1: proofless probe refused (linker_admission_proof) -> Turnstile challenge; went interactive in both built-in browser AND owner real Chrome; 120s no interaction -> 'Verification could not be completed. No request has been sent in this attempt. Please try again.' banner + 'Send an inquiry' fallback link; composer text preserved on failure. attempt2 (immediate resend): challenge auto-solved non-interactively, proof verified, turn dispatched, answer arrived",
+      "notes": "mode=enforce (window.linkerPublicProtectionConfig.mode). Trust row granted on proof: wp_options linker_commerce_trust_genie.44ce31e882fa.0000041528 until 1794094877 (12h WINDOW per Trust.php). Subsequent questions (Q2 chip, Q4) show 'Checking verification…' TurnProgress only as proofless-probe phase UI; verifState stays container-only (no widget events) - trust admission avoids fresh challenge. DE + 390 viewport passes still pending."
+    },
+    {
+      "state": "suggestion-chip-consumption",
+      "result": "pass",
+      "evidence": "chip 'Tell me about the GoodWe ESA GW10K-EHA-G20' click sent the full chip text as exactly one user turn; composer empty after; answer arrived with product card"
+    },
+    {
+      "state": "history-and-restore (partial)",
+      "result": "partial",
+      "evidence": "older turns from previous sessions restored in transcript (two GW10K-EHA-G20 rated-output Q/A pairs); full reload/restore verification still pending"
+    }
+  ],
+  "open_items": [
+    "Q4 'Which smart meter works with the GW10K-EHA-G20 for zero export?' in flight - watching for trust-admitted probe -> answer (no challenge expected)",
+    "product-add -> real Woo draft readback (consumer-readback contract)",
+    "copy-and-rating, human-handoff, voice, attachments, long-conversation-scroll, dock-keyboard-focus-escape",
+    "save-pending-error-success, ordinary-draft-failure-owner-isolation",
+    "DE language pass + 390 viewport functional pass",
+    "server-side persistence readback via VPS"
+  ],
+  "defects_found": [
+    {
+      "id": "genie-turn-latency",
+      "severity": "perf",
+      "detail": "First turn for a fresh identity: probe(400) + prepare + turnstile script + widget auto-solve + verify + resend + model answer ≈ 60-130s total wall time observed (click 1794051653 -> answer by 1794051786, bounded by poll granularity). Even trust-admitted turns wait on Hostinger backend (entry-context 0.8-3.3s, conversation 1.9s)."
+    },
+    {
+      "id": "interactive-challenge-real-chrome",
+      "severity": "watch",
+      "detail": "Cloudflare Turnstile chose INTERACTIVE widget for owner's real Chrome on first attempt (before-interactive-callback observed). If common for real visitors, first question requires one checkbox click; owner ruling 2026-11-04 demands real humans not be blocked. Attempt2 auto-solved; frequency unknown - needs broader sampling before treating as defect."
+    }
+  ]
+}

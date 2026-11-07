@@ -51,7 +51,11 @@ test( 'in-progress same-owner revalidation quarantines settlements, then permits
 		)
 	);
 	const pending = context.verify();
-	expect( context.capture() ).toBeNull();
+	// A transient re-verification keeps the established lease authoritative:
+	// the visitor's composer stays usable (production 2026-11-07 — a window
+	// focus re-verify cleared live input and swallowed the send).
+	expect( context.capture() ).toEqual( lease );
+	expect( context.phase ).toBe( 'ready' );
 	let settled = false;
 	const settlement = context.settle( lease ).then( ( value ) => {
 		settled = value;
