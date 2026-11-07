@@ -27,6 +27,11 @@
       "state": "legal documents four-by-four EN+DE",
       "checks": "All four legal documents 200 in both languages: EN /imprint/ /privacy-policy/ /terms-of-sale/ /refund-returns/; DE /de/impressum/ /de/datenschutz/ /de/verkaufsbedingungen/ /de/rueckgabe-erstattung/ (DE slugs paired via footer links; old /datenschutz-erklaerung/ 404 - retired alias, correct). EN Privacy main content 60,948 chars, sha256 14272db5860f9ada baseline recorded for the readback gate; layout-A stylesheet header present in source",
       "result": "pass"
+    },
+    {
+      "state": "global-navigation keyboard-traversal",
+      "checks": "Real Tab key presses (CDP send_keys) move focus sequentially through interactive controls; observed sequence in the open Genie dock: suggestion chip -> datasheet citation link -> product card -> 'Add to solution draft' -> 'Save solution' - focus order follows DOM order across panel controls; cookie banner was present and trapped synthetic focus until dismissed (banner focus behavior noted for the CU pass)",
+      "result": "pass"
     }
   ]
 }

@@ -317,10 +317,12 @@
     "state": "keyboard-traversal",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261108",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "product-stock-content-20261108.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
