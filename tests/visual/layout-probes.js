@@ -599,6 +599,23 @@
 			(rect.width <= 1 && rect.height <= 1) ||
 			style.clipPath === "inset(50%)";
 		if (focusable && invisible && !hiddenAncestor) {
+			// Progressive disclosure: skip links and heading copy buttons stay
+			// transparent until hover or focus. Focusing applies their
+			// reveal rules synchronously (SETTLE pins transitions off), so a
+			// control that shows itself when focused is intended disclosure,
+			// not a broken tab stop (measured: the legal pages' lg-skip grows
+			// to 141x44 and lg-copy hits opacity 1 under h2:focus-within).
+			element.focus({ preventScroll: true });
+			const focused = CSS(element);
+			const revealed =
+				Number(focused.opacity) !== 0 &&
+				focused.clipPath === "none" &&
+				!(
+					element.getBoundingClientRect().width <= 1 &&
+					element.getBoundingClientRect().height <= 1
+				);
+			element.blur();
+			if (revealed) continue;
 			report(
 				"focusable-invisible",
 				element,

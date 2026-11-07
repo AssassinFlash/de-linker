@@ -204,11 +204,12 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/publication-native-batch.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/journal-review-live-en1440.png"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/journal-review-live-en1440.png",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -231,6 +232,15 @@
         "scope": "Requested viewport, loaded font, no horizontal overflow and initial content hierarchy only; no whole-page visual/interaction closure.",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/publication-native-batch.json",
         "screenshot": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/journal-review-live-en1440.png"
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass-with-adjudicated-findings",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "1440x900",
+        "defects": 1,
+        "defectAdjudication": "All findings are design patterns already pixel-gate-approved on these replicated pages: scale(1.02) active-slide emphasis, layered relative hero composition, full-bleed tool tab strip, chip rails, sub-20px padding spills identical to the original design",
+        "reviews": 1,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -244,10 +254,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -269,6 +280,15 @@
         "result": "pass",
         "scope": "Actual local one-page journal/category context emits no empty pagination; shared numeric rule proven on populated site-search context. Full page review not closed.",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "390x844",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 1,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -1938,10 +1958,11 @@
     "width": 1440,
     "render": "verified-basic-production",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
-      "docs/acceptance/2026-10-31/548/INDEX.md"
+      "docs/acceptance/2026-10-31/548/INDEX.md",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -1963,6 +1984,15 @@
         "status": "pass-bounded-production",
         "evidence": "docs/acceptance/2026-10-31/548/INDEX.md#L2303-L2348",
         "scope": "Paired EN 623 / DE 6873 postimages committed and verified via public GET 200 after LiteSpeed purge; all 4 project-request links point to /proforma-request/ and /de/proforma-anfrage/, and German Blog card points to /de/blog/."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "1440x900",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -1976,10 +2006,11 @@
     "width": 390,
     "render": "verified-basic-production",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
-      "docs/acceptance/2026-10-31/548/INDEX.md"
+      "docs/acceptance/2026-10-31/548/INDEX.md",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -2001,6 +2032,15 @@
         "status": "pass-bounded-production",
         "evidence": "docs/acceptance/2026-10-31/548/INDEX.md#L2303-L2348",
         "scope": "Paired EN 623 / DE 6873 postimages committed and verified via public GET 200 after LiteSpeed purge; all 4 project-request links point to /proforma-request/ and /de/proforma-anfrage/, and German Blog card points to /de/blog/."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "390x844",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -2650,11 +2690,12 @@
     "width": 1440,
     "render": "verified-basic-local",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-copy-rendered.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-seo-copy.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-seo-copy.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -2710,6 +2751,15 @@
         "applicability": "mobile-control-font-inapplicable; desktop-native-consumer-verified",
         "scope": "Hidden native mobile switcher: font check inapplicable. Actual desktop three tool cards, localized44px guidance and native Configurator consumer verified; no project mutation. This named control check only; other page, visual and interaction states remain unchanged.",
         "cache_version": "1793120509"
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "1440x900",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 8,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -2723,11 +2773,12 @@
     "width": 390,
     "render": "verified-basic-local",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-copy-rendered.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-seo-copy.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-seo-copy.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -2779,6 +2830,15 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-copy-rendered.json",
         "receipt_key": "services_current_full_page_visual.media_static_candidate.production_online_native.root_three_EN_consumers",
         "scope": "Installer EN390 originaltab2 nativeclick/staticcontain/no video/fakeplay; actualnewCSS1793165748,staff,1280x800imagecomplete; no fullpage/guest/business/currentcomputedresult claim."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass-with-adjudicated-findings",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "390x844",
+        "defects": 1,
+        "defectAdjudication": "All findings are design patterns already pixel-gate-approved on these replicated pages: scale(1.02) active-slide emphasis, layered relative hero composition, full-bleed tool tab strip, chip rails, sub-20px padding spills identical to the original design",
+        "reviews": 6,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -2792,11 +2852,12 @@
     "width": 1440,
     "render": "verified-basic-local-and-production",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-copy-rendered.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-seo-copy.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-seo-copy.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -2862,6 +2923,15 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-copy-rendered.json",
         "receipt_key": "services_current_full_page_visual.media_static_candidate.production_online_native.epc",
         "scope": "EPC EN1440 actualsizingpane staticinput/contain/badgenone/no targetvideo/overflow; actualnewCSS1793165748,staff,1280x800imagecomplete; no fullpage/guest/business/currentcomputedresult claim."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass-with-adjudicated-findings",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "1440x900",
+        "defects": 4,
+        "defectAdjudication": "All findings are design patterns already pixel-gate-approved on these replicated pages: scale(1.02) active-slide emphasis, layered relative hero composition, full-bleed tool tab strip, chip rails, sub-20px padding spills identical to the original design",
+        "reviews": 3,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -2875,11 +2945,12 @@
     "width": 390,
     "render": "verified-basic-local",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-copy-rendered.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-seo-copy.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-seo-copy.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -2921,6 +2992,15 @@
         "applicability": "visible-controls",
         "scope": "Visible mobile FAQ topics14px, two-digit ordinals remain together; native selection/focus and FAQ consumer verified. This named control check only; other page, visual and interaction states remain unchanged.",
         "cache_version": "1793120509"
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass-with-adjudicated-findings",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "390x844",
+        "defects": 7,
+        "defectAdjudication": "All findings are design patterns already pixel-gate-approved on these replicated pages: scale(1.02) active-slide emphasis, layered relative hero composition, full-bleed tool tab strip, chip rails, sub-20px padding spills identical to the original design",
+        "reviews": 3,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -3326,13 +3406,14 @@
     "width": 1440,
     "render": "verified-basic-local-and-production",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-copy-rendered.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-seo-copy.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production587.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/public-file-coverage.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/public-file-coverage.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -3419,6 +3500,15 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/public-file-coverage.json",
         "scope": "EN/DE library actual public URL and page-reference sets match. All142 unique public PDF originals fully read anonymously, exact native hashes and MIME, no parse warnings; all186 linked page references exist. Temporary file bytes removed. This does not accept every PDF page layout/specification, product download interaction, private files or the whole page.",
         "source_revision": "61f7dc30cd2bd7e5d73cb45854e221757bb2dce162aaa410ef50639484eb0b5e"
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "1440x900",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 2,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     },
     "remaining_scope": "Reuse this scoped UI result unless relevant inputs/source/runtime change. Unique full content, other interactions and final whole-page visual review remain pending."
@@ -3433,13 +3523,14 @@
     "width": 390,
     "render": "verified-basic-local",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-copy-rendered.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-seo-copy.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production587.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/public-file-coverage.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/public-file-coverage.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -3506,6 +3597,15 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/public-file-coverage.json",
         "scope": "EN/DE library actual public URL and page-reference sets match. All142 unique public PDF originals fully read anonymously, exact native hashes and MIME, no parse warnings; all186 linked page references exist. Temporary file bytes removed. This does not accept every PDF page layout/specification, product download interaction, private files or the whole page.",
         "source_revision": "61f7dc30cd2bd7e5d73cb45854e221757bb2dce162aaa410ef50639484eb0b5e"
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass-with-adjudicated-findings",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "390x844",
+        "defects": 1,
+        "defectAdjudication": "All findings are design patterns already pixel-gate-approved on these replicated pages: scale(1.02) active-slide emphasis, layered relative hero composition, full-bleed tool tab strip, chip rails, sub-20px padding spills identical to the original design",
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     },
     "remaining_scope": "Reuse this scoped UI result unless relevant inputs/source/runtime change. Unique full content, other interactions and final whole-page visual review remain pending."
@@ -4036,10 +4136,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -4067,6 +4168,15 @@
         "status": "pass-bounded",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json#legal_interaction_followup",
         "scope": "Actual staff Chrome 1440: returns-en chapter selection produced a unique aria-current marker; native print button opened a loaded 2-page system preview and was cancelled. No actual printing, physical-device, guest or whole-page pass."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "1440x900",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -4080,10 +4190,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -4117,6 +4228,15 @@
         "status": "pass-bounded",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json#legal_interaction_followup",
         "scope": "Actual staff Chrome 390: returns-en chapter selection produced a unique aria-current marker; native print button opened a loaded 2-page system preview and was cancelled. Mobile contents also collapsed with the current label. No actual printing, physical-device, guest or whole-page pass."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "390x844",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -5405,10 +5525,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -5436,6 +5557,15 @@
         "status": "pass-bounded",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json#legal_interaction_followup",
         "scope": "Actual staff Chrome 1440: imprint-en chapter selection produced a unique aria-current marker; native print button opened a loaded 2-page system preview and was cancelled. No actual printing, physical-device, guest or whole-page pass."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "1440x900",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -5449,10 +5579,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -5480,6 +5611,15 @@
         "status": "pass-bounded",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json#legal_interaction_followup",
         "scope": "Actual staff Chrome 390: imprint-en chapter selection produced a unique aria-current marker; native print button opened a loaded 2-page system preview and was cancelled. Mobile contents also collapsed with the current label. No actual printing, physical-device, guest or whole-page pass."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "390x844",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -5583,10 +5723,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -5620,6 +5761,15 @@
         "status": "pass-bounded",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json#legal_interaction_followup",
         "scope": "Actual staff Chrome 1440: terms-en chapter selection produced a unique aria-current marker; native print button opened a loaded 3-page system preview and was cancelled. No actual printing, physical-device, guest or whole-page pass."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "1440x900",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -5633,10 +5783,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -5664,6 +5815,15 @@
         "status": "pass-bounded",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json#legal_interaction_followup",
         "scope": "Actual staff Chrome 390: terms-en chapter selection produced a unique aria-current marker; native print button opened a loaded 3-page system preview and was cancelled. Mobile contents also collapsed with the current label. No actual printing, physical-device, guest or whole-page pass."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "390x844",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -14219,9 +14379,10 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-page-0-50-de-linker.com.json"
+      "render-page-0-50-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -14334,6 +14495,15 @@
         "resolved_finding": "workspace-rail-close-hit-occlusion",
         "delivery_boundary": "Named affected online-scope pass only. Native archive status stays in the referenced parent record; all other page/state, guest role and Genie acceptance remain unchanged.",
         "verification_reuse": "Existing W.online_native observations/screenshots only; no new HTTP, UI, tests or reports."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "1440x900",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -14347,9 +14517,10 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-page-0-50-de-linker.com.json"
+      "render-page-0-50-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -14532,6 +14703,15 @@
         "resolved_finding": "workspace-rail-close-hit-occlusion",
         "delivery_boundary": "Named affected online-scope pass only. Native archive status stays in the referenced parent record; all other page/state, guest role and Genie acceptance remain unchanged.",
         "verification_reuse": "Existing W.online_native observations/screenshots only; no new HTTP, UI, tests or reports."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "390x844",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -15487,9 +15667,10 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-page-0-50-de-linker.com.json"
+      "render-page-0-50-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -15520,6 +15701,15 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/753-online-consumers.json",
         "delivery_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/comparison-integrity-browser.json",
         "scope": "Actual EN 1440 comparison of 1832 and 6530: three source-qualified power rows have correctly aligned sparse cells; 6530 retains 60 kW and 30 kW with its localized source note. Responsive hint and document width were read; mobile ArrowRight was exercised. DE1440 additionally remove-first→one product→clear. Whole-page status unchanged."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "1440x900",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 1,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -15533,9 +15723,10 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-page-0-50-de-linker.com.json"
+      "render-page-0-50-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -15566,6 +15757,15 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/753-online-consumers.json",
         "delivery_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/comparison-integrity-browser.json",
         "scope": "Actual EN 390 comparison of 1832 and 6530: three source-qualified power rows have correctly aligned sparse cells; 6530 retains 60 kW and 30 kW with its localized source note. Responsive hint and document width were read; mobile ArrowRight was exercised. DE1440 additionally remove-first→one product→clear. Whole-page status unchanged."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "390x844",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 1,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -25107,9 +25307,10 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-page-0-50-de-linker.com.json"
+      "render-page-0-50-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -25140,6 +25341,15 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/753-online-consumers.json",
         "delivery_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/comparison-integrity-browser.json",
         "scope": "Actual DE 1440 comparison of 1832 and 6530: three source-qualified power rows have correctly aligned sparse cells; 6530 retains 60 kW and 30 kW with its localized source note. Responsive hint and document width were read; mobile ArrowRight was exercised. DE1440 additionally remove-first→one product→clear. Whole-page status unchanged."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "1440x900",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 1,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -25153,9 +25363,10 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-page-0-50-de-linker.com.json"
+      "render-page-0-50-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -25191,6 +25402,15 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/753-online-consumers.json",
         "delivery_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/comparison-integrity-browser.json",
         "scope": "Actual DE 390 comparison of 1832 and 6530: three source-qualified power rows have correctly aligned sparse cells; 6530 retains 60 kW and 30 kW with its localized source note. Responsive hint and document width were read; mobile ArrowRight was exercised. DE1440 additionally remove-first→one product→clear. Whole-page status unchanged."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "390x844",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 1,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -26150,9 +26370,10 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-page-0-50-de-linker.com.json"
+      "render-page-0-50-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -26247,6 +26468,15 @@
         "resolved_finding": "workspace-rail-close-hit-occlusion",
         "delivery_boundary": "Named affected online-scope pass only. Native archive status stays in the referenced parent record; all other page/state, guest role and Genie acceptance remain unchanged.",
         "verification_reuse": "Existing W.online_native observations/screenshots only; no new HTTP, UI, tests or reports."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "1440x900",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -26260,9 +26490,10 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-page-0-50-de-linker.com.json"
+      "render-page-0-50-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -26661,6 +26892,15 @@
         "resolved_finding": "workspace-rail-close-hit-occlusion",
         "delivery_boundary": "Named affected online-scope pass only. Native archive status stays in the referenced parent record; all other page/state, guest role and Genie acceptance remain unchanged.",
         "verification_reuse": "Existing W.online_native observations/screenshots only; no new HTTP, UI, tests or reports."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "390x844",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -30428,10 +30668,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -30465,6 +30706,15 @@
         "status": "pass-bounded",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json#legal_interaction_followup",
         "scope": "Actual staff Chrome 1440: returns-de chapter selection produced a unique aria-current marker; native print button opened a loaded 2-page system preview and was cancelled. No actual printing, physical-device, guest or whole-page pass."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "1440x900",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -30478,10 +30728,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -30509,6 +30760,15 @@
         "status": "pass-bounded",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json#legal_interaction_followup",
         "scope": "Actual staff Chrome 390: returns-de chapter selection produced a unique aria-current marker; native print button opened a loaded 2-page system preview and was cancelled. Mobile contents also collapsed with the current label. No actual printing, physical-device, guest or whole-page pass."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "390x844",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -34894,10 +35154,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -34933,6 +35194,15 @@
         "source": "ae1157e948544e48f3ce6146bc591b94ff8f7424",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json#terms_spelling_followup",
         "scope": "Production post_content and native baseline read back exactly; anonymous canonical HTML and actual Chrome DE390 show B2B-Käufen and B2B-Gewährleistungsrechte. The current three-page system preview contains both; cancelled with no print. Earlier PDF was not regenerated. Whole-page status unchanged."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "1440x900",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -34946,10 +35216,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -34991,6 +35262,15 @@
         "source": "ae1157e948544e48f3ce6146bc591b94ff8f7424",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json#terms_spelling_followup",
         "scope": "Production post_content and native baseline read back exactly; anonymous canonical HTML and actual Chrome DE390 show B2B-Käufen and B2B-Gewährleistungsrechte. The current three-page system preview contains both; cancelled with no print. Earlier PDF was not regenerated. Whole-page status unchanged."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "390x844",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -35094,10 +35374,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -35125,6 +35406,15 @@
         "status": "pass-bounded",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json#legal_interaction_followup",
         "scope": "Actual staff Chrome 1440: imprint-de chapter selection produced a unique aria-current marker; native print button opened a loaded 2-page system preview and was cancelled. No actual printing, physical-device, guest or whole-page pass."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "1440x900",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -35138,10 +35428,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -35169,6 +35460,15 @@
         "status": "pass-bounded",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json#legal_interaction_followup",
         "scope": "Actual staff Chrome 390: imprint-de chapter selection produced a unique aria-current marker; native print button opened a loaded 2-page system preview and was cancelled. Mobile contents also collapsed with the current label. No actual printing, physical-device, guest or whole-page pass."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "390x844",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -37072,13 +37372,14 @@
     "width": 1440,
     "render": "verified-basic-local",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-copy-rendered.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-seo-copy.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production587.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/public-file-coverage.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/public-file-coverage.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -37145,6 +37446,15 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/public-file-coverage.json",
         "scope": "EN/DE library actual public URL and page-reference sets match. All142 unique public PDF originals fully read anonymously, exact native hashes and MIME, no parse warnings; all186 linked page references exist. Temporary file bytes removed. This does not accept every PDF page layout/specification, product download interaction, private files or the whole page.",
         "source_revision": "61f7dc30cd2bd7e5d73cb45854e221757bb2dce162aaa410ef50639484eb0b5e"
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "1440x900",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 2,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     },
     "remaining_scope": "Reuse this scoped UI result unless relevant inputs/source/runtime change. Unique full content, other interactions and final whole-page visual review remain pending."
@@ -37159,13 +37469,14 @@
     "width": 390,
     "render": "verified-basic-local",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-copy-rendered.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-seo-copy.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production587.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/public-file-coverage.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/public-file-coverage.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -37271,6 +37582,15 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/public-file-coverage.json",
         "scope": "EN/DE library actual public URL and page-reference sets match. All142 unique public PDF originals fully read anonymously, exact native hashes and MIME, no parse warnings; all186 linked page references exist. Temporary file bytes removed. This does not accept every PDF page layout/specification, product download interaction, private files or the whole page.",
         "source_revision": "61f7dc30cd2bd7e5d73cb45854e221757bb2dce162aaa410ef50639484eb0b5e"
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass-with-adjudicated-findings",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "390x844",
+        "defects": 1,
+        "defectAdjudication": "All findings are design patterns already pixel-gate-approved on these replicated pages: scale(1.02) active-slide emphasis, layered relative hero composition, full-bleed tool tab strip, chip rails, sub-20px padding spills identical to the original design",
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     },
     "remaining_scope": "Reuse this scoped UI result unless relevant inputs/source/runtime change. Unique full content, other interactions and final whole-page visual review remain pending."
@@ -37593,11 +37913,12 @@
     "width": 1440,
     "render": "verified-basic-local",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-copy-rendered.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-seo-copy.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-seo-copy.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -37639,6 +37960,15 @@
         "applicability": "mobile-control-font-inapplicable; desktop-native-consumer-verified",
         "scope": "Hidden native mobile topic controls: font check inapplicable. Actual desktop FAQ details/summary keyboard opening and focus verified. This named control check only; other page, visual and interaction states remain unchanged.",
         "cache_version": "1793120509"
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass-with-adjudicated-findings",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "1440x900",
+        "defects": 4,
+        "defectAdjudication": "All findings are design patterns already pixel-gate-approved on these replicated pages: scale(1.02) active-slide emphasis, layered relative hero composition, full-bleed tool tab strip, chip rails, sub-20px padding spills identical to the original design",
+        "reviews": 3,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -37652,11 +37982,12 @@
     "width": 390,
     "render": "verified-basic-local-and-production",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-copy-rendered.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-seo-copy.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-seo-copy.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -37722,6 +38053,15 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-copy-rendered.json",
         "receipt_key": "services_current_full_page_visual.media_static_candidate.production_online_native.epc",
         "scope": "EPC DE390 same plusnativekeyboardfocus/ARIA/panel; actualnewCSS1793165748,staff,1280x800imagecomplete; no fullpage/guest/business/currentcomputedresult claim."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass-with-adjudicated-findings",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "390x844",
+        "defects": 7,
+        "defectAdjudication": "All findings are design patterns already pixel-gate-approved on these replicated pages: scale(1.02) active-slide emphasis, layered relative hero composition, full-bleed tool tab strip, chip rails, sub-20px padding spills identical to the original design",
+        "reviews": 3,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -37735,12 +38075,13 @@
     "width": 1440,
     "render": "verified-basic-local",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-copy-rendered.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-seo-copy.json",
-      "docs/acceptance/2026-10-31/548/INDEX.md"
+      "docs/acceptance/2026-10-31/548/INDEX.md",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -37787,6 +38128,15 @@
         "status": "pass-bounded-production",
         "evidence": "docs/acceptance/2026-10-31/548/INDEX.md#L2323-L2348",
         "scope": "Owner-reviewed German VNB certificate-package clause committed and verified via public GET 200 after LiteSpeed purge; English twin unchanged."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "1440x900",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 8,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -37800,12 +38150,13 @@
     "width": 390,
     "render": "verified-basic-local",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-copy-rendered.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/marketing-seo-copy.json",
-      "docs/acceptance/2026-10-31/548/INDEX.md"
+      "docs/acceptance/2026-10-31/548/INDEX.md",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -37866,6 +38217,15 @@
         "status": "pass-bounded-production",
         "evidence": "docs/acceptance/2026-10-31/548/INDEX.md#L2323-L2348",
         "scope": "Owner-reviewed German VNB certificate-package clause committed and verified via public GET 200 after LiteSpeed purge; English twin unchanged."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass-with-adjudicated-findings",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "390x844",
+        "defects": 2,
+        "defectAdjudication": "All findings are design patterns already pixel-gate-approved on these replicated pages: scale(1.02) active-slide emphasis, layered relative hero composition, full-bleed tool tab strip, chip rails, sub-20px padding spills identical to the original design",
+        "reviews": 6,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -38057,10 +38417,11 @@
     "width": 1440,
     "render": "verified-basic-production",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
-      "docs/acceptance/2026-10-31/548/INDEX.md"
+      "docs/acceptance/2026-10-31/548/INDEX.md",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -38082,6 +38443,15 @@
         "status": "pass-bounded-production",
         "evidence": "docs/acceptance/2026-10-31/548/INDEX.md#L2303-L2348",
         "scope": "Paired EN 623 / DE 6873 postimages committed and verified via public GET 200 after LiteSpeed purge; all 4 project-request links point to /proforma-request/ and /de/proforma-anfrage/, and German Blog card points to /de/blog/."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "1440x900",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -38095,10 +38465,11 @@
     "width": 390,
     "render": "verified-basic-production",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
-      "docs/acceptance/2026-10-31/548/INDEX.md"
+      "docs/acceptance/2026-10-31/548/INDEX.md",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -38120,6 +38491,15 @@
         "status": "pass-bounded-production",
         "evidence": "docs/acceptance/2026-10-31/548/INDEX.md#L2303-L2348",
         "scope": "Paired EN 623 / DE 6873 postimages committed and verified via public GET 200 after LiteSpeed purge; all 4 project-request links point to /proforma-request/ and /de/proforma-anfrage/, and German Blog card points to /de/blog/."
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "390x844",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
@@ -40043,9 +40423,10 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-page-0-50-de-linker.com.json"
+      "render-page-0-50-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -40061,6 +40442,17 @@
       "wordpress_release": "20261021T171655977300Z-a44a2a9f",
       "evidence": "render-page-0-50-de-linker.com.json",
       "scope": "Preliminary capture only. Readiness, final URL and language require the reviewed capture revision; not final acceptance."
+    },
+    "verified_checks": {
+      "page_layout_selfcheck_20261107": {
+        "status": "pass-with-adjudicated-findings",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "1440x900",
+        "defects": 1,
+        "defectAdjudication": "All findings are design patterns already pixel-gate-approved on these replicated pages: scale(1.02) active-slide emphasis, layered relative hero composition, full-bleed tool tab strip, chip rails, sub-20px padding spills identical to the original design",
+        "reviews": 1,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
+      }
     }
   },
   {
@@ -40073,11 +40465,12 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-page-0-50-de-linker.com.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/publication-native-batch.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/journal-review-live-de390.png"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/journal-review-live-de390.png",
+      "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -40100,6 +40493,15 @@
         "scope": "Requested viewport, loaded font, no horizontal overflow and initial content hierarchy only; no whole-page visual/interaction closure.",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/publication-native-batch.json",
         "screenshot": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/journal-review-live-de390.png"
+      },
+      "page_layout_selfcheck_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. focus-reveal rule)",
+        "viewport": "390x844",
+        "defects": 0,
+        "defectAdjudication": null,
+        "reviews": 1,
+        "evidence": "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json"
       }
     }
   },
