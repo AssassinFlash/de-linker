@@ -41187,9 +41187,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -41219,6 +41221,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 5,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -41232,9 +41242,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -41264,6 +41276,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 5,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -41277,9 +41297,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -41309,6 +41331,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 5,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -41322,9 +41352,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -41354,6 +41386,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 2,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -41367,9 +41407,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -41385,6 +41427,16 @@
       "evidence": "render-term-0-70-de-linker.com.json",
       "wordpress_release": "unbracketed; deployment changed during the legacy discovery series",
       "scope": "Legacy helper: no canonical/language/readiness gate. Discovery image only; all interaction/visual review remain pending."
+    },
+    "verified_checks": {
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
+      }
     }
   },
   {
@@ -41397,9 +41449,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -41415,6 +41469,16 @@
       "evidence": "render-term-0-70-de-linker.com.json",
       "wordpress_release": "unbracketed; deployment changed during the legacy discovery series",
       "scope": "Legacy helper: no canonical/language/readiness gate. Discovery image only; all interaction/visual review remain pending."
+    },
+    "verified_checks": {
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
+      }
     }
   },
   {
@@ -41427,9 +41491,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -41445,6 +41511,16 @@
       "evidence": "render-term-0-70-de-linker.com.json",
       "wordpress_release": "unbracketed; deployment changed during the legacy discovery series",
       "scope": "Legacy helper: no canonical/language/readiness gate. Discovery image only; all interaction/visual review remain pending."
+    },
+    "verified_checks": {
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
+      }
     }
   },
   {
@@ -41457,9 +41533,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -41475,6 +41553,16 @@
       "evidence": "render-term-0-70-de-linker.com.json",
       "wordpress_release": "unbracketed; deployment changed during the legacy discovery series",
       "scope": "Legacy helper: no canonical/language/readiness gate. Discovery image only; all interaction/visual review remain pending."
+    },
+    "verified_checks": {
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
+      }
     }
   },
   {
@@ -41487,9 +41575,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -41519,6 +41609,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 5,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -41532,9 +41630,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -41564,6 +41664,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 2,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -41577,12 +41685,14 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-term-0-70-de-linker.com.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/footer-readable-controls.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-query-retention.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/journal-category-live-de1440.png"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/journal-category-live-de1440.png",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -41632,6 +41742,14 @@
           "width": 1440
         },
         "scope": "Visible main body, both cards, fonts, language and document width; no whole-page or unrelated interaction closure."
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -41645,12 +41763,14 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-term-0-70-de-linker.com.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/publication-native-batch.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/journal-category-live-de390.png",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/footer-readable-controls.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/footer-readable-controls.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -41683,6 +41803,14 @@
         "local": "Guest EN/DE1440/390 passed, no overflow or email/copy overlap; actual paired language links/contact landing, hover and2px/3px keyboard focus. OfficialGenerate once, cache/drift healthy.",
         "production": "Guest EN1440/DE390 same bounds/fonts and native paired category/contact navigation. All1344runtime files matchexpected;54CMS hashes/pairs/slashes unchanged. Only11intended footer compiledrules added; unrelated orderedCSS identical apart from same nonconflicting focusposition.",
         "remaining_scope": "Other footer panel operations, clipboard contents, consent dialog and full-page/globalnavigation contracts retain existing uncovered states; unchanged implementation proofs reused, not asserted newly tested."
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -41696,9 +41824,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -41728,6 +41858,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 4,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -41741,9 +41879,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -41773,6 +41913,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 3,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -41786,12 +41934,14 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-term-0-70-de-linker.com.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/footer-readable-controls.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-query-retention.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/journal-category-live-en1440.png"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/journal-category-live-en1440.png",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -41841,6 +41991,14 @@
           "width": 1440
         },
         "scope": "Visible main body, both cards, fonts, language and document width; no whole-page or unrelated interaction closure."
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -41854,12 +42012,14 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-term-0-70-de-linker.com.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/footer-readable-controls.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-query-retention.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/journal-category-live-en390.png"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/journal-category-live-en390.png",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -41908,6 +42068,14 @@
           "width": 390
         },
         "scope": "Visible main body, both cards, fonts, language and document width; no whole-page or unrelated interaction closure."
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -41921,9 +42089,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -41953,6 +42123,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 4,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -41966,9 +42144,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -41998,6 +42178,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 3,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -42753,9 +42941,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -42785,6 +42975,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 6,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -42798,9 +42996,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -42830,6 +43030,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 4,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -42843,9 +43051,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -42861,6 +43071,16 @@
       "evidence": "render-term-0-70-de-linker.com.json",
       "wordpress_release": "unbracketed; deployment changed during the legacy discovery series",
       "scope": "Legacy helper: no canonical/language/readiness gate. Discovery image only; all interaction/visual review remain pending."
+    },
+    "verified_checks": {
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 6,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
+      }
     }
   },
   {
@@ -42873,9 +43093,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -42891,6 +43113,16 @@
       "evidence": "render-term-0-70-de-linker.com.json",
       "wordpress_release": "unbracketed; deployment changed during the legacy discovery series",
       "scope": "Legacy helper: no canonical/language/readiness gate. Discovery image only; all interaction/visual review remain pending."
+    },
+    "verified_checks": {
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 8,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
+      }
     }
   },
   {
@@ -45073,9 +45305,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -45091,6 +45325,16 @@
       "evidence": "render-term-0-70-de-linker.com.json",
       "wordpress_release": "unbracketed; deployment changed during the legacy discovery series",
       "scope": "Legacy helper: no canonical/language/readiness gate. Discovery image only; all interaction/visual review remain pending."
+    },
+    "verified_checks": {
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 4,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
+      }
     }
   },
   {
@@ -45103,9 +45347,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -45121,6 +45367,16 @@
       "evidence": "render-term-0-70-de-linker.com.json",
       "wordpress_release": "unbracketed; deployment changed during the legacy discovery series",
       "scope": "Legacy helper: no canonical/language/readiness gate. Discovery image only; all interaction/visual review remain pending."
+    },
+    "verified_checks": {
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 1,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
+      }
     }
   },
   {
@@ -45133,9 +45389,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -45165,6 +45423,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 4,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -45178,9 +45444,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -45210,6 +45478,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 2,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -45223,9 +45499,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -45255,6 +45533,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 4,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -45268,9 +45554,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -45300,6 +45588,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 2,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -45313,9 +45609,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -45345,6 +45643,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 3,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -45358,9 +45664,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -45390,6 +45698,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 5,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -45403,9 +45719,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -45435,6 +45753,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 5,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -45448,9 +45774,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -45480,6 +45808,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 2,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -45493,9 +45829,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -45525,6 +45863,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 6,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -45538,9 +45884,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -45570,6 +45918,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 4,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -50545,10 +50901,12 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-term-0-70-de-linker.com.json",
-      "/Users/chesterjohn/Documents/de-linker/docs/acceptance/2026-10-22/full-site/products/live-review.md"
+      "/Users/chesterjohn/Documents/de-linker/docs/acceptance/2026-10-22/full-site/products/live-review.md",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -50590,6 +50948,14 @@
           "final_solution_draft_consumer": "OPEN",
           "new_tests_http_or_ui_actions": false
         }
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 4,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -50603,11 +50969,13 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-term-0-70-de-linker.com.json",
       "/Users/chesterjohn/Documents/de-linker/docs/acceptance/2026-10-22/full-site/products/live-review.md",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/category-home-storage-online-de390.png"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/category-home-storage-online-de390.png",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -50649,6 +51017,14 @@
           "final_solution_draft_consumer": "OPEN",
           "new_tests_http_or_ui_actions": false
         }
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 6,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -50662,9 +51038,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -50680,6 +51058,16 @@
       "evidence": "render-term-0-70-de-linker.com.json",
       "wordpress_release": "unbracketed; deployment changed during the legacy discovery series",
       "scope": "Legacy helper: no canonical/language/readiness gate. Discovery image only; all interaction/visual review remain pending."
+    },
+    "verified_checks": {
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 5,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
+      }
     }
   },
   {
@@ -50692,9 +51080,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -50710,6 +51100,16 @@
       "evidence": "render-term-0-70-de-linker.com.json",
       "wordpress_release": "unbracketed; deployment changed during the legacy discovery series",
       "scope": "Legacy helper: no canonical/language/readiness gate. Discovery image only; all interaction/visual review remain pending."
+    },
+    "verified_checks": {
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 7,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
+      }
     }
   },
   {
@@ -50722,9 +51122,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -50740,6 +51142,16 @@
       "evidence": "render-term-0-70-de-linker.com.json",
       "wordpress_release": "unbracketed; deployment changed during the legacy discovery series",
       "scope": "Legacy helper: no canonical/language/readiness gate. Discovery image only; all interaction/visual review remain pending."
+    },
+    "verified_checks": {
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 5,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
+      }
     }
   },
   {
@@ -50752,9 +51164,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -50770,6 +51184,16 @@
       "evidence": "render-term-0-70-de-linker.com.json",
       "wordpress_release": "unbracketed; deployment changed during the legacy discovery series",
       "scope": "Legacy helper: no canonical/language/readiness gate. Discovery image only; all interaction/visual review remain pending."
+    },
+    "verified_checks": {
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 7,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
+      }
     }
   },
   {
@@ -50782,11 +51206,13 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-term-0-70-de-linker.com.json",
       "/Users/chesterjohn/Documents/de-linker/docs/acceptance/2026-10-22/full-site/products/live-review.md",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/category-home-storage-online-en1440.png"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/category-home-storage-online-en1440.png",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -50828,6 +51254,14 @@
           "final_solution_draft_consumer": "OPEN",
           "new_tests_http_or_ui_actions": false
         }
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 4,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -50841,10 +51275,12 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-term-0-70-de-linker.com.json",
-      "/Users/chesterjohn/Documents/de-linker/docs/acceptance/2026-10-22/full-site/products/live-review.md"
+      "/Users/chesterjohn/Documents/de-linker/docs/acceptance/2026-10-22/full-site/products/live-review.md",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -50886,6 +51322,14 @@
           "final_solution_draft_consumer": "OPEN",
           "new_tests_http_or_ui_actions": false
         }
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 6,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -50899,9 +51343,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -50917,6 +51363,16 @@
       "evidence": "render-term-0-70-de-linker.com.json",
       "wordpress_release": "unbracketed; deployment changed during the legacy discovery series",
       "scope": "Legacy helper: no canonical/language/readiness gate. Discovery image only; all interaction/visual review remain pending."
+    },
+    "verified_checks": {
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
+      }
     }
   },
   {
@@ -50929,9 +51385,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -50947,6 +51405,16 @@
       "evidence": "render-term-0-70-de-linker.com.json",
       "wordpress_release": "unbracketed; deployment changed during the legacy discovery series",
       "scope": "Legacy helper: no canonical/language/readiness gate. Discovery image only; all interaction/visual review remain pending."
+    },
+    "verified_checks": {
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
+      }
     }
   },
   {
@@ -50959,9 +51427,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -50977,6 +51447,16 @@
       "evidence": "render-term-0-70-de-linker.com.json",
       "wordpress_release": "unbracketed; deployment changed during the legacy discovery series",
       "scope": "Legacy helper: no canonical/language/readiness gate. Discovery image only; all interaction/visual review remain pending."
+    },
+    "verified_checks": {
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
+      }
     }
   },
   {
@@ -50989,9 +51469,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -51007,6 +51489,16 @@
       "evidence": "render-term-0-70-de-linker.com.json",
       "wordpress_release": "unbracketed; deployment changed during the legacy discovery series",
       "scope": "Legacy helper: no canonical/language/readiness gate. Discovery image only; all interaction/visual review remain pending."
+    },
+    "verified_checks": {
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
+      }
     }
   },
   {
@@ -51019,9 +51511,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -51051,6 +51545,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 8,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -51064,9 +51566,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -51096,6 +51600,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 7,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -51109,9 +51621,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -51141,6 +51655,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 5,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -51154,9 +51676,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -51186,6 +51710,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 2,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -51199,9 +51731,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -51229,6 +51763,14 @@
         "document_horizontal_overflow": false,
         "scope": "AX and rendered DOM after navigation: heading, localized search description, GoodWe HCA G2 product family and image alt. No full-page visual, image load, guest price, long-copy or all interaction acceptance.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 5,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -51242,9 +51784,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -51274,6 +51818,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 2,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -51287,9 +51839,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -51319,6 +51873,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 3,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -51332,9 +51894,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -51364,6 +51928,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 4,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -51457,9 +52029,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -51489,6 +52063,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 5,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -51502,9 +52084,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -51534,6 +52118,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 2,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -56367,9 +56959,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -56385,6 +56979,16 @@
       "evidence": "render-term-0-70-de-linker.com.json",
       "wordpress_release": "unbracketed; deployment changed during the legacy discovery series",
       "scope": "Legacy helper: no canonical/language/readiness gate. Discovery image only; all interaction/visual review remain pending."
+    },
+    "verified_checks": {
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 4,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
+      }
     }
   },
   {
@@ -56397,9 +57001,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -56415,6 +57021,16 @@
       "evidence": "render-term-0-70-de-linker.com.json",
       "wordpress_release": "unbracketed; deployment changed during the legacy discovery series",
       "scope": "Legacy helper: no canonical/language/readiness gate. Discovery image only; all interaction/visual review remain pending."
+    },
+    "verified_checks": {
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 1,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
+      }
     }
   },
   {
@@ -56427,9 +57043,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -56445,6 +57063,16 @@
       "evidence": "render-term-0-70-de-linker.com.json",
       "wordpress_release": "unbracketed; deployment changed during the legacy discovery series",
       "scope": "Legacy helper: no canonical/language/readiness gate. Discovery image only; all interaction/visual review remain pending."
+    },
+    "verified_checks": {
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
+      }
     }
   },
   {
@@ -56457,10 +57085,12 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-term-0-70-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -56482,6 +57112,14 @@
         "result": "pass",
         "scope": "Actual local one-page journal/category context emits no empty pagination; shared numeric rule proven on populated site-search context. Full page review not closed.",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -56495,9 +57133,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -56513,6 +57153,16 @@
       "evidence": "render-term-0-70-de-linker.com.json",
       "wordpress_release": "unbracketed; deployment changed during the legacy discovery series",
       "scope": "Legacy helper: no canonical/language/readiness gate. Discovery image only; all interaction/visual review remain pending."
+    },
+    "verified_checks": {
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
+      }
     }
   },
   {
@@ -56525,10 +57175,12 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-term-0-70-de-linker.com.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -56550,6 +57202,14 @@
         "result": "pass",
         "scope": "Actual local one-page journal/category context emits no empty pagination; shared numeric rule proven on populated site-search context. Full page review not closed.",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -56563,9 +57223,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -56581,6 +57243,16 @@
       "evidence": "render-term-0-70-de-linker.com.json",
       "wordpress_release": "unbracketed; deployment changed during the legacy discovery series",
       "scope": "Legacy helper: no canonical/language/readiness gate. Discovery image only; all interaction/visual review remain pending."
+    },
+    "verified_checks": {
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 6,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
+      }
     }
   },
   {
@@ -56593,9 +57265,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -56611,6 +57285,16 @@
       "evidence": "render-term-0-70-de-linker.com.json",
       "wordpress_release": "unbracketed; deployment changed during the legacy discovery series",
       "scope": "Legacy helper: no canonical/language/readiness gate. Discovery image only; all interaction/visual review remain pending."
+    },
+    "verified_checks": {
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 8,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
+      }
     }
   },
   {
@@ -56623,9 +57307,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -56641,6 +57327,16 @@
       "evidence": "render-term-0-70-de-linker.com.json",
       "wordpress_release": "unbracketed; deployment changed during the legacy discovery series",
       "scope": "Legacy helper: no canonical/language/readiness gate. Discovery image only; all interaction/visual review remain pending."
+    },
+    "verified_checks": {
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
+      }
     }
   },
   {
@@ -56653,9 +57349,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -56671,6 +57369,16 @@
       "evidence": "render-term-0-70-de-linker.com.json",
       "wordpress_release": "unbracketed; deployment changed during the legacy discovery series",
       "scope": "Legacy helper: no canonical/language/readiness gate. Discovery image only; all interaction/visual review remain pending."
+    },
+    "verified_checks": {
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 0,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
+      }
     }
   },
   {
@@ -56683,9 +57391,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -56715,6 +57425,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 7,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -56728,9 +57446,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -56760,6 +57480,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 6,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -56773,9 +57501,11 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -56805,6 +57535,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 5,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },
@@ -56818,9 +57556,11 @@
     "width": 390,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "pending",
+    "visual_review": "partially-verified",
     "evidence": [
-      "render-term-0-70-de-linker.com.json"
+      "render-term-0-70-de-linker.com.json",
+      "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
     ],
     "findings": [],
     "records": [
@@ -56850,6 +57590,14 @@
         "image_note": "Some below-viewport images were still lazy at initial sample; no failure inferred. EV charger EN image separately loaded on scroll, naturalWidth 300.",
         "known_scope": "Production GoodWe archive membership defect has candidate 734, not counted as a new finding.",
         "captured_date": "2026-10-28"
+      },
+      "term_layout_count_20261107": {
+        "status": "pass",
+        "environment": "production, anonymous browser, deterministic layout probe (final probe incl. the inline-overlap fix) + listing count reconciliation against WP-CLI term counts",
+        "viewport": "390x844",
+        "defects": 0,
+        "reviews": 6,
+        "evidence": "docs/acceptance/2026-10-22/full-site/term-visual-selfcheck-20261107.json + docs/acceptance/2026-10-22/full-site/term-counts-20261107.json"
       }
     }
   },

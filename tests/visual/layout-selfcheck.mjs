@@ -203,6 +203,8 @@ const runSelftest = async (browser) => {
 		"#control-overflow-clipped",
 		"#control-scroller",
 		"#control-closed-details-body",
+		"#control-wrapped-inline-a",
+		"#control-wrapped-inline-b",
 		"#control-grid-fill",
 		"#control-flex",
 		"#control-wrapping",

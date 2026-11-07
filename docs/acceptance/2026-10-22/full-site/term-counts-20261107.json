@@ -1,0 +1,317 @@
+[
+ {
+  "url": "https://de-linker.com/product-category/accessories/",
+  "status": 200,
+  "h1": "Accessories",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 7
+ },
+ {
+  "url": "https://de-linker.com/product-category/commercial-storage/all-in-one-systems/",
+  "status": 200,
+  "h1": "All-in-One Systems",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 3
+ },
+ {
+  "url": "https://de-linker.com/de/kategorie/anwendungen/",
+  "status": 200,
+  "h1": "Anwendungen",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 0
+ },
+ {
+  "url": "https://de-linker.com/category/applications-blog/",
+  "status": 200,
+  "h1": "Applications",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 0
+ },
+ {
+  "url": "https://de-linker.com/product-category/accessories/backup-power/",
+  "status": 200,
+  "h1": "Backup Power",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 4
+ },
+ {
+  "url": "https://de-linker.com/de/kategorie/batteriespeicher/",
+  "status": 200,
+  "h1": "Batteriespeicher",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 0
+ },
+ {
+  "url": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/batteriesysteme/",
+  "status": 200,
+  "h1": "Batteriesysteme",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 4
+ },
+ {
+  "url": "https://de-linker.com/category/battery-storage-blog/",
+  "status": 200,
+  "h1": "Battery Storage",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 0
+ },
+ {
+  "url": "https://de-linker.com/product-category/commercial-storage/battery-systems/",
+  "status": 200,
+  "h1": "Battery Systems",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 4
+ },
+ {
+  "url": "https://de-linker.com/product-category/commercial-storage/",
+  "status": 200,
+  "h1": "Commercial Storage",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 7
+ },
+ {
+  "url": "https://de-linker.com/de/phase/dreiphasig/",
+  "status": 200,
+  "h1": "Dreiphasig",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 24
+ },
+ {
+  "url": "https://de-linker.com/de/phase/einphasig/",
+  "status": 200,
+  "h1": "Einphasig",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 7
+ },
+ {
+  "url": "https://de-linker.com/product-category/ems-monitoring/",
+  "status": 200,
+  "h1": "EMS & Monitoring",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 5
+ },
+ {
+  "url": "https://de-linker.com/de/produkt-kategorie/ems-ueberwachung/",
+  "status": 200,
+  "h1": "EMS und Überwachung",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 5
+ },
+ {
+  "url": "https://de-linker.com/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/",
+  "status": 200,
+  "h1": "Energiezähler & Stromwandler",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 3
+ },
+ {
+  "url": "https://de-linker.com/product-category/ev-chargers/",
+  "status": 200,
+  "h1": "EV Chargers",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 1
+ },
+ {
+  "url": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/",
+  "status": 200,
+  "h1": "Gewerbespeicher",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 7
+ },
+ {
+  "url": "https://de-linker.com/de/produkt-kategorie/heimspeicher/",
+  "status": 200,
+  "h1": "Heimspeicher",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 9
+ },
+ {
+  "url": "https://de-linker.com/battery-voltage/high-voltage/",
+  "status": 200,
+  "h1": "High Voltage",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 8
+ },
+ {
+  "url": "https://de-linker.com/de/battery-voltage/hochvolt/",
+  "status": 200,
+  "h1": "Hochvolt",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 8
+ },
+ {
+  "url": "https://de-linker.com/product-category/home-storage/",
+  "status": 200,
+  "h1": "Home Storage",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 9
+ },
+ {
+  "url": "https://de-linker.com/category/installation-commissioning/",
+  "status": 200,
+  "h1": "Installation & Commissioning",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 0
+ },
+ {
+  "url": "https://de-linker.com/de/kategorie/installation-inbetriebnahme/",
+  "status": 200,
+  "h1": "Installation & Inbetriebnahme",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 0
+ },
+ {
+  "url": "https://de-linker.com/product-category/inverters/",
+  "status": 200,
+  "h1": "Inverters",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 24
+ },
+ {
+  "url": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/komplettsysteme/",
+  "status": 200,
+  "h1": "Komplettsysteme",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 3
+ },
+ {
+  "url": "https://de-linker.com/de/produkt-kategorie/ladestationen/",
+  "status": 200,
+  "h1": "Ladestationen",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 1
+ },
+ {
+  "url": "https://de-linker.com/product-category/accessories/meters-current-transformers/",
+  "status": 200,
+  "h1": "Meters & Current Transformers",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 3
+ },
+ {
+  "url": "https://de-linker.com/de/produkt-kategorie/zubehoer/notstrom/",
+  "status": 200,
+  "h1": "Notstrom",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 4
+ },
+ {
+  "url": "https://de-linker.com/phase/single-phase/",
+  "status": 200,
+  "h1": "Single-phase",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 7
+ },
+ {
+  "url": "https://de-linker.com/category/system-design/",
+  "status": 200,
+  "h1": "System Design",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 0
+ },
+ {
+  "url": "https://de-linker.com/de/kategorie/systemauslegung/",
+  "status": 200,
+  "h1": "Systemauslegung",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 0
+ },
+ {
+  "url": "https://de-linker.com/phase/three-phase/",
+  "status": 200,
+  "h1": "Three-phase",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 24
+ },
+ {
+  "url": "https://de-linker.com/de/kategorie/ueberwachung-energiemanagement/",
+  "status": 200,
+  "h1": "Überwachung & Energiemanagement",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 0
+ },
+ {
+  "url": "https://de-linker.com/de/produkt-kategorie/wechselrichter/",
+  "status": 200,
+  "h1": "Wechselrichter",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 24
+ },
+ {
+  "url": "https://de-linker.com/de/produkt-kategorie/zubehoer/",
+  "status": 200,
+  "h1": "Zubehör",
+  "cards": 0,
+  "resultText": null,
+  "emptyNotice": null,
+  "cardsAlt": 7
+ }
+]
