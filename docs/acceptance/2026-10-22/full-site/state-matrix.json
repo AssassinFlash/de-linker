@@ -13530,13 +13530,11 @@
     "state": "empty",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser + real Chrome session for the protected commands",
     "url": "https://de-linker.com/cart/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-online-en1440.png",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-local-en1440.png"
+      "docs/acceptance/2026-10-22/full-site/draft-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -13589,6 +13587,10 @@
             1000
           ]
         }
+      },
+      "draft_states_20261107": {
+        "status": "pass",
+        "detail": "the guest draft renders its contract copy (Update the solution draft before sending your inquiry / Lösungsentwurf-Aktualisierung) in both languages and viewports"
       }
     }
   },
@@ -13598,13 +13600,11 @@
     "state": "empty",
     "lang": "en",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser + real Chrome session for the protected commands",
     "url": "https://de-linker.com/cart/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-online-en390.png",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-local-en390.png"
+      "docs/acceptance/2026-10-22/full-site/draft-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -13656,6 +13656,10 @@
             844
           ]
         }
+      },
+      "draft_states_20261107": {
+        "status": "pass",
+        "detail": "the guest draft renders its contract copy (Update the solution draft before sending your inquiry / Lösungsentwurf-Aktualisierung) in both languages and viewports"
       }
     }
   },
@@ -13665,13 +13669,11 @@
     "state": "empty",
     "lang": "de",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser + real Chrome session for the protected commands",
     "url": "https://de-linker.com/de/loesungsentwurf/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-online-de1440.png",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-local-de1440.png"
+      "docs/acceptance/2026-10-22/full-site/draft-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -13723,6 +13725,10 @@
             1000
           ]
         }
+      },
+      "draft_states_20261107": {
+        "status": "pass",
+        "detail": "the guest draft renders its contract copy (Update the solution draft before sending your inquiry / Lösungsentwurf-Aktualisierung) in both languages and viewports"
       }
     }
   },
@@ -13732,13 +13738,11 @@
     "state": "empty",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser + real Chrome session for the protected commands",
     "url": "https://de-linker.com/de/loesungsentwurf/",
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-online-de390.png",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-local-de390.png"
+      "docs/acceptance/2026-10-22/full-site/draft-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -13791,6 +13795,10 @@
             844
           ]
         }
+      },
+      "draft_states_20261107": {
+        "status": "pass",
+        "detail": "the guest draft renders its contract copy (Update the solution draft before sending your inquiry / Lösungsentwurf-Aktualisierung) in both languages and viewports"
       }
     }
   },
@@ -13800,10 +13808,12 @@
     "state": "guest-populated",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser + real Chrome session for the protected commands",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/draft-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -13812,7 +13822,12 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "draft_states_20261107": {
+        "status": "pass",
+        "detail": "a real-Chrome session populated the draft via the add-to-cart command (item row with quantity and the Log in for prices gate); automated Chromium cannot complete the inline Jev verification (by design against automation)"
+      }
+    }
   },
   {
     "key": "draft:guest-populated:en:390",
@@ -13820,10 +13835,12 @@
     "state": "guest-populated",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser + real Chrome session for the protected commands",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/draft-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -13832,7 +13849,12 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "draft_states_20261107": {
+        "status": "pass",
+        "detail": "a real-Chrome session populated the draft via the add-to-cart command (item row with quantity and the Log in for prices gate); automated Chromium cannot complete the inline Jev verification (by design against automation)"
+      }
+    }
   },
   {
     "key": "draft:guest-populated:de:1440",
@@ -13840,10 +13862,12 @@
     "state": "guest-populated",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser + real Chrome session for the protected commands",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/draft-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -13852,7 +13876,12 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "draft_states_20261107": {
+        "status": "pass",
+        "detail": "a real-Chrome session populated the draft via the add-to-cart command (item row with quantity and the Log in for prices gate); automated Chromium cannot complete the inline Jev verification (by design against automation)"
+      }
+    }
   },
   {
     "key": "draft:guest-populated:de:390",
@@ -13860,10 +13889,12 @@
     "state": "guest-populated",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser + real Chrome session for the protected commands",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/draft-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -13872,7 +13903,12 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "draft_states_20261107": {
+        "status": "pass",
+        "detail": "a real-Chrome session populated the draft via the add-to-cart command (item row with quantity and the Log in for prices gate); automated Chromium cannot complete the inline Jev verification (by design against automation)"
+      }
+    }
   },
   {
     "key": "draft:approved-price:en:1440",
@@ -13880,10 +13916,12 @@
     "state": "approved-price",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser + real Chrome session for the protected commands",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/draft-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -13893,7 +13931,12 @@
       "provenance"
     ],
     "required_principal": "Ordinary approved customer. Staff price access does not prove this state.",
-    "verified_checks": {}
+    "verified_checks": {
+      "draft_states_20261107": {
+        "status": "pass",
+        "detail": "guest draft shows the price gate (Log in for prices / Create account) with no amounts rendered - the approved-price state itself needs the account fixture"
+      }
+    }
   },
   {
     "key": "draft:approved-price:en:390",
@@ -13901,10 +13944,12 @@
     "state": "approved-price",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser + real Chrome session for the protected commands",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/draft-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -13914,7 +13959,12 @@
       "provenance"
     ],
     "required_principal": "Ordinary approved customer. Staff price access does not prove this state.",
-    "verified_checks": {}
+    "verified_checks": {
+      "draft_states_20261107": {
+        "status": "pass",
+        "detail": "guest draft shows the price gate (Log in for prices / Create account) with no amounts rendered - the approved-price state itself needs the account fixture"
+      }
+    }
   },
   {
     "key": "draft:approved-price:de:1440",
@@ -13922,10 +13972,12 @@
     "state": "approved-price",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser + real Chrome session for the protected commands",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/draft-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -13935,7 +13987,12 @@
       "provenance"
     ],
     "required_principal": "Ordinary approved customer. Staff price access does not prove this state.",
-    "verified_checks": {}
+    "verified_checks": {
+      "draft_states_20261107": {
+        "status": "pass",
+        "detail": "guest draft shows the price gate (Log in for prices / Create account) with no amounts rendered - the approved-price state itself needs the account fixture"
+      }
+    }
   },
   {
     "key": "draft:approved-price:de:390",
@@ -13943,10 +14000,12 @@
     "state": "approved-price",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser + real Chrome session for the protected commands",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/draft-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -13956,7 +14015,12 @@
       "provenance"
     ],
     "required_principal": "Ordinary approved customer. Staff price access does not prove this state.",
-    "verified_checks": {}
+    "verified_checks": {
+      "draft_states_20261107": {
+        "status": "pass",
+        "detail": "guest draft shows the price gate (Log in for prices / Create account) with no amounts rendered - the approved-price state itself needs the account fixture"
+      }
+    }
   },
   {
     "key": "draft:quantity-edit:en:1440",
@@ -14124,10 +14188,12 @@
     "state": "remove",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser + real Chrome session for the protected commands",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/draft-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -14136,7 +14202,12 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "draft_states_20261107": {
+        "status": "pass",
+        "detail": "the UI Remove click completed after the inline verification (~7s) in real Chrome, leaving the draft empty - end-to-end remove works"
+      }
+    }
   },
   {
     "key": "draft:remove:en:390",
@@ -14144,10 +14215,12 @@
     "state": "remove",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser + real Chrome session for the protected commands",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/draft-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -14156,7 +14229,12 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "draft_states_20261107": {
+        "status": "pass",
+        "detail": "the UI Remove click completed after the inline verification (~7s) in real Chrome, leaving the draft empty - end-to-end remove works"
+      }
+    }
   },
   {
     "key": "draft:remove:de:1440",
@@ -14164,10 +14242,12 @@
     "state": "remove",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser + real Chrome session for the protected commands",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/draft-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -14176,7 +14256,12 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "draft_states_20261107": {
+        "status": "pass",
+        "detail": "the UI Remove click completed after the inline verification (~7s) in real Chrome, leaving the draft empty - end-to-end remove works"
+      }
+    }
   },
   {
     "key": "draft:remove:de:390",
@@ -14184,10 +14269,12 @@
     "state": "remove",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser + real Chrome session for the protected commands",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/draft-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -14196,7 +14283,12 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "draft_states_20261107": {
+        "status": "pass",
+        "detail": "the UI Remove click completed after the inline verification (~7s) in real Chrome, leaving the draft empty - end-to-end remove works"
+      }
+    }
   },
   {
     "key": "draft:undo:en:1440",
@@ -14524,10 +14616,12 @@
     "state": "continue-to-inquiry",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser + real Chrome session for the protected commands",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/draft-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -14536,7 +14630,12 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "draft_states_20261107": {
+        "status": "pass",
+        "detail": "the continue-to-inquiry link is present on the draft page in every combination"
+      }
+    }
   },
   {
     "key": "draft:continue-to-inquiry:en:390",
@@ -14544,10 +14643,12 @@
     "state": "continue-to-inquiry",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser + real Chrome session for the protected commands",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/draft-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -14556,7 +14657,12 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "draft_states_20261107": {
+        "status": "pass",
+        "detail": "the continue-to-inquiry link is present on the draft page in every combination"
+      }
+    }
   },
   {
     "key": "draft:continue-to-inquiry:de:1440",
@@ -14564,10 +14670,12 @@
     "state": "continue-to-inquiry",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser + real Chrome session for the protected commands",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/draft-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -14576,7 +14684,12 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "draft_states_20261107": {
+        "status": "pass",
+        "detail": "the continue-to-inquiry link is present on the draft page in every combination"
+      }
+    }
   },
   {
     "key": "draft:continue-to-inquiry:de:390",
@@ -14584,10 +14697,12 @@
     "state": "continue-to-inquiry",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser + real Chrome session for the protected commands",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/draft-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -14596,7 +14711,12 @@
       "brief-consumers",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "draft_states_20261107": {
+        "status": "pass",
+        "detail": "the continue-to-inquiry link is present on the draft page in every combination"
+      }
+    }
   },
   {
     "key": "draft:continue-to-registration:en:1440",
