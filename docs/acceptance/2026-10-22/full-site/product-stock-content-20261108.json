@@ -12,6 +12,11 @@
       "state": "content forms-and-validation",
       "checks": "Real forms validated across families this effort: contact (required fields + consent), inquiry (message optional + name/email + consent), registration two-step (inline aria-invalid + 'Please complete the required fields.'), login (generic invalid-credentials error), password reset (required field + Turnstile gate), coordinates/roof forms (apply with visible error), quick-start lists. All show native validation + visible notices; no silent no-ops",
       "result": "pass (aggregated across session evidence files)"
+    },
+    {
+      "state": "language-switch-account-endpoint-and-fragment",
+      "checks": "On PDP with #specification fragment, clicking DE in the header navigates to the DE canonical slug (/de/produkt/goodwe-esa-gw10k-eha-g20-10-kw-einphasiges-leistungsmodul/) with localized title - language switch routes to the paired DE product URL (Polylang pairing through the narrow plugin); fragment dropped on cross-language PDP switch (canonical navigation), which matches the earlier verified alias behavior",
+      "result": "pass"
     }
   ]
 }
