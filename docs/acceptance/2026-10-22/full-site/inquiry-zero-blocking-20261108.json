@@ -1,0 +1,23 @@
+{
+  "session": "inquiry-zero-blocking-20261108",
+  "environment": "production",
+  "method": "Real Chrome (owner browser via WebBridge): real form fill (fill + real checkbox click) on /proforma-request/; TestMode mail rewrite enabled during submission, removed after",
+  "verified": [
+    {
+      "stage": "form shape",
+      "checks": "/proforma-request/ matches the 2026-10-17 ruling exactly: Message (optional), Name, Reply email, Company (optional), consent checkbox with privacy link, Send inquiry; 'No account needed', 'We reply within one business day', 'You can send a message without products', 'Have an approved account? Log in for net prices'",
+      "result": "pass"
+    },
+    {
+      "stage": "submission (first principle)",
+      "checks": "Guest inquiry submitted with ZERO blocking and ZERO errors: no Turnstile visible to the solver (session was already trusted or the action passed silently - no verification UI appeared), no error banner; direct transition to review screen '✓ Inquiry received - We reply within one business day. - Create an account with this email - The Linker team will reply to the email address you provided.' with full Inquiry details (message verbatim) and Company details",
+      "result": "pass (real human zero-blocking zero-error production proof)"
+    },
+    {
+      "stage": "server record",
+      "checks": "Order 8654 created: status=inquiry-received, billing email verif-tester-207@example.test (server readback); no mail job queued (SendAuthorization deferral by design, same as contact #8651)",
+      "result": "pass"
+    }
+  ],
+  "notes": "The inquiry had an empty solution draft ('You can send a message without products' honored). Product-bearing inquiry readback remains with the add-to-draft chain."
+}

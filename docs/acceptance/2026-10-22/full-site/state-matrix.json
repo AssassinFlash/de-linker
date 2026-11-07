@@ -15121,10 +15121,12 @@
     "state": "signed-in-summary",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261108",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "inquiry-zero-blocking-20261108.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -16113,10 +16115,12 @@
     "state": "submission-pending",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261108",
+    "environment": "production",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "inquiry-zero-blocking-20261108.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -16281,11 +16285,11 @@
     "state": "success-confirmation",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261108",
+    "environment": "production",
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json"
+      "inquiry-zero-blocking-20261108.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
