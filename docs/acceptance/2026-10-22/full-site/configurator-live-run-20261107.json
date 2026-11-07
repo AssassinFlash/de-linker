@@ -1,0 +1,53 @@
+{
+  "session": "configurator-live-run-20261107",
+  "environment": "production",
+  "method": "Real Chrome (owner browser via WebBridge), real UI clicks and key_type fills",
+  "project": {
+    "name": "Verification residence 10kW",
+    "id": "7fd95ba286e349659db13129c3bdfe21",
+    "saved": "revision 1 at creation, equipment check ran at Input revision 2"
+  },
+  "verified": [
+    {
+      "stage": "entry+workspace",
+      "checks": "/solution-configurator/ renders guest workspace: Your projects / New project / Saved projects; unified six-step nav (Site and project, Roof design, Energy inputs, Energy calculation, Equipment, Installation routing); 'A project can start with the information already available. Roof drawing is optional.'",
+      "result": "pass"
+    },
+    {
+      "stage": "project-brief (workbench)",
+      "checks": "01 Project brief (Site use Residential/Commercial/Industrial, Planned system three options), 02 Project location with full country list; 'Project location and time zone are independent of the interface language'",
+      "result": "pass"
+    },
+    {
+      "stage": "quick-start form",
+      "checks": "All-select lists, zero typing: Project type, PV array 5-100 kWp, orientation/tilt 4 presets, module class 400-600 Wp, annual use presets, grid connection, system goal, postcode/town ('Entering a postcode or town is enough to start')",
+      "result": "pass"
+    },
+    {
+      "stage": "generation pipeline",
+      "checks": "Residential 10 kWp 10115 Berlin -> step pipeline with honest skip explanations (typical-year weather needs roof coordinates; roof generation needs placed modules; storage scenario needs interval data); Find matching equipment -> 666 matching combinations; Check the chosen combination; Build the report",
+      "result": "pass"
+    },
+    {
+      "stage": "equipment+provisional BOM",
+      "checks": "Equipment search finished (Input revision 2, 666 combinations assessed); recommended real combinations (SAJ H2-25K-T3 + B2/BU2 batteries, HS2/HS3 series, GoodWe ET + BAT-LC); provisional BOM with real Woo SKUs: SAJ H2-25K-T3 (DLK-SAJ-H225KT3) x1, SAJ BC2-HV1 (DLK-SAJ-BC2HV1), SAJ B2-10.0-HV1 (DLK-SAJ-B2100HV1)",
+      "result": "pass"
+    },
+    {
+      "stage": "honest-scoping statements",
+      "checks": "'QuickStart planning assumption: storage window derived from declared annual consumption and chosen system goal. Not a product specification and not an engineering result.'; 'Country requirements: not assessed by this calculation.'; 'Battery discharge path: Further checks required'; 'Quantities are shown only when the product's sales unit and selected configuration are established.'; 'This calculation uses an earlier input snapshot.'",
+      "result": "pass (matches the no-fake-engineering-release contract)"
+    }
+  ],
+  "automation_notes": [
+    "Synthetic input value-set does not register in the configurator's React state; real key_type fills work",
+    "Generation requires postcode/town; without it Generate does nothing visible (validation silent) - candidate UX note"
+  ],
+  "open": [
+    "report PDF/CSV download",
+    "add-to-solution-draft from workbench Equipment step",
+    "roof design entry (canvas) and interval data import",
+    "save/guest claim/account link, refresh/back/language switch persistence",
+    "inquiry from project, DE language pass, 390 viewport"
+  ]
+}
