@@ -81,6 +81,12 @@
       "state": "attachments (partial)",
       "result": "accepted-ui-dispatch-pending-fix",
       "evidence": "Real PDF bytes injected via DataTransfer into the dock's file input: file accepted, 'genie-attach-test.pdf' displayed in composer area, accept list covers images/heic/pdf/csv/xlsx. Ask with attachment on CURRENT (pre-fix) production consumed the composer without appending the turn - same silent-drop family PR #1001 fixes; a stale unsent-draft record also surfaced the 'Current unsent draft / Restore unsent draft' recovery UI (visible affordance). Full attachment turn (parse + answer citing file) to verify after deploy."
+    },
+    {
+      "state": "DE-live-question-post-fix",
+      "result": "pass",
+      "evidence": "PRODUCTION ACCEPTANCE (deploy 6508ed9a4, genie.js ver 6faa9c53776c58e37d2d): German question 'Welche Batterie passt zum GW10K-EHA-G20?' on /de/ - question visible in transcript, 'Die Überprüfung läuft…' TurnProgress, Turnstile auto-solved, German answer arrived: 'Zum GW10K-EHA-G20 sind die Batteriemodule GW5.1/8.3/6.0/9.0-BAT-D-G20 als Paar freigegeben…' (same pairing facts as EN). Exact scenario that silently dropped 3x before the fix now completes end-to-end; input never lost permanently (one interim state kept text in composer).",
+      "note": "During verification a test-injected zombie failure record ('Sondierung 123') blocked sends with the composer retaining text; after clearing the test pollution the flow completed. Lesson recorded: clean injected failure records immediately after testing."
     }
   ],
   "open_items": [
@@ -103,7 +109,8 @@
     {
       "id": "genie-first-ask-silent-drop",
       "severity": "critical",
-      "detail": "Window focus/pageshow re-verify cleared composer and swallowed send (3 clean reproductions, real Chrome). Fixed in PR #1001; dossier genie-first-ask-silent-drop-20261107.md; production re-verification pending deploy."
+      "detail": "Window focus/pageshow re-verify cleared composer and swallowed send (3 clean reproductions, real Chrome). Fixed in PR #1001; dossier genie-first-ask-silent-drop-20261107.md; production re-verification pending deploy.",
+      "status": "fixed-verified-production (PR #1001, deploy 6508ed9a4)"
     }
   ]
 }
