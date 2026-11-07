@@ -1,0 +1,230 @@
+[
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "initial-input",
+  "appRenders": true,
+  "heading": "Your projects",
+  "selects": [
+   {
+    "name": "",
+    "options": 2
+   },
+   {
+    "name": "",
+    "options": 10
+   },
+   {
+    "name": "",
+    "options": 4
+   },
+   {
+    "name": "",
+    "options": 5
+   },
+   {
+    "name": "",
+    "options": 5
+   },
+   {
+    "name": "",
+    "options": 2
+   }
+  ],
+  "hasMap": false,
+  "text": "L· Solution Configurator Projects Guest workspace SOLUTION CONFIGURATOR Your projects Site information, roof layout and system planning belong to the same proje"
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "native-choice-controls",
+  "selectCount": 7,
+  "radioGroups": 0,
+  "checkboxCount": 2,
+  "buttonsLocalized": [
+   "Choose purposes",
+   "Reject all",
+   "Accept all",
+   "Essential",
+   "Website analytics"
+  ]
+ },
+ {
+  "lang": "en",
+  "width": 1440,
+  "state": "roof-optional-entry",
+  "mentionsRoof": true,
+  "hasSkip": false
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "initial-input",
+  "appRenders": true,
+  "heading": "Your projects",
+  "selects": [
+   {
+    "name": "",
+    "options": 2
+   },
+   {
+    "name": "",
+    "options": 10
+   },
+   {
+    "name": "",
+    "options": 4
+   },
+   {
+    "name": "",
+    "options": 5
+   },
+   {
+    "name": "",
+    "options": 5
+   },
+   {
+    "name": "",
+    "options": 2
+   }
+  ],
+  "hasMap": false,
+  "text": "L· Solution Configurator Projects SOLUTION CONFIGURATOR Your projects Site information, roof layout and system planning belong to the same project. New project "
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "native-choice-controls",
+  "selectCount": 7,
+  "radioGroups": 0,
+  "checkboxCount": 2,
+  "buttonsLocalized": [
+   "Choose purposes",
+   "Reject all",
+   "Accept all",
+   "Essential",
+   "Website analytics"
+  ]
+ },
+ {
+  "lang": "en",
+  "width": 390,
+  "state": "roof-optional-entry",
+  "mentionsRoof": true,
+  "hasSkip": false
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "initial-input",
+  "appRenders": true,
+  "heading": "Ihre Projekte",
+  "selects": [
+   {
+    "name": "",
+    "options": 2
+   },
+   {
+    "name": "",
+    "options": 10
+   },
+   {
+    "name": "",
+    "options": 4
+   },
+   {
+    "name": "",
+    "options": 5
+   },
+   {
+    "name": "",
+    "options": 5
+   },
+   {
+    "name": "",
+    "options": 2
+   }
+  ],
+  "hasMap": false,
+  "text": "L· Lösungskonfigurator Projekte Gastarbeitsbereich LÖSUNGSKONFIGURATOR Ihre Projekte Standortdaten, Dachbelegung und Systemplanung gehören zum selben Projekt. N"
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "native-choice-controls",
+  "selectCount": 7,
+  "radioGroups": 0,
+  "checkboxCount": 2,
+  "buttonsLocalized": [
+   "Zwecke auswählen",
+   "Alle ablehnen",
+   "Alle akzeptieren",
+   "Notwendig",
+   "Website-Analyse"
+  ]
+ },
+ {
+  "lang": "de",
+  "width": 1440,
+  "state": "roof-optional-entry",
+  "mentionsRoof": true,
+  "hasSkip": false
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "initial-input",
+  "appRenders": true,
+  "heading": "Ihre Projekte",
+  "selects": [
+   {
+    "name": "",
+    "options": 2
+   },
+   {
+    "name": "",
+    "options": 10
+   },
+   {
+    "name": "",
+    "options": 4
+   },
+   {
+    "name": "",
+    "options": 5
+   },
+   {
+    "name": "",
+    "options": 5
+   },
+   {
+    "name": "",
+    "options": 2
+   }
+  ],
+  "hasMap": false,
+  "text": "L· Lösungskonfigurator Projekte LÖSUNGSKONFIGURATOR Ihre Projekte Standortdaten, Dachbelegung und Systemplanung gehören zum selben Projekt. Neues Projekt Gespei"
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "native-choice-controls",
+  "selectCount": 7,
+  "radioGroups": 0,
+  "checkboxCount": 2,
+  "buttonsLocalized": [
+   "Zwecke auswählen",
+   "Alle ablehnen",
+   "Alle akzeptieren",
+   "Notwendig",
+   "Website-Analyse"
+  ]
+ },
+ {
+  "lang": "de",
+  "width": 390,
+  "state": "roof-optional-entry",
+  "mentionsRoof": true,
+  "hasSkip": false
+ }
+]
