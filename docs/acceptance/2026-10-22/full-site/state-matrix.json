@@ -22281,10 +22281,12 @@
     "state": "dock",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/genie-dock-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -22293,7 +22295,12 @@
       "marketing-entries",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "genie_dock_20261107": {
+        "status": "pass",
+        "detail": "the floating dock renders with its localized label (Ask Genie / Genie fragen) and opens a panel; at 390 the dock is below the fold of the measured home (present in the DOM). Turn-level states need live Genie runs and stay pending"
+      }
+    }
   },
   {
     "key": "genie:dock:en:390",
@@ -22301,10 +22308,12 @@
     "state": "dock",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/genie-dock-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -22313,7 +22322,12 @@
       "marketing-entries",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "genie_dock_20261107": {
+        "status": "pass",
+        "detail": "the floating dock renders with its localized label (Ask Genie / Genie fragen) and opens a panel; at 390 the dock is below the fold of the measured home (present in the DOM). Turn-level states need live Genie runs and stay pending"
+      }
+    }
   },
   {
     "key": "genie:dock:de:1440",
@@ -22321,10 +22335,12 @@
     "state": "dock",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/genie-dock-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -22333,7 +22349,12 @@
       "marketing-entries",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "genie_dock_20261107": {
+        "status": "pass",
+        "detail": "the floating dock renders with its localized label (Ask Genie / Genie fragen) and opens a panel; at 390 the dock is below the fold of the measured home (present in the DOM). Turn-level states need live Genie runs and stay pending"
+      }
+    }
   },
   {
     "key": "genie:dock:de:390",
@@ -22341,10 +22362,12 @@
     "state": "dock",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/genie-dock-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -22353,7 +22376,12 @@
       "marketing-entries",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "genie_dock_20261107": {
+        "status": "pass",
+        "detail": "the floating dock renders with its localized label (Ask Genie / Genie fragen) and opens a panel; at 390 the dock is below the fold of the measured home (present in the DOM). Turn-level states need live Genie runs and stay pending"
+      }
+    }
   },
   {
     "key": "genie:home-hero:en:1440",
