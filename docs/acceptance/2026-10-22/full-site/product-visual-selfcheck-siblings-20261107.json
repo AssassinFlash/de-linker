@@ -1,0 +1,630 @@
+{
+  "base": "https://de-linker.com",
+  "generatedAt": "2026-11-07T06:33:46.174Z",
+  "widths": [
+    1440,
+    390
+  ],
+  "heights": [
+    900,
+    844
+  ],
+  "pages": [
+    {
+      "name": "gw2089-lcd-en",
+      "lang": "en",
+      "path": "/product/goodwe-gw208-9-bat-lcd-g10/"
+    },
+    {
+      "name": "gw2089-lcd-de",
+      "lang": "de",
+      "path": "/de/produkt/goodwe-gw208-9-bat-lcd-g10/"
+    },
+    {
+      "name": "etr125-en",
+      "lang": "en",
+      "path": "/product/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/"
+    },
+    {
+      "name": "etr125-de",
+      "lang": "de",
+      "path": "/de/produkt/goodwe-etr-125-kw-ci-dreiphasiger-hybridwechselrichter-1000v/"
+    }
+  ],
+  "rows": [
+    {
+      "name": "gw2089-lcd-en",
+      "lang": "en",
+      "path": "/product/goodwe-gw208-9-bat-lcd-g10/",
+      "url": "https://de-linker.com/product/goodwe-gw208-9-bat-lcd-g10/",
+      "title": "GoodWe GW208.9-BAT-LCD-G10 | Linker",
+      "documentLang": "en-US",
+      "status": 200,
+      "viewport": "1440x900",
+      "document": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 7882
+      },
+      "counts": {
+        "small-target": 4
+      },
+      "issues": [
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#tv-storefront-pdp > nav.pdp-crumbs.sf-container:nth-of-type(1) > a",
+          "text": "Products",
+          "rect": {
+            "x": 80,
+            "y": 109,
+            "w": 61.2,
+            "h": 21.7,
+            "pageY": 109
+          },
+          "metrics": {
+            "w": 61.2,
+            "h": 21.7,
+            "min": 24,
+            "display": "block",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        },
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#tv-storefront-pdp > div.pdp-layout.sf-container:nth-of-type(1) > aside.pdp-purchase > div.pdp-buy-inner > div.pdp-price:nth-of-type(3) > a.pdp-price-login:nth-of-type(1)",
+          "text": "Net price after partner sign-in",
+          "rect": {
+            "x": 804.4,
+            "y": 280.2,
+            "w": 214.5,
+            "h": 20,
+            "pageY": 280.2
+          },
+          "metrics": {
+            "w": 214.5,
+            "h": 20,
+            "min": 24,
+            "display": "inline",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        },
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#tv-storefront-pdp > div.pdp-layout.sf-container:nth-of-type(1) > aside.pdp-purchase > div.pdp-buy-inner > div.pdp-price:nth-of-type(3) > a.linker-create-account:nth-of-type(2)",
+          "text": "Create account",
+          "rect": {
+            "x": 1030.9,
+            "y": 281.2,
+            "w": 97.7,
+            "h": 20.1,
+            "pageY": 281.2
+          },
+          "metrics": {
+            "w": 97.7,
+            "h": 20.1,
+            "min": 24,
+            "display": "inline-block",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        },
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#stats > div.pdp-stats-layout > div.pdp-stats-summary:nth-of-type(1) > details.pdp-stats-context > summary",
+          "text": "About these specifications",
+          "rect": {
+            "x": 80,
+            "y": 2860.8,
+            "w": 1280,
+            "h": 20.1,
+            "pageY": 2860.8
+          },
+          "metrics": {
+            "w": 1280,
+            "h": 20.1,
+            "min": 24,
+            "display": "list-item",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        }
+      ],
+      "consoleErrors": []
+    },
+    {
+      "name": "gw2089-lcd-de",
+      "lang": "de",
+      "path": "/de/produkt/goodwe-gw208-9-bat-lcd-g10/",
+      "url": "https://de-linker.com/de/produkt/goodwe-gw208-9-bat-lcd-g10/",
+      "title": "GoodWe GW208.9-BAT-LCD-G10 | Linker",
+      "documentLang": "de-DE",
+      "status": 200,
+      "viewport": "1440x900",
+      "document": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 7956
+      },
+      "counts": {
+        "small-target": 4
+      },
+      "issues": [
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#tv-storefront-pdp > nav.pdp-crumbs.sf-container:nth-of-type(1) > a",
+          "text": "Produkte",
+          "rect": {
+            "x": 80,
+            "y": 109,
+            "w": 61.7,
+            "h": 21.7,
+            "pageY": 109
+          },
+          "metrics": {
+            "w": 61.7,
+            "h": 21.7,
+            "min": 24,
+            "display": "block",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        },
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#tv-storefront-pdp > div.pdp-layout.sf-container:nth-of-type(1) > aside.pdp-purchase > div.pdp-buy-inner > div.pdp-price:nth-of-type(3) > a.pdp-price-login:nth-of-type(1)",
+          "text": "Nettopreis nach Partner-Anmeldung",
+          "rect": {
+            "x": 804.4,
+            "y": 280.2,
+            "w": 263.4,
+            "h": 20,
+            "pageY": 280.2
+          },
+          "metrics": {
+            "w": 263.4,
+            "h": 20,
+            "min": 24,
+            "display": "inline",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        },
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#tv-storefront-pdp > div.pdp-layout.sf-container:nth-of-type(1) > aside.pdp-purchase > div.pdp-buy-inner > div.pdp-price:nth-of-type(3) > a.linker-create-account:nth-of-type(2)",
+          "text": "Konto erstellen",
+          "rect": {
+            "x": 1079.7,
+            "y": 281.2,
+            "w": 94.9,
+            "h": 20.1,
+            "pageY": 281.2
+          },
+          "metrics": {
+            "w": 94.9,
+            "h": 20.1,
+            "min": 24,
+            "display": "inline-block",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        },
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#stats > div.pdp-stats-layout > div.pdp-stats-summary:nth-of-type(1) > details.pdp-stats-context > summary",
+          "text": "Zu diesen Angaben",
+          "rect": {
+            "x": 80,
+            "y": 2860.8,
+            "w": 1280,
+            "h": 20.1,
+            "pageY": 2860.8
+          },
+          "metrics": {
+            "w": 1280,
+            "h": 20.1,
+            "min": 24,
+            "display": "list-item",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        }
+      ],
+      "consoleErrors": []
+    },
+    {
+      "name": "etr125-en",
+      "lang": "en",
+      "path": "/product/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/",
+      "url": "https://de-linker.com/product/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/",
+      "title": "GoodWe GW125K-ETR-G10 (125 kW three-phase hybrid inverter) | Linker",
+      "documentLang": "en-US",
+      "status": 200,
+      "viewport": "1440x900",
+      "document": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 11396
+      },
+      "counts": {
+        "small-target": 4
+      },
+      "issues": [
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#tv-storefront-pdp > nav.pdp-crumbs.sf-container:nth-of-type(1) > a",
+          "text": "Products",
+          "rect": {
+            "x": 80,
+            "y": 109,
+            "w": 61.2,
+            "h": 21.7,
+            "pageY": 109
+          },
+          "metrics": {
+            "w": 61.2,
+            "h": 21.7,
+            "min": 24,
+            "display": "block",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        },
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#tv-storefront-pdp > div.pdp-layout.sf-container:nth-of-type(1) > aside.pdp-purchase > div.pdp-buy-inner > div.pdp-price:nth-of-type(3) > a.pdp-price-login:nth-of-type(1)",
+          "text": "Net price after partner sign-in",
+          "rect": {
+            "x": 804.4,
+            "y": 308.2,
+            "w": 214.5,
+            "h": 20,
+            "pageY": 308.2
+          },
+          "metrics": {
+            "w": 214.5,
+            "h": 20,
+            "min": 24,
+            "display": "inline",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        },
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#tv-storefront-pdp > div.pdp-layout.sf-container:nth-of-type(1) > aside.pdp-purchase > div.pdp-buy-inner > div.pdp-price:nth-of-type(3) > a.linker-create-account:nth-of-type(2)",
+          "text": "Create account",
+          "rect": {
+            "x": 1030.9,
+            "y": 309.2,
+            "w": 97.7,
+            "h": 20.1,
+            "pageY": 309.2
+          },
+          "metrics": {
+            "w": 97.7,
+            "h": 20.1,
+            "min": 24,
+            "display": "inline-block",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        },
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#stats > div.pdp-stats-layout > div.pdp-stats-summary:nth-of-type(1) > details.pdp-stats-context > summary",
+          "text": "About these specifications",
+          "rect": {
+            "x": 80,
+            "y": 2861,
+            "w": 1280,
+            "h": 20.1,
+            "pageY": 2861
+          },
+          "metrics": {
+            "w": 1280,
+            "h": 20.1,
+            "min": 24,
+            "display": "list-item",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        }
+      ],
+      "consoleErrors": []
+    },
+    {
+      "name": "etr125-de",
+      "lang": "de",
+      "path": "/de/produkt/goodwe-etr-125-kw-ci-dreiphasiger-hybridwechselrichter-1000v/",
+      "url": "https://de-linker.com/de/produkt/goodwe-etr-125-kw-ci-dreiphasiger-hybridwechselrichter-1000v/",
+      "title": "GoodWe GW125K-ETR-G10 (125 kW dreiphasiger Hybrid-Wechselrichter) | Linker",
+      "documentLang": "de-DE",
+      "status": 200,
+      "viewport": "1440x900",
+      "document": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 11764
+      },
+      "counts": {
+        "small-target": 4
+      },
+      "issues": [
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#tv-storefront-pdp > nav.pdp-crumbs.sf-container:nth-of-type(1) > a",
+          "text": "Produkte",
+          "rect": {
+            "x": 80,
+            "y": 109,
+            "w": 61.7,
+            "h": 21.7,
+            "pageY": 109
+          },
+          "metrics": {
+            "w": 61.7,
+            "h": 21.7,
+            "min": 24,
+            "display": "block",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        },
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#tv-storefront-pdp > div.pdp-layout.sf-container:nth-of-type(1) > aside.pdp-purchase > div.pdp-buy-inner > div.pdp-price:nth-of-type(3) > a.pdp-price-login:nth-of-type(1)",
+          "text": "Nettopreis nach Partner-Anmeldung",
+          "rect": {
+            "x": 804.4,
+            "y": 308.2,
+            "w": 263.4,
+            "h": 20,
+            "pageY": 308.2
+          },
+          "metrics": {
+            "w": 263.4,
+            "h": 20,
+            "min": 24,
+            "display": "inline",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        },
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#tv-storefront-pdp > div.pdp-layout.sf-container:nth-of-type(1) > aside.pdp-purchase > div.pdp-buy-inner > div.pdp-price:nth-of-type(3) > a.linker-create-account:nth-of-type(2)",
+          "text": "Konto erstellen",
+          "rect": {
+            "x": 1079.7,
+            "y": 309.2,
+            "w": 94.9,
+            "h": 20.1,
+            "pageY": 309.2
+          },
+          "metrics": {
+            "w": 94.9,
+            "h": 20.1,
+            "min": 24,
+            "display": "inline-block",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        },
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#stats > div.pdp-stats-layout > div.pdp-stats-summary:nth-of-type(1) > details.pdp-stats-context > summary",
+          "text": "Zu diesen Angaben",
+          "rect": {
+            "x": 80,
+            "y": 2936,
+            "w": 1280,
+            "h": 20.1,
+            "pageY": 2936
+          },
+          "metrics": {
+            "w": 1280,
+            "h": 20.1,
+            "min": 24,
+            "display": "list-item",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        }
+      ],
+      "consoleErrors": []
+    },
+    {
+      "name": "gw2089-lcd-en",
+      "lang": "en",
+      "path": "/product/goodwe-gw208-9-bat-lcd-g10/",
+      "url": "https://de-linker.com/product/goodwe-gw208-9-bat-lcd-g10/",
+      "title": "GoodWe GW208.9-BAT-LCD-G10 | Linker",
+      "documentLang": "en-US",
+      "status": 200,
+      "viewport": "390x844",
+      "document": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "scrollHeight": 10498
+      },
+      "counts": {
+        "small-target": 1
+      },
+      "issues": [
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#stats > div.pdp-stats-layout > div.pdp-stats-summary:nth-of-type(1) > details.pdp-stats-context > summary",
+          "text": "About these specifications",
+          "rect": {
+            "x": 20,
+            "y": 3188.2,
+            "w": 350,
+            "h": 20.1,
+            "pageY": 3188.2
+          },
+          "metrics": {
+            "w": 350,
+            "h": 20.1,
+            "min": 24,
+            "display": "list-item",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        }
+      ],
+      "consoleErrors": []
+    },
+    {
+      "name": "gw2089-lcd-de",
+      "lang": "de",
+      "path": "/de/produkt/goodwe-gw208-9-bat-lcd-g10/",
+      "url": "https://de-linker.com/de/produkt/goodwe-gw208-9-bat-lcd-g10/",
+      "title": "GoodWe GW208.9-BAT-LCD-G10 | Linker",
+      "documentLang": "de-DE",
+      "status": 200,
+      "viewport": "390x844",
+      "document": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "scrollHeight": 10888
+      },
+      "counts": {
+        "small-target": 1
+      },
+      "issues": [
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#stats > div.pdp-stats-layout > div.pdp-stats-summary:nth-of-type(1) > details.pdp-stats-context > summary",
+          "text": "Zu diesen Angaben",
+          "rect": {
+            "x": 20,
+            "y": 3269.8,
+            "w": 350,
+            "h": 20.1,
+            "pageY": 3269.8
+          },
+          "metrics": {
+            "w": 350,
+            "h": 20.1,
+            "min": 24,
+            "display": "list-item",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        }
+      ],
+      "consoleErrors": []
+    },
+    {
+      "name": "etr125-en",
+      "lang": "en",
+      "path": "/product/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/",
+      "url": "https://de-linker.com/product/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/",
+      "title": "GoodWe GW125K-ETR-G10 (125 kW three-phase hybrid inverter) | Linker",
+      "documentLang": "en-US",
+      "status": 200,
+      "viewport": "390x844",
+      "document": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "scrollHeight": 16279
+      },
+      "counts": {
+        "small-target": 1
+      },
+      "issues": [
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#stats > div.pdp-stats-layout > div.pdp-stats-summary:nth-of-type(1) > details.pdp-stats-context > summary",
+          "text": "About these specifications",
+          "rect": {
+            "x": 20,
+            "y": 3978.7,
+            "w": 350,
+            "h": 20.1,
+            "pageY": 3978.7
+          },
+          "metrics": {
+            "w": 350,
+            "h": 20.1,
+            "min": 24,
+            "display": "list-item",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        }
+      ],
+      "consoleErrors": []
+    },
+    {
+      "name": "etr125-de",
+      "lang": "de",
+      "path": "/de/produkt/goodwe-etr-125-kw-ci-dreiphasiger-hybridwechselrichter-1000v/",
+      "url": "https://de-linker.com/de/produkt/goodwe-etr-125-kw-ci-dreiphasiger-hybridwechselrichter-1000v/",
+      "title": "GoodWe GW125K-ETR-G10 (125 kW dreiphasiger Hybrid-Wechselrichter) | Linker",
+      "documentLang": "de-DE",
+      "status": 200,
+      "viewport": "390x844",
+      "document": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "scrollHeight": 16967
+      },
+      "counts": {
+        "small-target": 1
+      },
+      "issues": [
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#stats > div.pdp-stats-layout > div.pdp-stats-summary:nth-of-type(1) > details.pdp-stats-context > summary",
+          "text": "Zu diesen Angaben",
+          "rect": {
+            "x": 20,
+            "y": 4066.6,
+            "w": 350,
+            "h": 20.1,
+            "pageY": 4066.6
+          },
+          "metrics": {
+            "w": 350,
+            "h": 20.1,
+            "min": 24,
+            "display": "list-item",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        }
+      ],
+      "consoleErrors": []
+    }
+  ],
+  "summary": {
+    "pagesChecked": 8,
+    "defects": 0,
+    "reviews": 20,
+    "failedLoads": 0
+  }
+}

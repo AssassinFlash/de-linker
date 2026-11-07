@@ -56,4 +56,5 @@
 ## 剩余核对范围
 
 - ~~71 个物理型号的数据级核对~~ 已完成（见上节）：85 SKU 对零不一致，44 条非客户页改 not-applicable。
+- **产品类条目全部收口（2026-11-07）**：69 条代表页直测 + 103 条兄弟记录按渲染结构键（specRows/statCards/docs/pairingRows/库存态）映射到已测代表页收口（形状共享，证据链 r4 + 数据级读数）；4 个结构独特页（gw208-9-bat-lcd、etr-125 各 EN/DE——前序会话已有首覆盖证据）补直测 0 defect（`product-visual-selfcheck-siblings-20261107.json`）。产品类 pending 归零；矩阵剩余 pending = term 70 + page 40（交互轴另计）。
 - 71 个物理型号的 Computer Use 视觉走查（代表页机械探针通过 ≠ 人工视觉验收）仍待执行；产品页工具入口（project-check 按钮的 Genie 消费）不在数据级范围内，由 genie-entry-inventory 族覆盖。
