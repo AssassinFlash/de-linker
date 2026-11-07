@@ -28954,14 +28954,13 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "partial-with-finding",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-20261107.json"
+      "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-postdeploy-20261107.json"
     ],
-    "findings": [
-      "pdp-de-feature-headline-overflow"
-    ],
+    "findings": [],
     "records": [
       {
         "key": "product::6689:1440",
@@ -29013,6 +29012,14 @@
         "defects": 1,
         "reviews": 4,
         "evidence": "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-20261107.json"
+      },
+      "layout_selfcheck_product_20261107_postdeploy": {
+        "status": "pass",
+        "environment": "production de-linker.com after deploy 34cd20566 + WindPress cache recompile (1794029105), anonymous browser, same probe",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 4,
+        "evidence": "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-postdeploy-20261107.json"
       }
     }
   },
@@ -29934,14 +29941,13 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "partial-with-finding",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-20261107.json"
+      "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-postdeploy-20261107.json"
     ],
-    "findings": [
-      "pdp-de-feature-headline-overflow"
-    ],
+    "findings": [],
     "records": [
       {
         "key": "product::6712:1440",
@@ -29985,6 +29991,14 @@
         "defects": 1,
         "reviews": 4,
         "evidence": "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-20261107.json"
+      },
+      "layout_selfcheck_product_20261107_postdeploy": {
+        "status": "pass",
+        "environment": "production de-linker.com after deploy 34cd20566 + WindPress cache recompile (1794029105), anonymous browser, same probe",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 4,
+        "evidence": "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-postdeploy-20261107.json"
       }
     }
   },
@@ -30060,14 +30074,13 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "partial-with-finding",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-20261107.json"
+      "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-postdeploy-20261107.json"
     ],
-    "findings": [
-      "pdp-de-feature-headline-overflow"
-    ],
+    "findings": [],
     "records": [
       {
         "key": "product::6714:1440",
@@ -30111,6 +30124,14 @@
         "defects": 1,
         "reviews": 4,
         "evidence": "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-20261107.json"
+      },
+      "layout_selfcheck_product_20261107_postdeploy": {
+        "status": "pass",
+        "environment": "production de-linker.com after deploy 34cd20566 + WindPress cache recompile (1794029105), anonymous browser, same probe",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 4,
+        "evidence": "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-postdeploy-20261107.json"
       }
     }
   },
@@ -30434,14 +30455,13 @@
     "width": 1440,
     "render": "preliminary-pass",
     "interaction": "pending",
-    "visual_review": "partial-with-finding",
+    "visual_review": "partially-verified",
     "evidence": [
       "render-product-0-212-de-linker.com.json",
-      "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-20261107.json"
+      "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-20261107.json",
+      "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-postdeploy-20261107.json"
     ],
-    "findings": [
-      "pdp-de-feature-headline-overflow"
-    ],
+    "findings": [],
     "records": [
       {
         "key": "product::6720:1440",
@@ -30493,6 +30513,14 @@
         "defects": 1,
         "reviews": 4,
         "evidence": "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-20261107.json"
+      },
+      "layout_selfcheck_product_20261107_postdeploy": {
+        "status": "pass",
+        "environment": "production de-linker.com after deploy 34cd20566 + WindPress cache recompile (1794029105), anonymous browser, same probe",
+        "viewport": "1440x900",
+        "defects": 0,
+        "reviews": 4,
+        "evidence": "docs/acceptance/2026-10-22/full-site/product-visual-selfcheck-postdeploy-20261107.json"
       }
     }
   },
