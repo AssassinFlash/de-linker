@@ -112,6 +112,11 @@
       "state": "voice (entry states)",
       "result": "pass",
       "evidence": "Dictate button present with aria-pressed; click activates ('Stop dictation', pressed=true, recognition session started, no voice error); second click deactivates. Actual speech transcription not verifiable without a live microphone - entry/activation/deactivation states verified."
+    },
+    {
+      "state": "DE-390-mobile-surface",
+      "result": "pass",
+      "evidence": "390x844 responsive: mobile Genie renders as a side drawer ('In der Seitenleiste fortsetzen' + close), German AI disclosure ('Antworten stammen aus unseren Produktdaten und Dokumenten und kunnen trotzdem falsch sein'), unsent-draft recovery WORKS on mobile (restore button returned the old EN question verbatim), all three mobile input entries in German (Typenschild-Foto/Schaltplan/Spracheingabe), nameplate/photo chip visible. DE question send consumed the composer and hit the built-in browser's challenge-timeout HONEST failure state with visible retry + 'Anfrage senden' fallback link (same recovery design as desktop; zero silent loss)."
     }
   ],
   "open_items": [
