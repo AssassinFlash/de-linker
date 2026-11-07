@@ -35,8 +35,9 @@
   - `.pdp-crumbs > a`（桌面面包屑"Products"链接，61×21.7px，67 条）
   - `.pdp-price-login` / `.linker-create-account`（未登录价签链接，214×20px，134 条）
   - `.pdp-stats-context summary`（"About these specifications" 折叠标题，20.1px，102 条）
-- 矩阵更新：134 条目 `visual_review` pending → partially-verified（新增 `layout_selfcheck_product_20261107` verified_check，evidence 指向本目录 JSON）；4 条 defect 页标 `partial-with-finding` + finding `pdp-de-feature-headline-overflow`，待部署复测后升级。
-- 证据：`product-visual-selfcheck-20261107.json`（r4 完整批次输出，含逐条 issue 几何）。
+- 矩阵更新：134 条目 `visual_review` pending → partially-verified（新增 `layout_selfcheck_product_20261107` verified_check，evidence 指向本目录 JSON）；4 条 defect 页标 `partial-with-finding` + finding `pdp-de-feature-headline-overflow`。
+- **finding 已关闭（生产实证）**：deploy `34cd20566`（cutover deploy + WindPress headless 重编译，缓存 1793958560 → 1794029105、body 变化、锚点齐全）后复测 4 页：0 defect、h3 干净、0 失败加载；回滚点 `/home/u388076051/deploy-prev/20261107T052008387414Z-34cd20566` 按策略保留。矩阵 4 条目已升级 partially-verified，post-deploy verified_check 与证据 `product-visual-selfcheck-postdeploy-20261107.json`。
+- 证据：`product-visual-selfcheck-20261107.json`（r4 完整批次输出，含逐条 issue 几何）、`product-visual-selfcheck-postdeploy-20261107.json`（部署后复测）。
 
 ## 已接受 review 项
 

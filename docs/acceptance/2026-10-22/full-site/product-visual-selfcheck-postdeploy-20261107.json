@@ -1,0 +1,460 @@
+{
+  "base": "https://de-linker.com",
+  "generatedAt": "2026-11-07T05:31:43.979Z",
+  "widths": [
+    1440
+  ],
+  "heights": [
+    900
+  ],
+  "pages": [
+    {
+      "name": "3000-2409-de",
+      "lang": "de",
+      "path": "/de/produkt/goodwe-sec3000c-intelligente-energiesteuerung/"
+    },
+    {
+      "name": "10-2403-de",
+      "lang": "de",
+      "path": "/de/produkt/goodwe-gw125k-sts-g10/"
+    },
+    {
+      "name": "666-2281-de",
+      "lang": "de",
+      "path": "/de/produkt/chint-dtsu666/"
+    },
+    {
+      "name": "3557-de",
+      "lang": "de",
+      "path": "/de/produkt/goodwe-hca-g2-gw11k-hca-20-11-kw-dreiphasige-ladestation/"
+    }
+  ],
+  "rows": [
+    {
+      "name": "3000-2409-de",
+      "lang": "de",
+      "path": "/de/produkt/goodwe-sec3000c-intelligente-energiesteuerung/",
+      "url": "https://de-linker.com/de/produkt/goodwe-sec3000c-intelligente-energiesteuerung/",
+      "title": "GoodWe SEC3000C (intelligenter Energieregler) | Linker",
+      "documentLang": "de-DE",
+      "status": 200,
+      "viewport": "1440x900",
+      "document": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 8081
+      },
+      "counts": {
+        "small-target": 4
+      },
+      "issues": [
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#tv-storefront-pdp > nav.pdp-crumbs.sf-container:nth-of-type(1) > a",
+          "text": "Produkte",
+          "rect": {
+            "x": 80,
+            "y": 109,
+            "w": 61.7,
+            "h": 21.7,
+            "pageY": 109
+          },
+          "metrics": {
+            "w": 61.7,
+            "h": 21.7,
+            "min": 24,
+            "display": "block",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        },
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#tv-storefront-pdp > div.pdp-layout.sf-container:nth-of-type(1) > aside.pdp-purchase > div.pdp-buy-inner > div.pdp-price:nth-of-type(3) > a.pdp-price-login:nth-of-type(1)",
+          "text": "Nettopreis nach Partner-Anmeldung",
+          "rect": {
+            "x": 804.4,
+            "y": 308.2,
+            "w": 263.4,
+            "h": 20,
+            "pageY": 308.2
+          },
+          "metrics": {
+            "w": 263.4,
+            "h": 20,
+            "min": 24,
+            "display": "inline",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        },
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#tv-storefront-pdp > div.pdp-layout.sf-container:nth-of-type(1) > aside.pdp-purchase > div.pdp-buy-inner > div.pdp-price:nth-of-type(3) > a.linker-create-account:nth-of-type(2)",
+          "text": "Konto erstellen",
+          "rect": {
+            "x": 1079.7,
+            "y": 309.2,
+            "w": 94.9,
+            "h": 20.1,
+            "pageY": 309.2
+          },
+          "metrics": {
+            "w": 94.9,
+            "h": 20.1,
+            "min": 24,
+            "display": "inline-block",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        },
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#stats > div.pdp-stats-layout > div.pdp-stats-summary:nth-of-type(1) > details.pdp-stats-context > summary",
+          "text": "Zu diesen Angaben",
+          "rect": {
+            "x": 80,
+            "y": 2780,
+            "w": 1280,
+            "h": 20.1,
+            "pageY": 2780
+          },
+          "metrics": {
+            "w": 1280,
+            "h": 20.1,
+            "min": 24,
+            "display": "list-item",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        }
+      ],
+      "consoleErrors": []
+    },
+    {
+      "name": "10-2403-de",
+      "lang": "de",
+      "path": "/de/produkt/goodwe-gw125k-sts-g10/",
+      "url": "https://de-linker.com/de/produkt/goodwe-gw125k-sts-g10/",
+      "title": "GoodWe GW125K-STS-G10 | Linker",
+      "documentLang": "de-DE",
+      "status": 200,
+      "viewport": "1440x900",
+      "document": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 7353
+      },
+      "counts": {
+        "small-target": 4
+      },
+      "issues": [
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#tv-storefront-pdp > nav.pdp-crumbs.sf-container:nth-of-type(1) > a",
+          "text": "Produkte",
+          "rect": {
+            "x": 80,
+            "y": 109,
+            "w": 61.7,
+            "h": 21.7,
+            "pageY": 109
+          },
+          "metrics": {
+            "w": 61.7,
+            "h": 21.7,
+            "min": 24,
+            "display": "block",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        },
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#tv-storefront-pdp > div.pdp-layout.sf-container:nth-of-type(1) > aside.pdp-purchase > div.pdp-buy-inner > div.pdp-price:nth-of-type(3) > a.pdp-price-login:nth-of-type(1)",
+          "text": "Nettopreis nach Partner-Anmeldung",
+          "rect": {
+            "x": 804.4,
+            "y": 280.2,
+            "w": 263.4,
+            "h": 20,
+            "pageY": 280.2
+          },
+          "metrics": {
+            "w": 263.4,
+            "h": 20,
+            "min": 24,
+            "display": "inline",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        },
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#tv-storefront-pdp > div.pdp-layout.sf-container:nth-of-type(1) > aside.pdp-purchase > div.pdp-buy-inner > div.pdp-price:nth-of-type(3) > a.linker-create-account:nth-of-type(2)",
+          "text": "Konto erstellen",
+          "rect": {
+            "x": 1079.7,
+            "y": 281.2,
+            "w": 94.9,
+            "h": 20.1,
+            "pageY": 281.2
+          },
+          "metrics": {
+            "w": 94.9,
+            "h": 20.1,
+            "min": 24,
+            "display": "inline-block",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        },
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#stats > div.pdp-stats-layout > div.pdp-stats-summary:nth-of-type(1) > details.pdp-stats-context > summary",
+          "text": "Zu diesen Angaben",
+          "rect": {
+            "x": 80,
+            "y": 2802,
+            "w": 1280,
+            "h": 20.1,
+            "pageY": 2802
+          },
+          "metrics": {
+            "w": 1280,
+            "h": 20.1,
+            "min": 24,
+            "display": "list-item",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        }
+      ],
+      "consoleErrors": []
+    },
+    {
+      "name": "666-2281-de",
+      "lang": "de",
+      "path": "/de/produkt/chint-dtsu666/",
+      "url": "https://de-linker.com/de/produkt/chint-dtsu666/",
+      "title": "Chint DTSU666 | Linker",
+      "documentLang": "de-DE",
+      "status": 200,
+      "viewport": "1440x900",
+      "document": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 5860
+      },
+      "counts": {
+        "small-target": 4
+      },
+      "issues": [
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#tv-storefront-pdp > nav.pdp-crumbs.sf-container:nth-of-type(1) > a",
+          "text": "Produkte",
+          "rect": {
+            "x": 80,
+            "y": 109,
+            "w": 61.7,
+            "h": 21.7,
+            "pageY": 109
+          },
+          "metrics": {
+            "w": 61.7,
+            "h": 21.7,
+            "min": 24,
+            "display": "block",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        },
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#tv-storefront-pdp > div.pdp-layout.sf-container:nth-of-type(1) > aside.pdp-purchase > div.pdp-buy-inner > div.pdp-price:nth-of-type(3) > a.pdp-price-login:nth-of-type(1)",
+          "text": "Nettopreis nach Partner-Anmeldung",
+          "rect": {
+            "x": 804.4,
+            "y": 280.2,
+            "w": 263.4,
+            "h": 20,
+            "pageY": 280.2
+          },
+          "metrics": {
+            "w": 263.4,
+            "h": 20,
+            "min": 24,
+            "display": "inline",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        },
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#tv-storefront-pdp > div.pdp-layout.sf-container:nth-of-type(1) > aside.pdp-purchase > div.pdp-buy-inner > div.pdp-price:nth-of-type(3) > a.linker-create-account:nth-of-type(2)",
+          "text": "Konto erstellen",
+          "rect": {
+            "x": 1079.7,
+            "y": 281.2,
+            "w": 94.9,
+            "h": 20.1,
+            "pageY": 281.2
+          },
+          "metrics": {
+            "w": 94.9,
+            "h": 20.1,
+            "min": 24,
+            "display": "inline-block",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        },
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#stats > div.pdp-stats-layout > div.pdp-stats-summary:nth-of-type(1) > details.pdp-stats-context > summary",
+          "text": "Zu diesen Angaben",
+          "rect": {
+            "x": 80,
+            "y": 3057.3,
+            "w": 1280,
+            "h": 20.1,
+            "pageY": 3057.3
+          },
+          "metrics": {
+            "w": 1280,
+            "h": 20.1,
+            "min": 24,
+            "display": "list-item",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        }
+      ],
+      "consoleErrors": []
+    },
+    {
+      "name": "3557-de",
+      "lang": "de",
+      "path": "/de/produkt/goodwe-hca-g2-gw11k-hca-20-11-kw-dreiphasige-ladestation/",
+      "url": "https://de-linker.com/de/produkt/goodwe-hca-g2-gw11k-hca-20-11-kw-dreiphasige-ladestation/",
+      "title": "GoodWe HCA G2 GW11K-HCA-20 (11 kW dreiphasige Wallbox, 7,5 m Kabel) | Linker",
+      "documentLang": "de-DE",
+      "status": 200,
+      "viewport": "1440x900",
+      "document": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 8230
+      },
+      "counts": {
+        "small-target": 4
+      },
+      "issues": [
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#tv-storefront-pdp > nav.pdp-crumbs.sf-container:nth-of-type(1) > a",
+          "text": "Produkte",
+          "rect": {
+            "x": 80,
+            "y": 109,
+            "w": 61.7,
+            "h": 21.7,
+            "pageY": 109
+          },
+          "metrics": {
+            "w": 61.7,
+            "h": 21.7,
+            "min": 24,
+            "display": "block",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        },
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#tv-storefront-pdp > div.pdp-layout.sf-container:nth-of-type(1) > aside.pdp-purchase > div.pdp-buy-inner > div.pdp-price:nth-of-type(3) > a.pdp-price-login:nth-of-type(1)",
+          "text": "Nettopreis nach Partner-Anmeldung",
+          "rect": {
+            "x": 804.4,
+            "y": 308.2,
+            "w": 263.4,
+            "h": 20,
+            "pageY": 308.2
+          },
+          "metrics": {
+            "w": 263.4,
+            "h": 20,
+            "min": 24,
+            "display": "inline",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        },
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#tv-storefront-pdp > div.pdp-layout.sf-container:nth-of-type(1) > aside.pdp-purchase > div.pdp-buy-inner > div.pdp-price:nth-of-type(3) > a.linker-create-account:nth-of-type(2)",
+          "text": "Konto erstellen",
+          "rect": {
+            "x": 1079.7,
+            "y": 309.2,
+            "w": 94.9,
+            "h": 20.1,
+            "pageY": 309.2
+          },
+          "metrics": {
+            "w": 94.9,
+            "h": 20.1,
+            "min": 24,
+            "display": "inline-block",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        },
+        {
+          "type": "small-target",
+          "severity": "review",
+          "selector": "#stats > div.pdp-stats-layout > div.pdp-stats-summary:nth-of-type(1) > details.pdp-stats-context > summary",
+          "text": "Zu diesen Angaben",
+          "rect": {
+            "x": 80,
+            "y": 3355.8,
+            "w": 1280,
+            "h": 20.1,
+            "pageY": 3355.8
+          },
+          "metrics": {
+            "w": 1280,
+            "h": 20.1,
+            "min": 24,
+            "display": "list-item",
+            "position": "static"
+          },
+          "note": "hit area below the 24px pointer target"
+        }
+      ],
+      "consoleErrors": []
+    }
+  ],
+  "summary": {
+    "pagesChecked": 4,
+    "defects": 0,
+    "reviews": 16,
+    "failedLoads": 0
+  }
+}
