@@ -647,6 +647,10 @@
 	font-weight: 700;
 	line-height: 1.15;
 	letter-spacing: -0.01em;
+	/* German compounds at the band's 52px clamp can exceed the copy column
+	   (measured: "Notstromumschaltung" 557px in a 528px box); every width
+	   wraps them, not only the phone layout. */
+	overflow-wrap: anywhere;
 }
 
 #tv-storefront-pdp .pdp-intro-lede,
@@ -1820,10 +1824,6 @@
 
 	#tv-storefront-pdp .pdp-block {
 		padding-block: 40px;
-	}
-
-	#tv-storefront-pdp .pdp-section-title {
-		overflow-wrap: anywhere;
 	}
 
 	#tv-storefront-pdp .pdp-benefits {
