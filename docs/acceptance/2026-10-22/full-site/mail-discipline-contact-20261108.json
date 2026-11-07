@@ -1,0 +1,35 @@
+{
+  "session": "mail-discipline-contact-20261108",
+  "environment": "production",
+  "method": "Real Chrome contact-form submission + wp-cli readback; TestMode enabled throughout (linker_commerce_test_mail_to = chester@de-linker.com)",
+  "verified": [
+    {
+      "stage": "contact submission",
+      "checks": "Real form fill (question/email/name/consent) -> submit -> 'Your inquiry #8651 is saved and waiting for review. We have not sent a confirmation email.' (IntakeAdmin message); no confirmation email sent; order 8651 created (shop_order_placehold, HPOS)",
+      "result": "pass"
+    },
+    {
+      "stage": "recipient configuration",
+      "checks": "Options: notify_to=sales@sunriverinverter.com, bcc=[chester@de-linker.com] - matches owner ruling 2026-10-17 exactly (internal notifications to sunriverinverter, boss address not notified, chester bcc kept because it can receive)",
+      "result": "pass"
+    },
+    {
+      "stage": "email deferral (by design)",
+      "checks": "NewInquiryEmail trigger -> Queue::defer -> SendAuthorization: the team notification is deferred pending abuse-assessment authorization; no linker_mail_job created for #8651 yet - the hold is the D-line anti-abuse mechanism, not a mail failure",
+      "result": "pass (mechanism verified; actual send below)"
+    },
+    {
+      "stage": "test-mode rewrite capability",
+      "checks": "TestMode option set and read back; Outbox.php:317 redirects every outgoing message's recipients to the tester address on the way out (code-verified); mail jobs table readback path works (latest jobs 8200-8206 from 2026-10-22 batch)",
+      "result": "pass"
+    }
+  ],
+  "automation_notes": [
+    "wp eval direct NewInquiryEmail::capture() critical-errors on production (class needs full Woo email context); the real transition path (pending -> inquiry-received) fires the hook but deferral holds the send",
+    "Force-send assertion needs the SendAuthorization assessment to authorize; left for the D-line batch where the authorization flow is verified together with attack isolation"
+  ],
+  "open": [
+    "actual single-delivery to tester after authorization (with queue-data assertion for the multi-recipient routing)",
+    "inquiry submission (draft -> Proforma request path) same assertions"
+  ]
+}
