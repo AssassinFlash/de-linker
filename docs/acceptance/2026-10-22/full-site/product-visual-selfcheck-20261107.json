@@ -1,6 +1,6 @@
 {
   "base": "https://de-linker.com",
-  "generatedAt": "2026-11-07T03:41:51.305Z",
+  "generatedAt": "2026-11-07T05:08:34.146Z",
   "widths": [
     1440,
     390
@@ -2604,7 +2604,7 @@
       "issues": [
         {
           "type": "overflow-x-visible",
-          "severity": "review",
+          "severity": "defect",
           "selector": "#tv-storefront-pdp > div.pdp-content:nth-of-type(2) > div.pdp-block.pdp-feature-band:nth-of-type(1) > section.pdp-feature > div.pdp-feature-copy:nth-of-type(2) > h3.pdp-section-title",
           "text": "Nulleinspeisungsregelung mit zertifizierter Präzision.",
           "rect": {
@@ -2620,8 +2620,7 @@
             "overflowPx": 106,
             "overflowX": "visible"
           },
-          "note": "inside a laid-out track wider than its clipping frame (#tv-storefront-pdp > div.pdp-content:nth-of-type(2) > div.pdp-block.pdp-feature-band:nth-of-type(1) > section.pdp-feature > div.pdp-feature-copy:nth-of-type(2)); treated as a carousel, not a spill",
-          "carousel": "#tv-storefront-pdp > div.pdp-content:nth-of-type(2) > div.pdp-block.pdp-feature-band:nth-of-type(1) > section.pdp-feature > div.pdp-feature-copy:nth-of-type(2)"
+          "note": "content wider than the box and no clip contains it; the spill is visible"
         },
         {
           "type": "small-target",
@@ -5083,7 +5082,7 @@
       "issues": [
         {
           "type": "overflow-x-visible",
-          "severity": "review",
+          "severity": "defect",
           "selector": "#tv-storefront-pdp > div.pdp-content:nth-of-type(2) > div.pdp-block.pdp-feature-band:nth-of-type(1) > section.pdp-feature:nth-of-type(3) > div.pdp-feature-copy:nth-of-type(2) > h3.pdp-section-title",
           "text": "Netzbezugsbegrenzung an Bord",
           "rect": {
@@ -5099,8 +5098,7 @@
             "overflowPx": 60,
             "overflowX": "visible"
           },
-          "note": "inside a laid-out track wider than its clipping frame (#tv-storefront-pdp > div.pdp-content:nth-of-type(2) > div.pdp-block.pdp-feature-band:nth-of-type(1) > section.pdp-feature:nth-of-type(3) > div.pdp-feature-copy:nth-of-type(2)); treated as a carousel, not a spill",
-          "carousel": "#tv-storefront-pdp > div.pdp-content:nth-of-type(2) > div.pdp-block.pdp-feature-band:nth-of-type(1) > section.pdp-feature:nth-of-type(3) > div.pdp-feature-copy:nth-of-type(2)"
+          "note": "content wider than the box and no clip contains it; the spill is visible"
         },
         {
           "type": "small-target",
@@ -5856,7 +5854,7 @@
             "overflowPx": 6,
             "overflowX": "visible"
           },
-          "note": "content wider than the box, nothing in its own overflow clips it"
+          "note": "content wider than the box and no clip contains it; the spill is visible"
         },
         {
           "type": "small-target",
@@ -6423,7 +6421,7 @@
             "overflowPx": 29,
             "overflowX": "visible"
           },
-          "note": "content wider than the box, nothing in its own overflow clips it"
+          "note": "content wider than the box and no clip contains it; the spill is visible"
         },
         {
           "type": "small-target",
@@ -9655,8 +9653,8 @@
   ],
   "summary": {
     "pagesChecked": 138,
-    "defects": 2,
-    "reviews": 305,
+    "defects": 4,
+    "reviews": 303,
     "failedLoads": 0
   }
 }

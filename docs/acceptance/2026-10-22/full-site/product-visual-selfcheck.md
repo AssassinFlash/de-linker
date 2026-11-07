@@ -28,15 +28,15 @@
 
 ## 代表页批次结果
 
-- 日期：2026-11-07；环境：生产 de-linker.com，匿名浏览器，确定性布局探针（`tests/visual/layout-selfcheck.mjs`，分支 `visual/layout-selfcheck-paths`）；站点 release 运行期未变（main `31a5b64c6` 部署态）。
+- 日期：2026-11-07；环境：生产 de-linker.com，匿名浏览器，确定性布局探针（`tests/visual/layout-selfcheck.mjs`）；签收运行为 r4 批次（最终探针，分支 `3e1392e10`），站点 release 运行期未变（main `31a5b64c6` 部署态）。早前 r2/r3 批次被后续探针修正取代（r2 的 carousel 判据漏掉 2 页真实 defect、r3 的关闭 details 豁免误吞 102 条 summary review），不作为签收依据。
 - 138 个 page/viewport（69 条 EN/DE 记录 × 1440×900/390×844），0 个失败加载。
-- **defect 2 个**（`3000-2409-de@1440`、`10-2403-de@1440`），同一根因：德语桌面 feature band 大标题 `h3.pdp-section-title`（该处 clamp 至 52px）遇到不可断行复合词（"Notstromumschaltung für die Klasse ET 80 bis 100 kW" 557px > 528px 内容盒）溢出 6/29px。手机端 ≤860px 早有 `overflow-wrap: anywhere`，桌面缺失。修复：把该规则上移到 `pdp.css` 基础 `.pdp-section-title`（对不溢出的标题零渲染变化），删除手机端冗余副本。修复效果已在两页免部署注入验证：h3 正常换行（高 168/225px）、scrollWidth=clientWidth、探针 0 defect、无新增问题。生产部署后须复测这两页 defect=0 再关闭 finding。
-- **review 305 条**，三组 small-target，全部裁定接受（同性质：单行文本控件略低于 24px 触靶线，宽度充足 61px–1280px，无客户受阻证据；批量改生产 CSS 走像素门变更台账不成比例，如需 WCAG 打磨另行批量处理）：
+- **defect 4 个**（`3000-2409-de`、`10-2403-de`、`666-2281-de`、`3557-de`，全部 1440），同一根因：德语桌面 feature band 大标题 `h3.pdp-section-title`（该处 clamp 至 52px）遇到不可断行复合词（"Notstromumschaltung" 557px、"Nulleinspeisungsregelung…" 634px > 528px 内容盒）溢出可见（无任何裁切者容纳溢出，画在 navy 面板上）。手机端 ≤860px 早有 `overflow-wrap: anywhere`，桌面缺失。修复：把该规则上移到 `pdp.css` 基础 `.pdp-section-title`（对不溢出的标题零渲染变化），删除手机端冗余副本。修复效果已在全部 4 页免部署注入验证：h3 正常换行、scrollWidth=clientWidth、探针 0 defect、无新增问题。生产部署后须复测这 4 页 defect=0 再关闭 finding。
+- **review 303 条**，全部 small-target，三组，全部裁定接受（单行文本控件略低于 24px 触靶线，宽度充足 61px–1280px，无客户受阻证据；批量改生产 CSS 走像素门变更台账不成比例，如需 WCAG 打磨另行批量处理）：
   - `.pdp-crumbs > a`（桌面面包屑"Products"链接，61×21.7px，67 条）
-  - `.pdp-price-login`（未登录价签链接，214×20px，134 条）
+  - `.pdp-price-login` / `.linker-create-account`（未登录价签链接，214×20px，134 条）
   - `.pdp-stats-context summary`（"About these specifications" 折叠标题，20.1px，102 条）
-- 矩阵更新：136 条目 `visual_review` pending → partially-verified（新增 `layout_selfcheck_product_20261107` verified_check，evidence 指向本目录 JSON）；2 条 defect 页标 `partial-with-finding` + finding `pdp-de-feature-headline-overflow`，待部署复测后升级。
-- 证据：`product-visual-selfcheck-20261107.json`（完整批次输出，含逐条 issue 几何）。
+- 矩阵更新：134 条目 `visual_review` pending → partially-verified（新增 `layout_selfcheck_product_20261107` verified_check，evidence 指向本目录 JSON）；4 条 defect 页标 `partial-with-finding` + finding `pdp-de-feature-headline-overflow`，待部署复测后升级。
+- 证据：`product-visual-selfcheck-20261107.json`（r4 完整批次输出，含逐条 issue 几何）。
 
 ## 已接受 review 项
 
