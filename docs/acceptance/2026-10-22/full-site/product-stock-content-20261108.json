@@ -22,6 +22,11 @@
       "state": "actual-file-manifest-open-and-content",
       "checks": "/faq-download/ (header 'FAQ & Documents') renders 143 PDF links (datasheets DE+EN, manuals, catalogs). Live-manifest samples open correctly: chint_dtsu666_catalog_en.pdf 200 application/pdf 505KB; delinker-goodwe_batc208-datasheet.pdf 200 532KB; chint_dtsu666_dssu666_user_manual_en.pdf 200 1.2MB; H2-10-30K-T2T3-datasheet-EN-BEU.pdf 200 430KB (linked from PDP). One URL NOT in the live manifest (goodwe-esa-3-10kw-eha-g20-datasheet-en.pdf) returns 410 Gone = spec-609 publication semantics for withdrawn files (no existence oracle), correct behavior",
       "result": "pass"
+    },
+    {
+      "state": "legal documents four-by-four EN+DE",
+      "checks": "All four legal documents 200 in both languages: EN /imprint/ /privacy-policy/ /terms-of-sale/ /refund-returns/; DE /de/impressum/ /de/datenschutz/ /de/verkaufsbedingungen/ /de/rueckgabe-erstattung/ (DE slugs paired via footer links; old /datenschutz-erklaerung/ 404 - retired alias, correct). EN Privacy main content 60,948 chars, sha256 14272db5860f9ada baseline recorded for the readback gate; layout-A stylesheet header present in source",
+      "result": "pass"
     }
   ]
 }
