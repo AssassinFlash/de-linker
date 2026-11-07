@@ -39,7 +39,7 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'woocommerce_product_single_add_to_cart_text', array( $labels, 'add_to_draft' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_product_add_to_cart_text', array( $labels, 'add_to_draft' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'woocommerce_order_button_text', array( $labels, 'send_inquiry' ) );
-		WP_Mock::expectFilterAdded( 'woocommerce_thankyou_order_received_text', array( $labels, 'inquiry_received' ) );
+		WP_Mock::expectFilterAdded( 'woocommerce_thankyou_order_received_text', array( $labels, 'inquiry_received' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'woocommerce_checkout_must_be_logged_in_message', array( $labels, 'log_in_to_send' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_get_privacy_policy_text', array( $labels, 'privacy_text' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'the_title', array( $labels, 'page_title' ), 5, 2 );

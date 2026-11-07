@@ -5202,7 +5202,14 @@ msgstr ""
 msgid "Thank you. Your inquiry has been received."
 msgstr ""
 
-#: includes/Vocabulary/Labels.php:54 includes/Vocabulary/Terms.php:90
+#: includes/Vocabulary/Labels.php:54
+msgid ""
+"This confirmation link did not open. Please use the link from your inquiry "
+"confirmation email, or write to sales@de-linker.com and we will send it "
+"again."
+msgstr ""
+
+#: includes/Vocabulary/Labels.php:58 includes/Vocabulary/Terms.php:90
 msgid ""
 "Please log in to request a Proforma invoice. No account yet? Register on the "
 "account page."
