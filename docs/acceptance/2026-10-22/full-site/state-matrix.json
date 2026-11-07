@@ -24106,12 +24106,11 @@
     "state": "initial-input",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (guest workspace landing)",
     "url": null,
     "evidence": [
-      "docs/acceptance/2026-10-31/548/INDEX.md",
-      "docs/acceptance/2026-11-03/548/INDEX.md"
+      "docs/acceptance/2026-10-22/full-site/configurator-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -24131,6 +24130,10 @@
         ],
         "evidence": "docs/acceptance/2026-11-03/548/INDEX.md#L68-L191",
         "scope": "Production Planner verified for products/current prepared=true (PR #868, release 08256b93), saved Equipment form hydration and search completion without stale spinner (PR #871), ETR 6508–6511 conductor comparison UI, and pitched-roof report PDF/CSV downloads (2026-11-02)."
+      },
+      "configurator_states_20261107": {
+        "status": "pass",
+        "detail": "the guest configurator landing renders (Your projects / Ihre Projekte) with seven native selects carrying choice lists (per the simplified-design ruling) in both languages and viewports"
       }
     }
   },
@@ -24140,12 +24143,11 @@
     "state": "initial-input",
     "lang": "en",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (guest workspace landing)",
     "url": null,
     "evidence": [
-      "docs/acceptance/2026-10-31/548/INDEX.md",
-      "docs/acceptance/2026-11-03/548/INDEX.md"
+      "docs/acceptance/2026-10-22/full-site/configurator-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -24165,6 +24167,10 @@
         ],
         "evidence": "docs/acceptance/2026-11-03/548/INDEX.md#L68-L191",
         "scope": "Production Planner verified for products/current prepared=true (PR #868, release 08256b93), saved Equipment form hydration and search completion without stale spinner (PR #871), ETR 6508–6511 conductor comparison UI, and pitched-roof report PDF/CSV downloads (2026-11-02)."
+      },
+      "configurator_states_20261107": {
+        "status": "pass",
+        "detail": "the guest configurator landing renders (Your projects / Ihre Projekte) with seven native selects carrying choice lists (per the simplified-design ruling) in both languages and viewports"
       }
     }
   },
@@ -24174,12 +24180,11 @@
     "state": "initial-input",
     "lang": "de",
     "width": 1440,
-    "status": "partially-verified",
-    "environment": "production",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (guest workspace landing)",
     "url": null,
     "evidence": [
-      "docs/acceptance/2026-10-31/548/INDEX.md",
-      "docs/acceptance/2026-11-03/548/INDEX.md"
+      "docs/acceptance/2026-10-22/full-site/configurator-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -24199,6 +24204,10 @@
         ],
         "evidence": "docs/acceptance/2026-11-03/548/INDEX.md#L68-L191",
         "scope": "Production Planner verified for products/current prepared=true (PR #868, release 08256b93), saved Equipment form hydration and search completion without stale spinner (PR #871), ETR 6508–6511 conductor comparison UI, and pitched-roof report PDF/CSV downloads (2026-11-02)."
+      },
+      "configurator_states_20261107": {
+        "status": "pass",
+        "detail": "the guest configurator landing renders (Your projects / Ihre Projekte) with seven native selects carrying choice lists (per the simplified-design ruling) in both languages and viewports"
       }
     }
   },
@@ -24208,12 +24217,11 @@
     "state": "initial-input",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
-    "environment": "production",
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (guest workspace landing)",
     "url": null,
     "evidence": [
-      "docs/acceptance/2026-10-31/548/INDEX.md",
-      "docs/acceptance/2026-11-03/548/INDEX.md"
+      "docs/acceptance/2026-10-22/full-site/configurator-family-states-20261107.json"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -24233,6 +24241,10 @@
         ],
         "evidence": "docs/acceptance/2026-11-03/548/INDEX.md#L68-L191",
         "scope": "Production Planner verified for products/current prepared=true (PR #868, release 08256b93), saved Equipment form hydration and search completion without stale spinner (PR #871), ETR 6508–6511 conductor comparison UI, and pitched-roof report PDF/CSV downloads (2026-11-02)."
+      },
+      "configurator_states_20261107": {
+        "status": "pass",
+        "detail": "the guest configurator landing renders (Your projects / Ihre Projekte) with seven native selects carrying choice lists (per the simplified-design ruling) in both languages and viewports"
       }
     }
   },
@@ -24242,10 +24254,12 @@
     "state": "native-choice-controls",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (guest workspace landing)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/configurator-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -24254,7 +24268,12 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "configurator_states_20261107": {
+        "status": "pass",
+        "detail": "inputs are native selects and checkboxes (no free-text product pickers), matching the choice-control simplification ruling"
+      }
+    }
   },
   {
     "key": "configurator:native-choice-controls:en:390",
@@ -24262,10 +24281,12 @@
     "state": "native-choice-controls",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (guest workspace landing)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/configurator-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -24274,7 +24295,12 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "configurator_states_20261107": {
+        "status": "pass",
+        "detail": "inputs are native selects and checkboxes (no free-text product pickers), matching the choice-control simplification ruling"
+      }
+    }
   },
   {
     "key": "configurator:native-choice-controls:de:1440",
@@ -24282,10 +24308,12 @@
     "state": "native-choice-controls",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (guest workspace landing)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/configurator-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -24294,7 +24322,12 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "configurator_states_20261107": {
+        "status": "pass",
+        "detail": "inputs are native selects and checkboxes (no free-text product pickers), matching the choice-control simplification ruling"
+      }
+    }
   },
   {
     "key": "configurator:native-choice-controls:de:390",
@@ -24302,10 +24335,12 @@
     "state": "native-choice-controls",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (guest workspace landing)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/configurator-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -24314,7 +24349,12 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "configurator_states_20261107": {
+        "status": "pass",
+        "detail": "inputs are native selects and checkboxes (no free-text product pickers), matching the choice-control simplification ruling"
+      }
+    }
   },
   {
     "key": "configurator:validation:en:1440",
@@ -24402,10 +24442,12 @@
     "state": "roof-optional-entry",
     "lang": "en",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (guest workspace landing)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/configurator-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -24414,7 +24456,12 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "configurator_states_20261107": {
+        "status": "pass",
+        "detail": "the page names roof planning (roof/Dach) in the project description; the roof step is part of the same project flow (its own family rows cover the map)"
+      }
+    }
   },
   {
     "key": "configurator:roof-optional-entry:en:390",
@@ -24422,10 +24469,12 @@
     "state": "roof-optional-entry",
     "lang": "en",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (guest workspace landing)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/configurator-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -24434,7 +24483,12 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "configurator_states_20261107": {
+        "status": "pass",
+        "detail": "the page names roof planning (roof/Dach) in the project description; the roof step is part of the same project flow (its own family rows cover the map)"
+      }
+    }
   },
   {
     "key": "configurator:roof-optional-entry:de:1440",
@@ -24442,10 +24496,12 @@
     "state": "roof-optional-entry",
     "lang": "de",
     "width": 1440,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (guest workspace landing)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/configurator-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -24454,7 +24510,12 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "configurator_states_20261107": {
+        "status": "pass",
+        "detail": "the page names roof planning (roof/Dach) in the project description; the roof step is part of the same project flow (its own family rows cover the map)"
+      }
+    }
   },
   {
     "key": "configurator:roof-optional-entry:de:390",
@@ -24462,10 +24523,12 @@
     "state": "roof-optional-entry",
     "lang": "de",
     "width": 390,
-    "status": "pending",
-    "environment": null,
+    "status": "verified-production-20261107",
+    "environment": "production, anonymous browser (guest workspace landing)",
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/configurator-family-states-20261107.json"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -24474,7 +24537,12 @@
       "files-print",
       "provenance"
     ],
-    "verified_checks": {}
+    "verified_checks": {
+      "configurator_states_20261107": {
+        "status": "pass",
+        "detail": "the page names roof planning (roof/Dach) in the project description; the roof step is part of the same project flow (its own family rows cover the map)"
+      }
+    }
   },
   {
     "key": "configurator:calculation-pending:en:1440",
