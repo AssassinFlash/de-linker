@@ -46,11 +46,24 @@
       "state": "history-and-restore (partial)",
       "result": "partial",
       "evidence": "older turns from previous sessions restored in transcript (two GW10K-EHA-G20 rated-output Q/A pairs); full reload/restore verification still pending"
+    },
+    {
+      "state": "consumer-draft-readback",
+      "result": "pass",
+      "evidence": "product-card 'Add to solution draft' (GW8.3-BAT-D-G20) -> draft_write action's own Turnstile proof (prepare 0.66s + verify 0.64s, auto-solved) -> POST /genie/draft (6.2s) -> /cart/ shows real Woo item 'GoodWe GW8.3-BAT-D-G20 (ESA battery module, 8.32 kWh)' with 'Log in for prices' gate for anonymous; notice 'In your solution draft.'"
+    },
+    {
+      "state": "history-and-restore",
+      "result": "pass",
+      "evidence": "full page reload + dock reopen restores all 4 turns (2 old + battery Q + chip Q + smart-meter Q); rating buttons (Copy response x5, Helpful/Not helpful) present; locale switch EN->DE keeps thread, cards re-localize (In stock -> Auf Lager)"
+    },
+    {
+      "state": "DE-panel-texts",
+      "result": "pass",
+      "evidence": "DE dock aria-label 'Genie fragen' (raw HTML verified); panel title 'Genie – der KI-Assistent von Linker'; composer placeholder 'Genie fragen'; suggestion chips in German; dock present in both languages"
     }
   ],
   "open_items": [
-    "Q4 'Which smart meter works with the GW10K-EHA-G20 for zero export?' in flight - watching for trust-admitted probe -> answer (no challenge expected)",
-    "product-add -> real Woo draft readback (consumer-readback contract)",
     "copy-and-rating, human-handoff, voice, attachments, long-conversation-scroll, dock-keyboard-focus-escape",
     "save-pending-error-success, ordinary-draft-failure-owner-isolation",
     "DE language pass + 390 viewport functional pass",
@@ -66,6 +79,11 @@
       "id": "interactive-challenge-real-chrome",
       "severity": "watch",
       "detail": "Cloudflare Turnstile chose INTERACTIVE widget for owner's real Chrome on first attempt (before-interactive-callback observed). If common for real visitors, first question requires one checkbox click; owner ruling 2026-11-04 demands real humans not be blocked. Attempt2 auto-solved; frequency unknown - needs broader sampling before treating as defect."
+    },
+    {
+      "id": "genie-first-ask-silent-drop",
+      "severity": "critical",
+      "detail": "Window focus/pageshow re-verify cleared composer and swallowed send (3 clean reproductions, real Chrome). Fixed in PR #1001; dossier genie-first-ask-silent-drop-20261107.md; production re-verification pending deploy."
     }
   ]
 }
