@@ -87,6 +87,11 @@
       "stage": "planning report generation",
       "checks": "Planning report view: result-inclusion selects (equipment checks rev3 runs), optional logo upload, Generate button (enabled after selecting a result via native change event; gated on save-first + at-least-one-result). Generate -> POST /wp-json/linker/v1/planner/rpc/runs/report (7.1s) -> 'Report ready 11/8/26 1:52 AM Revision 4' with 'Project planning report / Saved project inputs and selected calculation results / timestamp', Download PDF button, Download bill of materials (CSV) button, Add selected products to solution draft button with honest note 'Adding them does not replace any outstanding engineering checks'. Prior project (517eb745) report artifacts on disk prove the PDF/CSV download path works for a real report (r20 EN+DE PDF + CSV in ~/Downloads from Nov 7).",
       "result": "pass (generation + UI); direct download of THIS report's PDF via automation produced no fetch/blob artifact (extension session swallowing downloads) - download machinery proven by prior artifacts"
+    },
+    {
+      "stage": "add-products zero-request root-caused",
+      "checks": "rev4 equipment check re-run via the fixed button (2:04 AM, Input revision 4): honest per-check outcomes with 'Required accessory: Requirements not met' (selection lacks an accessory - correct engineering refusal). The prior report (rev3 check) had NO product-add section for its requirements-not-met result; a second Generate with the rev4 check selected started ('Cancel calculation' visible). Conclusion: the zero-request Add click was an empty-product-section data state, not the silent-no-op defect family; add-to-draft consumer readback still pending a report with selectable products",
+      "result": "root-caused (data state, not defect); add->draft readback remains open for a products-bearing report"
     }
   ],
   "automation_notes": [
@@ -95,7 +100,6 @@
     "Equipment workbench step: requirement inputs (kWp/kWh/kW) resisted both value-set fill and ref-click+key_type within this session (values reset); needs a focused pass. QuickStart regeneration is the working path."
   ],
   "open": [
-    "INVESTIGATE: 'Add selected products to solution draft' click fired ZERO requests and cart remained empty - either the report had no selectable products (requirements-not-met check, no BOM rows) or another silent no-op; needs one clean-report retry with a requirements-met result",
     "Report PDF requires the energy calculation step (interval data) - by design; deep chain continues via workbench Energy inputs import or equipment selection -> draft add",
     "UX finding: navigating QuickStart -> workbench Equipment -> back resets the quick-start form selections and shows 'Unsaved changes' even though the pipeline ran at revision 2 - candidate state-persistence issue to verify with a clean run",
     "report PDF/CSV download",
