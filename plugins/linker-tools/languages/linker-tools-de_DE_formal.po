@@ -26,6 +26,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: hand-written, reviewed\n"
 
+#: ../../apps/planner/src/components/energy/EnergyError.tsx build/planner/assets/planner.js:1
 msgid "The project is not ready to calculate yet. Check the highlighted fields in the steps of this project, then try again."
 msgstr "Das Projekt ist noch nicht bereit für die Berechnung. Prüfen Sie die markierten Felder in den Schritten dieses Projekts und versuchen Sie es erneut."
 
