@@ -109,3 +109,27 @@ Credential re-scan: all 25 tracked files changed since the 2026-11-05 scan
   off: emails go to their recipients again."
 - Chrome incognito test window closed; test tab in the normal window
   closed (original tabs restored); built-in browser test tab closed.
+
+## Current-release readback (2026-11-07, after PR #972 / Planner #973)
+
+- Context: PR #972 re-uploaded the `linker-commerce` bundle and PR #973
+  activated the reduced-read Planner release. The public protection endpoint
+  still answered `POST /wp-json/linker/v1/protection/prepare` with
+  `mode=enforce`, `lifetime=300`, action/site-key/prepare fields.
+- A fresh real Google Chrome incognito window opened
+  `/proforma-request/` as a guest. Message, name, reply email, company and
+  consent were entered through the visible form. One submit passed with no
+  Cloudflare checkbox and no error; the browser reached
+  `/proforma-request/inquiry-received/8631/` directly.
+- Readback: order 8631 was `wc-inquiry-received`, guest customer 0, with the
+  entered reply address/name/company. The frozen assessment completed through
+  the permitted Jev channel in 0.441 s with decision `normal`
+  (`business_request`; no escalation).
+- Mail discipline: test mode was enabled for this check only. The 02:32:20 UTC
+  mail log contains exactly two deliveries for #8631 — the internal new-inquiry
+  message and the customer receipt — both to the single tester address
+  `chester@de-linker.com`. No other recipient was used.
+- Cleanup: order 8631 was force-deleted through WooCommerce's native CLI and
+  SQL readback returned `remaining=0`; `test-mail off` was executed and status
+  read back as off. The owned incognito window was closed; Chrome's original
+  user window remained.
