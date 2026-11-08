@@ -19,6 +19,13 @@ import { expect, test, type Page } from '@playwright/test';
  * Internal dependencies
  */
 import { instance, wp, REPO_ROOT } from '../lib/instance';
+import { seedConsentCookies } from '../lib/consent';
+
+// The CookieYes banner covers the reset card until answered; pre-seed the
+// consent cookies so every goto starts from an answered banner.
+test.beforeEach(async ({ context }) => {
+	await seedConsentCookies(context);
+});
 
 const PASSWORD = 'e2e-Account-2026!';
 
@@ -256,6 +263,74 @@ for (const { locale, account, lost } of LOCALES) {
 			page.locator('a[href*="action=logout"]'),
 			'the password the reset saved is the one that signs in'
 		).not.toHaveCount(0);
+	});
+
+	test(`${locale}: a wrong or spent reset key never offers the new-password form`, async ({
+		page,
+	}) => {
+		const login = createCustomer(Date.now(), locale);
+		const id = wp(['user', 'get', login, '--field=ID']).trim();
+		if (!/^\d+$/.test(id)) {
+			throw new Error(`the fixture account has no id: ${id}`);
+		}
+		const key = wp([
+			'eval',
+			`$u = get_user_by( 'login', '${login}' ); echo get_password_reset_key( $u );`,
+		]).trim();
+		expect(key, 'the fixture account carries a reset key').not.toBe('');
+		const reset = `${lost}?show-reset-form=true&key=${encodeURIComponent(
+			key
+		)}&id=${id}`;
+
+		// The redesigned card answers in one of two modes. A key that is not
+		// the account's own never reaches the new-password form: the same
+		// card asks for the account instead (the request form).
+		await page.goto(
+			url(
+				`${lost}?show-reset-form=true&key=${encodeURIComponent(
+					`not-${key}`
+				)}&id=${id}`
+			)
+		);
+		await page.waitForLoadState('load');
+		const card = page.locator('.linker-auth-inner--solo .linker-auth-card');
+		await expect(card, 'the card itself answers').toBeVisible();
+		await expect(
+			page.locator('input#user_login, input[name="user_login"]').first(),
+			'a wrong key gets the request form'
+		).toBeVisible();
+		await expect(
+			page.locator('#password_1'),
+			'a wrong key never sees password fields'
+		).toHaveCount(0);
+		await shot(page, `${locale}-reset-wrong-key`);
+
+		// The account's own key opens the new-password form and saves once.
+		await page.goto(url(reset));
+		await page.waitForLoadState('load');
+		await expect(page.locator('#password_1')).toBeVisible();
+		await page.fill('#password_1', NEW_PASSWORD);
+		await page.fill('#password_2', NEW_PASSWORD);
+		await page.locator('button[type="submit"]').click();
+		await page.waitForLoadState('load');
+		await expect(
+			page.locator('.woocommerce-message, .woocommerce-info').first(),
+			'the account own key saves once'
+		).toBeVisible();
+
+		// The spent key no longer opens the new-password form: the same
+		// address falls back to the request form.
+		await page.goto(url(reset));
+		await page.waitForLoadState('load');
+		await expect(
+			page.locator('input#user_login, input[name="user_login"]').first(),
+			'the spent key gets the request form'
+		).toBeVisible();
+		await expect(
+			page.locator('#password_1'),
+			'the spent key never sees password fields'
+		).toHaveCount(0);
+		await shot(page, `${locale}-reset-spent-key`);
 	});
 }
 
