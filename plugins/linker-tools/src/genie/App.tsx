@@ -3163,11 +3163,12 @@ export function App( { config }: { config: GenieConfig } ) {
 									hidden
 									onChange={ ( event ) => {
 										const picked = event.target.files;
-										if (
-											picked &&
-											draftContext.acceptEditor()
-										) {
+										if ( picked ) {
 											setRefused( '' );
+											// add() holds a pick that
+											// arrives before the cold
+											// identity lookup settles;
+											// gating here would drop it.
 											files.add( picked );
 										}
 										// Picking the same file again must

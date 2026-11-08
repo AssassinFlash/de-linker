@@ -320,7 +320,10 @@ for (const lang of ['en', 'de'] as Lang[]) {
 			});
 			await arriveForList(page, lang, tag);
 
-			// The 20-row list, pasted: matched, unclear and missing rows.
+			// The 20-row list, pasted: matched, unclear and missing rows. The
+			// EcoFlow OCEAN 2 rows are missing with the SMA and Fronius lines:
+			// the catalog carries every EcoFlow product as a draft, so the
+			// vocabulary of published products does not match them.
 			await page.fill('#linker-genie-input', LIST[lang]);
 			await send(page);
 			await settle(page);
@@ -331,13 +334,13 @@ for (const lang of ['en', 'de'] as Lang[]) {
 			);
 			await expect(
 				card.locator('.linker-genie-parts__row--matched')
-			).toHaveCount(16);
+			).toHaveCount(14);
 			await expect(
 				card.locator('.linker-genie-parts__row--uncertain')
 			).toHaveCount(2);
 			await expect(
 				card.locator('.linker-genie-parts__row--missing')
-			).toHaveCount(2);
+			).toHaveCount(4);
 			await expect(card.getByText(words.match)).toBeVisible();
 			await expect(card.getByText(words.missing).first()).toBeVisible();
 			await expect(card.getByText(words.ask)).toBeVisible();
@@ -351,7 +354,7 @@ for (const lang of ['en', 'de'] as Lang[]) {
 			).toHaveText(words.answer.replace('%d', '17'));
 			await expect(
 				page.locator('.linker-genie-parts__row--matched')
-			).toHaveCount(17);
+			).toHaveCount(15);
 			await expect(
 				page.locator('.linker-genie-parts__row--uncertain')
 			).toHaveCount(1);
@@ -416,10 +419,10 @@ for (const lang of ['en', 'de'] as Lang[]) {
 			await settle(page);
 			await expect(
 				page.locator('.linker-genie-parts__row--matched')
-			).toHaveCount(16, { timeout: 30_000 });
+			).toHaveCount(14, { timeout: 30_000 });
 			await expect(
 				page.locator('.linker-genie-parts__row--missing')
-			).toHaveCount(2);
+			).toHaveCount(4);
 			await shot(page, `${tag}-1-csv-parts`);
 
 			// The same list as an .xlsx workbook.
@@ -429,10 +432,10 @@ for (const lang of ['en', 'de'] as Lang[]) {
 			await settle(page);
 			await expect(
 				page.locator('.linker-genie-parts__row--matched')
-			).toHaveCount(16, { timeout: 30_000 });
+			).toHaveCount(14, { timeout: 30_000 });
 			await expect(
 				page.locator('.linker-genie-parts__row--missing')
-			).toHaveCount(2);
+			).toHaveCount(4);
 			await shot(page, `${tag}-1-xlsx-parts`);
 
 			// A photographed handwritten list (#236's vision channel).

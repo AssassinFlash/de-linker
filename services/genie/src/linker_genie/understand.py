@@ -203,7 +203,7 @@ class Understander:
                 if (r.model or r.kind in {"nameplate", "document"})
                 and (not r.model or statuses.get(r.model.casefold()) != "published")
             ]
-            if blocked:
+            if blocked and not self._readings_carried_models(readings):
                 from linker_genie.publication_copy import upload_unavailable
 
                 safe = [
@@ -364,6 +364,26 @@ class Understander:
         if vocabulary is None:
             return False
         return len({m.value for m in vocabulary.match(message)}) >= 2
+
+    def _readings_carried_models(self, readings: list[AttachmentReading]) -> bool:
+        """Whether the uploads' transcriptions name at least two carried models.
+
+        The same principle as the message branch: a photographed or scanned
+        parts list names many models - most of them carried - and the parts
+        flow marks the unavailable rows missing itself (2026-11-08: a
+        handwritten list was sanitized to an empty reading and answered with
+        the single-model script). A nameplate names one model at most and
+        keeps the script.
+        """
+        vocabulary = self._load_vocabulary({})
+        if vocabulary is None:
+            return False
+        names = {
+            match.value
+            for reading in readings
+            for match in vocabulary.match(reading.text or "")
+        }
+        return len(names) >= 2
 
     def _load_vocabulary(
         self,
