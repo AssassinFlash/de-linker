@@ -259,9 +259,7 @@ for (const lang of ['en', 'de'] as Lang[]) {
 				'.linker-genie-attachment__status'
 			);
 			const outOfRange = page.getByText(words.outOfRange);
-			await expect(
-				unreadableStatus.or(outOfRange.first())
-			).toBeVisible({
+			await expect(unreadableStatus.or(outOfRange.first())).toBeVisible({
 				timeout: 30_000,
 			});
 			if (await unreadableStatus.isVisible()) {
@@ -273,9 +271,7 @@ for (const lang of ['en', 'de'] as Lang[]) {
 				await page
 					.getByRole('button', { name: words.typeModel })
 					.click();
-				await expect(
-					page.locator('#linker-genie-input')
-				).toBeFocused();
+				await expect(page.locator('#linker-genie-input')).toBeFocused();
 				await shot(page, `${tag}-7-type-the-model`);
 			} else {
 				await shot(page, `${tag}-6-nameplate-out-of-range`);
