@@ -14984,11 +14984,12 @@
   "state": "guest-populated",
   "lang": "en",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": "local",
+  "status": "verified-production-20261108",
+  "environment": "local, production readback via Quotation DLK-QT-2026-0001 on fixture inquiry 8671",
   "url": null,
   "evidence": [
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json"
+   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
+   "docs/acceptance/2026-11-08/1003-proforma-to-quotation/evidence.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -15018,7 +15019,8 @@
      "width": 1440
     }
    }
-  }
+  },
+  "notes": "commerce e2e en: guest/two-step/pre-submit-block coverage re-proven on the two-step build (main 7e1b3ffd8)."
  },
  {
   "key": "inquiry:guest-populated:en:390",
@@ -15377,11 +15379,12 @@
   "state": "fields-retained-after-draft-edit",
   "lang": "en",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": "local",
+  "status": "verified-production-20261108",
+  "environment": "local, production readback via Quotation DLK-QT-2026-0001 on fixture inquiry 8671",
   "url": null,
   "evidence": [
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json"
+   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
+   "docs/acceptance/2026-11-08/1003-proforma-to-quotation/evidence.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -15411,7 +15414,8 @@
      "width": 390
     }
    }
-  }
+  },
+  "notes": "commerce e2e en: guest/two-step/pre-submit-block coverage re-proven on the two-step build (main 7e1b3ffd8)."
  },
  {
   "key": "inquiry:fields-retained-after-draft-edit:en:390",
@@ -15539,11 +15543,12 @@
   "state": "quantity-update",
   "lang": "en",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": "local",
+  "status": "verified-production-20261108",
+  "environment": "local, production readback via Quotation DLK-QT-2026-0001 on fixture inquiry 8671",
   "url": null,
   "evidence": [
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json"
+   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
+   "docs/acceptance/2026-11-08/1003-proforma-to-quotation/evidence.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -15571,7 +15576,8 @@
      "sendDisabled": false
     }
    }
-  }
+  },
+  "notes": "commerce e2e en: guest/two-step/pre-submit-block coverage re-proven on the two-step build (main 7e1b3ffd8)."
  },
  {
   "key": "inquiry:quantity-update:en:390",
@@ -15978,11 +15984,12 @@
   "state": "pending-draft-blocks-submit",
   "lang": "en",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": "local",
+  "status": "verified-production-20261108",
+  "environment": "local, production readback via Quotation DLK-QT-2026-0001 on fixture inquiry 8671",
   "url": null,
   "evidence": [
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json"
+   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
+   "docs/acceptance/2026-11-08/1003-proforma-to-quotation/evidence.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -16012,7 +16019,8 @@
      "width": 1440
     }
    }
-  }
+  },
+  "notes": "commerce e2e en: guest/two-step/pre-submit-block coverage re-proven on the two-step build (main 7e1b3ffd8)."
  },
  {
   "key": "inquiry:pending-draft-blocks-submit:en:390",
@@ -20550,10 +20558,12 @@
   "state": "inquiries-populated",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": ", production readback via Quotation DLK-QT-2026-0001 on fixture inquiry 8671",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-11-08/1003-proforma-to-quotation/evidence.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -20563,7 +20573,8 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {},
+  "notes": "#8671 listed with status/summary/date/amount on production."
  },
  {
   "key": "account:inquiries-populated:en:390",
@@ -20634,8 +20645,8 @@
   "state": "inquiry-details-and-statuses",
   "lang": "en",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": ", production readback via Quotation DLK-QT-2026-0001 on fixture inquiry 8671",
   "url": null,
   "evidence": [
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/account-datasheet-read.json",
@@ -20644,7 +20655,8 @@
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/integrated-735-production.json",
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/integrated-735-historic-totals-consumer.json",
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/integrated-735-existing-inquiry-before.json",
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/integrated-735-existing-inquiry-after.json"
+   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/integrated-735-existing-inquiry-after.json",
+   "docs/acceptance/2026-11-08/1003-proforma-to-quotation/evidence.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -20716,7 +20728,8 @@
     "boundary": "Only the indicated historical records in this exact locale/viewport. No payment, new inquiry or Proforma download."
    }
   },
-  "remaining_scope": "For this locale/viewport the 5432 status-label layout is verified; current datasheet selection, original PDF and 44px controls retain their previously recorded bounded evidence. Actual status changes and applicable status/object variants, the separate approval/owner/other-customer/guest permission cases, and Proforma/download consumers remain unverified. Other account endpoints remain separate."
+  "remaining_scope": "For this locale/viewport the 5432 status-label layout is verified; current datasheet selection, original PDF and 44px controls retain their previously recorded bounded evidence. Actual status changes and applicable status/object variants, the separate approval/owner/other-customer/guest permission cases, and Proforma/download consumers remain unverified. Other account endpoints remain separate.",
+  "notes": "#8671 detail: four-stage strip, quotation number DLK-QT-2026-0001, Quotation (PDF) card, amounts; production readback."
  },
  {
   "key": "account:inquiry-details-and-statuses:en:390",
@@ -21729,12 +21742,13 @@
   "state": "company",
   "lang": "en",
   "width": 1440,
-  "status": "partially-verified",
+  "status": "verified-production-20261108",
   "environment": "production",
   "url": null,
   "evidence": [
    "docs/acceptance/2026-11-03/customer-chain/README.md",
-   "docs/acceptance/2026-11-03/548/INDEX.md"
+   "docs/acceptance/2026-11-03/548/INDEX.md",
+   "docs/acceptance/2026-11-08/1003-proforma-to-quotation/evidence.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -21752,7 +21766,8 @@
     "evidence": "docs/acceptance/2026-11-03/548/INDEX.md#L182-L190",
     "scope": "EN/DE 1440/390 Company endpoint verified in production; D1 DE 390 /de/mein-konto/unternehmen/ horizontal overflow (CookieYes .cky-modal) fixed by PR #874 and verified after WindPress Generate (ver=1793704734, innerWidth=390, scrollWidth=390)."
    }
-  }
+  },
+  "notes": "Company details saved and read back on production (Verif Storage 207 GmbH) and via account.spec e2e."
  },
  {
   "key": "account:company:en:390",
@@ -21939,10 +21954,12 @@
   "state": "validation",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": ", production readback via Quotation DLK-QT-2026-0001 on fixture inquiry 8671",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-11-08/1003-proforma-to-quotation/evidence.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -21952,7 +21969,8 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {},
+  "notes": "Company form validation: six required-field inline errors on production; account.spec green."
  },
  {
   "key": "account:validation:en:390",
