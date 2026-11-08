@@ -1,0 +1,26 @@
+{
+  "phase": "de-1440-surface-probes",
+  "date": "2026-11-08",
+  "environment": "production anonymous probes (real consent cookie) + review-instance bilingual e2e",
+  "cases": {
+    "product-archive:multiple-filters:de:1440": "products.spec de legs green on review 2026-11-08 (the filters narrow the product listing, de): phase=1 leaves 7 one-phase cards, brand facet by card titles; production probe: ?phase=1 all one-phase none three-phase",
+    "product-archive:compare-selection:de:1440": "production probe: 13 card-compare-checkbox controls on /de/produkte/; products.spec de compare tests green (16 passed bilingual)",
+    "product:approved-price:de:1440": "products.spec (de, approved customer sees the price) green on review 2026-11-08",
+    "product:pending-price-gate:de:1440": "account.spec pending workspace tests (de) green; price gate behavior bilingual",
+    "product:restricted-price-gate:de:1440": "account.spec restricted gate tests (de) green (the restricted gate speaks German and links its own address)",
+    "product:add-pending-success-error:de:1440": "failure-injection de add-to-draft leg green (pending/error/recovery through the protection seam)",
+    "content:forms-and-validation:de:1440": "production probe /de/kontakt/: native validation active (novalidate=false), email and message required, focus held in form after empty submit",
+    "files-and-feedback:404:de:1440": "production probe: /de/keine-seite-20261108/ -> 404, h1 \"Diese Seite existiert nicht.\", html lang de-DE, home link present",
+    "files-and-feedback:invalid-route:de:1440": "same probe: an unoccupied /de/ path answers the 404 template in German",
+    "global-navigation:keyboard-traversal:de:1440": "production probe: 8 Tab presses land on visible focus (\"Produkte suchen\"), outline style not none"
+  },
+  "results": {
+    "products.spec bilingual": "16 passed (60.0s)",
+    "de-phase1-filter": "7 cards all one-phase",
+    "de-compare-controls": "13 card-compare-checkbox buttons",
+    "de-404": "404 + Diese Seite existiert nicht. + lang de-DE + home link",
+    "keyboard-traversal": "focus visible with outline after 8 tabs",
+    "de-contact-validation": "native validation active, email+message required, focus in form"
+  },
+  "boundary": "lang-switch-account-endpoint and filtered-pagination-count DE rows stay pending (need their own checks); 390 viewports remain with the CU batch."
+}

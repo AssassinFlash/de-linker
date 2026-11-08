@@ -365,10 +365,12 @@
   "state": "keyboard-traversal",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "review-instance e2e (bilingual) or production probe, DE 2026-11-08",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/de-surface-probes-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -377,7 +379,12 @@
    "route-fixtures",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_probe_20261108": {
+    "result": "passed",
+    "scope": "production probe: 8 Tab presses land on visible focus (\"Produkte suchen\"), outline style not none"
+   }
+  }
  },
  {
   "key": "global-navigation:keyboard-traversal:de:390",
@@ -2541,10 +2548,12 @@
   "state": "multiple-filters",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review-instance e2e (bilingual) or production probe, DE 2026-11-08",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/de-surface-probes-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -2554,7 +2563,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_probe_20261108": {
+    "result": "passed",
+    "scope": "products.spec de legs green on review 2026-11-08 (the filters narrow the product listing, de): phase=1 leaves 7 one-phase cards, brand facet by card titles; production probe: ?phase=1 all one-phase none three-phase"
+   }
+  }
  },
  {
   "key": "product-archive:multiple-filters:de:390",
@@ -3144,10 +3158,12 @@
   "state": "compare-selection",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review-instance e2e (bilingual) or production probe, DE 2026-11-08",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/de-surface-probes-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -3157,7 +3173,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_probe_20261108": {
+    "result": "passed",
+    "scope": "production probe: 13 card-compare-checkbox controls on /de/produkte/; products.spec de compare tests green (16 passed bilingual)"
+   }
+  }
  },
  {
   "key": "product-archive:compare-selection:de:390",
@@ -3807,10 +3828,12 @@
   "state": "approved-price",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review-instance e2e (bilingual) or production probe, DE 2026-11-08",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/de-surface-probes-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -3820,7 +3843,12 @@
    "provenance"
   ],
   "required_principal": "Ordinary approved customer. Staff price access does not prove this state.",
-  "verified_checks": {}
+  "verified_checks": {
+   "de_probe_20261108": {
+    "result": "passed",
+    "scope": "products.spec (de, approved customer sees the price) green on review 2026-11-08"
+   }
+  }
  },
  {
   "key": "product:approved-price:de:390",
@@ -3891,10 +3919,12 @@
   "state": "pending-price-gate",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review-instance e2e (bilingual) or production probe, DE 2026-11-08",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/de-surface-probes-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -3903,7 +3933,12 @@
    "files-print",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_probe_20261108": {
+    "result": "passed",
+    "scope": "account.spec pending workspace tests (de) green; price gate behavior bilingual"
+   }
+  }
  },
  {
   "key": "product:pending-price-gate:de:390",
@@ -3973,10 +4008,12 @@
   "state": "restricted-price-gate",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review-instance e2e (bilingual) or production probe, DE 2026-11-08",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/de-surface-probes-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -3985,7 +4022,12 @@
    "files-print",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_probe_20261108": {
+    "result": "passed",
+    "scope": "account.spec restricted gate tests (de) green (the restricted gate speaks German and links its own address)"
+   }
+  }
  },
  {
   "key": "product:restricted-price-gate:de:390",
@@ -4171,10 +4213,12 @@
   "state": "add-pending-success-error",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review-instance e2e (bilingual) or production probe, DE 2026-11-08",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/de-surface-probes-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -4183,7 +4227,12 @@
    "files-print",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_probe_20261108": {
+    "result": "passed",
+    "scope": "failure-injection de add-to-draft leg green (pending/error/recovery through the protection seam)"
+   }
+  }
  },
  {
   "key": "product:add-pending-success-error:de:390",
@@ -6504,10 +6553,12 @@
   "state": "forms-and-validation",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "review-instance e2e (bilingual) or production probe, DE 2026-11-08",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/de-surface-probes-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -6515,7 +6566,12 @@
    "overlay-responsive",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_probe_20261108": {
+    "result": "passed",
+    "scope": "production probe /de/kontakt/: native validation active (novalidate=false), email and message required, focus held in form after empty submit"
+   }
+  }
  },
  {
   "key": "content:forms-and-validation:de:390",
@@ -27920,10 +27976,12 @@
   "state": "404",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "review-instance e2e (bilingual) or production probe, DE 2026-11-08",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/de-surface-probes-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -27932,7 +27990,12 @@
    "overlay-responsive",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_probe_20261108": {
+    "result": "passed",
+    "scope": "production probe: /de/keine-seite-20261108/ -> 404, h1 \"Diese Seite existiert nicht.\", html lang de-DE, home link present"
+   }
+  }
  },
  {
   "key": "files-and-feedback:404:de:390",
@@ -28002,10 +28065,12 @@
   "state": "invalid-route",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "review-instance e2e (bilingual) or production probe, DE 2026-11-08",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/de-surface-probes-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -28014,7 +28079,12 @@
    "overlay-responsive",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_probe_20261108": {
+    "result": "passed",
+    "scope": "same probe: an unoccupied /de/ path answers the 404 template in German"
+   }
+  }
  },
  {
   "key": "files-and-feedback:invalid-route:de:390",
