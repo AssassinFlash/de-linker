@@ -25,6 +25,12 @@ type Outcome = 'added' | 'retry' | 'unverified';
 type Surface = 'workspace' | 'dock' | 'hero';
 
 async function fixtures(page: Page, locale: 'en' | 'de') {
+	page.on('request', (r) => {
+		if (/draft|add-item|solution|cart/.test(r.url())) {
+			console.log('[REQ]', r.method(), r.url().slice(0, 110));
+		}
+	});
+
 	let outcome: Outcome = 'added';
 	let wrote = false;
 	let release: (() => void) | null = null;
@@ -56,6 +62,7 @@ async function fixtures(page: Page, locale: 'en' | 'de') {
 			{
 				type: 'cards',
 				product_ids: [PRODUCT_ID],
+				draft_proofs: { [PRODUCT_ID]: 'fixture-proof' },
 				prices: [
 					{
 						product_id: PRODUCT_ID,
@@ -72,6 +79,8 @@ async function fixtures(page: Page, locale: 'en' | 'de') {
 			{
 				type: 'document',
 				ref: 'fixture',
+				document_id: 'fixture-doc',
+				document_revision: '1',
 				label: german
 					? 'SAJ eSolar AIO3 – Datenblatt für den Wi-Fi/Ethernet/Bluetooth-Datenkollektor'
 					: 'SAJ eSolar AIO3 datasheet for the Wi-Fi/Ethernet/Bluetooth data collector',
@@ -122,6 +131,27 @@ async function fixtures(page: Page, locale: 'en' | 'de') {
 	await page.route('**/wp-json/linker-ai/v1/genie/conversations', (route) =>
 		route.fulfill({ json: { current_id: 0, conversations: [] } })
 	);
+	await page.route('**/wp-json/linker/v1/publication/manifest*', (route) =>
+		route.fulfill({
+			json: {
+				schema_version: 1,
+				products: [
+					{ product_id: PRODUCT_ID, published_locale_ids: [] },
+				],
+				documents: [
+					{
+						document_id: 'fixture-doc',
+						document_revision: '1',
+						title: 'SAJ eSolar AIO3 datasheet',
+						url: `${instance().url}/fixture-datasheet.pdf`,
+					},
+				],
+			},
+		})
+	);
+	await page.route('**/wp-json/linker/v1/publication/product/*', (route) =>
+		route.fulfill({ json: {} })
+	);
 	await page.route('**/wp-json/linker-ai/v1/genie/turn', (route) =>
 		route.fulfill({ json: { conversation_id: 223, stream } })
 	);
@@ -144,8 +174,13 @@ async function fixtures(page: Page, locale: 'en' | 'de') {
 		'**/wp-json/wp-abilities/v1/abilities/linker/get-product/run?*',
 		(route) => route.fulfill({ json: { result: { model: 'eSolar AIO3' } } })
 	);
-	await page.route('**/wp-json/wc/store/v1/cart', (route) =>
-		route.fulfill({
+	await page.route('**/wp-json/wc/store/v1/cart', (route) => {
+		if (outcome === 'retry') {
+			// The new write contract reaches retry only when the write never
+			// leaves the browser; a failed cart read is that pre-submit failure.
+			return route.fulfill({ status: 500 });
+		}
+		return route.fulfill({
 			headers: { Nonce: 'fixture-nonce' },
 			json: {
 				items:
@@ -153,29 +188,37 @@ async function fixtures(page: Page, locale: 'en' | 'de') {
 						? [{ id: PRODUCT_ID, quantity: 1 }]
 						: [],
 			},
-		})
-	);
-	await page.route('**/wp-json/wc/store/v1/cart/add-item', async (route) => {
+		});
+	});
+	await page.route('**/wp-json/linker-ai/v1/genie/draft*', async (route) => {
 		await new Promise<void>((resolve) => {
 			release = resolve;
 			releases.set(page, resolve);
 		});
 		wrote = true;
 		await route.fulfill({
-			status: outcome === 'retry' ? 503 : 200,
-			json: {},
+			status: outcome === 'unverified' ? 503 : 200,
+			json: {
+				items:
+					outcome === 'added'
+						? [{ id: PRODUCT_ID, quantity: 1 }]
+						: [],
+			},
 		});
 	});
-	await page.route('**/wp-json/linker/v1/solutions?*', async (route) => {
-		await new Promise<void>((resolve) => {
-			release = resolve;
-			releases.set(page, resolve);
-		});
-		await route.fulfill({
-			status: savingFails ? 503 : 200,
-			json: { id: 1, url: '/my-account/saved-solutions/' },
-		});
-	});
+	await page.route(
+		'**/wp-json/linker-ai/v1/genie/solution?*',
+		async (route) => {
+			await new Promise<void>((resolve) => {
+				release = resolve;
+				releases.set(page, resolve);
+			});
+			await route.fulfill({
+				status: savingFails ? 503 : 200,
+				json: { id: 1, url: '/my-account/saved-solutions/' },
+			});
+		}
+	);
 	return {
 		release: async () => {
 			await expect.poll(() => release !== null).toBe(true);
@@ -396,6 +439,28 @@ for (const locale of ['en', 'de'] as const) {
 				] as const) {
 					fixture.next(outcome);
 					await primary.click();
+					if (outcome === 'retry') {
+						// A pre-submit failure resolves instantly: no gate ever
+						// opens (no write left the browser), so only the final
+						// state and the enabled actions are observable.
+						await expect(card).toHaveAttribute(
+							'data-state',
+							'retry'
+						);
+						await expect(primary).toBeEnabled();
+						await expect(primary).toHaveCSS(
+							'color',
+							'rgb(255, 255, 255)'
+						);
+						await expect(
+							card.locator('[role="status"]')
+						).not.toBeEmpty();
+						await expect(card.locator('[role="status"]')).toHaveCSS(
+							'color',
+							'rgb(146, 67, 47)'
+						);
+						continue;
+					}
 					await expect(card).toHaveAttribute('data-state', 'pending');
 					await expect(primary).toBeDisabled();
 					await expect(secondary).toBeDisabled();
@@ -444,7 +509,9 @@ for (const locale of ['en', 'de'] as const) {
 					await fixture.release();
 					await expect(card).toHaveAttribute(
 						'data-state',
-						succeeds ? 'added' : 'retry'
+						// A failed save may have landed: the new contract reads
+						// the ambiguous outcome as unconfirmed, not retry.
+						succeeds ? 'added' : 'unverified'
 					);
 				}
 				const document = app.locator('.linker-genie-app__document');

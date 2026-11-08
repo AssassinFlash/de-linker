@@ -1,0 +1,18 @@
+{
+  "phase": "genie-red-specs-resolution",
+  "date": "2026-11-08",
+  "resolved": {
+    "card_actions": "12/12 green. Five layers of spec drift fixed: write endpoint (linker-ai/v1/genie/draft), response contract (items read-back), state machine (503-after-submit = unverified; retry only when the write never leaves), streamed draft_proofs for saves, and the publication manifest gate for document blocks (restoreArtifacts nulls unpublished urls BY DESIGN).",
+    "parts_page_attachments": "44 passed on review (10.2m), real model turns included."
+  },
+  "product_defect_fixed": "Hero.tsx wired onSave without the streamed draft proof - every home-hero card save failed before any request left the browser. Fixed (proofsOf aligned with App.tsx); on branch fix/genie-card-actions-contract, awaiting PR/CI/deploy.",
+  "new_finding_de_390_parts": {
+    "symptom": "parts list/csv de 390 fail deterministically (3 runs); en and de-1440 pass",
+    "evidence": "transcript: the 20-row German list on the 390 phone entry gets a real answer 'This model is outside our current product range...' - the identify/out-of-range handoff - and the reply-option chips show home/commercial",
+    "two_defects": [
+      "locale leak: the out-of-range handoff template renders English inside a German conversation (buttons Antwort kopieren, but the paragraph is English)",
+      "classification: the pasted parts list on the de-390 entry is classified out-of-range instead of a parts request (de-1440 classifies correctly) - entry context/scope differs on the phone entry"
+    ],
+    "status": "recorded for the next batch; the two parts de-390 matrix rows stay pending on this evidence"
+  }
+}
