@@ -77,9 +77,9 @@ test('en 1440: add-to-draft pending, error and recovery', async ({ page }) => {
 	// says a verification is being checked.
 	seam.set('hold');
 	await add.click();
-	await expect(status.filter({ hasText: /verification/i }).first()).toBeVisible(
-		{ timeout: 20_000 }
-	);
+	await expect(
+		status.filter({ hasText: /verification/i }).first()
+	).toBeVisible({ timeout: 20_000 });
 
 	// Error: the held answer never arrives, the client names the failure and
 	// promises no request was sent — and no Woo session appears.
@@ -128,7 +128,10 @@ test('en 1440: inquiry submit is held by a failed verification, then sends', asy
 	seam.set('abort');
 	await form.locator('button[type="submit"]').click();
 	await expect(
-		page.locator('p[role="status"]').filter({ hasText: /no request has been sent/i }).first()
+		page
+			.locator('p[role="status"]')
+			.filter({ hasText: /no request has been sent/i })
+			.first()
 	).toBeVisible({ timeout: 20_000 });
 	await expect(page).toHaveURL(/proforma-request/);
 	const typed = await email.inputValue();
@@ -138,10 +141,9 @@ test('en 1440: inquiry submit is held by a failed verification, then sends', asy
 	// PublicGuard's minimum fill time has long passed by now.
 	seam.set('pass');
 	await form.locator('button[type="submit"]').click();
-	await expect(page, { message: 'the inquiry reaches its receipt' }).toHaveURL(
-		/inquiry-received/,
-		{ timeout: 120_000 }
-	);
+	await expect(page, {
+		message: 'the inquiry reaches its receipt',
+	}).toHaveURL(/inquiry-received/, { timeout: 120_000 });
 });
 
 test('en 1440: contact submit is held by a failed verification, then sends', async ({
@@ -162,7 +164,10 @@ test('en 1440: contact submit is held by a failed verification, then sends', asy
 	seam.set('abort');
 	await form.locator('button[type="submit"]').click();
 	await expect(
-		page.locator('p[role="status"]').filter({ hasText: /no request has been sent/i }).first()
+		page
+			.locator('p[role="status"]')
+			.filter({ hasText: /no request has been sent/i })
+			.first()
 	).toBeVisible({ timeout: 20_000 });
 	await expect(page).toHaveURL(/\/contact\//);
 
@@ -203,7 +208,10 @@ test('en 1440: draft quantity update is held by a failed verification', async ({
 		.first()
 		.click();
 	await expect(
-		page.locator('p[role="status"]').filter({ hasText: /no request has been sent/i }).first()
+		page
+			.locator('p[role="status"]')
+			.filter({ hasText: /no request has been sent/i })
+			.first()
 	).toBeVisible({ timeout: 20_000 });
 
 	// The held update never reached the server: a reload carries the
@@ -211,4 +219,3 @@ test('en 1440: draft quantity update is held by a failed verification', async ({
 	await page.reload();
 	await expect(page.locator('input.qty').first()).toHaveValue(loaded);
 });
-

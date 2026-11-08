@@ -16,14 +16,15 @@ import { instance } from './instance';
  * `consentid:…` does not answer the banner — without `action:yes` the overlay
  * still intercepts pointer events over the dock.
  */
-export async function seedConsentCookies(context: BrowserContext): Promise<void> {
+export async function seedConsentCookies(
+	context: BrowserContext
+): Promise<void> {
 	const url = new URL(instance().url);
 	await context.addCookies(
 		[
 			{
 				name: 'cookieyes-consent',
-				value:
-					'consentid:e2e,consent:no,action:yes,necessary:yes,analytics:no,advertisement:no',
+				value: 'consentid:e2e,consent:no,action:yes,necessary:yes,analytics:no,advertisement:no',
 			},
 			{ name: 'wp_consent_preferences', value: 'deny' },
 			{ name: 'wp_consent_statistics', value: 'deny' },
