@@ -59,6 +59,17 @@
         "review_consumed_once": "protected click -> notice -> lands /proforma-request/ clean URL with exactly 1 draft line; PDP hard reload -> still 1 line (no re-add)"
       },
       "result": "pass"
+    },
+    "inquiry:message-summary-note-isolation": {
+      "negative_re_exercised": {
+        "evidence": "latest 5 ordinary inquiries on review (submitted 2026-11-08 by the injection and account suites) all carry _linker_genie_summary absent - the ordinary form attaches no implicit Genie summary, on current Handler code",
+        "result": "pass for the ordinary-message half"
+      },
+      "positive_half_blocked": {
+        "finding": "the reviewed-summary readback (Genie card handover -> order meta) could not run: on this day the review instance Outbox defers mail attempts ~18h (retry actions scheduled 2026-11-09 05:19) behind an inquiry-assessment backlog, so genie-inquiry.spec spool assertions time out before submission asserts complete",
+        "open_question": "why mail_attempt actions take the long retry while their assessment completed - review pipeline behavior for the mail/assessment line to answer (E/F domains)",
+        "status": "row stays pending; not closed on a half-proof"
+      }
     }
   },
   "boundary": "EN-1440 on the review instance; production carries the same client (protection.js) and the same seam. DE-1440 and 390 variants remain with their own rows."
