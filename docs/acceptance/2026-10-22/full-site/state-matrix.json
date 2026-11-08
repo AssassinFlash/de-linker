@@ -19144,8 +19144,8 @@
   "state": "invalid-sign-in",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (de legs) 2026-11-08",
   "url": null,
   "evidence": [],
   "findings": [],
@@ -19156,7 +19156,12 @@
    "overlay-responsive",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_leg_20261108": {
+    "result": "passed",
+    "scope": "account.spec (de) wrong-password leg green 2026-11-08: refused with the form own error, stays on the sign-in form"
+   }
+  }
  },
  {
   "key": "authentication:invalid-sign-in:de:390",
@@ -19980,8 +19985,8 @@
   "state": "pending-submit",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (de 1440) 2026-11-08",
   "url": null,
   "evidence": [],
   "findings": [],
@@ -19992,7 +19997,12 @@
    "overlay-responsive",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_leg_20261108": {
+    "result": "passed",
+    "scope": "pending-account.spec (de 1440): pending registration submits and the workspace answers in the same session"
+   }
+  }
  },
  {
   "key": "authentication:pending-submit:de:390",
@@ -20062,8 +20072,8 @@
   "state": "registration-success",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (de 1440) 2026-11-08",
   "url": null,
   "evidence": [],
   "findings": [],
@@ -20074,7 +20084,12 @@
    "overlay-responsive",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_leg_20261108": {
+    "result": "passed",
+    "scope": "pending-account.spec (de 1440) green 2026-11-08: register -> pending workspace and inquiry -> approve in the same session"
+   }
+  }
  },
  {
   "key": "authentication:registration-success:de:390",
@@ -20312,8 +20327,8 @@
   "state": "password-email-confirmation",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (de legs) 2026-11-08",
   "url": null,
   "evidence": [],
   "findings": [],
@@ -20324,7 +20339,12 @@
    "overlay-responsive",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_leg_20261108": {
+    "result": "passed",
+    "scope": "account.spec (de) lost-password + reset chain green 2026-11-08: request answered, reset link opens the card, save confirmed, new password signs in"
+   }
+  }
  },
  {
   "key": "authentication:password-email-confirmation:de:390",
@@ -20682,8 +20702,8 @@
   "state": "overview-pending",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (de 1440) 2026-11-08",
   "url": null,
   "evidence": [],
   "findings": [],
@@ -20695,7 +20715,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_leg_20261108": {
+    "result": "passed",
+    "scope": "pending-account.spec (de 1440): the pending workspace state rendered (under review, no prices, inquiry open)"
+   }
+  }
  },
  {
   "key": "account:overview-pending:de:390",
@@ -20947,8 +20972,8 @@
   "state": "overview-approved",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (de 1440) 2026-11-08",
   "url": null,
   "evidence": [],
   "findings": [],
@@ -20961,7 +20986,12 @@
    "provenance"
   ],
   "required_principal": "Ordinary approved customer. Staff price access does not prove this state.",
-  "verified_checks": {}
+  "verified_checks": {
+   "de_leg_20261108": {
+    "result": "passed",
+    "scope": "pending-account.spec (de 1440): approve in the same session, approved workspace reached"
+   }
+  }
  },
  {
   "key": "account:overview-approved:de:390",
@@ -22431,8 +22461,8 @@
   "state": "account-details",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (de legs) 2026-11-08",
   "url": null,
   "evidence": [],
   "findings": [],
@@ -22444,7 +22474,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_leg_20261108": {
+    "result": "passed",
+    "scope": "account.spec (de) account details save green 2026-11-08: refused save names its error and keeps typing; corrected save confirms"
+   }
+  }
  },
  {
   "key": "account:account-details:de:390",
