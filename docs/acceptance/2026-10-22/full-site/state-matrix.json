@@ -20125,10 +20125,12 @@
   "state": "reset-password",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (specs/account.spec.ts), EN+DE",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "tests/e2e/specs/account.spec.ts (reset chain + wrong/spent key tests, 11/11 green 2026-11-08)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -20137,7 +20139,13 @@
    "overlay-responsive",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "reset_states_20261108": {
+    "result": "passed",
+    "scope": "full chain: request answer, valid key card with Woo nonce/credentials riding along, weak-password held by the meter, mismatch named under its field, real save, sign-in with the new password; wrong key and spent key never see password fields (card answers in request mode); fixture keys via WP-CLI get_password_reset_key",
+    "environment": "LINKER_E2E_INSTANCE=review, playwright 2026-11-08"
+   }
+  }
  },
  {
   "key": "authentication:reset-password:en:390",
@@ -20165,10 +20173,12 @@
   "state": "reset-password",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (specs/account.spec.ts), EN+DE",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "tests/e2e/specs/account.spec.ts (reset chain + wrong/spent key tests, 11/11 green 2026-11-08)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -20177,7 +20187,13 @@
    "overlay-responsive",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "reset_states_20261108": {
+    "result": "passed",
+    "scope": "full chain: request answer, valid key card with Woo nonce/credentials riding along, weak-password held by the meter, mismatch named under its field, real save, sign-in with the new password; wrong key and spent key never see password fields (card answers in request mode); fixture keys via WP-CLI get_password_reset_key",
+    "environment": "LINKER_E2E_INSTANCE=review, playwright 2026-11-08"
+   }
+  }
  },
  {
   "key": "authentication:reset-password:de:390",
@@ -32029,10 +32045,12 @@
   "state": "password-reset-token-states",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (specs/account.spec.ts), EN+DE",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "tests/e2e/specs/account.spec.ts (reset chain + wrong/spent key tests, 11/11 green 2026-11-08)"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -32042,7 +32060,13 @@
    "permissions",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "reset_states_20261108": {
+    "result": "passed",
+    "scope": "full chain: request answer, valid key card with Woo nonce/credentials riding along, weak-password held by the meter, mismatch named under its field, real save, sign-in with the new password; wrong key and spent key never see password fields (card answers in request mode); fixture keys via WP-CLI get_password_reset_key",
+    "environment": "LINKER_E2E_INSTANCE=review, playwright 2026-11-08"
+   }
+  }
  },
  {
   "key": "dynamic-routes:password-reset-token-states:en:390",
@@ -32071,10 +32095,12 @@
   "state": "password-reset-token-states",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (specs/account.spec.ts), EN+DE",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "tests/e2e/specs/account.spec.ts (reset chain + wrong/spent key tests, 11/11 green 2026-11-08)"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -32084,7 +32110,13 @@
    "permissions",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "reset_states_20261108": {
+    "result": "passed",
+    "scope": "full chain: request answer, valid key card with Woo nonce/credentials riding along, weak-password held by the meter, mismatch named under its field, real save, sign-in with the new password; wrong key and spent key never see password fields (card answers in request mode); fixture keys via WP-CLI get_password_reset_key",
+    "environment": "LINKER_E2E_INSTANCE=review, playwright 2026-11-08"
+   }
+  }
  },
  {
   "key": "dynamic-routes:password-reset-token-states:de:390",

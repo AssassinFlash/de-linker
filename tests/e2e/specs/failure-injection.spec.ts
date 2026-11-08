@@ -7,10 +7,32 @@
  * the page shows its own real states — never a synthesized one.
  */
 import { expect, test } from '@playwright/test';
-import { instance, wp } from '../lib/instance';
+import { applyTurnstileProfile, instance, wp } from '../lib/instance';
 import { seedConsentCookies } from '../lib/consent';
 
 const PROTECTION = /linker\/v1\/protection\/(prepare|verify)/;
+
+// The protection client only intercepts in enforce mode; this suite needs it
+// on (with the always-pass dummy Turnstile profile) for its whole run, and
+// puts the instance's own constants back afterwards.
+let restoreTurnstile: () => void = () => {};
+test.beforeAll(() => {
+	restoreTurnstile = applyTurnstileProfile();
+});
+test.afterAll(async () => {
+	restoreTurnstile();
+	// The successful submits must have queued their notifications; the
+	// routing itself lives in the Outbox queue, asserted on the job rows
+	// rather than on real mail (test mail discipline).
+	const jobs = wp([
+		'eval',
+		`echo count(get_posts(array("post_type" => Linker\\Commerce\\Mail\\JobStore::POST_TYPE, "post_status" => "any", "posts_per_page" => 20, "fields" => "ids", "date_query" => array(array("after" => "30 minutes ago")))));`,
+	]).trim();
+	expect(
+		Number(jobs),
+		'the injected submissions queued their mail'
+	).toBeGreaterThanOrEqual(2);
+});
 
 /** One route handler whose behavior a test flips, so no request is orphaned. */
 function protectionSeam(page: import('@playwright/test').Page): {
@@ -95,9 +117,11 @@ test('en 1440: inquiry submit is held by a failed verification, then sends', asy
 	const form = page.locator('form.linker-inquiry-form');
 	await expect(form).toBeVisible();
 
-	await page.fill('#billing_first_name', 'Failure');
+	await form.locator('[name="name"]').fill('Failure Injection');
 	const email = form.locator('[name="email"]');
 	await email.fill(`injection-${Date.now()}@example.test`);
+	await form.locator('[name="message"]').fill('Injection batch.');
+	await form.locator('[name="consent"]').check();
 
 	// The verification seam refuses: the form must not leave the page and
 	// the visitor's typing stays.
@@ -111,6 +135,7 @@ test('en 1440: inquiry submit is held by a failed verification, then sends', asy
 	expect(typed).toContain('injection-');
 
 	// The seam answers again: the same submit goes through to the receipt.
+	// PublicGuard's minimum fill time has long passed by now.
 	seam.set('pass');
 	await form.locator('button[type="submit"]').click();
 	await expect(page, { message: 'the inquiry reaches its receipt' }).toHaveURL(
@@ -187,16 +212,3 @@ test('en 1440: draft quantity update is held by a failed verification', async ({
 	await expect(page.locator('input.qty').first()).toHaveValue(loaded);
 });
 
-test.afterAll(async () => {
-	// The successful submits above must have queued their notifications; the
-	// routing itself lives in the Outbox queue, asserted on the job rows
-	// rather than on real mail (test mail discipline).
-	const jobs = wp([
-		'eval',
-		`echo count(get_posts(array("post_type" => Linker\\Commerce\\Mail\\JobStore::POST_TYPE, "post_status" => "any", "posts_per_page" => 20, "fields" => "ids", "date_query" => array(array("after" => "30 minutes ago")))));`,
-	]).trim();
-	expect(
-		Number(jobs),
-		'the injected submissions queued their mail'
-	).toBeGreaterThanOrEqual(2);
-});
