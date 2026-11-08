@@ -151,6 +151,9 @@ final class RedirectsTest extends TestCase {
 	 * properties above.
 	 */
 	private function wordpress(): void {
+		WP_Mock::userFunction( 'did_action' )->andReturnUsing(
+			fn( string $hook ): int => 'woocommerce_init' === $hook ? 1 : 0
+		);
 		$query     = new class( $this->query_vars ) {
 			/**
 			 * Query vars Woo answers with.
