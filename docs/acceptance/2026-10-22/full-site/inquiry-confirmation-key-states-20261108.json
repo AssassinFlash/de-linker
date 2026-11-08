@@ -1,0 +1,30 @@
+{
+  "phase": "inquiry-confirmation-key-states-complete",
+  "date": "2026-11-08",
+  "scope": "Closes the remaining confirmation-key states the 2026-11-07 evidence did not reach (no-key DE), re-confirms wrong-key DE after the Quotation deploy, and records the legacy /checkout/ link finding. Production, anonymous, read-only.",
+  "prior_evidence": "inquiry-received-key-states-20261107.json (wrong-key en/de, no-key en, correct-key en/de with gate)",
+  "cases": {
+    "no-key-de": {
+      "requested_url": "https://de-linker.com/de/proforma-anfrage/inquiry-received/8671/",
+      "actual": {"http": 200, "notice": "Dieser Bestätigungslink ließ sich nicht öffnen. Bitte verwenden Sie den Link aus Ihrer Anfragebestätigung, oder schreiben Sie an sales@de-linker.com.", "data_leak": false},
+      "result": "pass"
+    },
+    "wrong-key-de": {
+      "requested_url": "https://de-linker.com/de/proforma-anfrage/inquiry-received/8671/?key=wc_order_falsch",
+      "actual": {"http": 200, "notice": "same recovery message, no order data", "data_leak": false},
+      "result": "pass"
+    },
+    "wrong-key-en-recheck": {
+      "requested_url": "https://de-linker.com/proforma-request/inquiry-received/8671/?key=wc_order_wrongkey123",
+      "actual": {"http": 200, "notice": "This confirmation link did not open. Please use the link from your inquiry confirmation email, or write to sales@de-linker.com and we will send it again.", "data_leak": false},
+      "result": "pass"
+    },
+    "legacy-checkout-link": {
+      "finding": "Old-site emails carry /checkout/order-received/<id>/?key=… (and /kasse/…). The retired-checkout redirect preserved the endpoint segment verbatim, but the site renames the endpoint to inquiry-received, so the link landed on /proforma-request/order-received/<id>/ -> 404.",
+      "evidence": "curl 2026-11-08: /checkout/order-received/8671/?key=x -> 301 -> /proforma-request/order-received/8671/ -> 404",
+      "fix": "PR #1004 Redirects::checkout_target translates the legacy order-received segment to the live endpoint slug (option woocommerce_checkout_order_received_endpoint, pinned to inquiry-received)",
+      "readback": "pending deploy"
+    }
+  },
+  "boundary": "Confirmation keys do not expire (they are the order key); correct/missing/wrong states are covered by this file plus the 2026-11-07 file. 390 viewports remain with the CU batch. Owner view of the valid confirmation (DLK-QT-2026-0001 flow) recorded in docs/acceptance/2026-11-08/1003-proforma-to-quotation/evidence.json."
+}

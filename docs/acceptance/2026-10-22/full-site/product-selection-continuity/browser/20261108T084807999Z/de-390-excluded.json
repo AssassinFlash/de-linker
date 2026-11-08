@@ -1,0 +1,32 @@
+{
+  "url": "http://127.0.0.1:8889/de/kontakt/?intent=product&linker_contact_selection=%7B%22source%22%3A%22http%3A%5C%2F%5C%2F127.0.0.1%3A8889%5C%2Fde%5C%2Fprodukte%5C%2F%22%2C%22selection%22%3A%7B%22brand%22%3A%22saj%22%2C%22phase%22%3A%223%22%2C%22kw_min%22%3A5.5%2C%22q%22%3A%22owned-no-match-SAJ%22%2C%22sort%22%3A%22name%22%7D%7D",
+  "collectedAt": "2026-11-08T08:48:19.157Z",
+  "viewport": {
+    "width": 390,
+    "height": 1000
+  },
+  "field": {
+    "x": 39,
+    "y": 190.25,
+    "width": 312,
+    "height": 164.6875,
+    "top": 190.25,
+    "right": 351,
+    "bottom": 354.9375,
+    "left": 39
+  },
+  "label": {
+    "x": 56,
+    "y": 230.75,
+    "width": 278,
+    "height": 47.59375,
+    "top": 230.75,
+    "right": 334,
+    "bottom": 278.34375,
+    "left": 56
+  },
+  "included": false,
+  "summaryDisplay": "none",
+  "excludedDisplay": "block",
+  "text": "Zugehörige AngabenDiese Angaben mit meiner Nachricht sendenWechselrichter, Speicher und SystemeMarkeSAJPhase3-phasigMindestleistung (kW)5.5Suchenowned-no-match-SAJProdukte sortierenName A-ZDiese Angaben werden nicht mitgesendet."
+}

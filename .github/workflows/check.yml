@@ -184,7 +184,7 @@ jobs:
         if: matrix.project == 'tools/local' || matrix.project == 'tools/migrate'
         run: |
           sudo apt-get update && sudo apt-get install -y gettext
-          curl -fsSL -o /usr/local/bin/wp https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
+          curl -fsSL --retry 5 --retry-all-errors --retry-delay 5 --connect-timeout 15 -o /usr/local/bin/wp https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
           sudo chmod +x /usr/local/bin/wp
           wp --version
       - name: Validate module
@@ -234,7 +234,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y gettext
       - name: WP-CLI 2.12
         run: |
-          curl -fsSL -o /usr/local/bin/wp https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
+          curl -fsSL --retry 5 --retry-all-errors --retry-delay 5 --connect-timeout 15 -o /usr/local/bin/wp https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
           sudo chmod +x /usr/local/bin/wp
           wp --version
       - name: Validate module
@@ -315,7 +315,7 @@ jobs:
       - name: WP-CLI for changed catalogues
         if: needs.plan.outputs.catalog_changed == 'true'
         run: |
-          curl -fsSL -o /usr/local/bin/wp https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
+          curl -fsSL --retry 5 --retry-all-errors --retry-delay 5 --connect-timeout 15 -o /usr/local/bin/wp https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
           sudo chmod +x /usr/local/bin/wp
       - name: Validate module
         env:
@@ -368,7 +368,7 @@ jobs:
       - name: gettext and WP-CLI
         run: |
           sudo apt-get update && sudo apt-get install -y gettext
-          curl -fsSL -o /usr/local/bin/wp https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
+          curl -fsSL --retry 5 --retry-all-errors --retry-delay 5 --connect-timeout 15 -o /usr/local/bin/wp https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
           sudo chmod +x /usr/local/bin/wp
       - name: Commerce source, unit and content checks
         run: just commerce-check
@@ -409,7 +409,7 @@ jobs:
           tool: just@1.58.0
       - name: WP-CLI 2.12
         run: |
-          curl -fsSL -o /usr/local/bin/wp https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
+          curl -fsSL --retry 5 --retry-all-errors --retry-delay 5 --connect-timeout 15 -o /usr/local/bin/wp https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
           sudo chmod +x /usr/local/bin/wp
       - name: Native test dependencies
         run: |

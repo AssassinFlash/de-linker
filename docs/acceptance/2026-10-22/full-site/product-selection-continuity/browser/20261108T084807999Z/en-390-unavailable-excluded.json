@@ -1,0 +1,32 @@
+{
+  "url": "http://127.0.0.1:8889/contact/?intent=product&linker_contact_selection=%7B%22source%22%3A%22https%3A%2F%2Fforeign.invalid%2Fproducts%2F%22%2C%22selection%22%3A%7B%22q%22%3A%22not+a+trusted+source%22%7D%7D",
+  "collectedAt": "2026-11-08T08:48:13.894Z",
+  "viewport": {
+    "width": 390,
+    "height": 1000
+  },
+  "field": {
+    "x": 39,
+    "y": 166.453125,
+    "width": 312,
+    "height": 140.890625,
+    "top": 166.453125,
+    "right": 351,
+    "bottom": 307.34375,
+    "left": 39
+  },
+  "label": {
+    "x": 56,
+    "y": 206.953125,
+    "width": 278,
+    "height": 47.59375,
+    "top": 206.953125,
+    "right": 334,
+    "bottom": 254.546875,
+    "left": 56
+  },
+  "included": false,
+  "summaryDisplay": "none",
+  "excludedDisplay": "block",
+  "text": "Related detailsInclude these details with my messageThese details could not be loaded. To send your message without them, uncheck “Include these details with my message”.These details will not be sent."
+}

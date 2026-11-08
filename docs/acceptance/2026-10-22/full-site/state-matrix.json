@@ -1350,10 +1350,12 @@
   "state": "floating-widgets-no-obstruction",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -1362,7 +1364,15 @@
    "route-fixtures",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "gnav_overlay_states_20261108": {
+    "result": "passed",
+    "environment": "production; playwright-core headless probes with real consent cookie",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "global-navigation:floating-widgets-no-obstruction:en:390",
@@ -1370,10 +1380,12 @@
   "state": "floating-widgets-no-obstruction",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -1387,6 +1399,13 @@
     "status": "bounded-production-readback",
     "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/747-online-consumers.json",
     "scope": "Staff phone selected compare chip followed header at observed DE top/intermediate/scrolled and EN top; cleared state restored 0/4. Only chip/header geometry, not all widgets or simultaneous overlays."
+   },
+   "gnav_overlay_states_20261108": {
+    "result": "passed",
+    "environment": "production; playwright-core headless probes with real consent cookie",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+    ]
    }
   }
  },
@@ -1396,10 +1415,12 @@
   "state": "floating-widgets-no-obstruction",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -1408,7 +1429,15 @@
    "route-fixtures",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "gnav_overlay_states_20261108": {
+    "result": "passed",
+    "environment": "production; playwright-core headless probes with real consent cookie",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "global-navigation:floating-widgets-no-obstruction:de:390",
@@ -1416,10 +1445,12 @@
   "state": "floating-widgets-no-obstruction",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -1433,6 +1464,13 @@
     "status": "bounded-production-readback",
     "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/747-online-consumers.json",
     "scope": "Staff phone selected compare chip followed header at observed DE top/intermediate/scrolled and EN top; cleared state restored 0/4. Only chip/header geometry, not all widgets or simultaneous overlays."
+   },
+   "gnav_overlay_states_20261108": {
+    "result": "passed",
+    "environment": "production; playwright-core headless probes with real consent cookie",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+    ]
    }
   }
  },
@@ -3158,10 +3196,12 @@
   "state": "add-to-draft",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "not-applicable-today",
+  "environment": "production probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -3171,7 +3211,15 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "archive_surface_20261108": {
+    "result": "not-applicable-today",
+    "reason": "archive cards carry no add-to-draft control and no client-side loading (0 wp-json/admin-ajax requests during a full render; 72 links server-rendered)",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "product-archive:add-to-draft:en:390",
@@ -3242,10 +3290,12 @@
   "state": "loading-error",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "not-applicable-today",
+  "environment": "production probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -3255,7 +3305,15 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "archive_surface_20261108": {
+    "result": "not-applicable-today",
+    "reason": "archive cards carry no add-to-draft control and no client-side loading (0 wp-json/admin-ajax requests during a full render; 72 links server-rendered)",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "product-archive:loading-error:en:390",
@@ -4063,10 +4121,12 @@
   "state": "add-pending-success-error",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (specs/failure-injection.spec.ts)",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -4075,7 +4135,15 @@
    "files-print",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "failure_injection_20261108": {
+    "result": "passed",
+    "environment": "LINKER_E2E_INSTANCE=review; Turnstile dummy profile applied and restored; failures injected at linker/v1/protection",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "product:add-pending-success-error:en:390",
@@ -6474,12 +6542,13 @@
   "state": "index",
   "lang": "en",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": "production",
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": "https://de-linker.com/blog/",
   "evidence": [
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/publication-native-batch.json",
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/journal-review-live-en1440.png"
+   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/journal-review-live-en1440.png",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -6559,6 +6628,13 @@
      "width": 1440
     },
     "release": "673 native published runtime before674; no journal change in674."
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   }
  },
@@ -6596,11 +6672,12 @@
   "state": "index",
   "lang": "de",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": "production-existing-editorial-staff",
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": "https://de-linker.com/de/blog/",
   "evidence": [
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/blog-reading-rhythm.json"
+   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/blog-reading-rhythm.json",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [
    "Production DE linked card image alts leak English into accessible card names; local candidate only."
@@ -6617,6 +6694,13 @@
     "at": "2026-11-03T17:15:54.547068+00:00",
     "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/blog-reading-rhythm.json",
     "scope": "Actual DE desktop index, title/10 cards/topics and top/middle/end visuals. Card accessible names include English image alt; guest and full interactions remain open."
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   }
  },
@@ -6711,12 +6795,13 @@
   "state": "category",
   "lang": "en",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": "production",
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": "https://de-linker.com/category/battery-storage-blog/",
   "evidence": [
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-query-retention.json",
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/journal-category-live-en1440.png"
+   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/journal-category-live-en1440.png",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -6748,6 +6833,13 @@
      "width": 1440
     },
     "scope": "Initial main content including both cards visually inspected; native ENtoDEcategory and DEarticle consumer. Other categories/interactions remain pending. Unchanged DE390 prior proof reused."
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   }
  },
@@ -6818,12 +6910,13 @@
   "state": "category",
   "lang": "de",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": "production",
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": "https://de-linker.com/de/kategorie/batteriespeicher/",
   "evidence": [
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-query-retention.json",
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/journal-category-live-de1440.png"
+   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/journal-category-live-de1440.png",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -6855,6 +6948,13 @@
      "width": 1440
     },
     "scope": "Initial main content including both cards visually inspected; native ENtoDEcategory and DEarticle consumer. Other categories/interactions remain pending. Unchanged DE390 prior proof reused."
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   }
  },
@@ -6950,11 +7050,12 @@
   "state": "pagination",
   "lang": "en",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": "production-with-local-integration",
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": null,
   "evidence": [
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -6968,6 +7069,13 @@
     "result": "pass",
     "scope": "Shared LC pagination in global site-search context; local four views, online EN1440/DE390.44px current non-link/aria-current, teal/white, hidden localized heading, mobile search->sections->results. Actual next and language path to matching product. Journal-specific search, other pagination and out-of-range remain separately open.",
     "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   },
   "remaining_scope": "Named679 checks only; retained prior results, whole content/query/permission/edge-state contracts remain open unless separately proved."
@@ -7006,11 +7114,12 @@
   "state": "pagination",
   "lang": "de",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": "production-with-local-integration",
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": null,
   "evidence": [
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -7024,6 +7133,13 @@
     "result": "pass",
     "scope": "Shared LC pagination in global site-search context; local four views, online EN1440/DE390.44px current non-link/aria-current, teal/white, hidden localized heading, mobile search->sections->results. Actual next and language path to matching product. Journal-specific search, other pagination and out-of-range remain separately open.",
     "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   },
   "remaining_scope": "Named679 checks only; retained prior results, whole content/query/permission/edge-state contracts remain open unless separately proved."
@@ -7062,15 +7178,16 @@
   "state": "search-results",
   "lang": "en",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": "production-with-local-integration",
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": "https://de-linker.com/?post_type=post&s=backup",
   "evidence": [
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/publication-native-batch.json",
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/journal-search-keyword-missing-before.png",
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-query-retention.json",
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-live-en1440.png",
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -7130,6 +7247,13 @@
     "result": "pass",
     "scope": "Shared LC pagination in global site-search context; local four views, online EN1440/DE390.44px current non-link/aria-current, teal/white, hidden localized heading, mobile search->sections->results. Actual next and language path to matching product. Journal-specific search, other pagination and out-of-range remain separately open.",
     "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   },
   "remaining_scope": "Named679 checks only; retained prior results, whole content/query/permission/edge-state contracts remain open unless separately proved."
@@ -7191,13 +7315,14 @@
   "state": "search-results",
   "lang": "de",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": "production-with-local-integration",
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": "http://127.0.0.1:8888/de/?post_type=post&lang=de&s=Notstrom",
   "evidence": [
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-query-retention.json",
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-local-de1440.png",
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -7226,6 +7351,13 @@
     "result": "pass",
     "scope": "Shared LC pagination in global site-search context; local four views, online EN1440/DE390.44px current non-link/aria-current, teal/white, hidden localized heading, mobile search->sections->results. Actual next and language path to matching product. Journal-specific search, other pagination and out-of-range remain separately open.",
     "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   },
   "remaining_scope": "Named679 checks only; retained prior results, whole content/query/permission/edge-state contracts remain open unless separately proved."
@@ -7434,11 +7566,12 @@
   "state": "article-contents",
   "lang": "en",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": null,
   "evidence": [
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/blog-reading-rhythm.json"
+   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/blog-reading-rhythm.json",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -7461,6 +7594,13 @@
     "source": "e6095e442a817bff5418ae0da1a2ce7f9aa8b58e",
     "receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/blog-reading-rhythm.json",
     "scope": "Only551/6883 nestedarticle title/checklist andcomparison-group spacing;local actual ENDE1440/390,production guest EN1440/DE390 and originalTOC target. All20blog content+meta/pairs/slashes guarded;only2currentposts use wrappers. Otherfullpage/interaction acceptance unchanged."
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   }
  },
@@ -7512,11 +7652,12 @@
   "state": "article-contents",
   "lang": "de",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": null,
   "evidence": [
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/blog-reading-rhythm.json"
+   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/blog-reading-rhythm.json",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -7539,6 +7680,13 @@
     "source": "e6095e442a817bff5418ae0da1a2ce7f9aa8b58e",
     "receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/blog-reading-rhythm.json",
     "scope": "Only551/6883 nestedarticle title/checklist andcomparison-group spacing;local actual ENDE1440/390,production guest EN1440/DE390 and originalTOC target. All20blog content+meta/pairs/slashes guarded;only2currentposts use wrappers. Otherfullpage/interaction acceptance unchanged."
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   }
  },
@@ -7584,10 +7732,12 @@
   "state": "article-related",
   "lang": "en",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -7603,6 +7753,13 @@
     "deploy_id": "20261025T090725Z-blog-controls-5b16bd70",
     "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json",
     "scope": "Main/secondary article CTA, Back/All posts 44px, mobile TOC44px, action spacing, hover/focus; all labels/hrefs/prose preserved. ENDE1440/390. Native keyboard, DE mobile TOC destination and quote contact landing. Other article states/fullpage remain open."
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   }
  },
@@ -7648,10 +7805,12 @@
   "state": "article-related",
   "lang": "de",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -7667,6 +7826,13 @@
     "deploy_id": "20261025T090725Z-blog-controls-5b16bd70",
     "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json",
     "scope": "Main/secondary article CTA, Back/All posts 44px, mobile TOC44px, action spacing, hover/focus; all labels/hrefs/prose preserved. ENDE1440/390. Native keyboard, DE mobile TOC destination and quote contact landing. Other article states/fullpage remain open."
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   }
  },
@@ -7834,13 +8000,14 @@
   "state": "icons",
   "lang": "en",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": null,
   "evidence": [
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
    "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/online-final-checks.json",
-   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json"
+   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -7968,6 +8135,13 @@
      "other_first_page_evidence": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/route-coverage.md"
     },
     "remaining": "No complete per-document icon-state assertion is inferred for every unchanged Imprint/other viewport from screenshot inventory or source parsing alone."
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   }
  },
@@ -8120,13 +8294,14 @@
   "state": "icons",
   "lang": "de",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": null,
   "evidence": [
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
    "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/online-final-checks.json",
-   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json"
+   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -8254,6 +8429,13 @@
      "other_first_page_evidence": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/route-coverage.md"
     },
     "remaining": "No complete per-document icon-state assertion is inferred for every unchanged Imprint/other viewport from screenshot inventory or source parsing alone."
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   }
  },
@@ -8942,13 +9124,14 @@
   "state": "section-anchor",
   "lang": "en",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": null,
   "evidence": [
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
    "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/online-final-checks.json",
-   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json"
+   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -9058,6 +9241,13 @@
      "code_leak": false
     },
     "remaining": "Other legal documents retain source/IDs unchanged but their individual section-activation consumers are not claimed by this Privacy case."
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   }
  },
@@ -9192,13 +9382,14 @@
   "state": "section-anchor",
   "lang": "de",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": null,
   "evidence": [
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
    "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/online-final-checks.json",
-   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json"
+   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -9308,6 +9499,13 @@
      "code_leak": false
     },
     "remaining": "Other legal documents retain source/IDs unchanged but their individual section-activation consumers are not claimed by this Privacy case."
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   }
  },
@@ -9442,13 +9640,14 @@
   "state": "copy-anchor-feedback",
   "lang": "en",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": null,
   "evidence": [
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
    "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/online-final-checks.json",
-   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json"
+   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -9558,6 +9757,13 @@
      "chapter": "#section-4"
     },
     "remaining": "No complete copied-link/feedback execution record located for the other three documents in this locale/viewport."
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   }
  },
@@ -9692,13 +9898,14 @@
   "state": "copy-anchor-feedback",
   "lang": "de",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": null,
   "evidence": [
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
    "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/online-final-checks.json",
-   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json"
+   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -9808,6 +10015,13 @@
      "chapter": "#section-4"
     },
     "remaining": "No complete copied-link/feedback execution record located for the other three documents in this locale/viewport."
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   }
  },
@@ -9942,13 +10156,14 @@
   "state": "back-to-top",
   "lang": "en",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": null,
   "evidence": [
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
    "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/online-final-checks.json",
-   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json"
+   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -10065,6 +10280,13 @@
     ],
     "actual_case_boundary": "Raw successful entries are DE1440 and EN390, scrollY0; README also describes desktop/phone completion. Do not invent missing exact document/width cases.",
     "remaining": "Full document-specific back-to-top matrix is not inferred from the two representative raw cases."
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   }
  },
@@ -10206,13 +10428,14 @@
   "state": "back-to-top",
   "lang": "de",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": null,
   "evidence": [
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
    "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/online-final-checks.json",
-   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json"
+   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -10329,6 +10552,13 @@
     ],
     "actual_case_boundary": "Raw successful entries are DE1440 and EN390, scrollY0; README also describes desktop/phone completion. Do not invent missing exact document/width cases.",
     "remaining": "Full document-specific back-to-top matrix is not inferred from the two representative raw cases."
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   }
  },
@@ -10470,13 +10700,14 @@
   "state": "cross-document-navigation",
   "lang": "en",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": null,
   "evidence": [
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
    "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/online-final-checks.json",
-   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json"
+   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -10594,6 +10825,13 @@
      "all_destination_pages_have_existing_pdf_or_live_render_evidence": true
     },
     "remaining": "Rendered localized hrefs plus target-page evidence retained; no assertion that every cross-document link from every source page was natively activated."
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   }
  },
@@ -10736,13 +10974,14 @@
   "state": "cross-document-navigation",
   "lang": "de",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": null,
   "evidence": [
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
    "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/online-final-checks.json",
-   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json"
+   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -10860,6 +11099,13 @@
      "all_destination_pages_have_existing_pdf_or_live_render_evidence": true
     },
     "remaining": "Rendered localized hrefs plus target-page evidence retained; no assertion that every cross-document link from every source page was natively activated."
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   }
  },
@@ -11002,13 +11248,14 @@
   "state": "language-switch",
   "lang": "en",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": null,
   "evidence": [
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
    "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/online-final-checks.json",
-   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json"
+   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -11118,6 +11365,13 @@
      "local_regression": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/browser-regressions-local.json"
     },
     "remaining": "Actual Privacy EN↔DE chapter-preserving switches are proved at both widths. Other three document pairs have source/mapping proof but are not new native switch consumers here."
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   }
  },
@@ -11252,13 +11506,14 @@
   "state": "language-switch",
   "lang": "de",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": null,
   "evidence": [
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
    "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/online-final-checks.json",
-   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json"
+   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -11368,6 +11623,13 @@
      "local_regression": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/browser-regressions-local.json"
     },
     "remaining": "Actual Privacy EN↔DE chapter-preserving switches are proved at both widths. Other three document pairs have source/mapping proof but are not new native switch consumers here."
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   }
  },
@@ -13014,15 +13276,16 @@
   "state": "repeat-save-backslashes",
   "lang": "en",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": null,
   "evidence": [
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
    "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/online-final-checks.json",
    "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json",
    "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/german-migration-native-roundtrip.json",
-   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/production-final-readback.json"
+   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/production-final-readback.json",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -13140,6 +13403,13 @@
      "current_source_stable": true
     },
     "remaining": "Three real German-writer saves proved complete fixture bytes; final production pages are stable. No new ordinary English repeat-save or all-document persistence execution is inferred from29slashes."
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   }
  },
@@ -13284,15 +13554,16 @@
   "state": "repeat-save-backslashes",
   "lang": "de",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": null,
   "evidence": [
    "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/legal-print-coverage.json",
    "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/online-final-checks.json",
    "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/legal-browser-checks.json",
    "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/german-migration-native-roundtrip.json",
-   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/production-final-readback.json"
+   "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/docs/acceptance/2026-10-21/privacy-visual/production-final-readback.json",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -13410,6 +13681,13 @@
      "current_source_stable": true
     },
     "remaining": "Three real German-writer saves proved complete fixture bytes; final production pages are stable. No new ordinary English repeat-save or all-document persistence execution is inferred from29slashes."
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   }
  },
@@ -14490,10 +14768,12 @@
   "state": "update-failure",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (specs/failure-injection.spec.ts)",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -14502,7 +14782,15 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "failure_injection_20261108": {
+    "result": "passed",
+    "environment": "LINKER_E2E_INSTANCE=review; Turnstile dummy profile applied and restored; failures injected at linker/v1/protection",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "draft:update-failure:en:390",
@@ -16258,10 +16546,12 @@
   "state": "submission-error",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (specs/failure-injection.spec.ts)",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -16271,7 +16561,15 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "failure_injection_20261108": {
+    "result": "passed",
+    "environment": "LINKER_E2E_INSTANCE=review; Turnstile dummy profile applied and restored; failures injected at linker/v1/protection",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "inquiry:submission-error:en:390",
@@ -17750,10 +18048,12 @@
   "state": "receipt-and-notification-queue",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (specs/failure-injection.spec.ts)",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -17763,7 +18063,15 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "failure_injection_20261108": {
+    "result": "passed",
+    "environment": "LINKER_E2E_INSTANCE=review; Turnstile dummy profile applied and restored; failures injected at linker/v1/protection",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "inquiry:receipt-and-notification-queue:en:390",
@@ -18160,10 +18468,12 @@
   "state": "error",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (specs/failure-injection.spec.ts)",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -18171,7 +18481,15 @@
    "permissions",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "failure_injection_20261108": {
+    "result": "passed",
+    "environment": "LINKER_E2E_INSTANCE=review; Turnstile dummy profile applied and restored; failures injected at linker/v1/protection",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "contact:error:en:390",
@@ -18418,10 +18736,12 @@
   "state": "notification-queue",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (specs/failure-injection.spec.ts)",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -18429,7 +18749,15 @@
    "permissions",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "failure_injection_20261108": {
+    "result": "passed",
+    "environment": "LINKER_E2E_INSTANCE=review; Turnstile dummy profile applied and restored; failures injected at linker/v1/protection",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "contact:notification-queue:en:390",
@@ -19877,10 +20205,12 @@
   "state": "reset-password",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (specs/account.spec.ts), EN+DE",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "tests/e2e/specs/account.spec.ts (reset chain + wrong/spent key tests, 11/11 green 2026-11-08)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -19889,7 +20219,13 @@
    "overlay-responsive",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "reset_states_20261108": {
+    "result": "passed",
+    "scope": "full chain: request answer, valid key card with Woo nonce/credentials riding along, weak-password held by the meter, mismatch named under its field, real save, sign-in with the new password; wrong key and spent key never see password fields (card answers in request mode); fixture keys via WP-CLI get_password_reset_key",
+    "environment": "LINKER_E2E_INSTANCE=review, playwright 2026-11-08"
+   }
+  }
  },
  {
   "key": "authentication:reset-password:en:390",
@@ -19917,10 +20253,12 @@
   "state": "reset-password",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (specs/account.spec.ts), EN+DE",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "tests/e2e/specs/account.spec.ts (reset chain + wrong/spent key tests, 11/11 green 2026-11-08)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -19929,7 +20267,13 @@
    "overlay-responsive",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "reset_states_20261108": {
+    "result": "passed",
+    "scope": "full chain: request answer, valid key card with Woo nonce/credentials riding along, weak-password held by the meter, mismatch named under its field, real save, sign-in with the new password; wrong key and spent key never see password fields (card answers in request mode); fixture keys via WP-CLI get_password_reset_key",
+    "environment": "LINKER_E2E_INSTANCE=review, playwright 2026-11-08"
+   }
+  }
  },
  {
   "key": "authentication:reset-password:de:390",
@@ -22069,10 +22413,12 @@
   "state": "save-pending-error-success",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (specs/account.spec.ts account details save test)",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "tests/e2e/specs/account.spec.ts (account details save test, 2026-11-08)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -22082,7 +22428,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_save_20261108": {
+    "result": "passed",
+    "scope": "refused save names its error and keeps typing (email change without current password); corrected save confirms on the same card; malformed email held by native field validation (no server state by design)"
+   }
+  }
  },
  {
   "key": "account:save-pending-error-success:en:390",
@@ -22111,10 +22462,12 @@
   "state": "save-pending-error-success",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (specs/account.spec.ts account details save test)",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "tests/e2e/specs/account.spec.ts (account details save test, 2026-11-08)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -22124,7 +22477,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_save_20261108": {
+    "result": "passed",
+    "scope": "refused save names its error and keeps typing (email change without current password); corrected save confirms on the same card; malformed email held by native field validation (no server state by design)"
+   }
+  }
  },
  {
   "key": "account:save-pending-error-success:de:390",
@@ -27701,10 +28059,12 @@
   "state": "slow-network-loading",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "not-applicable-today",
+  "environment": "production probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -27713,7 +28073,12 @@
    "overlay-responsive",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "library_surface_20261108": {
+    "result": "not-applicable-today",
+    "reason": "the FAQ/documents library is progressive enhancement: 0 client fetches during a full render, 143 document links server-rendered"
+   }
+  }
  },
  {
   "key": "files-and-feedback:slow-network-loading:en:390",
@@ -31781,10 +32146,12 @@
   "state": "password-reset-token-states",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (specs/account.spec.ts), EN+DE",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "tests/e2e/specs/account.spec.ts (reset chain + wrong/spent key tests, 11/11 green 2026-11-08)"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -31794,7 +32161,13 @@
    "permissions",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "reset_states_20261108": {
+    "result": "passed",
+    "scope": "full chain: request answer, valid key card with Woo nonce/credentials riding along, weak-password held by the meter, mismatch named under its field, real save, sign-in with the new password; wrong key and spent key never see password fields (card answers in request mode); fixture keys via WP-CLI get_password_reset_key",
+    "environment": "LINKER_E2E_INSTANCE=review, playwright 2026-11-08"
+   }
+  }
  },
  {
   "key": "dynamic-routes:password-reset-token-states:en:390",
@@ -31823,10 +32196,12 @@
   "state": "password-reset-token-states",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (specs/account.spec.ts), EN+DE",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "tests/e2e/specs/account.spec.ts (reset chain + wrong/spent key tests, 11/11 green 2026-11-08)"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -31836,7 +32211,13 @@
    "permissions",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "reset_states_20261108": {
+    "result": "passed",
+    "scope": "full chain: request answer, valid key card with Woo nonce/credentials riding along, weak-password held by the meter, mismatch named under its field, real save, sign-in with the new password; wrong key and spent key never see password fields (card answers in request mode); fixture keys via WP-CLI get_password_reset_key",
+    "environment": "LINKER_E2E_INSTANCE=review, playwright 2026-11-08"
+   }
+  }
  },
  {
   "key": "dynamic-routes:password-reset-token-states:de:390",
@@ -32972,10 +33353,12 @@
   "state": "overlay-stacking-scroll-lock",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -32985,7 +33368,15 @@
    "route-fixtures",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "gnav_overlay_states_20261108": {
+    "result": "passed",
+    "environment": "production; playwright-core headless probes with real consent cookie",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "global-navigation:overlay-stacking-scroll-lock:en:390",
@@ -32993,10 +33384,12 @@
   "state": "overlay-stacking-scroll-lock",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -33011,6 +33404,13 @@
     "status": "bounded-direct-staff-consumer",
     "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json",
     "scope": "Long menu body was scrolled and visible menu text was readable; this does not establish background scroll lock or simultaneous overlay behavior."
+   },
+   "gnav_overlay_states_20261108": {
+    "result": "passed",
+    "environment": "production; playwright-core headless probes with real consent cookie",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+    ]
    }
   }
  },
@@ -33020,10 +33420,12 @@
   "state": "overlay-stacking-scroll-lock",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -33033,7 +33435,15 @@
    "route-fixtures",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "gnav_overlay_states_20261108": {
+    "result": "passed",
+    "environment": "production; playwright-core headless probes with real consent cookie",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "global-navigation:overlay-stacking-scroll-lock:de:390",
@@ -33041,10 +33451,12 @@
   "state": "overlay-stacking-scroll-lock",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -33059,6 +33471,13 @@
     "status": "bounded-direct-staff-consumer",
     "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json",
     "scope": "Long menu body was scrolled and visible menu text was readable; this does not establish background scroll lock or simultaneous overlay behavior."
+   },
+   "gnav_overlay_states_20261108": {
+    "result": "passed",
+    "environment": "production; playwright-core headless probes with real consent cookie",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+    ]
    }
   }
  },
@@ -33068,10 +33487,12 @@
   "state": "mobile-input-visible-area",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "not-applicable-today",
+  "environment": "production, anonymous probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -33086,7 +33507,16 @@
    "predicate": "A mobile input or composer is present; inspect the reduced visible area and reachable actions.",
    "evidence": []
   },
-  "verified_checks": {}
+  "verified_checks": {
+   "gnav_overlay_states_20261108": {
+    "result": "not-applicable-today",
+    "environment": "production; playwright-core headless probes with real consent cookie",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+    ],
+    "reason": "no mobile input surface at 1440; the 390 row carries the state"
+   }
+  }
  },
  {
   "key": "global-navigation:mobile-input-visible-area:en:390",
@@ -33094,10 +33524,12 @@
   "state": "mobile-input-visible-area",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -33112,7 +33544,15 @@
    "predicate": "A mobile input or composer is present; inspect the reduced visible area and reachable actions.",
    "evidence": []
   },
-  "verified_checks": {}
+  "verified_checks": {
+   "gnav_overlay_states_20261108": {
+    "result": "passed",
+    "environment": "production; playwright-core headless probes with real consent cookie",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "global-navigation:mobile-input-visible-area:de:1440",
@@ -33120,10 +33560,12 @@
   "state": "mobile-input-visible-area",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "not-applicable-today",
+  "environment": "production, anonymous probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -33138,7 +33580,16 @@
    "predicate": "A mobile input or composer is present; inspect the reduced visible area and reachable actions.",
    "evidence": []
   },
-  "verified_checks": {}
+  "verified_checks": {
+   "gnav_overlay_states_20261108": {
+    "result": "not-applicable-today",
+    "environment": "production; playwright-core headless probes with real consent cookie",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+    ],
+    "reason": "no mobile input surface at 1440; the 390 row carries the state"
+   }
+  }
  },
  {
   "key": "global-navigation:mobile-input-visible-area:de:390",
@@ -33146,10 +33597,12 @@
   "state": "mobile-input-visible-area",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -33164,7 +33617,15 @@
    "predicate": "A mobile input or composer is present; inspect the reduced visible area and reachable actions.",
    "evidence": []
   },
-  "verified_checks": {}
+  "verified_checks": {
+   "gnav_overlay_states_20261108": {
+    "result": "passed",
+    "environment": "production; playwright-core headless probes with real consent cookie",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "product-archive:pagination-out-of-range:en:1440",
@@ -33511,11 +33972,12 @@
   "state": "search-pagination-query-preserved",
   "lang": "en",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": "production-with-local-integration",
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": null,
   "evidence": [
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
@@ -33530,6 +33992,13 @@
     "result": "pass",
     "scope": "Shared LC pagination in global site-search context; local four views, online EN1440/DE390.44px current non-link/aria-current, teal/white, hidden localized heading, mobile search->sections->results. Actual next and language path to matching product. Journal-specific search, other pagination and out-of-range remain separately open.",
     "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   },
   "remaining_scope": "Named679 checks only; retained prior results, whole content/query/permission/edge-state contracts remain open unless separately proved."
@@ -33576,11 +34045,12 @@
   "state": "search-pagination-query-preserved",
   "lang": "de",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": "production-with-local-integration",
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous browser + headless probe",
   "url": null,
   "evidence": [
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+   "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
@@ -33595,6 +34065,13 @@
     "result": "pass",
     "scope": "Shared LC pagination in global site-search context; local four views, online EN1440/DE390.44px current non-link/aria-current, teal/white, hidden localized heading, mobile search->sections->results. Actual next and language path to matching product. Journal-specific search, other pagination and out-of-range remain separately open.",
     "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+   },
+   "blog_legal_production_20261108": {
+    "result": "passed",
+    "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+    ]
    }
   },
   "remaining_scope": "Named679 checks only; retained prior results, whole content/query/permission/edge-state contracts remain open unless separately proved."
@@ -35733,10 +36210,13 @@
   "state": "confirmation-key-invalid-expired-and-owner",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous read-only",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/inquiry-confirmation-key-states-20261108.json",
+   "docs/acceptance/2026-10-22/full-site/inquiry-received-key-states-20261107.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -35747,7 +36227,15 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "confirmation_key_states_20261108": {
+    "result": "passed",
+    "scope": "correct/missing/wrong key, EN+DE, anonymous; recovery notice, no data leak; legacy /checkout/ link fix tracked in PR #1004",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/inquiry-confirmation-key-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "inquiry:confirmation-key-invalid-expired-and-owner:en:390",
@@ -35777,10 +36265,13 @@
   "state": "confirmation-key-invalid-expired-and-owner",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous read-only",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/inquiry-confirmation-key-states-20261108.json",
+   "docs/acceptance/2026-10-22/full-site/inquiry-received-key-states-20261107.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -35791,7 +36282,15 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "confirmation_key_states_20261108": {
+    "result": "passed",
+    "scope": "correct/missing/wrong key, EN+DE, anonymous; recovery notice, no data leak; legacy /checkout/ link fix tracked in PR #1004",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/inquiry-confirmation-key-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "inquiry:confirmation-key-invalid-expired-and-owner:de:390",
@@ -35965,10 +36464,13 @@
   "state": "native-pdp-entry-query-consumed-once",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production real-Chrome evidence + production bare-GET probe + review consumed-once probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/draft-native-pdp-20261108.json",
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -35978,7 +36480,12 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "consumed_once_20261108": {
+    "result": "passed",
+    "scope": "native entry adds once: protected click lands a clean URL with one line and a reload does not duplicate; bare GET add query refused without proof"
+   }
+  }
  },
  {
   "key": "draft:native-pdp-entry-query-consumed-once:en:390",

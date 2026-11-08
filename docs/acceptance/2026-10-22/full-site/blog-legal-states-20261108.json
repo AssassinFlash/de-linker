@@ -1,0 +1,378 @@
+{
+  "phase": "blog-legal-family-production-states",
+  "date": "2026-11-08",
+  "scope": "EN-1440 blog and legal family interaction states on production, anonymous visitor, no writes. Upgrades partially-verified matrix rows whose static-scoped evidence existed since 2026-10-26/28 (B1-B4 defects already closed by PR 671/675).",
+  "environment": {
+    "site": "https://de-linker.com",
+    "visitor": "anonymous",
+    "viewport": "1440x900 (built-in browser tab) and headless Chromium 1440x900 (playwright-core probe from tests/e2e)",
+    "writes": "none"
+  },
+  "cases": {
+    "blog:index": {
+      "requested_url": "https://de-linker.com/blog/",
+      "actual": {
+        "title": "Journal: Sizing, Pairing and Commissioning | Linker",
+        "hero": "Knowledge for your next project. / Technical guidance for installers and EPCs.",
+        "latest_card": "Hybrid inverter or AC storage? (System Design, May 29 2026)",
+        "all_posts_cards": 10,
+        "topics_rail": [
+          "Applications",
+          "Battery Storage",
+          "Installation & Commissioning",
+          "Monitoring & Energy Management",
+          "System Design"
+        ],
+        "search_field": "Search the journal",
+        "cta": "Open the Solution Configurator",
+        "more_from_journal": 4,
+        "footer_legal": [
+          "Imprint",
+          "Privacy Policy",
+          "Cookie settings",
+          "Terms of Sale",
+          "Refund & Returns"
+        ]
+      },
+      "result": "pass"
+    },
+    "blog:category": {
+      "requested_url": "https://de-linker.com/category/system-design/",
+      "http": 200,
+      "alias_check": "/blog/category/system-design/ -> 404 (not a route)",
+      "actual": {
+        "h1": "System Design",
+        "cards": [
+          "Hybrid inverter or AC storage?",
+          "Pairing inverters and batteries"
+        ],
+        "exactly_this_category": true
+      },
+      "result": "pass"
+    },
+    "blog:pagination": {
+      "note": "10 published posts fit one page; no page 2 exists",
+      "requested_url": "https://de-linker.com/blog/page/2/",
+      "actual": "301 -> https://de-linker.com/blog/",
+      "out_of_range": {
+        "url": "https://de-linker.com/blog/page/99/",
+        "actual": "301 -> https://de-linker.com/blog/"
+      },
+      "result": "pass (single-page archive; out-of-range redirects to index, WordPress standard)"
+    },
+    "blog:search-results": {
+      "requested_url": "https://de-linker.com/blog/?s=storage",
+      "http": 200,
+      "actual": {
+        "filtered_cards": 9,
+        "dropped_non_matching": "Documents for project handover (no 'storage' term)",
+        "note": "Latest block is static (Hybrid card) outside the All posts result list; heading stays 'All posts' with no result count shown"
+      },
+      "result": "pass"
+    },
+    "blog:search-empty": {
+      "requested_url": "https://de-linker.com/blog/?s=zzzznothing",
+      "actual": {
+        "all_posts_empty_state": "No matching posts found. / Try another search term or choose a topic. / All topics link",
+        "recovery_action_present": true
+      },
+      "result": "pass"
+    },
+    "blog:search-pagination-query-preserved": {
+      "requested_url": "https://de-linker.com/blog/page/2/?s=storage",
+      "actual": "301 -> https://de-linker.com/blog/?s=storage (query preserved through redirect)",
+      "de_check": "https://de-linker.com/de/blog/seite/2/?s=speicher -> 301 -> /de/blog/?s=speicher",
+      "result": "pass (out-of-range only; no in-range search pagination exists with 9 results)"
+    },
+    "blog:article-contents": {
+      "requested_url": "https://de-linker.com/hybrid-inverter-vs-ac-coupled-storage/",
+      "actual": {
+        "toc": "On this page: Overview / What is a hybrid inverter? / What is an AC-coupled system? / When to choose hybrid / When to choose AC-coupled / What installers should verify",
+        "sections": 5,
+        "toc_anchor_click": "What installers should verify -> URL #article-installer-checks, target heading lands at top of viewport",
+        "cta": "Browse our products / Talk through your storage options sales@de-linker.com",
+        "share": [
+          "Facebook",
+          "Whatsapp",
+          "Telegram",
+          "Twitter"
+        ],
+        "adjacent_post": "Previous post <- What Installers Should Check Before Pairing an Inverter with Battery Storage (real title, no empty label; B3 fix live)"
+      },
+      "result": "pass"
+    },
+    "blog:article-related": {
+      "from": "https://de-linker.com/hybrid-inverter-vs-ac-coupled-storage/",
+      "action": "click 'Pairing inverters and batteries' in Related reading",
+      "actual": "navigated to https://de-linker.com/installer-checklist-inverter-battery-pairing/ (correct article)",
+      "result": "pass"
+    },
+    "legal:section-anchor": {
+      "page": "https://de-linker.com/imprint/",
+      "action": "expand 'On this page' (collapsed by default), click 'Liability for links'",
+      "actual": {
+        "url": "https://de-linker.com/imprint/#section-4",
+        "landing": "'Liability for links' heading in viewport",
+        "toc_current_section_feedback": "On this page · Liability for links",
+        "toc_toggle_behavior": "collapsed hides anchor links, expanded shows 4 anchors (interactive design, not a defect)"
+      },
+      "result": "pass"
+    },
+    "legal:copy-anchor-feedback": {
+      "page": "https://de-linker.com/imprint/",
+      "action": "hover H2 'Site operator' -> button 'Copy link to section 1: Site operator' appears -> click",
+      "probe": "playwright-core headless Chromium against production",
+      "actual": {
+        "url_hash": "#section-1 set via history.replaceState",
+        "tooltip": ".lg-tip text 'Link copied', data-state=ok",
+        "mechanism": "icon swaps to check + .lg-tip (aria-hidden visual tooltip) + announce() live region; reverts after 2000ms (tv-legal-js inline script)"
+      },
+      "result": "pass"
+    },
+    "legal:back-to-top": {
+      "page": "https://de-linker.com/imprint/#section-4",
+      "action": "click 'Back to top' button",
+      "actual": "hash cleared, viewport back at Imprint H1 / Site operator",
+      "result": "pass"
+    },
+    "legal:cross-document-navigation": {
+      "page": "https://de-linker.com/imprint/",
+      "action": "click 'Privacy Policy' card in Legal documents rail",
+      "actual": "navigated to https://de-linker.com/privacy-policy/; rail cards carry metadata (Imprint/Privacy: Last updated 29 September 2026; Terms of Sale: Version 1.2 · 27 October 2026; Refund & Returns: Version 1.1 · 27 October 2026)",
+      "result": "pass"
+    },
+    "legal:language-switch": {
+      "action": "on /privacy-policy/#section-2 click header DE, then on /de/datenschutz/#section-2 click header EN",
+      "actual": {
+        "en_to_de": "https://de-linker.com/de/datenschutz/#section-2 (same document, hash preserved)",
+        "de_to_en": "https://de-linker.com/privacy-policy/#section-2 (round trip complete)"
+      },
+      "result": "pass"
+    },
+    "legal:icons": {
+      "probe": "playwright-core headless Chromium, #tv-legal svg/use rendered boxes + escaped-markup scan, 4 EN documents",
+      "actual": {
+        "imprint": {
+          "svg": 13,
+          "visible_with_box": 6,
+          "zero_box_hidden_containers": 7,
+          "escaped_svg_leak": false
+        },
+        "privacy-policy": {
+          "svg": 15,
+          "visible_with_box": 8,
+          "zero_box_hidden_containers": 7,
+          "escaped_svg_leak": false
+        },
+        "terms-of-sale": {
+          "svg": 19,
+          "visible_with_box": 12,
+          "zero_box_hidden_containers": 7,
+          "escaped_svg_leak": false
+        },
+        "refund-returns": {
+          "svg": 15,
+          "visible_with_box": 8,
+          "zero_box_hidden_containers": 7,
+          "escaped_svg_leak": false
+        },
+        "zero_box_note": "the 7 per-page zero-box svgs all sit inside hidden containers (responsive variants lga-toc-toggle, off-state lga-top--end, hidden lga-print, offscreen doc arrows) - expected, not rendering failures"
+      },
+      "result": "pass"
+    },
+    "legal:repeat-save-backslashes": {
+      "probe": "serialized DOM (page.content()) twice per document, backslash counts compared",
+      "actual": {
+        "imprint": {
+          "save1": 267,
+          "save2": 267,
+          "stable": true
+        },
+        "privacy-policy": {
+          "save1": 265,
+          "save2": 265,
+          "stable": true
+        },
+        "terms-of-sale": {
+          "save1": 267,
+          "save2": 267,
+          "stable": true
+        },
+        "refund-returns": {
+          "save1": 265,
+          "save2": 265,
+          "stable": true
+        }
+      },
+      "result": "pass (no accumulation on repeat save; no escaped svg markup in rendered text)"
+    }
+  },
+  "boundary": "EN/DE-1440 interaction states. 390 viewports, keyboard-only operation, print dialog behavior and visual pixel parity remain with their own rows/batches (CU visual walkthrough). No production writes.",
+  "de_cases": {
+    "blog:index": {
+      "requested_url": "https://de-linker.com/de/blog/",
+      "actual": {
+        "title": "Journal: Auslegung, Kombination und Inbetriebnahme | Linker",
+        "all_posts_cards": 10,
+        "topics_rail": [
+          "Alle Themen",
+          "Anwendungen",
+          "Batteriespeicher",
+          "Installation & Inbetriebnahme",
+          "Systemauslegung",
+          "Überwachung & Energiemanagement"
+        ]
+      },
+      "result": "pass"
+    },
+    "blog:category": {
+      "requested_url": "https://de-linker.com/de/kategorie/anwendungen/",
+      "actual": {
+        "h1": "Anwendungen",
+        "cards": [
+          "Heimspeicher: Notstrom und Ausbau",
+          "Gewerbespeicher planen"
+        ]
+      },
+      "result": "pass"
+    },
+    "blog:pagination": {
+      "requested_url": "https://de-linker.com/de/blog/seite/2/",
+      "actual": "301 -> /de/blog/",
+      "out_of_range": "seite/99 -> 301 -> /de/blog/",
+      "note": "10 DE posts, single page",
+      "result": "pass"
+    },
+    "blog:search-results": {
+      "requested_url": "https://de-linker.com/de/blog/?s=speicher",
+      "actual": {
+        "filtered_cards": 9,
+        "dropped": "Dokumente für die Projektübergabe"
+      },
+      "result": "pass"
+    },
+    "blog:search-empty": {
+      "requested_url": "https://de-linker.com/de/blog/?s=zzzznichts",
+      "actual": {
+        "empty_state": "Keine passenden Beiträge gefunden. / Versuchen Sie einen anderen Suchbegriff oder wählen Sie ein Thema."
+      },
+      "result": "pass"
+    },
+    "blog:search-pagination-query-preserved": {
+      "requested_url": "https://de-linker.com/de/blog/seite/2/?s=speicher",
+      "actual": "301 -> /de/blog/?s=speicher",
+      "result": "pass"
+    },
+    "blog:article-contents": {
+      "requested_url": "https://de-linker.com/de/hybridwechselrichter-vs-ac-speicher/",
+      "actual": {
+        "toc": [
+          "Überblick",
+          "Was ist ein Hybrid-Wechselrichter?",
+          "Was ist ein AC-gekoppeltes System?",
+          "Wann Hybrid wählen",
+          "Wann AC-gekoppelt wählen",
+          "Was Installateure prüfen sollten",
+          "Beitragsdetails",
+          "Passende Beiträge"
+        ],
+        "anchor_click": "TOC link -> hash set, target section lands in view"
+      },
+      "result": "pass"
+    },
+    "blog:article-related": {
+      "from": "de/hybridwechselrichter-vs-ac-speicher/",
+      "action": "click 'Wechselrichter und Batterie kombinieren' in Passende Beiträge",
+      "actual": "https://de-linker.com/de/installateur-checkliste-wechselrichter-akku/",
+      "result": "pass"
+    },
+    "legal:section-anchor": {
+      "page": "/de/impressum/",
+      "action": "click rail anchor a[href='#section-4'] (TOC toggle is the below-1024 variant, hidden at 1440)",
+      "actual": {
+        "hash": "#section-4",
+        "landing": "section 4 content in view"
+      },
+      "result": "pass"
+    },
+    "legal:copy-anchor-feedback": {
+      "page": "/de/impressum/",
+      "actual": {
+        "tooltip": "Link kopiert",
+        "data_state": "ok"
+      },
+      "result": "pass"
+    },
+    "legal:back-to-top": {
+      "page": "/de/datenschutz/",
+      "mechanism": "rail variant visible after scrollY > 1.5*innerHeight; end variant hidden at 1024+ by CSS",
+      "actual": {
+        "rail_visible_at_depth": true,
+        "click": "scrollY -> top (smooth), hash cleared, focus to H1"
+      },
+      "note": "on short Impressum (max scroll 1332 < 1350 threshold at 900px viewport) the control correctly never appears",
+      "result": "pass"
+    },
+    "legal:cross-document-navigation": {
+      "page": "/de/impressum/",
+      "action": "click 'Datenschutzerklärung' docs card",
+      "actual": "https://de-linker.com/de/datenschutz/",
+      "result": "pass"
+    },
+    "legal:language-switch": {
+      "round_trip": "/privacy-policy/#section-2 -> DE -> /de/datenschutz/#section-2 -> EN -> /privacy-policy/#section-2",
+      "result": "pass"
+    },
+    "legal:icons": {
+      "probe": "4 DE documents",
+      "actual": {
+        "impressum": {
+          "svg": 13,
+          "visible": 6,
+          "zero_box_hidden": 7,
+          "leak": false
+        },
+        "datenschutz": {
+          "svg": 15,
+          "visible": 8,
+          "zero_box_hidden": 7,
+          "leak": false
+        },
+        "verkaufsbedingungen": {
+          "svg": 19,
+          "visible": 12,
+          "zero_box_hidden": 7,
+          "leak": false
+        },
+        "rueckgabe-erstattung": {
+          "svg": 15,
+          "visible": 8,
+          "zero_box_hidden": 7,
+          "leak": false
+        }
+      },
+      "result": "pass"
+    },
+    "legal:repeat-save-backslashes": {
+      "actual": {
+        "impressum": [
+          1644,
+          1644
+        ],
+        "datenschutz": [
+          1643,
+          1643
+        ],
+        "verkaufsbedingungen": [
+          1644,
+          1644
+        ],
+        "rueckgabe-erstattung": [
+          1644,
+          1644
+        ]
+      },
+      "result": "pass (stable, no accumulation)"
+    }
+  }
+}

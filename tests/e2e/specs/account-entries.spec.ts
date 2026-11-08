@@ -14,51 +14,14 @@ async function rejectCookies(
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { instance, loginLink, REPO_ROOT, wp } from '../lib/instance';
+import { seedConsentCookies } from '../lib/consent';
 
 test.describe.configure({ timeout: 60_000 });
 
 // The CookieYes banner covers the page until answered; these tests pre-seed
 // the consent cookies it reads, so every goto starts from an answered page.
 test.beforeEach(async ({ context }) => {
-	const url = new URL(instance().url);
-	await context.addCookies([
-		{
-			name: 'cookieyes-consent',
-			value: 'consentid:e2e',
-			domain: url.hostname,
-			path: '/',
-		},
-		{
-			name: 'wp_consent_preferences',
-			value: 'deny',
-			domain: url.hostname,
-			path: '/',
-		},
-		{
-			name: 'wp_consent_statistics',
-			value: 'deny',
-			domain: url.hostname,
-			path: '/',
-		},
-		{
-			name: 'wp_consent_statistics-anonymous',
-			value: 'deny',
-			domain: url.hostname,
-			path: '/',
-		},
-		{
-			name: 'wp_consent_functional',
-			value: 'deny',
-			domain: url.hostname,
-			path: '/',
-		},
-		{
-			name: 'wp_consent_marketing',
-			value: 'deny',
-			domain: url.hostname,
-			path: '/',
-		},
-	]);
+	await seedConsentCookies(context);
 });
 
 for (const locale of ['en', 'de'] as const) {

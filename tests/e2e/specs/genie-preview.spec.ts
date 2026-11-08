@@ -24,7 +24,15 @@ import { expect, test, type Page } from '@playwright/test';
  * Internal dependencies
  */
 import { instance } from '../lib/instance';
+import { seedConsentCookies } from '../lib/consent';
 import { DWELL_MS } from '../../../plugins/linker-tools/src/preview/rules';
+
+// The CookieYes banner covers the Genie dock on phones until answered; the
+// pre-seeded consent cookies start every page from an answered banner (the
+// first run without them timed out four phone tests on the overlay).
+test.beforeEach(async ({ context }) => {
+	await seedConsentCookies(context);
+});
 
 type Lang = 'en' | 'de';
 type Kind = 'home' | 'product' | 'category' | 'solution';

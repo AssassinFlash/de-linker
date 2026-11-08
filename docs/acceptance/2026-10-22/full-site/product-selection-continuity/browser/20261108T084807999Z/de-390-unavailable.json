@@ -1,0 +1,32 @@
+{
+  "url": "http://127.0.0.1:8889/de/kontakt/?intent=product&linker_contact_selection=%7B%22source%22%3A%22https%3A%2F%2Fforeign.invalid%2Fproducts%2F%22%2C%22selection%22%3A%7B%22q%22%3A%22not+a+trusted+source%22%7D%7D",
+  "collectedAt": "2026-11-08T08:48:19.679Z",
+  "viewport": {
+    "width": 390,
+    "height": 1000
+  },
+  "field": {
+    "x": 39,
+    "y": 455.25,
+    "width": 312,
+    "height": 236.078125,
+    "top": 455.25,
+    "right": 351,
+    "bottom": 691.328125,
+    "left": 39
+  },
+  "label": {
+    "x": 56,
+    "y": 495.75,
+    "width": 278,
+    "height": 47.59375,
+    "top": 495.75,
+    "right": 334,
+    "bottom": 543.34375,
+    "left": 56
+  },
+  "included": true,
+  "summaryDisplay": "block",
+  "excludedDisplay": "none",
+  "text": "Zugehörige AngabenDiese Angaben mit meiner Nachricht sendenDiese Angaben konnten nicht geladen werden. Um Ihre Nachricht ohne diese Angaben zu senden, entfernen Sie das Häkchen bei „Diese Angaben mit meiner Nachricht senden“.Diese Angaben werden nicht mitgesendet."
+}
