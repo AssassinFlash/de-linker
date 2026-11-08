@@ -79,6 +79,8 @@ async function fixtures(page: Page, locale: 'en' | 'de') {
 			{
 				type: 'document',
 				ref: 'fixture',
+				document_id: 'fixture-doc',
+				document_revision: '1',
 				label: german
 					? 'SAJ eSolar AIO3 – Datenblatt für den Wi-Fi/Ethernet/Bluetooth-Datenkollektor'
 					: 'SAJ eSolar AIO3 datasheet for the Wi-Fi/Ethernet/Bluetooth data collector',
@@ -128,6 +130,27 @@ async function fixtures(page: Page, locale: 'en' | 'de') {
 	);
 	await page.route('**/wp-json/linker-ai/v1/genie/conversations', (route) =>
 		route.fulfill({ json: { current_id: 0, conversations: [] } })
+	);
+	await page.route('**/wp-json/linker/v1/publication/manifest*', (route) =>
+		route.fulfill({
+			json: {
+				schema_version: 1,
+				products: [
+					{ product_id: PRODUCT_ID, published_locale_ids: [] },
+				],
+				documents: [
+					{
+						document_id: 'fixture-doc',
+						document_revision: '1',
+						title: 'SAJ eSolar AIO3 datasheet',
+						url: `${instance().url}/fixture-datasheet.pdf`,
+					},
+				],
+			},
+		})
+	);
+	await page.route('**/wp-json/linker/v1/publication/product/*', (route) =>
+		route.fulfill({ json: {} })
 	);
 	await page.route('**/wp-json/linker-ai/v1/genie/turn', (route) =>
 		route.fulfill({ json: { conversation_id: 223, stream } })
