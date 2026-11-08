@@ -77,5 +77,10 @@
       }
     }
   },
-  "boundary": "EN-1440 on the review instance; production carries the same client (protection.js) and the same seam. DE-1440 and 390 variants remain with their own rows."
+  "boundary": "EN-1440 on the review instance; production carries the same client (protection.js) and the same seam. DE-1440 and 390 variants remain with their own rows.",
+  "de_leg_20261108": {
+    "scope": "DE-1440 twins of the injection states, via the bilingual failure-injection spec (en/de loop; locale paths, the DE endpoint slug anfrage-eingegangen, the DE receipt number format Nr. N, and PublicGuard's 3s minimum fill time all accounted for)",
+    "results": "de inquiry/contact/quantity legs green; genie-inquiry (de, 1440) green including the reviewed-summary readback; DE consumed-once probe green (notice in German, clean URL, reload does not duplicate)",
+    "known_race": "running two mail-sending suites concurrently on one instance can race the test-mail-to option (one run's afterAll restore vs the other's beforeAll set, observed once: mails sent unrewitten to the local file spool only - no real outbound, smtp unavailable locally); suites that set it run serially"
+  }
 }
