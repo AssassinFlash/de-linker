@@ -49,7 +49,7 @@ import { Reply } from '../genie/components/Reply';
 import { Transcript } from '../genie/components/Transcript';
 import { TurnProgress } from '../genie/components/TurnProgress';
 import type { GenieConfig } from '../genie/config';
-import { idsOf, pricesOf } from '../genie/shared/blocks';
+import { idsOf, pricesOf, proofsOf } from '../genie/shared/blocks';
 import { useCardActions } from '../genie/shared/cardActions';
 import { buildQuestion, typeModelPrompt } from '../genie/shared/conversation';
 import {
@@ -910,6 +910,7 @@ export function HeroConversation( {
 	const cardIds = idsOf( blocks, 'cards' );
 	const compareIds = idsOf( blocks, 'compare' );
 	const cardPrices = pricesOf( blocks );
+	const cardProofs = proofsOf( blocks );
 	const hasCompare = blocks.some( ( block ) => 'compare' === block.type );
 	const hasCards = blocks.some( ( block ) => 'cards' === block.type );
 	const offersInquiry = blocks.some(
@@ -1102,7 +1103,13 @@ export function HeroConversation( {
 											line.product_id === productId
 									) }
 									onAdd={ addCardToDraft }
-									onSave={ saveCardSolution }
+									onSave={ ( id, title ) =>
+										saveCardSolution(
+											id,
+											title,
+											cardProofs[ id ]
+										)
+									}
 								/>
 							) ) }
 						</div>
