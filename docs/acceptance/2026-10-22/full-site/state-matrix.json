@@ -37018,11 +37018,12 @@
   "state": "ordinary-draft-failure-owner-isolation",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e 2026-11-08 (genie-failure-ownership browser evidence, run 20261108T140004814Z case ordinary-home-de-1440 passed)",
   "url": null,
   "evidence": [
-   "genie-failure-isolation-discovery.md"
+   "genie-failure-isolation-discovery.md",
+   "docs/acceptance/2026-10-22/genie-failure-ownership/browser/20261108T140004814Z/summary.json"
   ],
   "findings": [
    "Local diagnostic consumers confirm unscoped ordinary failure text and PDF recovery across identity changes; repair and final browser/production readback pending."
@@ -37049,7 +37050,12 @@
    "predicate": "All surfaces accepting ordinary private text or files at this viewport.",
    "evidence": []
   },
-  "verified_checks": {}
+  "verified_checks": {
+   "de_ownership_20261108": {
+    "result": "passed",
+    "scope": "real producer retains A while guest B writes separately and A explicitly restores (de-1440); follow-up run 20261108T140130675Z all 9 cases passed"
+   }
+  }
  },
  {
   "key": "genie:ordinary-draft-failure-owner-isolation:de:390",
