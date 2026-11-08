@@ -1,0 +1,43 @@
+{
+  "phase": "de-390-parts-chain-closed",
+  "date": "2026-11-09",
+  "context": "2026-10-22/genie-red-specs-resolution-20261108.json recorded new_finding_de_390_parts with two defects; a third and fourth surfaced while closing it",
+  "fixes": {
+    "pr_1011": "understand.py message branch: a pasted list naming >=2 carried models (_names_carried_models) is not captured by the unavailable-publication script",
+    "pr_1012_attachment_chain": [
+      "App.tsx onChange no longer gates files.add on acceptEditor(): the file input is never disabled, so a pick during the cold identity lookup was silently dropped",
+      "useAttachments.add() snapshots Array.from(files) before its first await: the input's live FileList is emptied by the composer's value reset right after the pick",
+      "understand.py upload branch: _readings_carried_models - a transcription naming >=2 carried models is a list and keeps its reading; the parts flow marks unavailable rows missing itself",
+      "attachments.py PHOTO prompt: the document branch must carry the transcription, and a handwritten or printed list is a document, never a photo"
+    ],
+    "catalog_fact": "the spec's 16/2/2 expectation had drifted: production (and the review snapshot, same IDs) carries every EcoFlow product as a draft, so the two EcoFlow rows are missing - 14 matched / 2 uncertain / 4 missing, 15 after the first uncertain row"
+  },
+  "local_verification": {
+    "genie_service": "ruff/mypy clean, 2988 passed, 1 skipped, 6 xfailed",
+    "linker_tools": "lint:js, lint:types, test:unit green; just build manifest consistent",
+    "e2e_review": "specs/genie-parts.spec.ts 8/8 (en/de x 1440/390; list, csv, xlsx, photo steps)",
+    "photo_stability": "the handwritten fixture through the production vision channel: 6/6 turns route=parts with a parts card (3 matched rows) after the gate bypass + prompt fix; before, 3-4 of 5 turned empty-scripted"
+  },
+  "release": {
+    "pr": "#1012 merged (main 0c5b70508)",
+    "candidate": "clone of current 20261108T164815975476Z + understand.py/attachments.py overlay = /opt/linker-genie/20261108T175538932000Z (12-digit timestamp: the first clone name had 9 digits and failed the version regex silently)",
+    "identity": "recipe 2c17e5f206730c107edd6ddfc1a79bfd5e0ca7b89ebd1ffc186b97b2e45b60b0 (recipe hashes src too, so the serving fixes drove a new index build 20261108T183602Z-365393000, epoch 98), serving 1605572be5202743ce9033f8ae28b2372f4bae96418bc20c427e1693826e574b",
+    "publish": "paired_release publish from releases/0c5b70508-main, 39s, ready-ack flow completed; Mac worker paused for the window and resumed (launchctl running)"
+  },
+  "production_readback": {
+    "selector": "current -> 20261108T175538932000Z",
+    "health": "serving_revision 1605572b... = merged main identity",
+    "units": "linker-genie.service and linker-genie-judge.service active",
+    "production_turn": "the de-390 German 20-row list against the production /turn: route=parts, 14 matched / 2 uncertain / 4 missing, German text 'Ich habe Ihre Liste geprueft: 14 von 20 Zeilen passen zu unseren Produkten...'"
+  },
+  "matrix": "the two pending parts de-390 rows (parts list de 390, parts csv de 390) close on this evidence; the whole spec is green locally on review",
+  "resource_report": {
+    "reclaimed": [
+      "journals/locale-fix-1010-attempt1-preserve.json (inspected failure journal, superseded by the verified live release)",
+      "worker release dirs 5a925bf6f-main, 1418dc26e14c, 8c9e6d809eec, c8160eada1f7, 06e2b8549a93 (~3.1G freed; kept 0c5b70508-main live + db86fad4f-main rollback source)",
+      "/tmp pwtrace*, served-genie.js, parts-en.csv, remote-status-cmd.sh, review-serve logs; the desktop-browser debug tab"
+    ],
+    "running": "review instance (just serve review) and its genie/engine on 8891/8890 stay up as the shared verification instance; Mac knowledge worker active; VPS units active",
+    "disk": "1.2Ti available"
+  }
+}
