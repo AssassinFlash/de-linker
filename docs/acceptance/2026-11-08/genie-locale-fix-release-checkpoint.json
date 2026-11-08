@@ -1,0 +1,22 @@
+{
+  "phase": "de-390-locale-fix-release-ready",
+  "date": "2026-11-08",
+  "fix": "PR #1010 (main db86fad4f): a dotted abbreviation's single letters no longer vote a language; genie service 2986 tests green",
+  "candidate": {
+    "vps_dir": "/opt/linker-genie/20261108T164815975476Z",
+    "prepared_by": "clone of current (20261105T043742944830Z-06e2b854) + language.py from main db86fad4f + editable .pth repointed to the candidate's own src",
+    "verified": ["import linker_genie / linker_genie.app / linker_genie.quality.worker in the candidate .venv", "clear_language(德语清单) == de on the candidate interpreter", "serving identity 34fe16dc667d0f9678a63124901c054a3197714eb59d69fdfcc7093f30db240d equals the Mac main source identity"]
+  },
+  "current_live": {
+    "runtime": "20261105T043742944830Z-06e2b854, serving 3d33d5cb...",
+    "index": "20261105T064354Z-336809000, activation epoch 95 (managed paired flow)"
+  },
+  "release_procedure_next_session": [
+    "the runtime is managed (index/.activation.json present): the shared release.sh refuses; use ops/paired_release.py per PUBLICATION.md 'Paired serving-rule release'",
+    "Mac worker env: /Users/chesterjohn/de-linker-ops/knowledge-worker/worker.env (LINKER_PUBLICATION_JOBS_URL/USER/PASSWORD, GENIE_SERVICE_TOKEN); worker-id publication-618-mac; loaded-url http://127.0.0.1:8902/knowledge/loaded; host linker-services",
+    "pause the Mac launchd worker (launchctl bootout gui/$(id -u)/com.linker.knowledge-publication) for the window, resume after (done once this session; resumed at checkpoint time)",
+    "run paired_release publish with a guard that reports the change reason, then confirm-ready with --wp-host hostinger-de-linker --wp-root /home/u388076051/domains/de-linker.com/public_html",
+    "after activation: health readback (serving==candidate), then rerun the de-390 parts e2e legs for the closed loop"
+  ],
+  "honest_status": "fix merged and candidate fully prepared and verified; the production switch itself (first-time paired-release operator with Woo queue claim + Mac index build) deferred to a focused session rather than executed at the tail of a long session; the two de-390 matrix rows stay pending until the deployed rerun"
+}
