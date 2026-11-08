@@ -6,24 +6,37 @@
   "cases": {
     "no-key-de": {
       "requested_url": "https://de-linker.com/de/proforma-anfrage/inquiry-received/8671/",
-      "actual": {"http": 200, "notice": "Dieser Bestätigungslink ließ sich nicht öffnen. Bitte verwenden Sie den Link aus Ihrer Anfragebestätigung, oder schreiben Sie an sales@de-linker.com.", "data_leak": false},
+      "actual": {
+        "http": 200,
+        "notice": "Dieser Bestätigungslink ließ sich nicht öffnen. Bitte verwenden Sie den Link aus Ihrer Anfragebestätigung, oder schreiben Sie an sales@de-linker.com.",
+        "data_leak": false
+      },
       "result": "pass"
     },
     "wrong-key-de": {
       "requested_url": "https://de-linker.com/de/proforma-anfrage/inquiry-received/8671/?key=wc_order_falsch",
-      "actual": {"http": 200, "notice": "same recovery message, no order data", "data_leak": false},
+      "actual": {
+        "http": 200,
+        "notice": "same recovery message, no order data",
+        "data_leak": false
+      },
       "result": "pass"
     },
     "wrong-key-en-recheck": {
       "requested_url": "https://de-linker.com/proforma-request/inquiry-received/8671/?key=wc_order_wrongkey123",
-      "actual": {"http": 200, "notice": "This confirmation link did not open. Please use the link from your inquiry confirmation email, or write to sales@de-linker.com and we will send it again.", "data_leak": false},
+      "actual": {
+        "http": 200,
+        "notice": "This confirmation link did not open. Please use the link from your inquiry confirmation email, or write to sales@de-linker.com and we will send it again.",
+        "data_leak": false
+      },
       "result": "pass"
     },
     "legacy-checkout-link": {
       "finding": "Old-site emails carry /checkout/order-received/<id>/?key=… (and /kasse/…). The retired-checkout redirect preserved the endpoint segment verbatim, but the site renames the endpoint to inquiry-received, so the link landed on /proforma-request/order-received/<id>/ -> 404.",
       "evidence": "curl 2026-11-08: /checkout/order-received/8671/?key=x -> 301 -> /proforma-request/order-received/8671/ -> 404",
-      "fix": "PR #1004 Redirects::checkout_target translates the legacy order-received segment to the live endpoint slug (option woocommerce_checkout_order_received_endpoint, pinned to inquiry-received)",
-      "readback": "pending deploy"
+      "fix": "PR #1005 + #1006: the endpoint slug is read from WC()->query->get_query_vars() (the rename lives in the query-vars filter; the option stays at its default, and wc_get_query_vars() does not exist in this Woo), guarded by did_action('woocommerce_init')",
+      "readback": "2026-11-08 after #1006 deploy: /checkout/order-received/8671/?key=… -> 301 -> /proforma-request/inquiry-received/8671/?key=… -> 200 with the recovery notice; /kasse/ variant identical",
+      "result": "fixed and verified on production"
     }
   },
   "boundary": "Confirmation keys do not expire (they are the order key); correct/missing/wrong states are covered by this file plus the 2026-11-07 file. 390 viewports remain with the CU batch. Owner view of the valid confirmation (DLK-QT-2026-0001 flow) recorded in docs/acceptance/2026-11-08/1003-proforma-to-quotation/evidence.json."
