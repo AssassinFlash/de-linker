@@ -20294,10 +20294,12 @@
   "state": "rejected-sign-in-and-session-revocation",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261107",
+  "environment": "production",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/account-approval-states-20261107.json"
+  ],
   "findings": [],
   "reclassified_from": "account:overview-rejected:en:1440",
   "expected_result": "Rejected customers cannot sign in; show the current rejection/recovery state and invalidate an existing customer session. Do not invent a rejected dashboard.",
@@ -20308,7 +20310,8 @@
    "overlay-responsive",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {},
+  "notes": " Rejected fixture (user 56) sign-in refused with reason; session revocation proven in the approval-states session."
  },
  {
   "key": "authentication:rejected-sign-in-and-session-revocation:en:390",
@@ -21642,7 +21645,7 @@
   "state": "documents-populated",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "verified-production-20261108",
   "environment": null,
   "url": null,
   "evidence": [
@@ -21659,7 +21662,7 @@
    "provenance"
   ],
   "verified_checks": {},
-  "notes": " Documents now lists design reports only (PR #1003). Design-report rows verified via configurator report evidence; a Proforma row cannot exist by design. Reopened by PR #1003 (same-day clarification): the site issues a bank-free Quotation online; production readback pending after deploy."
+  "notes": " Documents now lists design reports only (PR #1003). Design-report rows verified via configurator report evidence; a Proforma row cannot exist by design. Reopened by PR #1003 (same-day clarification): the site issues a bank-free Quotation online; production readback pending after deploy. Documents row now real: Quotation DLK-QT-2026-0001 (PDF) listed for inquiry #8671 on production."
  },
  {
   "key": "account:documents-populated:en:390",
