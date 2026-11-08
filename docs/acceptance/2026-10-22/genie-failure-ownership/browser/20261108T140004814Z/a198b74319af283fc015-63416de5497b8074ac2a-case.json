@@ -1,0 +1,16 @@
+{
+  "title": "ordinary-home-en-1440: real producer retains A while guest B writes separately and A explicitly restores",
+  "status": "passed",
+  "native": {
+    "a": 200,
+    "b": 200,
+    "returned": 200,
+    "rotated": true,
+    "restored": true
+  },
+  "surface": "home",
+  "locale": "en",
+  "width": 1440,
+  "turns": 3,
+  "source": "actual ordinary producer + actual PDF preparation for home; actual native guest-cookie rotation/authority; history empty/403 and model fixtures; no marketing binder or seeded failure"
+}

@@ -1,0 +1,34 @@
+{
+  "capturedAt": "2026-11-08T14:00:29.615Z",
+  "url": "http://127.0.0.1:8889/de/genie/",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "geometry": [
+    {
+      "text": "Bisherigen Entwurf wiederherstellen",
+      "label": null,
+      "x": 482,
+      "y": 506.09375,
+      "width": 244.484375,
+      "height": 44
+    },
+    {
+      "text": "Welches Modell passt zu meinem Projekt?",
+      "label": null,
+      "x": 531.703125,
+      "y": 676.09375,
+      "width": 280.0625,
+      "height": 44
+    },
+    {
+      "text": "Welche Batterien passen zu meinem Wechselrichter?",
+      "label": null,
+      "x": 821.765625,
+      "y": 676.09375,
+      "width": 346.53125,
+      "height": 44
+    }
+  ]
+}

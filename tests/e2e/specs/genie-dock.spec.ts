@@ -17,6 +17,7 @@ import { expect, test, type Page } from '@playwright/test';
  * Internal dependencies
  */
 import { instance, loginLink, wp } from '../lib/instance';
+import { seedConsentCookies } from '../lib/consent';
 
 const PRODUCT = '/product/saj-h2-10k-t3/';
 const ACCOUNT = '/my-account/';
@@ -60,6 +61,10 @@ async function ask(page: Page, question: string): Promise<string> {
 		.toBeGreaterThan(before);
 	return (await page.locator('.linker-genie-app__panel').innerText()).trim();
 }
+
+test.beforeEach(async ({ context }) => {
+	await seedConsentCookies(context);
+});
 
 test.describe('the Genie dock', () => {
 	test('the disclosure is spoken once when the dock opens', async ({

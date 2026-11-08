@@ -1,0 +1,12 @@
+{
+  "title": "ordinary-auth-en: native logout and same-account new session cannot claim the previous failure",
+  "status": "passed",
+  "expectedStatus": "passed",
+  "finishedAt": "2026-11-08T14:01:51.638Z",
+  "url": "http://127.0.0.1:8889/genie/",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "errors": []
+}

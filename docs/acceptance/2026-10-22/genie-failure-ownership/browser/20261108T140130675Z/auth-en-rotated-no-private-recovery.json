@@ -1,0 +1,26 @@
+{
+  "capturedAt": "2026-11-08T14:01:51.637Z",
+  "url": "http://127.0.0.1:8889/genie/",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "geometry": [
+    {
+      "text": "Which model fits my project?",
+      "label": null,
+      "x": 613.546875,
+      "y": 583.5,
+      "width": 201.78125,
+      "height": 44
+    },
+    {
+      "text": "Which batteries work with my inverter?",
+      "label": null,
+      "x": 825.328125,
+      "y": 583.5,
+      "width": 261.125,
+      "height": 44
+    }
+  ]
+}

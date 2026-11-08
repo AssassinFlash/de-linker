@@ -1,0 +1,34 @@
+{
+  "capturedAt": "2026-11-08T14:00:13.494Z",
+  "url": "http://127.0.0.1:8889/genie/",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "geometry": [
+    {
+      "text": "Try again",
+      "label": null,
+      "x": 483,
+      "y": 495.546875,
+      "width": 81.40625,
+      "height": 44
+    },
+    {
+      "text": "Which model fits my project?",
+      "label": null,
+      "x": 613.546875,
+      "y": 668.546875,
+      "width": 201.78125,
+      "height": 44
+    },
+    {
+      "text": "Which batteries work with my inverter?",
+      "label": null,
+      "x": 825.328125,
+      "y": 668.546875,
+      "width": 261.125,
+      "height": 44
+    }
+  ]
+}

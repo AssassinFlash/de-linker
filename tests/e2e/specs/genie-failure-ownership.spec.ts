@@ -3,6 +3,7 @@ import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
 import { instance, loginLink, REPO_ROOT } from '../lib/instance';
+import { seedConsentCookies } from '../lib/consent';
 
 const OUTPUT = join(
 	REPO_ROOT,
@@ -12,6 +13,10 @@ const OUTPUT = join(
 );
 const scopeKey = 'linker-genie-turn-failure:v2:';
 test.use({ reducedMotion: 'reduce' });
+test.beforeEach(async ({ context }) => {
+	await seedConsentCookies(context);
+});
+
 test.describe.configure({ timeout: 60000 });
 test.afterEach(async ({ page }, info) => {
 	mkdirSync(OUTPUT, { recursive: true });

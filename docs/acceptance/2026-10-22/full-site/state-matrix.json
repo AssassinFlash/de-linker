@@ -23107,10 +23107,12 @@
   "state": "home-hero",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance, real model turns (dummy Turnstile profile), DE 2026-11-08",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/de-genie-admission-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23119,7 +23121,12 @@
    "marketing-entries",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_live_20261108": {
+    "result": "passed",
+    "scope": "review live session 2026-11-08: DE home dock opens the composer; a real German question sends and receives a real model answer (votes, 948-char transcript)"
+   }
+  }
  },
  {
   "key": "genie:home-hero:de:390",
@@ -23283,8 +23290,8 @@
   "state": "thinking",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e 2026-11-08",
   "url": null,
   "evidence": [],
   "findings": [],
@@ -23295,7 +23302,12 @@
    "marketing-entries",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_leg_20261108": {
+    "result": "passed",
+    "scope": "genie-reply-presentation.spec (de) green on review 2026-11-08 (13 passed with dock): waiting state, formatted response, reader-controlled scroll"
+   }
+  }
  },
  {
   "key": "genie:thinking:de:390",
@@ -24729,10 +24741,12 @@
   "state": "long-conversation-scroll",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance, real model turns (dummy Turnstile profile), DE 2026-11-08",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/de-genie-admission-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -24741,7 +24755,12 @@
    "marketing-entries",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_live_20261108": {
+    "result": "passed",
+    "scope": "review live session: second turn makes the transcript scrollable with auto-bottom held (scrollHeight>clientHeight, scrollTop at bottom)"
+   }
+  }
  },
  {
   "key": "genie:long-conversation-scroll:de:390",

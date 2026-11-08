@@ -27,6 +27,7 @@ import { expect, test, type Page } from '@playwright/test';
  */
 import { instance, loginLink, wp } from '../lib/instance';
 import { mark, since } from '../lib/mail';
+import { seedConsentCookies } from '../lib/consent';
 
 type Lang = 'en' | 'de';
 type Who = 'guest' | 'signed-in';
@@ -108,6 +109,10 @@ function freshCounters(): void {
 		"global $wpdb; $wpdb->query( \"DELETE FROM {$wpdb->options} WHERE option_name LIKE 'linker\\_tools\\_limit\\_genie\\_contact%' OR option_name LIKE 'linker\\_commerce\\_limit\\_public\\_receipts%'\" ); delete_option( 'linker_commerce_mail_sends' );",
 	]);
 }
+
+test.beforeEach(async ({ context }) => {
+	await seedConsentCookies(context);
+});
 
 for (const lang of ['en', 'de'] as const) {
 	for (const who of ['guest', 'signed-in'] as const satisfies Who[]) {

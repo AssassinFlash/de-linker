@@ -25,6 +25,7 @@ import { expect, test, type Browser, type Page } from '@playwright/test';
  * Internal dependencies
  */
 import { REPO_ROOT, instance, wp } from '../lib/instance';
+import { seedConsentCookies } from '../lib/consent';
 
 type Lang = 'en' | 'de';
 
@@ -167,6 +168,10 @@ async function scrollTranscript(page: Page, top: 'start' | 'end') {
 		}, top);
 	await page.waitForTimeout(200);
 }
+
+test.beforeEach(async ({ context }) => {
+	await seedConsentCookies(context);
+});
 
 for (const lang of LANGS) {
 	for (const viewport of VIEWPORTS) {

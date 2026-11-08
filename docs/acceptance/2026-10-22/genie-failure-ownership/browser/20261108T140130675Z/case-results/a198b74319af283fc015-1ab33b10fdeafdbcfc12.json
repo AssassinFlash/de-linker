@@ -1,0 +1,12 @@
+{
+  "title": "ordinary-memory-de-setItem: current mount warns and retries under native memory-tab ownership",
+  "status": "passed",
+  "expectedStatus": "passed",
+  "finishedAt": "2026-11-08T14:02:03.957Z",
+  "url": "http://127.0.0.1:8889/de/genie/",
+  "viewport": {
+    "width": 390,
+    "height": 1000
+  },
+  "errors": []
+}

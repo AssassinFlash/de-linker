@@ -1,0 +1,26 @@
+{
+  "capturedAt": "2026-11-08T14:00:06.760Z",
+  "url": "http://127.0.0.1:8889/",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "geometry": [
+    {
+      "text": "",
+      "label": "Remove attachment guest-A-private-plan.pdf",
+      "x": 456.296875,
+      "y": 400.5,
+      "width": 44,
+      "height": 44
+    },
+    {
+      "text": "Try again",
+      "label": null,
+      "x": 288,
+      "y": 496.5,
+      "width": 83.46875,
+      "height": 44
+    }
+  ]
+}

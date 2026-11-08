@@ -38,6 +38,7 @@ import {
  */
 import { instance, wp } from '../lib/instance';
 import { mark, since } from '../lib/mail';
+import { seedConsentCookies } from '../lib/consent';
 
 type Lang = 'en' | 'de';
 
@@ -199,6 +200,10 @@ async function signIn(
 		timeout: 30_000,
 	});
 }
+
+test.beforeEach(async ({ context }) => {
+	await seedConsentCookies(context);
+});
 
 for (const lang of ['en', 'de'] as Lang[]) {
 	for (const width of [1440, 390]) {

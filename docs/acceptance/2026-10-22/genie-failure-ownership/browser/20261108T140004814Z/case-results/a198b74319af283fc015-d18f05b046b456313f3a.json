@@ -1,0 +1,12 @@
+{
+  "title": "ordinary-outage-en-1440: pending native lookup quarantines accepted text and auxiliary retry makes no model turn",
+  "status": "passed",
+  "expectedStatus": "passed",
+  "finishedAt": "2026-11-08T14:00:13.746Z",
+  "url": "http://127.0.0.1:8889/genie/",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "errors": []
+}

@@ -3,6 +3,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { expect, test } from '@playwright/test';
 import { instance, REPO_ROOT } from '../lib/instance';
+import { seedConsentCookies } from '../lib/consent';
 
 const OUTPUT = join(
 	REPO_ROOT,
@@ -12,6 +13,10 @@ const OUTPUT = join(
 const PRODUCTS = [3573, 3556, 4107, 1957];
 
 test.use({ reducedMotion: 'reduce' });
+
+test.beforeEach(async ({ context }) => {
+	await seedConsentCookies(context);
+});
 
 for (const locale of ['en', 'de'] as const) {
 	test(`hero-${locale}-1440: four native products retain readable comparison columns`, async ({

@@ -26,6 +26,7 @@ import { expect, test, type Page } from '@playwright/test';
  * Internal dependencies
  */
 import { instance, REPO_ROOT, wp } from '../lib/instance';
+import { seedConsentCookies } from '../lib/consent';
 
 type Lang = 'en' | 'de';
 
@@ -174,6 +175,10 @@ test.beforeEach(() => {
 		'query',
 		"DELETE FROM wp_options WHERE option_name LIKE 'linker\\_tools\\_limit\\_genie\\_upload.%'",
 	]);
+});
+
+test.beforeEach(async ({ context }) => {
+	await seedConsentCookies(context);
 });
 
 for (const lang of ['en', 'de'] as Lang[]) {

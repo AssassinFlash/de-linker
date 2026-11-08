@@ -1,0 +1,26 @@
+{
+  "capturedAt": "2026-11-08T14:01:33.485Z",
+  "url": "http://127.0.0.1:8889/de/genie/",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "geometry": [
+    {
+      "text": "Welches Modell passt zu meinem Projekt?",
+      "label": null,
+      "x": 16,
+      "y": 514,
+      "width": 259.265625,
+      "height": 44
+    },
+    {
+      "text": "Welche Batterien passen zu meinem Wechselrichter?",
+      "label": null,
+      "x": 16,
+      "y": 566,
+      "width": 321.328125,
+      "height": 44
+    }
+  ]
+}

@@ -21,6 +21,7 @@ import { expect, test, type Page } from '@playwright/test';
  * Internal dependencies
  */
 import { instance, loginLink } from '../lib/instance';
+import { seedConsentCookies } from '../lib/consent';
 
 type Lang = 'en' | 'de';
 type Kind =
@@ -220,6 +221,10 @@ async function newConversation(page: Page): Promise<void> {
 async function fresh(page: Page): Promise<void> {
 	await page.context().clearCookies();
 }
+
+test.beforeEach(async ({ context }) => {
+	await seedConsentCookies(context);
+});
 
 for (const lang of ['en', 'de'] as const) {
 	for (const kind of Object.keys(PAGES[lang]) as Kind[]) {

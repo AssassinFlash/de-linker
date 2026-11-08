@@ -1,0 +1,10 @@
+{
+  "phase": "de-genie-admission-and-live",
+  "date": "2026-11-08",
+  "production_challenge_flow": {
+    "finding": "A turn POST without an earned admission proof answers 400 linker_admission_proof, and the app opens the verification slot with the German status 'Die Überprüfung läuft …' - the on-demand challenge design working as intended. The model turn starts after the visitor completes the challenge; a headless fresh context cannot pass the real Turnstile, which is the anti-bot intent. Production Genie is healthy.",
+    "evidence": "network capture: POST /wp-json/linker-ai/v1/genie/turn -> 400 {code: linker_admission_proof}; DOM: [data-linker-resource-verification-slot] visible, German status text present",
+    "relevance": "D-line double proof: the challenge gates bots while the UI stays transparent (visible slot + localized status, no silent dead end)"
+  },
+  "boundary": "DE live-turn matrix rows (home-hero, thinking, product-add states, save states, voice, handoff, consumer readbacks, long-scroll) are verified on the review instance instead: real model turns with the always-pass dummy Turnstile profile. Production cannot be driven headless past the real challenge."
+}

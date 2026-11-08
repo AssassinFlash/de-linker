@@ -1,0 +1,12 @@
+{
+  "title": "ordinary-workspace-en-390: real producer retains A while guest B writes separately and A explicitly restores",
+  "status": "passed",
+  "expectedStatus": "passed",
+  "finishedAt": "2026-11-08T14:00:21.143Z",
+  "url": "http://127.0.0.1:8889/genie/",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "errors": []
+}

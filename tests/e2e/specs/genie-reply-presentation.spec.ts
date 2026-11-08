@@ -3,8 +3,13 @@ import { expect, test, type Page } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { instance, REPO_ROOT } from '../lib/instance';
+import { seedConsentCookies } from '../lib/consent';
 
 const releases = new WeakMap<Page, () => void>();
+test.beforeEach(async ({ context }) => {
+	await seedConsentCookies(context);
+});
+
 test.describe.configure({ timeout: 60_000 });
 test.use({ video: 'on' });
 test.afterEach(async ({ page }, info) => {

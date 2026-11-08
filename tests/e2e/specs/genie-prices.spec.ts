@@ -22,6 +22,7 @@ import { expect, test, type Page } from '@playwright/test';
  * Internal dependencies
  */
 import { instance, loginLink, wp } from '../lib/instance';
+import { seedConsentCookies } from '../lib/consent';
 
 const PRODUCT = 4107;
 const QUESTION = {
@@ -102,6 +103,10 @@ async function askGenie(page: Page, question: string): Promise<void> {
 		timeout: 180_000,
 	});
 }
+
+test.beforeEach(async ({ context }) => {
+	await seedConsentCookies(context);
+});
 
 for (const lang of ['en', 'de'] as const) {
 	for (const width of [1440, 390]) {

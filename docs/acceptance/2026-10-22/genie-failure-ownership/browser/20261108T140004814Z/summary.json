@@ -1,0 +1,115 @@
+{
+  "source": "published local LC + App/startHero/native scope guest rotation/login/logout and real PDF preparation; turn/history plus selected scope503/storage exceptions are explicit fixtures, no external model or email",
+  "cases": [
+    {
+      "title": "ordinary-home-de-1440: real producer retains A while guest B writes separately and A explicitly restores",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "finishedAt": "2026-11-08T14:00:26.703Z",
+      "url": "http://127.0.0.1:8889/de/genie/",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "errors": []
+    },
+    {
+      "title": "ordinary-workspace-en-390: real producer retains A while guest B writes separately and A explicitly restores",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "finishedAt": "2026-11-08T14:00:21.143Z",
+      "url": "http://127.0.0.1:8889/genie/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": []
+    },
+    {
+      "title": "ordinary-home-en-390: real producer retains A while guest B writes separately and A explicitly restores",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "finishedAt": "2026-11-08T14:00:17.788Z",
+      "url": "http://127.0.0.1:8889/genie/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": []
+    },
+    {
+      "title": "ordinary-workspace-en-1440: real producer retains A while guest B writes separately and A explicitly restores",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "finishedAt": "2026-11-08T14:00:12.655Z",
+      "url": "http://127.0.0.1:8889/genie/",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "errors": []
+    },
+    {
+      "title": "ordinary-outage-de-1440: pending native lookup quarantines accepted text and auxiliary retry makes no model turn",
+      "status": "timedOut",
+      "expectedStatus": "passed",
+      "finishedAt": "2026-11-08T14:01:30.329Z",
+      "url": "http://127.0.0.1:8889/de/genie/",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "errors": [
+        "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m"
+      ]
+    },
+    {
+      "title": "ordinary-home-en-1440: real producer retains A while guest B writes separately and A explicitly restores",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "finishedAt": "2026-11-08T14:00:09.209Z",
+      "url": "http://127.0.0.1:8889/genie/",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "errors": []
+    },
+    {
+      "title": "ordinary-outage-en-390: pending native lookup quarantines accepted text and auxiliary retry makes no model turn",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "finishedAt": "2026-11-08T14:00:22.260Z",
+      "url": "http://127.0.0.1:8889/genie/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": []
+    },
+    {
+      "title": "ordinary-workspace-de-1440: real producer retains A while guest B writes separately and A explicitly restores",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "finishedAt": "2026-11-08T14:00:30.248Z",
+      "url": "http://127.0.0.1:8889/de/genie/",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "errors": []
+    },
+    {
+      "title": "ordinary-outage-en-1440: pending native lookup quarantines accepted text and auxiliary retry makes no model turn",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "finishedAt": "2026-11-08T14:00:13.746Z",
+      "url": "http://127.0.0.1:8889/genie/",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "errors": []
+    }
+  ]
+}
