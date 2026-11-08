@@ -1,0 +1,41 @@
+{
+  "phase": "gnav-overlay-floating-input-states",
+  "date": "2026-11-08",
+  "scope": "global-navigation pending rows: overlay stacking and scroll behavior, floating-widget obstruction, mobile input visible area. Production, anonymous, read-only probes (playwright-core headless, real consent cookie seeded so the CookieYes banner does not mask the page's own floating elements).",
+  "environment": {"site": "https://de-linker.com", "visitor": "anonymous", "writes": "none"},
+  "cases": {
+    "overlay-stacking-scroll-lock:1440": {
+      "facts": {
+        "search": "header 'Search products' is a navigation link to /products/#search-box, not an overlay; no modal overlay exists at 1440",
+        "mega_menu": "Products button opens .tv-mega-menu panel stacked above content (4 shelf links visible); body overflow unchanged (no scroll lock - dropdown pattern); page scroll while open works; Escape/scroll closes it"
+      },
+      "result": "pass - the 1440 surfaces are dropdowns and navigations; no scroll-locking overlay exists at this width by design"
+    },
+    "overlay-stacking-scroll-lock:390": {
+      "facts": {
+        "nav": "native <details class=tv-mobile-navigation> with #tv-mobile-toggle summary; open=true shows .tv-mobile-panel, second toggle click closes (open=false, panel hidden), EN and DE identical",
+        "sections": "Products/Solutions are nested <details> sections (accordion); shelf links appear after expanding a section",
+        "scroll": "body scroll is not locked while the nav is open (native details pattern, no modal)"
+      },
+      "result": "pass - native markup, toggle round trip verified both languages"
+    },
+    "floating-widgets-no-obstruction:1440": {
+      "facts": {
+        "product_page": "2 inquiry CTAs vs 1 fixed-position widget (Genie dock): zero bounding-box overlaps",
+        "home_rest": "no fixed-position widgets at rest (dock appears after dwell)",
+        "after_dwell": "dock 50x50 at bottom-right (x 1370-1420, y 830-880) and preview card 320px wide in the right margin (x 1100-1420, ends y 816, above the dock); centered content column unobstructed; EN and DE identical geometry"
+      },
+      "result": "pass"
+    },
+    "mobile-input-visible-area:390": {
+      "facts": "focused inquiry form email input sits at viewport y 629-680 of 844; no fixed-position element (header, dock, banner) intersects its box; EN and DE identical",
+      "result": "pass"
+    },
+    "mobile-input-visible-area:1440": {
+      "predicate": "A mobile input or composer is present",
+      "fact": "no mobile input surface exists at 1440 (mobile nav and inputs are the below-1024 responsive branch; the 390 row carries the state)",
+      "result": "not-applicable-today"
+    }
+  },
+  "boundary": "Keyboard-only traversal of the mega menu and details nav, focus rings and 390 floating-widget obstruction remain with the CU visual batch. No production writes."
+}

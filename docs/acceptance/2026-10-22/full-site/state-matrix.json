@@ -1350,10 +1350,12 @@
   "state": "floating-widgets-no-obstruction",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -1362,7 +1364,15 @@
    "route-fixtures",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "gnav_overlay_states_20261108": {
+    "result": "passed",
+    "environment": "production; playwright-core headless probes with real consent cookie",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "global-navigation:floating-widgets-no-obstruction:en:390",
@@ -1370,10 +1380,12 @@
   "state": "floating-widgets-no-obstruction",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -1387,6 +1399,13 @@
     "status": "bounded-production-readback",
     "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/747-online-consumers.json",
     "scope": "Staff phone selected compare chip followed header at observed DE top/intermediate/scrolled and EN top; cleared state restored 0/4. Only chip/header geometry, not all widgets or simultaneous overlays."
+   },
+   "gnav_overlay_states_20261108": {
+    "result": "passed",
+    "environment": "production; playwright-core headless probes with real consent cookie",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+    ]
    }
   }
  },
@@ -1396,10 +1415,12 @@
   "state": "floating-widgets-no-obstruction",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -1408,7 +1429,15 @@
    "route-fixtures",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "gnav_overlay_states_20261108": {
+    "result": "passed",
+    "environment": "production; playwright-core headless probes with real consent cookie",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "global-navigation:floating-widgets-no-obstruction:de:390",
@@ -1416,10 +1445,12 @@
   "state": "floating-widgets-no-obstruction",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -1433,6 +1464,13 @@
     "status": "bounded-production-readback",
     "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/747-online-consumers.json",
     "scope": "Staff phone selected compare chip followed header at observed DE top/intermediate/scrolled and EN top; cleared state restored 0/4. Only chip/header geometry, not all widgets or simultaneous overlays."
+   },
+   "gnav_overlay_states_20261108": {
+    "result": "passed",
+    "environment": "production; playwright-core headless probes with real consent cookie",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+    ]
    }
   }
  },
@@ -33182,10 +33220,12 @@
   "state": "overlay-stacking-scroll-lock",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -33195,7 +33235,15 @@
    "route-fixtures",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "gnav_overlay_states_20261108": {
+    "result": "passed",
+    "environment": "production; playwright-core headless probes with real consent cookie",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "global-navigation:overlay-stacking-scroll-lock:en:390",
@@ -33203,10 +33251,12 @@
   "state": "overlay-stacking-scroll-lock",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -33221,6 +33271,13 @@
     "status": "bounded-direct-staff-consumer",
     "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json",
     "scope": "Long menu body was scrolled and visible menu text was readable; this does not establish background scroll lock or simultaneous overlay behavior."
+   },
+   "gnav_overlay_states_20261108": {
+    "result": "passed",
+    "environment": "production; playwright-core headless probes with real consent cookie",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+    ]
    }
   }
  },
@@ -33230,10 +33287,12 @@
   "state": "overlay-stacking-scroll-lock",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -33243,7 +33302,15 @@
    "route-fixtures",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "gnav_overlay_states_20261108": {
+    "result": "passed",
+    "environment": "production; playwright-core headless probes with real consent cookie",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "global-navigation:overlay-stacking-scroll-lock:de:390",
@@ -33251,10 +33318,12 @@
   "state": "overlay-stacking-scroll-lock",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -33269,6 +33338,13 @@
     "status": "bounded-direct-staff-consumer",
     "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json",
     "scope": "Long menu body was scrolled and visible menu text was readable; this does not establish background scroll lock or simultaneous overlay behavior."
+   },
+   "gnav_overlay_states_20261108": {
+    "result": "passed",
+    "environment": "production; playwright-core headless probes with real consent cookie",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+    ]
    }
   }
  },
@@ -33278,10 +33354,12 @@
   "state": "mobile-input-visible-area",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "not-applicable-today",
+  "environment": "production, anonymous probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -33296,7 +33374,16 @@
    "predicate": "A mobile input or composer is present; inspect the reduced visible area and reachable actions.",
    "evidence": []
   },
-  "verified_checks": {}
+  "verified_checks": {
+   "gnav_overlay_states_20261108": {
+    "result": "not-applicable-today",
+    "environment": "production; playwright-core headless probes with real consent cookie",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+    ],
+    "reason": "no mobile input surface at 1440; the 390 row carries the state"
+   }
+  }
  },
  {
   "key": "global-navigation:mobile-input-visible-area:en:390",
@@ -33304,10 +33391,12 @@
   "state": "mobile-input-visible-area",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -33322,7 +33411,15 @@
    "predicate": "A mobile input or composer is present; inspect the reduced visible area and reachable actions.",
    "evidence": []
   },
-  "verified_checks": {}
+  "verified_checks": {
+   "gnav_overlay_states_20261108": {
+    "result": "passed",
+    "environment": "production; playwright-core headless probes with real consent cookie",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "global-navigation:mobile-input-visible-area:de:1440",
@@ -33330,10 +33427,12 @@
   "state": "mobile-input-visible-area",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "not-applicable-today",
+  "environment": "production, anonymous probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -33348,7 +33447,16 @@
    "predicate": "A mobile input or composer is present; inspect the reduced visible area and reachable actions.",
    "evidence": []
   },
-  "verified_checks": {}
+  "verified_checks": {
+   "gnav_overlay_states_20261108": {
+    "result": "not-applicable-today",
+    "environment": "production; playwright-core headless probes with real consent cookie",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+    ],
+    "reason": "no mobile input surface at 1440; the 390 row carries the state"
+   }
+  }
  },
  {
   "key": "global-navigation:mobile-input-visible-area:de:390",
@@ -33356,10 +33464,12 @@
   "state": "mobile-input-visible-area",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -33374,7 +33484,15 @@
    "predicate": "A mobile input or composer is present; inspect the reduced visible area and reachable actions.",
    "evidence": []
   },
-  "verified_checks": {}
+  "verified_checks": {
+   "gnav_overlay_states_20261108": {
+    "result": "passed",
+    "environment": "production; playwright-core headless probes with real consent cookie",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/gnav-overlay-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "product-archive:pagination-out-of-range:en:1440",
@@ -35959,10 +36077,13 @@
   "state": "confirmation-key-invalid-expired-and-owner",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous read-only",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/inquiry-confirmation-key-states-20261108.json",
+   "docs/acceptance/2026-10-22/full-site/inquiry-received-key-states-20261107.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -35973,7 +36094,15 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "confirmation_key_states_20261108": {
+    "result": "passed",
+    "scope": "correct/missing/wrong key, EN+DE, anonymous; recovery notice, no data leak; legacy /checkout/ link fix tracked in PR #1004",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/inquiry-confirmation-key-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "inquiry:confirmation-key-invalid-expired-and-owner:en:390",
@@ -36003,10 +36132,13 @@
   "state": "confirmation-key-invalid-expired-and-owner",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production, anonymous read-only",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/inquiry-confirmation-key-states-20261108.json",
+   "docs/acceptance/2026-10-22/full-site/inquiry-received-key-states-20261107.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -36017,7 +36149,15 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "confirmation_key_states_20261108": {
+    "result": "passed",
+    "scope": "correct/missing/wrong key, EN+DE, anonymous; recovery notice, no data leak; legacy /checkout/ link fix tracked in PR #1004",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/inquiry-confirmation-key-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "inquiry:confirmation-key-invalid-expired-and-owner:de:390",
