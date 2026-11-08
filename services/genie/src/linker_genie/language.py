@@ -76,6 +76,10 @@ _UNIT_A = re.compile(
     r"(?<=\d)\s*[Aa]\b|(?<=\d)-[Aa]\b|\b(?:typ|type)\s+[Aa]\b",
     re.IGNORECASE,
 )
+# A single letter joined by dots is an abbreviation fragment (S.A.J.), not a
+# word: its `A` must not vote English against German prose around it (the
+# pasted German parts list answered in English, 2026-11-08).
+_ABBREV = re.compile(r"(?:(?<=\.)|\b)[A-Za-z]\.(?:\s*[A-Za-z]\.)+")
 # CAN is the communication protocol only in its exact uppercase spelling and
 # beside protocol wording. English "CAN YOU" and lowercase "can" still vote.
 # These are the document's existing CAN/RS485 and CAN-Bus terms (#563).
@@ -146,6 +150,7 @@ def _prepare(text: str) -> str:
     marks stay: they are emphasis, not a second way to hide a sentence (#443).
     """
     text = _CAN_PROTOCOL.sub(lambda match: match.group().replace("CAN", " "), text)
+    text = _ABBREV.sub(" ", text)
     return _QUOTED.sub(" ", _ADDRESS.sub(" ", _UNIT_A.sub(" ", text)))
 
 
