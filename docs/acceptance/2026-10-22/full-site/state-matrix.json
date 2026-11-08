@@ -21629,7 +21629,7 @@
   "state": "documents-populated",
   "lang": "en",
   "width": 1440,
-  "status": "not-applicable-today",
+  "status": "cu-pass-pending",
   "environment": null,
   "url": null,
   "evidence": [
@@ -21646,7 +21646,7 @@
    "provenance"
   ],
   "verified_checks": {},
-  "notes": " Documents now lists design reports only (PR #1003). Design-report rows verified via configurator report evidence; a Proforma row cannot exist by design."
+  "notes": " Documents now lists design reports only (PR #1003). Design-report rows verified via configurator report evidence; a Proforma row cannot exist by design. Reopened by PR #1003 (same-day clarification): the site issues a bank-free Quotation online; production readback pending after deploy."
  },
  {
   "key": "account:documents-populated:en:390",
@@ -21654,7 +21654,7 @@
   "state": "documents-populated",
   "lang": "en",
   "width": 390,
-  "status": "not-applicable-today",
+  "status": "cu-pass-pending",
   "environment": null,
   "url": null,
   "evidence": [
@@ -21671,7 +21671,7 @@
    "provenance"
   ],
   "verified_checks": {},
-  "notes": " Documents now lists design reports only (PR #1003). Design-report rows verified via configurator report evidence; a Proforma row cannot exist by design."
+  "notes": " Documents now lists design reports only (PR #1003). Design-report rows verified via configurator report evidence; a Proforma row cannot exist by design. Reopened by PR #1003 (same-day clarification): the site issues a bank-free Quotation online; production readback pending after deploy."
  },
  {
   "key": "account:documents-populated:de:1440",
@@ -21679,7 +21679,7 @@
   "state": "documents-populated",
   "lang": "de",
   "width": 1440,
-  "status": "not-applicable-today",
+  "status": "cu-pass-pending",
   "environment": null,
   "url": null,
   "evidence": [
@@ -21696,7 +21696,7 @@
    "provenance"
   ],
   "verified_checks": {},
-  "notes": " Documents now lists design reports only (PR #1003). Design-report rows verified via configurator report evidence; a Proforma row cannot exist by design."
+  "notes": " Documents now lists design reports only (PR #1003). Design-report rows verified via configurator report evidence; a Proforma row cannot exist by design. Reopened by PR #1003 (same-day clarification): the site issues a bank-free Quotation online; production readback pending after deploy."
  },
  {
   "key": "account:documents-populated:de:390",
@@ -21704,7 +21704,7 @@
   "state": "documents-populated",
   "lang": "de",
   "width": 390,
-  "status": "not-applicable-today",
+  "status": "cu-pass-pending",
   "environment": null,
   "url": null,
   "evidence": [
@@ -21721,7 +21721,7 @@
    "provenance"
   ],
   "verified_checks": {},
-  "notes": " Documents now lists design reports only (PR #1003). Design-report rows verified via configurator report evidence; a Proforma row cannot exist by design."
+  "notes": " Documents now lists design reports only (PR #1003). Design-report rows verified via configurator report evidence; a Proforma row cannot exist by design. Reopened by PR #1003 (same-day clarification): the site issues a bank-free Quotation online; production readback pending after deploy."
  },
  {
   "key": "account:company:en:1440",
@@ -27097,7 +27097,7 @@
   "state": "proforma-pdf",
   "lang": "en",
   "width": 1440,
-  "status": "not-applicable-today",
+  "status": "cu-pass-pending",
   "environment": null,
   "url": null,
   "evidence": [
@@ -27113,7 +27113,7 @@
    "provenance"
   ],
   "verified_checks": {},
-  "notes": " The site no longer issues Proforma documents (PR #1003); a quotation is written and sent offline by the team. No production Proforma fixture can exist."
+  "notes": " The site no longer issues Proforma documents (PR #1003); a quotation is written and sent offline by the team. No production Proforma fixture can exist. Reopened by PR #1003 (same-day clarification): the site issues a bank-free Quotation online; production readback pending after deploy."
  },
  {
   "key": "files-and-feedback:proforma-pdf:en:390",
@@ -27121,7 +27121,7 @@
   "state": "proforma-pdf",
   "lang": "en",
   "width": 390,
-  "status": "not-applicable-today",
+  "status": "cu-pass-pending",
   "environment": null,
   "url": null,
   "evidence": [
@@ -27137,7 +27137,7 @@
    "provenance"
   ],
   "verified_checks": {},
-  "notes": " The site no longer issues Proforma documents (PR #1003); a quotation is written and sent offline by the team. No production Proforma fixture can exist."
+  "notes": " The site no longer issues Proforma documents (PR #1003); a quotation is written and sent offline by the team. No production Proforma fixture can exist. Reopened by PR #1003 (same-day clarification): the site issues a bank-free Quotation online; production readback pending after deploy."
  },
  {
   "key": "files-and-feedback:proforma-pdf:de:1440",
@@ -27145,7 +27145,7 @@
   "state": "proforma-pdf",
   "lang": "de",
   "width": 1440,
-  "status": "not-applicable-today",
+  "status": "cu-pass-pending",
   "environment": null,
   "url": null,
   "evidence": [
@@ -27161,7 +27161,7 @@
    "provenance"
   ],
   "verified_checks": {},
-  "notes": " The site no longer issues Proforma documents (PR #1003); a quotation is written and sent offline by the team. No production Proforma fixture can exist."
+  "notes": " The site no longer issues Proforma documents (PR #1003); a quotation is written and sent offline by the team. No production Proforma fixture can exist. Reopened by PR #1003 (same-day clarification): the site issues a bank-free Quotation online; production readback pending after deploy."
  },
  {
   "key": "files-and-feedback:proforma-pdf:de:390",
@@ -27169,7 +27169,7 @@
   "state": "proforma-pdf",
   "lang": "de",
   "width": 390,
-  "status": "not-applicable-today",
+  "status": "cu-pass-pending",
   "environment": null,
   "url": null,
   "evidence": [
@@ -27185,7 +27185,7 @@
    "provenance"
   ],
   "verified_checks": {},
-  "notes": " The site no longer issues Proforma documents (PR #1003); a quotation is written and sent offline by the team. No production Proforma fixture can exist."
+  "notes": " The site no longer issues Proforma documents (PR #1003); a quotation is written and sent offline by the team. No production Proforma fixture can exist. Reopened by PR #1003 (same-day clarification): the site issues a bank-free Quotation online; production readback pending after deploy."
  },
  {
   "key": "files-and-feedback:public-document-auth:en:1440",
