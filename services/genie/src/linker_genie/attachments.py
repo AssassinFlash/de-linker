@@ -101,10 +101,12 @@ PHOTO = Instruction(
         "the ticked one, and null when none is ticked; a cell or pack code is not the "
         "model. product_type as printed, and every rating with its label and value, "
         "units included. "
-        'kind "document": a page, a datasheet, a list or a drawing: all printed text in '
-        '"text", line by line, a table row as "label: value". '
-        'kind "photo": anything else: one sentence in "text" saying what it shows, and a '
-        "brand or model printed on it in brand and model. "
+        'kind "document": a page, a datasheet, a list or a drawing: "text" is '
+        "required and holds every line of printed text, line by line, a table row "
+        'as "label: value"; a "document" answer with an empty "text" is wrong. '
+        'kind "photo": anything else: one sentence in "text" saying what it '
+        "shows, and a brand or model printed on it in brand and model. "
+        'A handwritten or printed list is a "document", never a "photo". '
         "Never correct, complete or guess anything; write null for what you cannot read. "
         "Leave out serial numbers, addresses, e-mail addresses and phone numbers."
     ),

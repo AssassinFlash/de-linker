@@ -62,62 +62,79 @@ export function useAttachments( context?: DraftContext ): Attachments {
 
 	const add = useCallback(
 		( files: ArrayLike< File > ) => {
-			const lease = context?.capture();
-			if ( context && ( ! lease || ! context.acceptEditor() ) ) {
-				return;
-			}
-			for ( const file of Array.from( files ) ) {
-				const key = nextKey++;
-				const kept = current.current.filter(
-					( item ) => item.state !== 'refused'
-				).length;
-				if ( kept >= MAX_FILES ) {
-					update( ( items ) => [
-						...items,
-						{
-							key,
-							name: file.name,
-							state: 'refused',
-							reason: 'count',
-						},
-					] );
-					continue;
-				}
-				update( ( items ) => [
-					...items,
-					{ key, name: file.name, state: 'preparing' },
-				] );
-				void prepare( file ).then( async ( result ) => {
-					if (
-						context &&
-						! ( await context.whenVerified( lease ?? null ) )
-					) {
+			// The input's FileList is live: the composer resets the field
+			// right after this call, which empties it. Snapshot the picks
+			// synchronously, before the first await.
+			const pickedFiles = Array.from( files );
+			void ( async () => {
+				// The file input is never disabled, so a pick can arrive while
+				// the cold identity lookup is still running. The choice is
+				// held until the lookup settles, not dropped: a customer who
+				// attaches first and waits for the composer afterwards still
+				// sends the file they chose.
+				if ( context && ! context.capture() ) {
+					const ok = await context.ready();
+					if ( ! ok ) {
 						return;
 					}
-					update( ( items ) =>
-						withTurnLimit(
-							items.map( ( item ) => {
-								if ( item.key !== key ) {
-									return item;
-								}
-								return result.ok
-									? {
-											...item,
-											name: result.upload.name,
-											state: 'ready',
-											upload: result.upload,
-											bytes: result.bytes,
-										}
-									: {
-											...item,
-											state: 'refused',
-											reason: result.reason,
-										};
-							} )
-						)
-					);
-				} );
-			}
+				}
+				const lease = context?.capture();
+				if ( context && ( ! lease || ! context.acceptEditor() ) ) {
+					return;
+				}
+				for ( const file of pickedFiles ) {
+					const key = nextKey++;
+					const kept = current.current.filter(
+						( item ) => item.state !== 'refused'
+					).length;
+					if ( kept >= MAX_FILES ) {
+						update( ( items ) => [
+							...items,
+							{
+								key,
+								name: file.name,
+								state: 'refused',
+								reason: 'count',
+							},
+						] );
+						continue;
+					}
+					update( ( items ) => [
+						...items,
+						{ key, name: file.name, state: 'preparing' },
+					] );
+					void prepare( file ).then( async ( result ) => {
+						if (
+							context &&
+							! ( await context.whenVerified( lease ?? null ) )
+						) {
+							return;
+						}
+						update( ( items ) =>
+							withTurnLimit(
+								items.map( ( item ) => {
+									if ( item.key !== key ) {
+										return item;
+									}
+									return result.ok
+										? {
+												...item,
+												name: result.upload.name,
+												state: 'ready',
+												upload: result.upload,
+												bytes: result.bytes,
+											}
+										: {
+												...item,
+												state: 'refused',
+												reason: result.reason,
+											};
+								} )
+							)
+						);
+					} );
+				}
+			} )();
 		},
 		[ update, context ]
 	);
