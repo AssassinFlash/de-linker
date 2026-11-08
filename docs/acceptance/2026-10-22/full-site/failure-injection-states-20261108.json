@@ -68,7 +68,12 @@
       "positive_half_blocked": {
         "finding": "the reviewed-summary readback (Genie card handover -> order meta) could not run: on this day the review instance Outbox defers mail attempts ~18h (retry actions scheduled 2026-11-09 05:19) behind an inquiry-assessment backlog, so genie-inquiry.spec spool assertions time out before submission asserts complete",
         "open_question": "why mail_attempt actions take the long retry while their assessment completed - review pipeline behavior for the mail/assessment line to answer (E/F domains)",
-        "status": "row stays pending; not closed on a half-proof"
+        "status": "resolved; row closes with both halves",
+        "resolved": "the blocker was the mail transport ledger linker_commerce_mail_transport_sends holding 80 PHP sends in the trailing 24h window (PER_DAY) from the previous session's test flood; every later mail deferred to the oldest entry's expiry (+16.5h measured). Not a defect - the throttle mirrors the Hostinger quota. Clearing the ledger restored immediate delivery; HTTP-path .eml capture confirmed working (two probes). WP-CLI-triggered attempts report sent without writing .eml - a CLI-context capture quirk worth knowing, real traffic unaffected."
+      },
+      "positive_re_exercised": {
+        "evidence": "specs/genie-inquiry.spec.ts (branch add/genie-inquiry-summary-readback): the Genie card submit -> receipt names the inquiry -> order meta _linker_genie_summary present; en-1440 green on review 2026-11-08",
+        "result": "pass for the positive half"
       }
     }
   },

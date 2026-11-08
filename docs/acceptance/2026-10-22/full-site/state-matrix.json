@@ -36320,11 +36320,12 @@
   "state": "message-summary-note-isolation",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance: ordinary half via real submissions meta readback; positive half via specs/genie-inquiry.spec.ts summary readback (en-1440 green)",
   "url": null,
   "evidence": [
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/inquiry-message-context.json"
+   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/inquiry-message-context.json",
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
@@ -36346,6 +36347,10 @@
     "native": "Before old-note prefill/filter1;deployed Form empty/filter0. Existing actualnative Handler/explicitSender cases accepted.",
     "browser": "Actual local ENDE1440/390 plus DE390 genuine validation failure,unchangedorders/mail. Actual production fresh-form readback for this lang/width.",
     "limits": "No production formsubmit/modelturn/mail/inbox claim."
+   },
+   "summary_isolation_20261108": {
+    "result": "passed",
+    "scope": "ordinary submissions carry no implicit _linker_genie_summary (5 latest orders absent); the Genie card handover attaches the reviewed summary (order meta present, read back in-test after the receipt)"
    }
   },
   "remaining_scope": "This ordinary-message increment accepted. Full required fixture contracts andremaining named inquiry contexts/realinbox gate remain separately pending;unchanged current evidence reused."

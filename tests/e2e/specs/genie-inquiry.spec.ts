@@ -230,6 +230,23 @@ for (const lang of ['en', 'de'] as const) {
 			expect(team?.html).toContain('Conversation with Genie');
 			expect(team?.html).toContain(product);
 
+			// The reviewed summary the card handed over rides on the inquiry
+			// itself (Sender::attach_summary): the ordinary-form invariant (no
+			// implicit summary, read back on every plain submission) and this
+			// positive instance are the two halves of the isolation contract.
+			const number = (await sent.textContent())?.match(/#(\d+)/);
+			const inquiryId = number?.[1] ?? '';
+			expect(inquiryId, 'the receipt names the inquiry number').toMatch(
+				/^\d+$/
+			);
+			const carries = wp([
+				'eval',
+				`$o = wc_get_order(${inquiryId}); echo (is_object($o) && is_array($o->get_meta("_linker_genie_summary"))) ? "1" : "0";`,
+			]).trim();
+			expect(carries, 'the reviewed summary rides on the inquiry').toBe(
+				'1'
+			);
+
 			// The conversation keeps the sent card through a reload.
 			await page.reload();
 			await expect(
