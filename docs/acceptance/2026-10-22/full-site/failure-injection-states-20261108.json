@@ -46,6 +46,19 @@
       "probe": "same zero-request render",
       "fact": "the listing and its filters carry no client-side loading; there is no fetch whose failure could strand the page",
       "result": "not-applicable-today - no client-side loading exists on the archive"
+    },
+    "files-and-feedback:slow-network-loading": {
+      "probe": "production /faq-download/ with all wp-json|admin-ajax routes armed to abort",
+      "fact": "0 such requests occur; 143 document links and 15 tab controls fully server-rendered (the library script only filters rows already in the HTML; no fetch exists whose slowness could strand a loading state)",
+      "result": "not-applicable-today - no client-side loading exists on the library surface"
+    },
+    "draft:native-pdp-entry-query-consumed-once": {
+      "facts": {
+        "production_real_chrome": "native entry add click -> notice + View solution draft + full draft page (draft-native-pdp-20261108.json, same day)",
+        "production_bare_get_refused": "direct ?add-to-cart=2090 GET without proof redirects to /cart/ and adds nothing (protection Draft::native), production 2026-11-08",
+        "review_consumed_once": "protected click -> notice -> lands /proforma-request/ clean URL with exactly 1 draft line; PDP hard reload -> still 1 line (no re-add)"
+      },
+      "result": "pass"
     }
   },
   "boundary": "EN-1440 on the review instance; production carries the same client (protection.js) and the same seam. DE-1440 and 390 variants remain with their own rows."

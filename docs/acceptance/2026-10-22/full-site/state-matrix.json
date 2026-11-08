@@ -22413,10 +22413,12 @@
   "state": "save-pending-error-success",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (specs/account.spec.ts account details save test)",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "tests/e2e/specs/account.spec.ts (account details save test, 2026-11-08)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -22426,7 +22428,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_save_20261108": {
+    "result": "passed",
+    "scope": "refused save names its error and keeps typing (email change without current password); corrected save confirms on the same card; malformed email held by native field validation (no server state by design)"
+   }
+  }
  },
  {
   "key": "account:save-pending-error-success:en:390",
@@ -22455,10 +22462,12 @@
   "state": "save-pending-error-success",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (specs/account.spec.ts account details save test)",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "tests/e2e/specs/account.spec.ts (account details save test, 2026-11-08)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -22468,7 +22477,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_save_20261108": {
+    "result": "passed",
+    "scope": "refused save names its error and keeps typing (email change without current password); corrected save confirms on the same card; malformed email held by native field validation (no server state by design)"
+   }
+  }
  },
  {
   "key": "account:save-pending-error-success:de:390",
@@ -28045,10 +28059,12 @@
   "state": "slow-network-loading",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "not-applicable-today",
+  "environment": "production probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -28057,7 +28073,12 @@
    "overlay-responsive",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "library_surface_20261108": {
+    "result": "not-applicable-today",
+    "reason": "the FAQ/documents library is progressive enhancement: 0 client fetches during a full render, 143 document links server-rendered"
+   }
+  }
  },
  {
   "key": "files-and-feedback:slow-network-loading:en:390",
@@ -36443,10 +36464,13 @@
   "state": "native-pdp-entry-query-consumed-once",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production real-Chrome evidence + production bare-GET probe + review consumed-once probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/draft-native-pdp-20261108.json",
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -36456,7 +36480,12 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "consumed_once_20261108": {
+    "result": "passed",
+    "scope": "native entry adds once: protected click lands a clean URL with one line and a reload does not duplicate; bare GET add query refused without proof"
+   }
+  }
  },
  {
   "key": "draft:native-pdp-entry-query-consumed-once:en:390",
