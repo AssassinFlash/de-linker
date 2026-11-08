@@ -469,11 +469,13 @@ class _UnavailableAuthority:
             found[self._available] = "published"
         return found
 
-    def identify(self, models):
+    def identify(self, models: Sequence[str]) -> dict[str, str]:
         return {m.casefold(): "unavailable" for m in models}
 
 
-def test_a_single_unavailable_model_still_answers_the_script(vocabulary) -> None:
+def test_a_single_unavailable_model_still_answers_the_script(
+    vocabulary: Vocabulary,
+) -> None:
     understander = Understander(
         lambda: vocabulary,
         FakeJev(_reading("find_products")),
@@ -487,7 +489,7 @@ def test_a_single_unavailable_model_still_answers_the_script(vocabulary) -> None
 
 
 def test_a_pasted_list_with_carried_models_is_not_captured_by_the_script(
-    vocabulary,
+    vocabulary: Vocabulary,
 ) -> None:
     understander = Understander(
         lambda: vocabulary,
