@@ -669,9 +669,7 @@ class Target:
         )
         return [line.strip() for line in listing.splitlines() if line.strip()]
 
-    def http(
-        self, path: str, *, cache_buster: str | None = None, attempt: bool = False
-    ) -> tuple[int, str]:
+    def http(self, path: str, *, cache_buster: str | None = None) -> tuple[int, str]:
         """Fetch one path from the site and return (status, body).
 
         Every request carries a cache-buster: production serves through
@@ -681,6 +679,18 @@ class Target:
         Redirects are not followed (OPENER): a caller asking about a 301 is
         asking about the address, not about where it points.
         """
+        try:
+            return self._fetch(path, cache_buster)
+        except _ReadTimeout:
+            # A shared host's origin render occasionally spikes past the read
+            # timeout once (measured 2026-11-08: every verify path answers
+            # 200 in 4-9s on independent passes, one random page exceeds 30s
+            # inside a 20-page verify burst). Retry just that read once,
+            # keeping the URL and redirect policy, like the TLS EOF retry.
+            print(f"cutover: read timeout, retrying GET {path}", flush=True)
+            return self._fetch(path, cache_buster)
+
+    def _fetch(self, path: str, cache_buster: str | None) -> tuple[int, str]:
         url = self.base_url.rstrip("/") + "/" + path.lstrip("/")
         if cache_buster:
             separator = "&" if "?" in url else "?"
@@ -707,19 +717,9 @@ class Target:
             # default error handler, which raises with the status and the body.
             return error.code, error.read().decode("utf-8", errors="replace")
         except OSError as error:  # a refused connection, a DNS failure, a timeout
-            if not _is_read_timeout(error) or attempt:
-                raise CutoverError(f"GET {url}: {error}") from error
-            # A shared host's origin render occasionally spikes past the read
-            # timeout once (measured 2026-11-08: every verify path answers
-            # 200 in 4-9s on independent passes, one random page exceeds 30s
-            # inside a 20-page verify burst). Retry just that read once,
-            # keeping the URL and redirect policy, like the TLS EOF retry.
-            print(
-                f"cutover: read timeout, retrying GET {path}",
-                flush=True,
-            )
-            return self.http(path, cache_buster=cache_buster, attempt=True)
-        raise AssertionError("unreachable")
+            if _is_read_timeout(error):
+                raise _ReadTimeout(url) from error
+            raise CutoverError(f"GET {url}: {error}") from error
 
 
 def remote_target() -> Target:
@@ -765,14 +765,19 @@ def wp_prefix_for(target: Target) -> str:
 
 def _is_read_timeout(error: BaseException) -> bool:
     """Whether an OSError chain is a read timeout (socket.timeout/TimeoutError)."""
-    while error is not None:
-        if isinstance(error, TimeoutError):
+    seen: BaseException | str | None = error
+    while isinstance(seen, BaseException):
+        if isinstance(seen, TimeoutError):
             return True
-        if isinstance(error, urllib.error.URLError):
-            error = error.reason
+        if isinstance(seen, urllib.error.URLError):
+            seen = seen.reason
             continue
-        error = error.__cause__ or error.__context__
+        seen = seen.__cause__ or seen.__context__
     return False
+
+
+class _ReadTimeout(CutoverError):
+    """A read that timed out once; the caller retries it exactly once more."""
 
 
 def _link_dest(earlier: Path | None) -> list[str]:
