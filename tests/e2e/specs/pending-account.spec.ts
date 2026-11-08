@@ -87,19 +87,36 @@ for (const language of ['en', 'de'] as const) {
 						: '.pdp-purchase .pdp-price'
 				);
 				await page.goto(base + account + 'register/');
+				// The two-step form (owner ruling 2026-10-17, variant B): the
+				// company first - the role is a radio group, not a select -
+				// then the person and the sign-in details.
 				await page.fill('#billing_company', '222 Browser Solar GmbH');
-				await page.selectOption('#linker_customer_role', 'installer');
+				await page
+					.locator(
+						'label.radio[for="linker_customer_role_installer"]'
+					)
+					.click();
 				await page.selectOption('#billing_country', 'DE');
+				await page.fill(
+					'#linker_company_website',
+					'222browser.example'
+				);
+				await shot(page, `${prefix}-register-step-1`);
+				await page.locator('[data-next]').click();
+				await expect(
+					page.locator('form[data-linker-register]')
+				).toHaveAttribute('data-active-step', '2');
 				await page.fill('#billing_first_name', 'Maria');
 				await page.fill('#billing_last_name', 'Beispiel');
-				await page.fill('#billing_address_1', 'Teststraße 1');
-				await page.fill('#billing_postcode', '39179');
-				await page.fill('#billing_city', 'Barleben');
 				await page.fill('#reg_email', email);
 				await page.fill('#reg_password', password);
 				await shot(page, `${prefix}-register`);
-				await page.locator('button[name="register"]').focus();
-				await page.keyboard.press('Enter');
+				// PublicGuard's minimum fill time is three seconds.
+				await page.waitForTimeout(3_300);
+				await Promise.all([
+					page.waitForURL(/\/mein-konto\/?$/, { timeout: 60_000 }),
+					page.locator('button[name="register"]').click(),
+				]);
 				await expect(
 					page.locator('.linker-account-status')
 				).toBeVisible();
@@ -118,13 +135,20 @@ for (const language of ['en', 'de'] as const) {
 				).toBe(true);
 				const registered = read();
 				expect(registered.status).toBe('pending');
-				expect(
-					registered.mail.some(
-						(mail: { to: string[]; subject: string }) =>
-							mail.to.includes(email) &&
-							/registration|Registrierung/i.test(mail.subject)
+				// TestMode redirects every send to the tester, and a delivered
+				// job is gone from the queue: the subject is the stable
+				// evidence of the customer's registration mail either way.
+				// The outbox delivers asynchronously, so the mail may land
+				// a beat after the registration response.
+				await expect
+					.poll(
+						() =>
+							read().mail.some((mail: { subject: string }) =>
+								/registration|Registrierung/i.test(mail.subject)
+							),
+						{ timeout: 20_000 }
 					)
-				).toBe(true);
+					.toBe(true);
 				await shot(page, `${prefix}-registered`);
 
 				await page.goto(base + product);
@@ -207,13 +231,25 @@ for (const language of ['en', 'de'] as const) {
 					await company.click();
 					await expect(page).toHaveURL(companyUrl);
 				}
-				for (const endpoint of [
-					'inquiries/',
-					'documents/',
-					'saved-solutions/',
-					'company/',
-					'edit-account/',
-				]) {
+				// The German account pages carry translated URL segments
+				// (linker-i18n), so each language walks its own slugs.
+				const endpoints =
+					language === 'de'
+						? [
+								'anfragen/',
+								'dokumente/',
+								'gespeicherte-loesungen/',
+								'unternehmen/',
+								'kontodaten/',
+							]
+						: [
+								'inquiries/',
+								'documents/',
+								'saved-solutions/',
+								'company/',
+								'edit-account/',
+							];
+				for (const endpoint of endpoints) {
 					await page.goto(base + account + endpoint);
 					await expect(page).toHaveURL(base + account + endpoint);
 					await expect(
@@ -290,14 +326,18 @@ for (const language of ['en', 'de'] as const) {
 					language === 'de' ? 'Preis auf Anfrage' : 'Price on request'
 				);
 				await shot(page, `${prefix}-approved-inquiry`);
+				// Same mail evidence as registration: the subject, polled for
+				// the asynchronous delivery.
 				const approved = read();
-				expect(
-					approved.mail.some(
-						(mail: { to: string[]; subject: string }) =>
-							mail.to.includes(email) &&
-							/approved|freigegeben/i.test(mail.subject)
+				await expect
+					.poll(
+						() =>
+							read().mail.some((mail: { subject: string }) =>
+								/approved|freigegeben/i.test(mail.subject)
+							),
+						{ timeout: 20_000 }
 					)
-				).toBe(true);
+					.toBe(true);
 				if (language === 'en' && width === 1440) {
 					const before = mark();
 					run('deliver-one');

@@ -57,6 +57,7 @@ final class BrowserFixture {
 			'ledger'    => get_option( \Linker\Commerce\Protection\Ledger::OPTION ),
 			'transient' => get_transient( 'linker_contact_' . md5( '127.0.0.1' ) ),
 			'products'  => array(),
+			'time'      => time(),
 		);
 		update_option( $this->key, $state, false );
 		$this->clear_limits();
@@ -110,6 +111,67 @@ final class BrowserFixture {
 	 * @return list<int>
 	 */
 	public function jobs(): array {
+		return $this->queued_jobs();
+	}
+
+	/**
+	 * The mail evidence a run owns: queued originals plus the durable
+	 * WooCommerce send log (a delivered job post is deleted and TestMode
+	 * rewrites its recipient, so the queue alone loses a fast delivery).
+	 *
+	 * @return list<array{to: string[], headers: array<string, string>|null, subject: string}>
+	 */
+	public function mail(): array {
+		return $this->mail_evidence();
+	}
+
+	/**
+	 * The mail a run owns, complete even after the queue delivered it.
+	 *
+	 * A delivered job post is deleted (Outbox); the WooCommerce log line is the
+	 * durable record of a send, so the fixture reads both. The queue alone
+	 * lost every mail a fast local instance delivered before read() ran.
+	 *
+	 * @return list<array{to: string[], headers: array<string, string>|null, subject: string}>
+	 */
+	private function mail_evidence(): array {
+		$state  = $this->state();
+		$mail   = array();
+		foreach ( $this->queued_jobs() as $id ) {
+			$message = json_decode( get_post_meta( $id, '_linker_mail_message', true ), true );
+			if ( is_array( $message ) ) {
+				$mail[] = $message;
+			}
+		}
+		$since = $state['time'] ?? 0;
+		$logs  = wp_get_upload_dir()['basedir'] . '/wc-logs/';
+		foreach ( glob( $logs . 'linker-mail-*.log' ) ?: array() as $file ) {
+			foreach ( file( $file, FILE_IGNORE_NEW_LINES ) ?: array() as $line ) {
+				if ( ! preg_match( '/^(\S+) \S+ Email "([^"]*)" sent to (\S+)\./', $line, $m ) ) {
+					continue;
+				}
+				$stamp = strtotime( $m[1] ) ?: 0;
+				// TestMode rewrites every recipient to the tester; a log line
+				// addressed to either is this fixture's mail.
+				if ( $stamp < $since || ! in_array( $m[3], array( $state['email'], $this->tester ), true ) ) {
+					continue;
+				}
+				$mail[] = array(
+					'to'      => array( $m[3] ),
+					'headers' => null,
+					'subject' => $m[2],
+				);
+			}
+		}
+		return $mail;
+	}
+
+	/**
+	 * The queue rows a run still owns; delivered rows are already deleted.
+	 *
+	 * @return list<int>
+	 */
+	private function queued_jobs(): array {
 		global $wpdb;
 		$state = $this->state();
 		$ids   = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_type='linker_mail_job' AND ID > %d ORDER BY ID", $state['marker'] ) );
