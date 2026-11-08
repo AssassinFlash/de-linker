@@ -162,6 +162,7 @@ class Understander:
         if (
             self._publication is not None
             and "unavailable" in self._publication.identify_text(message).values()
+            and not self._names_carried_models(message)
         ):
             from linker_genie.publication_copy import upload_unavailable
 
@@ -349,6 +350,20 @@ class Understander:
             language,
         )
         return prepared
+
+    def _names_carried_models(self, message: str) -> bool:
+        """Whether the message names at least two carried models.
+
+        The unavailable-model script is for a customer asking about one model
+        we do not carry. A pasted parts list names many models - most of them
+        carried - and the parts flow itself marks the unavailable rows
+        missing. Only the single-model inquiry takes the scripted answer
+        (a 20-row list answered as one out-of-range model, 2026-11-08).
+        """
+        vocabulary = self._load_vocabulary({})
+        if vocabulary is None:
+            return False
+        return len({m.value for m in vocabulary.match(message)}) >= 2
 
     def _load_vocabulary(
         self,

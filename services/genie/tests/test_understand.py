@@ -453,3 +453,59 @@ def test_a_page_read_is_timed_under_its_ability_name(vocabulary: Vocabulary) -> 
     assert [call.ability for call in prepared.route.calls] == ["linker/read-page"]
     assert prepared.timing is not None
     assert "understand.call.linker/read-page" in prepared.timing.as_log()
+
+
+class _UnavailableAuthority:
+    """A publication client whose text identification reports one row unavailable."""
+
+    def __init__(self, unavailable: str, available: str | None = None) -> None:
+        self._unavailable, self._available = unavailable, available
+
+    def identify_text(self, text: str) -> dict[str, str]:
+        found: dict[str, str] = {}
+        if self._unavailable.casefold() in text.casefold():
+            found[self._unavailable] = "unavailable"
+        if self._available and self._available.casefold() in text.casefold():
+            found[self._available] = "published"
+        return found
+
+    def identify(self, models: Sequence[str]) -> dict[str, str]:
+        return {m.casefold(): "unavailable" for m in models}
+
+
+def test_a_single_unavailable_model_still_answers_the_script(
+    vocabulary: Vocabulary,
+) -> None:
+    understander = Understander(
+        lambda: vocabulary,
+        FakeJev(_reading("find_products")),
+        publication=_UnavailableAuthority("SMA Sunny Boy 5.0"),  # type: ignore[arg-type]
+    )
+    prepared = understander.prepare(
+        _request("Is the SMA Sunny Boy 5.0 available?"), _abilities([])
+    )
+    assert prepared.route.name == "scripted"
+    assert prepared.log["publication"] == "supplied_model_unavailable"
+
+
+def test_a_pasted_list_with_carried_models_is_not_captured_by_the_script(
+    vocabulary: Vocabulary,
+) -> None:
+    understander = Understander(
+        lambda: vocabulary,
+        FakeJev(_reading("find_products")),
+        publication=_UnavailableAuthority(  # type: ignore[arg-type]
+            "SMA Sunny Boy 5.0", available="SAJ H2-10K-T3"
+        ),
+    )
+    pasted = "\n".join(
+        [
+            "Produkt;Menge",
+            "2x SAJ H2-10K-T3",
+            "1 x SAJ BC2-HV1",
+            "2 x SMA Sunny Boy 5.0",
+        ]
+    )
+    prepared = understander.prepare(_request(pasted, "de"), _abilities([]))
+    assert prepared.route.name != "scripted"
+    assert "publication" not in prepared.log
