@@ -3,6 +3,7 @@ import { expect, test, type Page, type BrowserContext } from '@playwright/test';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { instance, REPO_ROOT, wp } from '../lib/instance';
+import { seedConsentCookies } from '../lib/consent';
 import { mark, since } from '../lib/mail';
 
 const fixture = join(REPO_ROOT, 'tests/e2e/fixtures/pending-account.php');
@@ -37,6 +38,10 @@ async function shot(page: Page, name: string): Promise<void> {
 		animations: 'disabled',
 	});
 }
+
+test.beforeEach(async ({ context }) => {
+	await seedConsentCookies(context);
+});
 
 for (const language of ['en', 'de'] as const) {
 	for (const width of [1440, 390]) {
