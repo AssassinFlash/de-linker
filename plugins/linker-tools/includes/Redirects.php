@@ -241,7 +241,11 @@ final class Redirects {
 			return null;
 		}
 		$rest     = array_slice( $segments, 1 );
-		$wc_query = function_exists( 'WC' ) && WC() ? WC()->query : null;
+		$wc_query = null;
+		if ( function_exists( 'WC' ) ) {
+			$woo      = WC();
+			$wc_query = $woo ? $woo->query : null;
+		}
 		if ( isset( $rest[0] ) && 'order-received' === $rest[0] && null !== $wc_query ) {
 			// Legacy confirmation links name the endpoint WooCommerce shipped
 			// with; the site renames it through the query-vars filter (the
