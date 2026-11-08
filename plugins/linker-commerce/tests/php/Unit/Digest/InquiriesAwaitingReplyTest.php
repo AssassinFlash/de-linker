@@ -10,7 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Digest;
 
 use Linker\Commerce\Digest\Format;
-use Linker\Commerce\Digest\InquiriesAwaitingProforma;
+use Linker\Commerce\Digest\InquiriesAwaitingReply;
 use Linker\Commerce\Inquiry\Assessment\Queue;
 use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Mail\NotificationHold;
@@ -22,13 +22,13 @@ use WC_Order;
 use WP_Mock;
 
 /**
- * Tests for InquiriesAwaitingProforma: the window is "created more than 24
+ * Tests for InquiriesAwaitingReply: the window is "created more than 24
  * hours ago", the entries carry number, company, admin link and the moment.
  *
- * @covers \Linker\Commerce\Digest\InquiriesAwaitingProforma
+ * @covers \Linker\Commerce\Digest\InquiriesAwaitingReply
  * @covers \Linker\Commerce\Digest\Format
  */
-final class InquiriesAwaitingProformaTest extends TestCase {
+final class InquiriesAwaitingReplyTest extends TestCase {
 
 	/**
 	 * Unix time the digest runs at: 2026-10-11 09:00 Berlin (CEST).
@@ -69,13 +69,13 @@ final class InquiriesAwaitingProformaTest extends TestCase {
 			)
 		);
 
-		$entries = ( new InquiriesAwaitingProforma( self::NOW ) )->entries();
+		$entries = ( new InquiriesAwaitingReply( self::NOW ) )->entries();
 
 		$this->assertCount( 1, $entries );
 		$this->assertSame( 'Inquiry #20 – Solarbau GmbH', $entries[0]['label'] );
 		$this->assertSame( array( Statuses::RECEIVED ), $captured['status'] ?? null );
 		$this->assertSame( -1, $captured['limit'] );
-		$this->assertSame( 24 * 3600, InquiriesAwaitingProforma::WINDOW );
+		$this->assertSame( 24 * 3600, InquiriesAwaitingReply::WINDOW );
 	}
 
 	/**
@@ -84,7 +84,7 @@ final class InquiriesAwaitingProformaTest extends TestCase {
 	public function test_entry_carries_number_company_link_and_moment(): void {
 		WP_Mock::userFunction( 'wc_get_orders', array( 'return' => array( $this->order( self::NOW - 26 * 3600 ) ) ) );
 
-		$entries = ( new InquiriesAwaitingProforma( self::NOW ) )->entries();
+		$entries = ( new InquiriesAwaitingReply( self::NOW ) )->entries();
 
 		$this->assertCount( 1, $entries );
 		$this->assertSame( 'Inquiry #20 – Solarbau GmbH', $entries[0]['label'] );
@@ -98,12 +98,12 @@ final class InquiriesAwaitingProformaTest extends TestCase {
 		$order = $this->order( self::NOW - 26 * 3600, array(), BusinessDisposition::META );
 		WP_Mock::userFunction( 'wc_get_orders', array( 'return' => array( $order ) ) );
 
-		$this->assertCount( 1, ( new InquiriesAwaitingProforma( self::NOW ) )->entries() );
+		$this->assertCount( 1, ( new InquiriesAwaitingReply( self::NOW ) )->entries() );
 	}
 
 	/**
-	 * Quarantined inquiries are held for a staff decision, not pending Proforma
-	 * work (docs/research/2026-11-04-notification-receipt-audit.md §4): the
+	 * Quarantined inquiries are held for a staff decision, not pending the team
+	 * follow-up work (docs/research/2026-11-04-notification-receipt-audit.md §4): the
 	 * incident-hold marker and the assessment hold marker both leave the block,
 	 * while an ordinary day-old inquiry still counts.
 	 */
@@ -127,7 +127,7 @@ final class InquiriesAwaitingProformaTest extends TestCase {
 			)
 		);
 
-		$entries = ( new InquiriesAwaitingProforma( self::NOW ) )->entries();
+		$entries = ( new InquiriesAwaitingReply( self::NOW ) )->entries();
 
 		$this->assertCount( 1, $entries );
 		$this->assertSame( 'Inquiry #20 – Solarbau GmbH', $entries[0]['label'] );
@@ -138,14 +138,14 @@ final class InquiriesAwaitingProformaTest extends TestCase {
 		$order = $this->order( self::NOW - 26 * 3600, array(), NotificationHold::META );
 		WP_Mock::userFunction( 'wc_get_orders', array( 'return' => array( $order ) ) );
 
-		$this->assertCount( 1, ( new InquiriesAwaitingProforma( self::NOW ) )->entries() );
+		$this->assertCount( 1, ( new InquiriesAwaitingReply( self::NOW ) )->entries() );
 	}
 
 	/**
 	 * The empty sentence mirrors the window.
 	 */
 	public function test_empty_text(): void {
-		$this->assertSame( 'No inquiry is waiting for more than 24 hours.', ( new InquiriesAwaitingProforma() )->empty_text() );
+		$this->assertSame( 'No inquiry is waiting for more than 24 hours.', ( new InquiriesAwaitingReply() )->empty_text() );
 	}
 
 	/**

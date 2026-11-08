@@ -62,7 +62,7 @@ final class Sender {
 				'billing_email'      => $details->email,
 				'billing_company'    => $details->company,
 				'order_comments'     => $details->message,
-				'payment_method'     => ProformaGateway::ID,
+				'payment_method'     => InquiryGateway::ID,
 			)
 		);
 		WC()->cart->calculate_totals();
@@ -72,13 +72,13 @@ final class Sender {
 			$this->line_language( $order, $details->locale );
 			$awaited = null === $summary && false !== has_filter( self::SUMMARY_FILTER );
 			if ( $awaited ) {
-				$this->prepare( $order, $details, 'proforma', $context, true );
+				$this->prepare( $order, $details, 'inquiry', $context, true );
 				$this->attach_summary( $order, $summary );
 				Assessment\Queue::refresh_summary( $order );
 				\Linker\Commerce\Protection\BusinessCapacity::finalize( $order );
 			} else {
 				$this->attach_summary( $order, $summary );
-				$this->prepare( $order, $details, 'proforma', $context );
+				$this->prepare( $order, $details, 'inquiry', $context );
 			}
 			$prepared_key = (string) $order->get_meta( \Linker\Commerce\Protection\BusinessCapacity::KEY );
 			// Optional summary/provider work has finished before the first native write.
@@ -98,7 +98,7 @@ final class Sender {
 			if ( $stored instanceof WP_Error ) {
 				return $stored;
 			}
-			$this->receive( $order, $details, 'proforma', $context );
+			$this->receive( $order, $details, 'inquiry', $context );
 			if ( ! $transaction instanceof NativeTransaction ) {
 				return $this->unknown();
 			}
@@ -169,7 +169,7 @@ final class Sender {
 			'billing'
 		);
 		$order->set_customer_note( $details->message );
-		$order->set_payment_method( ProformaGateway::ID );
+		$order->set_payment_method( InquiryGateway::ID );
 		foreach ( $meta as $key => $value ) {
 			if ( is_array( $value ) ) {
 				Assessment\StructuredMeta::update( $order, (string) $key, $value );
@@ -217,7 +217,7 @@ final class Sender {
 	 *
 	 * @param WC_Order             $order Native inquiry.
 	 * @param Submission           $details Validated reply details.
-	 * @param string               $source proforma or contact.
+	 * @param string               $source inquiry or contact.
 	 * @param array<string, mixed> $context Trusted related Genie conversation/page.
 	 * @param bool                 $summary_awaited Reserve the proven native summary before dispatch.
 	 */
@@ -226,7 +226,7 @@ final class Sender {
 		$order->update_meta_data( OrderLocale::META, $details->locale );
 		$order->update_meta_data( '_linker_inquiry_source', $source );
 		$order->update_meta_data( '_linker_inquiry_topic', $details->intent );
-		if ( 'proforma' === $source ) {
+		if ( 'inquiry' === $source ) {
 			( new \Linker\Commerce\Planning\Context() )->capture( $order );
 		}
 		\Linker\Commerce\Protection\Intake::prepare( $order );
@@ -241,7 +241,7 @@ final class Sender {
 	 *
 	 * @param WC_Order             $order Native inquiry.
 	 * @param Submission           $details Validated reply details.
-	 * @param string               $source proforma or contact.
+	 * @param string               $source inquiry or contact.
 	 * @param array<string, mixed> $context Trusted related Genie conversation/page.
 	 * @throws \Linker\Commerce\Protection\CapacityFull First save could not be verified.
 	 */

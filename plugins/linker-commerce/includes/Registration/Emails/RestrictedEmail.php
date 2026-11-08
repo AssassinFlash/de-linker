@@ -13,7 +13,7 @@ use Linker\Commerce\Registration\Approval;
 
 /**
  * Sent when the team restricts an account: the products and the open inquiry
- * stay open, net prices and the Proforma request are paused, and the team's
+ * stay open, net prices are paused and inquiries continue, and the team's
  * reason says why.
  */
 final class RestrictedEmail extends CustomerApprovalEmail {

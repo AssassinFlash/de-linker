@@ -40,7 +40,7 @@ final class EvidenceView {
 		$stated  = __( 'Customer statement', 'linker-commerce' );
 		$source  = match ( $request['source'] ?? '' ) {
 			'contact' => __( 'Contact form', 'linker-commerce' ),
-			'proforma' => __( 'Proforma request', 'linker-commerce' ),
+			'inquiry'  => __( 'Inquiry', 'linker-commerce' ),
 			default => '',
 		};
 		self::field( __( 'Source', 'linker-commerce' ), $source, __( 'Site record', 'linker-commerce' ) );

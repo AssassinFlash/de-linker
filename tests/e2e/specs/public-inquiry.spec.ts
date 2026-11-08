@@ -248,7 +248,7 @@ for (const language of ['en', 'de']) {
 						);
 						expect(pendingOrder.status).toBe('inquiry-received');
 						expect(pendingOrder.source).toBe(
-							door === 'contact' ? 'contact' : 'proforma'
+							door === 'contact' ? 'contact' : 'inquiry'
 						);
 						// The fixture blocks both the opportunistic wake and
 						// Action Scheduler. This read is one consistent pending

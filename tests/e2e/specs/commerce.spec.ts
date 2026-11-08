@@ -1,13 +1,10 @@
 /**
  * The commercial chain, end to end (docs/specs/11-commerce.md §验收):
- * register → see prices → solution draft → inquiry → Proforma issued in the
- * back end → the customer downloads it, once in English and once in German,
- * with the captured mail checked at every step.
- *
- * The journey is driven through the pages a customer and a staff member
- * actually use; the Proforma is issued by pressing the inquiry screen's own
- * button (Proforma\AdminBox::BUTTON, in its meta box), which is the same
- * request a staff member's click sends.
+ * register → see prices → solution draft → inquiry received, once in English
+ * and once in German, with the captured mail checked at every step. The
+ * quotation itself is written and sent offline by the team (owner ruling
+ * 2026-11-08); this chain ends at the received inquiry the team follows up
+ * on.
  */
 
 /**
@@ -42,14 +39,6 @@ const BCC = 'e2e-bcc@example.test';
 function ensureBccConfigured(): void {
 	const settings: Array<[string, string]> = [
 		['linker_commerce_team_bcc', BCC],
-		// The Proforma names the seller's bank account, and staff cannot issue
-		// one without it (Proforma\Issuer::blocker). The production values are
-		// the owner's to enter at cutover; an instance that has none gets the
-		// test's, so "issue the Proforma" is a real step here.
-		['linker_commerce_bank_holder', 'Linker Technology GmbH'],
-		['linker_commerce_bank_name', 'E2E Testbank'],
-		['linker_commerce_bank_iban', 'DE02120300000000202051'],
-		['linker_commerce_bank_bic', 'BYLADEM1001'],
 	];
 	for (const [option, value] of settings) {
 		try {
@@ -273,63 +262,7 @@ async function openInquiries(page: Page, locale: Locale): Promise<number> {
 	return Number(id);
 }
 
-/** Issues the Proforma from the inquiry screen's own button. */
-async function issueProforma(
-	driver: Browser,
-	orderId: number
-): Promise<string> {
-	const context = await driver.newContext();
-	const admin = await context.newPage();
-	try {
-		await admin.goto(loginLink(undefined, STAFF));
-		await admin.goto(
-			`${instance().url}/wp-admin/admin.php?page=wc-orders&action=edit&id=${orderId}`
-		);
-		const button = admin.locator('button[name="linker_issue_proforma"]');
-		await expect(
-			button,
-			'the inquiry screen offers the Proforma button'
-		).toBeVisible({
-			timeout: 60_000,
-		});
-		await button.click();
-		await admin.waitForLoadState('load');
-	} finally {
-		await context.close();
-	}
-	// The Proforma number the issuer wrote on the inquiry; the box shows it
-	// and the customer's download link is built from it (Issuer::NUMBER_META).
-	// Through WooCommerce, not post meta: orders are stored in HPOS here.
-	return wp([
-		'eval',
-		`$order = wc_get_order( ${orderId} );` +
-			`echo $order ? (string) $order->get_meta( '_linker_proforma_number' ) : '';`,
-	]).trim();
-}
 
-/**
- * The number format the issuer writes: PREFIX-YYYY-NNNN (Sequence::format).
- * An empty prefix option is DLK-PF (Options::proforma_prefix); a saved custom
- * prefix is left as it is, so the assertion reads the option rather than a
- * hard-coded PI- from before the default changed.
- */
-function proformaNumberPattern(): RegExp {
-	let prefix = 'DLK-PF';
-	try {
-		const saved = wp([
-			'option',
-			'get',
-			'linker_commerce_proforma_prefix',
-		]).trim();
-		if (saved !== '') {
-			prefix = saved;
-		}
-	} catch {
-		// The option does not exist: the issuer uses the default prefix.
-	}
-	const escaped = prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-	return new RegExp(`^${escaped}-\\d{4}-\\d{4}$`);
-}
 
 /**
  * Adds the product page's own control to the draft. The page's control is a
@@ -355,7 +288,7 @@ test.describe('the commercial chain', () => {
 	});
 
 	for (const locale of ['en', 'de'] as Locale[]) {
-		test(`${locale}: register → price → draft → inquiry → Proforma → download`, async ({
+		test(`${locale}: register → price → draft → inquiry received`, async ({
 			page,
 			context,
 			browser,
@@ -455,52 +388,18 @@ test.describe('the commercial chain', () => {
 				'the company, about the inquiry'
 			);
 
-			// 7. The Proforma, from the inquiry screen's own button.
-			const proformaMark = mark();
-			const meta = await issueProforma(browser, orderId);
-			expect(meta, 'the Proforma is issued').toMatch(
-				proformaNumberPattern()
-			);
-			await mail(
-				(one) =>
-					one.writtenAt > proformaMark &&
-					one.to.includes(email) &&
-					one.subject.toLowerCase().includes('proforma'),
-				`to ${email} with the Proforma`
-			);
-
-			// 8. The customer downloads it; a guest cannot. The download lives on
-			// the inquiry's own page (the list row carries number, status, summary,
-			// date, amount and View — ticket #184's compact row).
+			// 7. The inquiry's own page: the compact row carries status,
+			// summary, date, amount and View (ticket #184); no document is
+			// issued by the site (owner ruling 2026-11-08).
 			await openInquiries(page, locale);
 			await page
 				.locator('a[href*="/inquiry/"], a[href*="view-order/"]')
 				.first()
 				.click();
-			const download = page.locator('[data-action="proforma"]').first();
 			await expect(
-				download,
-				'the Proforma is downloadable'
-			).toBeVisible();
-			const href = await download.getAttribute('href');
-			const response = await context.request.get(href!);
-			expect(response.status(), 'the download answers').toBe(200);
-			expect(response.headers()['content-type']).toContain(
-				'application/pdf'
-			);
-			const pdf = await response.body();
-			expect(pdf.subarray(0, 5).toString('latin1')).toBe('%PDF-');
-
-			const guest = await browser.newContext();
-			try {
-				const anonymous = await guest.request.get(href!);
-				expect(
-					anonymous.status(),
-					'without the session there is no document'
-				).not.toBe(200);
-			} finally {
-				await guest.close();
-			}
+				page.locator('[data-action="proforma"]'),
+				'the site issues no quotation document'
+			).toHaveCount(0);
 		});
 	}
 });

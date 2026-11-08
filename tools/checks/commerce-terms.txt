@@ -2,8 +2,9 @@
 #
 # This file is the single authority. docs/specs/11-commerce.md and AGENTS.md §3
 # point here instead of carrying their own copies of the list (issue #905): the
-# site has one link, product → inquiry (presented as a Proforma), and everything
-# after that happens offline (AGENTS.md §1). Copy must not describe a shop.
+# site has one link, product → inquiry, and everything after that happens
+# offline (AGENTS.md §1); the quotation itself is written and sent offline
+# (owner ruling 2026-11-08). Copy must not describe a shop.
 #
 # Format: one term per line. `#` starts a comment. A trailing `*` matches the
 # stem as a prefix, so compounds and inflections match too ("Versand*" covers
@@ -55,8 +56,9 @@ Zahlung*
 #     owns them with documented allowances (the legal citation "Artikel 5", the
 #     SKU compound Artikelnummer, Katalognummer). A second owner here would need
 #     a second allowance list and the two would drift.
-#   - "Rechnung"/"invoice": the Proforma invoice is real (AGENTS.md §2,
-#     2026-10-09); it is the document the site actually issues.
+#   - "Rechnung"/"invoice": the quotation the team sends offline (AGENTS.md
+#     §2, 2026-10-09; owner ruling 2026-11-08) is a real invoice document;
+#     only the site's own checkout/store vocabulary is banned.
 #   - "Lieferung"/"delivery": physical delivery exists after the inquiry; only
 #     the shipping/store copy is banned.
 #

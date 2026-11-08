@@ -595,7 +595,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$_POST    = array(
 			'billing_country' => 'FR',
 			'billing_email'   => 'unverified@example.test',
-			'payment_method'  => 'linker_proforma',
+			'payment_method'  => 'linker_inquiry',
 		);
 		$_REQUEST = array_merge( $_POST, array( 'woocommerce-process-checkout-nonce' => wp_create_nonce( 'woocommerce-process_checkout' ) ) );
 		WC()->checkout()->process_checkout();

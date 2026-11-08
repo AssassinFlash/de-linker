@@ -12,8 +12,10 @@ namespace Linker\Commerce\Inquiry;
 use WC_Order;
 
 /**
- * An inquiry is received, gets a Proforma invoice, and is then completed or
- * cancelled (AGENTS.md §3). The first two are statuses of this plugin; they lie
+ * An inquiry is received, moves to quotation in preparation while the team
+ * follows up offline, and is then completed or cancelled (AGENTS.md §3; the
+ * quotation itself is written and sent offline, owner ruling 2026-11-08). The
+ * first two are statuses of this plugin; they lie
  * outside WooCommerce's paid and payable statuses, so nothing asks for or
  * records a payment. The site never reduces stock: stock is only ever "in
  * stock" (owner ruling 2026-10-02) and deliveries happen offline.
@@ -23,16 +25,16 @@ final class Statuses {
 	/**
 	 * Status slugs, without WooCommerce's "wc-" prefix.
 	 */
-	public const RECEIVED = 'inquiry-received';
-	public const PROFORMA = 'proforma-issued';
+	public const RECEIVED  = 'inquiry-received';
+	public const QUOTATION = 'quotation-in-progress';
 
 	/**
 	 * Admin list colours of the two statuses: WooCommerce 11.1's own colours of
 	 * its on-hold and processing badges (assets/css/admin.css, .order-status).
 	 */
 	private const COLOURS = array(
-		self::RECEIVED => array( '#f8dda7', '#573b00' ),
-		self::PROFORMA => array( '#c6e1c6', '#2c4700' ),
+		self::RECEIVED  => array( '#f8dda7', '#573b00' ),
+		self::QUOTATION => array( '#c6e1c6', '#2c4700' ),
 	);
 
 	/**
@@ -52,15 +54,15 @@ final class Statuses {
 			)
 		);
 		register_post_status(
-			'wc-' . self::PROFORMA,
+			'wc-' . self::QUOTATION,
 			array(
-				'label'                     => _x( 'Proforma invoice issued', 'Inquiry status', 'linker-commerce' ),
+				'label'                     => _x( 'Quotation in preparation', 'Inquiry status', 'linker-commerce' ),
 				'public'                    => false,
 				'exclude_from_search'       => false,
 				'show_in_admin_all_list'    => true,
 				'show_in_admin_status_list' => true,
 				/* translators: %s: number of inquiries. */
-				'label_count'               => _n_noop( 'Proforma invoice issued <span class="count">(%s)</span>', 'Proforma invoice issued <span class="count">(%s)</span>', 'linker-commerce' ),
+				'label_count'               => _n_noop( 'Quotation in preparation <span class="count">(%s)</span>', 'Quotation in preparation <span class="count">(%s)</span>', 'linker-commerce' ),
 			)
 		);
 	}
@@ -77,12 +79,12 @@ final class Statuses {
 		foreach ( $statuses as $key => $name ) {
 			$named[ $key ] = $name;
 			if ( 'wc-pending' === $key ) {
-				$named[ 'wc-' . self::RECEIVED ] = _x( 'Inquiry received', 'Inquiry status', 'linker-commerce' );
-				$named[ 'wc-' . self::PROFORMA ] = _x( 'Proforma invoice issued', 'Inquiry status', 'linker-commerce' );
+				$named[ 'wc-' . self::RECEIVED ]  = _x( 'Inquiry received', 'Inquiry status', 'linker-commerce' );
+				$named[ 'wc-' . self::QUOTATION ] = _x( 'Quotation in preparation', 'Inquiry status', 'linker-commerce' );
 			}
 		}
-		$named[ 'wc-' . self::RECEIVED ] ??= _x( 'Inquiry received', 'Inquiry status', 'linker-commerce' );
-		$named[ 'wc-' . self::PROFORMA ] ??= _x( 'Proforma invoice issued', 'Inquiry status', 'linker-commerce' );
+		$named[ 'wc-' . self::RECEIVED ]  ??= _x( 'Inquiry received', 'Inquiry status', 'linker-commerce' );
+		$named[ 'wc-' . self::QUOTATION ] ??= _x( 'Quotation in preparation', 'Inquiry status', 'linker-commerce' );
 		// An inquiry WooCommerce created but could not send stays "pending"; it never reads "pending payment".
 		$named['wc-pending']   = _x( 'Not sent', 'Inquiry status', 'linker-commerce' );
 		$named['wc-completed'] = _x( 'Completed', 'Inquiry status', 'linker-commerce' );
@@ -108,7 +110,7 @@ final class Statuses {
 	 * @return list<string>
 	 */
 	public function request_again( array $statuses ): array {
-		return array_values( array_unique( array_merge( $statuses, array( self::RECEIVED, self::PROFORMA, 'completed', 'cancelled' ) ) ) );
+		return array_values( array_unique( array_merge( $statuses, array( self::RECEIVED, self::QUOTATION, 'completed', 'cancelled' ) ) ) );
 	}
 
 	/**
@@ -119,7 +121,7 @@ final class Statuses {
 	 * @return list<string>
 	 */
 	public function analytics_excluded( array $statuses ): array {
-		return array_values( array_unique( array_merge( $statuses, array( self::RECEIVED, self::PROFORMA ) ) ) );
+		return array_values( array_unique( array_merge( $statuses, array( self::RECEIVED, self::QUOTATION ) ) ) );
 	}
 
 	/**

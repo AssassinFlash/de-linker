@@ -251,8 +251,8 @@ body.woocommerce-account.logged-in .linker-account #container-content-account {
 
 .linker-account .linker-account-pill[data-status="inquiry-received"] { background: var(--proto-teal-50); color: var(--proto-teal-800); }
 .linker-account .linker-account-pill[data-status="inquiry-received"] .linker-account-pill-dot { background: var(--proto-teal-500); }
-.linker-account .linker-account-pill[data-status="proforma-issued"] { background: var(--acct-warn-bg); color: var(--acct-warn-ink); }
-.linker-account .linker-account-pill[data-status="proforma-issued"] .linker-account-pill-dot { background: var(--acct-warn); }
+.linker-account .linker-account-pill[data-status="quotation-in-progress"] { background: var(--acct-warn-bg); color: var(--acct-warn-ink); }
+.linker-account .linker-account-pill[data-status="quotation-in-progress"] .linker-account-pill-dot { background: var(--acct-warn); }
 .linker-account .linker-account-pill[data-status="completed"] { background: var(--acct-ok-bg); color: var(--acct-ok-ink); }
 .linker-account .linker-account-pill[data-status="completed"] .linker-account-pill-dot { background: var(--acct-ok); }
 .linker-account .linker-account-pill[data-status="cancelled"] { background: var(--acct-fill); color: var(--acct-muted); }
@@ -373,7 +373,7 @@ body.woocommerce-account .linker-account-undo:focus-visible { outline: 2px solid
 
 .linker-account .linker-account-tile-dot { width: 8px; height: 8px; border-radius: 99px; background: var(--acct-faint); }
 .linker-account .linker-account-tile[data-status="inquiry-received"] .linker-account-tile-dot { background: var(--proto-teal-500); }
-.linker-account .linker-account-tile[data-status="proforma-issued"] .linker-account-tile-dot { background: var(--acct-warn); }
+.linker-account .linker-account-tile[data-status="quotation-in-progress"] .linker-account-tile-dot { background: var(--acct-warn); }
 .linker-account .linker-account-tile[data-status="completed"] .linker-account-tile-dot { background: var(--acct-ok); }
 
 .linker-account .linker-account-tile-count {
@@ -613,19 +613,7 @@ body.woocommerce-account .linker-account-undo:focus-visible { outline: 2px solid
 .linker-account .linker-account-kv .v,
 .linker-account .linker-account-kv dd { margin-top: 4px; font-size: 15px; font-weight: 600; color: var(--acct-ink); }
 
-.linker-account .linker-account-proforma {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 12px;
-	align-items: center;
-	margin-top: 22px;
-	padding: 14px 16px;
-	background: var(--proto-teal-50);
-	border: 1px solid var(--proto-teal-100);
-	border-radius: var(--acct-r-md);
-}
 
-.linker-account .linker-account-proforma-number { flex: 1 1 220px; font-size: 14px; font-weight: 600; color: var(--proto-teal-800); }
 
 /* WooCommerce's own order details table (items, totals, the datasheet links of
  * each line), Customer details block and "Request again" button, in the

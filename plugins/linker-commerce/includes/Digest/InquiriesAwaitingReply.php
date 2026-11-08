@@ -1,6 +1,6 @@
 <?php
 /**
- * Inquiries that waited a day for their Proforma invoice.
+ * Inquiries that waited a day for the team's follow-up.
  *
  * @package Linker\Commerce
  */
@@ -15,18 +15,18 @@ use Linker\Commerce\Protection\BusinessDisposition;
 use WC_Order;
 
 /**
- * Block of the received inquiries still without a Proforma invoice (docs/specs/74-daily-digest.md:
+ * Block of the received inquiries the team has not yet moved on (docs/specs/74-daily-digest.md:
  * window start is the moment the inquiry was created, and the window is more
  * than 24 hours, compared in Unix seconds). A received inquiry is the team's
  * promise to reply within one business day, so a day-old one is the daily
  * work's first block.
  */
-final class InquiriesAwaitingProforma implements Block {
+final class InquiriesAwaitingReply implements Block {
 
 	/**
 	 * Stable identifier of the block.
 	 */
-	public const ID = 'inquiries_awaiting_proforma';
+	public const ID = 'inquiries_awaiting_reply';
 
 	/**
 	 * Age an inquiry must exceed to be listed: 24 hours in seconds.
@@ -51,7 +51,7 @@ final class InquiriesAwaitingProforma implements Block {
 	 * Heading of the block.
 	 */
 	public function title(): string {
-		return __( 'Inquiries waiting for a Proforma invoice', 'linker-commerce' );
+		return __( 'Inquiries waiting for your follow-up', 'linker-commerce' );
 	}
 
 	/**
@@ -84,8 +84,8 @@ final class InquiriesAwaitingProforma implements Block {
 	}
 
 	/**
-	 * A quarantined inquiry waits for a staff decision, not for a Proforma
-	 * invoice (docs/research/2026-11-04-notification-receipt-audit.md §4): the
+	 * A quarantined inquiry waits for a staff decision, not for the team's
+	 * follow-up (docs/research/2026-11-04-notification-receipt-audit.md §4): the
 	 * digest lists actionable work only, so an order under any incident-hold
 	 * marker leaves the block. Unreadable hold evidence keeps the inquiry
 	 * visible, like unreadable disposition evidence.

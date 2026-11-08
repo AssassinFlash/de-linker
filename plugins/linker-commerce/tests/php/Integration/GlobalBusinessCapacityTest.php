@@ -168,7 +168,7 @@ final class GlobalBusinessCapacityTest extends IntegrationTestCase {
 		self::assertArrayHasKey( $key, get_option( IntakeStore::OPTION )['business'], 'Anonymous/native cancellation does not attest staff handling.' );
 		$this->as_user( 1 );
 		$order->update_status( Statuses::RECEIVED );
-		$order->update_status( Statuses::PROFORMA );
+		$order->update_status( Statuses::QUOTATION );
 		self::assertArrayNotHasKey( $key, get_option( IntakeStore::OPTION )['business'], 'Staff Proforma handoff releases unhandled occupancy.' );
 		$fresh->read_meta_data( true );
 		self::assertSame( $payload, $fresh->get_meta( '_context_a' ), 'Disposition never deletes the original inquiry.' );
@@ -612,8 +612,8 @@ final class GlobalBusinessCapacityTest extends IntegrationTestCase {
 			}
 		);
 		$key = $order->get_meta( BusinessCapacity::KEY );
-		$order->set_status( Statuses::PROFORMA );
-		( new BusinessCapacity() )->status( $order->get_id(), Statuses::RECEIVED, Statuses::PROFORMA, $order );
+		$order->set_status( Statuses::QUOTATION );
+		( new BusinessCapacity() )->status( $order->get_id(), Statuses::RECEIVED, Statuses::QUOTATION, $order );
 		self::assertArrayHasKey( $key, get_option( IntakeStore::OPTION )['business'] );
 	}
 

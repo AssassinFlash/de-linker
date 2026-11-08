@@ -275,7 +275,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 		// Proforma gateway, the inquiry's source and status.
 		$record = $this->record( $guest );
 		$this->assertSame( $data['inquiry']['order'], $record->get_id() );
-		$this->assertSame( 'linker_proforma', $record->get_payment_method() );
+		$this->assertSame( 'linker_inquiry', $record->get_payment_method() );
 		$this->assertSame( 'proforma', $record->get_meta( '_linker_inquiry_source' ) );
 		$this->assertSame( Statuses::RECEIVED, $record->get_status() );
 		$this->assertSame( $this->summary['note'], $record->get_customer_note() );

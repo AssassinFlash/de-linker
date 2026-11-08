@@ -1458,9 +1458,9 @@ msgstr "Produkte und Mengen"
 msgid "Products, documents and your next step."
 msgstr "Produkte, Unterlagen und Ihr nächster Schritt."
 
-#: build/genie.js build/hero.js
-msgid "Proforma invoice issued"
-msgstr "Proformarechnung ausgestellt"
+#: src/genie/components/InquiryCard.tsx build/genie.js build/hero.js
+msgid "Quotation in preparation"
+msgstr "Angebot in Vorbereitung"
 
 #: src/configurator/utility/UtilityForm.tsx:79 build/configurator.js
 msgid "Project"
@@ -2208,8 +2208,8 @@ msgid "What would change the result:"
 msgstr "Was das Ergebnis ändern würde:"
 
 #: includes/Genie/Entries.php
-msgid "Where is my Proforma?"
-msgstr "Wo steht meine Proforma?"
+msgid "Where is my quotation?"
+msgstr "Wo bleibt mein Angebot?"
 
 #: build/genie.js:16 build/hero.js
 msgid "Where should we begin?"

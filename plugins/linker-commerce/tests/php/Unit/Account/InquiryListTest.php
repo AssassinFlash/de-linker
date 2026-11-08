@@ -11,7 +11,6 @@ namespace Linker\Commerce\Tests\Unit\Account;
 
 use Linker\Commerce\Account\InquiryList;
 use Linker\Commerce\Inquiry\Statuses;
-use Linker\Commerce\Proforma\Issuer;
 use Linker\Commerce\Tests\TestCase;
 use Mockery;
 use WC_Abstract_Order;
@@ -42,16 +41,14 @@ final class InquiryListTest extends TestCase {
 	/**
 	 * An inquiry.
 	 *
-	 * @param string $number Proforma number.
-	 * @param bool   $again  Whether its status allows "request again".
+	 * @param bool   $again Whether its status allows "request again".
 	 * @param string $status Stored status slug.
 	 * @return WC_Order&\Mockery\MockInterface
 	 */
-	private function inquiry( string $number, bool $again, string $status = 'completed' ) {
+	private function inquiry( bool $again, string $status = 'completed' ) {
 		$order = Mockery::mock( WC_Order::class );
 		$order->allows( 'get_id' )->andReturn( 20 );
 		$order->allows( 'get_view_order_url' )->andReturn( 'https://example.test/my-account/inquiry/20/' );
-		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( $number );
 		$order->allows( 'has_status' )->andReturnUsing(
 			static function ( $asked ) use ( $again, $status ): bool {
 				// The "request again" check passes the status list; the Proforma
@@ -77,7 +74,7 @@ final class InquiryListTest extends TestCase {
 	 * The inquiry page (WooCommerce's own button) and the confirmation offer no "Request again" of ours.
 	 */
 	public function test_actions(): void {
-		$this->filter_returns( 'woocommerce_valid_order_statuses_for_order_again', array( 'completed', 'inquiry-received', 'proforma-issued', 'cancelled' ), array( array( 'completed' ) ) );
+		$this->filter_returns( 'woocommerce_valid_order_statuses_for_order_again', array( 'completed', 'inquiry-received', 'quotation-in-progress', 'cancelled' ), array( array( 'completed' ) ) );
 		$endpoint = '';
 		WP_Mock::userFunction(
 			'is_wc_endpoint_url',
@@ -98,29 +95,18 @@ final class InquiryListTest extends TestCase {
 				'name' => 'Cancel',
 			),
 		);
-		$actions  = $list->actions( $woo_list, $this->inquiry( 'PI-2026-0001', true ) );
+		$actions  = $list->actions( $woo_list, $this->inquiry( true ) );
 
-		$this->assertSame( array( 'view', 'proforma', 'request-again' ), array_keys( $actions ) );
-		$this->assertSame( 'https://example.test/?linker-document=proforma&id=20', $actions['proforma']['url'] );
+		$this->assertSame( array( 'view', 'request-again' ), array_keys( $actions ) );
 		$this->assertSame( 'https://example.test/cart/?order_again=20&_wpnonce=woocommerce-order_again', $actions['request-again']['url'] );
 		$this->assertSame( 'Request again', $actions['request-again']['name'] );
 
-		// A stored number offers the download even when the status list would not. An empty number does not, in any status.
-		$issued = $list->actions( $woo_list, $this->inquiry( 'PI-2026-0008', false, Statuses::PROFORMA ) );
-		$this->assertSame( array( 'view', 'proforma' ), array_keys( $issued ) );
-		$this->assertSame( 'https://example.test/?linker-document=proforma&id=20', $issued['proforma']['url'] );
-		$this->assertSame( 'Proforma invoice (PDF)', $issued['proforma']['name'] );
-			$this->assertSame( array( 'view' ), array_keys( $list->actions( $woo_list, $this->inquiry( '', false, Statuses::PROFORMA ) ) ) );
-			$this->assertSame( array( 'view' ), array_keys( $list->actions( $woo_list, $this->inquiry( '', false, Statuses::RECEIVED ) ) ) );
-
-			// Completed keeps the download. The number is what the customer reads, not the status word.
-			$completed = $list->actions( $woo_list, $this->inquiry( 'DLK-PF-2026-0003', false, 'completed' ) );
-			$this->assertSame( array( 'view', 'proforma' ), array_keys( $completed ) );
-			$this->assertSame( 'https://example.test/?linker-document=proforma&id=20', $completed['proforma']['url'] );
-			$this->assertSame( 'Proforma invoice (PDF)', $completed['proforma']['name'] );
+		// A status without "request again" keeps the view action only.
+		$this->assertSame( array( 'view' ), array_keys( $list->actions( $woo_list, $this->inquiry( false, Statuses::QUOTATION ) ) ) );
+		$this->assertSame( array( 'view' ), array_keys( $list->actions( $woo_list, $this->inquiry( false, Statuses::RECEIVED ) ) ) );
 
 		foreach ( array( 'view-order', 'order-received' ) as $endpoint ) {
-			$this->assertSame( array( 'view', 'proforma' ), array_keys( $list->actions( $woo_list, $this->inquiry( 'PI-2026-0001', true ) ) ), $endpoint );
+			$this->assertSame( array( 'view' ), array_keys( $list->actions( $woo_list, $this->inquiry( true ) ) ), $endpoint );
 		}
 	}
 

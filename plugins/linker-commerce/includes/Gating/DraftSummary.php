@@ -16,8 +16,8 @@ use WC_Product;
 
 /**
  * For guests, the solution draft shows no totals but the way to prices: log in
- * and request a Proforma, or create an account. For customers, a draft with
- * lines that carry no price says that the Proforma prices them.
+ * and request a quotation, or create an account. For customers, a draft with
+ * lines that carry no price says that the quotation prices them.
  */
 final class DraftSummary {
 
@@ -64,7 +64,7 @@ final class DraftSummary {
 	}
 
 	/**
-	 * Under the totals: lines without a price are priced in the Proforma.
+	 * Under the totals: lines without a price are priced in the quotation.
 	 * Runs on woocommerce_cart_totals_after_order_total and
 	 * woocommerce_review_order_after_order_total (inside the totals table).
 	 */
@@ -74,13 +74,13 @@ final class DraftSummary {
 		}
 		printf(
 			'<tr class="linker-unpriced-note"><td colspan="2">%s</td></tr>',
-			esc_html__( 'For products without a price, we state the price in your Proforma invoice.', 'linker-commerce' )
+			esc_html__( 'For products without a price, we state the price in your quotation.', 'linker-commerce' )
 		);
 	}
 
 	/**
 	 * Under an inquiry's table (confirmation, inquiry page, customer email): lines
-	 * without a price are priced in the Proforma. The note speaks to the customer,
+	 * without a price are priced in the quotation. The note speaks to the customer,
 	 * so the team's email leaves it out. Runs on
 	 * woocommerce_order_details_after_order_table and woocommerce_email_after_order_table.
 	 *
@@ -92,7 +92,7 @@ final class DraftSummary {
 		if ( $sent_to_admin || ! $this->display->has_unpriced_lines( $order ) ) {
 			return;
 		}
-		$note = __( 'For products without a price, we state the price in your Proforma invoice.', 'linker-commerce' );
+		$note = __( 'For products without a price, we state the price in your quotation.', 'linker-commerce' );
 		if ( $plain_text ) {
 			echo "\n" . esc_html( $note ) . "\n";
 		} else {

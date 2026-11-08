@@ -46,7 +46,7 @@ final class StatusesTest extends TestCase {
 			'register_post_status',
 			array(
 				'times' => 1,
-				'args'  => array( 'wc-proforma-issued', Mockery::on( static fn ( array $args ): bool => 'Proforma invoice issued' === $args['label'] ) ),
+				'args'  => array( 'wc-quotation-in-progress', Mockery::on( static fn ( array $args ): bool => 'Quotation in preparation' === $args['label'] ) ),
 			)
 		);
 
@@ -68,9 +68,9 @@ final class StatusesTest extends TestCase {
 			)
 		);
 
-		$this->assertSame( array( 'wc-pending', 'wc-inquiry-received', 'wc-proforma-issued', 'wc-processing', 'wc-completed', 'wc-cancelled' ), array_keys( $names ) );
+		$this->assertSame( array( 'wc-pending', 'wc-inquiry-received', 'wc-quotation-in-progress', 'wc-processing', 'wc-completed', 'wc-cancelled' ), array_keys( $names ) );
 		$this->assertSame( 'Inquiry received', $names['wc-inquiry-received'] );
-		$this->assertSame( 'Proforma invoice issued', $names['wc-proforma-issued'] );
+		$this->assertSame( 'Quotation in preparation', $names['wc-quotation-in-progress'] );
 		$this->assertSame( 'Not sent', $names['wc-pending'] );
 		$this->assertSame( 'Completed', $names['wc-completed'] );
 		$this->assertSame( 'Cancelled', $names['wc-cancelled'] );
@@ -83,7 +83,7 @@ final class StatusesTest extends TestCase {
 		$received = Mockery::mock( WC_Order::class );
 		$received->allows( 'get_status' )->andReturn( 'inquiry-received' );
 		$issued = Mockery::mock( WC_Order::class );
-		$issued->allows( 'get_status' )->andReturn( 'proforma-issued' );
+		$issued->allows( 'get_status' )->andReturn( 'quotation-in-progress' );
 		$statuses = new Statuses();
 
 		$this->assertTrue( $statuses->editable( false, $received ) );
@@ -97,8 +97,8 @@ final class StatusesTest extends TestCase {
 	public function test_request_again_and_analytics(): void {
 		$statuses = new Statuses();
 
-		$this->assertSame( array( 'completed', 'inquiry-received', 'proforma-issued', 'cancelled' ), $statuses->request_again( array( 'completed' ) ) );
-		$this->assertSame( array( 'pending', 'failed', 'cancelled', 'inquiry-received', 'proforma-issued' ), $statuses->analytics_excluded( array( 'pending', 'failed', 'cancelled' ) ) );
+		$this->assertSame( array( 'completed', 'inquiry-received', 'quotation-in-progress', 'cancelled' ), $statuses->request_again( array( 'completed' ) ) );
+		$this->assertSame( array( 'pending', 'failed', 'cancelled', 'inquiry-received', 'quotation-in-progress' ), $statuses->analytics_excluded( array( 'pending', 'failed', 'cancelled' ) ) );
 	}
 
 	/**
@@ -108,6 +108,6 @@ final class StatusesTest extends TestCase {
 		ob_start();
 		( new Statuses() )->admin_colours();
 
-		$this->assertSame( '<style id="linker-inquiry-statuses">.order-status.status-inquiry-received{background:#f8dda7;color:#573b00}.order-status.status-proforma-issued{background:#c6e1c6;color:#2c4700}</style>', ob_get_clean() );
+		$this->assertSame( '<style id="linker-inquiry-statuses">.order-status.status-inquiry-received{background:#f8dda7;color:#573b00}.order-status.status-quotation-in-progress{background:#c6e1c6;color:#2c4700}</style>', ob_get_clean() );
 	}
 }

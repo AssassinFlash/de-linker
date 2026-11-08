@@ -154,7 +154,7 @@ final class Plugin {
 	/**
 	 * The modules of the inquiry chain, with what they share.
 	 *
-	 * @return list<Settings\Module|Vocabulary\Module|Gating\Module|Mail\Module|Registration\Module|Inquiry\Module|Proforma\Module|Account\Module|Presentation\Module|Stock\Module|Digest\Module|Genie\Module|Protection\Module>
+	 * @return list<Settings\Module|Vocabulary\Module|Gating\Module|Mail\Module|Registration\Module|Inquiry\Module|Account\Module|Presentation\Module|Stock\Module|Digest\Module|Genie\Module|Protection\Module>
 	 */
 	private function commerce_modules(): array {
 		$templates = plugin_dir_path( $this->file ) . 'templates/';
@@ -164,9 +164,7 @@ final class Plugin {
 		$prices    = new Gating\PriceDisplay( $state );
 		$jobs      = new Mail\JobStore();
 		$vat       = new Registration\VatProfile( new Registration\ViesClient() );
-		$proformas = new Account\PrivateFiles( Proforma\Issuer::DIRECTORY );
 		$solutions = $this->solutions ?? new Account\SavedSolutions( new Account\PrivateFiles( Account\SavedSolutions::REPORTS_DIRECTORY ), $templates );
-		$issuer    = new Proforma\Issuer( $options, new Proforma\Sequence(), new Proforma\Document( $options ), new Proforma\Renderer( $this->file ), $proformas, $prices );
 		$documents = new Account\Documents( $solutions, $templates );
 		$gate      = new Presentation\LoginGate( $approval );
 		$checkout  = new Inquiry\Checkout();
@@ -182,8 +180,7 @@ final class Plugin {
 			new Digest\Module( $this->file, $jobs ),
 			new Registration\Module( $this->file, $options, $fields, new Registration\BillingVatField( $vat ), new Registration\AddressForm(), $approval, new Registration\ApprovalAdmin( $approval ), new Registration\PendingApprovals( $approval ), new Registration\AccountsAdmin( $this->file, $accounts, $approval ), new Registration\AccountsController( $accounts, $approval ) ),
 			new Inquiry\Module( $this->file, $options, new Inquiry\Statuses(), $checkout, new Inquiry\OrderLocale(), new Inquiry\OrderAdmin() ),
-			new Proforma\Module( $this->file, new Proforma\AdminBox( $issuer ), $issuer ),
-			new Account\Module( new Account\Menu(), new Account\ContactCard( $options ), new Account\InquiryList(), $solutions, $documents, new Account\DocumentDownload( $proformas, $solutions ), new Planning\LegacyRoutes() ),
+			new Account\Module( new Account\Menu(), new Account\ContactCard( $options ), new Account\InquiryList(), $solutions, $documents, new Account\DocumentDownload( $solutions ), new Planning\LegacyRoutes() ),
 			new Presentation\Module( new Presentation\Shortcodes(), $gate, new Presentation\WindPress(), account: new Presentation\AccountTemplates( $documents ) ),
 			new Stock\Module( new Stock\StockController(), new Stock\BatchLog(), new Stock\Retention( $this->file ) ),
 			new Genie\Module( $this->file, $options ),

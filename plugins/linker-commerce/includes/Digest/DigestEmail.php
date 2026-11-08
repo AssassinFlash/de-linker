@@ -83,9 +83,9 @@ final class DigestEmail extends TeamEmail {
 			if ( 0 === $count ) {
 				continue;
 			}
-			if ( $block instanceof InquiriesAwaitingProforma ) {
-				/* translators: %d: number of inquiries waiting for a Proforma invoice. */
-				$parts[] = sprintf( __( '%d 条待开 PI', 'linker-commerce' ), $count );
+			if ( $block instanceof InquiriesAwaitingReply ) {
+				/* translators: %d: number of inquiries waiting for the team's follow-up. */
+				$parts[] = sprintf( __( '%d 条待跟进', 'linker-commerce' ), $count );
 			} elseif ( $block instanceof PendingApprovals ) {
 				$pending = $block->pending_count();
 				if ( $pending > 0 ) {

@@ -187,7 +187,7 @@ final class DraftSummaryTest extends TestCase {
 		ob_start();
 		$summary->unpriced_note();
 		$summary->unpriced_note();
-		$this->assertSame( '<tr class="linker-unpriced-note"><td colspan="2">For products without a price, we state the price in your Proforma invoice.</td></tr>', ob_get_clean() );
+		$this->assertSame( '<tr class="linker-unpriced-note"><td colspan="2">For products without a price, we state the price in your quotation.</td></tr>', ob_get_clean() );
 	}
 
 	/**
@@ -208,10 +208,10 @@ final class DraftSummaryTest extends TestCase {
 		$summary->inquiry_note( $open );
 		$summary->inquiry_note( $priced );
 		$summary->inquiry_note( $open, true );
-		$this->assertSame( '<p class="linker-unpriced-note">For products without a price, we state the price in your Proforma invoice.</p>', ob_get_clean() );
+		$this->assertSame( '<p class="linker-unpriced-note">For products without a price, we state the price in your quotation.</p>', ob_get_clean() );
 
 		ob_start();
 		$summary->inquiry_note( $open, false, true );
-		$this->assertSame( "\nFor products without a price, we state the price in your Proforma invoice.\n", ob_get_clean() );
+		$this->assertSame( "\nFor products without a price, we state the price in your quotation.\n", ob_get_clean() );
 	}
 }

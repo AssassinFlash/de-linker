@@ -86,7 +86,7 @@ const PAGES: Record<Lang, Record<Kind, Visit>> = {
 			path: '/my-account/',
 			question:
 				'What do the statuses on this page mean for my inquiries?',
-			answer: /Cancelled|Inquiry received|Proforma/i,
+			answer: /Cancelled|Inquiry received|Quotation/i,
 		},
 	},
 	de: {
@@ -133,7 +133,7 @@ const PAGES: Record<Lang, Record<Kind, Visit>> = {
 			path: '/de/mein-konto/',
 			question:
 				'Was bedeuten die Status meiner Anfragen auf dieser Seite?',
-			answer: /Storniert|Anfrage eingegangen|Proforma/i,
+			answer: /Storniert|Anfrage eingegangen|Angebot/i,
 		},
 	},
 };

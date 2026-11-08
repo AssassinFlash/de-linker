@@ -75,7 +75,7 @@ final class TermsTest extends TestCase {
 
 			$this->assertSame( 'Add to solution draft', $singular['Add to cart'] );
 			$this->assertSame( 'Solution draft', $singular['Cart'] );
-		$this->assertSame( 'Request Proforma', $singular['Place order'] );
+		$this->assertSame( 'Send inquiry', $singular['Place order'] );
 		$this->assertSame( 'Request again', $singular['Order again'] );
 		$this->assertSame( 'Inquiries', $singular['Orders'] );
 		$this->assertSame( 'Your solution draft is empty.', $singular['Your cart is currently empty.'] );

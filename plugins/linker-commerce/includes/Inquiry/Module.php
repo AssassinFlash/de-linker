@@ -14,7 +14,7 @@ use Linker\Commerce\Inquiry\Emails\NewInquiryEmail;
 use Linker\Commerce\Settings\Options;
 
 /**
- * Statuses, the Proforma gateway, the request page, the admin labels and the
+ * Statuses, the inquiry gateway, the request page, the admin labels and the
  * two inquiry emails.
  */
 final class Module {
@@ -25,7 +25,7 @@ final class Module {
 	 * @param string      $plugin_file Absolute path of the main plugin file.
 	 * @param Options     $options     The plugin settings.
 	 * @param Statuses    $statuses    The inquiry statuses.
-	 * @param Checkout    $checkout    The Proforma request page.
+	 * @param Checkout    $checkout    The inquiry page.
 	 * @param OrderLocale $locale      The inquiry language.
 	 * @param OrderAdmin  $admin       The admin labels.
 	 */
@@ -64,7 +64,7 @@ final class Module {
 		add_action( 'woocommerce_before_checkout_process', array( $this->checkout, 'block_native_checkout' ) );
 		add_filter( 'rest_pre_dispatch', array( $this->checkout, 'block_store_checkout' ), 10, 3 );
 		add_action( 'woocommerce_checkout_create_order', array( $this->locale, 'remember' ) );
-		add_action( 'woocommerce_thankyou_' . ProformaGateway::ID, array( $this->checkout, 'next_steps' ) );
+		add_action( 'woocommerce_thankyou_' . InquiryGateway::ID, array( $this->checkout, 'next_steps' ) );
 		add_filter( 'woocommerce_get_checkout_order_received_url', array( $this->checkout, 'received_url' ), 10, 2 );
 		add_filter( 'woocommerce_order_item_permalink', array( $this->checkout, 'item_permalink' ), 10, 3 );
 
@@ -83,7 +83,7 @@ final class Module {
 	/**
 	 * Tells WooCommerce what the plugin works with: inquiries are orders read
 	 * and written through WooCommerce's order objects only, so both order
-	 * storages work; the Proforma request page is the classic checkout
+	 * storages work; the inquiry page is the classic checkout
 	 * (shortcode), whose hooks the gateway and the page texts use, so the
 	 * checkout block is not supported. Runs on before_woocommerce_init.
 	 */
@@ -93,13 +93,13 @@ final class Module {
 	}
 
 	/**
-	 * Adds the Proforma gateway.
+	 * Adds the inquiry gateway.
 	 *
 	 * @param list<string|object> $gateways Gateway classes or objects.
 	 * @return list<string|object>
 	 */
 	public function add_gateway( array $gateways ): array {
-		$gateways[] = ProformaGateway::class;
+		$gateways[] = InquiryGateway::class;
 		return $gateways;
 	}
 

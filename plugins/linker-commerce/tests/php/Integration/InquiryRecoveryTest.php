@@ -64,7 +64,7 @@ final class InquiryRecoveryTest extends IntegrationTestCase {
 		// This test owns only inquiry recovery; do not rebuild unrelated local sources.
 		$mailer = WC()->mailer();
 		$emails = $mailer->emails;
-		unset( $mailer->emails[ \Linker\Commerce\Proforma\Emails\ProformaIssuedEmail::class ], $mailer->emails[ \Linker\Commerce\Registration\Emails\VatReviewEmail::class ] );
+		unset( $mailer->emails[ \Linker\Commerce\Registration\Emails\VatReviewEmail::class ] );
 		$this->later(
 			static function () use ( $mailer, $emails ): void {
 				$mailer->emails = $emails;

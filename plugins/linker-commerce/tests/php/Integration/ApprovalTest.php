@@ -12,7 +12,7 @@ namespace Linker\Commerce\Tests\Integration;
 
 use Linker\Commerce\Account\AccountStatusNotice;
 use Linker\Commerce\Gating\CommerceState;
-use Linker\Commerce\Inquiry\ProformaGateway;
+use Linker\Commerce\Inquiry\InquiryGateway;
 use Linker\Commerce\Presentation\LoginGate;
 use Linker\Commerce\Mail\TestMode;
 use Linker\Commerce\Mail\Throttle;
@@ -98,7 +98,7 @@ final class ApprovalTest extends IntegrationTestCase {
 			$this->assertNull( $this->store_api_prices( $product->get_id() ), "{$status} gets null Store API prices" );
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- WooCommerce's own filter, applied as the request page applies it.
 			$this->assertArrayHasKey(
-				ProformaGateway::ID,
+				InquiryGateway::ID,
 				apply_filters( 'woocommerce_available_payment_gateways', $this->gateways() ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- WooCommerce's own filter, applied as the request page applies it.
 				"{$status} may send an inquiry without seeing prices"
 			);
@@ -109,7 +109,7 @@ final class ApprovalTest extends IntegrationTestCase {
 		$this->assertSame( '1680', $this->price( $product->get_id() ), 'Approved sees the price' );
 		$this->assertSame( '168000', $this->store_api_prices( $product->get_id() )['price'] ?? null, 'Approved gets the Store API price' );
 		$this->assertSame(
-			array( ProformaGateway::ID ),
+			array( InquiryGateway::ID ),
 			array_keys( apply_filters( 'woocommerce_available_payment_gateways', $this->gateways() ) ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- WooCommerce's own filter, applied as the request page applies it.
 			'Approved sends through the Proforma gateway alone'
 		);
@@ -165,7 +165,7 @@ final class ApprovalTest extends IntegrationTestCase {
 		$this->assertNotFalse( WC()->cart->add_to_cart( $product->get_id(), 1 ), 'The draft accepts the line, as a guest\'s does' );
 
 		$this->assertArrayHasKey(
-			ProformaGateway::ID,
+			InquiryGateway::ID,
 			apply_filters( 'woocommerce_available_payment_gateways', $this->gateways() ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- WooCommerce's own filter, applied as the request page applies it.
 			'WooCommerce offers the inquiry gateway to pending accounts'
 		);
@@ -377,7 +377,7 @@ final class ApprovalTest extends IntegrationTestCase {
 		$gate = new AccountStatusNotice( new Approval(), new LoginGate( new Approval() ) );
 		$this->assertFalse( ( new CommerceState() )->visitor_sees_prices(), 'Pending sees no prices.' );
 		$this->assertArrayHasKey(
-			ProformaGateway::ID,
+			InquiryGateway::ID,
 			apply_filters( 'woocommerce_available_payment_gateways', $this->gateways() ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- WooCommerce's own filter, applied as the request page applies it.
 			'Pending may send an inquiry.'
 		);
@@ -393,7 +393,7 @@ final class ApprovalTest extends IntegrationTestCase {
 		$this->assertSame( '', (string) ob_get_clean(), 'Approved no longer reads the pending status.' );
 		$this->assertTrue( ( new CommerceState() )->visitor_sees_prices(), 'Approved sees prices.' );
 		$this->assertArrayHasKey(
-			ProformaGateway::ID,
+			InquiryGateway::ID,
 			apply_filters( 'woocommerce_available_payment_gateways', $this->gateways() ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- WooCommerce's own filter, applied as the request page applies it.
 			'Approved may send an inquiry.'
 		);

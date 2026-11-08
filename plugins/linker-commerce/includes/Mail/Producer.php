@@ -9,7 +9,6 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Mail;
 
-use Linker\Commerce\Proforma\Emails\ProformaIssuedEmail;
 use Linker\Commerce\Registration\Emails\CustomerApprovalEmail;
 use WC_Email;
 
@@ -65,7 +64,7 @@ final class Producer {
 	 * @return callable Wrapped callback only for the explicitly critical native classes.
 	 */
 	public function woocommerce( callable $callback, WC_Email $email ): callable {
-		$critical = $email instanceof CustomerApprovalEmail || $email instanceof ProformaIssuedEmail || $email instanceof \WC_Email_Customer_Reset_Password || $email instanceof \WC_Email_Admin_Payment_Gateway_Enabled;
+		$critical = $email instanceof CustomerApprovalEmail || $email instanceof \WC_Email_Customer_Reset_Password || $email instanceof \WC_Email_Admin_Payment_Gateway_Enabled;
 		return static function ( ...$args ) use ( $critical, $callback, $email ) {
 			$previous     = self::$origin;
 			$content      = $email instanceof \Linker\Commerce\Inquiry\Emails\NewInquiryEmail || $email instanceof \Linker\Commerce\Inquiry\Emails\InquiryReceivedEmail || $email instanceof \Linker\Commerce\Genie\ConversationEmail;

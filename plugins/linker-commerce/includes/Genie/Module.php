@@ -160,7 +160,7 @@ final class Module {
 	 * The card's own details go through the request page's validation
 	 * (Submission::from_post with the guest form's required fields) and then
 	 * through the one writer, Inquiry\Sender::request(): the same Woo record,
-	 * Proforma gateway, statuses, team mail and receipt the request page makes.
+	 * inquiry gateway, statuses, team mail and receipt the request page makes.
 	 * The summary is the card's choice: the exact #244 summary it showed, or
 	 * false when the customer turned it off.
 	 *

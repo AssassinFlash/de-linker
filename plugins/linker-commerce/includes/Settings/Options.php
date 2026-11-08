@@ -132,54 +132,8 @@ final class Options {
 		);
 	}
 
-	/**
-	 * The seller as printed on the Proforma: name, VAT ID and the store address of
-	 * WooCommerce → Settings → General.
-	 *
-	 * @return array{name: string, vat_id: string, address: list<string>, email: string}
-	 */
-	public function seller(): array {
-		$name    = $this->text( self::SELLER_NAME );
-		$address = array_values(
-			array_filter(
-				array(
-					$this->text( 'woocommerce_store_address' ),
-					$this->text( 'woocommerce_store_address_2' ),
-					trim( $this->text( 'woocommerce_store_postcode' ) . ' ' . $this->text( 'woocommerce_store_city' ) ),
-					$this->country_name( $this->text( 'woocommerce_default_country' ) ),
-				),
-				static fn ( string $line ): bool => '' !== $line
-			)
-		);
-		return array(
-			'name'    => '' === $name ? self::DEFAULT_SELLER_NAME : $name,
-			'vat_id'  => $this->text( self::SELLER_VAT_ID ),
-			'address' => $address,
-			'email'   => $this->team_mailbox(),
-		);
-	}
 
-	/**
-	 * The bank account the Proforma asks customers to transfer to.
-	 *
-	 * @return array{holder: string, name: string, iban: string, bic: string}
-	 */
-	public function bank(): array {
-		return array(
-			'holder' => $this->text( self::BANK_HOLDER ),
-			'name'   => $this->text( self::BANK_NAME ),
-			'iban'   => $this->text( self::BANK_IBAN ),
-			'bic'    => $this->text( self::BANK_BIC ),
-		);
-	}
 
-	/**
-	 * Prefix of the Proforma numbers.
-	 */
-	public function proforma_prefix(): string {
-		$prefix = $this->text( self::PROFORMA_PREFIX );
-		return '' === $prefix ? self::DEFAULT_PROFORMA_PREFIX : $prefix;
-	}
 
 	/**
 	 * An option as trimmed text; anything that is not a string reads as empty.
@@ -189,15 +143,5 @@ final class Options {
 	private function text( string $name ): string {
 		$value = get_option( $name, '' );
 		return is_string( $value ) ? trim( $value ) : '';
-	}
-
-	/**
-	 * The country of a WooCommerce "CC" or "CC:STATE" value, by name.
-	 *
-	 * @param string $value Option value of woocommerce_default_country.
-	 */
-	private function country_name( string $value ): string {
-		$code = strtoupper( explode( ':', $value )[0] );
-		return '' === $code ? '' : (string) ( WC()->countries->get_countries()[ $code ] ?? $code );
 	}
 }

@@ -12,7 +12,6 @@ namespace Linker\Commerce\Tests\Unit\Abilities;
 use Linker\Commerce\Abilities\InquiryStatus;
 use Linker\Commerce\Gating\PriceDisplay;
 use Linker\Commerce\Inquiry\Statuses;
-use Linker\Commerce\Proforma\Issuer;
 use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Tests\TestCase;
 use Mockery;
@@ -75,13 +74,13 @@ final class InquiryStatusTest extends TestCase {
 		$order = Mockery::mock( WC_Order::class );
 		$order->allows( 'get_id' )->andReturn( 59 );
 		$order->allows( 'get_order_number' )->andReturn( '59' );
-		$order->allows( 'get_status' )->andReturn( Statuses::PROFORMA );
+		$order->allows( 'get_status' )->andReturn( Statuses::QUOTATION );
 		$order->allows( 'get_date_created' )->andReturn( $created );
 		$order->allows( 'get_total' )->andReturn( '1200.00' );
 		$order->allows( 'get_item_count' )->andReturn( 1 );
 		$order->allows( 'get_items' )->andReturn( array( $line ) );
 		$order->allows( 'get_meta' )->andReturnUsing(
-			static fn ( string $key ): string => Issuer::NUMBER_META === $key ? 'PI-2026-0007' : ''
+			static fn (): string => ''
 		);
 		WP_Mock::userFunction(
 			'wc_get_orders',
@@ -101,9 +100,8 @@ final class InquiryStatusTest extends TestCase {
 		$result = ( new InquiryStatus() )->execute( array() );
 
 		$this->assertSame( 59, $result['inquiries'][0]['id'] );
-		$this->assertSame( Statuses::PROFORMA, $result['inquiries'][0]['status'] );
-		$this->assertSame( 'Proforma invoice issued', $result['inquiries'][0]['status_label'] );
-		$this->assertSame( 'PI-2026-0007', $result['inquiries'][0]['proforma_number'] );
+		$this->assertSame( Statuses::QUOTATION, $result['inquiries'][0]['status'] );
+		$this->assertSame( 'Quotation in preparation', $result['inquiries'][0]['status_label'] );
 		$this->assertSame( '1200.00', $result['inquiries'][0]['total'] );
 		$schema = ( new InquiryStatus() )->args()['output_schema'];
 		$this->assertSame( array( 'inquiries' ), $schema['required'] );

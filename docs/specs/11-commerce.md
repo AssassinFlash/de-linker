@@ -14,9 +14,9 @@
    - **pending**：保持登录，可进账户工作台；账户页在原生账户内容顶部显示审核状态卡（`AccountStatusNotice`，不再是整页门禁）；浏览无价产品、Genie 咨询（无价）、可在请求页或联系页发送询盘；不可看价（价格位 "Account under review. Prices after approval. / Ihr Konto wird geprüft. Preise nach Freigabe."）；可以提交询盘（#222，2026-10-17 裁定）。
    - **restricted**：保留工作台（询盘、资料、文件仍可读）；不可看价（价格位 "Not available for your account / Für Ihr Konto nicht verfügbar"）；可以提交询盘，账户中仍显示限制原因。
    - **rejected**：登录被挡（`wp_authenticate_user`，登录表单显示状态与原因去向；拒绝同时终结该账号的全部登录会话）。
-5. **询盘提交**（#246，业主 2026-10-17）：原 checkout 地址 `/proforma-request/`、`/de/proforma-anfrage/` 不变。访客填写姓名、邮箱、公司（选填）、一个开放留言框（选填）与隐私同意，不问国家、地址、VAT 或电话，不自动注册。左边表单、右边可编辑的 Lösungsentwurf；已登录客户的回复资料折叠为一行，可展开更改本次询盘资料，留言与发送按钮直接可用。产品随询盘带上；空草稿可以只留言，但产品和留言均空时拒绝。访客、pending、restricted、approved 共用发送入口，价格门保持现状。提交后原生 Woo 感谢页与回执保留，状态 `wc-inquiry-received`，库存不扣减。回执与感谢页给访客一个可选注册链接（本次邮箱预填；须带正确订单 key 才能将该询盘附到新账号）。地址和 VAT 从账号已有数据带入，或由团队开 Proforma 时补。
-6. **公司侧**（Woo 后台订单页，角色 shop_manager）：订单标题 "Inquiry #"；按钮 "Issue Proforma / Proforma ausstellen"：生成 PDF、状态改 `wc-proforma-issued`、给客户发邮件（附 PDF 链接，不附件）；之后手动 `completed` 或 `cancelled`。无其他动作。后台把状态直接改成 `wc-proforma-issued` 走同一条签发（`Issuer::ensure_issued`，钩在 `woocommerce_order_status_proforma-issued`）：号与 PDF 写上之后，客户侧才有下载入口。没有银行账户时按钮不出现，状态改过去也不签发——见下节，不补造账户。
-7. **客户账户**（Woo My Account，端点改名）：Inquiries / Anfragen（列表：编号、日期、状态、金额、PI 下载）、Saved solutions / Gespeicherte Lösungen（定名，账户页与 `POST linker/v1/solutions` 的保存结果；保存的方案与设计报告 PDF，来自 #14）、Company / Unternehmen（资料与地址）、Documents / Unterlagen（本账户所有 PI 与设计报告）、页面顶部 "Your contact person / Ihre Ansprechperson"（姓名、邮箱、电话，来自设置）、每条询盘上 "Request again / Erneut anfragen"（复制为新的 Lösungsentwurf）。移除：订单、付款方式、下载（Woo 原生端点中不需要的隐藏）。
+5. **询盘提交**（#246，业主 2026-10-17）：原 checkout 地址 `/proforma-request/`、`/de/proforma-anfrage/` 不变。访客填写姓名、邮箱、公司（选填）、一个开放留言框（选填）与隐私同意，不问国家、地址、VAT 或电话，不自动注册。左边表单、右边可编辑的 Lösungsentwurf；已登录客户的回复资料折叠为一行，可展开更改本次询盘资料，留言与发送按钮直接可用。产品随询盘带上；空草稿可以只留言，但产品和留言均空时拒绝。访客、pending、restricted、approved 共用发送入口，价格门保持现状。提交后原生 Woo 感谢页与回执保留，状态 `wc-inquiry-received`，库存不扣减。回执与感谢页给访客一个可选注册链接（本次邮箱预填；须带正确订单 key 才能将该询盘附到新账号）。地址和 VAT 从账号已有数据带入，或由团队线下跟进时补。
+6. **公司侧**（Woo 后台订单页，角色 shop_manager；业主 2026-11-08 裁定）：订单标题 "Inquiry #"；站点**不在线出具 Proforma**——报价（Proforma）由团队线下编写并发送，站点没有 Issue 按钮、没有 PDF 生成、没有银行账户配置。团队跟进时把状态改为 `wc-quotation-in-progress`（客户读 "Quotation in preparation / Angebot in Vorbereitung"，含义是团队正在准备报价、会线下联系），完成后手动 `completed` 或 `cancelled`。无其他动作。
+7. **客户账户**（Woo My Account，端点改名）：Inquiries / Anfragen（列表：编号、日期、状态、金额）、Saved solutions / Gespeicherte Lösungen（定名，账户页与 `POST linker/v1/solutions` 的保存结果；保存的方案与设计报告 PDF，来自 #14）、Company / Unternehmen（资料与地址）、Documents / Unterlagen（本账户的设计报告）、页面顶部 "Your contact person / Ihre Ansprechperson"（姓名、邮箱、电话，来自设置）、每条询盘上 "Request again / Erneut anfragen"（复制为新的 Lösungsentwurf）。移除：订单、付款方式、下载（Woo 原生端点中不需要的隐藏）。
 
 询盘详情的产品资料链接只读取该商品当前关联的文档，不为每一行反复装配全站事实与文档版本。数据手册类型、旧URL别名的选择顺序和原PDF权限门保持；旧别名参与选择时仍核对实际字节，变更后的别名不得授权原资料。未发布商品、邮件纯文本及非询盘详情不提供该链接。 数据手册入口沿账户次级动作样式，提供至少44px的点击高度、hover变色与可见键盘焦点；手机窄列中的长德语标签保持完整。
 
@@ -26,8 +26,8 @@
 - `Registration\ApprovalAdmin`（用户列表状态列及列表/资料页审核深链；只读）。
 - `Registration\AccountsAdmin` / `AccountsTable` / `AccountsController`（原生后台入口、历史与受权限/nonce 保护的 POST 决定），`Accounts` / `RegistrationInformation` / `AccountSignals`（同一审批权威、动态注册资料与检查线索）。
 - `Gating`（价格隐藏：模板过滤 + `wc/store/v1` 价格置空；可加入 Lösungsentwurf 与发询盘不受账号审批限制；`rfq_only` 产品标记显示 "Quoted per project / Angebot pro Projekt"）。`rfq_only` 读英文商品的标记：德语孪生经 `linker_commerce_facts_product_id`（linker-i18n 回答，与选型事实同一入口）换成英文商品再读。孪生上残留或缺失的 `tv_b2b_product_mode` 照旧留作数据（Polylang 免费版不同步 Woo meta），任何读取都必须走这条事实 ID 路径，永不直接对孪生 `get_post_meta`（2026-10-17 快照里 1957 的德语孪生 6800 没有自己的标记，德语产品页曾向已批准账号显示 33.250,00 €）。价格位置印什么由 `CommerceState::reason( $product, CARD|PAGE )` 决定，一个函数两个表面：`CARD`（Woo 自己的价格 HTML、Store API 的 `price_html`、Lösungsentwurf 与询盘的行、草稿汇总）先说商品——线上 2026-10-18 访客的 `/wc/store/v1/products/1957` 的 `price_html` 是 "Quoted per project"；`PAGE`（产品页、对比页、Genie 的产品卡）先说账号——同日线上访客的 1957 产品页是 "Net price after partner sign-in"。产品页与对比页共用 `ProductView::price_html`：访客 "Net price after partner sign-in"、待审 "Account under review. Prices after approval."、限制 "Not available for your account"，已批准账号在按项目报价的商品上 "Quoted per project"、无价商品 "Price on request"；Genie 的产品卡读同一行（#242，见 13-genie.md「价格跟账号走」）。其他插件经过滤器 `linker_commerce_visitor_sees_prices` 问同一条规则（唯一回答者 `PriceDisplay::sees_prices`）。
-- `Inquiry`（状态注册与颜色、网关类 `ProformaGateway extends WC_Payment_Gateway`、减库存关闭、订单标题与列表列；`Checkout::gateways` 只保留询盘网关，不按审批状态拦截）。
-- `Proforma`（PDF：dompdf 或 mpdf（MIT/LGPL），模板 EN/DE，编号 `DLK-PF-YYYY-NNNN`（按年计数，选项 `linker_commerce_proforma_prefix`，空则 `DLK-PF`），银行条款（设置页填写），有效期 30 天，税额行按 Woo 税设置显示；生成后存 `wp-content/uploads/proforma/<order>/` 私有目录，账户内经鉴权下载）。线上 `de-linker.com` 的号是 `DLK-PF-年份-订单ID`（下单即写入账本，不是后台按钮才编）；本站保留同一前缀，序号按年递增，不沿用订单 ID。
+- `Inquiry`（状态注册与颜色：`inquiry-received` 与 `quotation-in-progress`、网关类 `InquiryGateway extends WC_Payment_Gateway`（`linker_inquiry`，仅发送询盘不收款）、减库存关闭、订单标题与列表列；`Checkout::gateways` 只保留询盘网关，不按审批状态拦截）。
+- `Proforma` 线上出具链已于 2026-11-08 整体移除（业主裁定：报价全部线下跟进）。Issuance、PDF 渲染、编号序列、ProformaIssuedEmail、后台 Issue 按钮、银行账户设置与下载合同一并删除；历史证据与台账见下。
 - `Mail`（`wp_mail` 统一：内部通知一封主信 To 内部通知收件人 + Bcc（设置页，见下文“内部通知收件人”）；每封投递在 WooCommerce 日志 `linker-mail` 留一行 info（主题、收件人与 Bcc，客户回执的行里因此有客户邮箱；保留期 = WooCommerce → Settings → Advanced → Logs 的 Retention period，线上未改即 Woo 缺省 30 天，到期由 Woo 自己删；文件在 `wp-content/uploads/wc-logs/`，目录有 Woo 写的 `.htaccess` deny from all，只能经后台 WooCommerce → Status → Logs 看，需要 `manage_woocommerce` 权限，即管理员与 Shop manager）；队列 Action Scheduler；失败重试：1、5、30 分钟、2、6、12、24 小时；Woo 事务邮件也经队列；VAT 审核提醒只在结论变化时发；本地隔离下写文件）。**测试邮件开关**（AGENTS.md 测试邮件纪律，2026-10-11；`Mail\TestMode`，与 #73/#94 同一实现）：选项 `linker_commerce_test_mail_to` 设了地址时，Outbox 的发送路径把每封信的全部 To/Cc/Bcc 重写成该单地址（每封信只发一份），队列里的消息保留原路由——多收件路由的正确性以队列数据（`_linker_mail_message`）断言，不做多封实发。默认未设=生产路由；`wp linker-commerce test-mail on|off|status` 设与撤（默认收件人 chester@de-linker.com，`--to=` 可换），不是设置页字段（#17 切换冒烟时开，验证后撤）。
 - `Account`（端点注册、模板、对接人设置、再次询盘）。
 - `Vocabulary`（gettext 覆盖 Woo 自带字符串：Cart → Solution draft / Lösungsentwurf 等；全部通过 `.po`）。
@@ -169,22 +169,9 @@ sunriver 的垃圾箱结论来自 Hostinger 入站过滤器（Cloudmark `X-CM-*`
 ## 删除/不存在
 运费与发货（Woo 运费区域清空、所有 "shipping" 文案隐藏）、报价、锁价、阈值、分组、发票、Stripe、下载产品、订单跟踪。审批**存在**（票据 73），旧系统的运营台不复活。
 
-## 银行账户（签发 Proforma 的配置，业主数据）
+## 银行账户（已随线上出具链移除）
 
-Proforma 上的收款账户只来自 WooCommerce → Settings → Inquiries（`?page=wc-settings&tab=linker_inquiries`）。四项都是选项，没有默认账户，代码不发明、不回落测试值：
-
-| 设置页字段 | 选项键 | 写入 PDF | 签发门槛 |
-|---|---|---|---|
-| Account holder | `linker_commerce_bank_holder` | 有则印账户持有人，空则印卖方名 | 否 |
-| Bank | `linker_commerce_bank_name` | 非空才印银行名 | 否 |
-| IBAN | `linker_commerce_bank_iban` | 必印，四位一组分隔 | **是：空则不能签发** |
-| BIC | `linker_commerce_bank_bic` | 非空才印 | 否 |
-
-IBAN 按 ISO 13616 校验位保存（`SettingsTab::sanitize_iban`）；校验失败保留原值。BIC 只收 ISO 9362 的 8 或 11 位（`SettingsTab::sanitize_bic`）。
-
-IBAN 为空时：订单页不显示 Issue Proforma，框内说明去 Settings → Inquiries 填写（`Issuer::blocker`）。此时把状态改成 `wc-proforma-issued` 也不生成号、不生成 PDF，订单备注记下同一句原因（`Issuer::ensure_issued`）。客户侧询盘详情与 Documents 只在订单 meta `_linker_proforma_number` 非空时给出下载链接和号；没有号就没有入口，不显示一个点下去 404 的链接。
-
-这是配置要求，不是缺陷。生产账户由业主在切换时填写；本地验收用测试账户（示例见 `tests/e2e/specs/commerce.spec.ts` 的 `ensureBccConfigured`），用完删除，不写进仓库当生产值。
+2026-11-08 业主裁定后，站点不再出具任何含银行信息的文件：设置页的账户持有人/银行/IBAN/BIC 字段与校验器已删除，`Options::bank()` 不复存在。收款账户只存在于团队线下出具的报价上。
 
 ## 验收
 - [ ] 本地：注册 → pending → 团队邮件 → 行内一键通过 → 看价 → 加入 Lösungsentwurf → 提交询盘 → 后台出 PI → 客户账户下载 PI，EN 与 DE 各一次；本地邮件捕获里每封信只有 tester 单地址（测试邮件开关开着），注册确认、公司提醒、审批邮件、询盘确认、PI 邮件的路由（收件人/Bcc）以 Outbox 队列数据断言（AGENTS.md 测试邮件纪律，2026-10-11）。
@@ -195,6 +182,7 @@ IBAN 为空时：订单页不显示 Issue Proforma，框内说明去 Settings �
 - [ ] 视觉验收：注册、产品页、Lösungsentwurf、提交页、账户 × EN/DE × 1440/390；以及访客提交后邮件确认链接（带 key）**未登录**打开的状态（评审 2026-10-10：此前重放全程登录态，该页漏扫）× EN/DE。
 
 ## 变更记录
+- 2026-11-08（业主裁定）：线上不生成 Proforma。第二状态改为 `wc-quotation-in-progress`（Quotation in preparation / Angebot in Vorbereitung），表示团队线下准备报价；`Proforma\Issuer/Renderer/Sequence/Document/Module/AdminBox`、`ProformaIssuedEmail`、银行设置段与 Proforma 下载合同（`proforma_url`、Documents 的 PI 行、InquiryList 下载动作）全部删除；网关更名 `InquiryGateway`（`linker_inquiry`）；每日摘要两块改为「待跟进询盘」与「报价准备超 3 天」；`_linker_inquiry_source` 的 `proforma` 值改为 `inquiry`（存量 fixture 订单随部署迁移）。当日之前涉及签发链的台账条目为历史记录。
 - 2026-10-20（#425）：未批准账号不能经 `proforma_url` 下载带金额的 Proforma。`DocumentDownload::proforma_url()` 与 `serve()` 都问 `PriceDisplay::sees_prices()`；店员仍凭 `manage_woocommerce` 下载。待审与限制账号没有链接，直接请求该 URL 得到 404 且没有 PDF 字节。403 留给未登录和别人的账号：那句是「请用所属账号登录」，待审本人已经是那个账号，403 会确认有金额的 Proforma 存在。不用 `shows_order_total()`，以免已批准账号的联系留言或无价行失去已签发的 Proforma。列表、详情、Documents 与询盘动作在链接为空时不输出下载控件。回归 `ProformaPriceGateTest` 在 CI 的 mu-smoke，不进 #339 对话语料：`facts._from_inquiry` 只抄 id 与 status，与 #414 同一原因。
 - 2026-10-20（#414）：`linker/inquiry-status` 的 `total` 与账户列表、概览、详情共用 `PriceDisplay::shows_order_total()`。已批准账号的有价询盘仍返回库存金额；联系留言和无价行不返回金额，与账户页一致，而不是只按 `sees_prices()` 放行。待审与限制账号没有金额。Proforma 的下载见上条 #425。规格 13「价格跟账号走」。
 - 2026-10-18（#288）：生产改前/改后证明 Hostinger `hsendmail` 强制信封，SPF 已通过，de-linker.com 无 DMARC，客户邮件在 QQ 收件箱；取消无效的信封设置。保留并入修正：内部发件身份集中为唯一公开的 `Options::notify_sender()` / readonly `Mail\Identity`，Proforma 前缀去首尾连字符，Reply-To 按邮件 ID 独立断言，通知路由拆分测试；WP-CLI 从源码与 build 直接重建 POT，既有译文不变。证据见上文 Mail 一节与 `docs/acceptance/2026-10-18/288/`。

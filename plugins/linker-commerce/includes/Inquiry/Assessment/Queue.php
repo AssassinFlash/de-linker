@@ -164,7 +164,6 @@ final class Queue {
 	public function recover(): int {
 		// Cron loads WC email base classes lazily, before invoking native rebuilders.
 		WC()->mailer();
-		\Linker\Commerce\Proforma\Emails\ProformaIssuedEmail::recover();
 		\Linker\Commerce\Registration\VatNotice::recover();
 		// Reuse the approved complete native intake envelope, not a new quota.
 		$limit  = array_sum( array_column( BusinessCapacity::LIMITS, 'count' ) );

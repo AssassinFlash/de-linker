@@ -282,7 +282,7 @@ for (const locale of ['en', 'de'] as const) {
 			],
 			[
 				'document',
-				home + '?linker-document=proforma&id=1',
+				home + '?linker-document=report&id=1',
 				'#error-page',
 			],
 		]) {
@@ -397,7 +397,7 @@ test('a separate newly created account cannot read another account document or G
 		])
 	) as { owner: number; other: number; order: number };
 	try {
-		const route = `${instance().url}/?linker-document=proforma&id=${fixture.order}`;
+		const route = `${instance().url}/?linker-document=report&id=${fixture.order}`;
 		expect((await page.goto(route))?.status()).toBe(403);
 		await expect(page.locator('.linker-create-account')).toBeVisible();
 		const inquiryIds = async () => {

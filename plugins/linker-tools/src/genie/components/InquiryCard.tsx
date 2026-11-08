@@ -46,8 +46,8 @@ export function statusLabel( status: string ): string {
 	switch ( status ) {
 		case 'inquiry-received':
 			return __( 'Inquiry received', 'linker-tools' );
-		case 'proforma-issued':
-			return __( 'Proforma invoice issued', 'linker-tools' );
+		case 'quotation-in-progress':
+			return __( 'Quotation in preparation', 'linker-tools' );
 		case 'completed':
 			return __( 'Completed', 'linker-tools' );
 		case 'cancelled':

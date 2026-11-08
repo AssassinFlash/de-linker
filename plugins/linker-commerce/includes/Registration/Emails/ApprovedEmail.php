@@ -13,7 +13,7 @@ use Linker\Commerce\Registration\Approval;
 
 /**
  * Sent when the team approves an account: net prices open, and the solution
- * draft and the Proforma request are usable.
+ * draft and the inquiry page are usable.
  */
 final class ApprovedEmail extends CustomerApprovalEmail {
 

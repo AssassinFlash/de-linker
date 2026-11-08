@@ -35,9 +35,6 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'woocommerce_settings_' . SettingsTab::TAB, array( $tab, 'output' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_update_options_' . SettingsTab::TAB, array( $tab, 'save' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_admin_settings_sanitize_option_' . Options::NOTIFY_BCC, array( $tab, 'sanitize_bcc' ) );
-		WP_Mock::expectFilterAdded( 'woocommerce_admin_settings_sanitize_option_' . Options::BANK_IBAN, array( $tab, 'sanitize_iban' ) );
-		WP_Mock::expectFilterAdded( 'woocommerce_admin_settings_sanitize_option_' . Options::BANK_BIC, array( $tab, 'sanitize_bic' ) );
-		WP_Mock::expectFilterAdded( 'woocommerce_admin_settings_sanitize_option_' . Options::PROFORMA_PREFIX, array( $tab, 'sanitize_prefix' ) );
 		foreach ( array_keys( WooOptions::pinned() ) as $option ) {
 			WP_Mock::expectFilterAdded( 'pre_option_' . $option, array( $options, 'pin' ), 10, 2 );
 		}

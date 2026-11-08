@@ -11,7 +11,6 @@ namespace Linker\Commerce\Account;
 
 use Linker\Commerce\Products\Publication;
 
-use Linker\Commerce\Proforma\Issuer;
 use WC_Abstract_Order;
 use WC_Order;
 use WC_Order_Item;
@@ -19,9 +18,9 @@ use WC_Order_Item_Product;
 
 /**
  * WooCommerce's order list and order page as the list of inquiries: number,
- * date, status, amount, the Proforma invoice to download, "Request again",
- * and on the inquiry page each product's datasheet (docs/specs/11-commerce.md,
- * journey step 6; account-workspace.md §5.1).
+ * date, status, amount, "Request again", and on the inquiry page each
+ * product's datasheet (docs/specs/11-commerce.md, journey step 6;
+ * account-workspace.md §5.1).
  */
 final class InquiryList {
 
@@ -48,7 +47,7 @@ final class InquiryList {
 	}
 
 	/**
-	 * The actions of one inquiry: view it, download its Proforma, request it again.
+	 * The actions of one inquiry: view it, request it again.
 	 *
 	 * @param array<string, array{url: string, name: string}> $actions WooCommerce's actions.
 	 * @param WC_Order                                        $order   Inquiry.
@@ -61,16 +60,6 @@ final class InquiryList {
 				'name' => __( 'View', 'linker-commerce' ),
 			),
 		);
-		if ( self::has_proforma( $order ) ) {
-			$url = DocumentDownload::proforma_url( $order );
-			// An empty href is still a download control (#425).
-			if ( '' !== $url ) {
-				$ours['proforma'] = array(
-					'url'  => $url,
-					'name' => __( 'Proforma invoice (PDF)', 'linker-commerce' ),
-				);
-			}
-		}
 		/** This filter is documented in woocommerce/includes/wc-template-functions.php */
 		$again = apply_filters( 'woocommerce_valid_order_statuses_for_order_again', array( 'completed' ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce's own filter, applied as woocommerce_order_again_button() applies it.
 		// The inquiry page has WooCommerce's own "Request again" button under the table;
@@ -133,28 +122,6 @@ final class InquiryList {
 			$value .= apply_filters( 'woocommerce_order_shipping_to_display_tax_label', '&nbsp;<small class="tax_label">' . $label . '</small>', $order, $tax_display );
 		}
 		return $value;
-	}
-
-	/**
-	 * Whether the inquiry has a Proforma the customer can open.
-	 *
-	 * The download is the stored document. A status word without a number has
-	 * no PDF yet — the bank account or a price was missing — and is not shown
-	 * as a download. Issuer writes the number when the document is built.
-	 *
-	 * @param WC_Order $order Inquiry.
-	 */
-	public static function has_proforma( WC_Order $order ): bool {
-		return '' !== self::proforma_number( $order );
-	}
-
-	/**
-	 * The Proforma number as the customer reads it, or '' when none was stored.
-	 *
-	 * @param WC_Order $order Inquiry.
-	 */
-	public static function proforma_number( WC_Order $order ): string {
-		return (string) $order->get_meta( Issuer::NUMBER_META );
 	}
 
 	/**

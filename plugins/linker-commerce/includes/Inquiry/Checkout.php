@@ -1,6 +1,6 @@
 <?php
 /**
- * The Proforma request page and its confirmation.
+ * The inquiry page and its confirmation.
  *
  * @package Linker\Commerce
  */
@@ -86,14 +86,14 @@ final class Checkout {
 	}
 
 	/**
-	 * Only the Proforma gateway is offered; inquiries are open to everyone. It
+	 * Only the inquiry gateway is offered; inquiries are open to everyone. It
 	 * runs on woocommerce_available_payment_gateways.
 	 *
 	 * @param array<string, mixed> $gateways Available gateways by id.
 	 * @return array<string, mixed>
 	 */
 	public function gateways( array $gateways ): array {
-		return isset( $gateways[ ProformaGateway::ID ] ) ? array( ProformaGateway::ID => $gateways[ ProformaGateway::ID ] ) : array();
+		return isset( $gateways[ InquiryGateway::ID ] ) ? array( InquiryGateway::ID => $gateways[ InquiryGateway::ID ] ) : array();
 	}
 
 	/**
@@ -107,7 +107,7 @@ final class Checkout {
 	}
 
 	/**
-	 * What happens next, on the confirmation page; runs on woocommerce_thankyou_linker_proforma.
+	 * What happens next, on the confirmation page; runs on woocommerce_thankyou_linker_inquiry.
 	 *
 	 * @param int $order_id Received inquiry.
 	 */

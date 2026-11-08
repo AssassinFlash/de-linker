@@ -12,8 +12,8 @@ namespace Linker\Commerce\Tests\Unit\Digest;
 use Linker\Commerce\Digest\Block;
 use Linker\Commerce\Digest\Blocks;
 use Linker\Commerce\Digest\FailedEmails;
-use Linker\Commerce\Digest\InquiriesAwaitingProforma;
-use Linker\Commerce\Digest\ProformasAwaitingReply;
+use Linker\Commerce\Digest\InquiriesAwaitingReply;
+use Linker\Commerce\Digest\QuotationsInProgress;
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Tests\TestCase;
 
@@ -35,7 +35,7 @@ final class BlocksTest extends TestCase {
 		$blocks = ( new Blocks( new JobStore() ) )->all();
 
 		$this->assertSame(
-			array( InquiriesAwaitingProforma::ID, ProformasAwaitingReply::ID, FailedEmails::ID, 'internal_mail', 'pending_inquiry_reviews' ),
+			array( InquiriesAwaitingReply::ID, QuotationsInProgress::ID, FailedEmails::ID, 'internal_mail', 'pending_inquiry_reviews' ),
 			array_map( static fn ( Block $block ): string => $block->id(), $blocks )
 		);
 	}

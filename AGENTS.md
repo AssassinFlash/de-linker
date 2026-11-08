@@ -60,7 +60,7 @@
 ## 1. 这是什么
 
 de-linker.com：Linker Technology GmbH 的 B2B 光伏储能询盘网站，WordPress + WooCommerce，英德同等。
-客户是安装商、EPC、经销商。链路只有一条：产品分类与产品 → 询盘（以 Proforma 呈现）→ 之后全部线下。
+客户是安装商、EPC、经销商。链路只有一条：产品分类与产品 → 询盘 → 之后全部线下（报价由团队线下出具并跟进，业主 2026-11-08）。
 订单→询盘/Proforma 链、付款、发货、采购、分组、发票与任何后续处理不存在；**账号审批三态已于 2026-10-11 恢复**（票 #73：通过/限制/拒绝+原因邮件，WP 后台入口）。
 
 两个客户可见的工具：
@@ -109,7 +109,7 @@ de-linker.com：Linker Technology GmbH 的 B2B 光伏储能询盘网站，WordPr
 
 产品、产品分类；客户可见文案的禁用语与德语屈折形以 [commerce-terms.txt](tools/checks/commerce-terms.txt) 为唯一权威（`just commerce-terms` 执行，棘轮：存量逐条带理由，新增即失败）；本文不再另列词表。
 客户的工作清单：Solution draft / Lösungsentwurf。方案内的清单：Bill of materials / Stückliste。
-询盘四状态：Inquiry received / Anfrage eingegangen · Proforma invoice issued / Proformarechnung ausgestellt · Completed / Abgeschlossen · Cancelled / Storniert。
+询盘四状态（业主 2026-11-08 裁定第二态改为报价准备，线上不生成 Proforma）：Inquiry received / Anfrage eingegangen · Quotation in preparation / Angebot in Vorbereitung · Completed / Abgeschlossen · Cancelled / Storniert。站点不在线出具 Proforma 或任何含银行信息的文件；第二态只表示团队正在线下准备报价。
 德语用 Sie 体（locale `de_DE_formal`）；禁止 "不是…而是…"、三连排比等 AI 句式；英德永远同步交付。
 
 ## 4. 技术选型（按复刻与适用定，证据见 docs/research/2026-10-09/framework-choice.md）
