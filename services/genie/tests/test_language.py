@@ -830,7 +830,4 @@ def test_a_dotted_abbreviation_does_not_vote_english() -> None:
     )
     assert answer_language(pasted, "de_DE_formal") == "de"
     # English prose asking about the dotted model still answers English.
-    assert (
-        answer_language("Is the S.A.J. H2-12K-T3 available?", "de_DE_formal")
-        == "en"
-    )
+    assert answer_language("Is the S.A.J. H2-12K-T3 available?", "de_DE_formal") == "en"
