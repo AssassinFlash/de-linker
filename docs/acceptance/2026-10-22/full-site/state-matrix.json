@@ -3196,10 +3196,12 @@
   "state": "add-to-draft",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "not-applicable-today",
+  "environment": "production probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -3209,7 +3211,15 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "archive_surface_20261108": {
+    "result": "not-applicable-today",
+    "reason": "archive cards carry no add-to-draft control and no client-side loading (0 wp-json/admin-ajax requests during a full render; 72 links server-rendered)",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "product-archive:add-to-draft:en:390",
@@ -3280,10 +3290,12 @@
   "state": "loading-error",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "not-applicable-today",
+  "environment": "production probe",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -3293,7 +3305,15 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "archive_surface_20261108": {
+    "result": "not-applicable-today",
+    "reason": "archive cards carry no add-to-draft control and no client-side loading (0 wp-json/admin-ajax requests during a full render; 72 links server-rendered)",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "product-archive:loading-error:en:390",
@@ -4101,10 +4121,12 @@
   "state": "add-pending-success-error",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (specs/failure-injection.spec.ts)",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -4113,7 +4135,15 @@
    "files-print",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "failure_injection_20261108": {
+    "result": "passed",
+    "environment": "LINKER_E2E_INSTANCE=review; Turnstile dummy profile applied and restored; failures injected at linker/v1/protection",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "product:add-pending-success-error:en:390",
@@ -14738,10 +14768,12 @@
   "state": "update-failure",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (specs/failure-injection.spec.ts)",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -14750,7 +14782,15 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "failure_injection_20261108": {
+    "result": "passed",
+    "environment": "LINKER_E2E_INSTANCE=review; Turnstile dummy profile applied and restored; failures injected at linker/v1/protection",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "draft:update-failure:en:390",
@@ -16506,10 +16546,12 @@
   "state": "submission-error",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (specs/failure-injection.spec.ts)",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -16519,7 +16561,15 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "failure_injection_20261108": {
+    "result": "passed",
+    "environment": "LINKER_E2E_INSTANCE=review; Turnstile dummy profile applied and restored; failures injected at linker/v1/protection",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "inquiry:submission-error:en:390",
@@ -17998,10 +18048,12 @@
   "state": "receipt-and-notification-queue",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (specs/failure-injection.spec.ts)",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -18011,7 +18063,15 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "failure_injection_20261108": {
+    "result": "passed",
+    "environment": "LINKER_E2E_INSTANCE=review; Turnstile dummy profile applied and restored; failures injected at linker/v1/protection",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "inquiry:receipt-and-notification-queue:en:390",
@@ -18408,10 +18468,12 @@
   "state": "error",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (specs/failure-injection.spec.ts)",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -18419,7 +18481,15 @@
    "permissions",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "failure_injection_20261108": {
+    "result": "passed",
+    "environment": "LINKER_E2E_INSTANCE=review; Turnstile dummy profile applied and restored; failures injected at linker/v1/protection",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "contact:error:en:390",
@@ -18666,10 +18736,12 @@
   "state": "notification-queue",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e (specs/failure-injection.spec.ts)",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -18677,7 +18749,15 @@
    "permissions",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "failure_injection_20261108": {
+    "result": "passed",
+    "environment": "LINKER_E2E_INSTANCE=review; Turnstile dummy profile applied and restored; failures injected at linker/v1/protection",
+    "evidence": [
+     "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+    ]
+   }
+  }
  },
  {
   "key": "contact:notification-queue:en:390",
