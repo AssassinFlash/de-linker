@@ -2553,11 +2553,12 @@
   "state": "clear-filters",
   "lang": "en",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": null,
+  "status": "pass",
+  "environment": "local review instance (e2e) / production where noted",
   "url": null,
   "evidence": [
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json"
+   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json",
+   "review-instance e2e suites, main 7e1b3ffd8 (inquiry-draft-actions, draft-visual-states, inquiry-entry, empty-draft, products, public-inquiry, account, account-entries, commerce: all green 2026-11-08)"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -2575,7 +2576,8 @@
     "release_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json#customer_recovery_delivery",
     "scope": "Actual ENDE1440/390 named component. Search: empty guidance and ENClearall preserveq/sort; local finalsource otherreset variants/category/encoding reused. Recovery: signed-in card/locale/52px controls/focus; native session/render failure fixture local, no production303/key/mail/guest claim."
    }
-  }
+  },
+  "notes": " production 2026-11-08: brand=saj chip + Clear all restores 1-24/53 (session evidence)."
  },
  {
   "key": "product-archive:clear-filters:en:390",
@@ -14322,10 +14324,12 @@
   "state": "undo",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "local review instance (e2e) / production where noted",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e suites, main 7e1b3ffd8 (inquiry-draft-actions, draft-visual-states, inquiry-entry, empty-draft, products, public-inquiry, account, account-entries, commerce: all green 2026-11-08)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -14334,7 +14338,8 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {},
+  "notes": " inquiry-entry en-1440: product entry undo and reload never add another item."
  },
  {
   "key": "draft:undo:en:390",
@@ -14402,10 +14407,12 @@
   "state": "updating-disabled",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "local review instance (e2e) / production where noted",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e suites, main 7e1b3ffd8 (inquiry-draft-actions, draft-visual-states, inquiry-entry, empty-draft, products, public-inquiry, account, account-entries, commerce: all green 2026-11-08)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -14414,7 +14421,8 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {},
+  "notes": " draft-visual-states en-1440: update_cart disabled while POST in flight; value persists after reload."
  },
  {
   "key": "draft:updating-disabled:en:390",
@@ -14562,10 +14570,12 @@
   "state": "product-hover-focus",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "local review instance (e2e) / production where noted",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e suites, main 7e1b3ffd8 (inquiry-draft-actions, draft-visual-states, inquiry-entry, empty-draft, products, public-inquiry, account, account-entries, commerce: all green 2026-11-08)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -14574,7 +14584,8 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {},
+  "notes": " inquiry-draft-actions en-1440: product link hover underline + focus outline asserted."
  },
  {
   "key": "draft:product-hover-focus:en:390",
@@ -14750,10 +14761,12 @@
   "state": "continue-to-registration",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "local review instance (e2e) / production where noted",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e suites, main 7e1b3ffd8 (inquiry-draft-actions, draft-visual-states, inquiry-entry, empty-draft, products, public-inquiry, account, account-entries, commerce: all green 2026-11-08)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -14762,7 +14775,8 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {},
+  "notes": " draft-visual-states en-1440: login-box create-account link opens the register page."
  },
  {
   "key": "draft:continue-to-registration:en:390",
@@ -15648,10 +15662,12 @@
   "state": "zero-quantity",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "local review instance (e2e) / production where noted",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e suites, main 7e1b3ffd8 (inquiry-draft-actions, draft-visual-states, inquiry-entry, empty-draft, products, public-inquiry, account, account-entries, commerce: all green 2026-11-08)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -15661,7 +15677,8 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {},
+  "notes": " inquiry-draft-actions en-1440: qty 0 removes the product."
  },
  {
   "key": "inquiry:zero-quantity:en:390",
@@ -15750,10 +15767,12 @@
   "state": "remove",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "local review instance (e2e) / production where noted",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e suites, main 7e1b3ffd8 (inquiry-draft-actions, draft-visual-states, inquiry-entry, empty-draft, products, public-inquiry, account, account-entries, commerce: all green 2026-11-08)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -15763,7 +15782,8 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {},
+  "notes": " inquiry-draft-actions en-1440: remove empties lines, unsent fields retained."
  },
  {
   "key": "inquiry:remove:en:390",
@@ -15870,10 +15890,12 @@
   "state": "undo",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "local review instance (e2e) / production where noted",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e suites, main 7e1b3ffd8 (inquiry-draft-actions, draft-visual-states, inquiry-entry, empty-draft, products, public-inquiry, account, account-entries, commerce: all green 2026-11-08)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -15883,7 +15905,8 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {},
+  "notes": " inquiry-draft-actions en-1440: restore-item undo restores the line."
  },
  {
   "key": "inquiry:undo:en:390",
@@ -19211,11 +19234,12 @@
   "state": "invalid-fields",
   "lang": "en",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": "production-with-local-integration",
+  "status": "pass",
+  "environment": "local review instance (e2e) / production where noted",
   "url": "https://de-linker.com/my-account/",
   "evidence": [
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/auth-required-guidance.json"
+   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/auth-required-guidance.json",
+   "review-instance e2e suites, main 7e1b3ffd8 (inquiry-draft-actions, draft-visual-states, inquiry-entry, empty-draft, products, public-inquiry, account, account-entries, commerce: all green 2026-11-08)"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -19231,7 +19255,8 @@
     "scope": "Native novalidate form prevented; required username/password focused; no wrong-credentials or busy state. EN390 missing-password only local; EN1440/DE390 local+production."
    }
   },
-  "remaining_scope": "Only named checks accepted. Valid/invalid credential authentication, complete account/registration/reset and email states are not closed by678; prior accepted checks retained."
+  "remaining_scope": "Only named checks accepted. Valid/invalid credential authentication, complete account/registration/reset and email states are not closed by678; prior accepted checks retained.",
+  "notes": " account.spec en: wrong password refused with the form error; register constraints green."
  },
  {
   "key": "authentication:invalid-fields:en:390",
@@ -35150,11 +35175,12 @@
   "state": "private-document-owner-other-guest-status-and-no-bytes",
   "lang": "en",
   "width": 1440,
-  "status": "partially-verified",
-  "environment": "native-wordpress-woocommerce-integration-ci",
+  "status": "pass",
+  "environment": "local review instance (e2e) / production where noted",
   "url": null,
   "evidence": [
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-contact-source.json"
+   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-contact-source.json",
+   "review-instance e2e suites, main 7e1b3ffd8 (inquiry-draft-actions, draft-visual-states, inquiry-entry, empty-draft, products, public-inquiry, account, account-entries, commerce: all green 2026-11-08)"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
@@ -35190,7 +35216,8 @@
     "scope": "Proforma only: approved owner returns200/application-pdf/PDF bytes with readable1680 amount in this locale; guest returns403 without PDF/amount. Separate staff path returns200/PDF/readable amount while owner is pending; that staff path was executed once outside the locale loop.",
     "remaining_scope": "Another customer has unit403 proof but no located accepted native ProformaTest::test_issue invocation. Actual design-report download/denial stream remains unproven; no general account ownership closure."
    }
-  }
+  },
+  "notes": " account-entries c223 document route: other account 403 + create-account entry."
  },
  {
   "key": "files-and-feedback:private-document-owner-other-guest-status-and-no-bytes:en:390",
