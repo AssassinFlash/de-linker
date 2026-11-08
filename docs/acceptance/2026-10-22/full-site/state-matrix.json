@@ -14645,10 +14645,12 @@
   "state": "undo",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review-instance e2e suites (bilingual runs; DE leg green)",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e suites, main 7e1b3ffd8 (inquiry-draft-actions, draft-visual-states, inquiry-entry, empty-draft, products, public-inquiry, account, account-entries, commerce: all green 2026-11-08)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -14657,7 +14659,12 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_twin_20261108": {
+    "result": "passed",
+    "scope": "closed from the same bilingual suite run that closed the EN twin (the spec iterates en and de; both legs green)"
+   }
+  }
  },
  {
   "key": "draft:undo:de:390",
@@ -14728,10 +14735,12 @@
   "state": "updating-disabled",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review-instance e2e suites (bilingual runs; DE leg green)",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e suites, main 7e1b3ffd8 (inquiry-draft-actions, draft-visual-states, inquiry-entry, empty-draft, products, public-inquiry, account, account-entries, commerce: all green 2026-11-08)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -14740,7 +14749,12 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_twin_20261108": {
+    "result": "passed",
+    "scope": "closed from the same bilingual suite run that closed the EN twin (the spec iterates en and de; both legs green)"
+   }
+  }
  },
  {
   "key": "draft:updating-disabled:de:390",
@@ -14818,10 +14832,12 @@
   "state": "update-failure",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e/probes, DE legs 2026-11-08",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -14830,7 +14846,12 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_twin_20261108": {
+    "result": "passed",
+    "scope": "pass: de quantity leg green"
+   }
+  }
  },
  {
   "key": "draft:update-failure:de:390",
@@ -14901,10 +14922,12 @@
   "state": "product-hover-focus",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review-instance e2e suites (bilingual runs; DE leg green)",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e suites, main 7e1b3ffd8 (inquiry-draft-actions, draft-visual-states, inquiry-entry, empty-draft, products, public-inquiry, account, account-entries, commerce: all green 2026-11-08)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -14913,7 +14936,12 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_twin_20261108": {
+    "result": "passed",
+    "scope": "closed from the same bilingual suite run that closed the EN twin (the spec iterates en and de; both legs green)"
+   }
+  }
  },
  {
   "key": "draft:product-hover-focus:de:390",
@@ -15092,10 +15120,12 @@
   "state": "continue-to-registration",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review-instance e2e suites (bilingual runs; DE leg green)",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e suites, main 7e1b3ffd8 (inquiry-draft-actions, draft-visual-states, inquiry-entry, empty-draft, products, public-inquiry, account, account-entries, commerce: all green 2026-11-08)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -15104,7 +15134,12 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_twin_20261108": {
+    "result": "passed",
+    "scope": "closed from the same bilingual suite run that closed the EN twin (the spec iterates en and de; both legs green)"
+   }
+  }
  },
  {
   "key": "draft:continue-to-registration:de:390",
@@ -16013,10 +16048,12 @@
   "state": "zero-quantity",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review-instance e2e suites (bilingual runs; DE leg green)",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e suites, main 7e1b3ffd8 (inquiry-draft-actions, draft-visual-states, inquiry-entry, empty-draft, products, public-inquiry, account, account-entries, commerce: all green 2026-11-08)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -16026,7 +16063,12 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_twin_20261108": {
+    "result": "passed",
+    "scope": "closed from the same bilingual suite run that closed the EN twin (the spec iterates en and de; both legs green)"
+   }
+  }
  },
  {
   "key": "inquiry:zero-quantity:de:390",
@@ -16136,10 +16178,12 @@
   "state": "remove",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review-instance e2e suites (bilingual runs; DE leg green)",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e suites, main 7e1b3ffd8 (inquiry-draft-actions, draft-visual-states, inquiry-entry, empty-draft, products, public-inquiry, account, account-entries, commerce: all green 2026-11-08)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -16149,7 +16193,12 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_twin_20261108": {
+    "result": "passed",
+    "scope": "closed from the same bilingual suite run that closed the EN twin (the spec iterates en and de; both legs green)"
+   }
+  }
  },
  {
   "key": "inquiry:remove:de:390",
@@ -16253,10 +16302,12 @@
   "state": "undo",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review-instance e2e suites (bilingual runs; DE leg green)",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e suites, main 7e1b3ffd8 (inquiry-draft-actions, draft-visual-states, inquiry-entry, empty-draft, products, public-inquiry, account, account-entries, commerce: all green 2026-11-08)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -16266,7 +16317,12 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_twin_20261108": {
+    "result": "passed",
+    "scope": "closed from the same bilingual suite run that closed the EN twin (the spec iterates en and de; both legs green)"
+   }
+  }
  },
  {
   "key": "inquiry:undo:de:390",
@@ -16598,10 +16654,12 @@
   "state": "submission-error",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e/probes, DE legs 2026-11-08",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -16611,7 +16669,12 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_twin_20261108": {
+    "result": "passed",
+    "scope": "pass: de inquiry leg green (held, typing kept, receipt at anfrage-eingegangen)"
+   }
+  }
  },
  {
   "key": "inquiry:submission-error:de:390",
@@ -18100,10 +18163,12 @@
   "state": "receipt-and-notification-queue",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e/probes, DE legs 2026-11-08",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -18113,7 +18178,12 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_twin_20261108": {
+    "result": "passed",
+    "scope": "pass: receipt + queued mail (team+receipt logged, spool written)"
+   }
+  }
  },
  {
   "key": "inquiry:receipt-and-notification-queue:de:390",
@@ -18516,10 +18586,12 @@
   "state": "error",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e/probes, DE legs 2026-11-08",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -18527,7 +18599,12 @@
    "permissions",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_twin_20261108": {
+    "result": "passed",
+    "scope": "pass: de contact leg green"
+   }
+  }
  },
  {
   "key": "contact:error:de:390",
@@ -18784,10 +18861,12 @@
   "state": "notification-queue",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e/probes, DE legs 2026-11-08",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -18795,7 +18874,12 @@
    "permissions",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_twin_20261108": {
+    "result": "passed",
+    "scope": "pass: contact mail queued and logged"
+   }
+  }
  },
  {
   "key": "contact:notification-queue:de:390",
@@ -19620,10 +19704,12 @@
   "state": "invalid-fields",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "verified-production-20261108",
+  "environment": "production probe (DE-1440)",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "production probe 2026-11-08: empty sign-in on /de/mein-konto/ - native novalidate holds the form, both fields required, focus lands on a field, no spurious error or busy state"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -19632,7 +19718,12 @@
    "overlay-responsive",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_invalid_fields_20261108": {
+    "result": "passed",
+    "scope": "same behavior as the EN check: novalidate, required, focus, no wrong-credentials error on empty submit"
+   }
+  }
  },
  {
   "key": "authentication:invalid-fields:de:390",
@@ -36397,11 +36488,12 @@
   "state": "message-summary-note-isolation",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e/probes, DE legs 2026-11-08",
   "url": null,
   "evidence": [
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/inquiry-message-context.json"
+   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/inquiry-message-context.json",
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
@@ -36423,6 +36515,10 @@
     "native": "Before old-note prefill/filter1;deployed Form empty/filter0. Existing actualnative Handler/explicitSender cases accepted.",
     "browser": "Actual local ENDE1440/390 plus DE390 genuine validation failure,unchangedorders/mail. Production common mechanism/native andother orthogonal views;not a direct production capture of this row.",
     "limits": "No production formsubmit/modelturn/mail/inbox claim."
+   },
+   "de_twin_20261108": {
+    "result": "passed",
+    "scope": "pass: genie-inquiry (de,1440) green incl. reviewed-summary order-meta readback; ordinary half already covered"
    }
   },
   "remaining_scope": "This ordinary-message increment accepted. Full required fixture contracts andremaining named inquiry contexts/realinbox gate remain separately pending;unchanged current evidence reused."
@@ -36519,10 +36615,12 @@
   "state": "native-pdp-entry-query-consumed-once",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance e2e/probes, DE legs 2026-11-08",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/failure-injection-states-20261108.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -36532,7 +36630,12 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "de_twin_20261108": {
+    "result": "passed",
+    "scope": "pass: DE review probe - German notice, clean URL, one line, reload no duplicate; production bare-GET refusal is language-neutral"
+   }
+  }
  },
  {
   "key": "draft:native-pdp-entry-query-consumed-once:de:390",

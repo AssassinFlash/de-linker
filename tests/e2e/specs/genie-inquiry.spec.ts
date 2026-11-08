@@ -234,7 +234,9 @@ for (const lang of ['en', 'de'] as const) {
 			// itself (Sender::attach_summary): the ordinary-form invariant (no
 			// implicit summary, read back on every plain submission) and this
 			// positive instance are the two halves of the isolation contract.
-			const number = (await sent.textContent())?.match(/#(\d+)/);
+			const number = (await sent.textContent())?.match(
+				/(?:#|Nr\.)\s*(\d+)/
+			);
 			const inquiryId = number?.[1] ?? '';
 			expect(inquiryId, 'the receipt names the inquiry number').toMatch(
 				/^\d+$/
