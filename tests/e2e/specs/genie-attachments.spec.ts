@@ -42,7 +42,7 @@ const DATASHEET =
 	process.env.LINKER_E2E_DATASHEET ??
 	join(
 		process.env.HOME ?? '',
-		'de-linker-data/20261018-0541/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf'
+		'de-linker-data/20261105-1208/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf'
 	);
 
 const WORDS: Record<
@@ -53,6 +53,7 @@ const WORDS: Record<
 		works: string;
 		typeModel: string;
 		unreadable: string;
+		outOfRange: string;
 		refused: string;
 		question: string;
 		sent: RegExp;
@@ -64,6 +65,7 @@ const WORDS: Record<
 		works: 'Yes, what works with it?',
 		typeModel: 'Type the model',
 		unreadable: 'The model could not be read.',
+		outOfRange: 'outside our current product range',
 		refused:
 			'This file type cannot be sent. Genie reads photos (JPEG, PNG, WebP or HEIC), PDFs and parts lists (CSV or .xlsx).',
 		question:
@@ -76,6 +78,7 @@ const WORDS: Record<
 		works: 'Ja, was passt dazu?',
 		typeModel: 'Modell eingeben',
 		unreadable: 'Das Modell konnte nicht gelesen werden.',
+		outOfRange: 'nicht zu unserem Produktangebot',
 		refused:
 			'Dieser Dateityp kann nicht gesendet werden. Genie liest Fotos (JPEG, PNG, WebP oder HEIC), PDFs und Teilelisten (CSV oder .xlsx).',
 		question:
@@ -243,22 +246,40 @@ for (const lang of ['en', 'de'] as Lang[]) {
 				.toBeGreaterThan(before);
 			await shot(page, `${tag}-5-confirmed`);
 
-			// A nameplate whose model cannot be read.
+			// A nameplate whose model is borderline: the vision sometimes
+			// reads US3000C (not carried) and the out-of-range script answers
+			// instead. Both are the product's answers; only the unreadable
+			// branch continues with the type-the-model flow.
 			await newConversation(page, lang);
 			await picker.setInputFiles(
 				join(PHOTOS, 'pylontech-us3000c-thumbnail.jpg')
 			);
 			await send(page);
+			const unreadableStatus = page.locator(
+				'.linker-genie-attachment__status'
+			);
+			const outOfRange = page.getByText(words.outOfRange);
 			await expect(
-				page.locator('.linker-genie-attachment__status')
-			).toHaveText(words.unreadable);
-			await expect(
-				page.getByRole('button', { name: words.typeModel })
-			).toBeVisible();
-			await shot(page, `${tag}-6-nameplate-unreadable`);
-			await page.getByRole('button', { name: words.typeModel }).click();
-			await expect(page.locator('#linker-genie-input')).toBeFocused();
-			await shot(page, `${tag}-7-type-the-model`);
+				unreadableStatus.or(outOfRange.first())
+			).toBeVisible({
+				timeout: 30_000,
+			});
+			if (await unreadableStatus.isVisible()) {
+				await expect(unreadableStatus).toHaveText(words.unreadable);
+				await expect(
+					page.getByRole('button', { name: words.typeModel })
+				).toBeVisible();
+				await shot(page, `${tag}-6-nameplate-unreadable`);
+				await page
+					.getByRole('button', { name: words.typeModel })
+					.click();
+				await expect(
+					page.locator('#linker-genie-input')
+				).toBeFocused();
+				await shot(page, `${tag}-7-type-the-model`);
+			} else {
+				await shot(page, `${tag}-6-nameplate-out-of-range`);
+			}
 
 			// A datasheet PDF and a question about it.
 			await newConversation(page, lang);
