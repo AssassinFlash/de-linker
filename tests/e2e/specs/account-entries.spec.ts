@@ -280,11 +280,7 @@ for (const locale of ['en', 'de'] as const) {
 				account + 'lost-password/?reset-link-sent=true',
 				'.linker-auth-links',
 			],
-			[
-				'document',
-				home + '?linker-document=report&id=1',
-				'#error-page',
-			],
+			['document', home + '?linker-document=report&id=1', '#error-page'],
 		]) {
 			test(`${locale}-${width}: ${surface} has independent registration`, async ({
 				page,

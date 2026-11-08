@@ -21,13 +21,16 @@ final class Options {
 	/**
 	 * Option names, also the field ids of the settings tab.
 	 */
-	public const TEAM_TO       = 'linker_commerce_team_to';
-	public const NOTIFY_TO     = 'linker_commerce_notify_to';
-	public const NOTIFY_FROM   = 'linker_commerce_notify_from';
-	public const NOTIFY_BCC    = 'linker_commerce_team_bcc';
-	public const CONTACT_NAME  = 'linker_commerce_contact_name';
-	public const CONTACT_EMAIL = 'linker_commerce_contact_email';
-	public const CONTACT_PHONE = 'linker_commerce_contact_phone';
+	public const TEAM_TO          = 'linker_commerce_team_to';
+	public const NOTIFY_TO        = 'linker_commerce_notify_to';
+	public const NOTIFY_FROM      = 'linker_commerce_notify_from';
+	public const NOTIFY_BCC       = 'linker_commerce_team_bcc';
+	public const CONTACT_NAME     = 'linker_commerce_contact_name';
+	public const CONTACT_EMAIL    = 'linker_commerce_contact_email';
+	public const CONTACT_PHONE    = 'linker_commerce_contact_phone';
+	public const SELLER_NAME      = 'linker_commerce_seller_name';
+	public const SELLER_VAT_ID    = 'linker_commerce_seller_vat_id';
+	public const QUOTATION_PREFIX = 'linker_commerce_quotation_prefix';
 
 	/**
 	 * The team mailbox customers see and write to: the mailto links of the
@@ -50,6 +53,18 @@ final class Options {
 	 * Customer mail keeps WooCommerce's own sender settings.
 	 */
 	public const DEFAULT_NOTIFY_FROM = 'sales@sunriverinverter.com';
+
+	/**
+	 * Quotation numbers read DLK-QT-YYYY-NNNN when the settings leave the
+	 * prefix empty (owner ruling 2026-11-08: a quotation, not an invoice).
+	 */
+	public const DEFAULT_QUOTATION_PREFIX = 'DLK-QT';
+
+	/**
+	 * The seller named on the Quotation when the settings leave it empty
+	 * (AGENTS.md §1: the site belongs to Linker Technology GmbH).
+	 */
+	public const DEFAULT_SELLER_NAME = 'Linker Technology GmbH';
 
 	/**
 	 * Address of the team mailbox customers see (DEFAULT_TEAM_TO). Nothing
@@ -112,6 +127,53 @@ final class Options {
 
 
 
+
+	/**
+	 * The seller as printed on the Quotation: name, VAT ID and the store
+	 * address of WooCommerce → Settings → General. A quotation names no bank
+	 * account (owner ruling 2026-11-08).
+	 *
+	 * @return array{name: string, vat_id: string, address: list<string>, email: string}
+	 */
+	public function seller(): array {
+		$name    = $this->text( self::SELLER_NAME );
+		$address = array_values(
+			array_filter(
+				array(
+					$this->text( 'woocommerce_store_address' ),
+					$this->text( 'woocommerce_store_address_2' ),
+					trim( $this->text( 'woocommerce_store_postcode' ) . ' ' . $this->text( 'woocommerce_store_city' ) ),
+					$this->country_name( $this->text( 'woocommerce_default_country' ) ),
+				),
+				static fn ( string $line ): bool => '' !== $line
+			)
+		);
+		return array(
+			'name'    => '' === $name ? self::DEFAULT_SELLER_NAME : $name,
+			'vat_id'  => $this->text( self::SELLER_VAT_ID ),
+			'address' => $address,
+			'email'   => $this->team_mailbox(),
+		);
+	}
+
+	/**
+	 * The country name of WooCommerce's country:state value, or the raw value.
+	 *
+	 * @param string $value Country setting.
+	 */
+	private function country_name( string $value ): string {
+		$parts     = explode( ':', $value );
+		$countries = \WC()->countries->get_countries();
+		return isset( $countries[ $parts[0] ] ) ? (string) $countries[ $parts[0] ] : $value;
+	}
+
+	/**
+	 * Prefix of the Quotation numbers.
+	 */
+	public function quotation_prefix(): string {
+		$prefix = $this->text( self::QUOTATION_PREFIX );
+		return '' === $prefix ? self::DEFAULT_QUOTATION_PREFIX : $prefix;
+	}
 
 	/**
 	 * An option as trimmed text; anything that is not a string reads as empty.

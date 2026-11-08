@@ -1,0 +1,48 @@
+{
+ "session": "proforma-to-quotation-20261108",
+ "owner_ruling": "2026-11-08 (clarified same day): the site keeps issuing a document online, but the concept is a Quotation (Angebot), not a Proforma — no bank account, no payment instruction; billing and delivery are agreed offline. The document remains downloadable in the account.",
+ "implementation": {
+  "pr": 1003,
+  "branch": "proforma-to-quotation-20261108",
+  "second_status": {
+   "machine": "wc-quotation-in-progress",
+   "label_en": "Quotation issued (document context); status word per AGENTS.md §3 vocabulary",
+   "label_de": "Angebot in Vorbereitung",
+   "meaning": "the team is preparing the quotation offline and will contact the customer"
+  },
+  "removed": [
+   "bank-account settings (holder/bank/IBAN/BIC) + IBAN/BIC validators + Options::bank()",
+   "the bank block and payment instruction in the document template",
+   "the Proforma vocabulary across Terms/Labels/DraftSummary/Materials/Genie"
+  ],
+  "renamed": {
+   "gateway": "ProformaGateway -> InquiryGateway (linker_proforma -> linker_inquiry)",
+   "source_value": "_linker_inquiry_source proforma -> inquiry",
+   "digest_blocks": "InquiriesAwaitingReply (24h, no staff action) + QuotationsInProgress (3d, last-touched)",
+   "css_classes": "linker-proforma-success -> linker-inquiry-success; data-status quotation-in-progress",
+   "chain": "Proforma/* -> Quotation/* (Issuer, Renderer, Sequence, Document, Module, AdminBox, QuotationIssuedEmail), templates/quotation/, uploads/quotation/, meta _linker_quotation_*, number DLK-QT-YYYY-NNNN"
+  },
+  "kept_unchanged": [
+   "URL slugs /proforma-request/ and /de/proforma-anfrage/ (same-URL principle; page titles already inquiry-worded)",
+   "design-report downloads (Solution Configurator reports) with the same 403/404 ownership contract",
+   "confirmation page copy, one-business-day promise, anti-abuse assessment and notification hold (jev evidence on 8671)",
+   "full issuance chain: button on the inquiry screen, PDF generation, customer email, account download (#425 price gate), digest follow-up window"
+  ]
+ },
+ "verification_local": {
+  "phpunit": "2249 tests / 8540 assertions green (529 pre-existing skips); linker-tools 372/2889 green",
+  "phpcs": "0",
+  "phpstan": "0",
+  "i18n_coverage_gaps": "21 -> 16 (remaining 16 pre-date this batch)",
+  "e2e_review_instance": {
+   "public-inquiry+inquiry-draft-actions+empty-draft": "24/24 passed (incl. source value 'inquiry')",
+   "batches": "see separate runs"
+  }
+ },
+ "production_facts_before_change": {
+  "proforma_issued_orders": 0,
+  "reason_no_issuance_ever_happened": "bank account never configured; Issuer::material_blocker refused (order note on #8671, 2026-11-08)"
+ },
+ "deploy_readback": "pending",
+ "fixture_order_migration": "payment_method linker_proforma -> linker_inquiry; _linker_inquiry_source proforma -> inquiry (orders 8651/8654/8657/8671); script /tmp/migrate-fixture-orders.php"
+}

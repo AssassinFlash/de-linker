@@ -156,7 +156,49 @@ final class SettingsTab {
 				'type' => 'sectionend',
 				'id'   => 'linker_commerce_contact',
 			),
+
+			array(
+				'title' => __( 'Quotations', 'linker-commerce' ),
+				'type'  => 'title',
+				'desc'  => __( 'The team issues quotations on the inquiry screen; billing is agreed offline. The document itself names no bank account.', 'linker-commerce' ),
+				'id'    => 'linker_commerce_quotation',
+			),
+			array(
+				'title'       => __( 'Number prefix', 'linker-commerce' ),
+				'desc'        => __( 'Numbers read PREFIX-YEAR-NNNN and count from 1 each calendar year. Empty uses DLK-QT.', 'linker-commerce' ),
+				'id'          => Options::QUOTATION_PREFIX,
+				'type'        => 'text',
+				'default'     => Options::DEFAULT_QUOTATION_PREFIX,
+				'placeholder' => Options::DEFAULT_QUOTATION_PREFIX,
+				'autoload'    => false,
+			),
+			array(
+				'title'    => __( 'Seller', 'linker-commerce' ),
+				'id'       => Options::SELLER_NAME,
+				'type'     => 'text',
+				'autoload' => false,
+			),
+			array(
+				'title'    => __( 'Seller VAT ID', 'linker-commerce' ),
+				'id'       => Options::SELLER_VAT_ID,
+				'type'     => 'text',
+				'autoload' => false,
+			),
+			array(
+				'type' => 'sectionend',
+				'id'   => 'linker_commerce_quotation',
+			),
 		);
+	}
+
+	/**
+	 * Keeps letters, digits and hyphens of the number prefix, upper case.
+	 * Hyphens preserve the DLK-QT prefix when saving this tab.
+	 *
+	 * @param mixed $value Value WooCommerce sanitized as text.
+	 */
+	public function sanitize_prefix( $value ): string {
+		return trim( strtoupper( (string) preg_replace( '/[^A-Za-z0-9-]/', '', is_string( $value ) ? $value : '' ) ), '-' );
 	}
 
 	/**

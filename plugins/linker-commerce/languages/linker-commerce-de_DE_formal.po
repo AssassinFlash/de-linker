@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-11-08T02:42:20+00:00\n"
+"POT-Creation-Date: 2026-11-08T03:23:03+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -520,18 +520,18 @@ msgid "Reset your password"
 msgstr "Passwort zurücksetzen"
 
 #: includes/Account/AuthTemplates.php:116 includes/Account/Menu.php:48
-#: includes/Presentation/AccountTemplates.php:174
-#: includes/Presentation/AccountTemplates.php:464
+#: includes/Presentation/AccountTemplates.php:175
+#: includes/Presentation/AccountTemplates.php:465
 msgid "Overview"
 msgstr "Übersicht"
 
-#: includes/Account/AuthTemplates.php:122 includes/Account/InquiryList.php:41
+#: includes/Account/AuthTemplates.php:122 includes/Account/InquiryList.php:42
 #: includes/Account/Menu.php:79 includes/Inquiry/Assessment/EvidenceView.php:43
 #: includes/Inquiry/InquiryGateway.php:44
 #: includes/Inquiry/InquiryGateway.php:59 includes/Inquiry/OrderAdmin.php:31
 #: includes/Inquiry/OrderAdmin.php:74
-#: includes/Presentation/AccountTemplates.php:469
-#: includes/Vocabulary/Terms.php:75
+#: includes/Presentation/AccountTemplates.php:470
+#: includes/Quotation/AdminBox.php:130 includes/Vocabulary/Terms.php:75
 msgid "Inquiry"
 msgstr "Anfrage"
 
@@ -555,10 +555,11 @@ msgstr ""
 msgid "The solution could not be checked. Please try again."
 msgstr "Die Lösung konnte nicht geprüft werden. Bitte versuchen Sie es erneut."
 
-#: includes/Account/DocumentDownload.php:86
-#: includes/Account/DocumentDownload.php:125 includes/Admin/FaqsMetaBox.php:73
+#: includes/Account/DocumentDownload.php:116
+#: includes/Account/DocumentDownload.php:119
+#: includes/Account/DocumentDownload.php:181 includes/Admin/FaqsMetaBox.php:73
 #: includes/Admin/FiguresMetaBox.php:78
-#: includes/Presentation/AccountTemplates.php:474
+#: includes/Presentation/AccountTemplates.php:475
 #: includes/Presentation/LibraryPage.php:427
 #: includes/Presentation/LibraryPage.php:557
 #: includes/Products/DocumentLibrary.php:171
@@ -568,12 +569,13 @@ msgstr "Die Lösung konnte nicht geprüft werden. Bitte versuchen Sie es erneut.
 msgid "Document"
 msgstr "Dokument"
 
-#: includes/Account/DocumentDownload.php:86
+#: includes/Account/DocumentDownload.php:116
+#: includes/Account/DocumentDownload.php:119
 #: includes/Planning/ReportDownload.php:160
 msgid "This document is not available."
 msgstr "Dieses Dokument ist nicht verfügbar."
 
-#: includes/Account/DocumentDownload.php:119
+#: includes/Account/DocumentDownload.php:175
 msgid ""
 "This document is available to the account it belongs to. Please log in with "
 "that account."
@@ -581,57 +583,70 @@ msgstr ""
 "Dieses Dokument ist nur für das Konto abrufbar, zu dem es gehört. Bitte "
 "melden Sie sich mit diesem Konto an."
 
-#: includes/Account/DocumentDownload.php:121 includes/Vocabulary/Terms.php:78
+#: includes/Account/DocumentDownload.php:177 includes/Vocabulary/Terms.php:78
 #: includes/Vocabulary/Terms.php:79
 msgid "Log in"
 msgstr "Anmelden"
 
+#. translators: 1: Quotation number, 2: inquiry number.
+#: includes/Account/Documents.php:55
+#, php-format
+msgid "Quotation %1$s (inquiry #%2$s)"
+msgstr "Angebot %1$s (Anfrage Nr. %2$s)"
+
 #. translators: %s: name of the saved solution.
-#: includes/Account/Documents.php:44
+#: includes/Account/Documents.php:66
 #, php-format
 msgid "Design report: %s"
 msgstr "Auslegungsbericht: %s"
 
-#: includes/Account/InquiryList.php:42
-#: includes/Presentation/AccountTemplates.php:470
+#: includes/Account/InquiryList.php:43
+#: includes/Presentation/AccountTemplates.php:471
 #: templates/myaccount/linker-documents.php:24
 #: templates/myaccount/linker-documents.php:32
+#: templates/quotation/quotation.php:74
 msgid "Date"
 msgstr "Datum"
 
-#: includes/Account/InquiryList.php:43
-#: includes/Presentation/AccountTemplates.php:468
+#: includes/Account/InquiryList.php:44
+#: includes/Presentation/AccountTemplates.php:469
 msgid "Status"
 msgstr "Status"
 
-#: includes/Account/InquiryList.php:44
-#: includes/Presentation/AccountTemplates.php:471
+#: includes/Account/InquiryList.php:45
+#: includes/Presentation/AccountTemplates.php:472
 msgid "Amount"
 msgstr "Betrag"
 
-#: includes/Account/InquiryList.php:45
-#: includes/Presentation/AccountTemplates.php:472
+#: includes/Account/InquiryList.php:46
+#: includes/Presentation/AccountTemplates.php:473
 #: templates/myaccount/linker-saved-solutions.php:30
 msgid "Actions"
 msgstr "Aktionen"
 
-#: includes/Account/InquiryList.php:60
-#: includes/Presentation/AccountTemplates.php:473
+#: includes/Account/InquiryList.php:61
+#: includes/Presentation/AccountTemplates.php:474
 msgid "View"
 msgstr "Ansehen"
 
-#: includes/Account/InquiryList.php:70 includes/Vocabulary/Terms.php:110
+#: includes/Account/InquiryList.php:70
+#: includes/Presentation/AccountTemplates.php:572
+msgid "Quotation (PDF)"
+msgstr "Angebot (PDF)"
+
+#: includes/Account/InquiryList.php:81 includes/Vocabulary/Terms.php:110
 msgid "Request again"
 msgstr "Erneut anfragen"
 
-#: includes/Account/InquiryList.php:159
+#: includes/Account/InquiryList.php:192
 msgid "Datasheet (PDF)"
 msgstr "Datenblatt (PDF)"
 
 #: includes/Account/Menu.php:49 includes/Account/Menu.php:75
 #: includes/Inquiry/OrderAdmin.php:30 includes/Inquiry/OrderAdmin.php:32
-#: includes/Presentation/AccountTemplates.php:465
+#: includes/Presentation/AccountTemplates.php:466
 #: includes/Settings/SettingsTab.php:42 includes/Vocabulary/Terms.php:116
+#: templates/emails/linker-quotation-issued.php:47
 msgid "Inquiries"
 msgstr "Anfragen"
 
@@ -642,7 +657,7 @@ msgstr "Gespeicherte Lösungen"
 
 #: includes/Account/Menu.php:51 includes/Account/Menu.php:86
 #: includes/Admin/DocumentsMetaBox.php:56 includes/Contact/SelectionView.php:95
-#: includes/Presentation/AccountTemplates.php:495
+#: includes/Presentation/AccountTemplates.php:496
 #: includes/Presentation/LibraryPage.php:432
 #: includes/Presentation/ProductShortcodes.php:960
 msgid "Documents"
@@ -750,7 +765,7 @@ msgstr "Sprache"
 
 #: includes/Admin/DocumentsMetaBox.php:89
 #: includes/Admin/DocumentsMetaBox.php:200 includes/Inquiry/Form.php:198
-#: includes/Presentation/AccountTemplates.php:479
+#: includes/Presentation/AccountTemplates.php:480
 #: includes/Presentation/ComparePage.php:326
 msgid "Remove"
 msgstr "Entfernen"
@@ -1116,6 +1131,7 @@ msgstr "Suchen"
 #: includes/Inquiry/Assessment/EvidenceView.php:61
 #: includes/Products/EngineeringReference.php:82
 #: templates/emails/linker-genie-handoff.php:63
+#: templates/quotation/quotation.php:109
 msgid "Product"
 msgstr "Produkt"
 
@@ -1276,13 +1292,13 @@ msgstr "Keine Anfrage wartet länger als 24 Stunden."
 
 #. translators: 1: inquiry number, 2: customer's company.
 #: includes/Digest/InquiriesAwaitingReply.php:136
-#: includes/Digest/QuotationsInProgress.php:98
+#: includes/Digest/QuotationsInProgress.php:99
 #, php-format
 msgid "Inquiry #%1$s – %2$s"
 msgstr "Anfrage #%1$s – %2$s"
 
 #: includes/Digest/InquiriesAwaitingReply.php:141
-#: includes/Digest/QuotationsInProgress.php:103
+#: includes/Digest/QuotationsInProgress.php:104
 #: templates/emails/linker-new-inquiry.php:52
 msgid "Open the inquiry"
 msgstr "Anfrage öffnen"
@@ -1293,19 +1309,19 @@ msgstr "Anfrage öffnen"
 msgid "Received on %1$s at %2$s (%3$s)"
 msgstr "Eingegangen am %1$s um %2$s Uhr (%3$s)"
 
-#: includes/Digest/QuotationsInProgress.php:53
+#: includes/Digest/QuotationsInProgress.php:54
 msgid "Quotations in preparation for more than 3 days"
 msgstr "Angebote seit mehr als 3 Tagen in Vorbereitung"
 
-#: includes/Digest/QuotationsInProgress.php:84
-msgid "No quotation has been in preparation for more than 3 days."
-msgstr "Kein Angebot ist seit mehr als 3 Tagen in Vorbereitung."
+#: includes/Digest/QuotationsInProgress.php:85
+msgid "No Quotation has waited more than 3 days for a reply."
+msgstr "Kein Angebot wartet seit mehr als 3 Tagen auf eine Antwort."
 
-#. translators: 1: date, 2: time, 3: age.
-#: includes/Digest/QuotationsInProgress.php:106
+#. translators: 1: Quotation number, 2: date, 3: time, 4: age.
+#: includes/Digest/QuotationsInProgress.php:107
 #, php-format
-msgid "In quotation preparation since %1$s at %2$s (%3$s)"
-msgstr "In Angebotsvorbereitung seit %1$s um %2$s (%3$s)"
+msgid "Quotation %1$s issued on %2$s at %3$s (%4$s)"
+msgstr "Angebot %1$s ausgestellt am %2$s um %3$s (%4$s)"
 
 #: includes/Gating/DraftSummary.php:50
 msgid ""
@@ -2309,7 +2325,9 @@ msgstr "Wir prüfen Ihre Anfrage und senden Ihnen unser Angebot per E-Mail."
 msgid ""
 "Sends the inquiry free of charge. The team replies offline with the "
 "quotation. Always on: it is the only way to send an inquiry."
-msgstr "Sendet die Anfrage kostenlos. Das Team antwortet offline mit dem Angebot. Immer aktiv: Es ist der einzige Weg, eine Anfrage zu senden."
+msgstr ""
+"Sendet die Anfrage kostenlos. Das Team antwortet offline mit dem Angebot. "
+"Immer aktiv: Es ist der einzige Weg, eine Anfrage zu senden."
 
 #: includes/Inquiry/OrderAdmin.php:33
 msgid "Add inquiry"
@@ -2488,15 +2506,15 @@ msgstr "SMTP nicht konfiguriert"
 
 #: includes/Planning/Context.php:187
 msgid "Your project note"
-msgstr ""
+msgstr "Ihre Projektnotiz"
 
 #: includes/Planning/Context.php:189
 msgid "Include project notes with this inquiry"
-msgstr ""
+msgstr "Projektnotizen mit dieser Anfrage senden"
 
 #: includes/Planning/Context.php:194 includes/Planning/Context.php:606
 msgid "This note is not used in the calculation."
-msgstr ""
+msgstr "Diese Notiz geht nicht in die Berechnung ein."
 
 #: includes/Planning/Context.php:464 includes/Planning/Context.php:595
 #: includes/Planning/Context.php:597
@@ -2511,6 +2529,7 @@ msgstr "Projekthinweis"
 #: includes/Planning/Context.php:551 includes/Planning/Context.php:555
 msgid "The project notes have changed. Your other entries are still here."
 msgstr ""
+"Die Projektnotizen haben sich geändert. Ihre übrigen Angaben sind noch da."
 
 #. translators: 1: project title, 2: saved input revision.
 #: includes/Planning/Context.php:580
@@ -2526,16 +2545,16 @@ msgstr "Die Mengen weichen vom Planungsbericht ab."
 msgid "Planning report"
 msgstr "Planungsbericht"
 
-#: includes/Planning/Context.php:601
+#: includes/Planning/Context.php:601 includes/Quotation/AdminBox.php:72
 msgid "Download PDF"
 msgstr "PDF herunterladen"
 
 #: includes/Planning/Context.php:608 includes/Planning/Context.php:610
 msgid "Project note from the customer"
-msgstr ""
+msgstr "Projektnotiz des Kunden"
 
 #: includes/Planning/LegacyRoutes.php:47
-#: includes/Presentation/AccountTemplates.php:488
+#: includes/Presentation/AccountTemplates.php:489
 #: includes/Presentation/ProductShortcodes.php:378
 #: includes/Presentation/ProductShortcodes.php:995
 msgid "Open the Solution Configurator"
@@ -2556,48 +2575,48 @@ msgstr "Anmelden"
 msgid "Create account"
 msgstr "Konto erstellen"
 
-#: includes/Presentation/AccountTemplates.php:289
-#: includes/Presentation/AccountTemplates.php:365
+#: includes/Presentation/AccountTemplates.php:290
+#: includes/Presentation/AccountTemplates.php:366
 msgid "Account"
 msgstr "Konto"
 
-#: includes/Presentation/AccountTemplates.php:330
-#: includes/Presentation/AccountTemplates.php:463
+#: includes/Presentation/AccountTemplates.php:331
+#: includes/Presentation/AccountTemplates.php:464
 msgid "Account menu"
 msgstr "Kontomenü"
 
-#: includes/Presentation/AccountTemplates.php:364
+#: includes/Presentation/AccountTemplates.php:365
 msgid "Workplace"
 msgstr "Arbeitsbereich"
 
-#: includes/Presentation/AccountTemplates.php:461
+#: includes/Presentation/AccountTemplates.php:462
 msgid "Welcome back"
 msgstr "Willkommen zurück"
 
-#: includes/Presentation/AccountTemplates.php:462
+#: includes/Presentation/AccountTemplates.php:463
 msgid "Your account workspace"
 msgstr "Ihr persönlicher Arbeitsbereich"
 
-#: includes/Presentation/AccountTemplates.php:466
+#: includes/Presentation/AccountTemplates.php:467
 msgid "All inquiries"
 msgstr "Alle Anfragen"
 
-#: includes/Presentation/AccountTemplates.php:467
+#: includes/Presentation/AccountTemplates.php:468
 msgid "Open inquiries"
 msgstr "Offene Anfragen"
 
-#: includes/Presentation/AccountTemplates.php:475
+#: includes/Presentation/AccountTemplates.php:476
 #: templates/myaccount/linker-documents.php:33
 msgid "Download (PDF)"
 msgstr "Herunterladen (PDF)"
 
-#: includes/Presentation/AccountTemplates.php:476
+#: includes/Presentation/AccountTemplates.php:477
 #: templates/myaccount/linker-saved-solutions.php:28
 #: templates/myaccount/linker-saved-solutions.php:40
 msgid "Saved on"
 msgstr "Gespeichert am"
 
-#: includes/Presentation/AccountTemplates.php:477
+#: includes/Presentation/AccountTemplates.php:478
 #: includes/Presentation/ProductShortcodes.php:693
 #: includes/Storefront/ProductView.php:377 includes/Vocabulary/Labels.php:33
 #: includes/Vocabulary/Terms.php:43
@@ -2605,7 +2624,7 @@ msgstr "Gespeichert am"
 msgid "Add to solution draft"
 msgstr "Zum Lösungsentwurf hinzufügen"
 
-#: includes/Presentation/AccountTemplates.php:478
+#: includes/Presentation/AccountTemplates.php:479
 msgid ""
 "This saved solution needs a new calculation before it can be added to your "
 "solution draft."
@@ -2613,29 +2632,29 @@ msgstr ""
 "Diese gespeicherte Lösung muss neu berechnet werden, bevor Sie sie dem "
 "Lösungsentwurf hinzufügen können."
 
-#: includes/Presentation/AccountTemplates.php:480
+#: includes/Presentation/AccountTemplates.php:481
 msgid "Keep solution"
 msgstr "Lösung behalten"
 
-#: includes/Presentation/AccountTemplates.php:481
+#: includes/Presentation/AccountTemplates.php:482
 msgid "Remove this saved solution?"
 msgstr "Diese gespeicherte Lösung entfernen?"
 
-#: includes/Presentation/AccountTemplates.php:482
+#: includes/Presentation/AccountTemplates.php:483
 msgid "Remove solution"
 msgstr "Lösung entfernen"
 
-#: includes/Presentation/AccountTemplates.php:483
-#: includes/Presentation/AccountTemplates.php:636
+#: includes/Presentation/AccountTemplates.php:484
+#: includes/Presentation/AccountTemplates.php:655
 #: templates/myaccount/linker-saved-solutions.php:55
 msgid "Design report (PDF)"
 msgstr "Auslegungsbericht (PDF)"
 
-#: includes/Presentation/AccountTemplates.php:486
+#: includes/Presentation/AccountTemplates.php:487
 msgid "No inquiries yet."
 msgstr "Noch keine Anfragen."
 
-#: includes/Presentation/AccountTemplates.php:487
+#: includes/Presentation/AccountTemplates.php:488
 #: includes/Presentation/LoginGate.php:64
 #: includes/Presentation/Shortcodes.php:372 includes/Vocabulary/Terms.php:38
 #: templates/emails/linker-approval-approved.php:26
@@ -2643,19 +2662,23 @@ msgstr "Noch keine Anfragen."
 msgid "Browse products"
 msgstr "Zu den Produkten"
 
-#: includes/Presentation/AccountTemplates.php:489
+#: includes/Presentation/AccountTemplates.php:490
 msgid "Projects"
 msgstr "Projekte"
 
-#: includes/Presentation/AccountTemplates.php:490
+#: includes/Presentation/AccountTemplates.php:491
 msgid "Saved projects could not be loaded."
 msgstr "Gespeicherte Projekte konnten nicht geladen werden."
 
-#: includes/Presentation/AccountTemplates.php:491
-msgid "The design reports of your saved solutions will appear here."
-msgstr "Die Entwurfsberichte Ihrer gespeicherten Lösungen erscheinen hier."
-
 #: includes/Presentation/AccountTemplates.php:492
+msgid ""
+"Your quotations and the design reports of your saved solutions will appear "
+"here."
+msgstr ""
+"Ihre Angebote und die Entwurfsberichte Ihrer gespeicherten Lösungen "
+"erscheinen hier."
+
+#: includes/Presentation/AccountTemplates.php:493
 #: templates/myaccount/linker-saved-solutions.php:19
 msgid ""
 "Solutions you save in the Solution Configurator appear here, with their "
@@ -2664,23 +2687,23 @@ msgstr ""
 "Lösungen, die Sie im Lösungskonfigurator speichern, erscheinen hier mit "
 "ihrem Auslegungsbericht."
 
-#: includes/Presentation/AccountTemplates.php:493
+#: includes/Presentation/AccountTemplates.php:494
 msgid "Recent inquiries"
 msgstr "Neueste Anfragen"
 
-#: includes/Presentation/AccountTemplates.php:494
+#: includes/Presentation/AccountTemplates.php:495
 msgid "View all"
 msgstr "Alle anzeigen"
 
 #. translators: %s: inquiry number.
-#: includes/Presentation/AccountTemplates.php:893
+#: includes/Presentation/AccountTemplates.php:913
 #: includes/Vocabulary/Terms.php:121
 #, php-format
 msgid "View inquiry %s"
 msgstr "Anfrage %s ansehen"
 
 #. translators: %s: number of products in the inquiry.
-#: includes/Presentation/AccountTemplates.php:906
+#: includes/Presentation/AccountTemplates.php:926
 #, php-format
 msgid "%s product"
 msgid_plural "%s products"
@@ -3674,7 +3697,7 @@ msgstr "PV-Referenzmodul"
 
 #: includes/Products/EngineeringReference.php:84
 msgid "Reference cable"
-msgstr ""
+msgstr "Referenzkabel"
 
 #: includes/Products/EngineeringReference.php:91
 msgid "Engineering ID"
@@ -4170,51 +4193,64 @@ msgstr "Produkt nicht verfügbar"
 msgid ""
 "Installation facts need a current Woo product, item identity and English/"
 "German names."
-msgstr ""
+msgstr "Installationsfakten brauchen ein aktuelles Woo-Produkt, eine Artikelnummer sowie englische und deutsche Namen."
 
 #: includes/Products/Publication/InstallationFacts.php:60
 msgid "Each installation fact needs an explicit handling and basis."
 msgstr ""
+"Jeder Installationsfact braucht eine ausdrückliche Verarbeitung und "
+"Grundlage."
 
 #: includes/Products/Publication/InstallationFacts.php:63
 msgid ""
 "Installation fact quantities need an explicit unit and a whole count for "
 "pieces or pairs."
 msgstr ""
+"Mengenangaben von Installationsfakten brauchen eine explizite Einheit und "
+"eine ganze Stückzahl pro Stück oder Paar."
 
 #: includes/Products/Publication/InstallationFacts.php:66
 msgid "Installation fact quantities must be positive and interoperable."
 msgstr ""
+"Mengenangaben von Installationsfakten müssen positiv und ineinander "
+"umrechenbar sein."
 
 #: includes/Products/Publication/InstallationFacts.php:72
 msgid ""
 "Installation evidence must be a current product document with its PDF page "
 "and exact quote."
 msgstr ""
+"Der Installationsbeleg muss ein aktuelles Produktdokument mit PDF-Seite und "
+"wörtlichem Zitat sein."
 
 #: includes/Products/Publication/InstallationFacts.php:75
 msgid ""
 "Installation facts are bound to exact current document bytes and version."
 msgstr ""
+"Installationsfakten sind an die exakten aktuellen Dokumentbytes und die "
+"Version gebunden."
 
 #: includes/Products/Publication/InstallationFacts.php:81
 msgid ""
 "Installation specifications must retain their typed terminal and requirement "
 "semantics."
 msgstr ""
+"Installationsspezifikationen müssen ihre typisierten Anschluss- und "
+"Anforderungssemantiken behalten."
 
 #: includes/Products/Publication/InstallationFacts.php:124
 msgid "Unsupported installation facts format."
-msgstr ""
+msgstr "Nicht unterstütztes Format der Installationsfakten."
 
 #: includes/Products/Publication/InstallationFacts.php:129
 msgid "Installation fact identities must be distinct."
-msgstr ""
+msgstr "Die Identitäten der Installationsfakten müssen eindeutig sein."
 
 #: includes/Products/Publication/InstallationFacts.php:261
 #: includes/Products/Publication/InstallationFacts.php:266
 msgid "Installation conditions need English and German text."
 msgstr ""
+"Installationsbedingungen brauchen einen englischen und einen deutschen Text."
 
 #: includes/Products/Publication/Module.php:166
 msgid "Public technical document"
@@ -4826,6 +4862,91 @@ msgstr ""
 "bleiben erhalten, bis die gespeicherte Anfrage bearbeitet oder ihre Daten im "
 "System gelöscht wurden."
 
+#: includes/Quotation/AdminBox.php:47 includes/Quotation/AdminBox.php:132
+#: templates/quotation/quotation.php:70
+msgid "Quotation"
+msgstr "Angebot"
+
+#. translators: %s: date.
+#: includes/Quotation/AdminBox.php:68
+#, php-format
+msgid "Issued %s"
+msgstr "Ausgestellt am %s"
+
+#. translators: %s: date.
+#: includes/Quotation/AdminBox.php:70
+#, php-format
+msgid "Valid until %s"
+msgstr "Gültig bis %s"
+
+#: includes/Quotation/AdminBox.php:83
+msgid ""
+"Save your changes to prices and quantities, then issue the Quotation. The "
+"customer receives an email with the link."
+msgstr ""
+"Speichern Sie Ihre Änderungen an Preisen und Mengen und stellen Sie dann das "
+"Angebot aus. Der Kunde erhält eine E-Mail mit dem Link."
+
+#: includes/Quotation/AdminBox.php:85
+msgid "Issue Quotation"
+msgstr "Angebot ausstellen"
+
+#: includes/Quotation/Emails/QuotationIssuedEmail.php:69
+msgid "Quotation issued"
+msgstr "Angebot ausgestellt"
+
+#: includes/Quotation/Emails/QuotationIssuedEmail.php:70
+msgid "Sent to the customer when staff issue the Quotation of an inquiry."
+msgstr ""
+"Wird an den Kunden gesendet, wenn das Team das Angebot einer Anfrage "
+"ausstellt."
+
+#. translators: {quotation_number}: Quotation number, {order_number}: inquiry number.
+#: includes/Quotation/Emails/QuotationIssuedEmail.php:233
+msgid "Your Quotation {quotation_number} for inquiry #{order_number}"
+msgstr "Ihr Angebot {quotation_number} zur Anfrage Nr. {order_number}"
+
+#: includes/Quotation/Emails/QuotationIssuedEmail.php:240
+msgid "Your Quotation is ready"
+msgstr "Ihr Angebot ist bereit"
+
+#: includes/Quotation/Issuer.php:136
+msgid "This inquiry already has a Quotation."
+msgstr "Diese Anfrage hat bereits ein Angebot."
+
+#: includes/Quotation/Issuer.php:139
+msgid "Only a received inquiry gets a Quotation."
+msgstr "Nur eine eingegangene Anfrage erhält ein Angebot."
+
+#: includes/Quotation/Issuer.php:158
+msgid "The inquiry has no products."
+msgstr "Die Anfrage enthält keine Produkte."
+
+#: includes/Quotation/Issuer.php:161
+msgid "Set a price for every product before issuing the Quotation."
+msgstr ""
+"Setzen Sie für jedes Produkt einen Preis, bevor Sie das Angebot ausstellen."
+
+#: includes/Quotation/Issuer.php:183
+msgid ""
+"This inquiry is being issued a Quotation right now; please reload the page "
+"in a moment."
+msgstr ""
+"Für diese Anfrage wird gerade ein Angebot ausgestellt. Bitte laden Sie die "
+"Seite in einem Moment neu."
+
+#. translators: %s: Quotation number.
+#: includes/Quotation/Issuer.php:221
+#, php-format
+msgid "Quotation %s issued."
+msgstr "Angebot %s ausgestellt."
+
+#: includes/Quotation/Issuer.php:236
+msgid "No Quotation number could be reserved; please try again."
+msgstr ""
+"Es konnte keine Angebotsnummer reserviert werden. Bitte versuchen Sie es "
+"erneut."
+
 #. translators: %s: email domain.
 #: includes/Registration/AccountSignals.php:56
 #, php-format
@@ -4965,7 +5086,8 @@ msgstr "Linker-Freigabe"
 #: includes/Registration/BillingVatField.php:39
 #: includes/Registration/BillingVatField.php:55
 #: includes/Registration/BillingVatField.php:86
-#: includes/Registration/Fields.php:122
+#: includes/Registration/Fields.php:122 templates/quotation/quotation.php:85
+#: templates/quotation/quotation.php:100
 msgid "VAT ID"
 msgstr "USt-IdNr."
 
@@ -5374,7 +5496,9 @@ msgstr "Team-Postfach"
 msgid ""
 "The address customers see: on the website and in Genie's answers. Internal "
 "notifications do not go here."
-msgstr "Die Adresse, die Kunden sehen: auf der Website und in Genies Antworten. Interne Benachrichtigungen gehen nicht an diese Adresse."
+msgstr ""
+"Die Adresse, die Kunden sehen: auf der Website und in Genies Antworten. "
+"Interne Benachrichtigungen gehen nicht an diese Adresse."
 
 #: includes/Settings/SettingsTab.php:97
 msgid "Internal notifications"
@@ -5431,8 +5555,38 @@ msgstr ""
 msgid "Phone"
 msgstr "Telefon"
 
+#: includes/Settings/SettingsTab.php:161
+msgid "Quotations"
+msgstr "Angebote"
+
+#: includes/Settings/SettingsTab.php:163
+msgid ""
+"The team issues quotations on the inquiry screen; billing is agreed offline. "
+"The document itself names no bank account."
+msgstr "Das Team stellt Angebote im Anfragebildschirm aus; die Abrechnung wird offline vereinbart. Das Dokument selbst nennt keine Bankverbindung."
+
+#: includes/Settings/SettingsTab.php:167
+msgid "Number prefix"
+msgstr "Nummernpräfix"
+
+#: includes/Settings/SettingsTab.php:168
+msgid ""
+"Numbers read PREFIX-YEAR-NNNN and count from 1 each calendar year. Empty "
+"uses DLK-QT."
+msgstr ""
+"Nummern lauten PREFIX-JAHR-NNNN und zählen je Kalenderjahr ab 1. Leer "
+"verwendet DLK-QT."
+
+#: includes/Settings/SettingsTab.php:176
+msgid "Seller"
+msgstr "Verkäufer"
+
+#: includes/Settings/SettingsTab.php:182
+msgid "Seller VAT ID"
+msgstr "USt-IdNr. des Verkäufers"
+
 #. translators: %s: the addresses that were left out, comma-separated.
-#: includes/Settings/SettingsTab.php:183
+#: includes/Settings/SettingsTab.php:225
 #, php-format
 msgid "Not an email address, left out: %s"
 msgstr "Keine E-Mail-Adresse, nicht übernommen: %s"
@@ -5552,7 +5706,9 @@ msgstr "Vielen Dank. Ihre Anfrage ist eingegangen."
 msgid ""
 "Please log in to send your inquiry. No account yet? Register on the account "
 "page."
-msgstr "Bitte melden Sie sich an, um Ihre Anfrage zu senden. Noch kein Konto? Registrieren Sie sich auf der Kontoseite."
+msgstr ""
+"Bitte melden Sie sich an, um Ihre Anfrage zu senden. Noch kein Konto? "
+"Registrieren Sie sich auf der Kontoseite."
 
 #: includes/Vocabulary/Labels.php:75
 msgid ""
@@ -5575,20 +5731,29 @@ msgid ""
 "Review the lines in your solution draft, adjust quantities and check the "
 "totals. Approved partner accounts see net prices, tax and delivery terms "
 "before the inquiry page."
-msgstr "Prüfen Sie die Positionen in Ihrem Lösungsentwurf, passen Sie die Mengen an und prüfen Sie die Summen. Freigegebene Partnerkonten sehen Nettopreise, Steuern und Lieferbedingungen vor der Anfrageseite."
+msgstr ""
+"Prüfen Sie die Positionen in Ihrem Lösungsentwurf, passen Sie die Mengen an "
+"und prüfen Sie die Summen. Freigegebene Partnerkonten sehen Nettopreise, "
+"Steuern und Lieferbedingungen vor der Anfrageseite."
 
 #: includes/Vocabulary/Labels.php:131
 msgid ""
 "Build a solution draft from products or product numbers. Approved partner "
 "accounts can review prices, delivery, tax and the inquiry page."
-msgstr "Erstellen Sie einen Lösungsentwurf aus Produkten oder Artikelnummern. Freigegebene Partnerkonten können Preise, Lieferung, Steuern und die Anfrageseite einsehen."
+msgstr ""
+"Erstellen Sie einen Lösungsentwurf aus Produkten oder Artikelnummern. "
+"Freigegebene Partnerkonten können Preise, Lieferung, Steuern und die "
+"Anfrageseite einsehen."
 
 #: includes/Vocabulary/Labels.php:132
 msgid ""
 "Prüfen Sie die Positionen in Ihrem Lösungsentwurf, passen Sie die Mengen an "
 "und prüfen Sie die Summen. Freigegebene Partnerkonten sehen Nettopreise, "
 "Steuern und Lieferbedingungen vor der Anfrage."
-msgstr "Prüfen Sie die Positionen in Ihrem Lösungsentwurf, passen Sie die Mengen an und prüfen Sie die Summen. Freigegebene Partnerkonten sehen Nettopreise, Steuern und Lieferbedingungen vor der Anfrage."
+msgstr ""
+"Prüfen Sie die Positionen in Ihrem Lösungsentwurf, passen Sie die Mengen an "
+"und prüfen Sie die Summen. Freigegebene Partnerkonten sehen Nettopreise, "
+"Steuern und Lieferbedingungen vor der Anfrage."
 
 #: includes/Vocabulary/LocaleFormat.php:26
 msgctxt "date format, see https://www.php.net/manual/datetime.format.php"
@@ -5716,7 +5881,9 @@ msgstr ""
 msgid ""
 "Some products in your solution draft need checking. Please go back to the "
 "solution draft before you send your inquiry."
-msgstr "Einige Produkte in Ihrem Lösungsentwurf müssen geprüft werden. Bitte gehen Sie zum Lösungsentwurf zurück, bevor Sie Ihre Anfrage senden."
+msgstr ""
+"Einige Produkte in Ihrem Lösungsentwurf müssen geprüft werden. Bitte gehen "
+"Sie zum Lösungsentwurf zurück, bevor Sie Ihre Anfrage senden."
 
 #: includes/Vocabulary/Terms.php:70
 msgid "Sort by popularity"
@@ -5818,7 +5985,9 @@ msgstr ""
 msgid ""
 "The totals have been updated. Please confirm your inquiry with the "
 "&ldquo;Send inquiry&rdquo; button at the bottom of the page."
-msgstr "Die Summen wurden aktualisiert. Bitte bestätigen Sie Ihre Anfrage mit der Schaltfläche „Anfrage senden“ am unteren Ende der Seite."
+msgstr ""
+"Die Summen wurden aktualisiert. Bitte bestätigen Sie Ihre Anfrage mit der "
+"Schaltfläche „Anfrage senden“ am unteren Ende der Seite."
 
 #: includes/Vocabulary/Terms.php:106
 msgid "Please log in to your account to view this inquiry."
@@ -6089,6 +6258,7 @@ msgstr ""
 
 #. translators: %s: the customer's full name.
 #: templates/emails/linker-inquiry-received.php:39
+#: templates/emails/linker-quotation-issued.php:27
 #, php-format
 msgid "Hello %s,"
 msgstr "Guten Tag %s,"
@@ -6132,6 +6302,26 @@ msgstr "Neue Anfrage %1$s von %2$s (%3$s)."
 #, php-format
 msgid "This is about: %s"
 msgstr "Es geht um: %s"
+
+#. translators: 1: Quotation number, 2: inquiry number, 3: last day of validity. The sentence follows the salutation "Hello %s,".
+#: templates/emails/linker-quotation-issued.php:34
+#, php-format
+msgid "Your Quotation %1$s for inquiry %2$s is ready and valid until %3$s."
+msgstr "Ihr Angebot %1$s zur Anfrage %2$s ist bereit und gilt bis zum %3$s."
+
+#: templates/emails/linker-quotation-issued.php:41
+msgid "Download the Quotation (PDF)"
+msgstr "Angebot herunterladen (PDF)"
+
+#. translators: %s: link to the inquiry in the account.
+#: templates/emails/linker-quotation-issued.php:46
+#, php-format
+msgid ""
+"You need to be logged in to open it. You can also find it in your account "
+"under %s."
+msgstr ""
+"Zum Öffnen müssen Sie angemeldet sein. Sie finden sie auch in Ihrem Konto "
+"unter %s."
 
 #: templates/emails/linker-registration-received.php:24
 msgid "A partner registration was submitted using this email address."
@@ -6336,6 +6526,123 @@ msgstr ""
 msgid "Solution"
 msgstr "Lösung"
 
+#: templates/quotation/quotation.php:72
+msgid "Quotation no."
+msgstr "Angebotsnr."
+
+#: templates/quotation/quotation.php:73
+msgid "Inquiry no."
+msgstr "Anfrage-Nr."
+
+#: templates/quotation/quotation.php:75
+msgid "Valid until"
+msgstr "Gültig bis"
+
+#: templates/quotation/quotation.php:108
+msgid "Pos."
+msgstr "Pos."
+
+#: templates/quotation/quotation.php:110
+msgid "Qty"
+msgstr "Menge"
+
+#: templates/quotation/quotation.php:111
+msgid "Unit price (net)"
+msgstr "Einzelpreis (netto)"
+
+#: templates/quotation/quotation.php:112
+msgid "Amount (net)"
+msgstr "Betrag (netto)"
+
+#: templates/quotation/quotation.php:122
+msgid "Product no."
+msgstr "Produktnummer"
+
+#: templates/quotation/quotation.php:143
+msgid "Subtotal (net)"
+msgstr "Zwischensumme (netto)"
+
+#: templates/quotation/quotation.php:147
+msgid "Total"
+msgstr "Gesamtbetrag"
+
+#. translators: %s: last day of validity.
+#: templates/quotation/quotation.php:153
+#, php-format
+msgid "This Quotation is valid until %s."
+msgstr "Dieses Angebot gilt bis zum %s."
+
+#: templates/quotation/quotation.php:155
+msgid ""
+"This document is not an invoice within the meaning of Section 14 of the "
+"German VAT Act (UStG). The invoice will be issued separately."
+msgstr ""
+"Dieses Dokument ist keine Rechnung im Sinne des § 14 UStG. Die Rechnung wird "
+"gesondert ausgestellt."
+
+#: templates/quotation/quotation.php:159
+msgid "Next steps"
+msgstr "Nächste Schritte"
+
+#. translators: %s: team email address.
+#: templates/quotation/quotation.php:163
+#, php-format
+msgid ""
+"Reply to %s to confirm or adjust this Quotation. We agree on billing and "
+"delivery with you personally."
+msgstr "Antworten Sie an %s, um dieses Angebot zu bestätigen oder anzupassen. Abrechnung und Lieferung vereinbaren wir persönlich mit Ihnen."
+
+#~ msgid ""
+#~ "The team issues quotations on the inquiry screen; payment terms are "
+#~ "agreed offline. The document itself names no bank account."
+#~ msgstr ""
+#~ "Das Team stellt Angebote im Anfragebildschirm aus; Zahlungsbedingungen "
+#~ "werden offline vereinbart. Das Dokument selbst nennt keine Bankverbindung."
+
+#, php-format
+#~ msgid ""
+#~ "Reply to %s to confirm or adjust this Quotation. We agree payment terms "
+#~ "and delivery with you personally."
+#~ msgstr ""
+#~ "Antworten Sie an %s, um dieses Angebot zu bestätigen oder anzupassen. "
+#~ "Zahlungsbedingungen und Lieferung vereinbaren wir persönlich mit Ihnen."
+
+#~ msgid "No quotation has been in preparation for more than 3 days."
+#~ msgstr "Kein Angebot ist seit mehr als 3 Tagen in Vorbereitung."
+
+#, php-format
+#~ msgid "In quotation preparation since %1$s at %2$s (%3$s)"
+#~ msgstr "In Angebotsvorbereitung seit %1$s um %2$s (%3$s)"
+
+#~ msgid "The design reports of your saved solutions will appear here."
+#~ msgstr "Die Entwurfsberichte Ihrer gespeicherten Lösungen erscheinen hier."
+
+#~ msgid "Bank transfer"
+#~ msgstr "Überweisung"
+
+#, php-format
+#~ msgid ""
+#~ "Please transfer the total to the account below and give %s as the "
+#~ "reference."
+#~ msgstr ""
+#~ "Bitte überweisen Sie den Gesamtbetrag auf das unten genannte Konto und "
+#~ "geben Sie %s als Verwendungszweck an."
+
+#~ msgid "Account holder"
+#~ msgstr "Kontoinhaber"
+
+#~ msgid "Bank"
+#~ msgstr "Bank"
+
+#~ msgid "IBAN"
+#~ msgstr "IBAN"
+
+#~ msgid "BIC"
+#~ msgstr "BIC"
+
+#~ msgid "Reference"
+#~ msgstr "Verwendungszweck"
+
 #~ msgid ""
 #~ "The address customers see: on the Proforma, on the website and in Genie's "
 #~ "answers. Internal notifications do not go here."
@@ -6354,33 +6661,12 @@ msgstr "Lösung"
 #~ "Steht auf jeder Proformarechnung. Die Anschrift des Verkäufers ist die "
 #~ "Shop-Adresse unter „Allgemein“."
 
-#~ msgid "Number prefix"
-#~ msgstr "Nummernpräfix"
-
 #~ msgid ""
 #~ "Numbers read PREFIX-YEAR-NNNN and count from 1 each calendar year. Empty "
 #~ "uses DLK-PF, the prefix on de-linker.com."
 #~ msgstr ""
 #~ "Nummern haben die Form PRÄFIX-JAHR-NNNN und zählen jedes Kalenderjahr ab "
 #~ "1. Bleibt das Feld leer, gilt DLK-PF, das Präfix auf de-linker.com."
-
-#~ msgid "Seller"
-#~ msgstr "Verkäufer"
-
-#~ msgid "Seller VAT ID"
-#~ msgstr "USt-IdNr. des Verkäufers"
-
-#~ msgid "Account holder"
-#~ msgstr "Kontoinhaber"
-
-#~ msgid "Bank"
-#~ msgstr "Bank"
-
-#~ msgid "IBAN"
-#~ msgstr "IBAN"
-
-#~ msgid "BIC"
-#~ msgstr "BIC"
 
 #~ msgid "Request Proforma"
 #~ msgstr "Proforma anfordern"
@@ -6481,14 +6767,6 @@ msgstr "Lösung"
 #~ msgid "The final delivery charge is included in your Proforma."
 #~ msgstr "Die endgültigen Frachtkosten werden in Ihrer Proforma ausgewiesen."
 
-#, php-format
-#~ msgid "Issued %s"
-#~ msgstr "Ausgestellt am %s"
-
-#, php-format
-#~ msgid "Valid until %s"
-#~ msgstr "Gültig bis %s"
-
 #~ msgid ""
 #~ "Save your changes to prices and quantities, then issue the Proforma "
 #~ "invoice. The customer receives an email with the link."
@@ -6524,9 +6802,6 @@ msgstr "Lösung"
 #~ msgstr ""
 #~ "Eine Proformarechnung lässt sich nur für eine eingegangene Anfrage "
 #~ "ausstellen."
-
-#~ msgid "The inquiry has no products."
-#~ msgstr "Die Anfrage enthält keine Produkte."
 
 #~ msgid "Set a price for every product before issuing the Proforma invoice."
 #~ msgstr ""
@@ -6598,68 +6873,12 @@ msgstr "Lösung"
 #~ msgid "Download the Proforma invoice (PDF)"
 #~ msgstr "Proformarechnung herunterladen (PDF)"
 
-#, php-format
-#~ msgid ""
-#~ "You need to be logged in to open it. You can also find it in your account "
-#~ "under %s."
-#~ msgstr ""
-#~ "Zum Öffnen müssen Sie angemeldet sein. Sie finden sie auch in Ihrem Konto "
-#~ "unter %s."
-
 #~ msgid "Proforma no."
 #~ msgstr "Proforma-Nr."
-
-#~ msgid "Inquiry no."
-#~ msgstr "Anfrage-Nr."
-
-#~ msgid "Valid until"
-#~ msgstr "Gültig bis"
-
-#~ msgid "Pos."
-#~ msgstr "Pos."
-
-#~ msgid "Qty"
-#~ msgstr "Menge"
-
-#~ msgid "Unit price (net)"
-#~ msgstr "Einzelpreis (netto)"
-
-#~ msgid "Amount (net)"
-#~ msgstr "Betrag (netto)"
-
-#~ msgid "Product no."
-#~ msgstr "Produktnummer"
-
-#~ msgid "Subtotal (net)"
-#~ msgstr "Zwischensumme (netto)"
-
-#~ msgid "Total"
-#~ msgstr "Gesamtbetrag"
 
 #, php-format
 #~ msgid "This Proforma invoice is valid until %s."
 #~ msgstr "Diese Proformarechnung ist gültig bis %s."
-
-#~ msgid ""
-#~ "This document is not an invoice within the meaning of Section 14 of the "
-#~ "German VAT Act (UStG). The invoice will be issued separately."
-#~ msgstr ""
-#~ "Dieses Dokument ist keine Rechnung im Sinne des § 14 UStG. Die Rechnung "
-#~ "wird gesondert ausgestellt."
-
-#~ msgid "Bank transfer"
-#~ msgstr "Überweisung"
-
-#, php-format
-#~ msgid ""
-#~ "Please transfer the total to the account below and give %s as the "
-#~ "reference."
-#~ msgstr ""
-#~ "Bitte überweisen Sie den Gesamtbetrag auf das unten genannte Konto und "
-#~ "geben Sie %s als Verwendungszweck an."
-
-#~ msgid "Reference"
-#~ msgstr "Verwendungszweck"
 
 #~ msgid "Checking verification…"
 #~ msgstr "Verifizierung läuft …"

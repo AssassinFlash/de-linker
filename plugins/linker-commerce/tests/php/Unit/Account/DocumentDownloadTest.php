@@ -12,16 +12,18 @@ namespace Linker\Commerce\Tests\Unit\Account;
 use Linker\Commerce\Account\DocumentDownload;
 use Linker\Commerce\Account\PrivateFiles;
 use Linker\Commerce\Account\SavedSolutions;
-use Linker\Commerce\Registration\Approval;
+use Linker\Commerce\Quotation\Issuer;
 use Linker\Commerce\Tests\TestCase;
+use Mockery;
 use RuntimeException;
+use WC_Order;
 use WP_Mock;
 use WP_Post;
 
 /**
- * Tests for DocumentDownload: the design report link serves only the owning
- * account and shop staff; quotations are offline documents (owner ruling
- * 2026-11-08). wp_die() throws here, as it ends the request in WordPress.
+ * Tests for DocumentDownload: a Quotation serves only accounts that may read
+ * amounts plus staff; a design report serves its owner in every approval
+ * state. wp_die() throws here, as it ends the request in WordPress.
  *
  * @covers \Linker\Commerce\Account\DocumentDownload
  */
@@ -56,8 +58,19 @@ final class DocumentDownloadTest extends TestCase {
 				},
 			)
 		);
+		$order = Mockery::mock( WC_Order::class );
+		$order->allows( 'get_customer_id' )->andReturn( 5 );
+		$order->allows( 'get_meta' )->with( Issuer::FILE_META )->andReturn( '20/QT-2026-0001-abc.pdf' );
+		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( 'QT-2026-0001' );
+		WP_Mock::userFunction( 'wc_get_order', array( 'return' => $order ) );
 		WP_Mock::userFunction( 'wp_upload_dir', array( 'return' => array( 'basedir' => '/nonexistent' ) ) );
 		WP_Mock::userFunction( 'get_post_meta', array( 'return' => '' ) );
+		WP_Mock::userFunction(
+			'get_user_meta',
+			array(
+				'return' => static fn ( int $user_id, string $key ): string => 5 === $user_id && 'linker_approval_status' === $key ? 'approved' : '',
+			)
+		);
 	}
 
 	/** Registration remains secondary to the original account's ownership check. */
@@ -79,27 +92,21 @@ final class DocumentDownloadTest extends TestCase {
 	 * The downloads of a test.
 	 */
 	private function downloads(): DocumentDownload {
-		return new DocumentDownload( new SavedSolutions( new PrivateFiles( 'solution-reports' ), '/plugin/templates/' ) );
+		return new DocumentDownload( new PrivateFiles( 'quotation' ), new SavedSolutions( new PrivateFiles( 'solution-reports' ), '/plugin/templates/' ) );
 	}
 
 	/**
-	 * Asks for a design report and returns the HTTP status wp_die() gave.
+	 * Asks for a Quotation and returns the HTTP status wp_die() gave.
 	 *
-	 * @param bool           $logged_in Whether someone is logged in.
-	 * @param int            $user_id   Who.
-	 * @param bool           $is_staff  Whether that user manages the shop.
-	 * @param numeric-string $author Author of the saved solution.
+	 * @param bool $logged_in Whether someone is logged in.
+	 * @param int  $user_id   Who.
+	 * @param bool $is_staff  Whether that user manages the shop.
 	 */
-	private function status( bool $logged_in, int $user_id = 0, bool $is_staff = false, string $author = '5' ): string {
-		$_GET                  = array(
-			DocumentDownload::QUERY_VAR => 'report',
-			'id'                        => '45',
+	private function status( bool $logged_in, int $user_id = 0, bool $is_staff = false ): string {
+		$_GET = array(
+			DocumentDownload::QUERY_VAR => 'quotation',
+			'id'                        => '20',
 		);
-		$solution              = new WP_Post( new \stdClass() );
-		$solution->ID          = 45;
-		$solution->post_author = $author;
-		$solution->post_type   = SavedSolutions::POST_TYPE;
-		WP_Mock::userFunction( 'get_post', array( 'return' => $solution ) );
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => $logged_in ) );
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => $user_id ) );
 		WP_Mock::userFunction( 'current_user_can', array( 'return' => $is_staff ) );
@@ -140,7 +147,7 @@ final class DocumentDownloadTest extends TestCase {
 	}
 
 	/**
-	 * A saved solution of another type is not a report: the owner check answers 403 to a stranger.
+	 * Requests without the query variable are not touched.
 	 */
 	public function test_other_requests(): void {
 		$_GET = array();
@@ -149,12 +156,17 @@ final class DocumentDownloadTest extends TestCase {
 	}
 
 	/**
-	 * The report link names the kind of document and its id.
+	 * Links name the kind of document and its id; the Quotation link is empty
+	 * unless the visitor may read amounts (#425).
 	 */
 	public function test_urls(): void {
+		WP_Mock::userFunction( 'current_user_can', array( 'return' => true ) );
 		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/' ) );
 		WP_Mock::userFunction( 'add_query_arg', array( 'return' => static fn ( array $args, string $url ): string => $url . '?' . http_build_query( $args ) ) );
+		$order = Mockery::mock( WC_Order::class );
+		$order->allows( 'get_id' )->andReturn( 20 );
 
+		$this->assertSame( 'https://example.test/?linker-document=quotation&id=20', DocumentDownload::quotation_url( $order ) );
 		$this->assertSame( 'https://example.test/?linker-document=report&id=45', DocumentDownload::report_url( 45 ) );
 	}
 }

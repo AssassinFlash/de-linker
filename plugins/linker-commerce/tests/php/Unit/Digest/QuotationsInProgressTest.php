@@ -9,23 +9,24 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Unit\Digest;
 
-use Linker\Commerce\Digest\Format;
 use Linker\Commerce\Digest\QuotationsInProgress;
 use Linker\Commerce\Inquiry\Statuses;
+use Linker\Commerce\Quotation\Issuer;
 use Linker\Commerce\Tests\TestCase;
+use Mockery;
+use WC_Order;
 use WP_Mock;
 
 /**
- * Tests for QuotationsInProgress: the window is "last touched more than
- * 3 days ago", the entries carry number, company, admin link and the moment.
+ * Tests for QuotationsInProgress: the window starts at the Issuer's meta,
+ * runs 3 × 24 hours, and is strict.
  *
  * @covers \Linker\Commerce\Digest\QuotationsInProgress
- * @covers \Linker\Commerce\Digest\Format
  */
 final class QuotationsInProgressTest extends TestCase {
 
 	/**
-	 * Unix time the digest runs at.
+	 * Unix time the digest runs at: 2026-10-11 09:00 Berlin (CEST).
 	 */
 	private const NOW = 1_791_702_000;
 
@@ -40,16 +41,15 @@ final class QuotationsInProgressTest extends TestCase {
 		WP_Mock::userFunction(
 			'wp_date',
 			array(
-				'return' => static fn ( string $format ): string => 'H:i' === $format ? '07:12' : 'October 10, 2026',
+				'return' => static fn ( string $format ): string => 'H:i' === $format ? '09:30' : 'October 6, 2026',
 			)
 		);
 	}
 
 	/**
-	 * The query reads the quotations in preparation; the window is applied on
-	 * the record's last change.
+	 * The query reads the issued status; the window filters on the issue meta.
 	 */
-	public function test_queries_quotations_and_applies_the_window(): void {
+	public function test_window_is_three_days_from_the_issue_meta(): void {
 		$captured = null;
 		WP_Mock::userFunction(
 			'wc_get_orders',
@@ -57,48 +57,58 @@ final class QuotationsInProgressTest extends TestCase {
 				'times'  => 1,
 				'return' => static function ( array $args ) use ( &$captured ): array {
 					$captured = $args;
-					return array( self::order( self::NOW - 3 * 86400 - 3600 ), self::order( self::NOW - 86400 ) );
+					return array();
 				},
 			)
 		);
 
-		$entries = ( new QuotationsInProgress( self::NOW ) )->entries();
-
-		$this->assertCount( 1, $entries );
-		$this->assertSame( 'Inquiry #20 – Solarbau GmbH', $entries[0]['label'] );
+		$this->assertSame( array(), ( new QuotationsInProgress( self::NOW ) )->entries() );
 		$this->assertSame( array( Statuses::QUOTATION ), $captured['status'] ?? null );
-		$this->assertSame( -1, $captured['limit'] );
-		$this->assertSame( 3 * 86400, QuotationsInProgress::WINDOW );
+		$this->assertSame( 3 * 24 * 3600, QuotationsInProgress::WINDOW );
 	}
 
 	/**
-	 * A quotation comes back as number, company, admin link and the moment the
-	 * record was last touched.
+	 * In, out and the boundaries: 73 hours in, 71 and exactly 72 out, a
+	 * quotation-in-progress inquiry without the issue meta out.
 	 */
-	public function test_entry_carries_number_company_link_and_moment(): void {
-		WP_Mock::userFunction( 'wc_get_orders', array( 'return' => array( self::order( self::NOW - 4 * 86400 ) ) ) );
+	public function test_boundaries_are_strict(): void {
+		$in       = $this->order( self::NOW - 73 * 3600, 'QT-2026-0001' );
+		$out      = $this->order( self::NOW - 71 * 3600, 'QT-2026-0002' );
+		$boundary = $this->order( self::NOW - QuotationsInProgress::WINDOW, 'QT-2026-0003' );
+		$no_meta  = $this->order( 0, '' );
+		WP_Mock::userFunction( 'wc_get_orders', array( 'return' => array( $in, $out, $boundary, $no_meta ) ) );
 
 		$entries = ( new QuotationsInProgress( self::NOW ) )->entries();
 
 		$this->assertCount( 1, $entries );
 		$this->assertSame( 'Inquiry #20 – Solarbau GmbH', $entries[0]['label'] );
+		$this->assertSame( 'Quotation QT-2026-0001 issued on October 6, 2026 at 09:30 (3 days ago)', $entries[0]['detail'] );
 		$this->assertSame( '/wp-admin/admin.php?page=wc-orders&id=20&action=edit', $entries[0]['url'] );
-		$this->assertSame( 'Open the inquiry', $entries[0]['link_text'] );
 	}
 
 	/**
-	 * A mock quotation order.
-	 *
-	 * @param int $modified Unix time of the last change.
+	 * The empty sentence mirrors the window.
 	 */
-	private static function order( int $modified ): \WC_Order {
-		$date = \Mockery::mock( 'WC_DateTime' );
-		$date->shouldReceive( 'getTimestamp' )->andReturn( $modified );
-		$order = \Mockery::mock( 'WC_Order' );
-		$order->shouldReceive( 'get_date_modified' )->andReturn( $date );
-		$order->shouldReceive( 'get_order_number' )->andReturn( '20' );
-		$order->shouldReceive( 'get_billing_company' )->andReturn( 'Solarbau GmbH' );
-		$order->shouldReceive( 'get_edit_order_url' )->andReturn( '/wp-admin/admin.php?page=wc-orders&id=20&action=edit' );
+	public function test_empty_text(): void {
+		$this->assertSame( 'No Quotation has waited more than 3 days for a reply.', ( new QuotationsInProgress() )->empty_text() );
+	}
+
+	/**
+	 * An issued inquiry.
+	 *
+	 * @param int    $issued Unix time of issue, 0 for none.
+	 * @param string $number Quotation number.
+	 */
+	private function order( int $issued, string $number ): WC_Order {
+		$order = Mockery::mock( WC_Order::class );
+		$order->allows( 'get_order_number' )->andReturn( '20' );
+		$order->allows( 'get_billing_company' )->andReturn( 'Solarbau GmbH' );
+		$order->allows( 'get_edit_order_url' )->andReturn( '/wp-admin/admin.php?page=wc-orders&id=20&action=edit' );
+		$order->allows( 'get_meta' )->andReturnUsing(
+			static function ( string $key ) use ( $issued, $number ): string {
+				return Issuer::ISSUED_META === $key ? (string) $issued : $number;
+			}
+		);
 		return $order;
 	}
 }

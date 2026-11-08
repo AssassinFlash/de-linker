@@ -14,18 +14,20 @@ use Linker\Commerce\Gating\PriceDisplay;
 use Linker\Commerce\Presentation\AccountLinks;
 use Linker\Commerce\Presentation\PageUrls;
 use Linker\Commerce\Presentation\Tokens;
+use Linker\Commerce\Quotation\Issuer;
 
-use Linker\Commerce\Proforma\Issuer;
 use WC_Order;
 
 /**
- * The only way to a design report: a link that works for the customer it
- * belongs to and for shop staff. A visitor who is not logged in, and a
- * customer who does not own the document, get 403 (docs/specs/11-commerce.md,
- * acceptance). The design report carries no amounts (quantity, item, model
- * and scope only), so a pending or restricted owner keeps its link and file.
- * Quotations are written and sent offline by the team (owner ruling
- * 2026-11-08); they are not documents of this site.
+ * The only way to a Quotation or design report: a link that works for
+ * the customer it belongs to and for shop staff. A visitor who is not logged
+ * in, and a customer who does not own the document, get 403
+ * (docs/specs/11-commerce.md, acceptance). A pending or restricted owner gets
+ * no Quotation link and a 404 with no PDF bytes (#425): that account may not
+ * read amounts. The design report is not that document: it carries no amounts
+ * (quantity, item, model and scope only), so the owning account keeps its
+ * link and file. The Quotation itself names no bank account (owner ruling
+ * 2026-11-08); payment terms are agreed offline.
  */
 final class DocumentDownload {
 
@@ -37,11 +39,36 @@ final class DocumentDownload {
 	/**
 	 * Sets up the downloads.
 	 *
-	 * @param SavedSolutions $solutions The saved solutions.
+	 * @param PrivateFiles   $quotations Where the Quotation PDFs are kept.
+	 * @param SavedSolutions $solutions  The saved solutions.
 	 */
 	public function __construct(
+		private readonly PrivateFiles $quotations,
 		private readonly SavedSolutions $solutions
 	) {}
+
+	/**
+	 * Link to the Quotation of an inquiry.
+	 *
+	 * Empty unless this visitor may see prices. A pending or restricted account
+	 * gets no link (#425). Shop staff still get it: they issue the document, and
+	 * the customer email is rendered in that same request. serve() refuses the
+	 * download when the visitor may not read the amounts.
+	 *
+	 * @param WC_Order $order Inquiry.
+	 */
+	public static function quotation_url( WC_Order $order ): string {
+		if ( ! self::viewer_may_read_quotation() ) {
+			return '';
+		}
+		return add_query_arg(
+			array(
+				self::QUERY_VAR => 'quotation',
+				'id'            => $order->get_id(),
+			),
+			PageUrls::home()
+		);
+	}
 
 	/**
 	 * Link to the design report of a saved solution.
@@ -82,6 +109,12 @@ final class DocumentDownload {
 		if ( ! is_user_logged_in() || ( get_current_user_id() !== $owner && ! current_user_can( 'manage_woocommerce' ) ) || 0 === $owner ) {
 			$this->deny();
 		}
+		// 404, not 403, for a priced Quotation a pending or restricted owner
+		// asks for: 403 would confirm the document exists. Shop staff still
+		// receive the file (viewer_may_read_quotation()).
+		if ( 'quotation' === $kind && ! self::viewer_may_read_quotation() ) {
+			wp_die( esc_html__( 'This document is not available.', 'linker-commerce' ), esc_html__( 'Document', 'linker-commerce' ), array( 'response' => 404 ) );
+		}
 		if ( '' === $path ) {
 			wp_die( esc_html__( 'This document is not available.', 'linker-commerce' ), esc_html__( 'Document', 'linker-commerce' ), array( 'response' => 404 ) );
 		}
@@ -96,15 +129,38 @@ final class DocumentDownload {
 	/**
 	 * Owner, file path and download name of a document.
 	 *
-	 * @param string $kind "report".
-	 * @param int    $id   Solution id.
+	 * @param string $kind "quotation" or "report".
+	 * @param int    $id   Inquiry or solution id.
 	 * @return array{0: int, 1: string, 2: string}
 	 */
 	private function document( string $kind, int $id ): array {
+		if ( 'quotation' === $kind ) {
+			$order = wc_get_order( $id );
+			if ( $order instanceof WC_Order ) {
+				return array(
+					$order->get_customer_id(),
+					$this->quotations->path( (string) $order->get_meta( Issuer::FILE_META ) ),
+					$order->get_meta( Issuer::NUMBER_META ) . '.pdf',
+				);
+			}
+		}
 		if ( 'report' === $kind ) {
 			return array( $this->solutions->owner( $id ), $this->solutions->report_path( $id ), 'design-report-' . $id . '.pdf' );
 		}
 		return array( 0, '', '' );
+	}
+
+	/**
+	 * Whether this visitor may read a Quotation's amounts.
+	 *
+	 * The check is sees_prices(), not shows_order_total(). The latter also hides contact
+	 * messages and lines that still have no price, and would take an issued
+	 * Quotation away from an approved account. Shop staff pass on
+	 * manage_woocommerce, checked first so the approval lookup is not their path.
+	 */
+	private static function viewer_may_read_quotation(): bool {
+		return current_user_can( 'manage_woocommerce' )
+			|| ( new PriceDisplay( new CommerceState() ) )->sees_prices();
 	}
 
 	/**

@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Account;
 
 use Linker\Commerce\Products\Publication;
+use Linker\Commerce\Quotation\Issuer;
 
 use WC_Abstract_Order;
 use WC_Order;
@@ -47,7 +48,7 @@ final class InquiryList {
 	}
 
 	/**
-	 * The actions of one inquiry: view it, request it again.
+	 * The actions of one inquiry: view it, download its Quotation, request it again.
 	 *
 	 * @param array<string, array{url: string, name: string}> $actions WooCommerce's actions.
 	 * @param WC_Order                                        $order   Inquiry.
@@ -60,6 +61,16 @@ final class InquiryList {
 				'name' => __( 'View', 'linker-commerce' ),
 			),
 		);
+		if ( self::has_quotation( $order ) ) {
+			$url = DocumentDownload::quotation_url( $order );
+			// An empty href is still a download control (#425).
+			if ( '' !== $url ) {
+				$ours['quotation'] = array(
+					'url'  => $url,
+					'name' => __( 'Quotation (PDF)', 'linker-commerce' ),
+				);
+			}
+		}
 		/** This filter is documented in woocommerce/includes/wc-template-functions.php */
 		$again = apply_filters( 'woocommerce_valid_order_statuses_for_order_again', array( 'completed' ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce's own filter, applied as woocommerce_order_again_button() applies it.
 		// The inquiry page has WooCommerce's own "Request again" button under the table;
@@ -122,6 +133,28 @@ final class InquiryList {
 			$value .= apply_filters( 'woocommerce_order_shipping_to_display_tax_label', '&nbsp;<small class="tax_label">' . $label . '</small>', $order, $tax_display );
 		}
 		return $value;
+	}
+
+	/**
+	 * Whether the inquiry has a Quotation the customer can open.
+	 *
+	 * The download is the stored document. A status word without a number has
+	 * no PDF yet, and is not shown as a download. The Issuer writes the
+	 * number when the document is built.
+	 *
+	 * @param WC_Order $order Inquiry.
+	 */
+	public static function has_quotation( WC_Order $order ): bool {
+		return '' !== self::quotation_number( $order );
+	}
+
+	/**
+	 * The Quotation number as the customer reads it, or '' when none was stored.
+	 *
+	 * @param WC_Order $order Inquiry.
+	 */
+	public static function quotation_number( WC_Order $order ): string {
+		return (string) $order->get_meta( Issuer::NUMBER_META );
 	}
 
 	/**

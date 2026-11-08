@@ -11,6 +11,7 @@ namespace Linker\Commerce\Tests\Unit\Presentation;
 
 use Linker\Commerce\Account\PrivateFiles;
 use Linker\Commerce\Account\SavedSolutions;
+use Linker\Commerce\Quotation\Issuer;
 use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Presentation\AccountTemplates;
 use Linker\Commerce\Registration\Approval;
@@ -180,6 +181,7 @@ final class AccountTemplatesTest extends TestCase {
 		$order->allows( 'get_formatted_order_total' )->andReturn( '€1.00' );
 		$order->allows( 'get_item_count' )->andReturn( 3 );
 		$order->allows( 'get_meta' )->with( '_linker_inquiry_source' )->andReturn( '' );
+		$order->allows( 'get_meta' )->with( \Linker\Commerce\Quotation\Issuer::NUMBER_META )->andReturn( '' );
 		$order->allows( 'get_view_order_url' )->andReturn( 'https://example.test/my-account/inquiry/20/' );
 		$first = Mockery::mock( \WC_Order_Item_Product::class );
 		$first->allows( 'get_quantity' )->andReturn( 2 );
@@ -593,6 +595,7 @@ final class AccountTemplatesTest extends TestCase {
 		$order->allows( 'get_items' )->andReturn( $items );
 		$order->allows( 'get_item_count' )->andReturn( count( $items ) );
 		$order->allows( 'get_meta' )->with( '_linker_inquiry_source' )->andReturn( '' );
+		$order->allows( 'get_meta' )->with( \Linker\Commerce\Quotation\Issuer::NUMBER_META )->andReturn( '' );
 		$order->allows( 'get_date_created' )->andReturn( null );
 		$order->allows( 'get_formatted_order_total' )->andReturn( '€1.00' );
 		$order->allows( 'get_view_order_url' )->andReturn( 'https://example.test/my-account/inquiry/20/' );

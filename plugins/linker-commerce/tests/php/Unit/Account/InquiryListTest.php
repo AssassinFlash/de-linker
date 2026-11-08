@@ -11,6 +11,7 @@ namespace Linker\Commerce\Tests\Unit\Account;
 
 use Linker\Commerce\Account\InquiryList;
 use Linker\Commerce\Inquiry\Statuses;
+use Linker\Commerce\Quotation\Issuer;
 use Linker\Commerce\Tests\TestCase;
 use Mockery;
 use WC_Abstract_Order;
@@ -41,14 +42,16 @@ final class InquiryListTest extends TestCase {
 	/**
 	 * An inquiry.
 	 *
-	 * @param bool   $again Whether its status allows "request again".
+	 * @param bool   $again  Whether its status allows "request again".
 	 * @param string $status Stored status slug.
+	 * @param string $number Stored Quotation number.
 	 * @return WC_Order&\Mockery\MockInterface
 	 */
-	private function inquiry( bool $again, string $status = 'completed' ) {
+	private function inquiry( bool $again, string $status = 'completed', string $number = 'QT-2026-0001' ) {
 		$order = Mockery::mock( WC_Order::class );
 		$order->allows( 'get_id' )->andReturn( 20 );
 		$order->allows( 'get_view_order_url' )->andReturn( 'https://example.test/my-account/inquiry/20/' );
+		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( $number );
 		$order->allows( 'has_status' )->andReturnUsing(
 			static function ( $asked ) use ( $again, $status ): bool {
 				// The "request again" check passes the status list; the Proforma
@@ -97,16 +100,24 @@ final class InquiryListTest extends TestCase {
 		);
 		$actions  = $list->actions( $woo_list, $this->inquiry( true ) );
 
-		$this->assertSame( array( 'view', 'request-again' ), array_keys( $actions ) );
+		$this->assertSame( array( 'view', 'quotation', 'request-again' ), array_keys( $actions ) );
+		$this->assertSame( 'https://example.test/?linker-document=quotation&id=20', $actions['quotation']['url'] );
 		$this->assertSame( 'https://example.test/cart/?order_again=20&_wpnonce=woocommerce-order_again', $actions['request-again']['url'] );
 		$this->assertSame( 'Request again', $actions['request-again']['name'] );
 
-		// A status without "request again" keeps the view action only.
-		$this->assertSame( array( 'view' ), array_keys( $list->actions( $woo_list, $this->inquiry( false, Statuses::QUOTATION ) ) ) );
-		$this->assertSame( array( 'view' ), array_keys( $list->actions( $woo_list, $this->inquiry( false, Statuses::RECEIVED ) ) ) );
+		// A stored number offers the download even when the status list would not. An empty number does not, in any status.
+		$issued = $list->actions( $woo_list, $this->inquiry( false, Statuses::QUOTATION ) );
+		$this->assertSame( array( 'view', 'quotation' ), array_keys( $issued ) );
+		$this->assertSame( 'Quotation (PDF)', $issued['quotation']['name'] );
+		$this->assertSame( array( 'view' ), array_keys( $list->actions( $woo_list, $this->inquiry( false, Statuses::QUOTATION, '' ) ) ) );
+		$this->assertSame( array( 'view' ), array_keys( $list->actions( $woo_list, $this->inquiry( false, Statuses::RECEIVED, '' ) ) ) );
+
+		// Completed keeps the download. The number is what the customer reads, not the status word.
+		$completed = $list->actions( $woo_list, $this->inquiry( false, 'completed' ) );
+		$this->assertSame( array( 'view', 'quotation' ), array_keys( $completed ) );
 
 		foreach ( array( 'view-order', 'order-received' ) as $endpoint ) {
-			$this->assertSame( array( 'view' ), array_keys( $list->actions( $woo_list, $this->inquiry( true ) ) ), $endpoint );
+			$this->assertSame( array( 'view', 'quotation' ), array_keys( $list->actions( $woo_list, $this->inquiry( true ) ) ), $endpoint );
 		}
 	}
 

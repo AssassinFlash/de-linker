@@ -637,10 +637,7 @@ test('de: the restricted gate speaks German and links its own address', async ({
 	const gate = page.locator(
 		'section[aria-label="Konto mit eingeschränktem Zugriff"]'
 	);
-	await expect(
-		gate,
-		'the German inquiry page reads the gate'
-	).toBeVisible();
+	await expect(gate, 'the German inquiry page reads the gate').toBeVisible();
 	await expect(gate, 'the gate names the limit in German').toContainText(
 		/Zugriff derzeit eingeschränkt/
 	);

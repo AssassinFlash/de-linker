@@ -152,6 +152,10 @@ final class InquiryStatus {
 		if ( $prices->shows_order_total( $order ) ) {
 			$item['total'] = (string) $order->get_total();
 		}
+		$quotation = (string) $order->get_meta( \Linker\Commerce\Quotation\Issuer::NUMBER_META );
+		if ( '' !== $quotation ) {
+			$item['quotation_number'] = $quotation;
+		}
 		return $item;
 	}
 }

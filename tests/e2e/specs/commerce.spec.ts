@@ -1,10 +1,14 @@
 /**
  * The commercial chain, end to end (docs/specs/11-commerce.md §验收):
- * register → see prices → solution draft → inquiry received, once in English
- * and once in German, with the captured mail checked at every step. The
- * quotation itself is written and sent offline by the team (owner ruling
- * 2026-11-08); this chain ends at the received inquiry the team follows up
- * on.
+ * register → see prices → solution draft → inquiry → Quotation issued in the
+ * back end → the customer downloads it, once in English and once in German,
+ * with the captured mail checked at every step. The Quotation names no bank
+ * account (owner ruling 2026-11-08); payment terms are agreed offline.
+ *
+ * The journey is driven through the pages a customer and a staff member
+ * actually use; the Quotation is issued by pressing the inquiry screen's own
+ * button (Quotation\AdminBox::BUTTON, in its meta box), which is the same
+ * request a staff member's click sends.
  */
 
 /**
@@ -60,6 +64,85 @@ function ensureBccConfigured(): void {
 		// No window recorded yet.
 	}
 	parkTestMailRewrite();
+}
+
+/** The customer's inquiries screen; returns the inquiry's order id. */
+async function openInquiries(page: Page, locale: Locale): Promise<number> {
+	await page.goto(url(PAGES[locale].account));
+	await page
+		.getByRole('link', { name: PAGES[locale].inquiries })
+		.first()
+		.click();
+	// The endpoint is Woo's view-order, which this site names "inquiry".
+	const link = page
+		.locator('a[href*="/inquiry/"], a[href*="view-order/"]')
+		.first();
+	await expect(link, 'the inquiry list links to the inquiry').toBeVisible();
+	const href = await link.getAttribute('href');
+	const id = /(?:inquiry|view-order)\/(\d+)/.exec(href ?? '')?.[1];
+	expect(
+		id,
+		`the inquiry's id comes from its own link (${href})`
+	).toBeTruthy();
+	return Number(id);
+}
+
+/** Issues the Quotation from the inquiry screen's own button. */
+async function issueQuotation(
+	driver: Browser,
+	orderId: number
+): Promise<string> {
+	const context = await driver.newContext();
+	const admin = await context.newPage();
+	try {
+		await admin.goto(loginLink(undefined, STAFF));
+		await admin.goto(
+			`${instance().url}/wp-admin/admin.php?page=wc-orders&action=edit&id=${orderId}`
+		);
+		const button = admin.locator('button[name="linker_issue_quotation"]');
+		await expect(
+			button,
+			'the inquiry screen offers the Quotation button'
+		).toBeVisible({
+			timeout: 60_000,
+		});
+		await button.click();
+		await admin.waitForLoadState('load');
+	} finally {
+		await context.close();
+	}
+	// The Quotation number the issuer wrote on the inquiry; the box shows it
+	// and the customer's download link is built from it (Issuer::NUMBER_META).
+	// Through WooCommerce, not post meta: orders are stored in HPOS here.
+	return wp([
+		'eval',
+		`$order = wc_get_order( ${orderId} );` +
+			`echo $order ? (string) $order->get_meta( '_linker_quotation_number' ) : '';`,
+	]).trim();
+}
+
+/**
+ * The number format the issuer writes: PREFIX-YYYY-NNNN (Sequence::format).
+ * An empty prefix option is DLK-QT (Options::quotation_prefix); a saved custom
+ * prefix is left as it is, so the assertion reads the option rather than a
+ * hard-coded PI- from before the default changed.
+ */
+function quotationNumberPattern(): RegExp {
+	let prefix = 'DLK-QT';
+	try {
+		const saved = wp([
+			'option',
+			'get',
+			'linker_commerce_quotation_prefix',
+		]).trim();
+		if (saved !== '') {
+			prefix = saved;
+		}
+	} catch {
+		// The option does not exist: the issuer uses the default prefix.
+	}
+	const escaped = prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+	return new RegExp(`^${escaped}-\\d{4}-\\d{4}$`);
 }
 
 /**
@@ -241,29 +324,6 @@ async function register(
 	return email;
 }
 
-/** The customer's inquiries screen; returns the inquiry's order id. */
-async function openInquiries(page: Page, locale: Locale): Promise<number> {
-	await page.goto(url(PAGES[locale].account));
-	await page
-		.getByRole('link', { name: PAGES[locale].inquiries })
-		.first()
-		.click();
-	// The endpoint is Woo's view-order, which this site names "inquiry".
-	const link = page
-		.locator('a[href*="/inquiry/"], a[href*="view-order/"]')
-		.first();
-	await expect(link, 'the inquiry list links to the inquiry').toBeVisible();
-	const href = await link.getAttribute('href');
-	const id = /(?:inquiry|view-order)\/(\d+)/.exec(href ?? '')?.[1];
-	expect(
-		id,
-		`the inquiry's id comes from its own link (${href})`
-	).toBeTruthy();
-	return Number(id);
-}
-
-
-
 /**
  * Adds the product page's own control to the draft. The page's control is a
  * link to the request page with `?add-to-cart=<id>` (Woo's own add-to-cart
@@ -288,7 +348,7 @@ test.describe('the commercial chain', () => {
 	});
 
 	for (const locale of ['en', 'de'] as Locale[]) {
-		test(`${locale}: register → price → draft → inquiry received`, async ({
+		test(`${locale}: register → price → draft → inquiry → Quotation → download`, async ({
 			page,
 			context,
 			browser,
@@ -388,18 +448,56 @@ test.describe('the commercial chain', () => {
 				'the company, about the inquiry'
 			);
 
-			// 7. The inquiry's own page: the compact row carries status,
-			// summary, date, amount and View (ticket #184); no document is
-			// issued by the site (owner ruling 2026-11-08).
+			// 7. The Quotation, from the inquiry screen's own button.
+			const quotationMark = mark();
+			const meta = await issueQuotation(browser, orderId);
+			expect(meta, 'the Quotation is issued').toMatch(
+				quotationNumberPattern()
+			);
+			await mail(
+				(one) =>
+					one.writtenAt > quotationMark &&
+					one.to.includes(email) &&
+					one.subject.toLowerCase().includes('quotation'),
+				`to ${email} with the Quotation`
+			);
+
+			// 8. The customer downloads it; a guest cannot. The download lives on
+			// the inquiry's own page (the list row carries number, status, summary,
+			// date, amount and View — ticket #184's compact row).
 			await openInquiries(page, locale);
 			await page
 				.locator('a[href*="/inquiry/"], a[href*="view-order/"]')
 				.first()
 				.click();
+			const download = page.locator('[data-action="quotation"]').first();
 			await expect(
-				page.locator('[data-action="proforma"]'),
-				'the site issues no quotation document'
-			).toHaveCount(0);
+				download,
+				'the Quotation is downloadable'
+			).toBeVisible();
+			const href = await download.getAttribute('href');
+			const response = await context.request.get(href!);
+			expect(response.status(), 'the download answers').toBe(200);
+			expect(response.headers()['content-type']).toContain(
+				'application/pdf'
+			);
+			const pdf = await response.body();
+			expect(pdf.subarray(0, 5).toString('latin1')).toBe('%PDF-');
+			expect(
+				pdf.subarray(0, 4000).toString('latin1'),
+				'the document names no bank account'
+			).not.toMatch(/IBAN|Bank transfer/);
+
+			const guest = await browser.newContext();
+			try {
+				const anonymous = await guest.request.get(href!);
+				expect(
+					anonymous.status(),
+					'without the session there is no document'
+				).not.toBe(200);
+			} finally {
+				await guest.close();
+			}
 		});
 	}
 });

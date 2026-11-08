@@ -9,11 +9,16 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Account;
 
+use Linker\Commerce\Inquiry\Statuses;
+use Linker\Commerce\Quotation\Issuer;
+
+use WC_Order;
+
 /**
- * The "Documents" page of the account: the design reports of the customer's
- * saved solutions, newest first (docs/specs/11-commerce.md, journey step 6).
- * Quotations are written and sent offline by the team (owner ruling
- * 2026-11-08); they are not documents of this site.
+ * The "Documents" page of the account: every Quotation and design report of
+ * the customer, newest first (docs/specs/11-commerce.md, journey step 6). The
+ * Quotation names no bank account (owner ruling 2026-11-08): payment terms
+ * are agreed offline.
  */
 final class Documents {
 
@@ -36,6 +41,23 @@ final class Documents {
 	 */
 	public function for_customer( int $customer_id ): array {
 		$documents = array();
+		foreach ( $this->quotation_inquiries( $customer_id ) as $order ) {
+			if ( ! InquiryList::has_quotation( $order ) ) {
+				continue;
+			}
+			$url = DocumentDownload::quotation_url( $order );
+			// An empty href is still a download control (#425).
+			if ( '' === $url ) {
+				continue;
+			}
+			$documents[] = array(
+				/* translators: 1: Quotation number, 2: inquiry number. */
+				'title' => sprintf( __( 'Quotation %1$s (inquiry #%2$s)', 'linker-commerce' ), InquiryList::quotation_number( $order ), $order->get_order_number() ),
+				'date'  => self::issued_at( $order ),
+				'url'   => $url,
+				'kind'  => 'quotation',
+			);
+		}
 		foreach ( $this->solutions->for_customer( $customer_id ) as $solution ) {
 			if ( '' !== $this->solutions->report_path( $solution->ID ) ) {
 				$documents[] = array(
@@ -52,6 +74,54 @@ final class Documents {
 		return $documents;
 	}
 
+
+	/**
+	 * The customer's inquiries that may have a Quotation: one that carries the
+	 * number (including after Completed), and one whose status is "Quotation
+	 * issued". The two queries overlap; the inquiry id decides. A status
+	 * without a stored number adds no row — has_quotation() drops it.
+	 *
+	 * @param int $customer_id Customer.
+	 * @return list<WC_Order>
+	 */
+	private function quotation_inquiries( int $customer_id ): array {
+		$found    = array();
+		$numbered = wc_get_orders(
+			array(
+				'customer_id'  => $customer_id,
+				'limit'        => -1,
+				'meta_key'     => Issuer::NUMBER_META, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- one customer's inquiries.
+				'meta_compare' => 'EXISTS',
+			)
+		);
+		$issued   = wc_get_orders(
+			array(
+				'customer_id' => $customer_id,
+				'status'      => array( Statuses::QUOTATION ),
+				'limit'       => -1,
+			)
+		);
+		foreach ( array_merge( is_array( $numbered ) ? $numbered : array(), is_array( $issued ) ? $issued : array() ) as $order ) {
+			if ( InquiryList::has_quotation( $order ) ) {
+				$found[ $order->get_id() ] = $order;
+			}
+		}
+		return array_values( $found );
+	}
+
+	/**
+	 * When the Quotation was issued, or the inquiry's own date when that moment was not stored.
+	 *
+	 * @param WC_Order $order Inquiry.
+	 */
+	private static function issued_at( WC_Order $order ): int {
+		$issued = (int) $order->get_meta( Issuer::ISSUED_META );
+		if ( $issued > 0 ) {
+			return $issued;
+		}
+		$created = $order->get_date_created();
+		return $created instanceof \DateTimeInterface ? $created->getTimestamp() : 0;
+	}
 
 	/**
 	 * Prints the page; runs on its endpoint.

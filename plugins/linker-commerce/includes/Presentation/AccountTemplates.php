@@ -17,6 +17,7 @@ use Linker\Commerce\Gating\CommerceState;
 use Linker\Commerce\Gating\PriceDisplay;
 use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Products\Publication;
+use Linker\Commerce\Quotation\Issuer;
 use Linker\Commerce\Vocabulary\LocaleFormat;
 use WC_Order;
 
@@ -488,7 +489,7 @@ final class AccountTemplates {
 			'configurator'    => __( 'Open the Solution Configurator', 'linker-commerce' ),
 			'projects'        => __( 'Projects', 'linker-commerce' ),
 			'projects-error'  => __( 'Saved projects could not be loaded.', 'linker-commerce' ),
-			'empty-documents' => __( 'The design reports of your saved solutions will appear here.', 'linker-commerce' ),
+			'empty-documents' => __( 'Your quotations and the design reports of your saved solutions will appear here.', 'linker-commerce' ),
 			'empty-solutions' => __( 'Solutions you save in the Solution Configurator appear here, with their design report.', 'linker-commerce' ),
 			'recent'          => __( 'Recent inquiries', 'linker-commerce' ),
 			'view-all'        => __( 'View all', 'linker-commerce' ),
@@ -553,16 +554,34 @@ final class AccountTemplates {
 				return $order instanceof WC_Order && current_user_can( 'view_order', $order->get_id() ) ? $this->fragment( 'summary', $this->order_row( $order ) ) : '';
 			case 'amount':
 				return '' !== ( $this->row['total'] ?? '' ) ? $this->fragment( 'amount', $this->row ) : '';
+			case 'quotation':
+				$order = $this->row['order'] ?? null;
+				if ( ! $order instanceof WC_Order || ! InquiryList::has_quotation( $order ) ) {
+					return '';
+				}
+				$url = DocumentDownload::quotation_url( $order );
+				// An empty href is still a download control (#425).
+				if ( '' === $url ) {
+					return '';
+				}
+				return $this->fragment(
+					'quotation',
+					array(
+						'number' => InquiryList::quotation_number( $order ),
+						'url'    => $url,
+						'name'   => __( 'Quotation (PDF)', 'linker-commerce' ),
+					)
+				);
 			case 'stages':
 				$order = $this->row['order'] ?? null;
 				if ( $order instanceof WC_Order ) {
 					// Only the stored status is current; no invented transition
 					// history. A stage is reached when the record says so: the
-					// inquiry arrived, the team moved it to quotation in
-					// preparation, its status is completed or it was cancelled.
+					// inquiry arrived, its Quotation number is stored, its
+					// status is completed or it was cancelled.
 					$reached = array(
 						Statuses::RECEIVED  => true,
-						Statuses::QUOTATION => $order->has_status( Statuses::QUOTATION ),
+						Statuses::QUOTATION => InquiryList::has_quotation( $order ),
 						'completed'         => $order->has_status( 'completed' ),
 						'cancelled'         => $order->has_status( 'cancelled' ),
 					);
@@ -859,7 +878,8 @@ final class AccountTemplates {
 	}
 
 	/**
-	 * Inquiry values the account fragments read.
+	 * Inquiry values the account fragments read, including the Quotation
+	 * number and its download link once the document is issued.
 	 *
 	 * @param WC_Order $order Inquiry.
 	 * @return array<string, mixed>
@@ -923,14 +943,15 @@ final class AccountTemplates {
 	}
 
 	/**
-	 * The document's own mark: the report sheet for a design report, a
-	 * download sheet when the kind is not that.
+	 * The document's own mark: the sheet for a Quotation, the report
+	 * sheet for a design report, a download sheet when the kind is neither.
 	 *
-	 * @param string $kind report.
+	 * @param string $kind quotation or report.
 	 */
 	private static function document_icon( string $kind ): string {
 		$paths = array(
-			'report' => '<path d="M4 19V5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M8 15l3-3 2 2 3-4"/>',
+			'quotation' => '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/>',
+			'report'    => '<path d="M4 19V5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M8 15l3-3 2 2 3-4"/>',
 		);
 		$path  = $paths[ $kind ] ?? '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>';
 		return sprintf(

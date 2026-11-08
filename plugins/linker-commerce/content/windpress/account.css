@@ -870,3 +870,6 @@ body.woocommerce-account .linker-account-undo:focus-visible { outline: 2px solid
 }
 
 .linker-account .linker-account-contact-line svg { flex: none; color: var(--proto-teal-600); }
+
+.linker-account .linker-account-quotation { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--proto-line, #e5e7eb); }
+.linker-account .linker-account-quotation-number { flex: 1 1 220px; font-size: 14px; font-weight: 600; color: var(--proto-teal-800, #0f766e); }

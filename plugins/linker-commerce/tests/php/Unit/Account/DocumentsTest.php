@@ -12,6 +12,7 @@ namespace Linker\Commerce\Tests\Unit\Account;
 use Linker\Commerce\Account\Documents;
 use Linker\Commerce\Account\PrivateFiles;
 use Linker\Commerce\Account\SavedSolutions;
+use Linker\Commerce\Quotation\Issuer;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
 
@@ -83,6 +84,7 @@ final class DocumentsTest extends TestCase {
 			rmdir( $uploads );
 		};
 		WP_Mock::userFunction( 'wp_upload_dir', array( 'return' => array( 'basedir' => $uploads ) ) );
+		WP_Mock::userFunction( 'wc_get_orders', array( 'return' => array() ) );
 		WP_Mock::userFunction( 'get_post_timestamp' )->andReturnUsing(
 			static fn ( \WP_Post $post ): int => (int) strtotime( (string) $post->post_date )
 		);
