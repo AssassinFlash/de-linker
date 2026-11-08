@@ -816,3 +816,18 @@ def test_a_copied_menu_label_does_not_vote_when_the_chunk_has_it() -> None:
         "with the battery."
     )
     assert language_failure(_output("de", paragraph), "de", copied) is not None
+
+
+def test_a_dotted_abbreviation_does_not_vote_english() -> None:
+    """A pasted German parts list stays German (S.A.J.'s A is not a word)."""
+    pasted = "\n".join(
+        [
+            "Produkt;Menge",
+            "1 x S.A.J. H2-12K-T3",
+            "3 Stück GoodWe GW10K-ETA-G20",
+            "2 x SMA Sunny Boy 5.0",
+        ]
+    )
+    assert answer_language(pasted, "de_DE_formal") == "de"
+    # English prose asking about the dotted model still answers English.
+    assert answer_language("Is the S.A.J. H2-12K-T3 available?", "de_DE_formal") == "en"
