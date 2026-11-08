@@ -67,5 +67,21 @@
    "UPDATE wp_wc_orders SET payment_method='linker_inquiry' WHERE payment_method='linker_proforma'",
    "UPDATE wp_wc_orders_meta SET meta_value='inquiry' WHERE meta_key='_linker_inquiry_source' AND meta_value='proforma'"
   ]
+ },
+ "production_quotation_chain": {
+  "inquiry": 8671,
+  "issued": {
+   "status": "quotation-issued",
+   "number": "DLK-QT-2026-0001",
+   "file": "8671/DLK-QT-2026-0001-2cae5b40d3e06745.pdf",
+   "pdf_bytes": 28531
+  },
+  "pdf_scan": "all zlib streams decompressed; IBAN/BIC/Bank transfer/bank account hits = 0 (glyph-subset text; visual confirmation in the CU walkthrough)",
+  "account_readback": {
+   "list": "#8671 shows status \"Quotation in preparation\", 2 products, amount €3,113.18",
+   "detail": "/my-account/inquiry/8671/ shows the four-stage strip with quotation stage, number DLK-QT-2026-0001 and a \"Quotation (PDF)\" action",
+   "download": "authenticated fetch 200 application/pdf, 28531 bytes, %PDF- magic",
+   "method": "real Chrome (owner browser via WebBridge), logged in as fixture 53"
+  }
  }
 }
