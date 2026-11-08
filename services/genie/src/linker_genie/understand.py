@@ -200,7 +200,12 @@ class Understander:
             blocked = [
                 r
                 for r in readings
-                if (r.model or r.kind in {"nameplate", "document"})
+                # A document without a model can still be an unavailable
+                # product's datasheet, so it keeps the script. A nameplate
+                # without a model identifies nothing: its flow asks the
+                # customer to type the model, and the message branch of
+                # this gate answers what they then type (#236 UX, 2026-11-09).
+                if (r.model or r.kind == "document")
                 and (not r.model or statuses.get(r.model.casefold()) != "published")
             ]
             if blocked and not self._readings_carried_models(readings):
