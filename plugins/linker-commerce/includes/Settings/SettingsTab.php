@@ -14,8 +14,9 @@ use WC_Admin_Settings;
 
 /**
  * One tab in WooCommerce's own settings screen, built with its settings API:
- * team mailbox and blind copies, the customers' contact person, and what the
- * Proforma prints (number prefix, seller, bank account).
+ * team mailbox and blind copies, and the customers' contact person. The
+ * online Proforma fields are gone with the chain (owner ruling 2026-11-08):
+ * quotations are written and sent offline.
  */
 final class SettingsTab {
 
@@ -77,7 +78,7 @@ final class SettingsTab {
 			array(
 				'title' => __( 'Team mailbox', 'linker-commerce' ),
 				'type'  => 'title',
-				'desc'  => __( 'The address customers see: on the Proforma, on the website and in Genie\'s answers. Internal notifications do not go here.', 'linker-commerce' ),
+				'desc'  => __( 'The address customers see: on the website and in Genie\'s answers. Internal notifications do not go here.', 'linker-commerce' ),
 				'id'    => 'linker_commerce_team',
 			),
 			array(
@@ -155,27 +156,27 @@ final class SettingsTab {
 				'type' => 'sectionend',
 				'id'   => 'linker_commerce_contact',
 			),
+
 			array(
-				'title' => __( 'Proforma invoice', 'linker-commerce' ),
+				'title' => __( 'Quotations', 'linker-commerce' ),
 				'type'  => 'title',
-				'desc'  => __( 'Printed on every Proforma invoice. The seller address is the store address under General.', 'linker-commerce' ),
-				'id'    => 'linker_commerce_proforma',
+				'desc'  => __( 'The team issues quotations on the inquiry screen; billing is agreed offline. The document itself names no bank account.', 'linker-commerce' ),
+				'id'    => 'linker_commerce_quotation',
 			),
 			array(
 				'title'       => __( 'Number prefix', 'linker-commerce' ),
-				'desc'        => __( 'Numbers read PREFIX-YEAR-NNNN and count from 1 each calendar year. Empty uses DLK-PF, the prefix on de-linker.com.', 'linker-commerce' ),
-				'id'          => Options::PROFORMA_PREFIX,
+				'desc'        => __( 'Numbers read PREFIX-YEAR-NNNN and count from 1 each calendar year. Empty uses DLK-QT.', 'linker-commerce' ),
+				'id'          => Options::QUOTATION_PREFIX,
 				'type'        => 'text',
-				'default'     => Options::DEFAULT_PROFORMA_PREFIX,
-				'placeholder' => Options::DEFAULT_PROFORMA_PREFIX,
+				'default'     => Options::DEFAULT_QUOTATION_PREFIX,
+				'placeholder' => Options::DEFAULT_QUOTATION_PREFIX,
 				'autoload'    => false,
 			),
 			array(
-				'title'       => __( 'Seller', 'linker-commerce' ),
-				'id'          => Options::SELLER_NAME,
-				'type'        => 'text',
-				'placeholder' => Options::DEFAULT_SELLER_NAME,
-				'autoload'    => false,
+				'title'    => __( 'Seller', 'linker-commerce' ),
+				'id'       => Options::SELLER_NAME,
+				'type'     => 'text',
+				'autoload' => false,
 			),
 			array(
 				'title'    => __( 'Seller VAT ID', 'linker-commerce' ),
@@ -184,34 +185,20 @@ final class SettingsTab {
 				'autoload' => false,
 			),
 			array(
-				'title'    => __( 'Account holder', 'linker-commerce' ),
-				'id'       => Options::BANK_HOLDER,
-				'type'     => 'text',
-				'autoload' => false,
-			),
-			array(
-				'title'    => __( 'Bank', 'linker-commerce' ),
-				'id'       => Options::BANK_NAME,
-				'type'     => 'text',
-				'autoload' => false,
-			),
-			array(
-				'title'    => __( 'IBAN', 'linker-commerce' ),
-				'id'       => Options::BANK_IBAN,
-				'type'     => 'text',
-				'autoload' => false,
-			),
-			array(
-				'title'    => __( 'BIC', 'linker-commerce' ),
-				'id'       => Options::BANK_BIC,
-				'type'     => 'text',
-				'autoload' => false,
-			),
-			array(
 				'type' => 'sectionend',
-				'id'   => 'linker_commerce_proforma',
+				'id'   => 'linker_commerce_quotation',
 			),
 		);
+	}
+
+	/**
+	 * Keeps letters, digits and hyphens of the number prefix, upper case.
+	 * Hyphens preserve the DLK-QT prefix when saving this tab.
+	 *
+	 * @param mixed $value Value WooCommerce sanitized as text.
+	 */
+	public function sanitize_prefix( $value ): string {
+		return trim( strtoupper( (string) preg_replace( '/[^A-Za-z0-9-]/', '', is_string( $value ) ? $value : '' ) ), '-' );
 	}
 
 	/**
@@ -238,77 +225,5 @@ final class SettingsTab {
 			WC_Admin_Settings::add_error( sprintf( __( 'Not an email address, left out: %s', 'linker-commerce' ), implode( ', ', $invalid ) ) );
 		}
 		return implode( "\n", array_unique( $valid ) );
-	}
-
-	/**
-	 * Accepts an IBAN only when its ISO 13616 check digits are right, so a typo
-	 * never reaches a Proforma; otherwise the saved value stays.
-	 *
-	 * @param mixed $value Value WooCommerce sanitized as text.
-	 */
-	public function sanitize_iban( $value ): string {
-		$iban = strtoupper( (string) preg_replace( '/\s+/', '', is_string( $value ) ? $value : '' ) );
-		if ( '' === $iban || self::is_valid_iban( $iban ) ) {
-			return $iban;
-		}
-		WC_Admin_Settings::add_error( __( 'The IBAN is not valid (check digits do not match); the previous IBAN is kept.', 'linker-commerce' ) );
-		return $this->saved( Options::BANK_IBAN );
-	}
-
-	/**
-	 * Accepts a BIC only in the ISO 9362 form (4 letters bank, 2 letters country,
-	 * 2 characters location, optional 3 characters branch); otherwise the saved value stays.
-	 *
-	 * @param mixed $value Value WooCommerce sanitized as text.
-	 */
-	public function sanitize_bic( $value ): string {
-		$bic = strtoupper( (string) preg_replace( '/\s+/', '', is_string( $value ) ? $value : '' ) );
-		if ( '' === $bic || 1 === preg_match( '/^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/', $bic ) ) {
-			return $bic;
-		}
-		WC_Admin_Settings::add_error( __( 'The BIC is not valid (8 or 11 characters); the previous BIC is kept.', 'linker-commerce' ) );
-		return $this->saved( Options::BANK_BIC );
-	}
-
-	/**
-	 * Keeps letters, digits and hyphens of the number prefix, upper case.
-	 * Hyphens preserve the existing DLK-PF prefix when saving this tab (#286).
-	 *
-	 * @param mixed $value Value WooCommerce sanitized as text.
-	 */
-	public function sanitize_prefix( $value ): string {
-		return trim( strtoupper( (string) preg_replace( '/[^A-Za-z0-9-]/', '', is_string( $value ) ? $value : '' ) ), '-' );
-	}
-
-	/**
-	 * Whether an IBAN's check digits are right: move the first four characters to
-	 * the end, letters to numbers (A = 10 … Z = 35), and the remainder of the
-	 * division by 97 is 1 (ISO 13616-1 / ISO 7064 MOD 97-10).
-	 *
-	 * @param string $iban IBAN without spaces, upper case.
-	 */
-	public static function is_valid_iban( string $iban ): bool {
-		if ( 1 !== preg_match( '/^[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}$/', $iban ) ) {
-			return false;
-		}
-		$digits = '';
-		foreach ( str_split( substr( $iban, 4 ) . substr( $iban, 0, 4 ) ) as $char ) {
-			$digits .= ctype_alpha( $char ) ? (string) ( ord( $char ) - 55 ) : $char;
-		}
-		$remainder = 0;
-		foreach ( str_split( $digits, 7 ) as $chunk ) {
-			$remainder = (int) ( (string) $remainder . $chunk ) % 97;
-		}
-		return 1 === $remainder;
-	}
-
-	/**
-	 * The value an option has now.
-	 *
-	 * @param string $name Option name.
-	 */
-	private function saved( string $name ): string {
-		$value = get_option( $name, '' );
-		return is_string( $value ) ? $value : '';
 	}
 }

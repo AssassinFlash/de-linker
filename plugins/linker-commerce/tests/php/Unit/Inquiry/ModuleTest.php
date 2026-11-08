@@ -15,7 +15,7 @@ use Linker\Commerce\Inquiry\Emails\NewInquiryEmail;
 use Linker\Commerce\Inquiry\Module;
 use Linker\Commerce\Inquiry\OrderAdmin;
 use Linker\Commerce\Inquiry\OrderLocale;
-use Linker\Commerce\Inquiry\ProformaGateway;
+use Linker\Commerce\Inquiry\InquiryGateway;
 use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Tests\TestCase;
@@ -79,7 +79,7 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'woocommerce_available_payment_gateways', array( $checkout, 'gateways' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_checkout_create_order', array( $checkout, 'without_payment_method_title' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_checkout_create_order', array( $locale, 'remember' ) );
-		WP_Mock::expectActionAdded( 'woocommerce_thankyou_' . ProformaGateway::ID, array( $checkout, 'next_steps' ) );
+		WP_Mock::expectActionAdded( 'woocommerce_thankyou_' . InquiryGateway::ID, array( $checkout, 'next_steps' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_get_checkout_order_received_url', array( $checkout, 'received_url' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'woocommerce_order_item_permalink', array( $checkout, 'item_permalink' ), 10, 3 );
 		WP_Mock::expectActionAdded( 'woocommerce_after_checkout_validation', array( $checkout, 'validate_public' ), 10, 2 );
@@ -117,7 +117,7 @@ final class ModuleTest extends TestCase {
 	public function test_additions(): void {
 		$module = new Module( '/plugin/linker-commerce.php', new Options(), new Statuses(), new Checkout(), new OrderLocale(), new OrderAdmin() );
 
-		$this->assertSame( array( 'bacs', ProformaGateway::class ), $module->add_gateway( array( 'bacs' ) ) );
+		$this->assertSame( array( 'bacs', InquiryGateway::class ), $module->add_gateway( array( 'bacs' ) ) );
 		$this->assertSame( array( 'woocommerce_order_status_pending_to_inquiry-received' ), $module->email_actions( array() ) );
 
 		$this->plain_text();

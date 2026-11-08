@@ -277,7 +277,7 @@ test.describe('Genie — the behaviour panel', () => {
 		}
 	}
 
-	test('R7-en / R7-de — a guest asking for the Proforma is asked to log in, and sees nothing', async () => {
+	test('R7-en / R7-de — a guest asking for their inquiry is asked to log in, and sees nothing', async () => {
 		const row = ROWS.find((one) => one.id === 'R7')!;
 		for (const locale of ['en', 'de'] as Locale[]) {
 			const measured: string[] = [];

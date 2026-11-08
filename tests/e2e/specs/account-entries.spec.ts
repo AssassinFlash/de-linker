@@ -280,11 +280,7 @@ for (const locale of ['en', 'de'] as const) {
 				account + 'lost-password/?reset-link-sent=true',
 				'.linker-auth-links',
 			],
-			[
-				'document',
-				home + '?linker-document=proforma&id=1',
-				'#error-page',
-			],
+			['document', home + '?linker-document=report&id=1', '#error-page'],
 		]) {
 			test(`${locale}-${width}: ${surface} has independent registration`, async ({
 				page,
@@ -397,7 +393,7 @@ test('a separate newly created account cannot read another account document or G
 		])
 	) as { owner: number; other: number; order: number };
 	try {
-		const route = `${instance().url}/?linker-document=proforma&id=${fixture.order}`;
+		const route = `${instance().url}/?linker-document=report&id=${fixture.order}`;
 		expect((await page.goto(route))?.status()).toBe(403);
 		await expect(page.locator('.linker-create-account')).toBeVisible();
 		const inquiryIds = async () => {

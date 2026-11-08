@@ -1189,8 +1189,8 @@ final class Materials {
 		}
 		if ( \in_array( $reason, array( 'cross_border', 'destination_unknown', 'empty_cart', 'logistics_incomplete', 'consolidation_confirmation' ), true ) ) {
 			return array(
-				'kind'     => 'proforma',
-				'headline' => __( 'Delivery included in your Proforma', 'linker-commerce' ),
+				'kind'     => 'quotation',
+				'headline' => __( 'Delivery included in your quotation', 'linker-commerce' ),
 				'detail'   => '',
 			);
 		}
@@ -1199,8 +1199,8 @@ final class Materials {
 		$unit_weight = \is_numeric( $fact['weight_kg'] ?? null ) ? (float) $fact['weight_kg'] : 0.0;
 		if ( $unit_weight <= 0 || ! \in_array( $mode, array( 'half_pallet', 'pallet', 'multi_pallet' ), true ) ) {
 			return array(
-				'kind'     => 'proforma',
-				'headline' => __( 'Delivery included in your Proforma', 'linker-commerce' ),
+				'kind'     => 'quotation',
+				'headline' => __( 'Delivery included in your quotation', 'linker-commerce' ),
 				'detail'   => '',
 			);
 		}
@@ -1220,8 +1220,8 @@ final class Materials {
 		$band   = \is_array( $bands[ $classification ] ?? null ) ? $bands[ $classification ] : null;
 		if ( ! \is_array( $band ) || ! \is_numeric( $band['min'] ?? null ) || ! \is_numeric( $band['max'] ?? null ) ) {
 			return array(
-				'kind'     => 'proforma',
-				'headline' => __( 'Delivery included in your Proforma', 'linker-commerce' ),
+				'kind'     => 'quotation',
+				'headline' => __( 'Delivery included in your quotation', 'linker-commerce' ),
 				'detail'   => '',
 			);
 		}
@@ -1229,15 +1229,15 @@ final class Materials {
 		$max = (float) $band['max'];
 		if ( $min < 0 || $max < $min ) {
 			return array(
-				'kind'     => 'proforma',
-				'headline' => __( 'Delivery included in your Proforma', 'linker-commerce' ),
+				'kind'     => 'quotation',
+				'headline' => __( 'Delivery included in your quotation', 'linker-commerce' ),
 				'detail'   => '',
 			);
 		}
 		if ( 'project_freight' === $classification ) {
 			return array(
-				'kind'     => 'proforma',
-				'headline' => __( 'Delivery included in your Proforma', 'linker-commerce' ),
+				'kind'     => 'quotation',
+				'headline' => __( 'Delivery included in your quotation', 'linker-commerce' ),
 				'detail'   => '',
 			);
 		}
@@ -1249,7 +1249,7 @@ final class Materials {
 				self::money( $min ),
 				self::money( $max )
 			),
-			'detail'   => __( 'The final delivery charge is included in your Proforma.', 'linker-commerce' ),
+			'detail'   => __( 'The final delivery charge is included in your quotation.', 'linker-commerce' ),
 		);
 	}
 

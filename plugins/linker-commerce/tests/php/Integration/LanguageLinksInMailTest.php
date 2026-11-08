@@ -14,8 +14,6 @@ use Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture;
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Mail\Throttle;
-use Linker\Commerce\Proforma\Emails\ProformaIssuedEmail;
-use Linker\Commerce\Proforma\Issuer;
 use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Registration\Emails\ApprovedEmail;
 use WC_Order;
@@ -70,7 +68,7 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 			}
 		);
 		WC()->mailer();
-		foreach ( array( ApprovedEmail::ID, InquiryReceivedEmail::ID, ProformaIssuedEmail::ID ) as $id ) {
+		foreach ( array( ApprovedEmail::ID, InquiryReceivedEmail::ID ) as $id ) {
 			$name                    = 'woocommerce_' . $id . '_settings';
 			$this->settings[ $name ] = get_option( $name );
 			delete_option( $name );
@@ -129,42 +127,6 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 		$this->assertStringNotContainsString( 'href="' . $this->english_page_url( 'myaccount' ) . '"', $messages[0]['body'], 'No English account link in a German body.' );
 	}
 
-	/**
-	 * Staff issue the Proforma in wp-admin: both links in the German email
-	 * stay on German pages, the download included.
-	 */
-	public function test_admin_proforma_mail_links_follow_the_customer_language(): void {
-		$this->ensure_languages();
-		$order = $this->german_inquiry();
-		$order->set_status( \Linker\Commerce\Inquiry\Statuses::PROFORMA );
-		$order->save();
-
-		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
-		delete_option( Throttle::OPTION );
-		$this->as_user( 1 );
-		$email = new ProformaIssuedEmail( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php' );
-		$this->later(
-			static function () use ( $email ): void {
-				remove_action( 'woocommerce_order_status_inquiry-received_to_proforma-issued_notification', array( $email, 'trigger' ), 10 );
-			}
-		);
-		$email->trigger( $order->get_id(), $order );
-
-		$messages = $this->to_address( (string) $order->get_billing_email() );
-		$this->assertCount( 1, $messages, 'One German Proforma mail.' );
-		$this->assertCount( 1, $this->deliveries(), 'The original native handoff makes one actual tester delivery attempt beyond its preview.' );
-		$order->read_meta_data( true );
-		$this->assertSame( $order->get_meta( Issuer::NUMBER_META ), $order->get_meta( ProformaIssuedEmail::ACCEPTED ) );
-		$body = $messages[0]['body'];
-		$this->assertStringContainsString( 'Ihre Proformarechnung', $body, 'The body is German.' );
-
-		$this->assertSame( 1, preg_match( '~href="([^"]*linker-document=proforma[^"]*)"~', $body, $download ), 'The mail carries the download link.' );
-		$this->assertStringStartsWith( $this->german_home(), html_entity_decode( $download[1] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8' ), 'The download link is on the German site.' );
-
-		$this->assertSame( 1, preg_match( '~href="([^"]*/de/mein-konto/[^"]*)"~', $body, $inquiry ), 'The inquiry link is on the German account.' );
-		$this->assertStringContainsString( '/de/mein-konto/', html_entity_decode( $inquiry[1] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
-		$this->assertStringNotContainsString( 'href="' . $this->english_home() . '?linker-document=proforma', $body );
-	}
 
 	/**
 	 * A guest inquiry from the German request form gets the German receipt,
@@ -407,8 +369,6 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 		$order = new WC_Order();
 		$order->set_billing_email( 'linker-language-' . self::tag() . '@example.test' );
 		$order->update_meta_data( '_linker_locale', 'de_DE_formal' );
-		$order->update_meta_data( Issuer::NUMBER_META, 'DLK-PF-' . wp_date( 'Y' ) . '-0001' );
-		$order->update_meta_data( Issuer::ISSUED_META, (string) time() );
 		$order->save();
 		$this->later(
 			static function () use ( $order ): void {
@@ -445,21 +405,7 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 		return $link;
 	}
 
-	/**
-	 * The German home URL: the site root under Polylang's /de/ directory.
-	 * Written from the site root rather than pll_home_url(), whose static
-	 * front page answers the front page's own /de/<page>/ link.
-	 */
-	private function german_home(): string {
-		return trailingslashit( home_url( '/de/' ) );
-	}
 
-	/**
-	 * The English home URL without its trailing slash.
-	 */
-	private function english_home(): string {
-		return trailingslashit( home_url( '/' ) );
-	}
 
 	/**
 	 * Makes sure Polylang runs both languages and the pages the mails link to

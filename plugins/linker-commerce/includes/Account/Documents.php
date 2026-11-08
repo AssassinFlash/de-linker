@@ -10,12 +10,15 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Account;
 
 use Linker\Commerce\Inquiry\Statuses;
-use Linker\Commerce\Proforma\Issuer;
+use Linker\Commerce\Quotation\Issuer;
+
 use WC_Order;
 
 /**
- * The "Documents" page of the account: every Proforma invoice and design
- * report of the customer, newest first (docs/specs/11-commerce.md, journey step 6).
+ * The "Documents" page of the account: every Quotation and design report of
+ * the customer, newest first (docs/specs/11-commerce.md, journey step 6). The
+ * Quotation names no bank account (owner ruling 2026-11-08): payment terms
+ * are agreed offline.
  */
 final class Documents {
 
@@ -38,21 +41,21 @@ final class Documents {
 	 */
 	public function for_customer( int $customer_id ): array {
 		$documents = array();
-		foreach ( $this->proforma_inquiries( $customer_id ) as $order ) {
-			if ( ! InquiryList::has_proforma( $order ) ) {
+		foreach ( $this->quotation_inquiries( $customer_id ) as $order ) {
+			if ( ! InquiryList::has_quotation( $order ) ) {
 				continue;
 			}
-			$url = DocumentDownload::proforma_url( $order );
+			$url = DocumentDownload::quotation_url( $order );
 			// An empty href is still a download control (#425).
 			if ( '' === $url ) {
 				continue;
 			}
 			$documents[] = array(
-				/* translators: 1: Proforma number, 2: inquiry number. */
-				'title' => sprintf( __( 'Proforma invoice %1$s (inquiry #%2$s)', 'linker-commerce' ), InquiryList::proforma_number( $order ), $order->get_order_number() ),
+				/* translators: 1: Quotation number, 2: inquiry number. */
+				'title' => sprintf( __( 'Quotation %1$s (inquiry #%2$s)', 'linker-commerce' ), InquiryList::quotation_number( $order ), $order->get_order_number() ),
 				'date'  => self::issued_at( $order ),
 				'url'   => $url,
-				'kind'  => 'proforma',
+				'kind'  => 'quotation',
 			);
 		}
 		foreach ( $this->solutions->for_customer( $customer_id ) as $solution ) {
@@ -71,16 +74,17 @@ final class Documents {
 		return $documents;
 	}
 
+
 	/**
-	 * The customer's inquiries that may have a Proforma: one that carries the
-	 * number (including after Completed), and one whose status is "Proforma
-	 * invoice issued". The two queries overlap; the inquiry id decides. A status
-	 * without a stored number adds no row — has_proforma() drops it.
+	 * The customer's inquiries that may have a Quotation: one that carries the
+	 * number (including after Completed), and one whose status is "Quotation
+	 * issued". The two queries overlap; the inquiry id decides. A status
+	 * without a stored number adds no row — has_quotation() drops it.
 	 *
 	 * @param int $customer_id Customer.
 	 * @return list<WC_Order>
 	 */
-	private function proforma_inquiries( int $customer_id ): array {
+	private function quotation_inquiries( int $customer_id ): array {
 		$found    = array();
 		$numbered = wc_get_orders(
 			array(
@@ -93,12 +97,12 @@ final class Documents {
 		$issued   = wc_get_orders(
 			array(
 				'customer_id' => $customer_id,
-				'status'      => array( Statuses::PROFORMA ),
+				'status'      => array( Statuses::QUOTATION ),
 				'limit'       => -1,
 			)
 		);
 		foreach ( array_merge( is_array( $numbered ) ? $numbered : array(), is_array( $issued ) ? $issued : array() ) as $order ) {
-			if ( InquiryList::has_proforma( $order ) ) {
+			if ( InquiryList::has_quotation( $order ) ) {
 				$found[ $order->get_id() ] = $order;
 			}
 		}
@@ -106,7 +110,7 @@ final class Documents {
 	}
 
 	/**
-	 * When the Proforma was issued, or the inquiry's own date when that moment was not stored.
+	 * When the Quotation was issued, or the inquiry's own date when that moment was not stored.
 	 *
 	 * @param WC_Order $order Inquiry.
 	 */

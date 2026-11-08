@@ -12,7 +12,6 @@ namespace Linker\Commerce\Abilities;
 use Linker\Commerce\Gating\CommerceState;
 use Linker\Commerce\Gating\PriceDisplay;
 use Linker\Commerce\Inquiry\Statuses;
-use Linker\Commerce\Proforma\Issuer;
 use WC_Order;
 
 /**
@@ -35,33 +34,33 @@ final class InquiryStatus {
 		$inquiry = array(
 			'type'                 => 'object',
 			'properties'           => array(
-				'id'              => array(
+				'id'               => array(
 					'type'        => 'integer',
 					'description' => __( 'Inquiry ID.', 'linker-commerce' ),
 				),
-				'number'          => array(
+				'number'           => array(
 					'type'        => 'string',
 					'description' => __( 'Inquiry number as the customer sees it.', 'linker-commerce' ),
 				),
-				'status'          => array(
+				'status'           => array(
 					'type'        => 'string',
 					'description' => __( 'Status slug without the wc- prefix.', 'linker-commerce' ),
 				),
-				'status_label'    => array(
+				'status_label'     => array(
 					'type'        => 'string',
 					'description' => __( 'Status name in the page language.', 'linker-commerce' ),
 				),
-				'date'            => array(
+				'date'             => array(
 					'type'        => 'string',
 					'description' => __( 'Date created, GMT.', 'linker-commerce' ),
 				),
-				'total'           => array(
+				'total'            => array(
 					'type'        => 'string',
 					'description' => __( 'Amount as stored on the inquiry.', 'linker-commerce' ),
 				),
-				'proforma_number' => array(
+				'quotation_number' => array(
 					'type'        => 'string',
-					'description' => __( 'Proforma number when one has been issued.', 'linker-commerce' ),
+					'description' => __( 'Quotation number when one has been issued.', 'linker-commerce' ),
 				),
 			),
 			'required'             => array( 'id', 'number', 'status', 'status_label', 'date' ),
@@ -153,16 +152,14 @@ final class InquiryStatus {
 		// Account-page parity (#414): shows_order_total(), not sees_prices()
 		// alone. A pending or restricted account, and an approved account's
 		// contact message or unpriced line, get no amount. The field is
-		// absent, so English and German stay one payload. The Proforma file
-		// is DocumentDownload (#425); this payload does not carry its URL.
+		// absent, so English and German stay one payload.
 		if ( $prices->shows_order_total( $order ) ) {
 			$item['total'] = (string) $order->get_total();
 		}
-		$proforma = (string) $order->get_meta( Issuer::NUMBER_META );
-		if ( '' !== $proforma ) {
-			$item['proforma_number'] = $proforma;
+		$quotation = (string) $order->get_meta( \Linker\Commerce\Quotation\Issuer::NUMBER_META );
+		if ( '' !== $quotation ) {
+			$item['quotation_number'] = $quotation;
 		}
-
 		return $item;
 	}
 }

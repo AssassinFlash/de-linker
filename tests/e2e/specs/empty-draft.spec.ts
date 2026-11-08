@@ -88,7 +88,7 @@ for (const [locale, pageCopy] of Object.entries(DRAFTS)) {
 }
 
 for (const [locale, pageCopy] of Object.entries(REQUESTS)) {
-	test(`${locale}: an empty Proforma request stays public with optional account entries`, async ({
+	test(`${locale}: an empty inquiry page stays public with optional account entries`, async ({
 		page,
 	}) => {
 		await page.context().clearCookies();

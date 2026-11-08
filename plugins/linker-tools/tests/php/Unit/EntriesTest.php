@@ -127,7 +127,7 @@ final class EntriesTest extends TestCase {
 		$html = $this->capture( array( new Entries( '/plugin/linker-tools.php' ), 'dock' ) );
 
 		$this->assertStringContainsString( 'der KI-Assistent von Linker', $html );
-		$this->assertStringContainsString( 'Where is my Proforma?', $html );
+		$this->assertStringContainsString( 'Where is my quotation?', $html );
 			$this->assertStringContainsString( 'data-page-type="account"', $html );
 			$this->assertStringContainsString( 'data-workspace-url="https://de-linker.test/genie/"', $html );
 			$this->assertConditionsMet();
@@ -292,7 +292,7 @@ final class EntriesTest extends TestCase {
 			'blog index'       => array( 'blog', 'Which of these posts cover hybrid inverters?' ),
 			'faq'              => array( 'faq', 'Is there a datasheet for my model?' ),
 			'solution draft'   => array( 'cart', 'Check my draft' ),
-			'account'          => array( 'account', 'Where is my Proforma?' ),
+			'account'          => array( 'account', 'Where is my quotation?' ),
 			'other'            => array( 'contact', 'Which model fits my project?' ),
 		);
 	}
@@ -416,7 +416,7 @@ final class EntriesTest extends TestCase {
 		);
 		$this->assertStringContainsString( 'data-linker-genie-open', $html );
 		$this->assertStringContainsString(
-			'data-ask-message="Where is my Proforma?"',
+			'data-ask-message="Where is my quotation?"',
 			$html
 		);
 		$this->assertStringContainsString( 'data-page-type="account"', $html );
@@ -529,8 +529,8 @@ click(labelled);
 window.dispatchEvent({ type: 'linker-genie-ready' });
 var asking = document.createElement('button');
 asking.setAttribute('data-linker-genie-open', '');
-asking.setAttribute('data-ask-message', 'Where is my Proforma?');
-asking.textContent = 'Where is my Proforma?';
+asking.setAttribute('data-ask-message', 'Where is my quotation?');
+asking.textContent = 'Where is my quotation?';
 document.body.appendChild(asking);
 click(asking);
 // The empty Proforma request's pill is an anchor: the dock opens here, so
@@ -576,7 +576,7 @@ JS
 		unlink( $fixture );
 		$this->assertSame( 0, $code, $err );
 		$result = (array) json_decode( (string) $out, true );
-		$this->assertSame( array( '', 'Where is my Proforma?', '', '', 'What does my saved solution say?' ), $result['asks'] ?? null, 'every opener asks, the anchor included' );
+		$this->assertSame( array( '', 'Where is my quotation?', '', '', 'What does my saved solution say?' ), $result['asks'] ?? null, 'every opener asks, the anchor included' );
 		$this->assertFalse( (bool) ( $result['buttonPrevented'] ?? true ), 'a button opener has no default action to cancel' );
 		$this->assertTrue( (bool) ( $result['anchorPrevented'] ?? false ), 'the anchor opener must not navigate away from the page' );
 		$this->assertSame(

@@ -74,7 +74,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		// The email classes extend WC_Email, which WooCommerce loads with its mailer.
 		WC()->mailer();
 		$saved = array();
-		foreach ( array( Options::TEAM_TO, Options::NOTIFY_TO, Options::NOTIFY_FROM, Options::NOTIFY_BCC, Options::PROFORMA_PREFIX, 'linker_commerce_team_locale', 'woocommerce_email_from_name', 'woocommerce_email_from_address', Monitor::GENIE_URL_OPTION, Monitor::ENGINE_URL_OPTION ) as $name ) {
+		foreach ( array( Options::TEAM_TO, Options::NOTIFY_TO, Options::NOTIFY_FROM, Options::NOTIFY_BCC, 'linker_commerce_team_locale', 'woocommerce_email_from_name', 'woocommerce_email_from_address', Monitor::GENIE_URL_OPTION, Monitor::ENGINE_URL_OPTION ) as $name ) {
 			$saved[ $name ] = get_option( $name );
 		}
 		foreach ( array( NewCustomerEmail::ID, VatReviewEmail::ID, NewInquiryEmail::ID, 'linker_digest' ) as $id ) {
@@ -120,13 +120,6 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		$this->assertSame( 'alerts@example.test', ( new Options() )->notify_sender()->email );
 	}
 
-	/**
-	 * Woo's native settings save trims only the prefix's edge hyphens.
-	 */
-	public function test_native_settings_save_trims_the_proforma_prefix(): void {
-		$this->save_setting( Options::PROFORMA_PREFIX, '--DLK-PF--' );
-		$this->assertSame( 'DLK-PF', get_option( Options::PROFORMA_PREFIX ) );
-	}
 
 	/**
 	 * New-customer notifications go to the team; replies go to the customer.
@@ -371,7 +364,6 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 	 * band — stay sales@de-linker.com while internal mail goes elsewhere.
 	 */
 	public function test_every_customer_visible_address_stays_the_team_mailbox(): void {
-		$this->assertSame( self::PUBLIC, ( new Options() )->seller()['email'] );
 		$this->assertSame( self::PUBLIC, ( new Options() )->contact()['email'] );
 
 		$handoff = ( new HandoffTeam() )->execute();

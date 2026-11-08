@@ -125,7 +125,7 @@ test.describe('the Genie dock', () => {
 		);
 	});
 
-	test('a signed-in customer can ask about their own Proforma (R7)', async ({
+	test('a signed-in customer can ask about their own inquiry (R7)', async ({
 		page,
 	}) => {
 		test.setTimeout(600_000);
@@ -164,7 +164,7 @@ test.describe('the Genie dock', () => {
 		// row types its own question so the asserted status comes from a
 		// question this test controls.
 		await openDock(page);
-		const answer = await ask(page, 'Where does my Proforma stand?');
+		const answer = await ask(page, 'Where does my inquiry stand?');
 		// The status label can only come from the customer's own inquiry list:
 		// a guest's turn gets `login_required` and asks for a login instead.
 		expect(

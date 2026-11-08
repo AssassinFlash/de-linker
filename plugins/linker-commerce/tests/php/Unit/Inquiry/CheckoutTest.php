@@ -11,7 +11,7 @@ namespace Linker\Commerce\Tests\Unit\Inquiry;
 
 use Linker\Commerce\Inquiry\Checkout;
 use Linker\Commerce\Inquiry\OrderLocale;
-use Linker\Commerce\Inquiry\ProformaGateway;
+use Linker\Commerce\Inquiry\InquiryGateway;
 use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
@@ -50,25 +50,25 @@ final class CheckoutTest extends TestCase {
 		$this->approval_meta( array( Approval::STATUS_META => Approval::APPROVED ) );
 		$proforma = new \stdClass();
 		$gateways = array(
-			'bacs'              => new \stdClass(),
-			ProformaGateway::ID => $proforma,
-			'stripe'            => new \stdClass(),
+			'bacs'             => new \stdClass(),
+			InquiryGateway::ID => $proforma,
+			'stripe'           => new \stdClass(),
 		);
 
 		$approved = new Checkout();
 		$this->assertSame(
-			array( ProformaGateway::ID => $proforma ),
+			array( InquiryGateway::ID => $proforma ),
 			$approved->gateways( $gateways )
 		);
 		$this->assertSame( array(), $approved->gateways( array( 'bacs' => new \stdClass() ) ) );
 
 		$this->approval_meta( array() );
-		$this->assertSame( array( ProformaGateway::ID => $proforma ), ( new Checkout() )->gateways( $gateways ), 'Pending accounts may send inquiries.' );
+		$this->assertSame( array( InquiryGateway::ID => $proforma ), ( new Checkout() )->gateways( $gateways ), 'Pending accounts may send inquiries.' );
 
 		$this->signed_in( 0 );
 		$guest = new Checkout();
 		$this->assertSame(
-			array( ProformaGateway::ID => $proforma ),
+			array( InquiryGateway::ID => $proforma ),
 			$guest->gateways( $gateways ),
 			'A guest reaches the checkout flow WooCommerce itself runs.'
 		);
@@ -105,7 +105,7 @@ final class CheckoutTest extends TestCase {
 		$html = (string) ob_get_clean();
 		$this->assertStringContainsString( 'We reply within one business day.', $html );
 		$this->assertStringContainsString( 'reply to the email address', $html );
-		$this->assertStringContainsString( 'linker-proforma-success woocommerce-message', $html );
+		$this->assertStringContainsString( 'linker-inquiry-success woocommerce-message', $html );
 		$this->assertStringContainsString( 'href="http://site/my-account/inquiries/"', $html );
 		$this->assertStringContainsString( 'View inquiries', $html );
 	}

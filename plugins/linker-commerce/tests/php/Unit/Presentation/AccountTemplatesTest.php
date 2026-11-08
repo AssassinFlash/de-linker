@@ -11,9 +11,9 @@ namespace Linker\Commerce\Tests\Unit\Presentation;
 
 use Linker\Commerce\Account\PrivateFiles;
 use Linker\Commerce\Account\SavedSolutions;
+use Linker\Commerce\Quotation\Issuer;
 use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Presentation\AccountTemplates;
-use Linker\Commerce\Proforma\Issuer;
 use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Tests\TestCase;
 use Mockery;
@@ -115,7 +115,7 @@ final class AccountTemplatesTest extends TestCase {
 		$this->assertSame( $query, $adapter->orders_query( $query ) );
 		$_GET['inquiry-status'] = 'open';
 		try {
-			$this->assertSame( $query + array( 'status' => array( 'inquiry-received', 'proforma-issued' ) ), $adapter->orders_query( $query ) );
+			$this->assertSame( $query + array( 'status' => array( 'inquiry-received', 'quotation-issued' ) ), $adapter->orders_query( $query ) );
 		} finally {
 			unset( $_GET['inquiry-status'] );
 		}
@@ -133,7 +133,7 @@ final class AccountTemplatesTest extends TestCase {
 			'paginate'    => true,
 		);
 		try {
-			foreach ( array( 'inquiry-received', 'proforma-issued', 'completed', 'cancelled' ) as $status ) {
+			foreach ( array( 'inquiry-received', 'quotation-issued', 'completed', 'cancelled' ) as $status ) {
 				$_GET['inquiry-status'] = $status;
 				$this->assertSame( $query + array( 'status' => array( $status ) ), $adapter->orders_query( $query ) );
 			}
@@ -177,11 +177,11 @@ final class AccountTemplatesTest extends TestCase {
 		$order->allows( 'get_id' )->andReturn( 20 );
 		$order->allows( 'get_order_number' )->andReturn( '20' );
 		$order->allows( 'get_status' )->andReturn( Statuses::RECEIVED );
-		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( '' );
 		$order->allows( 'get_date_created' )->andReturn( null );
 		$order->allows( 'get_formatted_order_total' )->andReturn( '€1.00' );
 		$order->allows( 'get_item_count' )->andReturn( 3 );
 		$order->allows( 'get_meta' )->with( '_linker_inquiry_source' )->andReturn( '' );
+		$order->allows( 'get_meta' )->with( \Linker\Commerce\Quotation\Issuer::NUMBER_META )->andReturn( '' );
 		$order->allows( 'get_view_order_url' )->andReturn( 'https://example.test/my-account/inquiry/20/' );
 		$first = Mockery::mock( \WC_Order_Item_Product::class );
 		$first->allows( 'get_quantity' )->andReturn( 2 );
@@ -204,7 +204,7 @@ final class AccountTemplatesTest extends TestCase {
 		$this->visible_prices( false );
 		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => 'Inquiry received' ) );
 		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => '0' ) );
-		$row = ( new AccountTemplates() )->inquiry_row( $this->inquiry( Statuses::RECEIVED, '' ) );
+		$row = ( new AccountTemplates() )->inquiry_row( $this->inquiry( Statuses::RECEIVED ) );
 		$this->assertSame( '', $row['total'] );
 	}
 
@@ -218,7 +218,7 @@ final class AccountTemplatesTest extends TestCase {
 		$item->allows( 'get_quantity' )->andReturn( 1 );
 		$item->allows( 'get_meta' )->with( \Linker\Commerce\Gating\PriceDisplay::ITEM_REASON_META )->andReturn( 'approval' );
 		$item->allows( 'get_total' )->andReturn( '0' );
-		$row = ( new AccountTemplates() )->inquiry_row( $this->inquiry( Statuses::RECEIVED, '', array( $item ) ) );
+		$row = ( new AccountTemplates() )->inquiry_row( $this->inquiry( Statuses::RECEIVED, array( $item ) ) );
 		$this->assertSame( '', $row['total'] );
 	}
 
@@ -239,7 +239,7 @@ final class AccountTemplatesTest extends TestCase {
 		AccountTemplates::output(
 			array(
 				'template_name' => 'myaccount/view-order.php',
-				'args'          => array( 'order' => $this->inquiry( Statuses::RECEIVED, '' ) ),
+				'args'          => array( 'order' => $this->inquiry( Statuses::RECEIVED ) ),
 			)
 		);
 		$html = (string) ob_get_clean();
@@ -252,109 +252,7 @@ final class AccountTemplatesTest extends TestCase {
 		$this->assertSame( '', ( new AccountTemplates() )->hook( array( 'name' => 'delete_user' ) ) );
 	}
 
-	/**
-	 * An inquiry in "Proforma invoice issued" renders a download link and the stored number.
-	 * A received inquiry renders neither. The number is the order meta, never invented.
-	 */
-	public function test_proforma_issued_renders_the_download_and_the_number(): void {
-		$this->visible_prices( true );
-		WP_Mock::userFunction( 'current_user_can', array( 'return' => false ) );
-		$this->plain_text();
-		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => static fn ( string $status ): string => $status ) );
-		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => static fn ( int $number ): string => (string) $number ) );
-		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/' ) );
-		WP_Mock::userFunction(
-			'add_query_arg',
-			array(
-				'return' => static fn ( array $args, string $url ): string => $url . '?' . http_build_query( $args ),
-			)
-		);
-		$adapter = new AccountTemplates();
 
-		$issued = $adapter->inquiry_row( $this->inquiry( Statuses::PROFORMA, 'PI-2026-0008' ) );
-		$this->assertSame( 'PI-2026-0008', $issued['proforma_number'] );
-		$this->assertSame( '1', $issued['proforma'] );
-		$this->assertSame( 'https://example.test/?linker-document=proforma&id=20', $issued['proforma_url'] );
-
-		$bare = $adapter->inquiry_row( $this->inquiry( Statuses::PROFORMA, '' ) );
-		$this->assertSame( '', $bare['proforma_number'] );
-		$this->assertSame( '', $bare['proforma'] );
-		$this->assertSame( '', $bare['proforma_url'] );
-
-			$received = $adapter->inquiry_row( $this->inquiry( Statuses::RECEIVED, '' ) );
-			$this->assertSame( '', $received['proforma'] );
-			$this->assertSame( '', $received['proforma_number'] );
-			$this->assertSame( '', $received['proforma_url'] );
-
-			// Completed keeps the number and the download. The status word is not the gate.
-			$completed = $adapter->inquiry_row( $this->inquiry( 'completed', 'DLK-PF-2026-0003' ) );
-			$this->assertSame( 'DLK-PF-2026-0003', $completed['proforma_number'] );
-			$this->assertSame( '1', $completed['proforma'] );
-			$this->assertSame( 'https://example.test/?linker-document=proforma&id=20', $completed['proforma_url'] );
-	}
-
-		/**
-		 * The inquiry detail and the Documents page both carry the number and a download link.
-		 * German labels are the formal catalogue strings, not a translation invented in this test.
-		 */
-	public function test_detail_and_documents_both_carry_the_number_and_the_link(): void {
-		$this->visible_prices( true );
-		WP_Mock::userFunction( 'current_user_can', array( 'return' => false ) );
-		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => static fn ( string $status ): string => $status ) );
-		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => static fn ( int $number ): string => (string) $number ) );
-		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/' ) );
-		WP_Mock::userFunction(
-			'add_query_arg',
-			array(
-				'return' => static fn ( array $args, string $url ): string => $url . '?' . http_build_query( $args ),
-			)
-		);
-		WP_Mock::userFunction(
-			'__',
-			array(
-				'return' => static function ( string $text ): string {
-					return array(
-						'Proforma invoice (PDF)' => 'Proformarechnung (PDF)',
-						'Download (PDF)'         => 'Herunterladen (PDF)',
-						'Proforma invoice %1$s (inquiry #%2$s)' => 'Proformarechnung %1$s (Anfrage #%2$s)',
-					)[ $text ] ?? $text;
-				},
-			)
-		);
-		WP_Mock::userFunction( 'esc_html', array( 'return' => static fn ( string $text ): string => $text ) );
-		WP_Mock::userFunction( 'esc_attr', array( 'return' => static fn ( string $text ): string => $text ) );
-		WP_Mock::userFunction( 'esc_url', array( 'return' => static fn ( string $url ): string => $url ) );
-
-		$adapter = new AccountTemplates();
-		$order   = $this->inquiry( Statuses::PROFORMA, 'DLK-PF-2026-0001' );
-		$row     = $adapter->inquiry_row( $order );
-		$detail  = (string) file_get_contents( dirname( __DIR__, 4 ) . '/content/livecanvas/account/proforma.html' );
-		$summary = (string) file_get_contents( dirname( __DIR__, 4 ) . '/content/livecanvas/account/summary.html' );
-		$listed  = (string) file_get_contents( dirname( __DIR__, 4 ) . '/content/livecanvas/account/document-row.html' );
-
-		// Inquiry detail: the summary fragment includes the Proforma block, which prints the number and the link.
-		$this->assertStringContainsString( 'type="proforma"', $summary );
-		$this->assertStringContainsString( 'key="number"', $detail );
-		$this->assertStringContainsString( 'key=\'url\'', $detail );
-		$this->assertStringContainsString( 'data-action="proforma"', $detail );
-		$this->assertSame( 'DLK-PF-2026-0001', $row['proforma_number'] );
-		$this->assertSame( 'https://example.test/?linker-document=proforma&id=20', $row['proforma_url'] );
-		$this->assertSame( 'Proformarechnung (PDF)', __( 'Proforma invoice (PDF)', 'linker-commerce' ) );
-
-		// Documents: the row prints the title (number inside) and the same download URL.
-		$this->assertStringContainsString( 'key="title"', $listed );
-		$this->assertStringContainsString( 'key=\'url\'', $listed );
-		$this->assertSame( 'Herunterladen (PDF)', __( 'Download (PDF)', 'linker-commerce' ) );
-			$this->assertSame(
-				'Proformarechnung DLK-PF-2026-0001 (Anfrage #20)',
-				sprintf(
-					/* translators: 1: Proforma number, 2: inquiry number. */
-					__( 'Proforma invoice %1$s (inquiry #%2$s)', 'linker-commerce' ),
-					$row['proforma_number'],
-					$order->get_order_number()
-				)
-			);
-	}
 
 	/** Guests get no private account navigation. */
 	public function test_nav_is_empty_for_guests(): void {
@@ -461,16 +359,16 @@ final class AccountTemplatesTest extends TestCase {
 		);
 		WP_Mock::userFunction( 'get_posts', array( 'return' => array() ) );
 		$orders = array(
-			$this->inquiry( Statuses::RECEIVED, '' ),
-			$this->inquiry( Statuses::PROFORMA, 'DLK-PF-2026-0001' ),
-			$this->inquiry( 'completed', 'DLK-PF-2026-0002' ),
+			$this->inquiry( Statuses::RECEIVED ),
+			$this->inquiry( Statuses::QUOTATION ),
+			$this->inquiry( 'completed' ),
 		);
 		WP_Mock::userFunction(
 			'wc_get_orders',
 			array(
 				'return' => static function ( array $args ) use ( $orders ): array {
 					$status = $args['status'] ?? array();
-					return isset( $args['meta_key'] ) || array( Statuses::PROFORMA ) === $status ? array() : $orders;
+					return isset( $args['meta_key'] ) || array( Statuses::QUOTATION ) === $status ? array() : $orders;
 				},
 			)
 		);
@@ -479,7 +377,7 @@ final class AccountTemplatesTest extends TestCase {
 
 		$html = $adapter->rows( array( 'type' => 'dashboard' ) );
 		$this->assertSame( 4, substr_count( $html, 'linker-account-tile-count' ) );
-		foreach ( array( 'inquiry-received', 'proforma-issued', 'completed', 'cancelled' ) as $status ) {
+		foreach ( array( 'inquiry-received', 'quotation-issued', 'completed', 'cancelled' ) as $status ) {
 			$this->assertStringContainsString( 'data-status="' . $status . '"', $html );
 		}
 		// Three orders: one per state, none cancelled.
@@ -686,19 +584,18 @@ final class AccountTemplatesTest extends TestCase {
 	 * An inquiry for the account-row assertions.
 	 *
 	 * @param string                        $status Status slug.
-	 * @param string                        $number Stored Proforma number.
 	 * @param array<\WC_Order_Item_Product> $items Inquiry product lines.
 	 */
-	private function inquiry( string $status, string $number, array $items = array() ): WC_Order {
+	private function inquiry( string $status, array $items = array() ): WC_Order {
 		$order = Mockery::mock( WC_Order::class );
 		$order->allows( 'get_id' )->andReturn( 20 );
 		$order->allows( 'get_order_number' )->andReturn( '20' );
 		$order->allows( 'get_status' )->andReturn( $status );
 		$order->allows( 'has_status' )->andReturnUsing( static fn ( string $asked ): bool => $asked === $status );
-		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( $number );
 		$order->allows( 'get_items' )->andReturn( $items );
 		$order->allows( 'get_item_count' )->andReturn( count( $items ) );
 		$order->allows( 'get_meta' )->with( '_linker_inquiry_source' )->andReturn( '' );
+		$order->allows( 'get_meta' )->with( \Linker\Commerce\Quotation\Issuer::NUMBER_META )->andReturn( '' );
 		$order->allows( 'get_date_created' )->andReturn( null );
 		$order->allows( 'get_formatted_order_total' )->andReturn( '€1.00' );
 		$order->allows( 'get_view_order_url' )->andReturn( 'https://example.test/my-account/inquiry/20/' );

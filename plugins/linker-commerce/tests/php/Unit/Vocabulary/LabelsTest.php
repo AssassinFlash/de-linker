@@ -23,7 +23,7 @@ use WP_Mock;
 final class LabelsTest extends TestCase {
 
 	/**
-	 * Translations return their source string; the solution draft is page 6, the Proforma request page 7.
+	 * Translations return their source string; the solution draft is page 6, the inquiry page 7.
 	 */
 	public function setUp(): void {
 		parent::setUp();
@@ -63,11 +63,11 @@ final class LabelsTest extends TestCase {
 	public function test_request_texts(): void {
 		$labels = new Labels();
 
-		$this->assertSame( 'Request Proforma', $labels->send_inquiry() );
+		$this->assertSame( 'Send inquiry', $labels->send_inquiry() );
 		$this->assertSame( 'Thank you. Your inquiry has been received.', $labels->inquiry_received() );
 		$this->assertSame( 'Thank you. Your inquiry has been received.', $labels->inquiry_received( null, new \WC_Order( 1 ) ) );
 		$this->assertStringContainsString( 'confirmation link did not open', $labels->inquiry_received( null, false ) );
-		$this->assertStringContainsString( 'request a Proforma invoice', $labels->log_in_to_send() );
+		$this->assertStringContainsString( 'send your inquiry', $labels->log_in_to_send() );
 	}
 
 	/**
@@ -82,13 +82,13 @@ final class LabelsTest extends TestCase {
 	}
 
 	/**
-	 * The solution draft and Proforma request pages carry their names in the page and the browser tab.
+	 * The solution draft and inquiry pages carry their names in the page and the browser tab.
 	 */
 	public function test_page_titles(): void {
 		$labels = new Labels();
 
 		$this->assertSame( 'Solution draft', $labels->page_title( 'Cart', 6 ) );
-		$this->assertSame( 'Proforma request', $labels->page_title( 'Checkout', 7 ) );
+		$this->assertSame( 'Send an inquiry', $labels->page_title( 'Checkout', 7 ) );
 		$this->assertSame( 'About', $labels->page_title( 'About', 9 ) );
 
 		WP_Mock::userFunction( 'is_page', array( 'return' => true ) );
@@ -120,11 +120,11 @@ final class LabelsTest extends TestCase {
 		$this->assertSame( 'Solution draft | Linker', $labels->seo_title( 'Ihr Warenkorb | Linker' ) );
 		$this->assertSame( 'Products | Linker', $labels->seo_title( 'Products | Linker' ) );
 		$this->assertSame(
-			'Review the lines in your solution draft, adjust quantities and check the totals. Approved partner accounts see net prices, tax and delivery terms before the Proforma request.',
+			'Review the lines in your solution draft, adjust quantities and check the totals. Approved partner accounts see net prices, tax and delivery terms before the inquiry page.',
 			$labels->seo_description( 'Review the lines in your basket, adjust quantities and check the totals. Approved partner accounts see net pricing, tax and delivery terms before checkout.' )
 		);
 		$this->assertSame(
-			'Build a solution draft from products or product numbers. Approved partner accounts can review prices, delivery, tax and the Proforma request.',
+			'Build a solution draft from products or product numbers. Approved partner accounts can review prices, delivery, tax and the inquiry page.',
 			$labels->seo_description( 'Build a cart from catalog products or SKU rows. Approved partner accounts can review pricing, delivery, tax, and checkout details.' )
 		);
 		$this->assertSame( 'A page that does not name a cart.', $labels->seo_description( 'A page that does not name a cart.' ) );
@@ -138,7 +138,7 @@ final class LabelsTest extends TestCase {
 	}
 
 	/**
-	 * On the confirmation WooCommerce's crumb for the Proforma request page carries the stored title; it gets the page's name.
+	 * On the confirmation WooCommerce's crumb for the inquiry page carries the stored title; it gets the page's name.
 	 */
 	public function test_breadcrumb(): void {
 		WP_Mock::userFunction(
@@ -154,7 +154,7 @@ final class LabelsTest extends TestCase {
 		$this->assertSame(
 			array(
 				array( 'Home', 'https://example.test/' ),
-				array( 'Proforma request', 'https://example.test/proforma-request/' ),
+				array( 'Send an inquiry', 'https://example.test/proforma-request/' ),
 				array( 'Inquiry received' ),
 			),
 			( new Labels() )->breadcrumb(

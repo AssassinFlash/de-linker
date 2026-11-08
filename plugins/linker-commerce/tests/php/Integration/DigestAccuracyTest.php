@@ -10,7 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Integration;
 
 use Linker\Commerce\Digest\DigestEmail;
-use Linker\Commerce\Digest\InquiriesAwaitingProforma;
+use Linker\Commerce\Digest\InquiriesAwaitingReply;
 use Linker\Commerce\Inquiry\Assessment\Queue;
 use Linker\Commerce\Inquiry\Assessment\StructuredMeta;
 use Linker\Commerce\Inquiry\Statuses;
@@ -242,7 +242,7 @@ final class DigestAccuracyTest extends TestCase {
 		};
 		add_filter( 'query', $trace );
 		try {
-			$entries = ( new InquiriesAwaitingProforma() )->entries();
+			$entries = ( new InquiriesAwaitingReply() )->entries();
 		} finally {
 			remove_filter( 'query', $trace );
 		}

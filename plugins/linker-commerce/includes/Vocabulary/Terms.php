@@ -12,8 +12,8 @@ namespace Linker\Commerce\Vocabulary;
 /**
  * WooCommerce's customer-facing strings that speak of carts, orders, checkout,
  * payment or shipping, and what this site says instead (AGENTS.md §3: Solution
- * draft / Lösungsentwurf, Inquiry / Anfrage, Proforma invoice /
- * Proformarechnung; docs/specs/11-commerce.md, Vocabulary). Each replacement is
+ * draft / Lösungsentwurf, Inquiry / Anfrage, Quotation in preparation /
+ * Angebot in Vorbereitung; docs/specs/11-commerce.md, Vocabulary). Each replacement is
  * a string of this plugin, translated in its .po files; each key is
  * WooCommerce 11.1.0's source string, character for character.
  */
@@ -30,14 +30,14 @@ final class Terms {
 			'Cart totals'                                  => __( 'Totals', 'linker-commerce' ),
 			'Cart'                                         => __( 'Solution draft', 'linker-commerce' ),
 			'Update cart'                                  => __( 'Update solution draft', 'linker-commerce' ),
-			'Proceed to checkout'                          => __( 'Continue to Proforma request', 'linker-commerce' ),
+			'Proceed to checkout'                          => __( 'Continue to your inquiry', 'linker-commerce' ),
 			/* translators: %s: product name. */
 			'Remove %s from cart'                          => __( 'Remove %s from the solution draft', 'linker-commerce' ),
 			'Cart updated.'                                => __( 'Solution draft updated.', 'linker-commerce' ),
 			'Your cart is currently empty.'                => __( 'Your solution draft is empty.', 'linker-commerce' ),
 			'Return to shop'                               => __( 'Browse products', 'linker-commerce' ),
 			'View cart'                                    => __( 'View solution draft', 'linker-commerce' ),
-			'Checkout'                                     => __( 'Proforma request', 'linker-commerce' ),
+			'Checkout'                                     => __( 'Send an inquiry', 'linker-commerce' ),
 			'No products in the cart.'                     => __( 'No products in the solution draft.', 'linker-commerce' ),
 			'Return to cart'                               => __( 'Back to the solution draft', 'linker-commerce' ),
 			'Add to cart'                                  => __( 'Add to solution draft', 'linker-commerce' ),
@@ -61,7 +61,7 @@ final class Terms {
 			'You cannot add another "%s" to your cart.'    => __( 'You cannot add another &ldquo;%s&rdquo; to your solution draft.', 'linker-commerce' ),
 			/* translators: %s: product name. */
 			'You cannot add &quot;%s&quot; to the cart because the product is out of stock.' => __( '&ldquo;%s&rdquo; is not available at the moment and cannot be added to the solution draft.', 'linker-commerce' ),
-			'There are some issues with the items in your cart. Please go back to the cart page and resolve these issues before checking out.' => __( 'Some products in your solution draft need checking. Please go back to the solution draft before you request a Proforma invoice.', 'linker-commerce' ),
+			'There are some issues with the items in your cart. Please go back to the cart page and resolve these issues before checking out.' => __( 'Some products in your solution draft need checking. Please go back to the solution draft before you send your inquiry.', 'linker-commerce' ),
 			'Quantity'                                     => __( 'Quantity', 'linker-commerce' ),
 
 			// Products (AGENTS.md §2, 2026-10-05: Product / Model / Series, never "article").
@@ -71,8 +71,8 @@ final class Terms {
 			'SKU:'                                         => __( 'Product no.:', 'linker-commerce' ),
 			'Remove item'                                  => __( 'Remove product', 'linker-commerce' ),
 
-			// The Proforma request page (WooCommerce's checkout).
-			'Payment methods'                              => __( 'Proforma invoice', 'linker-commerce' ),
+			// The inquiry page (WooCommerce's checkout).
+			'Payment methods'                              => __( 'Inquiry', 'linker-commerce' ),
 			'If you have shopped with us before, please enter your details below. If you are a new customer, please proceed to the Billing section.' => __( 'Log in with your account.', 'linker-commerce' ),
 			'Returning customer?'                          => __( 'Already have an account?', 'linker-commerce' ),
 			'Click here to login'                          => __( 'Log in', 'linker-commerce' ),
@@ -86,8 +86,8 @@ final class Terms {
 			// The emails' heading of the same field ("Kundenhinweis" in WooCommerce's German pack).
 			'Customer note'                                => __( 'Notes', 'linker-commerce' ),
 			'Your order'                                   => __( 'Your inquiry', 'linker-commerce' ),
-			'Place order'                                  => __( 'Request Proforma', 'linker-commerce' ),
-			'You must be logged in to checkout.'           => __( 'Please log in to request a Proforma invoice. No account yet? Register on the account page.', 'linker-commerce' ),
+			'Place order'                                  => __( 'Send inquiry', 'linker-commerce' ),
+			'You must be logged in to checkout.'           => __( 'Please log in to send your inquiry. No account yet? Register on the account page.', 'linker-commerce' ),
 			'Please read and accept the terms and conditions to proceed with your order.' => __( 'Please read and accept the terms and conditions to send your inquiry.', 'linker-commerce' ),
 			'We were unable to process your order, please try again.' => __( 'Your inquiry could not be sent. Please try again.', 'linker-commerce' ),
 			'Unable to create order.'                      => __( 'Your inquiry could not be saved. Please try again.', 'linker-commerce' ),
@@ -98,7 +98,7 @@ final class Terms {
 			'Since your browser does not support JavaScript, or it is disabled, please ensure you click the %1$sUpdate Totals%2$s button before placing your order. You may be charged more than the amount stated above if you fail to do so.' => __( 'Your browser does not run JavaScript. Please click %1$sUpdate totals%2$s before sending your inquiry, so that the totals above are up to date.', 'linker-commerce' ),
 			/* translators: %s: link to the inquiries in the account. */
 			'There was an error processing your order. Please check for any charges in your payment method and review your <a href="%s">order history</a> before placing the order again.' => __( 'Your inquiry could not be sent. Please check your <a href="%s">inquiries</a> before sending it again.', 'linker-commerce' ),
-			'The order totals have been updated. Please confirm your order by pressing the "Place order" button at the bottom of the page.' => __( 'The totals have been updated. Please confirm your inquiry with the &ldquo;Request Proforma&rdquo; button at the bottom of the page.', 'linker-commerce' ),
+			'The order totals have been updated. Please confirm your order by pressing the "Place order" button at the bottom of the page.' => __( 'The totals have been updated. Please confirm your inquiry with the &ldquo;Send inquiry&rdquo; button at the bottom of the page.', 'linker-commerce' ),
 
 			// The confirmation, the inquiry pages and the account.
 			'Thank you. Your order has been received.'     => __( 'Thank you. Your inquiry has been received.', 'linker-commerce' ),
@@ -124,7 +124,7 @@ final class Terms {
 			/* translators: 1: "View" or a similar word, 2: inquiry number. */
 			'%1$s order number %2$s'                       => __( '%1$s: inquiry number %2$s', 'linker-commerce' ),
 			'Billing address'                              => __( 'Company details', 'linker-commerce' ),
-			'The following addresses will be used on the checkout page by default.' => __( 'These details are pre-filled on the Proforma request page.', 'linker-commerce' ),
+			'The following addresses will be used on the checkout page by default.' => __( 'These details are pre-filled on the inquiry page.', 'linker-commerce' ),
 			'Save address'                                 => __( 'Save company details', 'linker-commerce' ),
 			/* translators: 1: link to the inquiries, 2: link to the company details, 3: link to the account details. */
 			'From your account dashboard you can view your <a href="%1$s">recent orders</a>, manage your <a href="%2$s">billing address</a>, and <a href="%3$s">edit your password and account details</a>.' => __( 'In your account you can follow your <a href="%1$s">inquiries</a>, keep your <a href="%2$s">company details</a> up to date and <a href="%3$s">change your password and account details</a>.', 'linker-commerce' ),

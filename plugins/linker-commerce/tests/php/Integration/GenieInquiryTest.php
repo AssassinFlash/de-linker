@@ -119,7 +119,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 					)
 				);
 				foreach ( is_array( $made ) ? $made : array() as $order ) {
-					if ( 'proforma' === $order->get_meta( '_linker_inquiry_source' ) ) {
+					if ( 'inquiry' === $order->get_meta( '_linker_inquiry_source' ) ) {
 						$order->delete( true );
 					}
 				}
@@ -275,8 +275,8 @@ final class GenieInquiryTest extends IntegrationTestCase {
 		// Proforma gateway, the inquiry's source and status.
 		$record = $this->record( $guest );
 		$this->assertSame( $data['inquiry']['order'], $record->get_id() );
-		$this->assertSame( 'linker_proforma', $record->get_payment_method() );
-		$this->assertSame( 'proforma', $record->get_meta( '_linker_inquiry_source' ) );
+		$this->assertSame( 'linker_inquiry', $record->get_payment_method() );
+		$this->assertSame( 'inquiry', $record->get_meta( '_linker_inquiry_source' ) );
 		$this->assertSame( Statuses::RECEIVED, $record->get_status() );
 		$this->assertSame( $this->summary['note'], $record->get_customer_note() );
 		$this->assertSame( 'Weber Solar', $record->get_billing_company() );
@@ -708,7 +708,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 		);
 		$orders = array();
 		foreach ( is_array( $found ) ? $found : array() as $order ) {
-			if ( 'proforma' === $order->get_meta( '_linker_inquiry_source' ) && 'linker-it-' === substr( (string) $order->get_billing_email(), 0, 10 ) ) {
+			if ( 'inquiry' === $order->get_meta( '_linker_inquiry_source' ) && 'linker-it-' === substr( (string) $order->get_billing_email(), 0, 10 ) ) {
 				$orders[] = $order;
 			}
 		}

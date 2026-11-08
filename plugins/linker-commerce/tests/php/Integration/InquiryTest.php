@@ -41,7 +41,7 @@ final class InquiryTest extends IntegrationTestCase {
 			)
 		);
 
-		$this->assertSame( array( 'linker_proforma' ), array_keys( WC()->payment_gateways()->get_available_payment_gateways() ) );
+		$this->assertSame( array( 'linker_inquiry' ), array_keys( WC()->payment_gateways()->get_available_payment_gateways() ) );
 		$this->assertSame( Statuses::RECEIVED, $order->get_status() );
 		$this->assertSame( '', $order->get_payment_method_title() );
 		$this->assertSame( determine_locale(), $order->get_meta( OrderLocale::META ) );

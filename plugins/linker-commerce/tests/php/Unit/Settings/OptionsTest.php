@@ -48,7 +48,6 @@ final class OptionsTest extends TestCase {
 		$this->assertSame( 'sales@sunriverinverter.com', $options->notify_to() );
 		$this->assertSame( 'sales@sunriverinverter.com', $options->notify_sender()->email );
 		$this->assertSame( array(), $options->notify_bcc() );
-		$this->assertSame( 'DLK-PF', $options->proforma_prefix() );
 		$this->assertSame(
 			array(
 				'name'  => '',
@@ -57,7 +56,6 @@ final class OptionsTest extends TestCase {
 			),
 			$options->contact()
 		);
-		$this->assertSame( 'Linker Technology GmbH', $options->seller()['name'] );
 	}
 
 	/**
@@ -115,7 +113,6 @@ final class OptionsTest extends TestCase {
 		$options = new Options();
 
 		$this->assertSame( 'sales@de-linker.com', $options->team_mailbox() );
-		$this->assertSame( 'sales@de-linker.com', $options->seller()['email'] );
 		$this->assertSame( 'sales@de-linker.com', $options->contact()['email'] );
 		$this->assertSame( 'sales@sunriverinverter.com', $options->notify_to() );
 		$this->assertSame( array( 'chester@de-linker.com' ), $options->notify_bcc() );
@@ -131,50 +128,6 @@ final class OptionsTest extends TestCase {
 				'woocommerce_default_country' => 'DE',
 			)
 		);
-		$this->assertSame( 'team@example.test', ( new Options() )->seller()['email'] );
 		$this->assertSame( 'sales@sunriverinverter.com', ( new Options() )->notify_to(), 'The team mailbox never becomes the notification recipient.' );
-	}
-
-	/**
-	 * The seller block reads the store address of WooCommerce's general settings.
-	 */
-	public function test_seller_uses_the_store_address(): void {
-		$this->options(
-			array(
-				Options::SELLER_NAME          => '',
-				Options::SELLER_VAT_ID        => 'DE123456789',
-				'woocommerce_store_address'   => 'Steinfeldstraße 3',
-				'woocommerce_store_address_2' => '',
-				'woocommerce_store_postcode'  => '39179',
-				'woocommerce_store_city'      => 'Barleben',
-				'woocommerce_default_country' => 'DE:DE-ST',
-			)
-		);
-
-		$this->assertSame(
-			array(
-				'name'    => 'Linker Technology GmbH',
-				'vat_id'  => 'DE123456789',
-				'address' => array( 'Steinfeldstraße 3', '39179 Barleben', 'Germany' ),
-				'email'   => 'sales@de-linker.com',
-			),
-			( new Options() )->seller()
-		);
-	}
-
-	/**
-	 * Values that are not strings read as empty.
-	 */
-	public function test_non_string_values_read_as_empty(): void {
-		$this->options(
-			array(
-				Options::PROFORMA_PREFIX => array( 'PF' ),
-				Options::BANK_IBAN       => 42,
-			)
-		);
-		$options = new Options();
-
-		$this->assertSame( 'DLK-PF', $options->proforma_prefix() );
-		$this->assertSame( '', $options->bank()['iban'] );
 	}
 }

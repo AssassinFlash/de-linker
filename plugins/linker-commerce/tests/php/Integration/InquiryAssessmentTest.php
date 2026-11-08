@@ -168,7 +168,7 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 		);
 		$this->assertIsArray( $first );
 		$this->assertSame( 'yes', $first['pending'] );
-		$this->assertSame( 'proforma', $first['source'] );
+		$this->assertSame( 'inquiry', $first['source'] );
 		$this->assertSame( 'First native save evidence', $first['data']['snapshot']['submission']['message'] );
 		$this->assertSame( Queue::data( $order )['accepted_at'], $first['data']['accepted_at'] );
 	}

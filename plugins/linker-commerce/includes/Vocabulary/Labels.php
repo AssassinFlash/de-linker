@@ -13,9 +13,9 @@ use WC_Product;
 
 /**
  * The texts WooCommerce passes through filters of their own: the product
- * button, the send button, the confirmation, the login request on the Proforma
+ * button, the send button, the confirmation, the login request on the inquiry
  * request page, the privacy text, and the titles of the solution draft and
- * Proforma request pages (docs/specs/11-commerce.md, journey steps 3 and 4).
+ * inquiry pages (docs/specs/11-commerce.md, journey steps 3 and 4).
  */
 final class Labels {
 
@@ -34,10 +34,10 @@ final class Labels {
 	}
 
 	/**
-	 * The send button of the Proforma request page.
+	 * The send button of the inquiry page.
 	 */
 	public function send_inquiry(): string {
-		return __( 'Request Proforma', 'linker-commerce' );
+		return __( 'Send inquiry', 'linker-commerce' );
 	}
 
 	/**
@@ -57,10 +57,10 @@ final class Labels {
 	}
 
 	/**
-	 * What a visitor who is not logged in reads on the Proforma request page.
+	 * What a visitor who is not logged in reads on the inquiry page.
 	 */
 	public function log_in_to_send(): string {
-		return __( 'Please log in to request a Proforma invoice. No account yet? Register on the account page.', 'linker-commerce' );
+		return __( 'Please log in to send your inquiry. No account yet? Register on the account page.', 'linker-commerce' );
 	}
 
 	/**
@@ -81,7 +81,7 @@ final class Labels {
 	}
 
 	/**
-	 * Titles of the solution draft and Proforma request pages; runs on the_title
+	 * Titles of the solution draft and inquiry pages; runs on the_title
 	 * before WooCommerce sets endpoint titles.
 	 *
 	 * @param string $title   Title.
@@ -127,9 +127,9 @@ final class Labels {
 		 */
 	public function seo_description( string $description ): string {
 		$replacements = array(
-			'Review the lines in your basket, adjust quantities and check the totals. Approved partner accounts see net pricing, tax and delivery terms before checkout.' => __( 'Review the lines in your solution draft, adjust quantities and check the totals. Approved partner accounts see net prices, tax and delivery terms before the Proforma request.', 'linker-commerce' ),
-			'Build a cart from catalog products or SKU rows. Approved partner accounts can review pricing, delivery, tax, and checkout details.' => __( 'Build a solution draft from products or product numbers. Approved partner accounts can review prices, delivery, tax and the Proforma request.', 'linker-commerce' ),
-			'Überprüfen Sie die Positionen in Ihrem Warenkorb, passen Sie die Mengen an und prüfen Sie die Gesamtsummen. Zugelassene Partnerkonten sehen Nettopreise, Steuern und Lieferbedingungen vor dem Checkout.' => __( 'Prüfen Sie die Positionen in Ihrem Lösungsentwurf, passen Sie die Mengen an und prüfen Sie die Summen. Freigegebene Partnerkonten sehen Nettopreise, Steuern und Lieferbedingungen vor der Proforma-Anfrage.', 'linker-commerce' ),
+			'Review the lines in your basket, adjust quantities and check the totals. Approved partner accounts see net pricing, tax and delivery terms before checkout.' => __( 'Review the lines in your solution draft, adjust quantities and check the totals. Approved partner accounts see net prices, tax and delivery terms before the inquiry page.', 'linker-commerce' ),
+			'Build a cart from catalog products or SKU rows. Approved partner accounts can review pricing, delivery, tax, and checkout details.' => __( 'Build a solution draft from products or product numbers. Approved partner accounts can review prices, delivery, tax and the inquiry page.', 'linker-commerce' ),
+			'Überprüfen Sie die Positionen in Ihrem Warenkorb, passen Sie die Mengen an und prüfen Sie die Gesamtsummen. Zugelassene Partnerkonten sehen Nettopreise, Steuern und Lieferbedingungen vor dem Checkout.' => __( 'Prüfen Sie die Positionen in Ihrem Lösungsentwurf, passen Sie die Mengen an und prüfen Sie die Summen. Freigegebene Partnerkonten sehen Nettopreise, Steuern und Lieferbedingungen vor der Anfrage.', 'linker-commerce' ),
 		);
 			// seopress_titles_desc passes the sentence. seopress_social_og_desc
 			// passes the whole meta tag, so the sentence is replaced inside it.
@@ -185,7 +185,7 @@ final class Labels {
 			return __( 'Solution draft', 'linker-commerce' );
 		}
 		if ( wc_get_page_id( 'checkout' ) === $post_id ) {
-			return __( 'Proforma request', 'linker-commerce' );
+			return __( 'Send an inquiry', 'linker-commerce' );
 		}
 		return null;
 	}

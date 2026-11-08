@@ -542,7 +542,7 @@ test('en: an EU-format VAT ID is checked at registration and the verdict kept', 
 	).toMatch(/^(valid|invalid|unverified)$/);
 });
 
-test('en: a restricted account signs in, keeps the workplace and reads its gate on the Proforma request', async ({
+test('en: a restricted account signs in, keeps the workplace and reads its gate on the inquiry page', async ({
 	page,
 }) => {
 	const login = createCustomer(Date.now(), 'en');
@@ -580,7 +580,7 @@ test('en: a restricted account signs in, keeps the workplace and reads its gate 
 	);
 	await expect(
 		gate,
-		'the Proforma request reads the restriction gate'
+		'the inquiry page reads the restriction gate'
 	).toBeVisible();
 	await expect(gate, 'the gate names the limit').toContainText(
 		/Access currently limited/
@@ -606,7 +606,7 @@ test('en: a restricted account signs in, keeps the workplace and reads its gate 
 	expect(noticeBackground, 'the notice is tinted, not bare text').not.toBe(
 		'rgba(0, 0, 0, 0)'
 	);
-	await shot(page, 'en-restricted-proforma-gate');
+	await shot(page, 'en-restricted-inquiry-gate');
 });
 
 test('de: the restricted gate speaks German and links its own address', async ({
@@ -637,10 +637,7 @@ test('de: the restricted gate speaks German and links its own address', async ({
 	const gate = page.locator(
 		'section[aria-label="Konto mit eingeschränktem Zugriff"]'
 	);
-	await expect(
-		gate,
-		'the German Proforma request reads the gate'
-	).toBeVisible();
+	await expect(gate, 'the German inquiry page reads the gate').toBeVisible();
 	await expect(gate, 'the gate names the limit in German').toContainText(
 		/Zugriff derzeit eingeschränkt/
 	);
@@ -656,7 +653,7 @@ test('de: the restricted gate speaks German and links its own address', async ({
 	await expect(gate, 'the sentence reads as reviewed').toContainText(
 		/Schreiben Sie an sales@de-linker.com/
 	);
-	await shot(page, 'de-restricted-proforma-gate');
+	await shot(page, 'de-restricted-inquiry-gate');
 });
 
 test('en: a rejected account cannot sign in and reads the refusal', async ({

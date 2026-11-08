@@ -867,7 +867,7 @@
 /* ── The guest account page's own ground ───────────────────────────────── */
 body.woocommerce-account:not(.logged-in) .linker-account #container-content-account { padding: clamp(20px, 4vw, 48px) 1rem; }
 
-#tv-woo-b2b-checkout .linker-proforma-success {
+#tv-woo-b2b-checkout .linker-inquiry-success {
 	display: grid;
 	justify-items: center;
 	gap: var(--proto-space-5);
@@ -878,8 +878,8 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 	color: var(--proto-ink-deep);
 	text-align: center;
 }
-#tv-woo-b2b-checkout .linker-proforma-success :is(h2, p) { margin: 0; }
-#tv-woo-b2b-checkout .linker-proforma-success::before { display: none; }
+#tv-woo-b2b-checkout .linker-inquiry-success :is(h2, p) { margin: 0; }
+#tv-woo-b2b-checkout .linker-inquiry-success::before { display: none; }
 
 /* Replace the contact shortcode's literal palette with the site's tokens.
  * Desktop dimensions reproduce its previous utility classes. */
@@ -903,7 +903,7 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 }
 #contact-form .linker-contact-form .linker-form-input:focus { border-color: var(--proto-input-line-focus); }
 #contact-form .linker-contact-form .linker-form-primary,
-.linker-proforma-success .linker-form-primary {
+.linker-inquiry-success .linker-form-primary {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -918,9 +918,9 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 	font-weight: var(--proto-weight-semibold);
 	text-decoration: none;
 }
-#tv-woo-b2b-checkout .linker-proforma-success .linker-form-primary { color: var(--proto-pill-a-fg); justify-self: center; }
+#tv-woo-b2b-checkout .linker-inquiry-success .linker-form-primary { color: var(--proto-pill-a-fg); justify-self: center; }
 #contact-form .linker-contact-form :where(a, button, input, textarea):focus-visible,
-.linker-proforma-success a:focus-visible {
+.linker-inquiry-success a:focus-visible {
 	outline: var(--proto-focus-ring);
 	outline-offset: var(--proto-focus-offset);
 }
@@ -1005,7 +1005,7 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 	#contact-form .linker-contact-form textarea.linker-form-input { min-height: 10rem; }
 	#contact-form .linker-contact-form .linker-form-submit p { margin: 0; }
 	#contact-form .linker-contact-form .linker-form-success,
-	#tv-woo-b2b-checkout .linker-proforma-success {
+	#tv-woo-b2b-checkout .linker-inquiry-success {
 		display: grid;
 		justify-items: center;
 		gap: var(--proto-space-5);
@@ -1017,17 +1017,17 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 		text-align: center;
 	}
 	#contact-form .linker-contact-form .linker-form-success p,
-	#tv-woo-b2b-checkout .linker-proforma-success :is(h2, p) { margin: 0; }
+	#tv-woo-b2b-checkout .linker-inquiry-success :is(h2, p) { margin: 0; }
 	#contact-form .linker-contact-form .linker-form-success .linker-form-state-icon,
-	#tv-woo-b2b-checkout .linker-proforma-success .linker-form-state-icon {
+	#tv-woo-b2b-checkout .linker-inquiry-success .linker-form-state-icon {
 		width: var(--proto-space-8);
 		height: var(--proto-space-8);
 		font-size: var(--proto-size-2xl);
 	}
-	#tv-woo-b2b-checkout .linker-proforma-success::before { display: none; }
-	#tv-woo-b2b-checkout .linker-proforma-success h2 { font-size: var(--proto-size-lg); }
-	#tv-woo-b2b-checkout .linker-proforma-success p { font-size: var(--proto-size-sm); }
-	#tv-woo-b2b-checkout .linker-proforma-success + .linker-next-steps { display: none; }
+	#tv-woo-b2b-checkout .linker-inquiry-success::before { display: none; }
+	#tv-woo-b2b-checkout .linker-inquiry-success h2 { font-size: var(--proto-size-lg); }
+	#tv-woo-b2b-checkout .linker-inquiry-success p { font-size: var(--proto-size-sm); }
+	#tv-woo-b2b-checkout .linker-inquiry-success + .linker-next-steps { display: none; }
 	#tv-woo-b2b-checkout .woocommerce-invalid .checkout-inline-error-message { display: none; }
 	#container-content-checkout { padding: var(--proto-space-5) var(--proto-space-4) var(--proto-space-7); }
 	#tv-woo-b2b-checkout { padding: 0; }

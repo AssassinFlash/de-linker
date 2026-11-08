@@ -335,7 +335,7 @@ abstract class IntegrationTestCase extends TestCase {
 		WC()->cart->calculate_totals();
 		$order_id = WC()->checkout()->create_order(
 			array(
-				'payment_method'     => 'linker_proforma',
+				'payment_method'     => 'linker_inquiry',
 				'billing_company'    => $customer->get_billing_company(),
 				'billing_first_name' => $customer->get_billing_first_name(),
 				'billing_last_name'  => $customer->get_billing_last_name(),
@@ -355,7 +355,7 @@ abstract class IntegrationTestCase extends TestCase {
 				}
 			}
 		);
-		$gateway = WC()->payment_gateways()->payment_gateways()['linker_proforma'];
+		$gateway = WC()->payment_gateways()->payment_gateways()['linker_inquiry'];
 		$this->assertSame( 'success', $gateway->process_payment( $order_id )['result'] );
 		$order = wc_get_order( $order_id );
 		$this->assertInstanceOf( WC_Order::class, $order );

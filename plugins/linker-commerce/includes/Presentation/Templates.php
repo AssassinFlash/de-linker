@@ -64,7 +64,7 @@ final class Templates {
 	private const TITLES = array(
 		'is_shop_page'                     => 'Shop page',
 		'is_cart_page'                     => 'Solution draft',
-		'is_checkout_page'                 => 'Proforma request',
+		'is_checkout_page'                 => 'Inquiry',
 		'is_account_page'                  => 'Account',
 		'is_single_product'                => 'Single product',
 		'is_archive_for_post_type_product' => 'Product archive',

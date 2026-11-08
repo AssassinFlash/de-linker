@@ -778,9 +778,9 @@ JS,
 			),
 			'account'  => array(
 				array(
-					__( 'Where is my Proforma?', 'linker-tools' ),
+					__( 'Where is my quotation?', 'linker-tools' ),
 					'account',
-					'ask' => __( 'Where is my Proforma?', 'linker-tools' ),
+					'ask' => __( 'Where is my quotation?', 'linker-tools' ),
 				),
 			),
 		);
@@ -869,7 +869,7 @@ JS,
 				);
 			case 'account':
 				return array(
-					__( 'Where is my Proforma?', 'linker-tools' ),
+					__( 'Where is my quotation?', 'linker-tools' ),
 					__( 'What happens next?', 'linker-tools' ),
 				);
 			case 'category':

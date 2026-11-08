@@ -43,7 +43,7 @@ final class ModuleTest extends TestCase {
 		$saved     = new SavedSolutions( new PrivateFiles( SavedSolutions::REPORTS_DIRECTORY ), '/plugin/templates/' );
 		$removal   = new SavedSolutionRemoval();
 		$documents = new Documents( $saved, '/plugin/templates/' );
-		$download  = new DocumentDownload( new PrivateFiles( 'proforma' ), $saved );
+		$download  = new DocumentDownload( new PrivateFiles( 'quotation' ), $saved );
 		$route     = new LegacyRoutes();
 		$auth      = new AuthTemplates();
 

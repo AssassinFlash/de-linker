@@ -83,7 +83,7 @@ class InquiryRequest {
 	 * (Linker\Commerce\Inquiry\Statuses and WooCommerce's own ends). The shell
 	 * translates each in the page's language.
 	 */
-	public const STATUSES = array( 'inquiry-received', 'proforma-issued', 'completed', 'cancelled', 'pending' );
+	public const STATUSES = array( 'inquiry-received', 'quotation-issued', 'completed', 'cancelled', 'pending' );
 
 	/**
 	 * Sets up the route.

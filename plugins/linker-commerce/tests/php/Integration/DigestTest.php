@@ -14,15 +14,14 @@ use ActionScheduler_Store;
 use Linker\Commerce\Digest\Block;
 use Linker\Commerce\Digest\Blocks;
 use Linker\Commerce\Digest\FailedEmails;
-use Linker\Commerce\Digest\InquiriesAwaitingProforma;
+use Linker\Commerce\Digest\InquiriesAwaitingReply;
 use Linker\Commerce\Digest\Module;
-use Linker\Commerce\Digest\ProformasAwaitingReply;
+use Linker\Commerce\Digest\QuotationsInProgress;
 use Linker\Commerce\Digest\Scheduler;
 use Linker\Commerce\Mail\Capacity;
 use Linker\Commerce\Mail\CapacityHealth;
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Outbox;
-use Linker\Commerce\Proforma\Issuer;
 use Linker\Commerce\Registration\PendingApprovals;
 use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Protection\IntakeStore;
@@ -83,42 +82,43 @@ final class DigestTest extends IntegrationTestCase {
 		$created = (int) $created->getTimestamp();
 		$this->assertSame(
 			array(),
-			$this->fixture_only( ( new InquiriesAwaitingProforma( $created + 24 * 3600 ) )->entries(), $inquiry_out ),
+			$this->fixture_only( ( new \Linker\Commerce\Digest\InquiriesAwaitingReply( $created + 24 * 3600 ) )->entries(), $inquiry_out ),
 			'An inquiry exactly 24 hours old is not listed.'
 		);
 		$this->assertCount(
 			1,
-			$this->fixture_only( ( new InquiriesAwaitingProforma( $created + 24 * 3600 + 1 ) )->entries(), $inquiry_out ),
+			$this->fixture_only( ( new \Linker\Commerce\Digest\InquiriesAwaitingReply( $created + 24 * 3600 + 1 ) )->entries(), $inquiry_out ),
 			'One second past 24 hours, it is.'
 		);
-		$issued = (int) $proforma_out->get_meta( Issuer::ISSUED_META );
+		$modified = (int) $proforma_out->get_meta( \Linker\Commerce\Quotation\Issuer::ISSUED_META );
 		$this->assertSame(
 			array(),
-			$this->fixture_only( ( new ProformasAwaitingReply( $issued + 72 * 3600 ) )->entries(), $proforma_out ),
-			'A Proforma exactly 72 hours out is not listed.'
+			$this->fixture_only( ( new \Linker\Commerce\Digest\QuotationsInProgress( $modified + 72 * 3600 ) )->entries(), $proforma_out ),
+			'A quotation touched exactly 72 hours ago is not listed.'
 		);
 		$this->assertCount(
 			1,
-			$this->fixture_only( ( new ProformasAwaitingReply( $issued + 72 * 3600 + 1 ) )->entries(), $proforma_out ),
+			$this->fixture_only( ( new \Linker\Commerce\Digest\QuotationsInProgress( $modified + 72 * 3600 + 1 ) )->entries(), $proforma_out ),
 			'One second past 72 hours, it is.'
 		);
 
 		// The digest's own view, at the real clock: the 25-hour inquiry was
 		// created the day before in Berlin, the 23-hour one inside the window.
-		$inquiries = $this->fixture_only( ( new InquiriesAwaitingProforma() )->entries(), $inquiry_in, $inquiry_out );
+		$inquiries = $this->fixture_only( ( new \Linker\Commerce\Digest\InquiriesAwaitingReply() )->entries(), $inquiry_in, $inquiry_out );
 		$this->assertCount( 1, $inquiries );
 		$this->assertStringContainsString( '#' . $inquiry_in->get_order_number(), (string) $inquiries[0]['label'] );
 		$this->assertStringContainsString( 'Linker Integration Test GmbH', (string) $inquiries[0]['label'] );
 		$this->assertNotEmpty( $inquiries[0]['url'] );
 
-		$proformas = $this->fixture_only( ( new ProformasAwaitingReply() )->entries(), $proforma_in, $proforma_out );
+		$proformas = $this->fixture_only( ( new \Linker\Commerce\Digest\QuotationsInProgress() )->entries(), $proforma_in, $proforma_out );
 		$this->assertCount( 1, $proformas );
-		$this->assertStringContainsString( 'PI-', (string) $proformas[0]['detail'] );
+		$this->assertStringContainsString( 'Quotation QT-', (string) $proformas[0]['detail'] );
+		$this->assertStringContainsString( 'issued on', (string) $proformas[0]['detail'] );
 		$this->assertSame( '3 days ago', $this->age_of( $proformas[0]['detail'] ) );
 
 		// The boundaries hold in the other direction: the 23-hour inquiry is
 		// not among the entries even when the digest runs later in the hour.
-		$this->assertCount( 0, $this->fixture_only( ( new InquiriesAwaitingProforma() )->entries(), $inquiry_out ) );
+		$this->assertCount( 0, $this->fixture_only( ( new \Linker\Commerce\Digest\InquiriesAwaitingReply() )->entries(), $inquiry_out ) );
 	}
 
 	/**
@@ -129,7 +129,7 @@ final class DigestTest extends IntegrationTestCase {
 		// A live snapshot contains real older inquiries. Exercise the native
 		// empty-window clock seam, without hiding/deleting those source rows.
 		$empty_windows = static fn ( array $blocks ): array => array_map(
-			static fn ( Block $block ): Block => $block instanceof InquiriesAwaitingProforma ? new InquiriesAwaitingProforma( 1 ) : ( $block instanceof ProformasAwaitingReply ? new ProformasAwaitingReply( 1 ) : $block ),
+			static fn ( Block $block ): Block => $block instanceof \Linker\Commerce\Digest\InquiriesAwaitingReply ? new \Linker\Commerce\Digest\InquiriesAwaitingReply( 1 ) : ( $block instanceof \Linker\Commerce\Digest\QuotationsInProgress ? new \Linker\Commerce\Digest\QuotationsInProgress( 1 ) : $block ),
 			$blocks
 		);
 		add_filter( 'linker_commerce_digest_blocks', $empty_windows );
@@ -151,7 +151,7 @@ final class DigestTest extends IntegrationTestCase {
 		$this->assertSame( array( self::TESTER ), $to );
 		$this->assertStringStartsWith( 'Daily digest, ', $subject );
 		$this->assertStringContainsString( 'No inquiry is waiting for more than 24 hours.', $body );
-		$this->assertStringContainsString( 'No Proforma invoice has waited more than 3 days for a reply.', $body );
+		$this->assertStringContainsString( 'No Quotation has waited more than 3 days for a reply.', $body );
 		$this->assertStringContainsString( 'No email failed to send.', $body );
 
 		// One captured wire copy proves delivery to the tester.
@@ -279,7 +279,7 @@ final class DigestTest extends IntegrationTestCase {
 		// failed emails keep their order. Internal authentication health
 		// follows them (#297). Other modules may append their own blocks.
 		$this->assertSame(
-			array( PendingApprovals::ID, InquiriesAwaitingProforma::ID, ProformasAwaitingReply::ID, FailedEmails::ID, 'internal_mail' ),
+			array( PendingApprovals::ID, \Linker\Commerce\Digest\InquiriesAwaitingReply::ID, \Linker\Commerce\Digest\QuotationsInProgress::ID, FailedEmails::ID, 'internal_mail' ),
 			array_slice( array_map( static fn ( Block $block ): string => $block->id(), $blocks ), 0, 5 )
 		);
 		$fourth = $blocks[3];
@@ -331,18 +331,18 @@ final class DigestTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * Sends an inquiry, marks it proforma-issued with an issue time. The meta
-	 * and status are what the Issuer leaves behind; the PDF pipeline of the
-	 * issue button itself is ProformaTest's subject, not this one's.
+	 * Sends an inquiry, marks it issued with an issue time. The meta and
+	 * status are what the Issuer leaves behind; the PDF pipeline of the
+	 * issue button itself is QuotationTest's subject, not this one's.
 	 *
-	 * @param int $issued Unix time the Proforma was issued.
+	 * @param int $touched Unix time the Quotation was issued.
 	 */
-	private function issued_proforma( int $issued ): WC_Order {
+	private function issued_proforma( int $touched ): WC_Order {
 		$order = $this->send_inquiry( $this->customer(), array( array( $this->product( '1200' ), 1 ) ) );
 		$this->as_user( 0 );
-		$order->set_status( 'proforma-issued' );
-		$order->update_meta_data( Issuer::ISSUED_META, (string) $issued );
-		$order->update_meta_data( Issuer::NUMBER_META, 'PI-' . gmdate( 'Y', $issued ) . '-9911' );
+		$order->set_status( 'quotation-issued' );
+		$order->update_meta_data( \Linker\Commerce\Quotation\Issuer::ISSUED_META, (string) $touched );
+		$order->update_meta_data( \Linker\Commerce\Quotation\Issuer::NUMBER_META, 'QT-' . gmdate( 'Y', $touched ) . '-9911' );
 		$order->save();
 		$read_back = wc_get_order( $order->get_id() );
 		$this->assertInstanceOf( WC_Order::class, $read_back );

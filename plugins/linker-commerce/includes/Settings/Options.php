@@ -21,27 +21,22 @@ final class Options {
 	/**
 	 * Option names, also the field ids of the settings tab.
 	 */
-	public const TEAM_TO         = 'linker_commerce_team_to';
-	public const NOTIFY_TO       = 'linker_commerce_notify_to';
-	public const NOTIFY_FROM     = 'linker_commerce_notify_from';
-	public const NOTIFY_BCC      = 'linker_commerce_team_bcc';
-	public const CONTACT_NAME    = 'linker_commerce_contact_name';
-	public const CONTACT_EMAIL   = 'linker_commerce_contact_email';
-	public const CONTACT_PHONE   = 'linker_commerce_contact_phone';
-	public const SELLER_NAME     = 'linker_commerce_seller_name';
-	public const SELLER_VAT_ID   = 'linker_commerce_seller_vat_id';
-	public const BANK_HOLDER     = 'linker_commerce_bank_holder';
-	public const BANK_NAME       = 'linker_commerce_bank_name';
-	public const BANK_IBAN       = 'linker_commerce_bank_iban';
-	public const BANK_BIC        = 'linker_commerce_bank_bic';
-	public const PROFORMA_PREFIX = 'linker_commerce_proforma_prefix';
+	public const TEAM_TO          = 'linker_commerce_team_to';
+	public const NOTIFY_TO        = 'linker_commerce_notify_to';
+	public const NOTIFY_FROM      = 'linker_commerce_notify_from';
+	public const NOTIFY_BCC       = 'linker_commerce_team_bcc';
+	public const CONTACT_NAME     = 'linker_commerce_contact_name';
+	public const CONTACT_EMAIL    = 'linker_commerce_contact_email';
+	public const CONTACT_PHONE    = 'linker_commerce_contact_phone';
+	public const SELLER_NAME      = 'linker_commerce_seller_name';
+	public const SELLER_VAT_ID    = 'linker_commerce_seller_vat_id';
+	public const QUOTATION_PREFIX = 'linker_commerce_quotation_prefix';
 
 	/**
-	 * The team mailbox customers see and write to: the seller address of the
-	 * Proforma, the mailto links of the pages, Genie's hand-off sentence and
-	 * the contact person's fallback (owner rulings 2026-10-05 and 2026-10-17,
-	 * AGENTS.md §2). Internal notifications do not go here; see
-	 * DEFAULT_NOTIFY_TO.
+	 * The team mailbox customers see and write to: the mailto links of the
+	 * pages, Genie's hand-off sentence and the contact person's fallback
+	 * (owner rulings 2026-10-05 and 2026-10-17, AGENTS.md §2). Internal
+	 * notifications do not go here; see DEFAULT_NOTIFY_TO.
 	 */
 	public const DEFAULT_TEAM_TO = 'sales@de-linker.com';
 
@@ -60,15 +55,13 @@ final class Options {
 	public const DEFAULT_NOTIFY_FROM = 'sales@sunriverinverter.com';
 
 	/**
-	 * Proforma numbers read DLK-PF-YYYY-NNNN when the settings leave the prefix
-	 * empty. Live de-linker.com prints DLK-PF-YYYY-<order id>
-	 * (tv_b2b_document_reference); this site counts within the year instead of
-	 * using the order id, and keeps the same prefix (docs/specs/11-commerce.md).
+	 * Quotation numbers read DLK-QT-YYYY-NNNN when the settings leave the
+	 * prefix empty (owner ruling 2026-11-08: a quotation, not an invoice).
 	 */
-	public const DEFAULT_PROFORMA_PREFIX = 'DLK-PF';
+	public const DEFAULT_QUOTATION_PREFIX = 'DLK-QT';
 
 	/**
-	 * The seller named on the Proforma when the settings leave it empty
+	 * The seller named on the Quotation when the settings leave it empty
 	 * (AGENTS.md §1: the site belongs to Linker Technology GmbH).
 	 */
 	public const DEFAULT_SELLER_NAME = 'Linker Technology GmbH';
@@ -132,9 +125,13 @@ final class Options {
 		);
 	}
 
+
+
+
 	/**
-	 * The seller as printed on the Proforma: name, VAT ID and the store address of
-	 * WooCommerce → Settings → General.
+	 * The seller as printed on the Quotation: name, VAT ID and the store
+	 * address of WooCommerce → Settings → General. A quotation names no bank
+	 * account (owner ruling 2026-11-08).
 	 *
 	 * @return array{name: string, vat_id: string, address: list<string>, email: string}
 	 */
@@ -160,25 +157,22 @@ final class Options {
 	}
 
 	/**
-	 * The bank account the Proforma asks customers to transfer to.
+	 * The country name of WooCommerce's country:state value, or the raw value.
 	 *
-	 * @return array{holder: string, name: string, iban: string, bic: string}
+	 * @param string $value Country setting.
 	 */
-	public function bank(): array {
-		return array(
-			'holder' => $this->text( self::BANK_HOLDER ),
-			'name'   => $this->text( self::BANK_NAME ),
-			'iban'   => $this->text( self::BANK_IBAN ),
-			'bic'    => $this->text( self::BANK_BIC ),
-		);
+	private function country_name( string $value ): string {
+		$parts     = explode( ':', $value );
+		$countries = \WC()->countries->get_countries();
+		return isset( $countries[ $parts[0] ] ) ? (string) $countries[ $parts[0] ] : $value;
 	}
 
 	/**
-	 * Prefix of the Proforma numbers.
+	 * Prefix of the Quotation numbers.
 	 */
-	public function proforma_prefix(): string {
-		$prefix = $this->text( self::PROFORMA_PREFIX );
-		return '' === $prefix ? self::DEFAULT_PROFORMA_PREFIX : $prefix;
+	public function quotation_prefix(): string {
+		$prefix = $this->text( self::QUOTATION_PREFIX );
+		return '' === $prefix ? self::DEFAULT_QUOTATION_PREFIX : $prefix;
 	}
 
 	/**
@@ -189,15 +183,5 @@ final class Options {
 	private function text( string $name ): string {
 		$value = get_option( $name, '' );
 		return is_string( $value ) ? trim( $value ) : '';
-	}
-
-	/**
-	 * The country of a WooCommerce "CC" or "CC:STATE" value, by name.
-	 *
-	 * @param string $value Option value of woocommerce_default_country.
-	 */
-	private function country_name( string $value ): string {
-		$code = strtoupper( explode( ':', $value )[0] );
-		return '' === $code ? '' : (string) ( WC()->countries->get_countries()[ $code ] ?? $code );
 	}
 }

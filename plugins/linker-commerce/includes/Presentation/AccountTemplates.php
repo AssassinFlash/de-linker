@@ -16,8 +16,8 @@ use Linker\Commerce\Account\SavedSolutions;
 use Linker\Commerce\Gating\CommerceState;
 use Linker\Commerce\Gating\PriceDisplay;
 use Linker\Commerce\Inquiry\Statuses;
-use Linker\Commerce\Proforma\Issuer;
 use Linker\Commerce\Products\Publication;
+use Linker\Commerce\Quotation\Issuer;
 use Linker\Commerce\Vocabulary\LocaleFormat;
 use WC_Order;
 
@@ -489,7 +489,7 @@ final class AccountTemplates {
 			'configurator'    => __( 'Open the Solution Configurator', 'linker-commerce' ),
 			'projects'        => __( 'Projects', 'linker-commerce' ),
 			'projects-error'  => __( 'Saved projects could not be loaded.', 'linker-commerce' ),
-			'empty-documents' => __( 'Your Proforma invoices and the design reports of your saved solutions will appear here.', 'linker-commerce' ),
+			'empty-documents' => __( 'Your quotations and the design reports of your saved solutions will appear here.', 'linker-commerce' ),
 			'empty-solutions' => __( 'Solutions you save in the Solution Configurator appear here, with their design report.', 'linker-commerce' ),
 			'recent'          => __( 'Recent inquiries', 'linker-commerce' ),
 			'view-all'        => __( 'View all', 'linker-commerce' ),
@@ -554,22 +554,22 @@ final class AccountTemplates {
 				return $order instanceof WC_Order && current_user_can( 'view_order', $order->get_id() ) ? $this->fragment( 'summary', $this->order_row( $order ) ) : '';
 			case 'amount':
 				return '' !== ( $this->row['total'] ?? '' ) ? $this->fragment( 'amount', $this->row ) : '';
-			case 'proforma':
+			case 'quotation':
 				$order = $this->row['order'] ?? null;
-				if ( ! $order instanceof WC_Order || ! InquiryList::has_proforma( $order ) ) {
+				if ( ! $order instanceof WC_Order || ! InquiryList::has_quotation( $order ) ) {
 					return '';
 				}
-				$url = DocumentDownload::proforma_url( $order );
+				$url = DocumentDownload::quotation_url( $order );
 				// An empty href is still a download control (#425).
 				if ( '' === $url ) {
 					return '';
 				}
 				return $this->fragment(
-					'proforma',
+					'quotation',
 					array(
-						'number' => InquiryList::proforma_number( $order ),
+						'number' => InquiryList::quotation_number( $order ),
 						'url'    => $url,
-						'name'   => __( 'Proforma invoice (PDF)', 'linker-commerce' ),
+						'name'   => __( 'Quotation (PDF)', 'linker-commerce' ),
 					)
 				);
 			case 'stages':
@@ -577,13 +577,13 @@ final class AccountTemplates {
 				if ( $order instanceof WC_Order ) {
 					// Only the stored status is current; no invented transition
 					// history. A stage is reached when the record says so: the
-					// inquiry arrived, its Proforma number is stored, its status
-					// is completed or it was cancelled.
+					// inquiry arrived, its Quotation number is stored, its
+					// status is completed or it was cancelled.
 					$reached = array(
-						Statuses::RECEIVED => true,
-						Statuses::PROFORMA => InquiryList::has_proforma( $order ),
-						'completed'        => $order->has_status( 'completed' ),
-						'cancelled'        => $order->has_status( 'cancelled' ),
+						Statuses::RECEIVED  => true,
+						Statuses::QUOTATION => InquiryList::has_quotation( $order ),
+						'completed'         => $order->has_status( 'completed' ),
+						'cancelled'         => $order->has_status( 'cancelled' ),
 					);
 					foreach ( $this->statuses() as $status ) {
 						$current = $order->has_status( $status );
@@ -793,7 +793,7 @@ final class AccountTemplates {
 	 * @return list<string>
 	 */
 	private function statuses(): array {
-		return array( Statuses::RECEIVED, Statuses::PROFORMA, 'completed', 'cancelled' );
+		return array( Statuses::RECEIVED, Statuses::QUOTATION, 'completed', 'cancelled' );
 	}
 
 	/**
@@ -825,7 +825,7 @@ final class AccountTemplates {
 	 */
 	public function orders_query( array $query ): array {
 		if ( $this->open_only() ) {
-			$query['status'] = array( Statuses::RECEIVED, Statuses::PROFORMA );
+			$query['status'] = array( Statuses::RECEIVED, Statuses::QUOTATION );
 		} else {
 			$status = $this->selected_status();
 			if ( in_array( $status, $this->statuses(), true ) ) {
@@ -869,7 +869,7 @@ final class AccountTemplates {
 		$orders         = wc_get_orders(
 			array(
 				'customer_id' => get_current_user_id(),
-				'status'      => array( Statuses::RECEIVED, Statuses::PROFORMA, 'completed', 'cancelled' ),
+				'status'      => array( Statuses::RECEIVED, Statuses::QUOTATION, 'completed', 'cancelled' ),
 				'limit'       => -1,
 			)
 		);
@@ -878,8 +878,8 @@ final class AccountTemplates {
 	}
 
 	/**
-	 * Inquiry values the account fragments read, including the Proforma number
-	 * and its download link once the inquiry is issued.
+	 * Inquiry values the account fragments read, including the Quotation
+	 * number and its download link once the document is issued.
 	 *
 	 * @param WC_Order $order Inquiry.
 	 * @return array<string, mixed>
@@ -900,20 +900,20 @@ final class AccountTemplates {
 			$count += $item->get_quantity();
 		}
 			return array(
-				'order'           => $order,
-				'id'              => $order->get_id(),
-				'number'          => $order->get_order_number(),
-				'status'          => wc_get_order_status_name( $order->get_status() ),
-				'status-slug'     => $order->get_status(),
-				'date'            => $order->get_date_created() ? wc_format_datetime( $order->get_date_created() ) : '',
-				'total'           => $this->prices->shows_order_total( $order ) ? $order->get_formatted_order_total() : '',
-				'url'             => $order->get_view_order_url(),
-				'items-summary'   => self::items_summary( $count ),
+				'order'            => $order,
+				'id'               => $order->get_id(),
+				'number'           => $order->get_order_number(),
+				'status'           => wc_get_order_status_name( $order->get_status() ),
+				'status-slug'      => $order->get_status(),
+				'date'             => $order->get_date_created() ? wc_format_datetime( $order->get_date_created() ) : '',
+				'total'            => $this->prices->shows_order_total( $order ) ? $order->get_formatted_order_total() : '',
+				'url'              => $order->get_view_order_url(),
+				'items-summary'    => self::items_summary( $count ),
 				/* translators: %s: inquiry number. */
-				'view-aria'       => sprintf( __( 'View inquiry %s', 'linker-commerce' ), '#' . $order->get_order_number() ),
-				'proforma'        => InquiryList::has_proforma( $order ) ? '1' : '',
-				'proforma_number' => InquiryList::proforma_number( $order ),
-				'proforma_url'    => InquiryList::has_proforma( $order ) ? DocumentDownload::proforma_url( $order ) : '',
+				'view-aria'        => sprintf( __( 'View inquiry %s', 'linker-commerce' ), '#' . $order->get_order_number() ),
+				'quotation'        => InquiryList::has_quotation( $order ) ? '1' : '',
+				'quotation_number' => InquiryList::quotation_number( $order ),
+				'quotation_url'    => InquiryList::has_quotation( $order ) ? DocumentDownload::quotation_url( $order ) : '',
 			);
 	}
 
@@ -946,16 +946,15 @@ final class AccountTemplates {
 	}
 
 	/**
-	 * The document's own mark: the receipt for a Proforma invoice, the report
-	 * sheet for a design report, a download sheet when the kind is not one of
-	 * the two.
+	 * The document's own mark: the sheet for a Quotation, the report
+	 * sheet for a design report, a download sheet when the kind is neither.
 	 *
-	 * @param string $kind proforma or report.
+	 * @param string $kind quotation or report.
 	 */
 	private static function document_icon( string $kind ): string {
 		$paths = array(
-			'proforma' => '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/>',
-			'report'   => '<path d="M4 19V5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M8 15l3-3 2 2 3-4"/>',
+			'quotation' => '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/>',
+			'report'    => '<path d="M4 19V5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M8 15l3-3 2 2 3-4"/>',
 		);
 		$path  = $paths[ $kind ] ?? '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>';
 		return sprintf(

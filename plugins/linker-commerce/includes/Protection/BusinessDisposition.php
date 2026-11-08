@@ -183,7 +183,7 @@ final class BusinessDisposition {
 								}
 								$order->read_meta_data( true );
 								$body = self::body( $order );
-								if ( ! hash_equals( $body_hash, hash( 'sha256', $body ) ) || ! Campaign::matches( $body ) || $order->get_meta( Intake::META ) || $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) || ! $order->has_status( Statuses::RECEIVED ) || ! in_array( $order->get_meta( '_linker_inquiry_source' ), array( 'contact', 'proforma' ), true ) ) {
+								if ( ! hash_equals( $body_hash, hash( 'sha256', $body ) ) || ! Campaign::matches( $body ) || $order->get_meta( Intake::META ) || $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) || ! $order->has_status( Statuses::RECEIVED ) || ! in_array( $order->get_meta( '_linker_inquiry_source' ), array( 'contact', 'inquiry' ), true ) ) {
 									throw new \RuntimeException( 'disposition_source_changed' );
 								}
 								BusinessCapacity::synchronize( $state );

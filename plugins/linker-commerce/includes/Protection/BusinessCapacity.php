@@ -69,7 +69,7 @@ final class BusinessCapacity {
 	 * @throws CapacityFull Explicit native failure; no received result is fabricated.
 	 */
 	public static function prepare( WC_Order $order, int $additional_bytes = 0 ): void {
-		if ( 'enforce' !== Configuration::active_mode() || $order->get_id() > 0 || $order->get_meta( Intake::META ) || ! in_array( $order->get_meta( '_linker_inquiry_source' ), array( 'contact', 'proforma' ), true ) ) {
+		if ( 'enforce' !== Configuration::active_mode() || $order->get_id() > 0 || $order->get_meta( Intake::META ) || ! in_array( $order->get_meta( '_linker_inquiry_source' ), array( 'contact', 'inquiry' ), true ) ) {
 			return;
 		}
 		// Freeze the same trusted association before measuring, including the
@@ -240,7 +240,7 @@ final class BusinessCapacity {
 	 */
 	public function status( int $id, string $from, string $to, WC_Order $order ): void {
 		unset( $from, $order );
-		if ( in_array( $to, array( Statuses::PROFORMA, 'completed', 'cancelled' ), true ) ) {
+		if ( in_array( $to, array( Statuses::QUOTATION, 'completed', 'cancelled' ), true ) ) {
 			$this->release( $id, '', $to );
 		}
 	}
@@ -349,7 +349,7 @@ final class BusinessCapacity {
 				$order = \Linker\Commerce\Inquiry\Assessment\CurrentSource::order( $candidate->get_id() );
 				if ( ! $order instanceof WC_Order ) {
 					throw new \RuntimeException( 'business_capacity_source_unreadable' ); }
-				if ( in_array( $order->get_meta( '_linker_inquiry_source' ), array( 'contact', 'proforma' ), true ) && ! $order->get_meta( Intake::META ) ) {
+				if ( in_array( $order->get_meta( '_linker_inquiry_source' ), array( 'contact', 'inquiry' ), true ) && ! $order->get_meta( Intake::META ) ) {
 					$key                       = (string) $order->get_meta( self::KEY );
 					$key                       = '' !== $key ? $key : 'legacy-' . $order->get_id();
 					$state['business'][ $key ] = array(

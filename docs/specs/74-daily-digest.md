@@ -10,7 +10,7 @@
 |---|---|---|---|
 | ① 待审批新账号 | 标题数量 + 公司名 + 注册时间 + 审核卡片深链 | pending 的纯 customer，注册时间从早到晚，无时间窗 | 注册时间仅作展示；无条目时显示 No account is waiting for approval. / Kein Konto wartet auf die Freigabe. |
 | ② 未处理询盘 | 单号列表（编号、公司、创建时间、后台链接） | 创建时刻早于 发送时刻 − 86400 秒，且状态仍为 `wc-inquiry-received`，排除 `Protection\BusinessDisposition::processed()` 已验证的员工处置记录 | 询盘创建时刻（订单 `date_created`，进状态前的时间不算） |
-| ③ PI 未响应 | 单号列表（编号、公司、签发时间、后台链接） | PI 签发时刻早于 发送时刻 − 259200 秒（3 天 = 72 小时，固定时长，非自然日），且状态仍为 `wc-proforma-issued` | PI 签发时刻（订单 meta `_linker_proforma_issued`，`Proforma/Issuer` 签发时写入的 Unix 秒）。处于 `wc-proforma-issued` 但没有该 meta 的（后台手工改状态绕过签发流程的）不计入：签发时刻未知 |
+| ③ 报价准备超时 | 单号列表（编号、公司、最近变更时间、后台链接） | 记录最后变更时刻早于 发送时刻 − 259200 秒（3 天 = 72 小时，固定时长，非自然日），且状态仍为 `wc-quotation-in-progress`（2026-11-08 业主裁定：报价线下出具，站点以记录最后变更时刻为最近信号） |
 | ④ 邮件队列失败 | 封数 + 每封的收件人（Outbox 重试耗尽的消息） | 无时间窗：当前所有 `linker_mail_job` 草稿（`JobStore::FAILED_STATUS`）都算，直到有人处理 | 最近一次重试耗尽的时刻（消息保持草稿状态即视为未解决） |
 
 待审账号的主题摘要、区块标题和正文数字统一读取 `PendingApprovals::pending_count()`；空提示和受限账号汇总仍显示，但不计入待审数。待开 PI 的处置排除必须通过现有原生读取器验证员工权限、私有订单审计、HMAC、订单归属和原始正文；标记存在本身、模型分类、未知或损坏证据均不足以排除，读取失败继续显示。原询盘状态、正文、审计、队列和容量不因摘要读取而改变。
@@ -37,7 +37,7 @@
 
 ## 邮件
 - WC_Email 子类（`Digest/DigestEmail`，继承团队通知基类），注册进 `woocommerce_email_classes`（后台 WooCommerce → Settings → Emails 可见可关）。语言 = 站点默认语言（团队邮件规则），HTML 单格式，正文模板 `templates/emails/linker-digest.php`。有条目的块各成一张卡片，条数在标题左边，打开链接用原文、不用按钮。没有条目的块收在最后一张安静的卡片里。样式类写在 `DigestEmail::presentation_css()`，经 `woocommerce_email_styles` 在发送时内联，模板本身不加 style 属性。外层仍沿用 WooCommerce 邮件头尾，只改这一封的底色和字号。已审过的标题、空态句和条目句子不改。邮件内的时间显示一律 Europe/Berlin；日期格式随邮件语言取（EN "October 11, 2026" / DE "11. Oktober 2026"），不取站点的 date_format 选项（快照站点该选项是中文格式，与邮件语言无关）。
-- 主题/标题/各块标题与空态句是客户可见面之外的内部业务邮件文案，同样过文案对抗评审（记录 `docs/acceptance/<日期>/74/copy-review.md`）：EN 先行，DE 独立撰写非翻译，基准 = linker-copywriting Hard Stops（email subjects 属公开面）+ 既有 .po 术语（Anfrage / Proformarechnung / Anfrage eingegangen / Proformarechnung ausgestellt）。
+- 主题/标题/各块标题与空态句是客户可见面之外的内部业务邮件文案，同样过文案对抗评审（记录 `docs/acceptance/<日期>/74/copy-review.md`）：EN 先行，DE 独立撰写非翻译，基准 = linker-copywriting Hard Stops（email subjects 属公开面）+ 既有 .po 术语（Anfrage / Angebot in Vorbereitung / Anfrage eingegangen）。
 
 ## 不做
 不建后台页面（第④块的排查入口是既有设置页顶部提示与 WooCommerce → Status → Logs）；不重发/不清理失败消息；第①块查询与审批状态机不在本票；不碰 LiveCanvas 模板与任何站点页面呈现。

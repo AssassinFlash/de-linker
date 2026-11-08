@@ -34,8 +34,8 @@ final class Blocks {
 	 */
 	public function all(): array {
 		$blocks = array(
-			new InquiriesAwaitingProforma(),
-			new ProformasAwaitingReply(),
+			new InquiriesAwaitingReply(),
+			new QuotationsInProgress(),
 			new FailedEmails( $this->jobs ),
 			new InternalMail(),
 			new \Linker\Commerce\Health\PendingReviews(),

@@ -33,9 +33,7 @@ final class Module {
 		add_action( 'woocommerce_settings_' . SettingsTab::TAB, array( $this->tab, 'output' ) );
 		add_action( 'woocommerce_update_options_' . SettingsTab::TAB, array( $this->tab, 'save' ) );
 		add_filter( 'woocommerce_admin_settings_sanitize_option_' . Options::NOTIFY_BCC, array( $this->tab, 'sanitize_bcc' ) );
-		add_filter( 'woocommerce_admin_settings_sanitize_option_' . Options::BANK_IBAN, array( $this->tab, 'sanitize_iban' ) );
-		add_filter( 'woocommerce_admin_settings_sanitize_option_' . Options::BANK_BIC, array( $this->tab, 'sanitize_bic' ) );
-		add_filter( 'woocommerce_admin_settings_sanitize_option_' . Options::PROFORMA_PREFIX, array( $this->tab, 'sanitize_prefix' ) );
+		add_filter( 'woocommerce_admin_settings_sanitize_option_' . Options::QUOTATION_PREFIX, array( $this->tab, 'sanitize_prefix' ) );
 
 		foreach ( array_keys( WooOptions::pinned() ) as $option ) {
 			add_filter( 'pre_option_' . $option, array( $this->options, 'pin' ), 10, 2 );
