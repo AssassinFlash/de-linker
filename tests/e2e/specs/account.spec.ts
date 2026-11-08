@@ -280,12 +280,21 @@ test('en: the register form carries its client constraints and refuses a bad ema
 	// server's gate is reached with an address the browser accepts but the
 	// site refuses: x@y has no domain WordPress accepts. Submitted with the
 	// keyboard, the way commerce.spec submits this build's register button.
+	await page.fill('#billing_company', 'Constraint Check GmbH');
+	await page
+		.locator('label.radio[for="linker_customer_role_installer"]')
+		.click();
+	await page.locator('[data-next]').click();
+	await expect(page.locator('form[data-linker-register]')).toHaveAttribute(
+		'data-active-step',
+		'2'
+	);
 	await page.fill('#billing_first_name', 'Erika');
 	await page.fill('#billing_last_name', 'Mustermann');
 	await email.fill('x@y');
 	await page.fill('#reg_password', PASSWORD);
-	await page.locator('button[name="register"]').focus();
-	await page.keyboard.press('Enter');
+	await page.waitForTimeout(3_300);
+	await page.locator('button[name="register"]').click();
 	await page.waitForLoadState('load');
 	await expect(page).toHaveURL(new RegExp('/register/?$'));
 	await expect(
@@ -468,21 +477,24 @@ async function registerPartner(
 	vat: string
 ): Promise<void> {
 	await page.goto(url(REGISTER));
+	// The two-step registration (owner ruling 2026-10-17): company first,
+	// sign-in details second. The VAT field lives on step 1.
 	await page.fill('#billing_company', 'E2E Partner GmbH');
 	await page
-		.locator('select[name="linker_customer_role"]')
-		.selectOption('installer');
+		.locator('label.radio[for="linker_customer_role_installer"]')
+		.click();
 	await page.fill('#billing_vat_id', vat);
+	await page.locator('[data-next]').click();
+	await expect(page.locator('form[data-linker-register]')).toHaveAttribute(
+		'data-active-step',
+		'2'
+	);
 	await page.fill('#billing_first_name', 'Erika');
 	await page.fill('#billing_last_name', 'Mustermann');
-	await page.selectOption('#billing_country', 'DE');
-	await page.fill('#billing_address_1', 'Triftstraße 5');
-	await page.fill('#billing_postcode', '80538');
-	await page.fill('#billing_city', 'München');
 	await page.fill('#reg_email', email);
 	await page.fill('#reg_password', PASSWORD);
-	await page.locator('button[name="register"]').focus();
-	await page.keyboard.press('Enter');
+	await page.waitForTimeout(3_300);
+	await page.locator('button[name="register"]').click();
 	await page.waitForLoadState('load');
 }
 

@@ -1,10 +1,65 @@
 /** Guest sign-in surfaces also offer the native registration endpoint (#223). */
 import { expect, test } from '@playwright/test';
+
+/** Dismiss the cookie banner when it covers the page. */
+async function rejectCookies(
+	page: import('@playwright/test').Page
+): Promise<void> {
+	const reject = page.getByRole('button', {
+		name: /^(Reject all|Alle ablehnen)$/,
+	});
+	if (await reject.isVisible()) await reject.click();
+}
+
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { instance, loginLink, REPO_ROOT, wp } from '../lib/instance';
 
 test.describe.configure({ timeout: 60_000 });
+
+// The CookieYes banner covers the page until answered; these tests pre-seed
+// the consent cookies it reads, so every goto starts from an answered page.
+test.beforeEach(async ({ context }) => {
+	const url = new URL(instance().url);
+	await context.addCookies([
+		{
+			name: 'cookieyes-consent',
+			value: 'consentid:e2e',
+			domain: url.hostname,
+			path: '/',
+		},
+		{
+			name: 'wp_consent_preferences',
+			value: 'deny',
+			domain: url.hostname,
+			path: '/',
+		},
+		{
+			name: 'wp_consent_statistics',
+			value: 'deny',
+			domain: url.hostname,
+			path: '/',
+		},
+		{
+			name: 'wp_consent_statistics-anonymous',
+			value: 'deny',
+			domain: url.hostname,
+			path: '/',
+		},
+		{
+			name: 'wp_consent_functional',
+			value: 'deny',
+			domain: url.hostname,
+			path: '/',
+		},
+		{
+			name: 'wp_consent_marketing',
+			value: 'deny',
+			domain: url.hostname,
+			path: '/',
+		},
+	]);
+});
 
 for (const locale of ['en', 'de'] as const) {
 	const home = locale === 'de' ? '/de/' : '/';
@@ -25,6 +80,11 @@ for (const locale of ['en', 'de'] as const) {
 									: '/products/'
 								: home)
 				);
+				// The cookie banner covers the page until answered.
+				const reject = page.getByRole('button', {
+					name: /^(Reject all|Alle ablehnen)$/,
+				});
+				if (await reject.isVisible()) await reject.click();
 				if (surface === 'dock')
 					await page
 						.locator(
@@ -92,7 +152,9 @@ for (const locale of ['en', 'de'] as const) {
 				);
 				await create.click();
 				await expect(page).toHaveURL(
-					instance().url + account + 'register/'
+					instance().url +
+						account +
+						(locale === 'de' ? 'registrieren/' : 'register/')
 				);
 			});
 		}
@@ -107,8 +169,10 @@ for (const locale of ['en', 'de'] as const) {
 					'?add-to-cart=4107'
 			);
 			await page.goto(
-				instance().url + (locale === 'de' ? '/de/warenkorb/' : '/cart/')
+				instance().url +
+					(locale === 'de' ? '/de/loesungsentwurf/' : '/cart/')
 			);
+			await rejectCookies(page);
 			const gates = page.locator(
 				'.woocommerce-cart-form .linker-price-entries'
 			);
@@ -121,7 +185,9 @@ for (const locale of ['en', 'de'] as const) {
 					gate.locator('.linker-create-account')
 				).toHaveAttribute(
 					'href',
-					instance().url + account + 'register/'
+					instance().url +
+						account +
+						(locale === 'de' ? 'registrieren/' : 'register/')
 				);
 			}
 			await expect(
@@ -136,9 +202,15 @@ for (const locale of ['en', 'de'] as const) {
 				path: join(evidence, `${locale}-${width}.png`),
 				fullPage: true,
 			});
-			await gates.first().locator('.linker-create-account').click();
+			// The gate's own create-account link is a screen-reader/hidden
+			// entry in this design; the visible one lives in the login box.
+			await page
+				.locator('.linker-login-box .linker-create-account')
+				.click();
 			await expect(page).toHaveURL(
-				instance().url + account + 'register/'
+				instance().url +
+					account +
+					(locale === 'de' ? 'registrieren/' : 'register/')
 			);
 			// This disposable browser owns its anonymous Woo session; no user cart is changed.
 		});
@@ -167,7 +239,9 @@ for (const locale of ['en', 'de'] as const) {
 				.locator('.sf-card-actions .linker-create-account')
 				.click();
 			await expect(page).toHaveURL(
-				instance().url + account + 'register/'
+				instance().url +
+					account +
+					(locale === 'de' ? 'registrieren/' : 'register/')
 			);
 		});
 
@@ -208,12 +282,22 @@ for (const locale of ['en', 'de'] as const) {
 					.first();
 				await expect(create).toBeVisible();
 				if (surface === 'shop' || surface === 'category') {
-					expect(
-						await page
-							.locator('.sf-card-actions')
-							.first()
-							.evaluate((e) => e.getBoundingClientRect().height)
-					).toBe(44);
+					// The card stacks its action rows; every visible row keeps
+					// the 44px control footprint (the whole stack is taller).
+					const rows = await page
+						.locator('.sf-card-actions')
+						.first()
+						.evaluate((e) =>
+							Array.from(e.children)
+								.filter(
+									(c) => c.getBoundingClientRect().height > 0
+								)
+								.map((c) => c.getBoundingClientRect().height)
+						);
+					expect(rows.length).toBeGreaterThan(0);
+					for (const row of rows) {
+						expect(row).toBe(44);
+					}
 				}
 				if (surface === 'compare') {
 					await expect(
@@ -227,7 +311,9 @@ for (const locale of ['en', 'de'] as const) {
 				}
 				await create.click();
 				await expect(page).toHaveURL(
-					instance().url + account + 'register/'
+					instance().url +
+						account +
+						(locale === 'de' ? 'registrieren/' : 'register/')
 				);
 			});
 		}
@@ -263,7 +349,9 @@ for (const locale of ['en', 'de'] as const) {
 					.last()
 					.click();
 				await expect(page).toHaveURL(
-					instance().url + account + 'register/'
+					instance().url +
+						account +
+						(locale === 'de' ? 'registrieren/' : 'register/')
 				);
 			});
 		}
@@ -301,7 +389,9 @@ for (const locale of ['en', 'de'] as const) {
 				await expect(create).toBeVisible();
 				await create.click();
 				await expect(page).toHaveURL(
-					instance().url + account + 'register/'
+					instance().url +
+						account +
+						(locale === 'de' ? 'registrieren/' : 'register/')
 				);
 			});
 		}
@@ -332,7 +422,9 @@ for (const locale of ['en', 'de'] as const) {
 			}
 			await create.click();
 			await expect(page).toHaveURL(
-				instance().url + account + 'register/'
+				instance().url +
+					account +
+					(locale === 'de' ? 'registrieren/' : 'register/')
 			);
 		});
 		test(`${locale}-${width}: footer offers a direct registration entry`, async ({
@@ -340,6 +432,7 @@ for (const locale of ['en', 'de'] as const) {
 		}) => {
 			await page.setViewportSize({ width, height: 900 });
 			await page.goto(instance().url + home);
+			await rejectCookies(page);
 			await page.locator('#footer-tab-account').click();
 			const panel = page.locator('#footer-panel-account');
 			await expect(panel.locator('.linker-create-account')).toBeVisible();
@@ -355,7 +448,9 @@ for (const locale of ['en', 'de'] as const) {
 			);
 			await panel.locator('.linker-create-account').click();
 			await expect(page).toHaveURL(
-				instance().url + account + 'register/'
+				instance().url +
+					account +
+					(locale === 'de' ? 'registrieren/' : 'register/')
 			);
 		});
 		test(`${locale}-${width}: header registration opens its own language's form`, async ({
@@ -372,11 +467,15 @@ for (const locale of ['en', 'de'] as const) {
 			await expect(create).toBeVisible();
 			await expect(create).toHaveAttribute(
 				'href',
-				instance().url + account + 'register/'
+				instance().url +
+					account +
+					(locale === 'de' ? 'registrieren/' : 'register/')
 			);
 			await create.click();
 			await expect(page).toHaveURL(
-				instance().url + account + 'register/'
+				instance().url +
+					account +
+					(locale === 'de' ? 'registrieren/' : 'register/')
 			);
 			await expect(page.locator('form.register')).toBeVisible();
 		});
