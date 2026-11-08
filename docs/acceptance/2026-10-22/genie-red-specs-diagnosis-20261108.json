@@ -1,0 +1,18 @@
+{
+  "phase": "genie-red-specs-diagnosis-state",
+  "date": "2026-11-08",
+  "scope": "Precise diagnosis checkpoint for the four genuinely-red genie specs on review (card-actions, parts, page, attachments), so the next session starts from evidence instead of re-deriving.",
+  "established": {
+    "not_the_spec_patches": "A/B against git-stashed original specs: the unpatched card-actions en-1440-hero fails identically",
+    "not_the_protection_mode": "fails identically under LINKER_PUBLIC_PROTECTION_MODE off (the instance's own state, read back active_mode=off) and under enforce+dummy (that profile also changed other specs' environment and was fully restored)",
+    "not_the_consent_banner": "consent cookies pre-seeded in all runs since the helper landed",
+    "failing_point": "fixture.release() at genie-card-actions.spec.ts:181/415: expect.poll(release !== null) times out - the app never issues the gated write request (wp-json/wc/store/v1/cart/add-item, or the solutions save) after the card action is clicked; the write-state loop clicks primary while the app holds it disabled expecting a write that never leaves the browser",
+    "env_ruled_out": "engine 8890 / genie 8891 healthy; instance serves normally (dock/reply-presentation/ownership/prices/sessions/page-suggestions specs green the same day)"
+  },
+  "next_steps": [
+    "instrument the app bundle's write path: what precedes add-item (X-Linker-Proof / resource-verification-slot readiness for genie writes) and which gate swallows it in off mode",
+    "compare against the 2026-11-07 green runs: what changed in the review instance's served builds or fixtures between then and 2026-11-08 (the repo's linker-tools build rode along; Redirects is ruled out by inspection)",
+    "parts/page/attachments failures look related (same release-gate/answer pipeline); confirm after card-actions root-causes"
+  ],
+  "honest_status": "no matrix rows closed on these four specs; their DE/EN rows stay pending until green"
+}
