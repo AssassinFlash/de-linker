@@ -217,7 +217,10 @@ final class Redirects {
 	/**
 	 * Where the retired checkout slug goes: the checkout page's own address,
 	 * with the rest of the path and the query string it was requested with
-	 * (WooCommerce's received page and its order links live under it).
+	 * (WooCommerce's received page and its order links live under it). A
+	 * legacy `order-received` endpoint segment is renamed to the live
+	 * endpoint slug, so confirmation links from before the rename land on
+	 * the working received page instead of a 404.
 	 *
 	 * The rule answers the slug the checkout page *used* to have: while the
 	 * checkout page answers those addresses itself — a site where it was never
@@ -237,7 +240,17 @@ final class Redirects {
 		if ( $this->checkout_answers( $path ) ) {
 			return null;
 		}
-		$rest  = array() === array_slice( $segments, 1 ) ? '' : implode( '/', array_slice( $segments, 1 ) ) . '/';
+		$rest = array_slice( $segments, 1 );
+		if ( isset( $rest[0] ) && 'order-received' === $rest[0] ) {
+			// Legacy confirmation links name the endpoint WooCommerce shipped
+			// with; the site renames it (WooOptions pins the option), so the
+			// preserved path would 404 on the live endpoint name.
+			$endpoint = get_option( 'woocommerce_checkout_order_received_endpoint', 'order-received' );
+			if ( is_string( $endpoint ) && '' !== $endpoint && 'order-received' !== $endpoint ) {
+				$rest[0] = $endpoint;
+			}
+		}
+		$rest  = array() === $rest ? '' : implode( '/', $rest ) . '/';
 		$query = $this->request_query();
 
 		return $checkout['target'] . $rest . ( '' === $query ? '' : '?' . $query );

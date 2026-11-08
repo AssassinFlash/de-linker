@@ -3,6 +3,13 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
 import { instance, REPO_ROOT } from '../lib/instance';
+import { seedConsentCookies } from '../lib/consent';
+
+// The CookieYes banner covers the contact field until answered; pre-seed the
+// consent cookies so every goto starts from an answered banner.
+test.beforeEach(async ({ context }) => {
+	await seedConsentCookies(context);
+});
 
 const run =
 	process.env.LINKER_CONTACT_RUN_ID ??

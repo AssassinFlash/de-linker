@@ -131,6 +131,15 @@ final class RedirectsTest extends TestCase {
 	private array $post_twins = array();
 
 	/**
+	 * Option values get_option answers with, by name.
+	 *
+	 * @var array<string, mixed>
+	 */
+	private array $options = array(
+		'woocommerce_checkout_order_received_endpoint' => 'inquiry-received',
+	);
+
+	/**
 	 * The WordPress and WooCommerce functions the plugin reads, wired to the
 	 * properties above.
 	 */
@@ -139,6 +148,13 @@ final class RedirectsTest extends TestCase {
 		if ( $responder instanceof \WP_Mock\Filter_Responder ) {
 			$responder->reply( null );
 		}
+		WP_Mock::userFunction( 'get_option' )->andReturnUsing(
+			function ( string $name, mixed $fallback = false ): mixed {
+				// The live site pins the endpoint name to 'inquiry-received'
+				// (WooOptions); a test overrides $this->options to vary it.
+				return $this->options[ $name ] ?? $fallback;
+			}
+		);
 		WP_Mock::userFunction( 'home_url' )->andReturnUsing(
 			static fn( string $path = '' ): string => self::HOME . $path
 		);
@@ -710,13 +726,29 @@ final class RedirectsTest extends TestCase {
 		);
 
 		// WooCommerce's received page and its order links carry the order key
-		// in the query string, which the redirect passes on.
+		// in the query string, which the redirect passes on. The legacy
+		// endpoint segment names the slug WooCommerce shipped with; the site
+		// renames it, so the redirect translates it to the live name.
 		$_SERVER['QUERY_STRING'] = 'key=wc_order_abc';
 		$this->assertSame(
-			self::HOME . '/proforma-request/order-received/4711/?key=wc_order_abc',
+			self::HOME . '/proforma-request/inquiry-received/4711/?key=wc_order_abc',
 			( new Redirects() )->target( '/checkout/order-received/4711/' )
 		);
 		unset( $_SERVER['QUERY_STRING'] );
+	}
+
+	/**
+	 * A site that never renamed the endpoint keeps the segment as it was:
+	 * the translation only fires when the live name differs.
+	 */
+	public function test_the_legacy_endpoint_segment_stays_when_the_site_keeps_it(): void {
+		$this->wordpress();
+		$this->options['woocommerce_checkout_order_received_endpoint'] = 'order-received';
+
+		$this->assertSame(
+			self::HOME . '/proforma-request/order-received/4711/',
+			( new Redirects() )->target( '/checkout/order-received/4711/' )
+		);
 	}
 
 	/**

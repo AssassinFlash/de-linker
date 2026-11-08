@@ -1,0 +1,32 @@
+{
+  "url": "http://127.0.0.1:8889/contact/?intent=product&linker_contact_selection=%7B%22source%22%3A%22http%3A%5C%2F%5C%2F127.0.0.1%3A8889%5C%2Fproducts%5C%2F%22%2C%22selection%22%3A%7B%22brand%22%3A%22saj%22%2C%22phase%22%3A%223%22%2C%22kw_min%22%3A5.5%2C%22q%22%3A%22owned-no-match-SAJ%22%2C%22sort%22%3A%22name%22%7D%7D",
+  "collectedAt": "2026-11-08T08:48:13.143Z",
+  "viewport": {
+    "width": 390,
+    "height": 1000
+  },
+  "field": {
+    "x": 39,
+    "y": 431.453125,
+    "width": 312,
+    "height": 371.671875,
+    "top": 431.453125,
+    "right": 351,
+    "bottom": 803.125,
+    "left": 39
+  },
+  "label": {
+    "x": 56,
+    "y": 471.953125,
+    "width": 278,
+    "height": 47.59375,
+    "top": 471.953125,
+    "right": 334,
+    "bottom": 519.546875,
+    "left": 56
+  },
+  "included": true,
+  "summaryDisplay": "block",
+  "excludedDisplay": "none",
+  "text": "Related detailsInclude these details with my messageProductsBrandSAJPhase3-phaseMinimum power (kW)5.5Searchowned-no-match-SAJSort productsName A-ZThese details will not be sent."
+}
