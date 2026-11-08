@@ -46,5 +46,16 @@
  },
  "deploy_readback": "pending",
  "fixture_order_migration": "payment_method linker_proforma -> linker_inquiry; _linker_inquiry_source proforma -> inquiry (orders 8651/8654/8657/8671); script /tmp/migrate-fixture-orders.php",
- "root_cause_status_slug": "wc-quotation-in-progress was 23 chars, beyond wp_posts.post_status varchar(20); WordPress dropped the status write silently (probe evidence: update_status left the DB row on inquiry-received). Slug renamed to quotation-issued (wc- = 19 chars)."
+ "root_cause_status_slug": "wc-quotation-in-progress was 23 chars, beyond wp_posts.post_status varchar(20); WordPress dropped the status write silently (probe evidence: update_status left the DB row on inquiry-received). Slug renamed to quotation-issued (wc- = 19 chars).",
+ "production_precheck": {
+  "old_status_orders": 0,
+  "payment_method_rows": 200,
+  "payment_method_rows_note": "all draft (inquiry-received state); HPOS wp_wc_orders",
+  "source_rows": 5,
+  "source_rows_note": "wp_wc_orders_meta",
+  "migration_sql": [
+   "UPDATE wp_wc_orders SET payment_method='linker_inquiry' WHERE payment_method='linker_proforma'",
+   "UPDATE wp_wc_orders_meta SET meta_value='inquiry' WHERE meta_key='_linker_inquiry_source' AND meta_value='proforma'"
+  ]
+ }
 }
