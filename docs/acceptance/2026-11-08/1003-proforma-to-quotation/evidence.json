@@ -44,7 +44,17 @@
   "proforma_issued_orders": 0,
   "reason_no_issuance_ever_happened": "bank account never configured; Issuer::material_blocker refused (order note on #8671, 2026-11-08)"
  },
- "deploy_readback": "pending",
+ "deploy_readback": {
+  "merged": "2026-11-08T06:11:45Z (squash, CI green: full matrix on the code commit, scoped lanes on doc/e2e commits)",
+  "deploy": "cutover deploy + WindPress headless compile + resume-deploy; rollback point deploy-prev in place; page cache purged",
+  "classes": "QUOTATION=quotation-issued, gateway=linker_inquiry, Quotation\\Issuer exists, Proforma\\Issuer absent, Options::bank absent (wp eval-file readback)",
+  "http": "home/proforma-request/de-proforma-anfrage/products all 200; EN request page serves the inquiry form",
+  "migration": {
+   "payment_rows": 200,
+   "source_rows": 5,
+   "remaining": 0
+  }
+ },
  "fixture_order_migration": "payment_method linker_proforma -> linker_inquiry; _linker_inquiry_source proforma -> inquiry (orders 8651/8654/8657/8671); script /tmp/migrate-fixture-orders.php",
  "root_cause_status_slug": "wc-quotation-in-progress was 23 chars, beyond wp_posts.post_status varchar(20); WordPress dropped the status write silently (probe evidence: update_status left the DB row on inquiry-received). Slug renamed to quotation-issued (wc- = 19 chars).",
  "production_precheck": {
