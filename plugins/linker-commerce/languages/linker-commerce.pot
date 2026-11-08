@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-08T01:34:53+00:00\n"
+"POT-Creation-Date: 2026-11-08T02:42:20+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
@@ -488,8 +488,8 @@ msgstr ""
 
 #: includes/Account/AuthTemplates.php:122 includes/Account/InquiryList.php:41
 #: includes/Account/Menu.php:79 includes/Inquiry/Assessment/EvidenceView.php:43
-#: includes/Inquiry/InquiryGateway.php:43
-#: includes/Inquiry/InquiryGateway.php:58 includes/Inquiry/OrderAdmin.php:31
+#: includes/Inquiry/InquiryGateway.php:44
+#: includes/Inquiry/InquiryGateway.php:59 includes/Inquiry/OrderAdmin.php:31
 #: includes/Inquiry/OrderAdmin.php:74
 #: includes/Presentation/AccountTemplates.php:469
 #: includes/Vocabulary/Terms.php:75
@@ -514,8 +514,8 @@ msgstr ""
 msgid "The solution could not be checked. Please try again."
 msgstr ""
 
-#: includes/Account/DocumentDownload.php:81
-#: includes/Account/DocumentDownload.php:120 includes/Admin/FaqsMetaBox.php:73
+#: includes/Account/DocumentDownload.php:86
+#: includes/Account/DocumentDownload.php:125 includes/Admin/FaqsMetaBox.php:73
 #: includes/Admin/FiguresMetaBox.php:78
 #: includes/Presentation/AccountTemplates.php:474
 #: includes/Presentation/LibraryPage.php:427
@@ -527,18 +527,18 @@ msgstr ""
 msgid "Document"
 msgstr ""
 
-#: includes/Account/DocumentDownload.php:81
+#: includes/Account/DocumentDownload.php:86
 #: includes/Planning/ReportDownload.php:160
 msgid "This document is not available."
 msgstr ""
 
-#: includes/Account/DocumentDownload.php:114
+#: includes/Account/DocumentDownload.php:119
 msgid ""
 "This document is available to the account it belongs to. Please log in with "
 "that account."
 msgstr ""
 
-#: includes/Account/DocumentDownload.php:116 includes/Vocabulary/Terms.php:78
+#: includes/Account/DocumentDownload.php:121 includes/Vocabulary/Terms.php:78
 #: includes/Vocabulary/Terms.php:79
 msgid "Log in"
 msgstr ""
@@ -588,7 +588,7 @@ msgstr ""
 #: includes/Account/Menu.php:49 includes/Account/Menu.php:75
 #: includes/Inquiry/OrderAdmin.php:30 includes/Inquiry/OrderAdmin.php:32
 #: includes/Presentation/AccountTemplates.php:465
-#: includes/Settings/SettingsTab.php:41 includes/Vocabulary/Terms.php:116
+#: includes/Settings/SettingsTab.php:42 includes/Vocabulary/Terms.php:116
 msgid "Inquiries"
 msgstr ""
 
@@ -831,7 +831,7 @@ msgstr ""
 
 #: includes/Contact/Form.php:180
 #: includes/Inquiry/Assessment/EvidenceView.php:55
-#: includes/Inquiry/Form.php:150 includes/Settings/SettingsTab.php:137
+#: includes/Inquiry/Form.php:150 includes/Settings/SettingsTab.php:138
 msgid "Name"
 msgstr ""
 
@@ -1227,7 +1227,7 @@ msgid ""
 msgstr ""
 
 #: includes/Gating/DraftSummary.php:60 includes/Inquiry/Form.php:155
-#: includes/Vocabulary/Terms.php:89
+#: includes/Vocabulary/Labels.php:40 includes/Vocabulary/Terms.php:89
 msgid "Send inquiry"
 msgstr ""
 
@@ -1514,7 +1514,7 @@ msgid "Contact details as submitted"
 msgstr ""
 
 #: includes/Inquiry/Assessment/EvidenceView.php:56
-#: includes/Settings/SettingsTab.php:143
+#: includes/Settings/SettingsTab.php:144
 msgid "Email"
 msgstr ""
 
@@ -2024,7 +2024,7 @@ msgid "New inquiry #{order_number}"
 msgstr ""
 
 #: includes/Inquiry/Form.php:145 includes/Vocabulary/Labels.php:106
-#: includes/Vocabulary/Terms.php:40
+#: includes/Vocabulary/Labels.php:188 includes/Vocabulary/Terms.php:40
 msgid "Send an inquiry"
 msgstr ""
 
@@ -2112,11 +2112,11 @@ msgid ""
 "write to sales@de-linker.com."
 msgstr ""
 
-#: includes/Inquiry/InquiryGateway.php:51
+#: includes/Inquiry/InquiryGateway.php:52
 msgid "We check your inquiry and reply with your quotation by email."
 msgstr ""
 
-#: includes/Inquiry/InquiryGateway.php:65
+#: includes/Inquiry/InquiryGateway.php:66
 msgid ""
 "Sends the inquiry free of charge. The team replies offline with the "
 "quotation. Always on: it is the only way to send an inquiry."
@@ -4945,7 +4945,7 @@ msgid "Not checked yet"
 msgstr ""
 
 #. translators: %d: number of emails.
-#: includes/Settings/SettingsTab.php:55
+#: includes/Settings/SettingsTab.php:56
 #, php-format
 msgid ""
 "%d email could not be delivered. The attempts are in WooCommerce → Status → "
@@ -4956,65 +4956,65 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Settings/SettingsTab.php:78 includes/Settings/SettingsTab.php:84
+#: includes/Settings/SettingsTab.php:79 includes/Settings/SettingsTab.php:85
 msgid "Team mailbox"
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:80
+#: includes/Settings/SettingsTab.php:81
 msgid ""
 "The address customers see: on the website and in Genie's answers. Internal "
 "notifications do not go here."
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:96
+#: includes/Settings/SettingsTab.php:97
 msgid "Internal notifications"
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:98
+#: includes/Settings/SettingsTab.php:99
 msgid ""
 "Every internal notification (new customer, VAT check, new inquiry, contact "
 "form message, daily digest, health check) is one message to this address, "
 "with a blind copy to each address below."
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:102
+#: includes/Settings/SettingsTab.php:103
 msgid "Recipient"
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:110
+#: includes/Settings/SettingsTab.php:111
 msgid "Sender email"
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:111
+#: includes/Settings/SettingsTab.php:112
 msgid ""
 "Internal notifications use this address with the sender name Linker. "
 "Customer emails use the WooCommerce sender settings."
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:119
+#: includes/Settings/SettingsTab.php:120
 msgid "Blind copies"
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:120
+#: includes/Settings/SettingsTab.php:121
 msgid "One address per line."
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:131
+#: includes/Settings/SettingsTab.php:132
 msgid "Contact person"
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:133
+#: includes/Settings/SettingsTab.php:134
 msgid ""
 "Shown to customers at the top of their account. Without an email address the "
 "team mailbox is shown."
 msgstr ""
 
-#: includes/Settings/SettingsTab.php:149
+#: includes/Settings/SettingsTab.php:150
 msgid "Phone"
 msgstr ""
 
 #. translators: %s: the addresses that were left out, comma-separated.
-#: includes/Settings/SettingsTab.php:182
+#: includes/Settings/SettingsTab.php:183
 #, php-format
 msgid "Not an email address, left out: %s"
 msgstr ""
@@ -5116,10 +5116,6 @@ msgstr ""
 msgid "Energy capacity"
 msgstr ""
 
-#: includes/Vocabulary/Labels.php:40
-msgid "Request Proforma"
-msgstr ""
-
 #: includes/Vocabulary/Labels.php:54
 msgid ""
 "This confirmation link did not open. Please use the link from your inquiry "
@@ -5131,10 +5127,10 @@ msgstr ""
 msgid "Thank you. Your inquiry has been received."
 msgstr ""
 
-#: includes/Vocabulary/Labels.php:63
+#: includes/Vocabulary/Labels.php:63 includes/Vocabulary/Terms.php:90
 msgid ""
-"Please log in to request a Proforma invoice. No account yet? Register on the "
-"account page."
+"Please log in to send your inquiry. No account yet? Register on the account "
+"page."
 msgstr ""
 
 #: includes/Vocabulary/Labels.php:75
@@ -5153,24 +5149,20 @@ msgstr ""
 msgid ""
 "Review the lines in your solution draft, adjust quantities and check the "
 "totals. Approved partner accounts see net prices, tax and delivery terms "
-"before the Proforma request."
+"before the inquiry page."
 msgstr ""
 
 #: includes/Vocabulary/Labels.php:131
 msgid ""
 "Build a solution draft from products or product numbers. Approved partner "
-"accounts can review prices, delivery, tax and the Proforma request."
+"accounts can review prices, delivery, tax and the inquiry page."
 msgstr ""
 
 #: includes/Vocabulary/Labels.php:132
 msgid ""
 "Prüfen Sie die Positionen in Ihrem Lösungsentwurf, passen Sie die Mengen an "
 "und prüfen Sie die Summen. Freigegebene Partnerkonten sehen Nettopreise, "
-"Steuern und Lieferbedingungen vor der Proforma-Anfrage."
-msgstr ""
-
-#: includes/Vocabulary/Labels.php:188
-msgid "Proforma request"
+"Steuern und Lieferbedingungen vor der Anfrage."
 msgstr ""
 
 #: includes/Vocabulary/LocaleFormat.php:26
@@ -5332,12 +5324,6 @@ msgstr ""
 
 #: includes/Vocabulary/Terms.php:88
 msgid "Your inquiry"
-msgstr ""
-
-#: includes/Vocabulary/Terms.php:90
-msgid ""
-"Please log in to send your inquiry. No account yet? Register on the account "
-"page."
 msgstr ""
 
 #: includes/Vocabulary/Terms.php:91

@@ -14,8 +14,9 @@ use WC_Admin_Settings;
 
 /**
  * One tab in WooCommerce's own settings screen, built with its settings API:
- * team mailbox and blind copies, the customers' contact person, and what the
- * Proforma prints (number prefix, seller, bank account).
+ * team mailbox and blind copies, and the customers' contact person. The
+ * online Proforma fields are gone with the chain (owner ruling 2026-11-08):
+ * quotations are written and sent offline.
  */
 final class SettingsTab {
 
@@ -77,7 +78,7 @@ final class SettingsTab {
 			array(
 				'title' => __( 'Team mailbox', 'linker-commerce' ),
 				'type'  => 'title',
-				'desc'  => __( 'The address customers see: on the Proforma, on the website and in Genie\'s answers. Internal notifications do not go here.', 'linker-commerce' ),
+				'desc'  => __( 'The address customers see: on the website and in Genie\'s answers. Internal notifications do not go here.', 'linker-commerce' ),
 				'id'    => 'linker_commerce_team',
 			),
 			array(
@@ -154,62 +155,6 @@ final class SettingsTab {
 			array(
 				'type' => 'sectionend',
 				'id'   => 'linker_commerce_contact',
-			),
-			array(
-				'title' => __( 'Proforma invoice', 'linker-commerce' ),
-				'type'  => 'title',
-				'desc'  => __( 'Printed on every Proforma invoice. The seller address is the store address under General.', 'linker-commerce' ),
-				'id'    => 'linker_commerce_proforma',
-			),
-			array(
-				'title'       => __( 'Number prefix', 'linker-commerce' ),
-				'desc'        => __( 'Numbers read PREFIX-YEAR-NNNN and count from 1 each calendar year. Empty uses DLK-PF, the prefix on de-linker.com.', 'linker-commerce' ),
-				'id'          => Options::PROFORMA_PREFIX,
-				'type'        => 'text',
-				'default'     => Options::DEFAULT_PROFORMA_PREFIX,
-				'placeholder' => Options::DEFAULT_PROFORMA_PREFIX,
-				'autoload'    => false,
-			),
-			array(
-				'title'       => __( 'Seller', 'linker-commerce' ),
-				'id'          => Options::SELLER_NAME,
-				'type'        => 'text',
-				'placeholder' => Options::DEFAULT_SELLER_NAME,
-				'autoload'    => false,
-			),
-			array(
-				'title'    => __( 'Seller VAT ID', 'linker-commerce' ),
-				'id'       => Options::SELLER_VAT_ID,
-				'type'     => 'text',
-				'autoload' => false,
-			),
-			array(
-				'title'    => __( 'Account holder', 'linker-commerce' ),
-				'id'       => Options::BANK_HOLDER,
-				'type'     => 'text',
-				'autoload' => false,
-			),
-			array(
-				'title'    => __( 'Bank', 'linker-commerce' ),
-				'id'       => Options::BANK_NAME,
-				'type'     => 'text',
-				'autoload' => false,
-			),
-			array(
-				'title'    => __( 'IBAN', 'linker-commerce' ),
-				'id'       => Options::BANK_IBAN,
-				'type'     => 'text',
-				'autoload' => false,
-			),
-			array(
-				'title'    => __( 'BIC', 'linker-commerce' ),
-				'id'       => Options::BANK_BIC,
-				'type'     => 'text',
-				'autoload' => false,
-			),
-			array(
-				'type' => 'sectionend',
-				'id'   => 'linker_commerce_proforma',
 			),
 		);
 	}

@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-11-08T01:34:53+00:00\n"
+"POT-Creation-Date: 2026-11-08T02:42:20+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -527,8 +527,8 @@ msgstr "Übersicht"
 
 #: includes/Account/AuthTemplates.php:122 includes/Account/InquiryList.php:41
 #: includes/Account/Menu.php:79 includes/Inquiry/Assessment/EvidenceView.php:43
-#: includes/Inquiry/InquiryGateway.php:43
-#: includes/Inquiry/InquiryGateway.php:58 includes/Inquiry/OrderAdmin.php:31
+#: includes/Inquiry/InquiryGateway.php:44
+#: includes/Inquiry/InquiryGateway.php:59 includes/Inquiry/OrderAdmin.php:31
 #: includes/Inquiry/OrderAdmin.php:74
 #: includes/Presentation/AccountTemplates.php:469
 #: includes/Vocabulary/Terms.php:75
@@ -555,8 +555,8 @@ msgstr ""
 msgid "The solution could not be checked. Please try again."
 msgstr "Die Lösung konnte nicht geprüft werden. Bitte versuchen Sie es erneut."
 
-#: includes/Account/DocumentDownload.php:81
-#: includes/Account/DocumentDownload.php:120 includes/Admin/FaqsMetaBox.php:73
+#: includes/Account/DocumentDownload.php:86
+#: includes/Account/DocumentDownload.php:125 includes/Admin/FaqsMetaBox.php:73
 #: includes/Admin/FiguresMetaBox.php:78
 #: includes/Presentation/AccountTemplates.php:474
 #: includes/Presentation/LibraryPage.php:427
@@ -568,12 +568,12 @@ msgstr "Die Lösung konnte nicht geprüft werden. Bitte versuchen Sie es erneut.
 msgid "Document"
 msgstr "Dokument"
 
-#: includes/Account/DocumentDownload.php:81
+#: includes/Account/DocumentDownload.php:86
 #: includes/Planning/ReportDownload.php:160
 msgid "This document is not available."
 msgstr "Dieses Dokument ist nicht verfügbar."
 
-#: includes/Account/DocumentDownload.php:114
+#: includes/Account/DocumentDownload.php:119
 msgid ""
 "This document is available to the account it belongs to. Please log in with "
 "that account."
@@ -581,7 +581,7 @@ msgstr ""
 "Dieses Dokument ist nur für das Konto abrufbar, zu dem es gehört. Bitte "
 "melden Sie sich mit diesem Konto an."
 
-#: includes/Account/DocumentDownload.php:116 includes/Vocabulary/Terms.php:78
+#: includes/Account/DocumentDownload.php:121 includes/Vocabulary/Terms.php:78
 #: includes/Vocabulary/Terms.php:79
 msgid "Log in"
 msgstr "Anmelden"
@@ -631,7 +631,7 @@ msgstr "Datenblatt (PDF)"
 #: includes/Account/Menu.php:49 includes/Account/Menu.php:75
 #: includes/Inquiry/OrderAdmin.php:30 includes/Inquiry/OrderAdmin.php:32
 #: includes/Presentation/AccountTemplates.php:465
-#: includes/Settings/SettingsTab.php:41 includes/Vocabulary/Terms.php:116
+#: includes/Settings/SettingsTab.php:42 includes/Vocabulary/Terms.php:116
 msgid "Inquiries"
 msgstr "Anfragen"
 
@@ -898,7 +898,7 @@ msgstr "Wohin dürfen wir antworten?"
 
 #: includes/Contact/Form.php:180
 #: includes/Inquiry/Assessment/EvidenceView.php:55
-#: includes/Inquiry/Form.php:150 includes/Settings/SettingsTab.php:137
+#: includes/Inquiry/Form.php:150 includes/Settings/SettingsTab.php:138
 msgid "Name"
 msgstr "Name"
 
@@ -1332,7 +1332,7 @@ msgstr ""
 "nicht verfügbar."
 
 #: includes/Gating/DraftSummary.php:60 includes/Inquiry/Form.php:155
-#: includes/Vocabulary/Terms.php:89
+#: includes/Vocabulary/Labels.php:40 includes/Vocabulary/Terms.php:89
 msgid "Send inquiry"
 msgstr "Anfrage senden"
 
@@ -1638,7 +1638,7 @@ msgid "Contact details as submitted"
 msgstr "Übermittelte Kontaktdaten"
 
 #: includes/Inquiry/Assessment/EvidenceView.php:56
-#: includes/Settings/SettingsTab.php:143
+#: includes/Settings/SettingsTab.php:144
 msgid "Email"
 msgstr "E-Mail"
 
@@ -2205,7 +2205,7 @@ msgid "New inquiry #{order_number}"
 msgstr "Neue Anfrage #{order_number}"
 
 #: includes/Inquiry/Form.php:145 includes/Vocabulary/Labels.php:106
-#: includes/Vocabulary/Terms.php:40
+#: includes/Vocabulary/Labels.php:188 includes/Vocabulary/Terms.php:40
 msgid "Send an inquiry"
 msgstr "Anfrage senden"
 
@@ -2301,15 +2301,15 @@ msgstr ""
 "Von dieser Verbindung sind mehrere Nachrichten eingegangen. Bitte versuchen "
 "Sie es später erneut oder schreiben Sie an sales@de-linker.com."
 
-#: includes/Inquiry/InquiryGateway.php:51
+#: includes/Inquiry/InquiryGateway.php:52
 msgid "We check your inquiry and reply with your quotation by email."
 msgstr "Wir prüfen Ihre Anfrage und senden Ihnen unser Angebot per E-Mail."
 
-#: includes/Inquiry/InquiryGateway.php:65
+#: includes/Inquiry/InquiryGateway.php:66
 msgid ""
 "Sends the inquiry free of charge. The team replies offline with the "
 "quotation. Always on: it is the only way to send an inquiry."
-msgstr ""
+msgstr "Sendet die Anfrage kostenlos. Das Team antwortet offline mit dem Angebot. Immer aktiv: Es ist der einzige Weg, eine Anfrage zu senden."
 
 #: includes/Inquiry/OrderAdmin.php:33
 msgid "Add inquiry"
@@ -5349,7 +5349,7 @@ msgid "Not checked yet"
 msgstr "Noch nicht geprüft"
 
 #. translators: %d: number of emails.
-#: includes/Settings/SettingsTab.php:55
+#: includes/Settings/SettingsTab.php:56
 #, php-format
 msgid ""
 "%d email could not be delivered. The attempts are in WooCommerce → Status → "
@@ -5366,21 +5366,21 @@ msgstr[1] ""
 "WooCommerce → Status → Logs (linker-mail); jede Nachricht bleibt unter ihrer "
 "Beitrags-ID in der Warteschlange."
 
-#: includes/Settings/SettingsTab.php:78 includes/Settings/SettingsTab.php:84
+#: includes/Settings/SettingsTab.php:79 includes/Settings/SettingsTab.php:85
 msgid "Team mailbox"
 msgstr "Team-Postfach"
 
-#: includes/Settings/SettingsTab.php:80
+#: includes/Settings/SettingsTab.php:81
 msgid ""
 "The address customers see: on the website and in Genie's answers. Internal "
 "notifications do not go here."
-msgstr ""
+msgstr "Die Adresse, die Kunden sehen: auf der Website und in Genies Antworten. Interne Benachrichtigungen gehen nicht an diese Adresse."
 
-#: includes/Settings/SettingsTab.php:96
+#: includes/Settings/SettingsTab.php:97
 msgid "Internal notifications"
 msgstr "Interne Benachrichtigungen"
 
-#: includes/Settings/SettingsTab.php:98
+#: includes/Settings/SettingsTab.php:99
 msgid ""
 "Every internal notification (new customer, VAT check, new inquiry, contact "
 "form message, daily digest, health check) is one message to this address, "
@@ -5390,15 +5390,15 @@ msgstr ""
 "Nachricht über das Kontaktformular, Tagesübersicht, Gesundheitsprüfung) ist "
 "eine Nachricht an diese Adresse, mit einer Blindkopie an jede Adresse unten."
 
-#: includes/Settings/SettingsTab.php:102
+#: includes/Settings/SettingsTab.php:103
 msgid "Recipient"
 msgstr "Empfänger"
 
-#: includes/Settings/SettingsTab.php:110
+#: includes/Settings/SettingsTab.php:111
 msgid "Sender email"
 msgstr "Absenderadresse"
 
-#: includes/Settings/SettingsTab.php:111
+#: includes/Settings/SettingsTab.php:112
 msgid ""
 "Internal notifications use this address with the sender name Linker. "
 "Customer emails use the WooCommerce sender settings."
@@ -5407,19 +5407,19 @@ msgstr ""
 "Linker gesendet. Für E-Mails an Kunden gelten die Absendereinstellungen von "
 "WooCommerce."
 
-#: includes/Settings/SettingsTab.php:119
+#: includes/Settings/SettingsTab.php:120
 msgid "Blind copies"
 msgstr "Blindkopien"
 
-#: includes/Settings/SettingsTab.php:120
+#: includes/Settings/SettingsTab.php:121
 msgid "One address per line."
 msgstr "Eine Adresse pro Zeile."
 
-#: includes/Settings/SettingsTab.php:131
+#: includes/Settings/SettingsTab.php:132
 msgid "Contact person"
 msgstr "Ansprechperson"
 
-#: includes/Settings/SettingsTab.php:133
+#: includes/Settings/SettingsTab.php:134
 msgid ""
 "Shown to customers at the top of their account. Without an email address the "
 "team mailbox is shown."
@@ -5427,12 +5427,12 @@ msgstr ""
 "Wird Kunden oben in ihrem Konto angezeigt. Ohne E-Mail-Adresse erscheint das "
 "Team-Postfach."
 
-#: includes/Settings/SettingsTab.php:149
+#: includes/Settings/SettingsTab.php:150
 msgid "Phone"
 msgstr "Telefon"
 
 #. translators: %s: the addresses that were left out, comma-separated.
-#: includes/Settings/SettingsTab.php:182
+#: includes/Settings/SettingsTab.php:183
 #, php-format
 msgid "Not an email address, left out: %s"
 msgstr "Keine E-Mail-Adresse, nicht übernommen: %s"
@@ -5534,10 +5534,6 @@ msgstr "Netzphasen"
 msgid "Energy capacity"
 msgstr "Nutzbare Energie"
 
-#: includes/Vocabulary/Labels.php:40
-msgid "Request Proforma"
-msgstr "Proforma anfordern"
-
 #: includes/Vocabulary/Labels.php:54
 msgid ""
 "This confirmation link did not open. Please use the link from your inquiry "
@@ -5552,13 +5548,11 @@ msgstr ""
 msgid "Thank you. Your inquiry has been received."
 msgstr "Vielen Dank. Ihre Anfrage ist eingegangen."
 
-#: includes/Vocabulary/Labels.php:63
+#: includes/Vocabulary/Labels.php:63 includes/Vocabulary/Terms.php:90
 msgid ""
-"Please log in to request a Proforma invoice. No account yet? Register on the "
-"account page."
-msgstr ""
-"Bitte melden Sie sich an, um eine Proformarechnung anzufordern. Noch kein "
-"Konto? Registrieren Sie sich auf der Kontoseite."
+"Please log in to send your inquiry. No account yet? Register on the account "
+"page."
+msgstr "Bitte melden Sie sich an, um Ihre Anfrage zu senden. Noch kein Konto? Registrieren Sie sich auf der Kontoseite."
 
 #: includes/Vocabulary/Labels.php:75
 msgid ""
@@ -5580,34 +5574,21 @@ msgstr ""
 msgid ""
 "Review the lines in your solution draft, adjust quantities and check the "
 "totals. Approved partner accounts see net prices, tax and delivery terms "
-"before the Proforma request."
-msgstr ""
-"Prüfen Sie die Positionen in Ihrem Lösungsentwurf, passen Sie die Mengen an "
-"und prüfen Sie die Summen. Freigegebene Partnerkonten sehen Nettopreise, "
-"Steuern und Lieferbedingungen vor der Proforma-Anfrage."
+"before the inquiry page."
+msgstr "Prüfen Sie die Positionen in Ihrem Lösungsentwurf, passen Sie die Mengen an und prüfen Sie die Summen. Freigegebene Partnerkonten sehen Nettopreise, Steuern und Lieferbedingungen vor der Anfrageseite."
 
 #: includes/Vocabulary/Labels.php:131
 msgid ""
 "Build a solution draft from products or product numbers. Approved partner "
-"accounts can review prices, delivery, tax and the Proforma request."
-msgstr ""
-"Stellen Sie einen Lösungsentwurf aus Produkten oder Produktnummern zusammen. "
-"Freigegebene Partnerkonten können Preise, Lieferung, Steuern und die "
-"Proforma-Anfrage prüfen."
+"accounts can review prices, delivery, tax and the inquiry page."
+msgstr "Erstellen Sie einen Lösungsentwurf aus Produkten oder Artikelnummern. Freigegebene Partnerkonten können Preise, Lieferung, Steuern und die Anfrageseite einsehen."
 
 #: includes/Vocabulary/Labels.php:132
 msgid ""
 "Prüfen Sie die Positionen in Ihrem Lösungsentwurf, passen Sie die Mengen an "
 "und prüfen Sie die Summen. Freigegebene Partnerkonten sehen Nettopreise, "
-"Steuern und Lieferbedingungen vor der Proforma-Anfrage."
-msgstr ""
-"Prüfen Sie die Positionen in Ihrem Lösungsentwurf, passen Sie die Mengen an "
-"und prüfen Sie die Summen. Freigegebene Partnerkonten sehen Nettopreise, "
-"Steuern und Lieferbedingungen vor der Proforma-Anfrage."
-
-#: includes/Vocabulary/Labels.php:188
-msgid "Proforma request"
-msgstr "Proforma-Anfrage"
+"Steuern und Lieferbedingungen vor der Anfrage."
+msgstr "Prüfen Sie die Positionen in Ihrem Lösungsentwurf, passen Sie die Mengen an und prüfen Sie die Summen. Freigegebene Partnerkonten sehen Nettopreise, Steuern und Lieferbedingungen vor der Anfrage."
 
 #: includes/Vocabulary/LocaleFormat.php:26
 msgctxt "date format, see https://www.php.net/manual/datetime.format.php"
@@ -5735,7 +5716,7 @@ msgstr ""
 msgid ""
 "Some products in your solution draft need checking. Please go back to the "
 "solution draft before you send your inquiry."
-msgstr ""
+msgstr "Einige Produkte in Ihrem Lösungsentwurf müssen geprüft werden. Bitte gehen Sie zum Lösungsentwurf zurück, bevor Sie Ihre Anfrage senden."
 
 #: includes/Vocabulary/Terms.php:70
 msgid "Sort by popularity"
@@ -5780,12 +5761,6 @@ msgstr "Anmerkungen:"
 #: includes/Vocabulary/Terms.php:88
 msgid "Your inquiry"
 msgstr "Ihre Anfrage"
-
-#: includes/Vocabulary/Terms.php:90
-msgid ""
-"Please log in to send your inquiry. No account yet? Register on the account "
-"page."
-msgstr ""
 
 #: includes/Vocabulary/Terms.php:91
 msgid "Please read and accept the terms and conditions to send your inquiry."
@@ -5843,7 +5818,7 @@ msgstr ""
 msgid ""
 "The totals have been updated. Please confirm your inquiry with the "
 "&ldquo;Send inquiry&rdquo; button at the bottom of the page."
-msgstr ""
+msgstr "Die Summen wurden aktualisiert. Bitte bestätigen Sie Ihre Anfrage mit der Schaltfläche „Anfrage senden“ am unteren Ende der Seite."
 
 #: includes/Vocabulary/Terms.php:106
 msgid "Please log in to your account to view this inquiry."
@@ -6361,6 +6336,91 @@ msgstr ""
 msgid "Solution"
 msgstr "Lösung"
 
+#~ msgid ""
+#~ "The address customers see: on the Proforma, on the website and in Genie's "
+#~ "answers. Internal notifications do not go here."
+#~ msgstr ""
+#~ "Die Adresse, die Kunden sehen: auf der Proformarechnung, auf der Website "
+#~ "und in den Antworten von Genie. Interne Benachrichtigungen gehen nicht an "
+#~ "diese Adresse."
+
+#~ msgid "Proforma invoice"
+#~ msgstr "Proformarechnung"
+
+#~ msgid ""
+#~ "Printed on every Proforma invoice. The seller address is the store "
+#~ "address under General."
+#~ msgstr ""
+#~ "Steht auf jeder Proformarechnung. Die Anschrift des Verkäufers ist die "
+#~ "Shop-Adresse unter „Allgemein“."
+
+#~ msgid "Number prefix"
+#~ msgstr "Nummernpräfix"
+
+#~ msgid ""
+#~ "Numbers read PREFIX-YEAR-NNNN and count from 1 each calendar year. Empty "
+#~ "uses DLK-PF, the prefix on de-linker.com."
+#~ msgstr ""
+#~ "Nummern haben die Form PRÄFIX-JAHR-NNNN und zählen jedes Kalenderjahr ab "
+#~ "1. Bleibt das Feld leer, gilt DLK-PF, das Präfix auf de-linker.com."
+
+#~ msgid "Seller"
+#~ msgstr "Verkäufer"
+
+#~ msgid "Seller VAT ID"
+#~ msgstr "USt-IdNr. des Verkäufers"
+
+#~ msgid "Account holder"
+#~ msgstr "Kontoinhaber"
+
+#~ msgid "Bank"
+#~ msgstr "Bank"
+
+#~ msgid "IBAN"
+#~ msgstr "IBAN"
+
+#~ msgid "BIC"
+#~ msgstr "BIC"
+
+#~ msgid "Request Proforma"
+#~ msgstr "Proforma anfordern"
+
+#~ msgid ""
+#~ "Please log in to request a Proforma invoice. No account yet? Register on "
+#~ "the account page."
+#~ msgstr ""
+#~ "Bitte melden Sie sich an, um eine Proformarechnung anzufordern. Noch kein "
+#~ "Konto? Registrieren Sie sich auf der Kontoseite."
+
+#~ msgid ""
+#~ "Review the lines in your solution draft, adjust quantities and check the "
+#~ "totals. Approved partner accounts see net prices, tax and delivery terms "
+#~ "before the Proforma request."
+#~ msgstr ""
+#~ "Prüfen Sie die Positionen in Ihrem Lösungsentwurf, passen Sie die Mengen "
+#~ "an und prüfen Sie die Summen. Freigegebene Partnerkonten sehen "
+#~ "Nettopreise, Steuern und Lieferbedingungen vor der Proforma-Anfrage."
+
+#~ msgid ""
+#~ "Build a solution draft from products or product numbers. Approved partner "
+#~ "accounts can review prices, delivery, tax and the Proforma request."
+#~ msgstr ""
+#~ "Stellen Sie einen Lösungsentwurf aus Produkten oder Produktnummern "
+#~ "zusammen. Freigegebene Partnerkonten können Preise, Lieferung, Steuern "
+#~ "und die Proforma-Anfrage prüfen."
+
+#~ msgid ""
+#~ "Prüfen Sie die Positionen in Ihrem Lösungsentwurf, passen Sie die Mengen "
+#~ "an und prüfen Sie die Summen. Freigegebene Partnerkonten sehen "
+#~ "Nettopreise, Steuern und Lieferbedingungen vor der Proforma-Anfrage."
+#~ msgstr ""
+#~ "Prüfen Sie die Positionen in Ihrem Lösungsentwurf, passen Sie die Mengen "
+#~ "an und prüfen Sie die Summen. Freigegebene Partnerkonten sehen "
+#~ "Nettopreise, Steuern und Lieferbedingungen vor der Proforma-Anfrage."
+
+#~ msgid "Proforma request"
+#~ msgstr "Proforma-Anfrage"
+
 #, php-format
 #~ msgid "Proforma invoice %1$s (inquiry #%2$s)"
 #~ msgstr "Proformarechnung %1$s (Anfrage #%2$s)"
@@ -6386,9 +6446,6 @@ msgstr "Lösung"
 #~ msgstr ""
 #~ "Für Produkte ohne Preisangabe nennen wir den Preis in Ihrer "
 #~ "Proformarechnung."
-
-#~ msgid "Proforma invoice"
-#~ msgstr "Proformarechnung"
 
 #~ msgid "We check your inquiry and send you a Proforma invoice."
 #~ msgstr "Wir prüfen Ihre Anfrage und senden Ihnen eine Proformarechnung."
@@ -6498,49 +6555,6 @@ msgstr "Lösung"
 #~ msgstr ""
 #~ "Es konnte keine Proforma-Nummer vergeben werden. Bitte versuchen Sie es "
 #~ "erneut."
-
-#~ msgid ""
-#~ "The address customers see: on the Proforma, on the website and in Genie's "
-#~ "answers. Internal notifications do not go here."
-#~ msgstr ""
-#~ "Die Adresse, die Kunden sehen: auf der Proformarechnung, auf der Website "
-#~ "und in den Antworten von Genie. Interne Benachrichtigungen gehen nicht an "
-#~ "diese Adresse."
-
-#~ msgid ""
-#~ "Printed on every Proforma invoice. The seller address is the store "
-#~ "address under General."
-#~ msgstr ""
-#~ "Steht auf jeder Proformarechnung. Die Anschrift des Verkäufers ist die "
-#~ "Shop-Adresse unter „Allgemein“."
-
-#~ msgid "Number prefix"
-#~ msgstr "Nummernpräfix"
-
-#~ msgid ""
-#~ "Numbers read PREFIX-YEAR-NNNN and count from 1 each calendar year. Empty "
-#~ "uses DLK-PF, the prefix on de-linker.com."
-#~ msgstr ""
-#~ "Nummern haben die Form PRÄFIX-JAHR-NNNN und zählen jedes Kalenderjahr ab "
-#~ "1. Bleibt das Feld leer, gilt DLK-PF, das Präfix auf de-linker.com."
-
-#~ msgid "Seller"
-#~ msgstr "Verkäufer"
-
-#~ msgid "Seller VAT ID"
-#~ msgstr "USt-IdNr. des Verkäufers"
-
-#~ msgid "Account holder"
-#~ msgstr "Kontoinhaber"
-
-#~ msgid "Bank"
-#~ msgstr "Bank"
-
-#~ msgid "IBAN"
-#~ msgstr "IBAN"
-
-#~ msgid "BIC"
-#~ msgstr "BIC"
 
 #~ msgid ""
 #~ "The IBAN is not valid (check digits do not match); the previous IBAN is "
