@@ -12,7 +12,7 @@ from conftest import STORE_FIXTURE as FIXTURE
 from linker_genie.abilities import AbilityClient
 from linker_genie.jev import JevError, Reading
 from linker_genie.lexicon import Vocabulary
-from linker_genie.schema import TurnRequest
+from linker_genie.schema import AttachmentReading, TurnRequest
 from linker_genie.storeapi import VocabularyError
 from linker_genie.understand import Understander
 
@@ -509,3 +509,39 @@ def test_a_pasted_list_with_carried_models_is_not_captured_by_the_script(
     prepared = understander.prepare(_request(pasted, "de"), _abilities([]))
     assert prepared.route.name != "scripted"
     assert "publication" not in prepared.log
+
+
+def _nameplate_reading(model: str | None) -> AttachmentReading:
+    return AttachmentReading(
+        id="att1", name="nameplate.jpg", kind="nameplate", model=model
+    )
+
+
+def test_an_unreadable_nameplate_keeps_its_own_flow(
+    vocabulary: Vocabulary,
+) -> None:
+    understander = Understander(
+        lambda: vocabulary,
+        FakeJev(_reading("find_products")),
+        publication=_UnavailableAuthority("SMA Sunny Boy 5.0"),  # type: ignore[arg-type]
+    )
+    request = _request("Anhang: nameplate.jpg")
+    request.readings = [_nameplate_reading(None)]
+    prepared = understander.prepare(request, _abilities([]))
+    assert prepared.route.name != "scripted"
+    assert "publication" not in prepared.log
+
+
+def test_a_nameplate_naming_an_unavailable_model_is_still_captured(
+    vocabulary: Vocabulary,
+) -> None:
+    understander = Understander(
+        lambda: vocabulary,
+        FakeJev(_reading("find_products")),
+        publication=_UnavailableAuthority("SMA Sunny Boy 5.0"),  # type: ignore[arg-type]
+    )
+    request = _request("Anhang: nameplate.jpg")
+    request.readings = [_nameplate_reading("SMA Sunny Boy 5.0")]
+    prepared = understander.prepare(request, _abilities([]))
+    assert prepared.route.name == "scripted"
+    assert prepared.log["publication"] == "upload_identification_only"
