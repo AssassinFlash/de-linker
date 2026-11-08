@@ -23,7 +23,7 @@ require_once __DIR__ . '/BrowserFixture.php';
 	}
 	$state  = $fixture->state();
 	$user   = get_user_by( 'email', $state['email'] );
-	$jobs   = $fixture->jobs();
+	$jobs   = $fixture->mail();
 	$orders = $fixture->orders();
 	if ( 'read' === $mode ) {
 		echo wp_json_encode(
@@ -40,10 +40,7 @@ require_once __DIR__ . '/BrowserFixture.php';
 					$orders
 				),
 				'mail'          => array_map(
-					static function ( $id ) {
-						$message = json_decode( get_post_meta( $id, '_linker_mail_message', true ), true );
-						return array_intersect_key( $message, array_flip( array( 'to', 'headers', 'subject' ) ) );
-					},
+					static fn ( array $message ): array => array_intersect_key( $message, array_flip( array( 'to', 'headers', 'subject' ) ) ),
 					$jobs
 				),
 			)
