@@ -131,12 +131,12 @@ final class RedirectsTest extends TestCase {
 	private array $post_twins = array();
 
 	/**
-	 * Option values get_option answers with, by name.
+	 * WooCommerce's query vars, wc_get_query_vars' answer.
 	 *
-	 * @var array<string, mixed>
+	 * @var array<string, string>
 	 */
-	private array $options = array(
-		'woocommerce_checkout_order_received_endpoint' => 'inquiry-received',
+	private array $query_vars = array(
+		'order-received' => 'inquiry-received',
 	);
 
 	/**
@@ -148,12 +148,8 @@ final class RedirectsTest extends TestCase {
 		if ( $responder instanceof \WP_Mock\Filter_Responder ) {
 			$responder->reply( null );
 		}
-		WP_Mock::userFunction( 'get_option' )->andReturnUsing(
-			function ( string $name, mixed $fallback = false ): mixed {
-				// The live site pins the endpoint name to 'inquiry-received'
-				// (WooOptions); a test overrides $this->options to vary it.
-				return $this->options[ $name ] ?? $fallback;
-			}
+		WP_Mock::userFunction( 'wc_get_query_vars' )->andReturnUsing(
+			fn(): array => $this->query_vars
 		);
 		WP_Mock::userFunction( 'home_url' )->andReturnUsing(
 			static fn( string $path = '' ): string => self::HOME . $path
@@ -743,7 +739,7 @@ final class RedirectsTest extends TestCase {
 	 */
 	public function test_the_legacy_endpoint_segment_stays_when_the_site_keeps_it(): void {
 		$this->wordpress();
-		$this->options['woocommerce_checkout_order_received_endpoint'] = 'order-received';
+		$this->query_vars['order-received'] = 'order-received';
 
 		$this->assertSame(
 			self::HOME . '/proforma-request/order-received/4711/',
