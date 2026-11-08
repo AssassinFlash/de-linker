@@ -34,29 +34,33 @@ final class InquiryStatus {
 		$inquiry = array(
 			'type'                 => 'object',
 			'properties'           => array(
-				'id'           => array(
+				'id'               => array(
 					'type'        => 'integer',
 					'description' => __( 'Inquiry ID.', 'linker-commerce' ),
 				),
-				'number'       => array(
+				'number'           => array(
 					'type'        => 'string',
 					'description' => __( 'Inquiry number as the customer sees it.', 'linker-commerce' ),
 				),
-				'status'       => array(
+				'status'           => array(
 					'type'        => 'string',
 					'description' => __( 'Status slug without the wc- prefix.', 'linker-commerce' ),
 				),
-				'status_label' => array(
+				'status_label'     => array(
 					'type'        => 'string',
 					'description' => __( 'Status name in the page language.', 'linker-commerce' ),
 				),
-				'date'         => array(
+				'date'             => array(
 					'type'        => 'string',
 					'description' => __( 'Date created, GMT.', 'linker-commerce' ),
 				),
-				'total'        => array(
+				'total'            => array(
 					'type'        => 'string',
 					'description' => __( 'Amount as stored on the inquiry.', 'linker-commerce' ),
+				),
+				'quotation_number' => array(
+					'type'        => 'string',
+					'description' => __( 'Quotation number when one has been issued.', 'linker-commerce' ),
 				),
 			),
 			'required'             => array( 'id', 'number', 'status', 'status_label', 'date' ),

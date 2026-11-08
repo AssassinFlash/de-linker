@@ -115,7 +115,7 @@ final class AccountTemplatesTest extends TestCase {
 		$this->assertSame( $query, $adapter->orders_query( $query ) );
 		$_GET['inquiry-status'] = 'open';
 		try {
-			$this->assertSame( $query + array( 'status' => array( 'inquiry-received', 'quotation-in-progress' ) ), $adapter->orders_query( $query ) );
+			$this->assertSame( $query + array( 'status' => array( 'inquiry-received', 'quotation-issued' ) ), $adapter->orders_query( $query ) );
 		} finally {
 			unset( $_GET['inquiry-status'] );
 		}
@@ -133,7 +133,7 @@ final class AccountTemplatesTest extends TestCase {
 			'paginate'    => true,
 		);
 		try {
-			foreach ( array( 'inquiry-received', 'quotation-in-progress', 'completed', 'cancelled' ) as $status ) {
+			foreach ( array( 'inquiry-received', 'quotation-issued', 'completed', 'cancelled' ) as $status ) {
 				$_GET['inquiry-status'] = $status;
 				$this->assertSame( $query + array( 'status' => array( $status ) ), $adapter->orders_query( $query ) );
 			}
@@ -377,7 +377,7 @@ final class AccountTemplatesTest extends TestCase {
 
 		$html = $adapter->rows( array( 'type' => 'dashboard' ) );
 		$this->assertSame( 4, substr_count( $html, 'linker-account-tile-count' ) );
-		foreach ( array( 'inquiry-received', 'quotation-in-progress', 'completed', 'cancelled' ) as $status ) {
+		foreach ( array( 'inquiry-received', 'quotation-issued', 'completed', 'cancelled' ) as $status ) {
 			$this->assertStringContainsString( 'data-status="' . $status . '"', $html );
 		}
 		// Three orders: one per state, none cancelled.

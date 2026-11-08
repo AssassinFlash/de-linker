@@ -77,7 +77,7 @@ final class InquiryListTest extends TestCase {
 	 * The inquiry page (WooCommerce's own button) and the confirmation offer no "Request again" of ours.
 	 */
 	public function test_actions(): void {
-		$this->filter_returns( 'woocommerce_valid_order_statuses_for_order_again', array( 'completed', 'inquiry-received', 'quotation-in-progress', 'cancelled' ), array( array( 'completed' ) ) );
+		$this->filter_returns( 'woocommerce_valid_order_statuses_for_order_again', array( 'completed', 'inquiry-received', 'quotation-issued', 'cancelled' ), array( array( 'completed' ) ) );
 		$endpoint = '';
 		WP_Mock::userFunction(
 			'is_wc_endpoint_url',

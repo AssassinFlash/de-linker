@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-11-08T03:23:03+00:00\n"
+"POT-Creation-Date: 2026-11-08T04:02:28+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -366,11 +366,15 @@ msgstr ""
 msgid "Amount as stored on the inquiry."
 msgstr ""
 
-#: includes/Abilities/InquiryStatus.php:67
+#: includes/Abilities/InquiryStatus.php:63
+msgid "Quotation number when one has been issued."
+msgstr "Angebotsnummer, wenn eines ausgestellt wurde."
+
+#: includes/Abilities/InquiryStatus.php:71
 msgid "List my inquiries"
 msgstr ""
 
-#: includes/Abilities/InquiryStatus.php:68
+#: includes/Abilities/InquiryStatus.php:72
 msgid ""
 "Returns this account's inquiries and their status. Requires a logged-in "
 "customer."
@@ -2703,7 +2707,7 @@ msgid "View inquiry %s"
 msgstr "Anfrage %s ansehen"
 
 #. translators: %s: number of products in the inquiry.
-#: includes/Presentation/AccountTemplates.php:926
+#: includes/Presentation/AccountTemplates.php:929
 #, php-format
 msgid "%s product"
 msgid_plural "%s products"
@@ -4193,7 +4197,9 @@ msgstr "Produkt nicht verfügbar"
 msgid ""
 "Installation facts need a current Woo product, item identity and English/"
 "German names."
-msgstr "Installationsfakten brauchen ein aktuelles Woo-Produkt, eine Artikelnummer sowie englische und deutsche Namen."
+msgstr ""
+"Installationsfakten brauchen ein aktuelles Woo-Produkt, eine Artikelnummer "
+"sowie englische und deutsche Namen."
 
 #: includes/Products/Publication/InstallationFacts.php:60
 msgid "Each installation fact needs an explicit handling and basis."
@@ -5563,7 +5569,9 @@ msgstr "Angebote"
 msgid ""
 "The team issues quotations on the inquiry screen; billing is agreed offline. "
 "The document itself names no bank account."
-msgstr "Das Team stellt Angebote im Anfragebildschirm aus; die Abrechnung wird offline vereinbart. Das Dokument selbst nennt keine Bankverbindung."
+msgstr ""
+"Das Team stellt Angebote im Anfragebildschirm aus; die Abrechnung wird "
+"offline vereinbart. Das Dokument selbst nennt keine Bankverbindung."
 
 #: includes/Settings/SettingsTab.php:167
 msgid "Number prefix"
@@ -6590,7 +6598,9 @@ msgstr "Nächste Schritte"
 msgid ""
 "Reply to %s to confirm or adjust this Quotation. We agree on billing and "
 "delivery with you personally."
-msgstr "Antworten Sie an %s, um dieses Angebot zu bestätigen oder anzupassen. Abrechnung und Lieferung vereinbaren wir persönlich mit Ihnen."
+msgstr ""
+"Antworten Sie an %s, um dieses Angebot zu bestätigen oder anzupassen. "
+"Abrechnung und Lieferung vereinbaren wir persönlich mit Ihnen."
 
 #~ msgid ""
 #~ "The team issues quotations on the inquiry screen; payment terms are "

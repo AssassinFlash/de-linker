@@ -90,9 +90,7 @@ final class DigestTest extends IntegrationTestCase {
 			$this->fixture_only( ( new \Linker\Commerce\Digest\InquiriesAwaitingReply( $created + 24 * 3600 + 1 ) )->entries(), $inquiry_out ),
 			'One second past 24 hours, it is.'
 		);
-		$modified_date = $proforma_out->get_date_modified();
-		self::assertNotNull( $modified_date );
-		$modified = (int) $modified_date->getTimestamp();
+		$modified = (int) $proforma_out->get_meta( \Linker\Commerce\Quotation\Issuer::ISSUED_META );
 		$this->assertSame(
 			array(),
 			$this->fixture_only( ( new \Linker\Commerce\Digest\QuotationsInProgress( $modified + 72 * 3600 ) )->entries(), $proforma_out ),
@@ -114,7 +112,8 @@ final class DigestTest extends IntegrationTestCase {
 
 		$proformas = $this->fixture_only( ( new \Linker\Commerce\Digest\QuotationsInProgress() )->entries(), $proforma_in, $proforma_out );
 		$this->assertCount( 1, $proformas );
-		$this->assertStringContainsString( 'In quotation preparation since', (string) $proformas[0]['detail'] );
+		$this->assertStringContainsString( 'Quotation QT-', (string) $proformas[0]['detail'] );
+		$this->assertStringContainsString( 'issued on', (string) $proformas[0]['detail'] );
 		$this->assertSame( '3 days ago', $this->age_of( $proformas[0]['detail'] ) );
 
 		// The boundaries hold in the other direction: the 23-hour inquiry is
@@ -152,7 +151,7 @@ final class DigestTest extends IntegrationTestCase {
 		$this->assertSame( array( self::TESTER ), $to );
 		$this->assertStringStartsWith( 'Daily digest, ', $subject );
 		$this->assertStringContainsString( 'No inquiry is waiting for more than 24 hours.', $body );
-		$this->assertStringContainsString( 'No Proforma invoice has waited more than 3 days for a reply.', $body );
+		$this->assertStringContainsString( 'No Quotation has waited more than 3 days for a reply.', $body );
 		$this->assertStringContainsString( 'No email failed to send.', $body );
 
 		// One captured wire copy proves delivery to the tester.
@@ -332,17 +331,18 @@ final class DigestTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * Sends an inquiry, marks it proforma-issued with an issue time. The meta
-	 * and status are what the Issuer leaves behind; the PDF pipeline of the
-	 * issue button itself is ProformaTest's subject, not this one's.
+	 * Sends an inquiry, marks it issued with an issue time. The meta and
+	 * status are what the Issuer leaves behind; the PDF pipeline of the
+	 * issue button itself is QuotationTest's subject, not this one's.
 	 *
-	 * @param int $touched Unix time the Proforma was issued.
+	 * @param int $touched Unix time the Quotation was issued.
 	 */
 	private function issued_proforma( int $touched ): WC_Order {
 		$order = $this->send_inquiry( $this->customer(), array( array( $this->product( '1200' ), 1 ) ) );
 		$this->as_user( 0 );
-		$order->set_status( 'quotation-in-progress' );
-		$order->set_date_modified( $touched );
+		$order->set_status( 'quotation-issued' );
+		$order->update_meta_data( \Linker\Commerce\Quotation\Issuer::ISSUED_META, (string) $touched );
+		$order->update_meta_data( \Linker\Commerce\Quotation\Issuer::NUMBER_META, 'QT-' . gmdate( 'Y', $touched ) . '-9911' );
 		$order->save();
 		$read_back = wc_get_order( $order->get_id() );
 		$this->assertInstanceOf( WC_Order::class, $read_back );

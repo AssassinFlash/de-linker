@@ -26,7 +26,7 @@ final class Statuses {
 	 * Status slugs, without WooCommerce's "wc-" prefix.
 	 */
 	public const RECEIVED  = 'inquiry-received';
-	public const QUOTATION = 'quotation-in-progress';
+	public const QUOTATION = 'quotation-issued';
 
 	/**
 	 * Admin list colours of the two statuses: WooCommerce 11.1's own colours of

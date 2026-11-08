@@ -43,7 +43,7 @@ final class QuotationIssuedEmailTest extends TestCase {
 		$this->plain_text();
 		$this->options( array() );
 		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => '/plugin/' ) );
-		$this->expect_action_on_any( 'woocommerce_order_status_inquiry-received_to_quotation-in-progress_notification', QuotationIssuedEmail::class, 'trigger', 10, 2 );
+		$this->expect_action_on_any( 'woocommerce_order_status_inquiry-received_to_quotation-issued_notification', QuotationIssuedEmail::class, 'trigger', 10, 2 );
 		$order = Mockery::mock( WC_Order::class );
 		$order->allows( 'get_id' )->andReturn( 20 );
 		$order->allows( 'get_billing_email' )->andReturn( 'maria@example.test' );
@@ -112,7 +112,7 @@ final class QuotationIssuedEmailTest extends TestCase {
 	public function test_does_not_send_when_the_number_is_missing(): void {
 		$this->plain_text();
 		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => '/plugin/' ) );
-		$this->expect_action_on_any( 'woocommerce_order_status_inquiry-received_to_quotation-in-progress_notification', QuotationIssuedEmail::class, 'trigger', 10, 2 );
+		$this->expect_action_on_any( 'woocommerce_order_status_inquiry-received_to_quotation-issued_notification', QuotationIssuedEmail::class, 'trigger', 10, 2 );
 		$order = Mockery::mock( WC_Order::class );
 		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( '' );
 		$order->allows( 'get_meta' )->with( QuotationIssuedEmail::ACCEPTED )->andReturn( '' );
@@ -147,7 +147,7 @@ final class QuotationIssuedEmailTest extends TestCase {
 	public function test_does_not_render_a_letter_when_the_number_is_missing(): void {
 		$this->plain_text();
 		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => '/plugin/' ) );
-		$this->expect_action_on_any( 'woocommerce_order_status_inquiry-received_to_quotation-in-progress_notification', QuotationIssuedEmail::class, 'trigger', 10, 2 );
+		$this->expect_action_on_any( 'woocommerce_order_status_inquiry-received_to_quotation-issued_notification', QuotationIssuedEmail::class, 'trigger', 10, 2 );
 		$order = Mockery::mock( WC_Order::class );
 		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( '' );
 		$order->allows( 'get_meta' )->with( Issuer::ISSUED_META )->never();
@@ -171,7 +171,7 @@ final class QuotationIssuedEmailTest extends TestCase {
 	public function test_does_not_send_when_a_reloaded_inquiry_has_no_number(): void {
 		$this->plain_text();
 		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => '/plugin/' ) );
-		$this->expect_action_on_any( 'woocommerce_order_status_inquiry-received_to_quotation-in-progress_notification', QuotationIssuedEmail::class, 'trigger', 10, 2 );
+		$this->expect_action_on_any( 'woocommerce_order_status_inquiry-received_to_quotation-issued_notification', QuotationIssuedEmail::class, 'trigger', 10, 2 );
 		$order = Mockery::mock( WC_Order::class );
 		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( '' );
 		$order->allows( 'get_meta' )->with( QuotationIssuedEmail::ACCEPTED )->andReturn( '' );

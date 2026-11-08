@@ -251,8 +251,8 @@ body.woocommerce-account.logged-in .linker-account #container-content-account {
 
 .linker-account .linker-account-pill[data-status="inquiry-received"] { background: var(--proto-teal-50); color: var(--proto-teal-800); }
 .linker-account .linker-account-pill[data-status="inquiry-received"] .linker-account-pill-dot { background: var(--proto-teal-500); }
-.linker-account .linker-account-pill[data-status="quotation-in-progress"] { background: var(--acct-warn-bg); color: var(--acct-warn-ink); }
-.linker-account .linker-account-pill[data-status="quotation-in-progress"] .linker-account-pill-dot { background: var(--acct-warn); }
+.linker-account .linker-account-pill[data-status="quotation-issued"] { background: var(--acct-warn-bg); color: var(--acct-warn-ink); }
+.linker-account .linker-account-pill[data-status="quotation-issued"] .linker-account-pill-dot { background: var(--acct-warn); }
 .linker-account .linker-account-pill[data-status="completed"] { background: var(--acct-ok-bg); color: var(--acct-ok-ink); }
 .linker-account .linker-account-pill[data-status="completed"] .linker-account-pill-dot { background: var(--acct-ok); }
 .linker-account .linker-account-pill[data-status="cancelled"] { background: var(--acct-fill); color: var(--acct-muted); }
@@ -373,7 +373,7 @@ body.woocommerce-account .linker-account-undo:focus-visible { outline: 2px solid
 
 .linker-account .linker-account-tile-dot { width: 8px; height: 8px; border-radius: 99px; background: var(--acct-faint); }
 .linker-account .linker-account-tile[data-status="inquiry-received"] .linker-account-tile-dot { background: var(--proto-teal-500); }
-.linker-account .linker-account-tile[data-status="quotation-in-progress"] .linker-account-tile-dot { background: var(--acct-warn); }
+.linker-account .linker-account-tile[data-status="quotation-issued"] .linker-account-tile-dot { background: var(--acct-warn); }
 .linker-account .linker-account-tile[data-status="completed"] .linker-account-tile-dot { background: var(--acct-ok); }
 
 .linker-account .linker-account-tile-count {

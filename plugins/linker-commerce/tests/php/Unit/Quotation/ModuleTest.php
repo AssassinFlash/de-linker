@@ -41,7 +41,7 @@ final class ModuleTest extends TestCase {
 
 		WP_Mock::expectActionAdded( 'add_meta_boxes', array( $box, 'add' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_process_shop_order_meta', array( $box, 'process' ), 60 );
-		WP_Mock::expectActionAdded( 'woocommerce_order_status_quotation-in-progress', array( $issuer, 'ensure_issued' ), 20 );
+		WP_Mock::expectActionAdded( 'woocommerce_order_status_quotation-issued', array( $issuer, 'ensure_issued' ), 20 );
 		WP_Mock::expectFilterAdded( 'woocommerce_order_actions', array( $box, 'order_actions' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_shop_order_list_table_columns', array( $box, 'columns' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_shop_order_list_table_custom_column', array( $box, 'column' ), 10, 2 );
@@ -52,10 +52,10 @@ final class ModuleTest extends TestCase {
 
 		$module->register();
 
-		$this->assertSame( array( 'woocommerce_order_status_inquiry-received_to_quotation-in-progress' ), $module->email_actions( array() ) );
+		$this->assertSame( array( 'woocommerce_order_status_inquiry-received_to_quotation-issued' ), $module->email_actions( array() ) );
 		$this->plain_text();
 		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => '/plugin/' ) );
-		$this->expect_action_on_any( 'woocommerce_order_status_inquiry-received_to_quotation-in-progress_notification', QuotationIssuedEmail::class, 'trigger', 10, 2 );
+		$this->expect_action_on_any( 'woocommerce_order_status_inquiry-received_to_quotation-issued_notification', QuotationIssuedEmail::class, 'trigger', 10, 2 );
 		$this->assertArrayHasKey( QuotationIssuedEmail::class, $module->add_email( array() ) );
 		$this->assertConditionsMet();
 	}

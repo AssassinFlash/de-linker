@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-08T03:23:03+00:00\n"
+"POT-Creation-Date: 2026-11-08T04:02:28+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
@@ -336,11 +336,15 @@ msgstr ""
 msgid "Amount as stored on the inquiry."
 msgstr ""
 
-#: includes/Abilities/InquiryStatus.php:67
+#: includes/Abilities/InquiryStatus.php:63
+msgid "Quotation number when one has been issued."
+msgstr ""
+
+#: includes/Abilities/InquiryStatus.php:71
 msgid "List my inquiries"
 msgstr ""
 
-#: includes/Abilities/InquiryStatus.php:68
+#: includes/Abilities/InquiryStatus.php:72
 msgid ""
 "Returns this account's inquiries and their status. Requires a logged-in "
 "customer."
@@ -2496,7 +2500,7 @@ msgid "View inquiry %s"
 msgstr ""
 
 #. translators: %s: number of products in the inquiry.
-#: includes/Presentation/AccountTemplates.php:926
+#: includes/Presentation/AccountTemplates.php:929
 #, php-format
 msgid "%s product"
 msgid_plural "%s products"

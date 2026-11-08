@@ -69,7 +69,7 @@ final class QuotationsInProgressTest extends TestCase {
 
 	/**
 	 * In, out and the boundaries: 73 hours in, 71 and exactly 72 out, a
-	 * quotation-in-progress inquiry without the issue meta out.
+	 * quotation-issued inquiry without the issue meta out.
 	 */
 	public function test_boundaries_are_strict(): void {
 		$in       = $this->order( self::NOW - 73 * 3600, 'QT-2026-0001' );
