@@ -679,6 +679,18 @@ class Target:
         Redirects are not followed (OPENER): a caller asking about a 301 is
         asking about the address, not about where it points.
         """
+        try:
+            return self._fetch(path, cache_buster)
+        except _ReadTimeout:
+            # A shared host's origin render occasionally spikes past the read
+            # timeout once (measured 2026-11-08: every verify path answers
+            # 200 in 4-9s on independent passes, one random page exceeds 30s
+            # inside a 20-page verify burst). Retry just that read once,
+            # keeping the URL and redirect policy, like the TLS EOF retry.
+            print(f"cutover: read timeout, retrying GET {path}", flush=True)
+            return self._fetch(path, cache_buster)
+
+    def _fetch(self, path: str, cache_buster: str | None) -> tuple[int, str]:
         url = self.base_url.rstrip("/") + "/" + path.lstrip("/")
         if cache_buster:
             separator = "&" if "?" in url else "?"
@@ -705,6 +717,8 @@ class Target:
             # default error handler, which raises with the status and the body.
             return error.code, error.read().decode("utf-8", errors="replace")
         except OSError as error:  # a refused connection, a DNS failure, a timeout
+            if _is_read_timeout(error):
+                raise _ReadTimeout(url) from error
             raise CutoverError(f"GET {url}: {error}") from error
 
 
@@ -747,6 +761,23 @@ def local_target(name: str) -> Target:
 def wp_prefix_for(target: Target) -> str:
     """The target's WP-CLI command as a string, for `--wp` of tools/migrate."""
     return " ".join(shlex.quote(part) for part in target.prefix)
+
+
+def _is_read_timeout(error: BaseException) -> bool:
+    """Whether an OSError chain is a read timeout (socket.timeout/TimeoutError)."""
+    seen: BaseException | str | None = error
+    while isinstance(seen, BaseException):
+        if isinstance(seen, TimeoutError):
+            return True
+        if isinstance(seen, urllib.error.URLError):
+            seen = seen.reason
+            continue
+        seen = seen.__cause__ or seen.__context__
+    return False
+
+
+class _ReadTimeout(CutoverError):
+    """A read that timed out once; the caller retries it exactly once more."""
 
 
 def _link_dest(earlier: Path | None) -> list[str]:
