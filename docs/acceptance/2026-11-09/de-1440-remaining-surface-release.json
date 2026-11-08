@@ -1,0 +1,38 @@
+{
+  "phase": "de-1440-remaining-surface-closed",
+  "date": "2026-11-09",
+  "survey": "44 spec files sharded over review, 15m: 22+ de-1440 rows green in place; the pending surface reclassified - configurator/roof/project-brief carry no de rows yet (EN-only specs, #548 workbench coverage work, not defects)",
+  "real_defects_fixed": {
+    "pr_1013": "the upload branch of the unavailable-publication gate blocked every model-less nameplate, hijacking the #236 'model could not be read' UX; blocked narrowed to model-less documents only",
+    "pr_1014": "attachments spec pinned single outcomes on a live deepseek-flash channel: the thumbnail's model is genuinely borderline (US3000C read => out-of-range script is correct), the DATASHEET default pointed into the retired 20261018-0541 snapshot, pending-account lacked the consent beforeEach",
+    "pr_1015": "pending-account had drifted with every product change since two-step registration (#242): old single-step form with a select id that no longer exists (selectOption waited forever), Enter-submit without a session, untranslated German account slugs, and mail assertions that assume synchronous delivery of queue posts that fast local delivery deletes (TestMode also rewrites the recipient)"
+  },
+  "environment_repairs": [
+    "public-inquiry 4/4: the review business-pool ledger held 128/128 leftover intakes from a killed survey run (the spec warns a killed setup bypasses cleanup); cleared, then green",
+    "c222 rebuilt for pending-account: snapshot plugins/uploads via reset --snapshot 20261105-1208 PLUS the database via 'just pull load' (instance snapshots do not carry the DB - linker-local installs files only)",
+    "review knowledge index rebuilt after the serving-source change (just index): a mismatched index makes search-knowledge refuse and datasheet turns fall to handoff - the paired release builds its own index, but local serves do not"
+  ],
+  "verification": {
+    "genie_service": "understand 23/23 with the new gate regressions; full suite green on CI",
+    "attachments_spec": "4/4 on review (3.9m) after #1013 + the #1014 hardening + the fresh index",
+    "public_inquiry": "4/4 on review after the pool clear",
+    "pending_account": "de 1440 passes on c222 in 30.5s"
+  },
+  "release": {
+    "main": "e527b2feb (#1013+#1014+#1015 merged)",
+    "candidate": "/opt/linker-genie/20261108T204817031587Z = clone current + understand.py/attachments.py overlay; serving a4bde371..., recipe 67a500b5..., both equal to main",
+    "publish": "paired_release publish from releases/db0fddffa-main, 38s, index 20261108T205220Z-672808000 epoch 99",
+    "production_readback": "current -> 204817, health serving a4bde371, both units active",
+    "production_verification": "the pylontech thumbnail against the production /turn 3x: route=nameplate, model=None, no out-of-range script - the #1013 fix live and behaving",
+    "worker": "paused for the window, resumed after (launchctl active)"
+  },
+  "resource_report": {
+    "reclaimed": ["VPS /tmp verification image", "orphaned playwright workers from two 600s-timeout kills"],
+    "running": "review + c222 instances and their services stay up as verification environments; Mac knowledge worker active; VPS units active",
+    "disk": "1.2Ti available; worker releases hold 0c5b70508-main, db0fddffa-main (live) per the rolling boundary"
+  },
+  "open": [
+    "the remaining DE-1440 'surface' is new de coverage for EN-only specs (configurator, roof, project-brief) - that is #548 workbench scope, not a defect list",
+    "CU visual walkthrough awaits the owner switching to an image-capable model"
+  ]
+}
