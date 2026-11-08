@@ -131,6 +131,13 @@ final class RedirectsTest extends TestCase {
 	private array $post_twins = array();
 
 	/**
+	 * WooCommerce's query object, WC()'s answer.
+	 *
+	 * @var object|null
+	 */
+	private $woo;
+
+	/**
 	 * WooCommerce's query vars, wc_get_query_vars' answer.
 	 *
 	 * @var array<string, string>
@@ -144,12 +151,37 @@ final class RedirectsTest extends TestCase {
 	 * properties above.
 	 */
 	private function wordpress(): void {
+		$query     = new class( $this->query_vars ) {
+			/**
+			 * Query vars Woo answers with.
+			 *
+			 * @param array<string, string> $vars The vars.
+			 */
+			public function __construct( public array $vars ) {}
+
+			/**
+			 * Woo's own accessor, on the renamed endpoint set.
+			 *
+			 * @return array<string, string>
+			 */
+			public function get_query_vars(): array {
+				return $this->vars;
+			}
+		};
+		$this->woo = new class( $query ) {
+			/**
+			 * Carries the query object.
+			 *
+			 * @param object $query The query.
+			 */
+			public function __construct( public object $query ) {}
+		};
 		$responder = WP_Mock::onFilter( 'linker_tools_retired_url' )->withAnyArgs();
 		if ( $responder instanceof \WP_Mock\Filter_Responder ) {
 			$responder->reply( null );
 		}
-		WP_Mock::userFunction( 'wc_get_query_vars' )->andReturnUsing(
-			fn(): array => $this->query_vars
+		WP_Mock::userFunction( 'WC' )->andReturnUsing(
+			fn(): object => $this->woo
 		);
 		WP_Mock::userFunction( 'home_url' )->andReturnUsing(
 			static fn( string $path = '' ): string => self::HOME . $path
@@ -738,8 +770,8 @@ final class RedirectsTest extends TestCase {
 	 * the translation only fires when the live name differs.
 	 */
 	public function test_the_legacy_endpoint_segment_stays_when_the_site_keeps_it(): void {
-		$this->wordpress();
 		$this->query_vars['order-received'] = 'order-received';
+		$this->wordpress();
 
 		$this->assertSame(
 			self::HOME . '/proforma-request/order-received/4711/',

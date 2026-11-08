@@ -240,13 +240,14 @@ final class Redirects {
 		if ( $this->checkout_answers( $path ) ) {
 			return null;
 		}
-		$rest = array_slice( $segments, 1 );
-		if ( isset( $rest[0] ) && 'order-received' === $rest[0] && function_exists( 'wc_get_query_vars' ) ) {
+		$rest     = array_slice( $segments, 1 );
+		$wc_query = function_exists( 'WC' ) && WC() ? WC()->query : null;
+		if ( isset( $rest[0] ) && 'order-received' === $rest[0] && null !== $wc_query ) {
 			// Legacy confirmation links name the endpoint WooCommerce shipped
 			// with; the site renames it through the query-vars filter (the
 			// option itself stays at its default), so the preserved path
 			// would 404 on the live endpoint name.
-			$endpoint = wc_get_query_vars()['order-received'] ?? 'order-received';
+			$endpoint = $wc_query->get_query_vars()['order-received'] ?? 'order-received';
 			if ( is_string( $endpoint ) && '' !== $endpoint && 'order-received' !== $endpoint ) {
 				$rest[0] = $endpoint;
 			}
