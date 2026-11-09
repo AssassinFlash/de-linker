@@ -9,13 +9,15 @@
     "de-1440": "size mismatch 8595 vs 8616 (21px height difference) - dimension fail"
   },
   "root_cause": {
-    "mechanism": "the SAME image file (same URL, same md5 75a0d67..., same 74284 bytes on disk both sides) decodes to 2400x1593 in the live browser and 2048x1360 in the local browser at 1440; at 390 live serves the -768x510 srcset variant while local serves the full file",
-    "driver": "the live CDN/interchange layer answers the same URL with a differently-sized encoding stream depending on request context; the local snapshot's static file answers with its single stored encoding",
+    "layer_1_markup": "the live HTML's img tag carries a full srcset/sizes attribute set the local render does not: LiteSpeed Cache 7.9.2 (active on production only, absent on review) rewrites the template's img tags server-side",
+    "layer_2_negotiation": "with sizes=(max-width:600px) 120vw, 2400px at viewport 1440 the live browser selects the 2048w candidate, and the CDN answers a browser Accept header with a content-negotiated 2400x1593 encoding; curl without that header receives the identical 2048x1360 bytes (md5 75a0d67... matches local)",
+    "mechanism": "the SAME image file (same URL, same md5, same 74284 bytes on disk both sides) decodes to 2400x1593 in the live browser and 2048x1360 in the local browser at 1440; at 390 live serves the -768x510 srcset variant while local serves the full file",
     "consequence": "object-fit:cover crops the differently-proportioned decode into a 21px taller story card at de-1440 (size fail) and shifts cover crops across the testimonials band on every page; it is NOT a content or code difference",
     "evidence": [
+      "raw served markup: live img has srcset/sizes/fetchpriority, local img is bare - the theme template is the same; the rewrite is LiteSpeed's",
       "live vs local section geometry on /de/ identical at 390 to the pixel (pageH 9734 both, every section same bounds)",
       "story card height chain: media img natural 2400x1593 (live) vs 2048x1360 (local) -> story 915 vs 936 -> testimonials 1459 vs 1480 -> page 8613 vs 8634",
-      "byte identity: md5 75a0d678... both sides for linker-installers-buy-through-linker.webp",
+      "byte identity: md5 75a0d678... both sides for linker-installers-buy-through-linker.webp; curl on live returns 2048x1360 for the same URL",
       "the EN home diffs sit in the same y band (testimonials) with identical section bounds outside it"
     ]
   },
