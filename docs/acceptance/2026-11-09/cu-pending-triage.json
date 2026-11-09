@@ -146,16 +146,16 @@
     "03Power conversion section (hidden until opened; clicks on hidden-section controls hang - always open the section first) -> Add conversion group -> fill visible decimal inputs (97) -> CHECK the array-assignment checkbox (Each active array must belong to exactly one conversion group)",
     "Prepare PV model -> Save project -> Calculate PV for saved inputs [BLOCKED: see below]"
    ],
-   "open_blocker": {
-    "symptom": "after the full UI sequence and Save (Saved asserted), saveState returns to Unsaved changes within ~1s AND prepared=false/needsPrep=true/needsSave=true; Calculate PV stays disabled; no error Notice text captured; all visible HTML fields checkValidity()=true; weatherSelected=true",
-    "ruled_out": "field-level invalidity (checkValidity dump), missing weather selection (flag true), wrong operation order (verified in code), missing settle time (2.5s after prepare made no difference)",
-    "next_session_plan": [
-     "1: capture the PvSetup prepare onError: add a page.on(console) or read the EnergyError notice right after prepare click (the default text is \"The request could not be confirmed. Your inputs remain open here.\") - the dump never included it because the notice may render outside #lp-calculations or clears quickly",
-     "2: instrument the draft: after Save, page.evaluate the planner store or watch rpc projects/revise calls to see WHAT edit re-dirties the draft after save (repeat offender unknown)",
-     "3: source-read compilePv + PvSetup prepared modules.every(sameJson(module, resolveModuleParameters(spec, catalog))) - the fixture module is the tier reference module; check declaredModuleParameters(spec) vs what alignPv wrote (field order/number formatting could break sameJson)",
-     "4: consider the correct customer order being TWO saves: model edits -> Save -> Prepare -> Save (prepare on a clean draft); the probe currently does model edits -> Prepare -> one Save"
-    ]
-   }
+   "status": "WORKING end to end (2026-11-09, later session)",
+   "root_causes_closed": [
+    "prepare threw pv_parameters_incomplete: the model needs COMPLETE module/array/conversion parameters WITH non-empty source notes (02 array fills: 11 null percent fields + one select + textarea note; 03: group efficiencies + source note + array-assignment checkbox)",
+    "capture proof: revise payload had pv_generation absent before the fix; after completing the model prepare wrote it, prepared=true, Saved rev6, Calculate enabled and clicked",
+    "the run start switches the view to runs - poll the runs view (or the DB), not the PV tab buttons"
+   ],
+   "verified_chain": "site->roof->coord refs->module spec->array->profile import+selection->weather (real PVGIS, validated+retained)->weather source selection->PV model align->02 fills->03 group+notes+checkbox->Prepare->Save (double-save pattern for the one late edit)->Calculate PV-> evaluate job SUCCEEDED with result",
+   "next": [
+    "Equipment tab (Single system, operating mode/grid/phase, kWp/kWh/kW, PV strings via Set up PV strings or Single system flow) -> Scenario settings -> Generate planning report -> DraftTransferButton -> inquiry; the probe in .scratch carries the full working sequence"
+   ]
   }
  }
 }
