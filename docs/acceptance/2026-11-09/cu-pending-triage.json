@@ -1,0 +1,24 @@
+{
+  "phase": "cu-pending-triage",
+  "date": "2026-11-09",
+  "matrix": "docs/acceptance/2026-10-22/full-site/state-matrix.json",
+  "closed_this_pass": {
+    "count": 7,
+    "rows": "proforma-pdf x4, documents-populated x3",
+    "basis": "owner ruling 2026-11-08 (PR #1003): the site issues no document, quotations are produced offline - the states these rows describe no longer exist on the site",
+    "commit": "288beee1d"
+  },
+  "remaining_43_by_dependency": {
+    "needs_image_model_only": 13,
+    "map_canvas_chain": 11,
+    "brief_consumer_chain": 10,
+    "hero_automation_blocked": 3,
+    "injection_or_choreography": 6
+  },
+  "key_finding": "the deferred-to-cu marks are largely a bulk fallback from sessions whose automation was blocked, not a true image-model dependency: the map canvas chain already has deep Playwright-free controller tests (apps/planner/tests/map-drawing-controller.test.mjs: 8 transactional rows incl. drag/midpoint/undo-class interruptions; map-lifecycle: owner gating) and the planner screen opens in e2e (planner-first-frame green), so the 11 map rows (initial-map, address-search, permission-error, outline-draw, edit-vertices, obstacles, undo-redo, orientation-pitch, mobile-gestures, save-return, validation-error) are automatable at the browser layer against the review instance; the 10 brief-consumer rows follow the same pattern now that the plan-entry staging chain has e2e coverage (PR #1019)",
+  "next_batches": [
+    "map chain: browser e2e against review - the drawing controller rows map 1:1 onto the pending states; true-north/coordinate requirements come from the engine probe already used by the configurator roof row",
+    "brief consumer chain: reuse the plan-entry staging flow from PR #1019 as the entry",
+    "after both: only 13 image rows + 3 hero rows + injection rows remain for the image-model CU session"
+  ]
+}
