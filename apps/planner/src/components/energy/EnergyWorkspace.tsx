@@ -379,18 +379,6 @@ export function EnergyWorkspace({
 	const unconfirmed = operations.records.filter(
 		(record) => record.resultId === null,
 	);
-	// TEMPORARY local diagnostic; never merged.
-	console.log(
-		"[workspace-diag]",
-		JSON.stringify({
-			unconfirmed: unconfirmed.length,
-			records: operations.records.length,
-			busy: operations.busy,
-			checking: operations.checking,
-			storageFailed: operations.storageFailed,
-			view,
-		}),
-	);
 	const canCalculate =
 		prepared &&
 		(!joint || jointAvailable) &&

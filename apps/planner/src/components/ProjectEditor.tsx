@@ -971,24 +971,6 @@ export function ProjectEditor({
 						<div
 							hidden={workspace !== "calculations" && workspace !== "equipment"}
 						>
-							{/* TEMPORARY local diagnostic; never merged. */}
-							{(() => {
-								console.log(
-									'[editor-diag]',
-									JSON.stringify({
-										busy,
-										recoveries: recoveries.length,
-										conflict: Boolean(draft.conflict),
-										gridValid,
-										ruleValid,
-										briefValid,
-										designValid,
-										recoveryChecking,
-										discoveryFailed,
-									}),
-								);
-								return null;
-							})()}
 							<EnergyWorkspace
 								draft={draft}
 								edit={editEnergy}
@@ -1020,7 +1002,6 @@ export function ProjectEditor({
 									recoveryChecking ||
 									discoveryFailed
 								}
-
 							/>
 						</div>
 					)}
