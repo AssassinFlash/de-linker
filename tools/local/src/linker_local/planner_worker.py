@@ -520,18 +520,36 @@ class PlannerWorker:
                 continue
             if pid == owned:
                 continue
-            try:
-                environment = subprocess.run(
-                    ["ps", "-E", "-o", "command=", "-p", str(pid)],
-                    capture_output=True,
-                    text=True,
-                    timeout=10.0,
-                ).stdout
-            except (OSError, subprocess.SubprocessError):
-                continue
-            if runtime in environment:
+            if runtime in self._environment(pid):
                 found.append(pid)
         return found
+
+    @staticmethod
+    def _environment(pid: int) -> str:
+        """One process's environment as text, empty when unreadable.
+
+        Linux exposes it natively; Darwin's ps appends it to the command
+        column for the caller's own processes.
+        """
+        environ = Path(f"/proc/{pid}/environ")
+        if environ.is_file():
+            try:
+                return (
+                    environ.read_bytes()
+                    .replace(b"\x00", b"\n")
+                    .decode(errors="replace")
+                )
+            except OSError:
+                return ""
+        try:
+            return subprocess.run(
+                ["ps", "-E", "-o", "command=", "-p", str(pid)],
+                capture_output=True,
+                text=True,
+                timeout=10.0,
+            ).stdout
+        except (OSError, subprocess.SubprocessError):
+            return ""
 
     def stop_untracked_workers(self) -> list[int]:
         """Stop orphaned workers TERM-first with the shared stop grace."""
