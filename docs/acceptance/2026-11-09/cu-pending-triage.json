@@ -207,6 +207,15 @@
     ],
     "prepare_still_disabled_with": [
      "8/8 assigned, temperature/source/MPPT/input valid, inverter+mode+quantities set, catalog prepared - remaining suspects: (a) catalog.isFetching transient at the check moment, (b) a validity-map entry whose field never reported (unmounted NumberField), (c) setup.inverter_product_id falsy at check time - next session: capture the revise payload again (pv_plant_string_plan present?) and poll prepare-enabled with retries over 10s before concluding"
+    ],
+    "prepare_gate_status": [
+     "suspect (a) RULED OUT (10x retry poll + extra save, still disabled); editor-reset validity RULED OUT by source (PvStringSetup change() success path runs setFields({}) -> vacuous every=true -> onValidity(true); PvOperatingSetup optional)"
+    ],
+    "next_two_probes": [
+     [
+      "1: capture the post-string-plan revise payload: does inputs.equipment_setup carry inverter_product_id, operating_mode, module counts? (kills or confirms suspect c)",
+      "2: dump ALL \"Prepare equipment selection\" buttons with their visible/disabled state and panel context (Single vs Multiple systems) - the .first() match may be the wrong panel instance"
+     ]
     ]
    }
   }
