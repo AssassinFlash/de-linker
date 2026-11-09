@@ -10,7 +10,7 @@
  },
  "remaining_43_by_dependency": {
   "needs_image_model_only": 13,
-  "map_canvas_chain": 11,
+  "map_canvas_chain": 0,
   "brief_consumer_chain": 10,
   "hero_automation_blocked": 3,
   "injection_or_choreography": 6
@@ -104,5 +104,13 @@
     "evidence": "review instance, 1/1 green 12.2s; stale-discard closure covered on the path (module-spec commit makes the parked drawing stale by design, discard frees the workspace); validation-error triggers the domain rule via pitch=90 past native required; save-return asserts Save project -> Saved revision -> drawing retires -> roof list gains the map roof; obstacles assert feature selector -> Chimney footprint -> Obstacle footprint option appears in the boundary selector (editor selects the new object on commit)"
    }
   }
+ },
+ "map_chain_landed": {
+  "count": 11,
+  "rows": "initial-map, outline-draw, undo-redo, validation-error, save-return-to-configurator, obstacles, edit-vertices, address-search, permission-error, orientation-pitch, mobile-gestures",
+  "basis": "all 11 map_canvas_chain rows converted to browser e2e against the review instance; PRs #1020-#1022, #1023, #1024, #1025 and the final views/touch batch",
+  "spec": "tests/e2e/specs/planner-map-chain.spec.ts",
+  "final_run": "4/4 green, 27.3s, review instance",
+  "notes": "orientation-pitch = plan/map/3D view triad (3D canvas mounts headless); mobile-gestures = CDP touch taps collect + cooperative one-finger page scroll at 390; address-search = spec-548 network privacy gate; permission-error = denied tiles -> failure notice -> retry recovery"
  }
 }
