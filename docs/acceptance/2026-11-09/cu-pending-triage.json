@@ -139,7 +139,23 @@
    "gate_found": "PvSetup refuses until a completed weather result is SELECTED (\"A completed weather result must be selected in Saved calculations before PV generation can start\"); weatherSelected requires pv_preparation.weather_asset_id. Sequence: weather capture -> Saved calculations tab select -> PV tab Prepare PV model -> Save -> Calculate PV for saved inputs",
    "pv_model_form": "PvForm is a 3-section builder (Modules / Array models / Power conversion); \"Update parameters for current roof layout\" prefills from the placed arrays + module templates catalog",
    "next_probe_action": "dump the Saved calculations tab content properly (previous dump caught tab-button text; scope by the panel heading and wait for the tab body), find the weather-result select action, then wire select -> PV prepare -> save -> calculate",
-   "prod_audit": "linker-services read-only 2026-11-09: running planner release source has apify only in the two research comments (pvgis_request.py, rules.py); process args/configs contain no actor/token; weather = direct official re.jrc.ec.europa.eu GET"
+   "prod_audit": "linker-services read-only 2026-11-09: running planner release source has apify only in the two research comments (pvgis_request.py, rules.py); process args/configs contain no actor/token; weather = direct official re.jrc.ec.europa.eu GET",
+   "working_ui_sequence": [
+    "Saved calculations tab -> history entry (Revision) -> Use this weather source -> Save (rev+1) [VERIFIED green]",
+    "PV generation tab -> Update parameters for current roof layout (creates modules+array models from catalog; Active arrays: 1) [VERIFIED]",
+    "03Power conversion section (hidden until opened; clicks on hidden-section controls hang - always open the section first) -> Add conversion group -> fill visible decimal inputs (97) -> CHECK the array-assignment checkbox (Each active array must belong to exactly one conversion group)",
+    "Prepare PV model -> Save project -> Calculate PV for saved inputs [BLOCKED: see below]"
+   ],
+   "open_blocker": {
+    "symptom": "after the full UI sequence and Save (Saved asserted), saveState returns to Unsaved changes within ~1s AND prepared=false/needsPrep=true/needsSave=true; Calculate PV stays disabled; no error Notice text captured; all visible HTML fields checkValidity()=true; weatherSelected=true",
+    "ruled_out": "field-level invalidity (checkValidity dump), missing weather selection (flag true), wrong operation order (verified in code), missing settle time (2.5s after prepare made no difference)",
+    "next_session_plan": [
+     "1: capture the PvSetup prepare onError: add a page.on(console) or read the EnergyError notice right after prepare click (the default text is \"The request could not be confirmed. Your inputs remain open here.\") - the dump never included it because the notice may render outside #lp-calculations or clears quickly",
+     "2: instrument the draft: after Save, page.evaluate the planner store or watch rpc projects/revise calls to see WHAT edit re-dirties the draft after save (repeat offender unknown)",
+     "3: source-read compilePv + PvSetup prepared modules.every(sameJson(module, resolveModuleParameters(spec, catalog))) - the fixture module is the tier reference module; check declaredModuleParameters(spec) vs what alignPv wrote (field order/number formatting could break sameJson)",
+     "4: consider the correct customer order being TWO saves: model edits -> Save -> Prepare -> Save (prepare on a clean draft); the probe currently does model edits -> Prepare -> one Save"
+    ]
+   }
   }
  }
 }
