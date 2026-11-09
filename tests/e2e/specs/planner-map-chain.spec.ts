@@ -143,4 +143,23 @@ test('the map workspace mounts from a plain project through the full chain', asy
 	await expect(
 		page.locator('#lp-design a', { hasText: 'Roof properties' })
 	).toBeVisible({ timeout: 30_000 });
+
+	// The staged drawing keeps the drawing panel open, which gates the
+	// design forms; parking it with Pause drawing closes the panel.
+	await page
+		.locator('#lp-design button', { hasText: 'Pause drawing' })
+		.click();
+	await page
+		.locator('#lp-design button', { hasText: 'Add module specification' })
+		.click({ timeout: 15_000 });
+
+	// The module-specification state: the tier select is prefilled, and one
+	// submit puts the reference module into the project - the gate Add
+	// module array waits on (geometry.module_specs.length).
+	const moduleForm = page.locator('#lp-design form');
+	await moduleForm.locator('select').first().selectOption({ index: 0 });
+	await moduleForm.locator('button[type="submit"]').click();
+	await expect(
+		page.locator('#lp-design button', { hasText: 'Add module array' })
+	).toBeEnabled({ timeout: 30_000 });
 });
