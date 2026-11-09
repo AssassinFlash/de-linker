@@ -22216,12 +22216,13 @@
   "state": "documents-populated",
   "lang": "en",
   "width": 390,
-  "status": "cu-pass-pending",
+  "status": "not-applicable-by-ruling",
   "environment": null,
   "url": null,
   "evidence": [
    "PR #1003 (owner ruling 2026-11-08: quotation issued offline; site issues no document)",
-   "docs/acceptance/2026-11-08/1003-proforma-to-quotation/evidence.json"
+   "docs/acceptance/2026-11-08/1003-proforma-to-quotation/evidence.json",
+   "closed 2026-11-09: owner ruling 2026-11-08 (PR #1003) removed the on-site proforma document states entirely - the site issues no document, so these rows describe states that no longer exist; docs/acceptance/2026-11-08/1003-proforma-to-quotation/"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -22241,12 +22242,13 @@
   "state": "documents-populated",
   "lang": "de",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "not-applicable-by-ruling",
   "environment": null,
   "url": null,
   "evidence": [
    "PR #1003 (owner ruling 2026-11-08: quotation issued offline; site issues no document)",
-   "docs/acceptance/2026-11-08/1003-proforma-to-quotation/evidence.json"
+   "docs/acceptance/2026-11-08/1003-proforma-to-quotation/evidence.json",
+   "closed 2026-11-09: owner ruling 2026-11-08 (PR #1003) removed the on-site proforma document states entirely - the site issues no document, so these rows describe states that no longer exist; docs/acceptance/2026-11-08/1003-proforma-to-quotation/"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -22266,12 +22268,13 @@
   "state": "documents-populated",
   "lang": "de",
   "width": 390,
-  "status": "cu-pass-pending",
+  "status": "not-applicable-by-ruling",
   "environment": null,
   "url": null,
   "evidence": [
    "PR #1003 (owner ruling 2026-11-08: quotation issued offline; site issues no document)",
-   "docs/acceptance/2026-11-08/1003-proforma-to-quotation/evidence.json"
+   "docs/acceptance/2026-11-08/1003-proforma-to-quotation/evidence.json",
+   "closed 2026-11-09: owner ruling 2026-11-08 (PR #1003) removed the on-site proforma document states entirely - the site issues no document, so these rows describe states that no longer exist; docs/acceptance/2026-11-08/1003-proforma-to-quotation/"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -27702,12 +27705,13 @@
   "state": "proforma-pdf",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "not-applicable-by-ruling",
   "environment": null,
   "url": null,
   "evidence": [
    "PR #1003 (owner ruling 2026-11-08: quotation issued offline; site issues no document)",
-   "docs/acceptance/2026-11-08/1003-proforma-to-quotation/evidence.json"
+   "docs/acceptance/2026-11-08/1003-proforma-to-quotation/evidence.json",
+   "closed 2026-11-09: owner ruling 2026-11-08 (PR #1003) removed the on-site proforma document states entirely - the site issues no document, so these rows describe states that no longer exist; docs/acceptance/2026-11-08/1003-proforma-to-quotation/"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -27726,12 +27730,13 @@
   "state": "proforma-pdf",
   "lang": "en",
   "width": 390,
-  "status": "cu-pass-pending",
+  "status": "not-applicable-by-ruling",
   "environment": null,
   "url": null,
   "evidence": [
    "PR #1003 (owner ruling 2026-11-08: quotation issued offline; site issues no document)",
-   "docs/acceptance/2026-11-08/1003-proforma-to-quotation/evidence.json"
+   "docs/acceptance/2026-11-08/1003-proforma-to-quotation/evidence.json",
+   "closed 2026-11-09: owner ruling 2026-11-08 (PR #1003) removed the on-site proforma document states entirely - the site issues no document, so these rows describe states that no longer exist; docs/acceptance/2026-11-08/1003-proforma-to-quotation/"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -27750,12 +27755,13 @@
   "state": "proforma-pdf",
   "lang": "de",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "not-applicable-by-ruling",
   "environment": null,
   "url": null,
   "evidence": [
    "PR #1003 (owner ruling 2026-11-08: quotation issued offline; site issues no document)",
-   "docs/acceptance/2026-11-08/1003-proforma-to-quotation/evidence.json"
+   "docs/acceptance/2026-11-08/1003-proforma-to-quotation/evidence.json",
+   "closed 2026-11-09: owner ruling 2026-11-08 (PR #1003) removed the on-site proforma document states entirely - the site issues no document, so these rows describe states that no longer exist; docs/acceptance/2026-11-08/1003-proforma-to-quotation/"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -27774,12 +27780,13 @@
   "state": "proforma-pdf",
   "lang": "de",
   "width": 390,
-  "status": "cu-pass-pending",
+  "status": "not-applicable-by-ruling",
   "environment": null,
   "url": null,
   "evidence": [
    "PR #1003 (owner ruling 2026-11-08: quotation issued offline; site issues no document)",
-   "docs/acceptance/2026-11-08/1003-proforma-to-quotation/evidence.json"
+   "docs/acceptance/2026-11-08/1003-proforma-to-quotation/evidence.json",
+   "closed 2026-11-09: owner ruling 2026-11-08 (PR #1003) removed the on-site proforma document states entirely - the site issues no document, so these rows describe states that no longer exist; docs/acceptance/2026-11-08/1003-proforma-to-quotation/"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
