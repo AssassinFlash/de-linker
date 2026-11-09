@@ -24021,11 +24021,12 @@
   "state": "parts-card",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: needs a parts-list conversation flow"
+   "genie-parts.spec.ts - the parts-list card asserts the 20-row pasted list across matched/unclear/missing rows (EcoFlow OCEAN 2 missing with SMA/Fronius: catalog-draft vocabulary), plus a parts CSV test, EN/DE x 1440/390",
+   "merged spec, green"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -24035,7 +24036,9 @@
    "marketing-entries",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "genie_spec": "genie-parts.spec.ts - the parts-list card asserts the 20-row pasted list across matched/unclear/missing rows (EcoFlow OCEAN 2 missing with SMA/Fronius: catalog-draft vocabulary), plus a parts CSV test, EN/DE x 1440/390"
+  }
  },
  {
   "key": "genie:parts-card:en:390",
@@ -24800,11 +24803,12 @@
   "state": "service-error-retry",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: needs controlled 5xx injection"
+   "genie-failure-ownership.spec.ts outage test - pending native lookup quarantines accepted text and auxiliary retry makes no model turn (controlled failure + retry semantics), EN/DE x widths",
+   "merged spec, green"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -24814,7 +24818,9 @@
    "marketing-entries",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "genie_spec": "genie-failure-ownership.spec.ts outage test - pending native lookup quarantines accepted text and auxiliary retry makes no model turn (controlled failure + retry semantics), EN/DE x widths"
+  }
  },
  {
   "key": "genie:service-error-retry:en:390",
