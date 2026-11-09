@@ -175,6 +175,11 @@
     "picked": "SAJ H2-25K-T3 (first option)",
     "remaining_gate": "prepare equipment still disabled => !valid; find the still-empty required field next (assembly stack/module quantities for the chosen integrated system, or mode-dependent fields); then Prepare equipment selection -> double-save -> Check saved equipment selection -> Scenario -> report",
     "note": "the probe pickProduct regex matched the inverter select for both picks - scope the battery pick by its own label or skip (No separate battery)"
+   },
+   "strings_stage": {
+    "progress": "\"Set up PV strings\" enabled after inverter pick (gate disabled={!inverterId}); needs force-click (the equipment section re-renders too frequently for Playwright actionability); the section opens showing \"PV strings and inputs / Assign the roof modules to strings and inverter inputs\"",
+    "still_to_do": "drive the PvStringSetup editor (source: components/equipment/PvStringSetup.tsx; validity at lines ~179-206: controlled?fields.every(Boolean):valid - the plan assigns the roof array modules to strings/inputs; a valid plan feeds EquipmentSetup.valid and unlocks Prepare equipment selection)",
+    "probe_notes": "test.setTimeout(600_000) added (chain now exceeds 300s); PV-run wait 60s; all equipment-section clicks should use force:true"
    }
   }
  }
