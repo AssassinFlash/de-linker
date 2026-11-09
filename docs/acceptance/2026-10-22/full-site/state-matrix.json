@@ -25331,11 +25331,12 @@
   "state": "validation",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: needs invalid-input choreography in planner forms (input wall)"
+   "planner-report-chain.spec.ts (PR #1038) - tilt 91 (max 90) refused by the form constraint; corrected value proceeds",
+   "merged spec, review instance, 5.1m green"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -25345,7 +25346,9 @@
    "files-print",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "validation": "PR #1038"
+  }
  },
  {
   "key": "configurator:validation:en:390",
