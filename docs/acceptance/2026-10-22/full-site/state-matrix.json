@@ -2112,11 +2112,11 @@
   "state": "retry",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
   "evidence": [
-   "deferred-to-cu: hero retry needs the hero ask flow"
+   "PR #1043: home-hero-retry.spec.ts: one-shot turn abort -> hero error alert + Try again -> retry resends the restored draft, real answer arrives in place, no navigation (review 12.9s)"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -34631,11 +34631,11 @@
   "state": "consumer-saved-solution-readback",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
   "evidence": [
-   "deferred-to-cu: saved-solution consumer needs report with selectable products"
+   "PR #1042: genie-save-readback.spec.ts: live card proof saved 201 -> Saved to your account -> saved-solutions row names product + 1 x -> returns to draft with cart notice (review 27.6s)"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
@@ -34717,11 +34717,11 @@
   "state": "history-current-permissions-and-locale",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
   "evidence": [
-   "deferred-to-cu: needs permission/price authority choreography across states"
+   "PR #1045: genie-history-authority.spec.ts: same restored history carries each account own current line (approved net / pending / restricted / guest), failed authority read clears the old price (review 19.7s)"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
@@ -34835,11 +34835,11 @@
   "state": "cross-surface-entry-question-consumed",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
   "evidence": [
-   "deferred-to-cu: hero/entry activation gate blocks automation"
+   "PR #1046: genie-cross-surface-entry.spec.ts: hero entry question consumed once - first user message, dock restore carries it once, no entry re-offer, follow-up posts it first exactly once (review 18.9s)"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
@@ -34957,7 +34957,7 @@
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: PDF content read needs image reading"
+   "deferred-to-cu: PDF content read needs image reading - the only remaining row; awaiting the owner switching this session to an image-capable model (external condition, recorded in goal-state ledger)"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
