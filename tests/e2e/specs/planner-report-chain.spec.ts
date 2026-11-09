@@ -883,6 +883,19 @@ test('the full planner chain: report, transfer and the Woo solution draft', asyn
 			{ timeout: 90_000 }
 		)
 		.toBe(true);
+	// The configurator/calculation-error row: a failed calculation request
+	// surfaces the notice and keeps the inputs; the retry on the same chain
+	// then succeeds.
+	await page.route('**/rpc/runs/energy', (route) => route.abort());
+	await domClick('Calculate saved scenario');
+	await page.waitForTimeout(4000);
+	await expect(page.locator('#lp-calculations')).toContainText(
+		/The request could not be confirmed|calculation/i
+	);
+	await page.unroute('**/rpc/runs/energy');
+	// The aborted attempt leaves an unconfirmed stored request; the
+	// customer's recovery is discarding it, then the retry goes through.
+	await clearUnconfirmed();
 	await domClick('Calculate saved scenario');
 	await expect
 		.poll(
