@@ -321,5 +321,35 @@
         "FINAL": "PR #1035 merged (main=c2ce4ca0a): the full row2/3/4 sequence is green twice consecutively (5.0m both) INSIDE the permanent full-chain spec - tamper->409+retain, restore->accepted (retry-click rides the send button's transient disabled window), message verbatim + no invented summary, revision field gone on revisit. All four project-brief rows are now covered by the merged spec chain."
       }
     }
+  },
+  "cu_backlog_2026_11_10": {
+    "matrix_flips_today": "project-brief 12 + roof 11 + configurator 2 = 23 rows verified via merged specs (f2b063436, 002b12249, 92309065f); cu-pass-pending 43->18",
+    "remaining_18_by_automation_class": {
+      "genuinely_image_dependent": [
+        "genie/product-add-normal-hover-focus (hover/focus visual)",
+        "configurator/report-screen-pdf-content-and-current-revision (PDF content read)"
+      ],
+      "automatable_failure_injection": [
+        "genie/product-add-retry",
+        "genie/service-error-retry (route.abort pattern proven in brief-chain test 5)",
+        "genie/product-add-unverified (challenge-timeout)",
+        "configurator/calculation-error"
+      ],
+      "automatable_choreography": [
+        "genie/parts-card",
+        "genie/consumer-saved-solution-readback (UNBLOCKED by report chain)",
+        "genie/history-current-permissions-and-locale",
+        "genie/cross-surface-entry-question-consumed (hero gate; genie-hero.spec.ts exists)",
+        "genie/ordinary-draft-failure-owner-isolation (multi-tab pattern proven in brief-chain test 6)",
+        "configurator/validation",
+        "configurator/incompatible-result",
+        "configurator/logo-upload (setInputFiles)",
+        "configurator/restart",
+        "home/answer",
+        "home/retry",
+        "home/linked-product"
+      ]
+    },
+    "note": "only 2 of 18 are true image-model rows; 16 are spec-writing work that reuses proven patterns (route.abort failure injection, multi-tab conflict, transfer readback)"
   }
 }
