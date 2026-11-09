@@ -223,6 +223,11 @@
     "next_session_plan": [
      "stop black-boxing: add a TEMPORARY dev-only console.log in EquipmentSetup (scratch branch, never merged) printing Object.keys(validity) with values + blocked booleans right at the Prepare button render; one run names the failing key; remove the patch before any PR. Note: has_string_plan:false in the captured revise means the string plan edit may still be Unsaved in that capture - also log isDirty at that point."
     ]
+   },
+   "FIX_VERIFIED_LIVE": {
+    "milestone": "PR #1032 (main=6de6ece04) verified in the live chain: journal step discard -> done -> ALL PREPARE BUTTONS disabled:false -> Prepare equipment selection CLICKED -> draft Unsaved -> saved -> Check saved equipment selection clicked (no error)",
+    "meaning": "the #1031 deadlock fix works end to end on the real customer path; the equipment gate is passed for the first time",
+    "next_stage": "scenario: the probe failed waiting for \"Calculate saved scenario\" to enable (60s) after the equipment check - check what the equipment check produced (\"Requirements checked\" marker was false but no error; maybe the check run needs its result selected like the weather source, or the scenario panel needs the equipment run chosen in Saved calculations) then Generate planning report -> DraftTransferButton -> inquiry"
    }
   }
  }
