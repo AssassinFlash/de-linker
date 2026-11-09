@@ -43,8 +43,15 @@ async function openDrawingWorkspace(page: Page) {
 	await site.locator('input').nth(2).fill('11.5844');
 
 	// 3. Into the roof workspace: open the overview section first - the
-	// empty-state button renders collapsed (zero size) until then.
-	await page.getByRole('link', { name: 'Project overview' }).click();
+	// empty-state button renders collapsed (zero size) until then. Desktop
+	// exposes section links; the phone viewport is a Project sections
+	// combobox (both live in the DOM, one per viewport).
+	const overviewLink = page.getByRole('link', { name: 'Project overview' });
+	if (await overviewLink.isVisible()) await overviewLink.click();
+	else
+		await page
+			.getByRole('combobox', { name: 'Project sections' })
+			.selectOption('overview');
 	const roofEntry = page.locator('.lp-overview-empty .lp-button');
 	await roofEntry.waitFor({ state: 'attached' });
 	await page.evaluate(
@@ -436,4 +443,91 @@ test('external map requests wait for the street-map opt-in and recover from tile
 	await page.getByRole('button', { name: 'Retry loading map' }).click();
 	await expect(notice).toBeHidden({ timeout: 30_000 });
 	await expect(page.locator('.maplibregl-canvas')).toBeVisible();
+});
+
+test('the design view triad carries the geometry across plan, map and 3D', async ({
+	page,
+}) => {
+	const { counter } = await openDrawingWorkspace(page);
+	// The view switch stays locked while a drawing is open; discarding the
+	// empty drawing frees the triad.
+	await page
+		.locator('#lp-design button', { hasText: 'Discard drawing' })
+		.click();
+	const views = page.getByRole('group', { name: 'Design view' });
+	const third = views.getByRole('button', { name: '3D', exact: true });
+	await expect(third).toBeEnabled({ timeout: 15_000 });
+
+	// The orientation-pitch state: the 3D view presents the pitched roof
+	// faces (the manual face carries pitch 30 / bearing 180) from the same
+	// project geometry the map collected on.
+	await third.click();
+	await expect(page.getByRole('img', { name: 'Roof design' })).toBeVisible({
+		timeout: 60_000,
+	});
+
+	// Plan and map keep serving the same geometry.
+	await views.getByRole('button', { name: 'Plan' }).click();
+	await expect(page.locator('#lp-design .lp-plan-svg')).toBeVisible({
+		timeout: 30_000,
+	});
+	await views.getByRole('button', { name: 'Map' }).click();
+	await expect(page.locator('.maplibregl-canvas')).toBeVisible({
+		timeout: 30_000,
+	});
+});
+
+test.describe('phone viewport', () => {
+	test.use({ viewport: { width: 390, height: 844 }, hasTouch: true });
+
+	test('touch taps collect corners and one-finger drags scroll the page', async ({
+		page,
+	}) => {
+		const { counter } = await openDrawingWorkspace(page);
+		const rect = (await page.locator('.maplibregl-canvas').boundingBox())!;
+		const cdp = await page.context().newCDPSession(page);
+
+		// A touch tap records a corner through the same collector.
+		const tap = {
+			x: rect.x + rect.width * 0.4,
+			y: rect.y + rect.height * 0.4,
+		};
+		await cdp.send('Input.dispatchTouchEvent', {
+			type: 'touchStart',
+			touchPoints: [tap],
+		});
+		await cdp.send('Input.dispatchTouchEvent', {
+			type: 'touchEnd',
+			touchPoints: [],
+		});
+		await expect(counter).toContainText('Recorded corners: 1', {
+			timeout: 10_000,
+		});
+
+		// Cooperative gestures: one finger drags the page, not the map - the
+		// corner count stays put while the page scrolls.
+		const drag = {
+			x: rect.x + rect.width * 0.6,
+			y: rect.y + rect.height * 0.6,
+		};
+		const before = await page.evaluate(() => window.scrollY);
+		await cdp.send('Input.dispatchTouchEvent', {
+			type: 'touchStart',
+			touchPoints: [drag],
+		});
+		for (let step = 1; step <= 6; step++) {
+			await cdp.send('Input.dispatchTouchEvent', {
+				type: 'touchMove',
+				touchPoints: [{ x: drag.x, y: drag.y - step * 20 }],
+			});
+		}
+		await cdp.send('Input.dispatchTouchEvent', {
+			type: 'touchEnd',
+			touchPoints: [],
+		});
+		await page.waitForTimeout(400);
+		const after = await page.evaluate(() => window.scrollY);
+		expect(after, 'the page scrolled under the map').not.toBe(before);
+		await expect(counter).toContainText('Recorded corners: 1');
+	});
 });
