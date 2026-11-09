@@ -147,8 +147,12 @@ for (const locale of ['en', 'de'] as const) {
 						});
 					}
 				);
+				// The app asks /genie/conversation?locale=en; a trailing-glob
+				// route does not match the query string (the real backend
+				// would answer an empty thread and the restore would test
+				// nothing).
 				await page.route(
-					'**/wp-json/linker-ai/v1/genie/conversation',
+					/\/wp-json\/linker-ai\/v1\/genie\/conversation\?/,
 					(route) =>
 						route.fulfill({
 							json: {
