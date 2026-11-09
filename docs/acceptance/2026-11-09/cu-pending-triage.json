@@ -93,6 +93,15 @@
     "discipline": "two consecutive failures without new diagnostic info -> stopped, reverted the spec insertion (main stays green), recorded",
     "status": "resolved",
     "resolution": "Root cause: clicking Remove last corner scrolls the canvas ~535px out of the viewport; subsequent clicks land on the .lp-map-drawing panel, never on the canvas. Domain/journal/controller were all innocent - no rejection ever occurred, and the earlier same-spot \"dedup\" observation was the same artifact. Fix in spec: re-scrollIntoView + 800ms settle + fresh bounding box before the re-add click; the removed point left the ring so the same spot re-adds. Row landed green in planner-map-chain.spec.ts (4->3->4)."
+   },
+   "landed_rows_batch_2": {
+    "rows": [
+     "validation-error",
+     "save-return-to-configurator",
+     "obstacles"
+    ],
+    "spec": "tests/e2e/specs/planner-map-chain.spec.ts",
+    "evidence": "review instance, 1/1 green 12.2s; stale-discard closure covered on the path (module-spec commit makes the parked drawing stale by design, discard frees the workspace); validation-error triggers the domain rule via pitch=90 past native required; save-return asserts Save project -> Saved revision -> drawing retires -> roof list gains the map roof; obstacles assert feature selector -> Chimney footprint -> Obstacle footprint option appears in the boundary selector (editor selects the new object on commit)"
    }
   }
  }

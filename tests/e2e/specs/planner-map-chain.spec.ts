@@ -189,4 +189,186 @@ test('the map workspace mounts from a plain project through the full chain', asy
 	await expect(
 		page.locator('#lp-design button', { hasText: 'Add module array' })
 	).toBeEnabled({ timeout: 30_000 });
+
+	// The parked drawing went stale: the module specification changed the
+	// project geometry after the outline was recorded, so the retained
+	// drawing can no longer be applied to it (Resume stays disabled by
+	// design). The stale notice says so and discarding frees the workspace.
+	await expect(counter).toContainText('Drawing paused and retained');
+	await expect(page.locator('#lp-design')).toContainText(
+		'The project geometry has changed since this drawing began'
+	);
+	await page
+		.locator('#lp-design button', { hasText: 'Discard drawing' })
+		.click();
+	const restart = page.locator('#lp-design button', {
+		hasText: 'Start roof drawing',
+	});
+	await expect(restart.first()).toBeEnabled({ timeout: 15_000 });
+	await restart.first().click();
+	await page.evaluate(() => {
+		document
+			.querySelector('.lp-map-surface')
+			?.scrollIntoView({ block: 'center' });
+	});
+	await page.waitForTimeout(800);
+	await expect(counter).toContainText('Recorded corners: 0');
+	const second = (await page.locator('.maplibregl-canvas').boundingBox())!;
+	const secondSpots: Array<[number, number]> = [
+		[second.x + second.width * 0.4, second.y + second.height * 0.4],
+		[second.x + second.width * 0.6, second.y + second.height * 0.4],
+		[second.x + second.width * 0.6, second.y + second.height * 0.6],
+		[second.x + second.width * 0.4, second.y + second.height * 0.6],
+	];
+	for (const [i, [x, y]] of secondSpots.entries()) {
+		await page.mouse.click(x, y);
+		await expect(counter).toContainText(`Recorded corners: ${i + 1}`, {
+			timeout: 10_000,
+		});
+	}
+	await page
+		.locator('#lp-design button', { hasText: 'Close outline and review' })
+		.click();
+
+	// The edit-vertices state: the staged outline switches the canvas to the
+	// editor, and dragging an edge midpoint adds a corner (4 -> 5) without
+	// leaving review. The staging click scrolls the page, so the surface is
+	// scrolled back first; canvas-relative fractions still locate the drawn
+	// corners because the map camera never moved.
+	await page.evaluate(() => {
+		document
+			.querySelector('.lp-map-surface')
+			?.scrollIntoView({ block: 'center' });
+	});
+	await page.waitForTimeout(800);
+	const stagedBox = (await page.locator('.maplibregl-canvas').boundingBox())!;
+	await page.mouse.move(
+		stagedBox.x + stagedBox.width * 0.5,
+		stagedBox.y + stagedBox.height * 0.4
+	);
+	await page.mouse.down();
+	await page.mouse.move(
+		stagedBox.x + stagedBox.width * 0.5,
+		stagedBox.y + stagedBox.height * 0.35,
+		{ steps: 8 }
+	);
+	await page.mouse.up();
+	await expect(counter).toContainText('Recorded corners: 5', {
+		timeout: 10_000,
+	});
+
+	// The validation-error state: every native required field is satisfied,
+	// so the submission reaches the domain check, where pitch 90 breaks the
+	// 0 <= pitch < 90 rule. The field-level alert names the field and keeps
+	// every entry; the geometry check is never reached.
+	const roofForm = page.locator('#lp-map-roof-properties');
+	await expect(roofForm).toBeVisible({ timeout: 15_000 });
+	await roofForm.locator('[name="name"]').fill('Map roof');
+	await roofForm.locator('[name="pitch"]').fill('90');
+	await roofForm.locator('[name="bearing"]').fill('180');
+	await roofForm.locator('[name="height"]').fill('5');
+	await roofForm
+		.locator('[name="source"]')
+		.fill('Aerial imagery measurement');
+	await roofForm
+		.locator('[name="calibration"]')
+		.fill('Checked against the street alignment');
+	await roofForm
+		.locator('[name="rights"]')
+		.fill('Customer-provided survey extract');
+	await roofForm.locator('input[type="checkbox"]').check();
+	await roofForm.locator('button[type="submit"]').click();
+	await expect(
+		roofForm.locator('[aria-invalid="true"][name="pitch"]')
+	).toBeVisible();
+	await expect(roofForm.locator('.lp-field-error')).toContainText(
+		'missing or invalid'
+	);
+
+	// The save-return state: a corrected pitch passes the engine geometry
+	// check, the roof enters the project draft, Save project stores it, and
+	// the retained drawing retires - the boundary selector a returning
+	// customer edits from now lists both roof boundaries.
+	await roofForm.locator('[name="pitch"]').fill('30');
+	await roofForm.locator('button[type="submit"]').click();
+	await expect(counter).toContainText('Roof added to the project draft', {
+		timeout: 60_000,
+	});
+	await page.getByRole('button', { name: 'Save project' }).click();
+	await expect(page.locator('.lp-save-state')).toContainText('Saved', {
+		timeout: 60_000,
+	});
+	// The boundary selector covers the selected roof; the roof list is the
+	// project-wide consumer surface - the map-drawn roof now appears in it
+	// next to the manual one, and its boundary is editable on the map.
+	const boundaries = page.getByLabel('Boundary to edit');
+	const roofList = page.getByLabel('Roof face');
+	await expect(boundaries).toBeVisible({ timeout: 30_000 });
+	await expect(roofList).toBeVisible();
+	await expect(
+		roofList.locator('option', { hasText: 'Main roof' })
+	).toBeAttached();
+	await expect(
+		roofList.locator('option', { hasText: 'Map roof' })
+	).toBeAttached();
+
+	// The obstacles state: the feature selector drives the same collector for
+	// a footprint on the saved map roof. The obstacle review adds height and
+	// extrusion direction; the engine check admits it, Save project stores
+	// it, and the editor's selection moves to the new obstacle - the
+	// boundary selector then offers its footprint.
+	await roofList.selectOption({ label: 'Map roof' });
+	await page.getByLabel('Feature type').selectOption({ label: 'Obstacle' });
+	await page.getByRole('button', { name: 'Draw a roof feature' }).click();
+	await page.evaluate(() => {
+		document
+			.querySelector('.lp-map-surface')
+			?.scrollIntoView({ block: 'center' });
+	});
+	await page.waitForTimeout(800);
+	const obstacleBox = (await page
+		.locator('.maplibregl-canvas')
+		.boundingBox())!;
+	const obstacleSpots: Array<[number, number]> = [
+		[
+			obstacleBox.x + obstacleBox.width * 0.45,
+			obstacleBox.y + obstacleBox.height * 0.45,
+		],
+		[
+			obstacleBox.x + obstacleBox.width * 0.55,
+			obstacleBox.y + obstacleBox.height * 0.45,
+		],
+		[
+			obstacleBox.x + obstacleBox.width * 0.55,
+			obstacleBox.y + obstacleBox.height * 0.55,
+		],
+	];
+	for (const [i, [x, y]] of obstacleSpots.entries()) {
+		await page.mouse.click(x, y);
+		await expect(counter).toContainText(`Recorded corners: ${i + 1}`, {
+			timeout: 10_000,
+		});
+	}
+	await page
+		.locator('#lp-design button', { hasText: 'Close outline and review' })
+		.click();
+	const featureForm = page.locator('#lp-map-feature-properties');
+	await expect(featureForm).toBeVisible({ timeout: 15_000 });
+	await featureForm.locator('[name="name"]').fill('Chimney');
+	await featureForm.locator('[name="height"]').fill('1.5');
+	await featureForm
+		.locator('[name="axis"]')
+		.selectOption({ label: 'Vertically upward' });
+	await featureForm.locator('input[type="checkbox"]').check();
+	await featureForm.locator('button[type="submit"]').click();
+	await expect(counter).toContainText('Feature added to the project draft', {
+		timeout: 60_000,
+	});
+	await page.getByRole('button', { name: 'Save project' }).click();
+	await expect(page.locator('.lp-save-state')).toContainText('Saved', {
+		timeout: 60_000,
+	});
+	await expect(
+		boundaries.locator('option', { hasText: 'Obstacle footprint' })
+	).toBeAttached({ timeout: 30_000 });
 });
