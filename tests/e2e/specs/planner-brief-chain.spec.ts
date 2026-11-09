@@ -125,3 +125,50 @@ test('the staged brief survives refresh and the language switch', async ({
 		})
 	).toHaveAttribute('href', /\/de\/fuer-installateur\/$/);
 });
+
+test('the note never sizes the project', async ({ page }) => {
+	await stageBrief(
+		page,
+		'Please quote 99 kWp and 45000 kWh for our workshop in Munich'
+	);
+
+	// The note is the customer's own text; creating the project from it
+	// leaves every sizing input at its default - the numbers in the note are
+	// demands to answer, not inputs to consume.
+	await page.getByRole('button', { name: 'Create project' }).click();
+	await expect(page).toHaveURL(/project=/, { timeout: 60_000 });
+	await page
+		.getByRole('button', { name: 'Quick start: plan in one screen' })
+		.click();
+	await expect(page.getByLabel('PV array size')).toHaveValue('10');
+	await expect(page.getByLabel('Annual electricity use')).toHaveValue('5000');
+	await expect(page.getByLabel('Postcode or town')).toHaveValue('');
+});
+
+test('a failed note save keeps the text and retries on its own', async ({
+	page,
+}) => {
+	await stageBrief(page, NOTE);
+	const note = page.getByRole('textbox', { name: 'Your project note' });
+	const edited = NOTE + ', EV charging from 2027';
+	await note.fill(edited);
+
+	// The staging endpoint fails: the panel says so, keeps the customer's
+	// text untouched and never claims success.
+	await page.route('**/rpc/sources/project-brief/stage', (route) =>
+		route.abort()
+	);
+	await page.getByRole('button', { name: 'Save', exact: true }).click();
+	await expect(
+		page.locator('.lp-project-brief-start .lp-notice')
+	).toContainText('The project note could not be carried over.');
+	await expect(note).toHaveValue(edited);
+
+	// The retry is note-only: the same gesture stages the kept text once the
+	// endpoint answers again.
+	await page.unroute('**/rpc/sources/project-brief/stage');
+	await page.getByRole('button', { name: 'Save', exact: true }).click();
+	await expect(
+		page.locator('.lp-project-brief-start [role="status"]')
+	).toContainText('Project note saved.');
+});
