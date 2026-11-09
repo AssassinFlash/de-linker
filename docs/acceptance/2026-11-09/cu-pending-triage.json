@@ -24,6 +24,28 @@
  "map_chain_probe": {
   "date": "2026-11-09",
   "finding": "the full browser automation path to the map workspace is open on review: New project (title required enables Create) -> project overview -> Open roof workspace -> #lp-design step -> Map tab -> 'Start roof drawing' button; every step driven by Playwright, no CU dependency",
-  "implication": "all 11 map-canvas rows are automatable as browser e2e; the old 'requires true-north + real coordinates' deferral predates both the controller-level transactional tests (8 rows) and this verified UI entry"
+  "implication": "all 11 map-canvas rows are automatable as browser e2e; the old 'requires true-north + real coordinates' deferral predates both the controller-level transactional tests (8 rows) and this verified UI entry",
+  "mount_precondition_chain": {
+   "verified": "source-read + live probe",
+   "chain": [
+    "1. New project: title required (input[maxlength=256]) enables Create",
+    "2. #lp-site workspace: Country select -> DE; 3 inputs = address label, latitude, longitude (Triftstrasse 5 = 48.1689/11.5844)",
+    "3. roof workspace via .lp-overview-empty .lp-button; #lp-design; Map tab",
+    "4. 'Start roof drawing' gate = canStartDrawing: !mapProps.disabled && !journal.checking && !journal.storageFailed && geographicReady",
+    "5. geographicReady = drawingBridge(geometry) succeeds: requires coordinate_system.anchor AND north_reference === 'true_north' (else throws map_geographic_reference_required) - THIS is the live gate observed disabled",
+    "6. true_north is set in the Coordinate references dialog, whose button requires geometry.sources non-empty - so Add roof face (creates the first source) must come first",
+    "7. with true_north + anchor set, Start drawing enables and the maplibre canvas mounts"
+   ],
+   "selectors": {
+    "project_title": "input[maxlength=256]",
+    "site_country": "#lp-site select (first)",
+    "site_inputs": "#lp-site input[0..2] = address, latitude, longitude",
+    "roof_entry": ".lp-overview-empty .lp-button",
+    "map_tab": "#lp-design button 'Map'",
+    "add_face": "#lp-design button 'Add roof face'",
+    "coord_dialog": "#lp-design button 'Coordinate references' (enabled once sources exist), select[name=north] -> true_north, select[name=north_source]",
+    "start": "#lp-design button 'Start roof drawing'"
+   }
+  }
  }
 }
