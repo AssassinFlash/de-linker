@@ -2027,11 +2027,12 @@
   "state": "answer",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: hero activation gate blocks automation (machinery proven in earlier entry sessions)"
+   "genie-hero.spec.ts - the answer and its product cards appear in the hero: real answer, header identity, both exits, EN/DE x viewports; the activation machinery was proven in the hero-automation batch",
+   "merged spec, green"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -2041,7 +2042,9 @@
    "overlay-responsive",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "hero": "genie-hero.spec.ts - the answer and its product cards appear in the hero: real answer, header identity, both exits, EN/DE x viewports; the activation machinery was proven in the hero-automation batch"
+  }
  },
  {
   "key": "home:answer:en:390",
@@ -2191,11 +2194,12 @@
   "state": "linked-product",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: hero linked-product card needs hero ask flow"
+   "genie-hero.spec.ts - product cards appear with the answer inside the hero (the linked-product card row); card actions further covered by genie-card-actions hero surface",
+   "merged spec, green"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -2205,7 +2209,9 @@
    "overlay-responsive",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "hero": "genie-hero.spec.ts - product cards appear with the answer inside the hero (the linked-product card row); card actions further covered by genie-card-actions hero surface"
+  }
  },
  {
   "key": "home:linked-product:en:390",
