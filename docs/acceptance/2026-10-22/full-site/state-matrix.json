@@ -25827,11 +25827,12 @@
   "state": "incompatible-result",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: needs an incompatible selection fixture"
+   "planner-report-chain.spec.ts (PR #1041) - tight requirements surface Requirements not met + further-assessment sentence explicitly",
+   "merged spec, review instance, 5.2m green"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -25841,7 +25842,9 @@
    "files-print",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "incompatible_result": "PR #1041"
+  }
  },
  {
   "key": "configurator:incompatible-result:en:390",
