@@ -106,4 +106,41 @@ test('the map workspace mounts from a plain project through the full chain', asy
 		'the maplibre canvas mounts'
 	).toBeVisible({ timeout: 60_000 });
 	await expect(page.locator('[aria-label="Project map"]')).toBeVisible();
+
+	// The outline-draw state: plain map clicks add corners (the collector
+	// binds map.on('click'); the canvas must first be scrolled fully into
+	// view - before that, clicks land in the clipped region and nothing
+	// records). The role=status counter is the live evidence.
+	await page.evaluate(() => {
+		document
+			.querySelector('.lp-map-surface')
+			?.scrollIntoView({ block: 'center' });
+	});
+	// Let the scroll settle: a click during the settling misses the map.
+	await page.waitForTimeout(800);
+	const counter = page.locator('#lp-design [role="status"]');
+	await expect(counter).toContainText('Recorded corners: 0');
+	const rect = (await page.locator('.maplibregl-canvas').boundingBox())!;
+	const spots: Array<[number, number]> = [
+		[rect.x + rect.width * 0.4, rect.y + rect.height * 0.4],
+		[rect.x + rect.width * 0.6, rect.y + rect.height * 0.4],
+		[rect.x + rect.width * 0.6, rect.y + rect.height * 0.6],
+		[rect.x + rect.width * 0.4, rect.y + rect.height * 0.6],
+	];
+	for (const [i, [x, y]] of spots.entries()) {
+		await page.mouse.click(x, y);
+		await expect(counter).toContainText(`Recorded corners: ${i + 1}`, {
+			timeout: 10_000,
+		});
+	}
+
+	// A closed ring stages the outline: the review panel offers the roof
+	// properties (Add module array itself waits for a module specification,
+	// the next state row).
+	await page
+		.locator('#lp-design button', { hasText: 'Close outline and review' })
+		.click();
+	await expect(
+		page.locator('#lp-design a', { hasText: 'Roof properties' })
+	).toBeVisible({ timeout: 30_000 });
 });
