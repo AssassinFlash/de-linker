@@ -269,7 +269,17 @@
         "j24-j38 misread: post-send log sat after the await, so ERROR RESPONSES looked like hangs; response listener URL pattern ('/planning/runs/equipment') never matched the real rpc path ('/planning/rpc/runs/equipment')",
         "offline repros MUST carry LINKER_PUBLICATION_URL - the default points at PRODUCTION de-linker.com and poisons the comparison",
         "rev-diag on Workspace.get never fired: the 409 was never a revision conflict"
-      ]
+      ],
+      "RESOLVED_2026_11_10": {
+        "fix": "wp eval-file as admin: PreparationJobs->claim('engineering','keystone-fix-8349',120) then acknowledge(status ready, loaded_revision=source_revision) - engineering ack defaults prepared_products to ALL manifest products, closing the 8349 readiness loop",
+        "verify": "manifest 8349+1179 engineering=True; offline kernel.context OK; j44 both checks 200+succeeded, wiring-check error GONE from report; one more guard surfaced and fixed in probe (roof geometry export permission select defaults 'unknown' - set 'permitted')",
+        "j45_FINAL": "FULL CHAIN PASSED (5.8m): site->roof(export permitted)->coords->module->array->3 profiles->real PVGIS weather->PV model->equipment(SAJ 1179+8/8 strings)->check(200 rev9)->scenario 3 sections->energy calc->re-check(200 rev10)->report generated WITH Download PDF + Download BOM CSV->transfer preview(SAJ H2-25K-T3 0->1)->confirmed->receipt->View solution draft->cart readback saj+inquiryCta TRUE",
+        "probe": "final working sequence in .scratch/probe-report-chain.spec.ts (j45); lift into tests/e2e/specs/planner-report-chain.spec.ts for the permanent spec",
+        "product_notes": [
+          "the local stack lacks a publication worker: engineering readiness only flips when an ack runs (review had a stale 85-product receipt; 8349 the Trina reference module was added later and never acked) - any long-lived stack needs the ack flow documented/automated or product additions will silently break pv/equipment 409",
+          "RoofForm export permission defaults 'unknown' - reports silently refuse until the customer sets it; consider surfacing this at report time with a direct link (the notice exists; verify UX)"
+        ]
+      }
     }
   }
 }
