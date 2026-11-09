@@ -15,7 +15,7 @@ import { writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { seedConsentCookies } from '../lib/consent';
-import { instance } from '../lib/instance';
+import { instance, wp } from '../lib/instance';
 
 test.beforeEach(async ({ context }) => {
 	await seedConsentCookies(context);
@@ -1025,11 +1025,75 @@ test('the full planner chain: report, transfer and the Woo solution draft', asyn
 	// The public guard refuses submissions less than 3 seconds after the
 	// form rendered (PublicGuard::MIN_SECONDS) - a human never fills this
 	// fast, the automation does.
+	// The public-connection rate limiter (3/hour per connection) is shared
+	// by every local e2e run against this instance; reset it so the chain's
+	// submissions are judged on their own merits, not on the counter state
+	// left by earlier probes.
+	wp([
+		'db',
+		'query',
+		"DELETE FROM wp_options WHERE option_name LIKE 'linker_commerce_limit_public_connection%'",
+	]);
 	await page.waitForTimeout(3500);
+	// Row 2 (tamper branch): the hidden note revision must match the
+	// session's current note. Tamper it and the server refuses the order
+	// BEFORE creating it, keeping every other entry on the page.
+	const revisionField = page.locator(
+		'input[name^="linker_project_note_revisions"]'
+	);
+	await expect(revisionField).toHaveCount(1);
+	const trueRevision = await revisionField.inputValue();
+	await revisionField.evaluate((el) => {
+		(el as HTMLInputElement).value = 'deadbeefdeadbeef';
+	});
 	await inquiry.getByRole('button', { name: 'Send inquiry' }).click();
+	await expect(page.locator('body')).toContainText(
+		/The project notes have changed/,
+		{ timeout: 30_000 }
+	);
+	// The refusal keeps the customer's entries (409 branch: retained).
+	await expect(inquiry.locator('input[name="name"]')).toHaveValue(
+		'E2E Report Chain'
+	);
+	await expect(inquiry.locator('textarea[name="message"]')).toHaveValue(
+		'Please quote the transferred configuration.'
+	);
+	// Row 4 (consume): restore the true revision on the retained form (the
+	// flash is one-use; a fresh render loses the entries) and send - this
+	// accepted submission consumes the note. The retrying click rides past
+	// the send button's transient disabled window while the embedded cart
+	// fragment refreshes.
+	await revisionField.evaluate((el, value) => {
+		(el as HTMLInputElement).value = value as string;
+	}, trueRevision);
+	await page.waitForTimeout(3500);
+	for (
+		let press = 0;
+		press < 4 && !page.url().includes('inquiry-received');
+		press += 1
+	) {
+		await inquiry.getByRole('button', { name: 'Send inquiry' }).click();
+		await page.waitForTimeout(2500);
+	}
 	// The confirmation names the received inquiry state.
 	await expect(page.locator('body')).toContainText(
 		/inquiry received|anfrage eingegangen/i,
 		{ timeout: 60_000 }
 	);
+	// Row 3 (isolation): the customer's own message arrives verbatim on the
+	// confirmation, with no Genie summary envelope around it (this flow has
+	// no Genie conversation; a summary must not be invented).
+	await expect(page.locator('body')).toContainText(
+		'Please quote the transferred configuration.'
+	);
+	await expect(page.locator('body')).not.toContainText(
+		/conversation summary|gesprächszusammenfassung/i
+	);
+	// Row 4 (consumed): the revisited form no longer offers the consumed
+	// note - the exact revision was consumed by the accepted submission.
+	await page.goto(instance().url + '/proforma-request/');
+	await page.waitForTimeout(1200);
+	await expect(
+		page.locator('input[name^="linker_project_note_revisions"]')
+	).toHaveCount(0);
 });
