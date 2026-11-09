@@ -26436,11 +26436,12 @@
   "state": "restart",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: quick-start restart flow"
+   "planner-report-chain.spec.ts (PR #1040) - after the full chain the saved project reopens the one-screen quick start with editable defaults",
+   "merged spec, review instance, 5.2m green"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -26450,7 +26451,9 @@
    "files-print",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "restart": "PR #1040"
+  }
  },
  {
   "key": "configurator:restart:en:390",
