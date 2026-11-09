@@ -85,6 +85,12 @@
     "row": "module-spec -> Add module array unlock",
     "finding": "after Close outline (phase staged) the drawing panel keeps drawingOpen=true, and Add module specification is disabled={!!form || importOpen || drawingOpen} (DesignEditor:227). The staged drawing must first be parked/committed - the staged panel's Pause drawing (journal.pause()) or the drawing's own save path - before the module form opens. The reverted probe run confirmed the gate empirically (button stayed disabled for the full 300s)",
     "continuation": "next pass: click Pause drawing after the staged panel appears, then Add module specification (prefilled tier select) -> submit -> assert Add module array enabled (geometry.module_specs.length is the gate, DesignEditor:576)"
+   },
+   "undo_row_status": {
+    "attempted": "two runs",
+    "results": "Remove last corner works (counter 3->2 asserted green), but the re-add click does not advance the counter back to 3 - neither the exact re-click of the removed position (dedup, expected) nor a fresh offset point 20px away (unexpected)",
+    "hypothesis": "the remove button's click path resets the collector's gesture state (this.completed) or re-creates the controller, and the next canvas click after a button-driven remove does not append until a full gesture cycle re-arms it - needs a source read of MapPrefixController.remove + the up handler, not more blind probes",
+    "discipline": "two consecutive failures without new diagnostic info -> stopped, reverted the spec insertion (main stays green), recorded"
    }
   }
  }
