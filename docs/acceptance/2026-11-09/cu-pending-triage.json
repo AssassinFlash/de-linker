@@ -1,234 +1,265 @@
 {
- "phase": "cu-pending-triage",
- "date": "2026-11-09",
- "matrix": "docs/acceptance/2026-10-22/full-site/state-matrix.json",
- "closed_this_pass": {
-  "count": 7,
-  "rows": "proforma-pdf x4, documents-populated x3",
-  "basis": "owner ruling 2026-11-08 (PR #1003): the site issues no document, quotations are produced offline - the states these rows describe no longer exist on the site",
-  "commit": "288beee1d"
- },
- "remaining_43_by_dependency": {
-  "needs_image_model_only": 13,
-  "map_canvas_chain": 0,
-  "brief_consumer_chain": 10,
-  "hero_automation_blocked": 3,
-  "injection_or_choreography": 6
- },
- "key_finding": "the deferred-to-cu marks are largely a bulk fallback from sessions whose automation was blocked, not a true image-model dependency: the map canvas chain already has deep Playwright-free controller tests (apps/planner/tests/map-drawing-controller.test.mjs: 8 transactional rows incl. drag/midpoint/undo-class interruptions; map-lifecycle: owner gating) and the planner screen opens in e2e (planner-first-frame green), so the 11 map rows (initial-map, address-search, permission-error, outline-draw, edit-vertices, obstacles, undo-redo, orientation-pitch, mobile-gestures, save-return, validation-error) are automatable at the browser layer against the review instance; the 10 brief-consumer rows follow the same pattern now that the plan-entry staging chain has e2e coverage (PR #1019)",
- "next_batches": [
-  "map chain: browser e2e against review - the drawing controller rows map 1:1 onto the pending states; true-north/coordinate requirements come from the engine probe already used by the configurator roof row",
-  "brief consumer chain: reuse the plan-entry staging flow from PR #1019 as the entry",
-  "after both: only 13 image rows + 3 hero rows + injection rows remain for the image-model CU session"
- ],
- "map_chain_probe": {
+  "phase": "cu-pending-triage",
   "date": "2026-11-09",
-  "finding": "the full browser automation path to the map workspace is open on review: New project (title required enables Create) -> project overview -> Open roof workspace -> #lp-design step -> Map tab -> 'Start roof drawing' button; every step driven by Playwright, no CU dependency",
-  "implication": "all 11 map-canvas rows are automatable as browser e2e; the old 'requires true-north + real coordinates' deferral predates both the controller-level transactional tests (8 rows) and this verified UI entry",
-  "mount_precondition_chain": {
-   "verified": "source-read + live probe",
-   "chain": [
-    "1. New project: title required (input[maxlength=256]) enables Create",
-    "2. #lp-site workspace: Country select -> DE; 3 inputs = address label, latitude, longitude (Triftstrasse 5 = 48.1689/11.5844)",
-    "3. roof workspace via .lp-overview-empty .lp-button; #lp-design; Map tab",
-    "4. 'Start roof drawing' gate = canStartDrawing: !mapProps.disabled && !journal.checking && !journal.storageFailed && geographicReady",
-    "5. geographicReady = drawingBridge(geometry) succeeds: requires coordinate_system.anchor AND north_reference === 'true_north' (else throws map_geographic_reference_required) - THIS is the live gate observed disabled",
-    "6. true_north is set in the Coordinate references dialog, whose button requires geometry.sources non-empty - so Add roof face (creates the first source) must come first",
-    "7. with true_north + anchor set, Start drawing enables and the maplibre canvas mounts",
-    "8. RoofForm submit requires rights_note (the only hidden required field - form.checkValidity() flags it) plus name/width/length/pitch/bearing/source/rights; with those the Coordinate references button enables (live-verified)",
-    "9. CoordinatesForm carries the anchor: latitude+longitude number fields + anchor_source select; drawingBridge needs the anchor non-null as well as true_north - the remaining live gate after true_north was set",
-    "10. LIVE-VERIFIED END TO END: with the CoordinatesForm's latitude+longitude (48.1689/11.5844) and anchor_source set alongside true_north, the Start roof drawing gate ENABLES and clicking it MOUNTS the maplibre canvas (canvas=1, maplibre=true, aria Project map=true) - the full automation chain to the map workspace works in a plain Playwright context"
-   ],
-   "selectors": {
-    "project_title": "input[maxlength=256]",
-    "site_country": "#lp-site select (first)",
-    "site_inputs": "#lp-site input[0..2] = address, latitude, longitude",
-    "roof_entry": ".lp-overview-empty .lp-button",
-    "map_tab": "#lp-design button 'Map'",
-    "add_face": "#lp-design button 'Add roof face'",
-    "coord_dialog": "#lp-design button 'Coordinate references' (enabled once sources exist), select[name=north] -> true_north, select[name=north_source]",
-    "start": "#lp-design button 'Start roof drawing'"
-   }
+  "matrix": "docs/acceptance/2026-10-22/full-site/state-matrix.json",
+  "closed_this_pass": {
+    "count": 7,
+    "rows": "proforma-pdf x4, documents-populated x3",
+    "basis": "owner ruling 2026-11-08 (PR #1003): the site issues no document, quotations are produced offline - the states these rows describe no longer exist on the site",
+    "commit": "288beee1d"
   },
-  "drawing_surface": {
-   "verified": "live probe after mount",
-   "toolbar": "Show full design / + / - / North up / Add corner at map centre / Load street map / Main roof (object) / Add module array (disabled until a closed ring); while drawing: Remove last corner / Pause drawing / Discard drawing",
-   "aria": "Design view, Map drawing, Map controls, Zoom in/out, Project map, Map attribution, Design objects and properties, Select a design object",
-   "status": "role=status reports 'Recorded corners: N' live as corners are added - the outline-draw state is directly assertable",
-   "finding": "Add corner places a corner at the CURRENT map centre: repeated clicks at the same centre do not advance the count past 1 (the second same-position corner is deduplicated). A ring needs the viewport centre moved between clicks (pan or address re-centre) - the controller tests' click-at-distinct-points semantics map to pan-then-add in the browser",
-   "ring_completion_status": {
-    "attempted": "three interaction paths",
-    "results": [
-     "Add corner button x4 without moving the centre: counter stays 1 (same-position dedup)",
-     "mouse drag on the canvas then Add corner x4: counter stays 1 - the drag did not move the map centre during drawing mode (Terra Draw's drag handler likely consumes or suppresses the map pan)",
-     "direct canvas clicks at 4 distinct positions: counter stays 0 - the canvas click does not reach Terra Draw's ring mode (it binds to the map container's own events, not the raw canvas element)"
-    ],
-    "open": "the exact browser interaction that advances the ring needs a focused pass with MapDrawingController/MapViewport source study (the controller tests drive the SDK callbacks directly); candidates: keyboard arrow pan + button, maplibre fitBounds API through an exposed handle, or the address-search re-centre between corners (the addressSearch state row would supply the centre moves)",
-    "note": "the mount row and toolbar/status assertions are already green in PR #1020; only the ring-completion interaction is open",
-    "source_study": {
-     "map_options": "MapViewport constructs MapLibreMap with cooperativeGestures: true - plain drags do NOT pan (page-friendly); pan requires Ctrl+drag. This explains why the plain-drag probe moved nothing",
-     "click_to_add": "the collector binds map.on('click'): one physical release = at most one point (event.originalEvent.detail>1 rejected), gated on a completed single-pointer gesture ON the canvas (MapPrefixController.down). So the real-user path is plain map clicks - no button needed",
-     "reticle": ".lp-map-reticle is 24px at centre with pointer-events:none - it does not intercept",
-     "remaining_unknown": "direct canvas clicks at 40%/60% boundingBox positions still left the counter at 0 - most likely the #lp-design scroll container clips the canvas so part of the bounding box is off-viewport and the clicks landed outside the visible map; next pass: scrollIntoView the canvas, click its VISIBLE centre, verify with a screenshot that the click lands on map pixels"
-    },
-    "attempted_extra": [
-     "keyboard arrow pan (focus canvas + 5x arrows): counter stays 1 - cooperativeGestures also gates keyboard pan",
-     "Ctrl+drag pan: counter still 1 - the prefix controller's pointerdown capture likely consumes the gesture before maplibre pans during collecting mode"
-    ],
-    "RESOLVED": {
-     "hypothesis_confirmed": "clipped canvas: before scrollIntoView the clicks landed outside the visible map area; after .lp-map-surface scrollIntoView the canvas rect is fully in-viewport (266,169,829x560) and direct canvas clicks advance the counter: click1 -> Recorded corners: 1, click2 -> 2",
-     "the_drivable_recipe": "scrollIntoView(.lp-map-surface) -> mouse.click at 4 distinct visible canvas positions -> ring closes -> Close outline and review -> Add module array unlocks",
-     "significance": "the ring-completion interaction - the last open piece of the 11 map-canvas rows - is fully automatable with plain Playwright; no CU, no keyboard/ctrl workarounds needed"
-    }
-   },
-   "next_row_open": {
-    "row": "module-spec -> Add module array unlock",
-    "finding": "after Close outline (phase staged) the drawing panel keeps drawingOpen=true, and Add module specification is disabled={!!form || importOpen || drawingOpen} (DesignEditor:227). The staged drawing must first be parked/committed - the staged panel's Pause drawing (journal.pause()) or the drawing's own save path - before the module form opens. The reverted probe run confirmed the gate empirically (button stayed disabled for the full 300s)",
-    "continuation": "next pass: click Pause drawing after the staged panel appears, then Add module specification (prefilled tier select) -> submit -> assert Add module array enabled (geometry.module_specs.length is the gate, DesignEditor:576)"
-   },
-   "undo_row_status": {
-    "attempted": "two runs",
-    "results": "Remove last corner works (counter 3->2 asserted green), but the re-add click does not advance the counter back to 3 - neither the exact re-click of the removed position (dedup, expected) nor a fresh offset point 20px away (unexpected)",
-    "hypothesis": "the remove button's click path resets the collector's gesture state (this.completed) or re-creates the controller, and the next canvas click after a button-driven remove does not append until a full gesture cycle re-arms it - needs a source read of MapPrefixController.remove + the up handler, not more blind probes",
-    "discipline": "two consecutive failures without new diagnostic info -> stopped, reverted the spec insertion (main stays green), recorded",
-    "status": "resolved",
-    "resolution": "Root cause: clicking Remove last corner scrolls the canvas ~535px out of the viewport; subsequent clicks land on the .lp-map-drawing panel, never on the canvas. Domain/journal/controller were all innocent - no rejection ever occurred, and the earlier same-spot \"dedup\" observation was the same artifact. Fix in spec: re-scrollIntoView + 800ms settle + fresh bounding box before the re-add click; the removed point left the ring so the same spot re-adds. Row landed green in planner-map-chain.spec.ts (4->3->4)."
-   },
-   "landed_rows_batch_2": {
-    "rows": [
-     "validation-error",
-     "save-return-to-configurator",
-     "obstacles"
-    ],
-    "spec": "tests/e2e/specs/planner-map-chain.spec.ts",
-    "evidence": "review instance, 1/1 green 12.2s; stale-discard closure covered on the path (module-spec commit makes the parked drawing stale by design, discard frees the workspace); validation-error triggers the domain rule via pitch=90 past native required; save-return asserts Save project -> Saved revision -> drawing retires -> roof list gains the map roof; obstacles assert feature selector -> Chimney footprint -> Obstacle footprint option appears in the boundary selector (editor selects the new object on commit)"
-   }
-  }
- },
- "map_chain_landed": {
-  "count": 11,
-  "rows": "initial-map, outline-draw, undo-redo, validation-error, save-return-to-configurator, obstacles, edit-vertices, address-search, permission-error, orientation-pitch, mobile-gestures",
-  "basis": "all 11 map_canvas_chain rows converted to browser e2e against the review instance; PRs #1020-#1022, #1023, #1024, #1025 and the final views/touch batch",
-  "spec": "tests/e2e/specs/planner-map-chain.spec.ts",
-  "final_run": "4/4 green, 27.3s, review instance",
-  "notes": "orientation-pitch = plan/map/3D view triad (3D canvas mounts headless); mobile-gestures = CDP touch taps collect + cooperative one-finger page scroll at 390; address-search = spec-548 network privacy gate; permission-error = denied tiles -> failure notice -> retry recovery"
- },
- "brief_chain_keystone_probe": {
-  "date": "2026-11-09",
-  "spec_survivor": ".scratch/probe-report-chain.spec.ts (uncommitted probe; lift into planner-report-chain.spec.ts)",
-  "driven_green": "site+DE anchor -> manual roof face -> true_north coord refs -> module spec -> module array (8 modules; ArrayForm: ALL numeric fields required incl. mounting textarea - native validation blocks silently when empty) -> Save -> Import interval data (columnar CSV timestamp,power; ISO UTC; 30d x 15min) -> delimiter Comma -> Preview columns -> 12-field mapping (fixed-duration mode dynamically adds \"The timestamp identifies...\" select + \"Interval duration\" min input) -> Import and review data -> Use this profile in the open draft -> Save",
-  "walls_broken": [
-   "array form silent block: mounting textarea + every GeometryNumber required; use checkValidity() diagnostics when a GeometryForm submit no-ops",
-   "energy section anchor is #lp-profiles (not #lp-energy); intake opens behind \"Import interval data\" button",
-   "profile CSV must be columnar with delimiter; single-column line feeds stall at Preview columns",
-   "mapping selects must be addressed by label text - the select list re-renders (positional nth() handles drift and hang)"
+  "remaining_43_by_dependency": {
+    "needs_image_model_only": 13,
+    "map_canvas_chain": 0,
+    "brief_consumer_chain": 10,
+    "hero_automation_blocked": 3,
+    "injection_or_choreography": 6
+  },
+  "key_finding": "the deferred-to-cu marks are largely a bulk fallback from sessions whose automation was blocked, not a true image-model dependency: the map canvas chain already has deep Playwright-free controller tests (apps/planner/tests/map-drawing-controller.test.mjs: 8 transactional rows incl. drag/midpoint/undo-class interruptions; map-lifecycle: owner gating) and the planner screen opens in e2e (planner-first-frame green), so the 11 map rows (initial-map, address-search, permission-error, outline-draw, edit-vertices, obstacles, undo-redo, orientation-pitch, mobile-gestures, save-return, validation-error) are automatable at the browser layer against the review instance; the 10 brief-consumer rows follow the same pattern now that the plan-entry staging chain has e2e coverage (PR #1019)",
+  "next_batches": [
+    "map chain: browser e2e against review - the drawing controller rows map 1:1 onto the pending states; true-north/coordinate requirements come from the engine probe already used by the configurator roof row",
+    "brief consumer chain: reuse the plan-entry staging flow from PR #1019 as the entry",
+    "after both: only 13 image rows + 3 hero rows + injection rows remain for the image-model CU session"
   ],
-  "remaining": "#lp-calculations orchestration, all buttons mapped in transcript: Prepare weather settings -> Request weather for saved inputs -> Prepare PV model -> Calculate PV for saved inputs -> Set up PV strings -> Prepare equipment selection -> Check saved equipment selection -> Review energy inputs -> Prepare scenario settings -> Calculate saved scenario -> Generate planning report; then DraftTransferButton -> solution draft; each Prepare opens a form to read next session",
-  "weather_stage": {
-   "status": "WORKING end to end (2026-11-09)",
-   "ui_sequence": "Weather source tab -> Use roof coordinates -> First/Last source year 2005/2023 (>=10y span AND endyear<=2023: 2024 => weather_provider_rejected) -> radiation db index 1 -> Terrain horizon index 1 -> Synthetic calculation year 2023 -> Prepare weather settings -> Save -> Request weather for saved inputs",
-   "engine_enablement": "review runtime.json gained weather_acquisition limits copied from the production readback (8388608/262144/9000/10.0/30.0/120.0); stack restarted via just down -> just up -> just serve (serve needs the WP server up first)",
-   "terminal_evidence": "weather_downloads.capture_sha256 set; UI \"The original weather data has passed validation and is retained.\"",
-   "defects_found": [
-    "engine 503 weather acquisition is not configured when runtime.json lacks weather_acquisition (config gap on local stacks)",
-    "just down leaves an orphaned worker_host python child when its uv parent dies - issue #1030"
-   ],
-   "next": "continue probe from the PV generation tab (Prepare PV model -> Calculate PV), then equipment, scenario, Generate planning report, DraftTransferButton"
+  "map_chain_probe": {
+    "date": "2026-11-09",
+    "finding": "the full browser automation path to the map workspace is open on review: New project (title required enables Create) -> project overview -> Open roof workspace -> #lp-design step -> Map tab -> 'Start roof drawing' button; every step driven by Playwright, no CU dependency",
+    "implication": "all 11 map-canvas rows are automatable as browser e2e; the old 'requires true-north + real coordinates' deferral predates both the controller-level transactional tests (8 rows) and this verified UI entry",
+    "mount_precondition_chain": {
+      "verified": "source-read + live probe",
+      "chain": [
+        "1. New project: title required (input[maxlength=256]) enables Create",
+        "2. #lp-site workspace: Country select -> DE; 3 inputs = address label, latitude, longitude (Triftstrasse 5 = 48.1689/11.5844)",
+        "3. roof workspace via .lp-overview-empty .lp-button; #lp-design; Map tab",
+        "4. 'Start roof drawing' gate = canStartDrawing: !mapProps.disabled && !journal.checking && !journal.storageFailed && geographicReady",
+        "5. geographicReady = drawingBridge(geometry) succeeds: requires coordinate_system.anchor AND north_reference === 'true_north' (else throws map_geographic_reference_required) - THIS is the live gate observed disabled",
+        "6. true_north is set in the Coordinate references dialog, whose button requires geometry.sources non-empty - so Add roof face (creates the first source) must come first",
+        "7. with true_north + anchor set, Start drawing enables and the maplibre canvas mounts",
+        "8. RoofForm submit requires rights_note (the only hidden required field - form.checkValidity() flags it) plus name/width/length/pitch/bearing/source/rights; with those the Coordinate references button enables (live-verified)",
+        "9. CoordinatesForm carries the anchor: latitude+longitude number fields + anchor_source select; drawingBridge needs the anchor non-null as well as true_north - the remaining live gate after true_north was set",
+        "10. LIVE-VERIFIED END TO END: with the CoordinatesForm's latitude+longitude (48.1689/11.5844) and anchor_source set alongside true_north, the Start roof drawing gate ENABLES and clicking it MOUNTS the maplibre canvas (canvas=1, maplibre=true, aria Project map=true) - the full automation chain to the map workspace works in a plain Playwright context"
+      ],
+      "selectors": {
+        "project_title": "input[maxlength=256]",
+        "site_country": "#lp-site select (first)",
+        "site_inputs": "#lp-site input[0..2] = address, latitude, longitude",
+        "roof_entry": ".lp-overview-empty .lp-button",
+        "map_tab": "#lp-design button 'Map'",
+        "add_face": "#lp-design button 'Add roof face'",
+        "coord_dialog": "#lp-design button 'Coordinate references' (enabled once sources exist), select[name=north] -> true_north, select[name=north_source]",
+        "start": "#lp-design button 'Start roof drawing'"
+      }
+    },
+    "drawing_surface": {
+      "verified": "live probe after mount",
+      "toolbar": "Show full design / + / - / North up / Add corner at map centre / Load street map / Main roof (object) / Add module array (disabled until a closed ring); while drawing: Remove last corner / Pause drawing / Discard drawing",
+      "aria": "Design view, Map drawing, Map controls, Zoom in/out, Project map, Map attribution, Design objects and properties, Select a design object",
+      "status": "role=status reports 'Recorded corners: N' live as corners are added - the outline-draw state is directly assertable",
+      "finding": "Add corner places a corner at the CURRENT map centre: repeated clicks at the same centre do not advance the count past 1 (the second same-position corner is deduplicated). A ring needs the viewport centre moved between clicks (pan or address re-centre) - the controller tests' click-at-distinct-points semantics map to pan-then-add in the browser",
+      "ring_completion_status": {
+        "attempted": "three interaction paths",
+        "results": [
+          "Add corner button x4 without moving the centre: counter stays 1 (same-position dedup)",
+          "mouse drag on the canvas then Add corner x4: counter stays 1 - the drag did not move the map centre during drawing mode (Terra Draw's drag handler likely consumes or suppresses the map pan)",
+          "direct canvas clicks at 4 distinct positions: counter stays 0 - the canvas click does not reach Terra Draw's ring mode (it binds to the map container's own events, not the raw canvas element)"
+        ],
+        "open": "the exact browser interaction that advances the ring needs a focused pass with MapDrawingController/MapViewport source study (the controller tests drive the SDK callbacks directly); candidates: keyboard arrow pan + button, maplibre fitBounds API through an exposed handle, or the address-search re-centre between corners (the addressSearch state row would supply the centre moves)",
+        "note": "the mount row and toolbar/status assertions are already green in PR #1020; only the ring-completion interaction is open",
+        "source_study": {
+          "map_options": "MapViewport constructs MapLibreMap with cooperativeGestures: true - plain drags do NOT pan (page-friendly); pan requires Ctrl+drag. This explains why the plain-drag probe moved nothing",
+          "click_to_add": "the collector binds map.on('click'): one physical release = at most one point (event.originalEvent.detail>1 rejected), gated on a completed single-pointer gesture ON the canvas (MapPrefixController.down). So the real-user path is plain map clicks - no button needed",
+          "reticle": ".lp-map-reticle is 24px at centre with pointer-events:none - it does not intercept",
+          "remaining_unknown": "direct canvas clicks at 40%/60% boundingBox positions still left the counter at 0 - most likely the #lp-design scroll container clips the canvas so part of the bounding box is off-viewport and the clicks landed outside the visible map; next pass: scrollIntoView the canvas, click its VISIBLE centre, verify with a screenshot that the click lands on map pixels"
+        },
+        "attempted_extra": [
+          "keyboard arrow pan (focus canvas + 5x arrows): counter stays 1 - cooperativeGestures also gates keyboard pan",
+          "Ctrl+drag pan: counter still 1 - the prefix controller's pointerdown capture likely consumes the gesture before maplibre pans during collecting mode"
+        ],
+        "RESOLVED": {
+          "hypothesis_confirmed": "clipped canvas: before scrollIntoView the clicks landed outside the visible map area; after .lp-map-surface scrollIntoView the canvas rect is fully in-viewport (266,169,829x560) and direct canvas clicks advance the counter: click1 -> Recorded corners: 1, click2 -> 2",
+          "the_drivable_recipe": "scrollIntoView(.lp-map-surface) -> mouse.click at 4 distinct visible canvas positions -> ring closes -> Close outline and review -> Add module array unlocks",
+          "significance": "the ring-completion interaction - the last open piece of the 11 map-canvas rows - is fully automatable with plain Playwright; no CU, no keyboard/ctrl workarounds needed"
+        }
+      },
+      "next_row_open": {
+        "row": "module-spec -> Add module array unlock",
+        "finding": "after Close outline (phase staged) the drawing panel keeps drawingOpen=true, and Add module specification is disabled={!!form || importOpen || drawingOpen} (DesignEditor:227). The staged drawing must first be parked/committed - the staged panel's Pause drawing (journal.pause()) or the drawing's own save path - before the module form opens. The reverted probe run confirmed the gate empirically (button stayed disabled for the full 300s)",
+        "continuation": "next pass: click Pause drawing after the staged panel appears, then Add module specification (prefilled tier select) -> submit -> assert Add module array enabled (geometry.module_specs.length is the gate, DesignEditor:576)"
+      },
+      "undo_row_status": {
+        "attempted": "two runs",
+        "results": "Remove last corner works (counter 3->2 asserted green), but the re-add click does not advance the counter back to 3 - neither the exact re-click of the removed position (dedup, expected) nor a fresh offset point 20px away (unexpected)",
+        "hypothesis": "the remove button's click path resets the collector's gesture state (this.completed) or re-creates the controller, and the next canvas click after a button-driven remove does not append until a full gesture cycle re-arms it - needs a source read of MapPrefixController.remove + the up handler, not more blind probes",
+        "discipline": "two consecutive failures without new diagnostic info -> stopped, reverted the spec insertion (main stays green), recorded",
+        "status": "resolved",
+        "resolution": "Root cause: clicking Remove last corner scrolls the canvas ~535px out of the viewport; subsequent clicks land on the .lp-map-drawing panel, never on the canvas. Domain/journal/controller were all innocent - no rejection ever occurred, and the earlier same-spot \"dedup\" observation was the same artifact. Fix in spec: re-scrollIntoView + 800ms settle + fresh bounding box before the re-add click; the removed point left the ring so the same spot re-adds. Row landed green in planner-map-chain.spec.ts (4->3->4)."
+      },
+      "landed_rows_batch_2": {
+        "rows": [
+          "validation-error",
+          "save-return-to-configurator",
+          "obstacles"
+        ],
+        "spec": "tests/e2e/specs/planner-map-chain.spec.ts",
+        "evidence": "review instance, 1/1 green 12.2s; stale-discard closure covered on the path (module-spec commit makes the parked drawing stale by design, discard frees the workspace); validation-error triggers the domain rule via pitch=90 past native required; save-return asserts Save project -> Saved revision -> drawing retires -> roof list gains the map roof; obstacles assert feature selector -> Chimney footprint -> Obstacle footprint option appears in the boundary selector (editor selects the new object on commit)"
+      }
+    }
   },
-  "pv_stage": {
-   "gate_found": "PvSetup refuses until a completed weather result is SELECTED (\"A completed weather result must be selected in Saved calculations before PV generation can start\"); weatherSelected requires pv_preparation.weather_asset_id. Sequence: weather capture -> Saved calculations tab select -> PV tab Prepare PV model -> Save -> Calculate PV for saved inputs",
-   "pv_model_form": "PvForm is a 3-section builder (Modules / Array models / Power conversion); \"Update parameters for current roof layout\" prefills from the placed arrays + module templates catalog",
-   "next_probe_action": "dump the Saved calculations tab content properly (previous dump caught tab-button text; scope by the panel heading and wait for the tab body), find the weather-result select action, then wire select -> PV prepare -> save -> calculate",
-   "prod_audit": "linker-services read-only 2026-11-09: running planner release source has apify only in the two research comments (pvgis_request.py, rules.py); process args/configs contain no actor/token; weather = direct official re.jrc.ec.europa.eu GET",
-   "working_ui_sequence": [
-    "Saved calculations tab -> history entry (Revision) -> Use this weather source -> Save (rev+1) [VERIFIED green]",
-    "PV generation tab -> Update parameters for current roof layout (creates modules+array models from catalog; Active arrays: 1) [VERIFIED]",
-    "03Power conversion section (hidden until opened; clicks on hidden-section controls hang - always open the section first) -> Add conversion group -> fill visible decimal inputs (97) -> CHECK the array-assignment checkbox (Each active array must belong to exactly one conversion group)",
-    "Prepare PV model -> Save project -> Calculate PV for saved inputs [BLOCKED: see below]"
-   ],
-   "status": "WORKING end to end (2026-11-09, later session)",
-   "root_causes_closed": [
-    "prepare threw pv_parameters_incomplete: the model needs COMPLETE module/array/conversion parameters WITH non-empty source notes (02 array fills: 11 null percent fields + one select + textarea note; 03: group efficiencies + source note + array-assignment checkbox)",
-    "capture proof: revise payload had pv_generation absent before the fix; after completing the model prepare wrote it, prepared=true, Saved rev6, Calculate enabled and clicked",
-    "the run start switches the view to runs - poll the runs view (or the DB), not the PV tab buttons"
-   ],
-   "verified_chain": "site->roof->coord refs->module spec->array->profile import+selection->weather (real PVGIS, validated+retained)->weather source selection->PV model align->02 fills->03 group+notes+checkbox->Prepare->Save (double-save pattern for the one late edit)->Calculate PV-> evaluate job SUCCEEDED with result",
-   "next": [
-    "Equipment tab (Single system, operating mode/grid/phase, kWp/kWh/kW, PV strings via Set up PV strings or Single system flow) -> Scenario settings -> Generate planning report -> DraftTransferButton -> inquiry; the probe in .scratch carries the full working sequence"
-   ]
+  "map_chain_landed": {
+    "count": 11,
+    "rows": "initial-map, outline-draw, undo-redo, validation-error, save-return-to-configurator, obstacles, edit-vertices, address-search, permission-error, orientation-pitch, mobile-gestures",
+    "basis": "all 11 map_canvas_chain rows converted to browser e2e against the review instance; PRs #1020-#1022, #1023, #1024, #1025 and the final views/touch batch",
+    "spec": "tests/e2e/specs/planner-map-chain.spec.ts",
+    "final_run": "4/4 green, 27.3s, review instance",
+    "notes": "orientation-pitch = plan/map/3D view triad (3D canvas mounts headless); mobile-gestures = CDP touch taps collect + cooperative one-finger page scroll at 390; address-search = spec-548 network privacy gate; permission-error = denied tiles -> failure notice -> retry recovery"
   },
-  "equipment_stage": {
-   "status": "requirements filled and saved; product gates mapped",
-   "done": "Equipment tab -> Single system -> operating mode (index 1 Grid-connected) + Grid connection (index 1) + PV array kWp 8 + Required usable energy kWh 10 + Required continuous AC discharge kW 5 -> double-save (Saved); product catalog prepared=true after Reload product data (the initial \"is being prepared\" was just the first fetch being in flight; feed has figure_projection_version 2 + compatibility_origin woocommerce)",
-   "gates_remaining": [
-    "Set up PV strings: still disabled (needs the wiring-plan prerequisites - read PvStringSetup.tsx gate next)",
-    "Prepare equipment selection: disabled until an inverter_product_id is chosen (EquipmentSetup gate: blocked || !valid || !setup.inverter_product_id || !setup.operating_mode) - the customer picks real inverter/battery products from the Woo catalog first",
-    "Check saved equipment selection / Calculate saved scenario / Generate planning report: downstream of the above"
-   ],
-   "next": "explore the equipment product selection UI (inverter/battery selects under Choose equipment manually or Single system), pick catalog products, Prepare equipment selection -> Check saved equipment selection; then Scenario settings (Review energy inputs -> Use the shared profile range -> Add operating period -> Prepare scenario settings -> Calculate saved scenario) -> Generate planning report -> DraftTransferButton",
-   "manual_picker": {
-    "open": "Equipment tab -> the \"Choose equipment manually\" <details><summary> (NOT a button - a summary click)",
-    "selects_seen": [
-     "Inverter or integrated storage system: Choose a product / SAJ H2-25K-T3 / SAJ H2-30K-T3-DE / SAJ HS2-10K-T2-X (real Woo catalog)",
-     "Battery or storage system: only \"No separate battery\" (battery capacity comes via the integrated system assembly, likely stack/module quantities in DcStorageForm)"
+  "brief_chain_keystone_probe": {
+    "date": "2026-11-09",
+    "spec_survivor": ".scratch/probe-report-chain.spec.ts (uncommitted probe; lift into planner-report-chain.spec.ts)",
+    "driven_green": "site+DE anchor -> manual roof face -> true_north coord refs -> module spec -> module array (8 modules; ArrayForm: ALL numeric fields required incl. mounting textarea - native validation blocks silently when empty) -> Save -> Import interval data (columnar CSV timestamp,power; ISO UTC; 30d x 15min) -> delimiter Comma -> Preview columns -> 12-field mapping (fixed-duration mode dynamically adds \"The timestamp identifies...\" select + \"Interval duration\" min input) -> Import and review data -> Use this profile in the open draft -> Save",
+    "walls_broken": [
+      "array form silent block: mounting textarea + every GeometryNumber required; use checkValidity() diagnostics when a GeometryForm submit no-ops",
+      "energy section anchor is #lp-profiles (not #lp-energy); intake opens behind \"Import interval data\" button",
+      "profile CSV must be columnar with delimiter; single-column line feeds stall at Preview columns",
+      "mapping selects must be addressed by label text - the select list re-renders (positional nth() handles drift and hang)"
     ],
-    "picked": "SAJ H2-25K-T3 (first option)",
-    "remaining_gate": "prepare equipment still disabled => !valid; find the still-empty required field next (assembly stack/module quantities for the chosen integrated system, or mode-dependent fields); then Prepare equipment selection -> double-save -> Check saved equipment selection -> Scenario -> report",
-    "note": "the probe pickProduct regex matched the inverter select for both picks - scope the battery pick by its own label or skip (No separate battery)"
-   },
-   "strings_stage": {
-    "progress": "\"Set up PV strings\" enabled after inverter pick (gate disabled={!inverterId}); needs force-click (the equipment section re-renders too frequently for Playwright actionability); the section opens showing \"PV strings and inputs / Assign the roof modules to strings and inverter inputs\"",
-    "still_to_do": "drive the PvStringSetup editor (source: components/equipment/PvStringSetup.tsx; validity at lines ~179-206: controlled?fields.every(Boolean):valid - the plan assigns the roof array modules to strings/inputs; a valid plan feeds EquipmentSetup.valid and unlocks Prepare equipment selection)",
-    "probe_notes": "test.setTimeout(600_000) added (chain now exceeds 300s); PV-run wait 60s; all equipment-section clicks should use force:true",
-    "editor_open": "WORKING: open details (summary \"PV strings and inputs\", force click) -> create button now visible -> click \"Set up PV strings\" (force) -> plan created -> fill \"Lowest design ambient temperature\"=-10 + \"Temperature source and location\" -> the Add-a-string editor shows: MPPT, Inverter input, \"Modules to add to this string\", and \"Add selected modules to string\" (disabled until selection); status \"0 of 8 roof modules assigned\"",
-    "final_steps": "fill MPPT=1 and Inverter input=1 -> select all 8 module checkboxes -> \"Add selected modules to string\" -> \"8 of 8 roof modules assigned\" -> PvOperatingSetup fields (operating validity) -> equipment Prepare unlocks -> double-save -> Check saved equipment selection -> Scenario (Review energy inputs, Use the shared profile range, Add operating period) -> Calculate saved scenario -> Generate planning report -> DraftTransferButton -> inquiry",
-    "gotchas": [
-     "the create button is :visible ONLY after the details opens (earlier force-clicks on hidden copies never created the plan - the empty-dump root cause)",
-     "multiple PvStringSetup instances exist (Single/Multiple system panels); always scope with :visible",
-     "equipment-section clicks need force:true (constant re-render)"
-    ],
-    "module_selection_source": [
-     "PvModuleSelection: per-array <details><summary>\"Array 1 · Main array\"</summary> containing \"Select all available modules\" text-button (NO checkboxes - the checkboxes=0 run proved it); status line \"N available · M selected\""
-    ],
-    "last_hang": [
-     "getByRole(button Select all available modules) waited forever: the per-array details was not open, and getByRole does not match hidden buttons (force cannot rescue a non-match)"
-    ],
-    "next_fix": [
-     "open the array details via evaluate DOM click on its summary and verify el.open===true, then click Select-all via evaluate (bypasses role-visibility matching); MPPT/Inverter input fill already works; then \"Add selected modules to string\" (force) -> expect \"8 of 8 roof modules assigned\" -> PvOperatingSetup -> Prepare equipment selection unlocks"
-    ],
-    "ASSIGNED": [
-     "DONE: DOM-click approach works end to end - open per-array details via evaluate (el.open=true), DOM-click \"Select all available modules\" (\"8 available · 8 selected\"), DOM-click \"Add selected modules to string\" -> \"8 of 8 roof modules assigned\"; temperature -10/source/MPPT 1/input 1 all valid"
-    ],
-    "last_gate": [
-     "Prepare still disabled after assignment => PvOperatingSetup operating conditions (Effective irradiance / Hot operating cell temperature / Cold operating cell temperature, from PvOperatingSetup.tsx lines 90-131) - the probe filled them by label but added no count log, so the next run must log getByLabel(...).count() first (the labels carry separate unit <small> spans; exact:false may be needed) and dump the validity-contributing fields again"
-    ],
-    "operating_conditions": [
-     "OPTIONAL for validity (PvOperatingSetup: valid = !conditions || (...)); \"Add operating conditions\" button lives inside the CLOSED \"Electrical operating conditions\" details and creates the null fields - that is why the labels were absent from the DOM scan"
-    ],
-    "prepare_still_disabled_with": [
-     "8/8 assigned, temperature/source/MPPT/input valid, inverter+mode+quantities set, catalog prepared - remaining suspects: (a) catalog.isFetching transient at the check moment, (b) a validity-map entry whose field never reported (unmounted NumberField), (c) setup.inverter_product_id falsy at check time - next session: capture the revise payload again (pv_plant_string_plan present?) and poll prepare-enabled with retries over 10s before concluding"
-    ],
-    "prepare_gate_status": [
-     "suspect (a) RULED OUT (10x retry poll + extra save, still disabled); editor-reset validity RULED OUT by source (PvStringSetup change() success path runs setFields({}) -> vacuous every=true -> onValidity(true); PvOperatingSetup optional)"
-    ],
-    "next_two_probes": [
-     [
-      "1: capture the post-string-plan revise payload: does inputs.equipment_setup carry inverter_product_id, operating_mode, module counts? (kills or confirms suspect c)",
-      "2: dump ALL \"Prepare equipment selection\" buttons with their visible/disabled state and panel context (Single vs Multiple systems) - the .first() match may be the wrong panel instance"
-     ]
-    ],
-    "prepare_gate_final": [
-     "suspect (c) DEAD: revise payload carries equipment_setup with inverter 1179, mode grid_connected, modules_per_stack 1, parallel_stacks 1, all requirement fields; catalog prepared=true; 8/8 assigned; blocked=false candidates exhausted => the ONLY remaining condition is !valid (EquipmentSetup React state) whose failing key is externally invisible"
-    ],
-    "next_session_plan": [
-     "stop black-boxing: add a TEMPORARY dev-only console.log in EquipmentSetup (scratch branch, never merged) printing Object.keys(validity) with values + blocked booleans right at the Prepare button render; one run names the failing key; remove the patch before any PR. Note: has_string_plan:false in the captured revise means the string plan edit may still be Unsaved in that capture - also log isDirty at that point."
-    ]
-   },
-   "FIX_VERIFIED_LIVE": {
-    "milestone": "PR #1032 (main=6de6ece04) verified in the live chain: journal step discard -> done -> ALL PREPARE BUTTONS disabled:false -> Prepare equipment selection CLICKED -> draft Unsaved -> saved -> Check saved equipment selection clicked (no error)",
-    "meaning": "the #1031 deadlock fix works end to end on the real customer path; the equipment gate is passed for the first time",
-    "next_stage": "scenario: the probe failed waiting for \"Calculate saved scenario\" to enable (60s) after the equipment check - check what the equipment check produced (\"Requirements checked\" marker was false but no error; maybe the check run needs its result selected like the weather source, or the scenario panel needs the equipment run chosen in Saved calculations) then Generate planning report -> DraftTransferButton -> inquiry"
-   }
+    "remaining": "#lp-calculations orchestration, all buttons mapped in transcript: Prepare weather settings -> Request weather for saved inputs -> Prepare PV model -> Calculate PV for saved inputs -> Set up PV strings -> Prepare equipment selection -> Check saved equipment selection -> Review energy inputs -> Prepare scenario settings -> Calculate saved scenario -> Generate planning report; then DraftTransferButton -> solution draft; each Prepare opens a form to read next session",
+    "weather_stage": {
+      "status": "WORKING end to end (2026-11-09)",
+      "ui_sequence": "Weather source tab -> Use roof coordinates -> First/Last source year 2005/2023 (>=10y span AND endyear<=2023: 2024 => weather_provider_rejected) -> radiation db index 1 -> Terrain horizon index 1 -> Synthetic calculation year 2023 -> Prepare weather settings -> Save -> Request weather for saved inputs",
+      "engine_enablement": "review runtime.json gained weather_acquisition limits copied from the production readback (8388608/262144/9000/10.0/30.0/120.0); stack restarted via just down -> just up -> just serve (serve needs the WP server up first)",
+      "terminal_evidence": "weather_downloads.capture_sha256 set; UI \"The original weather data has passed validation and is retained.\"",
+      "defects_found": [
+        "engine 503 weather acquisition is not configured when runtime.json lacks weather_acquisition (config gap on local stacks)",
+        "just down leaves an orphaned worker_host python child when its uv parent dies - issue #1030"
+      ],
+      "next": "continue probe from the PV generation tab (Prepare PV model -> Calculate PV), then equipment, scenario, Generate planning report, DraftTransferButton"
+    },
+    "pv_stage": {
+      "gate_found": "PvSetup refuses until a completed weather result is SELECTED (\"A completed weather result must be selected in Saved calculations before PV generation can start\"); weatherSelected requires pv_preparation.weather_asset_id. Sequence: weather capture -> Saved calculations tab select -> PV tab Prepare PV model -> Save -> Calculate PV for saved inputs",
+      "pv_model_form": "PvForm is a 3-section builder (Modules / Array models / Power conversion); \"Update parameters for current roof layout\" prefills from the placed arrays + module templates catalog",
+      "next_probe_action": "dump the Saved calculations tab content properly (previous dump caught tab-button text; scope by the panel heading and wait for the tab body), find the weather-result select action, then wire select -> PV prepare -> save -> calculate",
+      "prod_audit": "linker-services read-only 2026-11-09: running planner release source has apify only in the two research comments (pvgis_request.py, rules.py); process args/configs contain no actor/token; weather = direct official re.jrc.ec.europa.eu GET",
+      "working_ui_sequence": [
+        "Saved calculations tab -> history entry (Revision) -> Use this weather source -> Save (rev+1) [VERIFIED green]",
+        "PV generation tab -> Update parameters for current roof layout (creates modules+array models from catalog; Active arrays: 1) [VERIFIED]",
+        "03Power conversion section (hidden until opened; clicks on hidden-section controls hang - always open the section first) -> Add conversion group -> fill visible decimal inputs (97) -> CHECK the array-assignment checkbox (Each active array must belong to exactly one conversion group)",
+        "Prepare PV model -> Save project -> Calculate PV for saved inputs [BLOCKED: see below]"
+      ],
+      "status": "WORKING end to end (2026-11-09, later session)",
+      "root_causes_closed": [
+        "prepare threw pv_parameters_incomplete: the model needs COMPLETE module/array/conversion parameters WITH non-empty source notes (02 array fills: 11 null percent fields + one select + textarea note; 03: group efficiencies + source note + array-assignment checkbox)",
+        "capture proof: revise payload had pv_generation absent before the fix; after completing the model prepare wrote it, prepared=true, Saved rev6, Calculate enabled and clicked",
+        "the run start switches the view to runs - poll the runs view (or the DB), not the PV tab buttons"
+      ],
+      "verified_chain": "site->roof->coord refs->module spec->array->profile import+selection->weather (real PVGIS, validated+retained)->weather source selection->PV model align->02 fills->03 group+notes+checkbox->Prepare->Save (double-save pattern for the one late edit)->Calculate PV-> evaluate job SUCCEEDED with result",
+      "next": [
+        "Equipment tab (Single system, operating mode/grid/phase, kWp/kWh/kW, PV strings via Set up PV strings or Single system flow) -> Scenario settings -> Generate planning report -> DraftTransferButton -> inquiry; the probe in .scratch carries the full working sequence"
+      ]
+    },
+    "equipment_stage": {
+      "status": "requirements filled and saved; product gates mapped",
+      "done": "Equipment tab -> Single system -> operating mode (index 1 Grid-connected) + Grid connection (index 1) + PV array kWp 8 + Required usable energy kWh 10 + Required continuous AC discharge kW 5 -> double-save (Saved); product catalog prepared=true after Reload product data (the initial \"is being prepared\" was just the first fetch being in flight; feed has figure_projection_version 2 + compatibility_origin woocommerce)",
+      "gates_remaining": [
+        "Set up PV strings: still disabled (needs the wiring-plan prerequisites - read PvStringSetup.tsx gate next)",
+        "Prepare equipment selection: disabled until an inverter_product_id is chosen (EquipmentSetup gate: blocked || !valid || !setup.inverter_product_id || !setup.operating_mode) - the customer picks real inverter/battery products from the Woo catalog first",
+        "Check saved equipment selection / Calculate saved scenario / Generate planning report: downstream of the above"
+      ],
+      "next": "explore the equipment product selection UI (inverter/battery selects under Choose equipment manually or Single system), pick catalog products, Prepare equipment selection -> Check saved equipment selection; then Scenario settings (Review energy inputs -> Use the shared profile range -> Add operating period -> Prepare scenario settings -> Calculate saved scenario) -> Generate planning report -> DraftTransferButton",
+      "manual_picker": {
+        "open": "Equipment tab -> the \"Choose equipment manually\" <details><summary> (NOT a button - a summary click)",
+        "selects_seen": [
+          "Inverter or integrated storage system: Choose a product / SAJ H2-25K-T3 / SAJ H2-30K-T3-DE / SAJ HS2-10K-T2-X (real Woo catalog)",
+          "Battery or storage system: only \"No separate battery\" (battery capacity comes via the integrated system assembly, likely stack/module quantities in DcStorageForm)"
+        ],
+        "picked": "SAJ H2-25K-T3 (first option)",
+        "remaining_gate": "prepare equipment still disabled => !valid; find the still-empty required field next (assembly stack/module quantities for the chosen integrated system, or mode-dependent fields); then Prepare equipment selection -> double-save -> Check saved equipment selection -> Scenario -> report",
+        "note": "the probe pickProduct regex matched the inverter select for both picks - scope the battery pick by its own label or skip (No separate battery)"
+      },
+      "strings_stage": {
+        "progress": "\"Set up PV strings\" enabled after inverter pick (gate disabled={!inverterId}); needs force-click (the equipment section re-renders too frequently for Playwright actionability); the section opens showing \"PV strings and inputs / Assign the roof modules to strings and inverter inputs\"",
+        "still_to_do": "drive the PvStringSetup editor (source: components/equipment/PvStringSetup.tsx; validity at lines ~179-206: controlled?fields.every(Boolean):valid - the plan assigns the roof array modules to strings/inputs; a valid plan feeds EquipmentSetup.valid and unlocks Prepare equipment selection)",
+        "probe_notes": "test.setTimeout(600_000) added (chain now exceeds 300s); PV-run wait 60s; all equipment-section clicks should use force:true",
+        "editor_open": "WORKING: open details (summary \"PV strings and inputs\", force click) -> create button now visible -> click \"Set up PV strings\" (force) -> plan created -> fill \"Lowest design ambient temperature\"=-10 + \"Temperature source and location\" -> the Add-a-string editor shows: MPPT, Inverter input, \"Modules to add to this string\", and \"Add selected modules to string\" (disabled until selection); status \"0 of 8 roof modules assigned\"",
+        "final_steps": "fill MPPT=1 and Inverter input=1 -> select all 8 module checkboxes -> \"Add selected modules to string\" -> \"8 of 8 roof modules assigned\" -> PvOperatingSetup fields (operating validity) -> equipment Prepare unlocks -> double-save -> Check saved equipment selection -> Scenario (Review energy inputs, Use the shared profile range, Add operating period) -> Calculate saved scenario -> Generate planning report -> DraftTransferButton -> inquiry",
+        "gotchas": [
+          "the create button is :visible ONLY after the details opens (earlier force-clicks on hidden copies never created the plan - the empty-dump root cause)",
+          "multiple PvStringSetup instances exist (Single/Multiple system panels); always scope with :visible",
+          "equipment-section clicks need force:true (constant re-render)"
+        ],
+        "module_selection_source": [
+          "PvModuleSelection: per-array <details><summary>\"Array 1 · Main array\"</summary> containing \"Select all available modules\" text-button (NO checkboxes - the checkboxes=0 run proved it); status line \"N available · M selected\""
+        ],
+        "last_hang": [
+          "getByRole(button Select all available modules) waited forever: the per-array details was not open, and getByRole does not match hidden buttons (force cannot rescue a non-match)"
+        ],
+        "next_fix": [
+          "open the array details via evaluate DOM click on its summary and verify el.open===true, then click Select-all via evaluate (bypasses role-visibility matching); MPPT/Inverter input fill already works; then \"Add selected modules to string\" (force) -> expect \"8 of 8 roof modules assigned\" -> PvOperatingSetup -> Prepare equipment selection unlocks"
+        ],
+        "ASSIGNED": [
+          "DONE: DOM-click approach works end to end - open per-array details via evaluate (el.open=true), DOM-click \"Select all available modules\" (\"8 available · 8 selected\"), DOM-click \"Add selected modules to string\" -> \"8 of 8 roof modules assigned\"; temperature -10/source/MPPT 1/input 1 all valid"
+        ],
+        "last_gate": [
+          "Prepare still disabled after assignment => PvOperatingSetup operating conditions (Effective irradiance / Hot operating cell temperature / Cold operating cell temperature, from PvOperatingSetup.tsx lines 90-131) - the probe filled them by label but added no count log, so the next run must log getByLabel(...).count() first (the labels carry separate unit <small> spans; exact:false may be needed) and dump the validity-contributing fields again"
+        ],
+        "operating_conditions": [
+          "OPTIONAL for validity (PvOperatingSetup: valid = !conditions || (...)); \"Add operating conditions\" button lives inside the CLOSED \"Electrical operating conditions\" details and creates the null fields - that is why the labels were absent from the DOM scan"
+        ],
+        "prepare_still_disabled_with": [
+          "8/8 assigned, temperature/source/MPPT/input valid, inverter+mode+quantities set, catalog prepared - remaining suspects: (a) catalog.isFetching transient at the check moment, (b) a validity-map entry whose field never reported (unmounted NumberField), (c) setup.inverter_product_id falsy at check time - next session: capture the revise payload again (pv_plant_string_plan present?) and poll prepare-enabled with retries over 10s before concluding"
+        ],
+        "prepare_gate_status": [
+          "suspect (a) RULED OUT (10x retry poll + extra save, still disabled); editor-reset validity RULED OUT by source (PvStringSetup change() success path runs setFields({}) -> vacuous every=true -> onValidity(true); PvOperatingSetup optional)"
+        ],
+        "next_two_probes": [
+          [
+            "1: capture the post-string-plan revise payload: does inputs.equipment_setup carry inverter_product_id, operating_mode, module counts? (kills or confirms suspect c)",
+            "2: dump ALL \"Prepare equipment selection\" buttons with their visible/disabled state and panel context (Single vs Multiple systems) - the .first() match may be the wrong panel instance"
+          ]
+        ],
+        "prepare_gate_final": [
+          "suspect (c) DEAD: revise payload carries equipment_setup with inverter 1179, mode grid_connected, modules_per_stack 1, parallel_stacks 1, all requirement fields; catalog prepared=true; 8/8 assigned; blocked=false candidates exhausted => the ONLY remaining condition is !valid (EquipmentSetup React state) whose failing key is externally invisible"
+        ],
+        "next_session_plan": [
+          "stop black-boxing: add a TEMPORARY dev-only console.log in EquipmentSetup (scratch branch, never merged) printing Object.keys(validity) with values + blocked booleans right at the Prepare button render; one run names the failing key; remove the patch before any PR. Note: has_string_plan:false in the captured revise means the string plan edit may still be Unsaved in that capture - also log isDirty at that point."
+        ]
+      },
+      "FIX_VERIFIED_LIVE": {
+        "milestone": "PR #1032 (main=6de6ece04) verified in the live chain: journal step discard -> done -> ALL PREPARE BUTTONS disabled:false -> Prepare equipment selection CLICKED -> draft Unsaved -> saved -> Check saved equipment selection clicked (no error)",
+        "meaning": "the #1031 deadlock fix works end to end on the real customer path; the equipment gate is passed for the first time",
+        "next_stage": "j3 running: three-section scenario fill (j2 root cause fixed in probe)"
+      }
+    },
+    "scenario_stage": {
+      "date": "2026-11-09",
+      "root_cause": "battery_source_required: scenarioBattery (energyScenario.ts:260) refuses an empty storage source_note; the probe had filled only operating-period numbers. ScenarioForm has THREE sections - Storage (7 battery numbers + 'Source or assumption for storage parameters' textarea), Starting state ('Start with an empty battery' writes 0/0/0 + its own basis note), Operation (periods + terminal select; empty default refuses terminal_condition_required)",
+      "equipment_check": "evaluate job succeeded in 7s (DB 20:16:07-14); the run label never renders in #lp-calculations while the equipment view holds focus - probe now settles 45s and moves on; the report form auto-picks succeeded equipment runs (PlanningReportForm completed filter)",
+      "panel_dump_note": "#lp-calculations textContent includes ALL hidden tab panels - marker checks on it match hidden content; SCENARIO BUTTONS :visible dump returned [] (all buttons hidden at dump moment) - do not gate on it",
+      "j3": "three sections filled (fill '1' in empty visible decimal/numeric + storage note + empty battery + terminal 'No minimum required') -> Prepare -> Calculate -> Generate report; dump SCENARIO PANEL before save",
+      "visibility_root_cause": {
+        "found": "2026-11-09 j3 source read",
+        "mechanism": "ProjectEditor renders EnergyWorkspace inside <div hidden={workspace!=='calculations'&&!=='equipment'}> with active={workspace in calculations/equipment}: when the workspace drifted away (probe profile stage used #lp-profiles = workspace 'energy'), the whole #lp-calculations section is hidden - domClick still works on hidden buttons (DOM click), but :visible fills no-op and button:visible polls match nothing; runs polling inactive so the equipment run label never rendered",
+        "compounding": "chooseWorkspace REFUSES transitions while editor-wide valid=false (setCloseBlocked), so the check click's openResults() could not bring the section back",
+        "probe_fix": "reload with #lp-calculations before the scenario section (no hashchange listener exists; remount reads the hash at mount, exactly the real link/refresh path) + VISIBILITY dump (wrapperHidden/visibleButtons/hash) + BLOCKED NOTICE fallback dump"
+      },
+      "third_root_cause": {
+        "found": "j8 input inventory + j9 INPUT DIAG",
+        "mechanism": "'Review energy inputs' onClick=openProfiles()->chooseWorkspace('energy') - clicking it in the scenario flow switches the workspace away and hides #lp-calculations again (DIAG: view=scenario pressed, usableLabelPresent but hidden by the classless workspace wrapper DIV). The probe had already selected profiles in its profile stage, so the click was redundant",
+        "also": "Playwright .all() on a locator has NO timeout and waits for DOM stability - with the planner's continuous re-renders it never resolves (j6 stall at storage fill, idle browser); all scenario fills now run inside one page.evaluate with React native value setters + input events",
+        "probe_fix": "j10: Review click removed; shared-range click kept (useRange runs regardless of section visibility)"
+      },
+      "status": "ENERGY CALCULATION WORKING END TO END (j19-j33): three profile roles imported, storage note + empty inventory + terminal + single period (7 controls) filled, prepare commits energy_replay, Calculate enabled and clicked, single_ac_energy_replay_v1 run SUCCEEDED (j33 project 4f50f9e8)"
+    },
+    "report_stage": {
+      "date": "2026-11-09 late",
+      "working": "report tab switch (workspace recovery via hash+page.reload after the equipment workspace), Energy-run select via label.lp-field scope, generate guards all green (gen-diag instrumented, since reverted)",
+      "blocker": "runs/report 422 report_wiring_check_required: the report requires an equipment check OF THE CURRENT SAVED PV STRINGS. The re-check attempt silently no-ops: startSolar entry guards pass, no throw, no start-wrapper early return (records clean after clearUnconfirmed), no submit early return, NO /planning/runs/equipment request reaches the engine - while runs/weather and runs/energy (direct operations.start callers) DO send. PV calculate ALSO silently no-ops in j26+ projects (no pv run rows) though it worked in j2-era. j24-26-era engine log shows /planning/runs/equipment 409 Conflict (revision mismatch) - whether the 409 phase and the silent phase are the same root cause is UNRESOLVED",
+      "next_session": "instrument the exact await chain in submit for runs/equipment: log AFTER store.write resolves and BEFORE/AFTER client.send (the only two unlogged awaits left); check whether PlanningJournal.write (IndexedDB) hangs; compare the working weather/energy paths call-by-call; ALSO investigate why runs/pv stopped creating runs",
+      "product_findings": [
+        "equipmentFocus trap: entering the equipment workspace and filling an incomplete scenario form (energyValid=false) makes chooseWorkspace REFUSE every back-switch - the customer is locked in the equipment workspace until a hard refresh (hash remount); tabs other than Equipment only switch views and never leave the workspace",
+        "startSolar silent-return vs enabled button: the Check button's disabled set is narrower than startSolar's guards - an enabled button can silently no-op (production 2026-11-07 comment in source acknowledges this class)",
+        "operations.start silently returns undefined when ANY stored record is unconfirmed - with no UI hint when the recovery details is collapsed"
+      ]
+    }
   }
- }
 }
