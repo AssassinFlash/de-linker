@@ -1,0 +1,32 @@
+{
+  "phase": "engine-evidence-binding-host-fix-released",
+  "date": "2026-11-09",
+  "defect": "a local instance's pull-load URL rewrite (de-linker.com -> 127.0.0.1) changed the figures entry bytes, so the evidence-binding fingerprint (host-ful hash) no longer matched the bound revision: every URL-cited figure failed the binding triple, the regenerated engine feed carried ac_power_kw 'unknown' for all 42 inverters, and no configurator design could select a candidate. Production feeds were never rewritten and stayed healthy throughout.",
+  "fix": {
+    "pr": "#1016 (main 2937f6347): Publication::figure_revision() hashes the entry with the citation URL reduced to its path; EvidenceBindings captures and matches on both sides with it",
+    "tests": "FigureRevisionTest (host change keeps identity / value change breaks it / no-citation fallback); commerce suite 2252 green; configurator e2e 17/17 on review with the recovered feed (39/42 local powers)",
+    "e2e_transport": "the engine's POST gate required the service token and resource subject since enforcement - enginePost/engineFetch carry them now; the PDF report follows the current selection_fingerprint contract; the single-phase case asks only the carried GoodWe model (the EcoFlow single-phase models are drafts)"
+  },
+  "release": {
+    "deploy": "just cutover deploy from main 2937f6347 (uploads, switch, opcache reset, verify pages 200, backup retained at deploy-prev/20261109T012936497720Z-2937f6347)",
+    "binding_replay_red_line": "mandatory with this code: the stored production bindings carried host-ful revisions; without a replay the live feed would have dropped figures the way review did",
+    "replay_runs": [
+      "run 1+2 (batch delete+capture_missing): stored stale host-ful revisions - a long single wp-eval over 500 products appears to serve stale meta reads; production live feed fell to 37/42",
+      "run 3 (per-product capture(id,false) after delete): 174 deleted, 500 captured; 38/42",
+      "run 4 (full capture(id,false) pass): 41/42",
+      "final in-process recapture of the last residual (1181, H2-30K-T3-DE): matches verified true"
+    ],
+    "verification": "live production engineering-feed endpoint: 42/42 inverter powers known (was 42/42 held-old-feed / dipped to 37 during the stale-replay window); the engine's held feed (20261105) remained 42/42 throughout, so the customer-facing configurator never degraded",
+    "residual_data_note": "DLK-SAJ-H230KT3DE's figures live only on the locale twin's meta (1181 canonical; 6837 carries none) - the recapture binds from the canonical, which now passes"
+  },
+  "lesson_recorded": "batch meta rewrites in one long wp-eval can read stale object-cache copies: recapture per product (or in short processes) is the reliable form; a release that changes fingerprint semantics must ship its data replay in the same window",
+  "resource_report": {
+    "reclaimed": ["/tmp probe feeds kept for evidence; no new persistent artifacts"],
+    "running": "review + c222 instances stay up as verification environments; Mac knowledge worker active; VPS units active (load 0.04)",
+    "disk": "VPS 43G free of 48G; deploy backup retained per cutover policy"
+  },
+  "open": [
+    "#548 de coverage rows for configurator/roof/project-brief (new coverage, EN-only specs today)",
+    "CU visual walkthrough awaits an image-capable model"
+  ]
+}
