@@ -55,7 +55,17 @@
    "toolbar": "Show full design / + / - / North up / Add corner at map centre / Load street map / Main roof (object) / Add module array (disabled until a closed ring); while drawing: Remove last corner / Pause drawing / Discard drawing",
    "aria": "Design view, Map drawing, Map controls, Zoom in/out, Project map, Map attribution, Design objects and properties, Select a design object",
    "status": "role=status reports 'Recorded corners: N' live as corners are added - the outline-draw state is directly assertable",
-   "finding": "Add corner places a corner at the CURRENT map centre: repeated clicks at the same centre do not advance the count past 1 (the second same-position corner is deduplicated). A ring needs the viewport centre moved between clicks (pan or address re-centre) - the controller tests' click-at-distinct-points semantics map to pan-then-add in the browser"
+   "finding": "Add corner places a corner at the CURRENT map centre: repeated clicks at the same centre do not advance the count past 1 (the second same-position corner is deduplicated). A ring needs the viewport centre moved between clicks (pan or address re-centre) - the controller tests' click-at-distinct-points semantics map to pan-then-add in the browser",
+   "ring_completion_status": {
+    "attempted": "three interaction paths",
+    "results": [
+     "Add corner button x4 without moving the centre: counter stays 1 (same-position dedup)",
+     "mouse drag on the canvas then Add corner x4: counter stays 1 - the drag did not move the map centre during drawing mode (Terra Draw's drag handler likely consumes or suppresses the map pan)",
+     "direct canvas clicks at 4 distinct positions: counter stays 0 - the canvas click does not reach Terra Draw's ring mode (it binds to the map container's own events, not the raw canvas element)"
+    ],
+    "open": "the exact browser interaction that advances the ring needs a focused pass with MapDrawingController/MapViewport source study (the controller tests drive the SDK callbacks directly); candidates: keyboard arrow pan + button, maplibre fitBounds API through an exposed handle, or the address-search re-centre between corners (the addressSearch state row would supply the centre moves)",
+    "note": "the mount row and toolbar/status assertions are already green in PR #1020; only the ring-completion interaction is open"
+   }
   }
  }
 }
