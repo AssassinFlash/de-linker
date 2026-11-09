@@ -124,6 +124,12 @@ test('the full planner chain: report, transfer and the Woo solution draft', asyn
 	await site.locator('input').nth(0).fill('Triftstrasse 5');
 	await site.locator('input').nth(1).fill('48.1689');
 	await site.locator('input').nth(2).fill('11.5844');
+	// The project note travels with the handoff into the inquiry's
+	// revision-protected section (not a calculation input).
+	await page
+		.locator('#lp-notes textarea')
+		.first()
+		.fill('8 kWp roof with battery, Munich, south-facing');
 
 	await page.getByRole('link', { name: 'Project overview' }).click();
 	const roofEntry = page.locator('.lp-overview-empty .lp-button');
@@ -989,4 +995,41 @@ test('the full planner chain: report, transfer and the Woo solution draft', asyn
 		timeout: 30_000,
 	});
 	await expect(page.locator('body')).toContainText(/inquir|anfrage/i);
+	// The draft's own inquiry form submits as a guest: email, name and an
+	// open message; the carried note stays revision-protected server-side.
+	await page
+		.getByRole('link', { name: 'Send inquiry' })
+		.click({ timeout: 15_000 });
+	await expect(page).toHaveURL(/proforma-request/, { timeout: 30_000 });
+	// Scope every field to the inquiry form itself (action=linker_inquiry):
+	// the page also carries the cookie banner and the draft panel controls.
+	const inquiry = page.locator(
+		'form:has(input[name="action"][value="linker_inquiry"])'
+	);
+	await inquiry
+		.locator('input[type="email"]')
+		.first()
+		.fill('e2e-report-chain@example.test');
+	await inquiry
+		.locator('input[name="name"]')
+		.first()
+		.fill('E2E Report Chain');
+	await inquiry
+		.locator('textarea[name="message"]')
+		.first()
+		.fill('Please quote the transferred configuration.');
+	// The transferred page carries TWO checkboxes (include-notes renders
+	// before consent) - check consent by name or the required field stays
+	// empty and native validation silently blocks the submit.
+	await inquiry.locator('input[name="consent"]').check();
+	// The public guard refuses submissions less than 3 seconds after the
+	// form rendered (PublicGuard::MIN_SECONDS) - a human never fills this
+	// fast, the automation does.
+	await page.waitForTimeout(3500);
+	await inquiry.getByRole('button', { name: 'Send inquiry' }).click();
+	// The confirmation names the received inquiry state.
+	await expect(page.locator('body')).toContainText(
+		/inquiry received|anfrage eingegangen/i,
+		{ timeout: 60_000 }
+	);
 });
