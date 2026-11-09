@@ -26345,11 +26345,12 @@
   "state": "logo-upload",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: file upload UI automation boundary"
+   "planner-report-chain.spec.ts (PR #1037) - small PNG on the report form input, generation proceeds without the could-not-use notice",
+   "merged spec, review instance, 5.0m green"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -26359,7 +26360,9 @@
    "files-print",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "logo_upload": "PR #1037"
+  }
  },
  {
   "key": "configurator:logo-upload:en:390",
