@@ -417,50 +417,62 @@ time.sleep(120)
 
 
 def test_stop_reaches_an_untracked_worker_bound_to_this_instance(
-	worker: PlannerWorker, tmp_path: Path
+    worker: PlannerWorker, tmp_path: Path
 ) -> None:
-	marker = tmp_path / "orphan.pid"
-	orphan = subprocess.Popen(
-		[sys.executable, "-c", ORPHAN_CHILD, "linker_engine.planning.worker_host", " serve"],
-		env={
-			**os.environ,
-			"LINKER_PLANNER_CONFIG": str(worker.runtime_file),
-			"ORPHAN_MARKER": str(marker),
-		},
-		stdout=subprocess.DEVNULL,
-		stderr=subprocess.DEVNULL,
-	)
-	try:
-		for _ in range(100):
-			if marker.is_file():
-				break
-			time.sleep(0.05)
-		assert marker.is_file(), "orphan never became observable"
-		assert worker.untracked_workers() == [orphan.pid]
-		assert worker.stop() is True
-		orphan.wait(timeout=30)
-		assert worker.untracked_workers() == []
-	finally:
-		if orphan.poll() is None:
-			orphan.kill()
-			orphan.wait(timeout=30)
+    marker = tmp_path / "orphan.pid"
+    orphan = subprocess.Popen(
+        [
+            sys.executable,
+            "-c",
+            ORPHAN_CHILD,
+            "linker_engine.planning.worker_host",
+            " serve",
+        ],
+        env={
+            **os.environ,
+            "LINKER_PLANNER_CONFIG": str(worker.runtime_file),
+            "ORPHAN_MARKER": str(marker),
+        },
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    try:
+        for _ in range(100):
+            if marker.is_file():
+                break
+            time.sleep(0.05)
+        assert marker.is_file(), "orphan never became observable"
+        assert worker.untracked_workers() == [orphan.pid]
+        assert worker.stop() is True
+        orphan.wait(timeout=30)
+        assert worker.untracked_workers() == []
+    finally:
+        if orphan.poll() is None:
+            orphan.kill()
+            orphan.wait(timeout=30)
 
 
 def test_another_instances_worker_is_untouched(
-	worker: PlannerWorker, tmp_path: Path
+    worker: PlannerWorker, tmp_path: Path
 ) -> None:
-	other = tmp_path / "other-runtime.json"
-	other.write_text("{}")
-	survivor = subprocess.Popen(
-		[sys.executable, "-c", "import time; time.sleep(120)", "linker_engine.planning.worker_host", " serve"],
-		env={**os.environ, "LINKER_PLANNER_CONFIG": str(other)},
-		stdout=subprocess.DEVNULL,
-		stderr=subprocess.DEVNULL,
-	)
-	try:
-		assert survivor.pid not in worker.untracked_workers()
-		assert worker.stop_untracked_workers() == []
-		assert survivor.poll() is None
-	finally:
-		survivor.kill()
-		survivor.wait(timeout=30)
+    other = tmp_path / "other-runtime.json"
+    other.write_text("{}")
+    survivor = subprocess.Popen(
+        [
+            sys.executable,
+            "-c",
+            "import time; time.sleep(120)",
+            "linker_engine.planning.worker_host",
+            " serve",
+        ],
+        env={**os.environ, "LINKER_PLANNER_CONFIG": str(other)},
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    try:
+        assert survivor.pid not in worker.untracked_workers()
+        assert worker.stop_untracked_workers() == []
+        assert survivor.poll() is None
+    finally:
+        survivor.kill()
+        survivor.wait(timeout=30)
