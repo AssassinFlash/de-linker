@@ -165,7 +165,17 @@
     "Prepare equipment selection: disabled until an inverter_product_id is chosen (EquipmentSetup gate: blocked || !valid || !setup.inverter_product_id || !setup.operating_mode) - the customer picks real inverter/battery products from the Woo catalog first",
     "Check saved equipment selection / Calculate saved scenario / Generate planning report: downstream of the above"
    ],
-   "next": "explore the equipment product selection UI (inverter/battery selects under Choose equipment manually or Single system), pick catalog products, Prepare equipment selection -> Check saved equipment selection; then Scenario settings (Review energy inputs -> Use the shared profile range -> Add operating period -> Prepare scenario settings -> Calculate saved scenario) -> Generate planning report -> DraftTransferButton"
+   "next": "explore the equipment product selection UI (inverter/battery selects under Choose equipment manually or Single system), pick catalog products, Prepare equipment selection -> Check saved equipment selection; then Scenario settings (Review energy inputs -> Use the shared profile range -> Add operating period -> Prepare scenario settings -> Calculate saved scenario) -> Generate planning report -> DraftTransferButton",
+   "manual_picker": {
+    "open": "Equipment tab -> the \"Choose equipment manually\" <details><summary> (NOT a button - a summary click)",
+    "selects_seen": [
+     "Inverter or integrated storage system: Choose a product / SAJ H2-25K-T3 / SAJ H2-30K-T3-DE / SAJ HS2-10K-T2-X (real Woo catalog)",
+     "Battery or storage system: only \"No separate battery\" (battery capacity comes via the integrated system assembly, likely stack/module quantities in DcStorageForm)"
+    ],
+    "picked": "SAJ H2-25K-T3 (first option)",
+    "remaining_gate": "prepare equipment still disabled => !valid; find the still-empty required field next (assembly stack/module quantities for the chosen integrated system, or mode-dependent fields); then Prepare equipment selection -> double-save -> Check saved equipment selection -> Scenario -> report",
+    "note": "the probe pickProduct regex matched the inverter select for both picks - scope the battery pick by its own label or skip (No separate battery)"
+   }
   }
  }
 }
