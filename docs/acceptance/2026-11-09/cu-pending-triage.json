@@ -253,12 +253,22 @@
     "report_stage": {
       "date": "2026-11-09 late",
       "working": "report tab switch (workspace recovery via hash+page.reload after the equipment workspace), Energy-run select via label.lp-field scope, generate guards all green (gen-diag instrumented, since reverted)",
-      "blocker": "runs/report 422 report_wiring_check_required: the report requires an equipment check OF THE CURRENT SAVED PV STRINGS. The re-check attempt silently no-ops: startSolar entry guards pass, no throw, no start-wrapper early return (records clean after clearUnconfirmed), no submit early return, NO /planning/runs/equipment request reaches the engine - while runs/weather and runs/energy (direct operations.start callers) DO send. PV calculate ALSO silently no-ops in j26+ projects (no pv run rows) though it worked in j2-era. j24-26-era engine log shows /planning/runs/equipment 409 Conflict (revision mismatch) - whether the 409 phase and the silent phase are the same root cause is UNRESOLVED",
-      "next_session": "instrument the exact await chain in submit for runs/equipment: log AFTER store.write resolves and BEFORE/AFTER client.send (the only two unlogged awaits left); check whether PlanningJournal.write (IndexedDB) hangs; compare the working weather/energy paths call-by-call; ALSO investigate why runs/pv stopped creating runs",
+      "blocker": "RESOLVED ROOT CAUSE (2026-11-10, offline-reproducible): ALL runs/pv+runs/equipment requests on review fail 409 {code: product_evidence_changed}. Chain: EquipmentKernel.context -> electrical_module_basis -> publication.confirm -> PublicationChanged('Product engineering preparation changed') for product 8349 (Trina Solar TSM-460NEG9R.28 reference_pv_module, EN id, DE twin 8350). Product 8349 IS in the site publication manifest (with role/id/documents) but is NOT among the feed's 85 products (manifest has 86); readiness = PreparationJobs::readiness (state option loaded_products[8349] == current revision, i.e. the ENGINE must report loading 8349) - the load-report loop never closes because the engine never loads 8349 from the feed. Verified stable across stack restarts (j43 on a quiet stack still 409x3) and reproduced offline with the engine's own code (prep-diag named 8349 directly).",
+      "next_session": "Fix the 8349 readiness loop (see fix_options), re-run .scratch/probe-report-chain.spec.ts (cp to tests/e2e/specs, LINKER_E2E_INSTANCE=review) - the chain is otherwise fully proven to Generate+report markers; then transfer->draft readback (section already in the probe) and the 4 brief-chain rows",
       "product_findings": [
         "equipmentFocus trap: entering the equipment workspace and filling an incomplete scenario form (energyValid=false) makes chooseWorkspace REFUSE every back-switch - the customer is locked in the equipment workspace until a hard refresh (hash remount); tabs other than Equipment only switch views and never leave the workspace",
         "startSolar silent-return vs enabled button: the Check button's disabled set is narrower than startSolar's guards - an enabled button can silently no-op (production 2026-11-07 comment in source acknowledges this class)",
         "operations.start silently returns undefined when ANY stored record is unconfirmed - with no UI hint when the recovery details is collapsed"
+      ],
+      "fix_options": [
+        "site side: include the reference module in the engineering feed so the engine loads and reports it (the feed carries an 'overlay' key - the overlay load path may be the intended reporting channel; check why its receipt never lands in loaded_products)",
+        "or engine side: the module/reference scope confirm must not demand site-readiness for a product the feed never delivers (readiness loop cannot close by construction)",
+        "also note: manifest includes 8349 while feed excludes it - the two endpoints' product sets disagree; whichever is wrong, one generation of the pair is inconsistent"
+      ],
+      "waste_notes": [
+        "j24-j38 misread: post-send log sat after the await, so ERROR RESPONSES looked like hangs; response listener URL pattern ('/planning/runs/equipment') never matched the real rpc path ('/planning/rpc/runs/equipment')",
+        "offline repros MUST carry LINKER_PUBLICATION_URL - the default points at PRODUCTION de-linker.com and poisons the comparison",
+        "rev-diag on Workspace.get never fired: the 409 was never a revision conflict"
       ]
     }
   }
