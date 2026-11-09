@@ -1,0 +1,312 @@
+{
+  "evidence": [
+    {
+      "state": "de-1440-native-early-documents",
+      "url": "http://127.0.0.1:8889/de/faq-dokumente/#linker-library-panel-documents",
+      "scrollY": 0,
+      "width": 1440,
+      "height": 1000,
+      "stickyBottom": 468.8125,
+      "selected": "faq",
+      "query": "",
+      "first": null,
+      "results": null,
+      "active": [],
+      "focus": {
+        "id": "",
+        "tag": "BODY"
+      }
+    },
+    {
+      "state": "de-1440-hash-forward-preserved-query",
+      "url": "http://127.0.0.1:8889/de/faq-dokumente/?q=AIO3#linker-library-panel-faq",
+      "scrollY": 417,
+      "width": 1440,
+      "height": 1000,
+      "stickyBottom": 137,
+      "selected": "faq",
+      "query": "AIO3",
+      "first": null,
+      "results": {
+        "x": 80,
+        "y": 139.8125,
+        "width": 1280,
+        "height": 1147.609375,
+        "top": 139.8125,
+        "right": 1360,
+        "bottom": 1287.421875,
+        "left": 80
+      },
+      "active": [],
+      "focus": {
+        "id": "",
+        "tag": "BODY"
+      }
+    },
+    {
+      "state": "de-1440-saj-visible-brand",
+      "url": "http://127.0.0.1:8889/de/faq-dokumente/",
+      "scrollY": 3607,
+      "width": 1440,
+      "height": 1000,
+      "stickyBottom": 137,
+      "selected": "faq",
+      "query": "",
+      "first": null,
+      "results": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "active": [
+        {
+          "href": "#linker-library-zone-answers",
+          "current": null,
+          "hidden": false
+        },
+        {
+          "href": "#linker-library-answers-saj",
+          "current": "location",
+          "hidden": false
+        },
+        {
+          "href": "#linker-library-zone-answers",
+          "current": null,
+          "hidden": false
+        },
+        {
+          "href": "#linker-library-answers-saj",
+          "current": "location",
+          "hidden": false
+        }
+      ],
+      "focus": {
+        "id": "",
+        "tag": "SUMMARY"
+      }
+    },
+    {
+      "state": "de-1440-deep-faq-before-tab",
+      "url": "http://127.0.0.1:8889/de/faq-dokumente/?q=AIO3",
+      "scrollY": 1356,
+      "width": 1440,
+      "height": 1000,
+      "stickyBottom": 137,
+      "selected": "faq",
+      "query": "AIO3",
+      "first": null,
+      "results": {
+        "x": 80,
+        "y": -799.1875,
+        "width": 1280,
+        "height": 1348.859375,
+        "top": -799.1875,
+        "right": 1360,
+        "bottom": 549.671875,
+        "left": 80
+      },
+      "active": [],
+      "focus": {
+        "id": "linker-library-q",
+        "tag": "INPUT"
+      }
+    },
+    {
+      "state": "de-1440-deep-documents-after-tab",
+      "url": "http://127.0.0.1:8889/de/faq-dokumente/?q=AIO3&tab=documents",
+      "scrollY": 467,
+      "width": 1440,
+      "height": 1000,
+      "stickyBottom": 137,
+      "selected": "documents",
+      "query": "AIO3",
+      "first": {
+        "x": 81,
+        "y": 178.953125,
+        "width": 1278,
+        "height": 91,
+        "top": 178.953125,
+        "right": 1359,
+        "bottom": 269.953125,
+        "left": 81
+      },
+      "results": {
+        "x": 80,
+        "y": 149.8125,
+        "width": 1280,
+        "height": 361.421875,
+        "top": 149.8125,
+        "right": 1360,
+        "bottom": 511.234375,
+        "left": 80
+      },
+      "active": [],
+      "focus": {
+        "id": "linker-library-tab-documents",
+        "tag": "A"
+      }
+    },
+    {
+      "state": "de-1440-visible-query-no-scroll",
+      "url": "http://127.0.0.1:8889/de/faq-dokumente/?q=AIO3&tab=documents",
+      "scrollY": 0,
+      "width": 1440,
+      "height": 1000,
+      "stickyBottom": 532.8125,
+      "selected": "documents",
+      "query": "AIO3",
+      "first": {
+        "x": 81,
+        "y": 645.953125,
+        "width": 1278,
+        "height": 91,
+        "top": 645.953125,
+        "right": 1359,
+        "bottom": 736.953125,
+        "left": 81
+      },
+      "results": {
+        "x": 80,
+        "y": 616.8125,
+        "width": 1280,
+        "height": 361.421875,
+        "top": 616.8125,
+        "right": 1360,
+        "bottom": 978.234375,
+        "left": 80
+      },
+      "active": [],
+      "focus": {
+        "id": "linker-library-q",
+        "tag": "INPUT"
+      }
+    },
+    {
+      "locale": "de",
+      "width": 1440,
+      "state": "no-js-native-details-and-real-thumbnail",
+      "title": "GoodWe BAT-C Series 208.9–261.2 kWh Datasheet (EMEA, DE, V1.1)",
+      "path": "http://127.0.0.1:8889/de/faq-dokumente/",
+      "source": "native library fragments and real thumbnail bytes; no network intercept"
+    },
+    {
+      "locale": "de",
+      "width": 1440,
+      "state": "search-document",
+      "title": "SAJ eSolar AIO3 Datasheet (EN)",
+      "geometry": {
+        "row": {
+          "x": 81,
+          "y": 645.953125,
+          "width": 1278,
+          "height": 91,
+          "top": 645.953125,
+          "right": 1359,
+          "bottom": 736.953125,
+          "left": 81
+        },
+        "title": {
+          "x": 260.140625,
+          "y": 649.953125,
+          "width": 931.75,
+          "height": 20.25,
+          "top": 649.953125,
+          "right": 1191.890625,
+          "bottom": 670.203125,
+          "left": 260.140625
+        },
+        "action": {
+          "x": 1205.890625,
+          "y": 664.453125,
+          "width": 137.109375,
+          "height": 44,
+          "top": 664.453125,
+          "right": 1343,
+          "bottom": 708.453125,
+          "left": 1205.890625
+        }
+      }
+    },
+    {
+      "locale": "de",
+      "width": 1440,
+      "state": "search-document",
+      "title": "SAJ eSolar AIO3 Module Quick Installation Guide (EN)",
+      "geometry": {
+        "row": {
+          "x": 81,
+          "y": 766.09375,
+          "width": 1278,
+          "height": 91,
+          "top": 766.09375,
+          "right": 1359,
+          "bottom": 857.09375,
+          "left": 81
+        },
+        "title": {
+          "x": 254.546875,
+          "y": 770.09375,
+          "width": 937.34375,
+          "height": 20.25,
+          "top": 770.09375,
+          "right": 1191.890625,
+          "bottom": 790.34375,
+          "left": 254.546875
+        },
+        "action": {
+          "x": 1205.890625,
+          "y": 784.59375,
+          "width": 137.109375,
+          "height": 44,
+          "top": 784.59375,
+          "right": 1343,
+          "bottom": 828.59375,
+          "left": 1205.890625
+        }
+      }
+    },
+    {
+      "locale": "de",
+      "width": 1440,
+      "state": "search-document",
+      "title": "SAJ eSolar AIO3 EU declaration of conformity (multilingual)",
+      "geometry": {
+        "row": {
+          "x": 81,
+          "y": 886.234375,
+          "width": 1278,
+          "height": 91,
+          "top": 886.234375,
+          "right": 1359,
+          "bottom": 977.234375,
+          "left": 81
+        },
+        "title": {
+          "x": 250.75,
+          "y": 890.234375,
+          "width": 941.140625,
+          "height": 20.25,
+          "top": 890.234375,
+          "right": 1191.890625,
+          "bottom": 910.484375,
+          "left": 250.75
+        },
+        "action": {
+          "x": 1205.890625,
+          "y": 904.734375,
+          "width": 137.109375,
+          "height": 44,
+          "top": 904.734375,
+          "right": 1343,
+          "bottom": 948.734375,
+          "left": 1205.890625
+        }
+      }
+    }
+  ]
+}
