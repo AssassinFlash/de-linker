@@ -201,6 +201,12 @@
     ],
     "last_gate": [
      "Prepare still disabled after assignment => PvOperatingSetup operating conditions (Effective irradiance / Hot operating cell temperature / Cold operating cell temperature, from PvOperatingSetup.tsx lines 90-131) - the probe filled them by label but added no count log, so the next run must log getByLabel(...).count() first (the labels carry separate unit <small> spans; exact:false may be needed) and dump the validity-contributing fields again"
+    ],
+    "operating_conditions": [
+     "OPTIONAL for validity (PvOperatingSetup: valid = !conditions || (...)); \"Add operating conditions\" button lives inside the CLOSED \"Electrical operating conditions\" details and creates the null fields - that is why the labels were absent from the DOM scan"
+    ],
+    "prepare_still_disabled_with": [
+     "8/8 assigned, temperature/source/MPPT/input valid, inverter+mode+quantities set, catalog prepared - remaining suspects: (a) catalog.isFetching transient at the check moment, (b) a validity-map entry whose field never reported (unmounted NumberField), (c) setup.inverter_product_id falsy at check time - next session: capture the revise payload again (pv_plant_string_plan present?) and poll prepare-enabled with retries over 10s before concluding"
     ]
    }
   }
