@@ -605,7 +605,7 @@ final class EngineeringFeedTest extends TestCase {
 		foreach ( $figures as $key => $entry ) {
 			if ( is_string( $entry['citation']['url'] ?? null ) ) {
 				$bindings[ $key ] = array(
-					'figure_revision' => \Linker\Commerce\Products\Publication::revision( $entry ),
+					'figure_revision' => \Linker\Commerce\Products\Publication::figure_revision( $entry ),
 					'document_id'     => \Linker\Commerce\Products\Publication\DocumentFiles::id( $document_url ),
 					'blob_sha256'     => hash_file( 'sha256', $this->publication_uploads . '/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf' ),
 				);

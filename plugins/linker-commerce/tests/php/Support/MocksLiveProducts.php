@@ -96,7 +96,7 @@ trait MocksLiveProducts {
 					$bindings[ $id ][ $field ] = array(
 						'document_id'     => hash( 'sha256', $url ),
 						'blob_sha256'     => hash( 'sha256', $url ),
-						'figure_revision' => \Linker\Commerce\Products\Publication::revision( $entry ),
+						'figure_revision' => \Linker\Commerce\Products\Publication::figure_revision( $entry ),
 					);
 				}
 			}

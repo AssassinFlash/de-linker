@@ -17,6 +17,7 @@ import { expect, test } from '@playwright/test';
  * Internal dependencies
  */
 import {
+	engineFetch,
 	engineGet,
 	enginePost,
 	HOUSEHOLDS,
@@ -118,7 +119,10 @@ test.describe('Solution Configurator', () => {
 				one.failed.map((rule) => rule.id),
 			])
 		);
-		for (const model of ['EF HD-P1-6K0-S2', 'GW6K-EHA-G20']) {
+		// The EcoFlow single-phase models are drafts the catalog does not
+		// carry, so only GoodWe's GW6K-EHA-G20 (6 kW, single-phase) can be
+		// asked to fail the unbalance limit.
+		for (const model of ['GW6K-EHA-G20']) {
 			expect(
 				excluded.get(model),
 				`${model} must be excluded for the single-phase limit`
@@ -310,7 +314,19 @@ test.describe('Solution Configurator', () => {
 
 	test('the design report is a PDF in both languages', async () => {
 		for (const locale of ['en', 'de']) {
-			const response = await fetch(`${instance().engineUrl}/report/pdf`, {
+			// The report is tied to a confirmed selection: design first and
+			// carry the selection fingerprint into the report request.
+			const design = await enginePost<ResidentialResult>(
+				'/design/residential',
+				{
+					locale,
+					plz: PLZ,
+					annual_kwh: 5000,
+					pv_kwp: 10,
+					phase: 3,
+				}
+			);
+			const response = await engineFetch('/report/pdf', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
@@ -321,6 +337,7 @@ test.describe('Solution Configurator', () => {
 						pv_kwp: 10,
 						phase: 3,
 					},
+					selection_fingerprint: design.selection_fingerprint,
 				}),
 			});
 			expect(response.status, `the ${locale} report`).toBe(200);

@@ -25,7 +25,7 @@ trait BoundFaqFixture {
 	private static function bound_faqs( array $answers, string $document_id, string $sha ): array {
 		$bindings = array();
 		foreach ( Faqs::normalize( $answers ) as $answer ) {
-			$revision              = Publication::revision( $answer );
+			$revision              = Publication::figure_revision( $answer );
 			$bindings[ $revision ] = array(
 				'document_id'     => $document_id,
 				'blob_sha256'     => $sha,

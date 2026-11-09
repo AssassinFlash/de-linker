@@ -57,7 +57,7 @@ final class EvidenceBindings {
 		$id      = Publication::canonical_id( $id );
 		$entries = array();
 		foreach ( Faqs::of( $id ) as $entry ) {
-			$entries[ Publication::revision( $entry ) ] = $entry;
+			$entries[ Publication::figure_revision( $entry ) ] = $entry;
 		}
 		self::capture_entries( $id, $entries, self::FAQ_META_KEY, $adopt_existing );
 	}
@@ -84,7 +84,7 @@ final class EvidenceBindings {
 				continue;
 			}
 			$old = $previous[ $key ] ?? null;
-			if ( $adopt_existing ? ! array_key_exists( $key, $previous ) : ! is_array( $old ) || ( $old['figure_revision'] ?? '' ) !== Publication::revision( $entry ) ) {
+			if ( $adopt_existing ? ! array_key_exists( $key, $previous ) : ! is_array( $old ) || ( $old['figure_revision'] ?? '' ) !== Publication::figure_revision( $entry ) ) {
 				$needed = true;
 				break;
 			}
@@ -125,7 +125,7 @@ final class EvidenceBindings {
 			if ( ! is_array( $entry ) || ! is_array( $entry['citation'] ?? null ) ) {
 				continue;
 			}
-			$fingerprint = Publication::revision( $entry );
+			$fingerprint = Publication::figure_revision( $entry );
 			$old         = $previous[ $key ] ?? null;
 			if ( ( $adopt_existing && array_key_exists( $key, $previous ) ) || ( is_array( $old ) && ( $old['figure_revision'] ?? '' ) === $fingerprint ) ) {
 				$next[ $key ] = $previous[ $key ];
@@ -171,7 +171,7 @@ final class EvidenceBindings {
 	 * @param array<string,mixed> $document Current allowed document.
 	 */
 	public static function matches_faq( int $id, array $entry, array $document ): bool {
-		return self::binding_matches( $id, self::FAQ_META_KEY, Publication::revision( $entry ), $entry, $document );
+		return self::binding_matches( $id, self::FAQ_META_KEY, Publication::figure_revision( $entry ), $entry, $document );
 	}
 
 	/**
@@ -186,6 +186,6 @@ final class EvidenceBindings {
 	private static function binding_matches( int $id, string $meta_key, string $key, array $entry, array $document ): bool {
 		$bindings = get_post_meta( $id, $meta_key, true );
 		$binding  = is_array( $bindings ) ? ( $bindings[ $key ] ?? null ) : null;
-		return is_array( $binding ) && ( $binding['figure_revision'] ?? '' ) === Publication::revision( $entry ) && ( $binding['document_id'] ?? '' ) === $document['document_id'] && ( $binding['blob_sha256'] ?? '' ) === $document['blob_sha256'];
+		return is_array( $binding ) && ( $binding['figure_revision'] ?? '' ) === Publication::figure_revision( $entry ) && ( $binding['document_id'] ?? '' ) === $document['document_id'] && ( $binding['blob_sha256'] ?? '' ) === $document['blob_sha256'];
 	}
 }

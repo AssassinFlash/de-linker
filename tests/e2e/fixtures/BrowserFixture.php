@@ -135,8 +135,8 @@ final class BrowserFixture {
 	 * @return list<array{to: string[], headers: array<string, string>|null, subject: string}>
 	 */
 	private function mail_evidence(): array {
-		$state  = $this->state();
-		$mail   = array();
+		$state = $this->state();
+		$mail  = array();
 		foreach ( $this->queued_jobs() as $id ) {
 			$message = json_decode( get_post_meta( $id, '_linker_mail_message', true ), true );
 			if ( is_array( $message ) ) {
@@ -145,12 +145,15 @@ final class BrowserFixture {
 		}
 		$since = $state['time'] ?? 0;
 		$logs  = wp_get_upload_dir()['basedir'] . '/wc-logs/';
-		foreach ( glob( $logs . 'linker-mail-*.log' ) ?: array() as $file ) {
-			foreach ( file( $file, FILE_IGNORE_NEW_LINES ) ?: array() as $line ) {
+		$files = glob( $logs . 'linker-mail-*.log' );
+		foreach ( is_array( $files ) ? $files : array() as $file ) {
+			$lines = file( $file, FILE_IGNORE_NEW_LINES );
+			foreach ( is_array( $lines ) ? $lines : array() as $line ) {
 				if ( ! preg_match( '/^(\S+) \S+ Email "([^"]*)" sent to (\S+)\./', $line, $m ) ) {
 					continue;
 				}
-				$stamp = strtotime( $m[1] ) ?: 0;
+				$stamp = strtotime( $m[1] );
+				$stamp = false === $stamp ? 0 : $stamp;
 				// TestMode rewrites every recipient to the tester; a log line
 				// addressed to either is this fixture's mail.
 				if ( $stamp < $since || ! in_array( $m[3], array( $state['email'], $this->tester ), true ) ) {

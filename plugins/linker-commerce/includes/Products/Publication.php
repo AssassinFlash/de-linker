@@ -42,6 +42,26 @@ final class Publication {
 	}
 
 	/**
+	 * A figure entry's identity, independent of which site host its citation names.
+	 *
+	 * A local instance's database rewrite replaces the citation URL's host
+	 * (de-linker.com -> 127.0.0.1:port); the fact and the cited bytes are the
+	 * same, so the binding fingerprint must not change with the host.
+	 *
+	 * @param array<string,mixed> $entry Figure entry with a citation.
+	 * @return string Host-insensitive revision of the entry.
+	 */
+	public static function figure_revision( array $entry ): string {
+		if ( is_array( $entry['citation'] ?? null ) && is_string( $entry['citation']['url'] ?? null ) ) {
+			$entry['citation'] = array_merge(
+				$entry['citation'],
+				array( 'url' => (string) wp_parse_url( $entry['citation']['url'], PHP_URL_PATH ) )
+			);
+		}
+		return self::revision( $entry );
+	}
+
+	/**
 	 * Normalize object keys recursively.
 	 *
 	 * @param mixed $value Content to normalize.
