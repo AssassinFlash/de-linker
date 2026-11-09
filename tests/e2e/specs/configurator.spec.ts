@@ -76,6 +76,41 @@ test.describe('Solution Configurator', () => {
 		});
 	}
 
+	test('the German design answers with German labels on the same contract', async () => {
+		const result = await enginePost<ResidentialResult>(
+			'/design/residential',
+			{
+				locale: 'de',
+				plz: PLZ,
+				annual_kwh: 5000,
+				pv_kwp: 10,
+				phase: 3,
+			}
+		);
+		expect(result.status).toBe('solution');
+		expect(result.selected, 'a system is selected').not.toBeNull();
+		const labels = result
+			.selected!.lines.map((line) => line.label)
+			.join('\n');
+		for (const word of [
+			'Hybridwechselrichter',
+			'Batteriemodule',
+			'Montagesystem',
+		]) {
+			expect(
+				labels,
+				`the bill of materials names ${word} in German`
+			).toContain(word);
+		}
+		expect(JSON.stringify(result), 'the metrics read in German').toContain(
+			'Autarkie'
+		);
+		// The rule basis stays canonical: the same HTW ids answer either language.
+		expect(result.storage.basis.map((rule) => rule.id)).toEqual(
+			expect.arrayContaining(['htw_min_pv'])
+		);
+	});
+
 	test('a three-phase 10 kWp home gets a complete released system', async () => {
 		const result = await design({});
 		expect(result.status).toBe('solution');
