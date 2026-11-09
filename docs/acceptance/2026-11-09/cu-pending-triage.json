@@ -49,6 +49,13 @@
     "coord_dialog": "#lp-design button 'Coordinate references' (enabled once sources exist), select[name=north] -> true_north, select[name=north_source]",
     "start": "#lp-design button 'Start roof drawing'"
    }
+  },
+  "drawing_surface": {
+   "verified": "live probe after mount",
+   "toolbar": "Show full design / + / - / North up / Add corner at map centre / Load street map / Main roof (object) / Add module array (disabled until a closed ring); while drawing: Remove last corner / Pause drawing / Discard drawing",
+   "aria": "Design view, Map drawing, Map controls, Zoom in/out, Project map, Map attribution, Design objects and properties, Select a design object",
+   "status": "role=status reports 'Recorded corners: N' live as corners are added - the outline-draw state is directly assertable",
+   "finding": "Add corner places a corner at the CURRENT map centre: repeated clicks at the same centre do not advance the count past 1 (the second same-position corner is deduplicated). A ring needs the viewport centre moved between clicks (pan or address re-centre) - the controller tests' click-at-distinct-points semantics map to pan-then-add in the browser"
   }
  }
 }
