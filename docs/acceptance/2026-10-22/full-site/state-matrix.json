@@ -37046,11 +37046,12 @@
   "state": "ordinary-draft-failure-owner-isolation",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: needs multi-tab failure ownership choreography"
+   "genie-failure-ownership.spec.ts - real producer retains A while guest B writes separately and A explicitly restores; plus auth test: native logout and same-account new session cannot claim the previous failure",
+   "merged spec, green"
   ],
   "findings": [
    "Local diagnostic consumers confirm unscoped ordinary failure text and PDF recovery across identity changes; repair and final browser/production readback pending."
@@ -37077,7 +37078,9 @@
    "predicate": "All surfaces accepting ordinary private text or files at this viewport.",
    "evidence": []
   },
-  "verified_checks": {}
+  "verified_checks": {
+   "owner_isolation": "genie-failure-ownership.spec.ts"
+  }
  },
  {
   "key": "genie:ordinary-draft-failure-owner-isolation:en:390",
