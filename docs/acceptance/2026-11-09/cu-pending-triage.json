@@ -90,7 +90,9 @@
     "attempted": "two runs",
     "results": "Remove last corner works (counter 3->2 asserted green), but the re-add click does not advance the counter back to 3 - neither the exact re-click of the removed position (dedup, expected) nor a fresh offset point 20px away (unexpected)",
     "hypothesis": "the remove button's click path resets the collector's gesture state (this.completed) or re-creates the controller, and the next canvas click after a button-driven remove does not append until a full gesture cycle re-arms it - needs a source read of MapPrefixController.remove + the up handler, not more blind probes",
-    "discipline": "two consecutive failures without new diagnostic info -> stopped, reverted the spec insertion (main stays green), recorded"
+    "discipline": "two consecutive failures without new diagnostic info -> stopped, reverted the spec insertion (main stays green), recorded",
+    "status": "resolved",
+    "resolution": "Root cause: clicking Remove last corner scrolls the canvas ~535px out of the viewport; subsequent clicks land on the .lp-map-drawing panel, never on the canvas. Domain/journal/controller were all innocent - no rejection ever occurred, and the earlier same-spot \"dedup\" observation was the same artifact. Fix in spec: re-scrollIntoView + 800ms settle + fresh bounding box before the re-add click; the removed point left the ring so the same spot re-adds. Row landed green in planner-map-chain.spec.ts (4->3->4)."
    }
   }
  }
