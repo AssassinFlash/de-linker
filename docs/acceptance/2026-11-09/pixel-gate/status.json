@@ -1,0 +1,28 @@
+{
+  "phase": "pixel-parity-status-1109",
+  "date": "2026-11-09",
+  "run": "node tests/visual/pixel-parity.mjs /tmp/pixgate-1109 https://de-linker.com http://127.0.0.1:8889 --widths 1440,390 --paths /,/de/ --allow-header /de/:1440:89",
+  "raw_counts": {
+    "home-1440": "66295 differing pixels, bounds y 4671-6899 (the testimonials section)",
+    "home-390": "77120 differing pixels, bounds y 5265-7448 (the testimonials section)",
+    "de-390": "334089 differing pixels, whole page; section geometry byte-identical",
+    "de-1440": "size mismatch 8595 vs 8616 (21px height difference) - dimension fail"
+  },
+  "root_cause": {
+    "mechanism": "the SAME image file (same URL, same md5 75a0d67..., same 74284 bytes on disk both sides) decodes to 2400x1593 in the live browser and 2048x1360 in the local browser at 1440; at 390 live serves the -768x510 srcset variant while local serves the full file",
+    "driver": "the live CDN/interchange layer answers the same URL with a differently-sized encoding stream depending on request context; the local snapshot's static file answers with its single stored encoding",
+    "consequence": "object-fit:cover crops the differently-proportioned decode into a 21px taller story card at de-1440 (size fail) and shifts cover crops across the testimonials band on every page; it is NOT a content or code difference",
+    "evidence": [
+      "live vs local section geometry on /de/ identical at 390 to the pixel (pageH 9734 both, every section same bounds)",
+      "story card height chain: media img natural 2400x1593 (live) vs 2048x1360 (local) -> story 915 vs 936 -> testimonials 1459 vs 1480 -> page 8613 vs 8634",
+      "byte identity: md5 75a0d678... both sides for linker-installers-buy-through-linker.webp",
+      "the EN home diffs sit in the same y band (testimonials) with identical section bounds outside it"
+    ]
+  },
+  "classification": "a real dynamic region in the pixel gate's sense: the response varies with request environment although the source file is identical. Per the gate rules this must be DECLARED as a ruled dynamic item to the owner (or the capture must normalize the variant: request the same srcset variant on both sides) - not silently masked",
+  "next_step_for_cu_walkthrough": [
+    "rerun the gate with the capture requesting an identical image variant on both bases (e.g. fixed DPR/accept headers) so the diff counts only true render differences",
+    "the 44 cu-pass-pending rows and the replica pixel gate then run in one pass once an image-capable model session is available for visual confirmation of the declared dynamic regions"
+  ],
+  "artifacts": "results.json and capture.json in this directory (full-page PNG pairs and red-difference images in /tmp/pixgate-1109, reclaimed after archiving the JSON)"
+}
