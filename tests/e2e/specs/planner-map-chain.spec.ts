@@ -9,7 +9,7 @@
 /**
  * External dependencies
  */
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 /**
  * Internal dependencies
@@ -21,9 +21,10 @@ test.beforeEach(async ({ context }) => {
 	await seedConsentCookies(context);
 });
 
-test('the map workspace mounts from a plain project through the full chain', async ({
-	page,
-}) => {
+/** Drives a plain project through the full gate chain - site anchor, first
+ * roof face, true-north coordinate reference - into a mounted, collecting
+ * map workspace with the corner counter live. */
+async function openDrawingWorkspace(page: Page) {
 	await page.goto(instance().url + '/solution-configurator/', {
 		waitUntil: 'networkidle',
 	});
@@ -120,6 +121,13 @@ test('the map workspace mounts from a plain project through the full chain', asy
 	await page.waitForTimeout(800);
 	const counter = page.locator('#lp-design [role="status"]');
 	await expect(counter).toContainText('Recorded corners: 0');
+	return { counter };
+}
+
+test('the map workspace mounts from a plain project through the full chain', async ({
+	page,
+}) => {
+	const { counter } = await openDrawingWorkspace(page);
 	const rect = (await page.locator('.maplibregl-canvas').boundingBox())!;
 	const spots: Array<[number, number]> = [
 		[rect.x + rect.width * 0.4, rect.y + rect.height * 0.4],
@@ -371,4 +379,61 @@ test('the map workspace mounts from a plain project through the full chain', asy
 	await expect(
 		boundaries.locator('option', { hasText: 'Obstacle footprint' })
 	).toBeAttached({ timeout: 30_000 });
+});
+
+test('external map requests wait for the street-map opt-in and recover from tile failure', async ({
+	page,
+}) => {
+	// The address-search row of the privacy gate: no tile, glyph, geolocation
+	// or address-search request leaves the browser until the visitor selects
+	// the disclosed Load street map action (spec 548).
+	const external: string[] = [];
+	await page.route('**/*', (route) => {
+		const url = route.request().url();
+		if (!url.includes('127.0.0.1') && !url.startsWith('data:'))
+			external.push(url);
+		void route.continue();
+	});
+	const { counter } = await openDrawingWorkspace(page);
+	const rect = (await page.locator('.maplibregl-canvas').boundingBox())!;
+	await page.mouse.click(
+		rect.x + rect.width * 0.4,
+		rect.y + rect.height * 0.4
+	);
+	await expect(counter).toContainText('Recorded corners: 1', {
+		timeout: 10_000,
+	});
+	await page.mouse.click(
+		rect.x + rect.width * 0.6,
+		rect.y + rect.height * 0.4
+	);
+	await expect(counter).toContainText('Recorded corners: 2', {
+		timeout: 10_000,
+	});
+	expect(
+		external,
+		'no external request before the street-map opt-in'
+	).toEqual([]);
+
+	// The single opt-in: the street style and its tiles then flow.
+	await page.getByRole('button', { name: 'Load street map' }).click();
+	await expect
+		.poll(() => external.length, { timeout: 30_000 })
+		.toBeGreaterThan(0);
+
+	// The permission-error row: denied street tiles surface the failure
+	// notice without touching the recorded geometry, and retrying after the
+	// denial is lifted recovers the map.
+	await page.route('**tiles.openfreemap.org/**', (route) => route.abort());
+	await page.getByRole('button', { name: 'Hide street map' }).click();
+	await page.getByRole('button', { name: 'Load street map' }).click();
+	const notice = page
+		.locator('.lp-map-view')
+		.getByText('could not be fully displayed');
+	await expect(notice).toBeVisible({ timeout: 30_000 });
+	await expect(counter).toContainText('Recorded corners: 2');
+	await page.unroute('**tiles.openfreemap.org/**');
+	await page.getByRole('button', { name: 'Retry loading map' }).click();
+	await expect(notice).toBeHidden({ timeout: 30_000 });
+	await expect(page.locator('.maplibregl-canvas')).toBeVisible();
 });
