@@ -8,10 +8,39 @@
 /**
  * Internal dependencies
  */
-import { instance } from './instance';
+import { createHash } from 'node:crypto';
+import { instance, wp } from './instance';
+
+/**
+ * The engine's POST gate requires the shared service token (gate.py, enforce
+ * on every served instance); the token is the instance's own, read once per
+ * process.
+ */
+let serviceToken: string | null = null;
+function token(): string {
+	if (serviceToken === null) {
+		serviceToken = wp([
+			'config',
+			'get',
+			'LINKER_GENIE_SERVICE_TOKEN',
+			'--type=constant',
+		]).trim();
+	}
+	return serviceToken;
+}
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-	const response = await fetch(`${instance().engineUrl}${path}`, init);
+	const headers = new Headers(init?.headers);
+	headers.set('x-linker-service-token', token());
+	// The engine's capacity slots key on the caller's stable subject.
+	headers.set(
+		'x-linker-resource-subject',
+		createHash('sha256').update('e2e-engine-contract').digest('hex')
+	);
+	const response = await fetch(`${instance().engineUrl}${path}`, {
+		...init,
+		headers,
+	});
 	const body = await response.text();
 	if (!response.ok) {
 		throw new Error(
@@ -19,6 +48,23 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 		);
 	}
 	return JSON.parse(body) as T;
+}
+
+/**
+ * An authorized raw response from the engine (the gate's token and subject
+ * headers included): for consumers that read bytes, like the PDF report.
+ */
+export function engineFetch(
+	path: string,
+	init?: RequestInit
+): Promise<Response> {
+	const headers = new Headers(init?.headers);
+	headers.set('x-linker-service-token', token());
+	headers.set(
+		'x-linker-resource-subject',
+		createHash('sha256').update('e2e-engine-contract').digest('hex')
+	);
+	return fetch(`${instance().engineUrl}${path}`, { ...init, headers });
 }
 
 export function engineGet<T>(path: string): Promise<T> {
@@ -81,6 +127,7 @@ export interface StringGroup {
 
 export interface ResidentialResult {
 	status: 'solution' | 'no_candidate';
+	selection_fingerprint?: string;
 	yield: {
 		kwh_year_range: Range;
 		kwh_per_kwp_range: Range;

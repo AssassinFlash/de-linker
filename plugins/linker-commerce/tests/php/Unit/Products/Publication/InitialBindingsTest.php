@@ -172,7 +172,7 @@ final class InitialBindingsTest extends TestCase {
 	/** An existing entry key, even null or an invalid array, is historical and stays fail closed. */
 	public function test_malformed_existing_entries_are_preserved_without_pdf_reads(): void {
 		WP_Mock::userFunction( 'wp_upload_dir' )->never();
-		$faq_key = Publication::revision( Faqs::of( 12 )[0] );
+		$faq_key = Publication::figure_revision( Faqs::of( 12 )[0] );
 		foreach ( array( null, 'damaged', array() ) as $malformed ) {
 			$figures = array( 'rated_ac_power_kw' => $malformed );
 			$faqs    = array( $faq_key => $malformed );
