@@ -156,6 +156,16 @@
    "next": [
     "Equipment tab (Single system, operating mode/grid/phase, kWp/kWh/kW, PV strings via Set up PV strings or Single system flow) -> Scenario settings -> Generate planning report -> DraftTransferButton -> inquiry; the probe in .scratch carries the full working sequence"
    ]
+  },
+  "equipment_stage": {
+   "status": "requirements filled and saved; product gates mapped",
+   "done": "Equipment tab -> Single system -> operating mode (index 1 Grid-connected) + Grid connection (index 1) + PV array kWp 8 + Required usable energy kWh 10 + Required continuous AC discharge kW 5 -> double-save (Saved); product catalog prepared=true after Reload product data (the initial \"is being prepared\" was just the first fetch being in flight; feed has figure_projection_version 2 + compatibility_origin woocommerce)",
+   "gates_remaining": [
+    "Set up PV strings: still disabled (needs the wiring-plan prerequisites - read PvStringSetup.tsx gate next)",
+    "Prepare equipment selection: disabled until an inverter_product_id is chosen (EquipmentSetup gate: blocked || !valid || !setup.inverter_product_id || !setup.operating_mode) - the customer picks real inverter/battery products from the Woo catalog first",
+    "Check saved equipment selection / Calculate saved scenario / Generate planning report: downstream of the above"
+   ],
+   "next": "explore the equipment product selection UI (inverter/battery selects under Choose equipment manually or Single system), pick catalog products, Prepare equipment selection -> Check saved equipment selection; then Scenario settings (Review energy inputs -> Use the shared profile range -> Add operating period -> Prepare scenario settings -> Calculate saved scenario) -> Generate planning report -> DraftTransferButton"
   }
  }
 }
