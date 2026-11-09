@@ -292,6 +292,20 @@
         "row2_revisions": "note+revision render PROVEN on the form; submission pending the blocker above",
         "row3_isolation": "unstarted",
         "row4_consume": "unstarted"
+      },
+      "SUBMISSION_GREEN_2026_11_10": {
+        "result": "FULL CHAIN + GUEST INQUIRY PASSED (4.9-5.0m, twice): 302 -> /proforma-request/inquiry-received/<order>/?key=wc_order_... - a real Woo order confirmation. The customer journey e2e is complete: planner -> report -> transfer -> solution draft -> inquiry received.",
+        "two_real_gates_found": [
+          "PublicGuard::MIN_SECONDS=3: submissions under 3s after render are refused too_fast with only the generic 'Please check your entries' flash - automation must wait like a human",
+          "the transferred page has TWO checkboxes (include-notes renders before consent); positional .first() checks the wrong one and the required consent silently fails native validation (zero POST, no visible error in headless)"
+        ],
+        "merged": "PR #1034 (main=19e00acbc); diagnostics stripped; verified green twice",
+        "matrix_rows": {
+          "row1_readback": "DONE (in spec)",
+          "row2_revisions": "happy path DONE (note+revision on form + submission accepted); tamper/409 branch still open",
+          "row3_isolation": "open",
+          "row4_consume": "open"
+        }
       }
     }
   }
