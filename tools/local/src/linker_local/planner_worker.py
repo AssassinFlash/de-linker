@@ -494,10 +494,30 @@ class PlannerWorker:
 
         A worker's command line carries no instance identity, but its
         environment does: LINKER_PLANNER_CONFIG points at this instance's
-        runtime file. The owned pid (any record) is excluded.
+        runtime file. The owned pid (any record) is excluded. Linux reads
+        /proc directly; Darwin's ps exposes the same facts.
         """
         owned = self.process.pid()
         runtime = str(self.runtime_file.resolve())
+        found: list[int] = []
+        proc = Path("/proc")
+        if proc.is_dir():
+            marker = f"LINKER_PLANNER_CONFIG={runtime}".encode()
+            for entry in proc.iterdir():
+                if not entry.name.isdigit():
+                    continue
+                pid = int(entry.name)
+                if pid == owned:
+                    continue
+                try:
+                    if marker not in (entry / "environ").read_bytes().split(b"\x00"):
+                        continue
+                    command = (entry / "cmdline").read_bytes()
+                except OSError:
+                    continue
+                if b"linker_engine.planning.worker_host" in command:
+                    found.append(pid)
+            return found
         try:
             listing = subprocess.run(
                 ["ps", "-axo", "pid=,command="],
@@ -506,8 +526,7 @@ class PlannerWorker:
                 timeout=10.0,
             ).stdout
         except (OSError, subprocess.SubprocessError):
-            return []
-        found: list[int] = []
+            return found
         for line in listing.splitlines():
             if "linker_engine.planning.worker_host" not in line:
                 continue
@@ -526,21 +545,7 @@ class PlannerWorker:
 
     @staticmethod
     def _environment(pid: int) -> str:
-        """One process's environment as text, empty when unreadable.
-
-        Linux exposes it natively; Darwin's ps appends it to the command
-        column for the caller's own processes.
-        """
-        environ = Path(f"/proc/{pid}/environ")
-        if environ.is_file():
-            try:
-                return (
-                    environ.read_bytes()
-                    .replace(b"\x00", b"\n")
-                    .decode(errors="replace")
-                )
-            except OSError:
-                return ""
+        """One Darwin process's environment as text, empty when unreadable."""
         try:
             return subprocess.run(
                 ["ps", "-E", "-o", "command=", "-p", str(pid)],
