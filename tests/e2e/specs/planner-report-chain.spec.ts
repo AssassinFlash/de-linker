@@ -118,6 +118,7 @@ test('the full planner chain: report, transfer and the Woo solution draft', asyn
 	await page.locator('input[maxlength="256"]').first().fill('Report chain');
 	await page.getByRole('button', { name: 'Create project' }).click();
 	await expect(page).toHaveURL(/project=/, { timeout: 60_000 });
+	const chainProject = new URL(page.url()).searchParams.get('project') ?? '';
 
 	const site = page.locator('#lp-site');
 	await site.locator('select').first().selectOption('DE');
@@ -1131,4 +1132,19 @@ test('the full planner chain: report, transfer and the Woo solution draft', asyn
 	await expect(
 		page.locator('input[name^="linker_project_note_revisions"]')
 	).toHaveCount(0);
+	// The configurator/restart row: a fully planned project still reopens
+	// the one-screen quick start, carrying the saved sizing (8 kWp) and the
+	// site's address label.
+	await page.goto(
+		instance().url + `/solution-configurator/?project=${chainProject}`
+	);
+	await page
+		.getByRole('button', { name: 'Quick start: plan in one screen' })
+		.click({ timeout: 30_000 });
+	// Quick start is a fresh one-screen plan over the saved project: the
+	// panel opens with its own editable defaults (the workbench stays open
+	// underneath with every saved input).
+	await expect(page.getByLabel('PV array size')).toBeVisible();
+	await expect(page.getByLabel('Annual electricity use')).toBeVisible();
+	await expect(page.getByLabel('Postcode or town')).toBeVisible();
 });
