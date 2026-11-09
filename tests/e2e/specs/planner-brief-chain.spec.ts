@@ -14,7 +14,7 @@ import { expect, test, type Page } from '@playwright/test';
  * Internal dependencies
  */
 import { seedConsentCookies } from '../lib/consent';
-import { instance } from '../lib/instance';
+import { instance, wp } from '../lib/instance';
 
 const NOTE = '8 kWp roof with battery, Munich, south-facing';
 
@@ -171,4 +171,119 @@ test('a failed note save keeps the text and retries on its own', async ({
 	await expect(
 		page.locator('.lp-project-brief-start [role="status"]')
 	).toContainText('Project note saved.');
+});
+
+test('two projects keep revisions apart and a concurrent save conflicts visibly', async ({
+	context,
+}) => {
+	const create = async (title: string) => {
+		const p = await context.newPage();
+		await p.goto(instance().url + '/solution-configurator/');
+		await p.getByRole('button', { name: 'New project' }).first().click();
+		await p.locator('input[maxlength="256"]').first().fill(title);
+		await p.getByRole('button', { name: 'Create project' }).click();
+		await expect(p).toHaveURL(/project=/, { timeout: 60_000 });
+		return p;
+	};
+
+	// Two projects coexist for one customer session.
+	const first = await create('Revision conflict e2e');
+	const second = await create('Second project in parallel');
+	await expect(second.locator('body')).toContainText('Second project');
+	await second.close();
+
+	// The same project opened in a second tab saves a new revision first.
+	const other = await context.newPage();
+	await other.goto(first.url());
+	const address = other.locator('#lp-site input').nth(0);
+	await address.fill('Triftstrasse 15');
+	await other.getByRole('button', { name: 'Save project' }).click();
+	await expect(other.locator('.lp-save-state')).toContainText('Saved', {
+		timeout: 60_000,
+	});
+
+	// The first tab still holds the older revision; saving its own edit hits
+	// the conflict, which keeps both sides and offers a choice.
+	const stale = first.locator('#lp-site input').nth(0);
+	await stale.fill('Triftstrasse 25');
+	await first.getByRole('button', { name: 'Save project' }).click();
+	await expect(
+		first.getByText(
+			'Open changes have been kept alongside the saved revision.'
+		)
+	).toBeVisible({ timeout: 30_000 });
+
+	// Choosing the saved revision clears the conflict and shows the other
+	// tab's value.
+	await first.getByRole('button', { name: 'Use saved revision' }).click();
+	await expect(
+		first.getByText(
+			'Open changes have been kept alongside the saved revision.'
+		)
+	).toBeHidden({ timeout: 30_000 });
+	await expect(first.locator('#lp-site input').nth(0)).toHaveValue(
+		'Triftstrasse 15'
+	);
+	await other.close();
+});
+
+test('a guest project transfers to the account that signs in', async ({
+	page,
+}) => {
+	// An approved account exists to receive the guest's project.
+	const stamp = `${Date.now()}`.slice(-9);
+	const login = `e2e-brief-claim-${stamp}`;
+	const password = 'e2e-Account-2026!';
+	const userId = wp([
+		'user',
+		'create',
+		login,
+		`${login}@example.test`,
+		'--role=customer',
+		`--user_pass=${password}`,
+		'--porcelain',
+	]).trim();
+	if (!/^\d+$/.test(userId)) throw new Error(`user create failed: ${userId}`);
+	wp([
+		'user',
+		'meta',
+		'update',
+		userId,
+		'linker_approval_status',
+		'approved',
+	]);
+
+	// The guest plans a project of their own.
+	await page.goto(instance().url + '/solution-configurator/');
+	await page.getByRole('button', { name: 'New project' }).first().click();
+	await page.locator('input[maxlength="256"]').first().fill('Guest to claim');
+	await page.getByRole('button', { name: 'Create project' }).click();
+	await expect(page).toHaveURL(/project=/, { timeout: 60_000 });
+	const projectUrl = page.url();
+
+	// The identity switch: signing in inside the same browser session hands
+	// every guest project to that account (session claim, spec 548).
+	await page.goto(instance().url + '/my-account/');
+	await page.fill('#username', login);
+	await page.fill('#password', password);
+	await page.locator('button[name="login"]').focus();
+	await page.keyboard.press('Enter');
+	await page.waitForLoadState('load');
+	await expect(page.locator('a[href*="action=logout"]')).not.toHaveCount(0, {
+		timeout: 30_000,
+	});
+
+	// The claimed project stays reachable under the account, and the
+	// projects screen lists it there.
+	await page.goto(projectUrl);
+	await expect(page.locator('.lp-project-bar')).toContainText(
+		'Guest to claim',
+		{ timeout: 60_000 }
+	);
+	await page
+		.locator('.lp-project-bar button', { hasText: 'Projects' })
+		.click();
+	await expect(page.locator('body')).toContainText('Guest to claim', {
+		timeout: 30_000,
+	});
 });
