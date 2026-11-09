@@ -36,7 +36,8 @@
     "6. true_north is set in the Coordinate references dialog, whose button requires geometry.sources non-empty - so Add roof face (creates the first source) must come first",
     "7. with true_north + anchor set, Start drawing enables and the maplibre canvas mounts",
     "8. RoofForm submit requires rights_note (the only hidden required field - form.checkValidity() flags it) plus name/width/length/pitch/bearing/source/rights; with those the Coordinate references button enables (live-verified)",
-    "9. CoordinatesForm carries the anchor: latitude+longitude number fields + anchor_source select; drawingBridge needs the anchor non-null as well as true_north - the remaining live gate after true_north was set"
+    "9. CoordinatesForm carries the anchor: latitude+longitude number fields + anchor_source select; drawingBridge needs the anchor non-null as well as true_north - the remaining live gate after true_north was set",
+    "10. LIVE-VERIFIED END TO END: with the CoordinatesForm's latitude+longitude (48.1689/11.5844) and anchor_source set alongside true_north, the Start roof drawing gate ENABLES and clicking it MOUNTS the maplibre canvas (canvas=1, maplibre=true, aria Project map=true) - the full automation chain to the map workspace works in a plain Playwright context"
    ],
    "selectors": {
     "project_title": "input[maxlength=256]",
