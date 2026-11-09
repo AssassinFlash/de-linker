@@ -952,6 +952,17 @@ test('the full planner chain: report, transfer and the Woo solution draft', asyn
 		}
 	}
 	// The planning report is the keystone's summit.
+	// The configurator/incompatible-result row: the deliberately tight
+	// requirements (1 module, 1 stack) against the chosen inverter surface
+	// the explicit incompatible presentation - the check completes and says
+	// so, it never silently passes.
+	await expect(page.locator('#lp-calculations')).toContainText(
+		'Requirements not met',
+		{ timeout: 60_000 }
+	);
+	await expect(page.locator('#lp-calculations')).toContainText(
+		'Further assessment of the complete system is required.'
+	);
 	await expect
 		.poll(
 			async () =>
