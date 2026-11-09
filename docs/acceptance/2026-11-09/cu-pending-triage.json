@@ -279,7 +279,8 @@
           "the local stack lacks a publication worker: engineering readiness only flips when an ack runs (review had a stale 85-product receipt; 8349 the Trina reference module was added later and never acked) - any long-lived stack needs the ack flow documented/automated or product additions will silently break pv/equipment 409",
           "RoofForm export permission defaults 'unknown' - reports silently refuse until the customer sets it; consider surfacing this at report time with a direct link (the notice exists; verify UX)"
         ]
-      }
+      },
+      "PERMANENT_SPEC": "PR #1033 merged (main=a535aada2): tests/e2e/specs/planner-report-chain.spec.ts - the full chain is now a regression asset; verified green on review twice (4.8m/5.8m)"
     }
   }
 }
