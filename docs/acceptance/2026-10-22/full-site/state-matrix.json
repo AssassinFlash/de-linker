@@ -25903,11 +25903,12 @@
   "state": "whole-parts-add",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: add products needs a products-bearing report (root-caused)"
+   "planner-report-chain.spec.ts (PR #1033) - transfer preview lists products with before/after quantities; confirm -> Woo solution draft receives them",
+   "merged planner-report-chain.spec.ts, review instance, green"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -25917,7 +25918,9 @@
    "files-print",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "consumer_chain": "planner-report-chain.spec.ts (PR #1033) - transfer preview lists products with before/after quantities; confirm -> Woo solution draft receives them"
+  }
  },
  {
   "key": "configurator:whole-parts-add:en:390",
@@ -25985,11 +25988,12 @@
   "state": "draft-readback",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: depends on whole-parts-add"
+   "planner-report-chain.spec.ts (PR #1033/#1034) - View solution draft -> cart readback asserts the transferred SAJ product and the inquiry CTA",
+   "merged planner-report-chain.spec.ts, review instance, green"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -25999,7 +26003,9 @@
    "files-print",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "consumer_chain": "planner-report-chain.spec.ts (PR #1033/#1034) - View solution draft -> cart readback asserts the transferred SAJ product and the inquiry CTA"
+  }
  },
  {
   "key": "configurator:draft-readback:en:390",
