@@ -347,6 +347,30 @@ test.describe('Solution Configurator', () => {
 		expect(beside.modules).toBe(0);
 	});
 
+	test('the German roof step answers in German on the same geometry', async () => {
+		const outline = await enginePost<RoofResult>('/roof/outline', {
+			plz: PLZ,
+			location: TRIFTSTRASSE_5,
+			locale: 'de',
+		});
+		expect(outline.found).toBe(true);
+		expect(outline.modules, 'the same roof carries the same count').toBe(
+			(
+				await enginePost<RoofResult>('/roof/outline', {
+					plz: PLZ,
+					location: TRIFTSTRASSE_5,
+					locale: 'en',
+				})
+			).modules
+		);
+		const german = JSON.stringify(outline);
+		expect(german, 'the assumptions are disclosed in German').toMatch(
+			/Dachfl\u00e4chen|Dachfl/
+		);
+		expect(german).toContain('Module');
+		expect(outline.licence).toContain('CC BY 4.0');
+	});
+
 	test('the design report is a PDF in both languages', async () => {
 		for (const locale of ['en', 'de']) {
 			// The report is tied to a confirmed selection: design first and
