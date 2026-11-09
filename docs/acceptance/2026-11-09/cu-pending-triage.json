@@ -195,6 +195,12 @@
     ],
     "next_fix": [
      "open the array details via evaluate DOM click on its summary and verify el.open===true, then click Select-all via evaluate (bypasses role-visibility matching); MPPT/Inverter input fill already works; then \"Add selected modules to string\" (force) -> expect \"8 of 8 roof modules assigned\" -> PvOperatingSetup -> Prepare equipment selection unlocks"
+    ],
+    "ASSIGNED": [
+     "DONE: DOM-click approach works end to end - open per-array details via evaluate (el.open=true), DOM-click \"Select all available modules\" (\"8 available · 8 selected\"), DOM-click \"Add selected modules to string\" -> \"8 of 8 roof modules assigned\"; temperature -10/source/MPPT 1/input 1 all valid"
+    ],
+    "last_gate": [
+     "Prepare still disabled after assignment => PvOperatingSetup operating conditions (Effective irradiance / Hot operating cell temperature / Cold operating cell temperature, from PvOperatingSetup.tsx lines 90-131) - the probe filled them by label but added no count log, so the next run must log getByLabel(...).count() first (the labels carry separate unit <small> spans; exact:false may be needed) and dump the validity-contributing fields again"
     ]
    }
   }
