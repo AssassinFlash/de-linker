@@ -112,5 +112,17 @@
   "spec": "tests/e2e/specs/planner-map-chain.spec.ts",
   "final_run": "4/4 green, 27.3s, review instance",
   "notes": "orientation-pitch = plan/map/3D view triad (3D canvas mounts headless); mobile-gestures = CDP touch taps collect + cooperative one-finger page scroll at 390; address-search = spec-548 network privacy gate; permission-error = denied tiles -> failure notice -> retry recovery"
+ },
+ "brief_chain_keystone_probe": {
+  "date": "2026-11-09",
+  "spec_survivor": ".scratch/probe-report-chain.spec.ts (uncommitted probe; lift into planner-report-chain.spec.ts)",
+  "driven_green": "site+DE anchor -> manual roof face -> true_north coord refs -> module spec -> module array (8 modules; ArrayForm: ALL numeric fields required incl. mounting textarea - native validation blocks silently when empty) -> Save -> Import interval data (columnar CSV timestamp,power; ISO UTC; 30d x 15min) -> delimiter Comma -> Preview columns -> 12-field mapping (fixed-duration mode dynamically adds \"The timestamp identifies...\" select + \"Interval duration\" min input) -> Import and review data -> Use this profile in the open draft -> Save",
+  "walls_broken": [
+   "array form silent block: mounting textarea + every GeometryNumber required; use checkValidity() diagnostics when a GeometryForm submit no-ops",
+   "energy section anchor is #lp-profiles (not #lp-energy); intake opens behind \"Import interval data\" button",
+   "profile CSV must be columnar with delimiter; single-column line feeds stall at Preview columns",
+   "mapping selects must be addressed by label text - the select list re-renders (positional nth() handles drift and hang)"
+  ],
+  "remaining": "#lp-calculations orchestration, all buttons mapped in transcript: Prepare weather settings -> Request weather for saved inputs -> Prepare PV model -> Calculate PV for saved inputs -> Set up PV strings -> Prepare equipment selection -> Check saved equipment selection -> Review energy inputs -> Prepare scenario settings -> Calculate saved scenario -> Generate planning report; then DraftTransferButton -> solution draft; each Prepare opens a form to read next session"
  }
 }
