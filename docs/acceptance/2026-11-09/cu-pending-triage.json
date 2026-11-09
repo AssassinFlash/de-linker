@@ -281,6 +281,18 @@
         ]
       },
       "PERMANENT_SPEC": "PR #1033 merged (main=a535aada2): tests/e2e/specs/planner-report-chain.spec.ts - the full chain is now a regression asset; verified green on review twice (4.8m/5.8m)"
+    },
+    "inquiry_stage": {
+      "date": "2026-11-10",
+      "proven_working": "the full chain now reaches the inquiry form WITH the carried note: the form renders 'Report chain · input revision 10 · 8 kWp roof with battery, Munich, south-facing · This note is not used in the calculation.' in its notes section - the handoff note-revision machinery (row 2's core) works end to end; draft hash proven STABLE across loads and fills (probes); a simple add-to-cart guest lands with Send ENABLED and no pending notice",
+      "open_blocker": "in the TRANSFERRED-draft context the Send click does not navigate: button enabled at click (SEND STATE qty 1/1, sendDisabled false), no server flash error ('check your entries' absent), page stays with 'Update the solution draft before sending your inquiry.' + 'Your browser could not save your entries.' visible - suspects: (a) the retention save (localStorage) throws and its error path also stops the submit (account-ui.js), (b) syncDraftState re-disables send between the evaluate and the click via the MutationObserver, (c) the pending notice unhidden by JS in the transferred context (Update button was disabled in the same state = the dead-end the contract warned about)",
+      "next_session": "reproduce with a 15s probe: transferred-draft form page, listen for console errors + submit event (addEventListener('submit') capture) + check send.disabled 100ms after focus; read account-ui.js's submit-time retention path; the WIP spec tail is archived at .scratch/planner-report-chain-WIP-inquiry.spec.ts (main spec reverted to HEAD, chain still green)",
+      "matrix_rows": {
+        "row1_readback": "transfer+cart readback PROVEN (in merged spec)",
+        "row2_revisions": "note+revision render PROVEN on the form; submission pending the blocker above",
+        "row3_isolation": "unstarted",
+        "row4_consume": "unstarted"
+      }
     }
   }
 }
