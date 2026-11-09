@@ -363,6 +363,45 @@ test("a verified account transition discovers the guest intent but never submits
 	);
 });
 
+test("discard releases an unacknowledgeable run request (issue #1031)", async (t) => {
+	// After the draft saves again, every retry's reply fails verification; the
+	// record must never lock the customer out - discard always releases it.
+	const stale = structuredClone(preparation.pv_run);
+	stale.revision += 1;
+	const r = await rig(t, async () => json(stale), {
+		projectId: preparation.pv_run.project_id,
+	});
+	await act(async () =>
+		r.api.start("runs/pv", { expected_revision: preparation.pv_run.revision }),
+	);
+	await until(() => r.api.error?.code === "invalid_run_reply");
+	const before = r.api.records.length;
+	if (before === 1) {
+		await act(async () => r.api.retry(r.api.records[0]));
+		await until(() => r.api.records.length === 1);
+	}
+	await act(async () => {
+		if (r.api.records.length === 1) await r.api.discard(r.api.records[0]);
+	});
+	await until(() => r.api.records.length === 0);
+	assert.deepEqual(
+		await r.durable.list([scope], preparation.pv_run.project_id),
+		[],
+	);
+});
+
+test("discard drops any stored request, acknowledged or not", async (t) => {
+	const r = await rig(t, async () => {
+		throw new TypeError("synthetic dispatch failure");
+	});
+	await act(async () => r.api.start("runs/energy", { expected_revision: 2 }));
+	await until(() => r.api.records.length === 1);
+	const record = r.api.records[0];
+	await act(async () => r.api.discard(record));
+	await until(() => r.api.records.length === 0);
+	assert.deepEqual(await r.durable.list([scope], projectId), []);
+});
+
 test("only a specific proven pre-mutation stale-revision refusal releases a calculation intent", async (t) => {
 	let code = "conflict";
 	const r = await rig(t, async () => json({ error: { code } }, 409));

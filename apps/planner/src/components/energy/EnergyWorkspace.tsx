@@ -1336,6 +1336,14 @@ export function EnergyWorkspace({
 										? __("Retry transfer", "linker-tools")
 										: __("Retry original calculation request", "linker-tools")}
 							</button>
+							<button
+								type="button"
+								className="lp-text-button"
+								disabled={operations.busy || operations.checking}
+								onClick={() => void operations.discard(record)}
+							>
+								{__("Discard stored request", "linker-tools")}
+							</button>
 							{record.resultId !== null && (
 								<button
 									type="button"
