@@ -123,6 +123,17 @@
    "profile CSV must be columnar with delimiter; single-column line feeds stall at Preview columns",
    "mapping selects must be addressed by label text - the select list re-renders (positional nth() handles drift and hang)"
   ],
-  "remaining": "#lp-calculations orchestration, all buttons mapped in transcript: Prepare weather settings -> Request weather for saved inputs -> Prepare PV model -> Calculate PV for saved inputs -> Set up PV strings -> Prepare equipment selection -> Check saved equipment selection -> Review energy inputs -> Prepare scenario settings -> Calculate saved scenario -> Generate planning report; then DraftTransferButton -> solution draft; each Prepare opens a form to read next session"
+  "remaining": "#lp-calculations orchestration, all buttons mapped in transcript: Prepare weather settings -> Request weather for saved inputs -> Prepare PV model -> Calculate PV for saved inputs -> Set up PV strings -> Prepare equipment selection -> Check saved equipment selection -> Review energy inputs -> Prepare scenario settings -> Calculate saved scenario -> Generate planning report; then DraftTransferButton -> solution draft; each Prepare opens a form to read next session",
+  "weather_stage": {
+   "status": "WORKING end to end (2026-11-09)",
+   "ui_sequence": "Weather source tab -> Use roof coordinates -> First/Last source year 2005/2023 (>=10y span AND endyear<=2023: 2024 => weather_provider_rejected) -> radiation db index 1 -> Terrain horizon index 1 -> Synthetic calculation year 2023 -> Prepare weather settings -> Save -> Request weather for saved inputs",
+   "engine_enablement": "review runtime.json gained weather_acquisition limits copied from the production readback (8388608/262144/9000/10.0/30.0/120.0); stack restarted via just down -> just up -> just serve (serve needs the WP server up first)",
+   "terminal_evidence": "weather_downloads.capture_sha256 set; UI \"The original weather data has passed validation and is retained.\"",
+   "defects_found": [
+    "engine 503 weather acquisition is not configured when runtime.json lacks weather_acquisition (config gap on local stacks)",
+    "just down leaves an orphaned worker_host python child when its uv parent dies - issue #1030"
+   ],
+   "next": "continue probe from the PV generation tab (Prepare PV model -> Calculate PV), then equipment, scenario, Generate planning report, DraftTransferButton"
+  }
  }
 }
