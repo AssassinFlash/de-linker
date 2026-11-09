@@ -74,7 +74,12 @@
     "attempted_extra": [
      "keyboard arrow pan (focus canvas + 5x arrows): counter stays 1 - cooperativeGestures also gates keyboard pan",
      "Ctrl+drag pan: counter still 1 - the prefix controller's pointerdown capture likely consumes the gesture before maplibre pans during collecting mode"
-    ]
+    ],
+    "RESOLVED": {
+     "hypothesis_confirmed": "clipped canvas: before scrollIntoView the clicks landed outside the visible map area; after .lp-map-surface scrollIntoView the canvas rect is fully in-viewport (266,169,829x560) and direct canvas clicks advance the counter: click1 -> Recorded corners: 1, click2 -> 2",
+     "the_drivable_recipe": "scrollIntoView(.lp-map-surface) -> mouse.click at 4 distinct visible canvas positions -> ring closes -> Close outline and review -> Add module array unlocks",
+     "significance": "the ring-completion interaction - the last open piece of the 11 map-canvas rows - is fully automatable with plain Playwright; no CU, no keyboard/ctrl workarounds needed"
+    }
    }
   }
  }
