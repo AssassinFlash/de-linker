@@ -134,6 +134,12 @@
     "just down leaves an orphaned worker_host python child when its uv parent dies - issue #1030"
    ],
    "next": "continue probe from the PV generation tab (Prepare PV model -> Calculate PV), then equipment, scenario, Generate planning report, DraftTransferButton"
+  },
+  "pv_stage": {
+   "gate_found": "PvSetup refuses until a completed weather result is SELECTED (\"A completed weather result must be selected in Saved calculations before PV generation can start\"); weatherSelected requires pv_preparation.weather_asset_id. Sequence: weather capture -> Saved calculations tab select -> PV tab Prepare PV model -> Save -> Calculate PV for saved inputs",
+   "pv_model_form": "PvForm is a 3-section builder (Modules / Array models / Power conversion); \"Update parameters for current roof layout\" prefills from the placed arrays + module templates catalog",
+   "next_probe_action": "dump the Saved calculations tab content properly (previous dump caught tab-button text; scope by the panel heading and wait for the tab body), find the weather-result select action, then wire select -> PV prepare -> save -> calculate",
+   "prod_audit": "linker-services read-only 2026-11-09: running planner release source has apify only in the two research comments (pvgis_request.py, rules.py); process args/configs contain no actor/token; weather = direct official re.jrc.ec.europa.eu GET"
   }
  }
 }
