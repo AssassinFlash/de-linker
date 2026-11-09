@@ -942,6 +942,20 @@ test('the full planner chain: report, transfer and the Woo solution draft', asyn
 			{ timeout: 120_000 }
 		)
 		.toBe(true);
+	// The report accepts a customer logo: a small PNG uploads cleanly and
+	// the generation proceeds with it (no "could not be used" notice).
+	const logo = join(tmpdir(), 'chain-logo.png');
+	writeFileSync(
+		logo,
+		Buffer.from(
+			'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+			'base64'
+		)
+	);
+	await page
+		.locator('#lp-calculations input[type="file"]')
+		.first()
+		.setInputFiles(logo);
 	await domClick('Generate planning report');
 	// The finished report offers its real artifacts; the transfer below
 	// consumes it: preview -> confirm -> receipt -> the real Woo draft.
