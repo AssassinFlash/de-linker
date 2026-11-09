@@ -134,6 +134,33 @@ test('the map workspace mounts from a plain project through the full chain', asy
 		});
 	}
 
+	// The undo-redo state: Remove last corner drops the newest corner, and
+	// re-clicking the same spot restores it - the removed point left the ring,
+	// so it is no longer a duplicate. The remove-button click scrolls the
+	// canvas out of the viewport (535px in the reference run), and clicks that
+	// land on the panel instead of the canvas record nothing; the surface must
+	// be scrolled back and settle before the canvas accepts clicks again.
+	await page
+		.locator('#lp-design button', { hasText: 'Remove last corner' })
+		.click();
+	await expect(counter).toContainText('Recorded corners: 3', {
+		timeout: 10_000,
+	});
+	await page.evaluate(() => {
+		document
+			.querySelector('.lp-map-surface')
+			?.scrollIntoView({ block: 'center' });
+	});
+	await page.waitForTimeout(800);
+	const redo = (await page.locator('.maplibregl-canvas').boundingBox())!;
+	await page.mouse.click(
+		redo.x + redo.width * 0.4,
+		redo.y + redo.height * 0.6
+	);
+	await expect(counter).toContainText('Recorded corners: 4', {
+		timeout: 10_000,
+	});
+
 	// A closed ring stages the outline: the review panel offers the roof
 	// properties (Add module array itself waits for a module specification,
 	// the next state row).
