@@ -197,7 +197,15 @@ test('the full planner chain: report, transfer and the Woo solution draft', asyn
 	await fillField('v', '1');
 	await fillField('rows', '2');
 	await fillField('columns', '4');
+	// The configurator/validation row: an out-of-range tilt (max 90) is
+	// refused by the form's own constraint - Apply does not commit it.
 	await fillField('rotation', '0');
+	await fillField('tilt', '91');
+	await arrayForm.locator('button', { hasText: 'Apply properties' }).click();
+	await page.waitForTimeout(800);
+	await expect(page.locator('#lp-design')).not.toContainText(
+		'Included modules8'
+	);
 	await fillField('tilt', '0');
 	await fillField('column_gap', '0.02');
 	await fillField('row_gap', '0.1');
