@@ -34,7 +34,9 @@
     "4. 'Start roof drawing' gate = canStartDrawing: !mapProps.disabled && !journal.checking && !journal.storageFailed && geographicReady",
     "5. geographicReady = drawingBridge(geometry) succeeds: requires coordinate_system.anchor AND north_reference === 'true_north' (else throws map_geographic_reference_required) - THIS is the live gate observed disabled",
     "6. true_north is set in the Coordinate references dialog, whose button requires geometry.sources non-empty - so Add roof face (creates the first source) must come first",
-    "7. with true_north + anchor set, Start drawing enables and the maplibre canvas mounts"
+    "7. with true_north + anchor set, Start drawing enables and the maplibre canvas mounts",
+    "8. RoofForm submit requires rights_note (the only hidden required field - form.checkValidity() flags it) plus name/width/length/pitch/bearing/source/rights; with those the Coordinate references button enables (live-verified)",
+    "9. CoordinatesForm carries the anchor: latitude+longitude number fields + anchor_source select; drawingBridge needs the anchor non-null as well as true_north - the remaining live gate after true_north was set"
    ],
    "selectors": {
     "project_title": "input[maxlength=256]",
