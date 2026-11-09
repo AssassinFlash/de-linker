@@ -186,6 +186,15 @@
      "the create button is :visible ONLY after the details opens (earlier force-clicks on hidden copies never created the plan - the empty-dump root cause)",
      "multiple PvStringSetup instances exist (Single/Multiple system panels); always scope with :visible",
      "equipment-section clicks need force:true (constant re-render)"
+    ],
+    "module_selection_source": [
+     "PvModuleSelection: per-array <details><summary>\"Array 1 · Main array\"</summary> containing \"Select all available modules\" text-button (NO checkboxes - the checkboxes=0 run proved it); status line \"N available · M selected\""
+    ],
+    "last_hang": [
+     "getByRole(button Select all available modules) waited forever: the per-array details was not open, and getByRole does not match hidden buttons (force cannot rescue a non-match)"
+    ],
+    "next_fix": [
+     "open the array details via evaluate DOM click on its summary and verify el.open===true, then click Select-all via evaluate (bypasses role-visibility matching); MPPT/Inverter input fill already works; then \"Add selected modules to string\" (force) -> expect \"8 of 8 roof modules assigned\" -> PvOperatingSetup -> Prepare equipment selection unlocks"
     ]
    }
   }
