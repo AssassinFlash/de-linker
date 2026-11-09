@@ -6,6 +6,7 @@ import json
 import math
 import os
 import re
+import signal
 import sqlite3
 import subprocess
 import time
@@ -18,7 +19,7 @@ from .checkout import Checkout
 from .engine_release import require_input_compatibility
 from .instance import Instance
 from .private_config import publish_once
-from .processes import POLL, Background, ProcessError
+from .processes import POLL, STOP_GRACE, Background, ProcessError
 
 # Private control/start command budget in the development worker contract;
 # not a numerical-task or engineering deadline.
@@ -408,6 +409,9 @@ class PlannerWorker:
             raise ProcessError(
                 "owned worker is running with a different/unready identity"
             )
+        # Two workers on one workspace race jobs under stale execution
+        # identities; an untracked holder is stopped first (#1030).
+        self.stop_untracked_workers()
         for name in ("runtime_sha256", "execution_key", "storage_binding"):
             if (
                 not isinstance(identity.get(name), str)
@@ -477,4 +481,76 @@ class PlannerWorker:
         )
 
     def stop(self) -> bool:
-        return self.process.stop()
+        stopped = self.process.stop()
+        # #1030: a worker whose uv parent died is reparented out of the
+        # recorded process group; no pid file can see it. Reconcile any live
+        # worker_host still bound to this instance's runtime file.
+        if self.stop_untracked_workers():
+            stopped = True
+        return stopped
+
+    def untracked_workers(self) -> list[int]:
+        """Live worker_host serve processes bound to this instance only.
+
+        A worker's command line carries no instance identity, but its
+        environment does: LINKER_PLANNER_CONFIG points at this instance's
+        runtime file. The owned pid (any record) is excluded.
+        """
+        owned = self.process.pid()
+        runtime = str(self.runtime_file.resolve())
+        try:
+            listing = subprocess.run(
+                ["ps", "-axo", "pid=,command="],
+                capture_output=True,
+                text=True,
+                timeout=10.0,
+            ).stdout
+        except (OSError, subprocess.SubprocessError):
+            return []
+        found: list[int] = []
+        for line in listing.splitlines():
+            if "linker_engine.planning.worker_host" not in line:
+                continue
+            fields = line.split(None, 1)
+            if len(fields) < 2 or " serve" not in fields[1]:
+                continue
+            try:
+                pid = int(fields[0])
+            except ValueError:
+                continue
+            if pid == owned:
+                continue
+            try:
+                environment = subprocess.run(
+                    ["ps", "-E", "-o", "command=", "-p", str(pid)],
+                    capture_output=True,
+                    text=True,
+                    timeout=10.0,
+                ).stdout
+            except (OSError, subprocess.SubprocessError):
+                continue
+            if runtime in environment:
+                found.append(pid)
+        return found
+
+    def stop_untracked_workers(self) -> list[int]:
+        """Stop orphaned workers TERM-first with the shared stop grace."""
+        stopped: list[int] = []
+        for pid in self.untracked_workers():
+            for sig in (signal.SIGTERM, signal.SIGKILL):
+                try:
+                    os.kill(pid, sig)
+                except (ProcessLookupError, PermissionError):
+                    break
+                deadline = time.monotonic() + STOP_GRACE
+                while time.monotonic() < deadline:
+                    try:
+                        os.kill(pid, 0)
+                    except ProcessLookupError:
+                        break
+                    time.sleep(POLL)
+                else:
+                    continue
+                break
+            stopped.append(pid)
+        return stopped
