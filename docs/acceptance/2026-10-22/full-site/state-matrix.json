@@ -31090,11 +31090,12 @@
   "state": "source-stage-readback-and-note-scope",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: brief consumer chain requires note-entry (input wall) and claim choreography"
+   "tests/e2e/specs/planner-brief-chain.spec.ts tests 1+5 (PR #1027-1029 era) - staged note reads back verbatim, stays out of sizing, note-only retry",
+   "merged spec, review instance, green"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
@@ -31106,7 +31107,9 @@
    "provenance"
   ],
   "capability_boundary": "Required design/consumer contract; implementation and production availability are unverified, not grounds for not-applicable.",
-  "verified_checks": {}
+  "verified_checks": {
+   "consumer_chain": "tests/e2e/specs/planner-brief-chain.spec.ts tests 1+5 (PR #1027-1029 era) - staged note reads back verbatim, stays out of sizing, note-only retry"
+  }
  },
  {
   "key": "project-brief:source-stage-readback-and-note-scope:en:390",
@@ -31180,11 +31183,12 @@
   "state": "plan-input-source-default-confirmation",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: brief consumer chain requires note-entry (input wall) and claim choreography"
+   "planner-brief-chain.spec.ts test 2 - URL hints stay proposals until the single confirmation",
+   "merged spec, review instance, green"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
@@ -31196,7 +31200,9 @@
    "provenance"
   ],
   "capability_boundary": "Required design/consumer contract; implementation and production availability are unverified, not grounds for not-applicable.",
-  "verified_checks": {}
+  "verified_checks": {
+   "consumer_chain": "planner-brief-chain.spec.ts test 2 - URL hints stay proposals until the single confirmation"
+  }
  },
  {
   "key": "project-brief:plan-input-source-default-confirmation:en:390",
@@ -31270,11 +31276,12 @@
   "state": "refresh-back-language-switch",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: brief consumer chain requires note-entry (input wall) and claim choreography"
+   "planner-brief-chain.spec.ts test 3 - staged brief survives refresh and the EN->DE switch",
+   "merged spec, review instance, green"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
@@ -31286,7 +31293,9 @@
    "provenance"
   ],
   "capability_boundary": "Required design/consumer contract; implementation and production availability are unverified, not grounds for not-applicable.",
-  "verified_checks": {}
+  "verified_checks": {
+   "consumer_chain": "planner-brief-chain.spec.ts test 3 - staged brief survives refresh and the EN->DE switch"
+  }
  },
  {
   "key": "project-brief:refresh-back-language-switch:en:390",
@@ -31360,11 +31369,12 @@
   "state": "identity-switch-and-guest-claim-failure",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: brief consumer chain requires note-entry (input wall) and claim choreography"
+   "planner-brief-chain.spec.ts test 7 - guest project transfers to the account that signs in",
+   "merged spec, review instance, green"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
@@ -31376,7 +31386,9 @@
    "provenance"
   ],
   "capability_boundary": "Required design/consumer contract; implementation and production availability are unverified, not grounds for not-applicable.",
-  "verified_checks": {}
+  "verified_checks": {
+   "consumer_chain": "planner-brief-chain.spec.ts test 7 - guest project transfers to the account that signs in"
+  }
  },
  {
   "key": "project-brief:identity-switch-and-guest-claim-failure:en:390",
@@ -31450,11 +31462,12 @@
   "state": "calculation-independent-from-note",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: brief consumer chain requires note-entry (input wall) and claim choreography"
+   "planner-brief-chain.spec.ts test 4 - note numbers never size the project",
+   "merged spec, review instance, green"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
@@ -31466,7 +31479,9 @@
    "provenance"
   ],
   "capability_boundary": "Required design/consumer contract; implementation and production availability are unverified, not grounds for not-applicable.",
-  "verified_checks": {}
+  "verified_checks": {
+   "consumer_chain": "planner-brief-chain.spec.ts test 4 - note numbers never size the project"
+  }
  },
  {
   "key": "project-brief:calculation-independent-from-note:en:390",
@@ -31540,11 +31555,12 @@
   "state": "saved-solution-owner-and-claim-consumer",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: brief consumer chain requires note-entry (input wall) and claim choreography"
+   "planner-report-chain.spec.ts (PR #1033/#1034) - transfer receipt + Woo cart readback (SAJ + inquiry CTA)",
+   "merged spec, review instance, green"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
@@ -31556,7 +31572,9 @@
    "provenance"
   ],
   "capability_boundary": "Required design/consumer contract; implementation and production availability are unverified, not grounds for not-applicable.",
-  "verified_checks": {}
+  "verified_checks": {
+   "consumer_chain": "planner-report-chain.spec.ts (PR #1033/#1034) - transfer receipt + Woo cart readback (SAJ + inquiry CTA)"
+  }
  },
  {
   "key": "project-brief:saved-solution-owner-and-claim-consumer:en:390",
@@ -31630,11 +31648,12 @@
   "state": "screen-report-and-complete-pdf",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: brief consumer chain requires note-entry (input wall) and claim choreography"
+   "tests/e2e/specs/planner-report-chain.spec.ts (PR #1033) - report generated with Download PDF + BOM CSV asserted on the real chain",
+   "merged spec, review instance, green"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
@@ -31646,7 +31665,9 @@
    "provenance"
   ],
   "capability_boundary": "Required design/consumer contract; implementation and production availability are unverified, not grounds for not-applicable.",
-  "verified_checks": {}
+  "verified_checks": {
+   "consumer_chain": "tests/e2e/specs/planner-report-chain.spec.ts (PR #1033) - report generated with Download PDF + BOM CSV asserted on the real chain"
+  }
  },
  {
   "key": "project-brief:screen-report-and-complete-pdf:en:390",
@@ -31720,11 +31741,12 @@
   "state": "draft-add-readback-and-note-only-retry",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: brief consumer chain requires note-entry (input wall) and claim choreography"
+   "planner-report-chain.spec.ts (PR #1033/#1034) - transfer preview->confirm->receipt, entries retained on refusal",
+   "merged spec, review instance, green"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
@@ -31736,7 +31758,9 @@
    "provenance"
   ],
   "capability_boundary": "Required design/consumer contract; implementation and production availability are unverified, not grounds for not-applicable.",
-  "verified_checks": {}
+  "verified_checks": {
+   "consumer_chain": "planner-report-chain.spec.ts (PR #1033/#1034) - transfer preview->confirm->receipt, entries retained on refusal"
+  }
  },
  {
   "key": "project-brief:draft-add-readback-and-note-only-retry:en:390",
@@ -31810,11 +31834,12 @@
   "state": "two-projects-and-revision-conflict",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: brief consumer chain requires note-entry (input wall) and claim choreography"
+   "planner-brief-chain.spec.ts test 6 - revisions kept apart, concurrent save conflicts visibly",
+   "merged spec, review instance, green"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
@@ -31826,7 +31851,9 @@
    "provenance"
   ],
   "capability_boundary": "Required design/consumer contract; implementation and production availability are unverified, not grounds for not-applicable.",
-  "verified_checks": {}
+  "verified_checks": {
+   "consumer_chain": "planner-brief-chain.spec.ts test 6 - revisions kept apart, concurrent save conflicts visibly"
+  }
  },
  {
   "key": "project-brief:two-projects-and-revision-conflict:en:390",
@@ -31900,11 +31927,12 @@
   "state": "inquiry-selected-revisions-and-note-only",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: brief consumer chain requires note-entry (input wall) and claim choreography"
+   "planner-report-chain.spec.ts (PR #1035) - note+revision carried to the form; tamper refused 409 with entries retained; accepted submission confirmed",
+   "merged spec, review instance, green"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
@@ -31916,7 +31944,9 @@
    "provenance"
   ],
   "capability_boundary": "Required design/consumer contract; implementation and production availability are unverified, not grounds for not-applicable.",
-  "verified_checks": {}
+  "verified_checks": {
+   "consumer_chain": "planner-report-chain.spec.ts (PR #1035) - note+revision carried to the form; tamper refused 409 with entries retained; accepted submission confirmed"
+  }
  },
  {
   "key": "project-brief:inquiry-selected-revisions-and-note-only:en:390",
@@ -31990,11 +32020,12 @@
   "state": "inquiry-message-and-genie-summary-isolation",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: brief consumer chain requires note-entry (input wall) and claim choreography"
+   "planner-report-chain.spec.ts (PR #1035) - customer message verbatim on the confirmation, no invented Genie summary envelope",
+   "merged spec, review instance, green"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
@@ -32006,7 +32037,9 @@
    "provenance"
   ],
   "capability_boundary": "Required design/consumer contract; implementation and production availability are unverified, not grounds for not-applicable.",
-  "verified_checks": {}
+  "verified_checks": {
+   "consumer_chain": "planner-report-chain.spec.ts (PR #1035) - customer message verbatim on the confirmation, no invented Genie summary envelope"
+  }
  },
  {
   "key": "project-brief:inquiry-message-and-genie-summary-isolation:en:390",
@@ -32080,11 +32113,12 @@
   "state": "success-consumes-exact-revision-and-failure-retains",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: brief consumer chain requires note-entry (input wall) and claim choreography"
+   "planner-report-chain.spec.ts (PR #1035) - accepted submission consumes the revision; revisited form no longer renders it; refusal retains entries",
+   "merged spec, review instance, green"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
@@ -32096,7 +32130,9 @@
    "provenance"
   ],
   "capability_boundary": "Required design/consumer contract; implementation and production availability are unverified, not grounds for not-applicable.",
-  "verified_checks": {}
+  "verified_checks": {
+   "consumer_chain": "PR #1035 consume branch"
+  }
  },
  {
   "key": "project-brief:success-consumes-exact-revision-and-failure-retains:en:390",
