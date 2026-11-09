@@ -379,6 +379,18 @@ export function EnergyWorkspace({
 	const unconfirmed = operations.records.filter(
 		(record) => record.resultId === null,
 	);
+	// TEMPORARY local diagnostic; never merged.
+	console.log(
+		"[workspace-diag]",
+		JSON.stringify({
+			unconfirmed: unconfirmed.length,
+			records: operations.records.length,
+			busy: operations.busy,
+			checking: operations.checking,
+			storageFailed: operations.storageFailed,
+			view,
+		}),
+	);
 	const canCalculate =
 		prepared &&
 		(!joint || jointAvailable) &&
@@ -1335,6 +1347,14 @@ export function EnergyWorkspace({
 									: record.path === "draft/apply"
 										? __("Retry transfer", "linker-tools")
 										: __("Retry original calculation request", "linker-tools")}
+							</button>
+							<button
+								type="button"
+								className="lp-text-button"
+								disabled={operations.busy || operations.checking}
+								onClick={() => void operations.discard(record)}
+							>
+								{__("Discard stored request", "linker-tools")}
 							</button>
 							{record.resultId !== null && (
 								<button

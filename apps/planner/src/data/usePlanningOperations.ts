@@ -366,6 +366,25 @@ export function usePlanningOperations({
 				setStorageFailed(true);
 			}
 		},
+		discard: async (record: PlanningIntent) => {
+			if (
+				!client.isCurrentScope(session.query_scope) ||
+				record.projectId !== projectId ||
+				!(JSON.parse(scopeKey) as string[]).includes(record.scope)
+			)
+				return;
+			const instance = lifetime.current;
+			try {
+				await store.clear(record.scope, record.path, record.body);
+				if (
+					instance === lifetime.current &&
+					client.isCurrentScope(session.query_scope)
+				)
+					setRefresh((value) => value + 1);
+			} catch {
+				if (instance === lifetime.current) setStorageFailed(true);
+			}
+		},
 		dismissAcknowledged: async (record: PlanningIntent) => {
 			if (
 				flight.current ||

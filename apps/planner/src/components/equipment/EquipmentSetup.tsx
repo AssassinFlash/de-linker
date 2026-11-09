@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { compileEquipmentRequirements } from "../../domain/equipmentRequirements.ts";
 import type { Draft } from "../../domain/draft.ts";
 import { isDirty, sameJson } from "../../domain/draft.ts";
@@ -62,6 +62,7 @@ export function EquipmentSetup({
 }) {
 	const catalog = useEquipmentProducts(client, scope, active);
 	const [validity, setValidity] = useState<Record<string, boolean>>({});
+	const diagPrevious = useRef('');
 	const callbacks = useMemo(
 		() =>
 			Object.fromEntries(
@@ -97,6 +98,18 @@ export function EquipmentSetup({
 			catalog.isFetching ||
 			!!catalog.error ||
 			!catalog.data?.prepared;
+	// TEMPORARY local diagnostic; never merged.
+	const diagSnapshot = JSON.stringify({
+		validity,
+		valid,
+		blocked,
+		inverter: setup?.inverter_product_id ?? null,
+		mode: setup?.operating_mode ?? null,
+	});
+	if (diagSnapshot !== diagPrevious.current) {
+		diagPrevious.current = diagSnapshot;
+		console.log('[equipment-diag]', diagSnapshot);
+	}
 	const assembly = setup
 		? catalog.data?.assemblies[String(setup.battery_product_id)]
 		: undefined;
