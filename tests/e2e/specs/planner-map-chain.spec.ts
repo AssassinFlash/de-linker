@@ -201,10 +201,9 @@ test('the map workspace mounts from a plain project through the full chain', asy
 	await page
 		.locator('#lp-design button', { hasText: 'Discard drawing' })
 		.click();
-	const restart = page.locator(
-		'#lp-design button',
-		{ hasText: 'Start roof drawing' }
-	);
+	const restart = page.locator('#lp-design button', {
+		hasText: 'Start roof drawing',
+	});
 	await expect(restart.first()).toBeEnabled({ timeout: 15_000 });
 	await restart.first().click();
 	await page.evaluate(() => {
@@ -231,6 +230,33 @@ test('the map workspace mounts from a plain project through the full chain', asy
 		.locator('#lp-design button', { hasText: 'Close outline and review' })
 		.click();
 
+	// The edit-vertices state: the staged outline switches the canvas to the
+	// editor, and dragging an edge midpoint adds a corner (4 -> 5) without
+	// leaving review. The staging click scrolls the page, so the surface is
+	// scrolled back first; canvas-relative fractions still locate the drawn
+	// corners because the map camera never moved.
+	await page.evaluate(() => {
+		document
+			.querySelector('.lp-map-surface')
+			?.scrollIntoView({ block: 'center' });
+	});
+	await page.waitForTimeout(800);
+	const stagedBox = (await page.locator('.maplibregl-canvas').boundingBox())!;
+	await page.mouse.move(
+		stagedBox.x + stagedBox.width * 0.5,
+		stagedBox.y + stagedBox.height * 0.4
+	);
+	await page.mouse.down();
+	await page.mouse.move(
+		stagedBox.x + stagedBox.width * 0.5,
+		stagedBox.y + stagedBox.height * 0.35,
+		{ steps: 8 }
+	);
+	await page.mouse.up();
+	await expect(counter).toContainText('Recorded corners: 5', {
+		timeout: 10_000,
+	});
+
 	// The validation-error state: every native required field is satisfied,
 	// so the submission reaches the domain check, where pitch 90 breaks the
 	// 0 <= pitch < 90 rule. The field-level alert names the field and keeps
@@ -241,7 +267,9 @@ test('the map workspace mounts from a plain project through the full chain', asy
 	await roofForm.locator('[name="pitch"]').fill('90');
 	await roofForm.locator('[name="bearing"]').fill('180');
 	await roofForm.locator('[name="height"]').fill('5');
-	await roofForm.locator('[name="source"]').fill('Aerial imagery measurement');
+	await roofForm
+		.locator('[name="source"]')
+		.fill('Aerial imagery measurement');
 	await roofForm
 		.locator('[name="calibration"]')
 		.fill('Checked against the street alignment');
@@ -298,9 +326,9 @@ test('the map workspace mounts from a plain project through the full chain', asy
 			?.scrollIntoView({ block: 'center' });
 	});
 	await page.waitForTimeout(800);
-	const obstacleBox = (
-		await page.locator('.maplibregl-canvas').boundingBox()
-	)!;
+	const obstacleBox = (await page
+		.locator('.maplibregl-canvas')
+		.boundingBox())!;
 	const obstacleSpots: Array<[number, number]> = [
 		[
 			obstacleBox.x + obstacleBox.width * 0.45,
