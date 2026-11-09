@@ -216,6 +216,12 @@
       "1: capture the post-string-plan revise payload: does inputs.equipment_setup carry inverter_product_id, operating_mode, module counts? (kills or confirms suspect c)",
       "2: dump ALL \"Prepare equipment selection\" buttons with their visible/disabled state and panel context (Single vs Multiple systems) - the .first() match may be the wrong panel instance"
      ]
+    ],
+    "prepare_gate_final": [
+     "suspect (c) DEAD: revise payload carries equipment_setup with inverter 1179, mode grid_connected, modules_per_stack 1, parallel_stacks 1, all requirement fields; catalog prepared=true; 8/8 assigned; blocked=false candidates exhausted => the ONLY remaining condition is !valid (EquipmentSetup React state) whose failing key is externally invisible"
+    ],
+    "next_session_plan": [
+     "stop black-boxing: add a TEMPORARY dev-only console.log in EquipmentSetup (scratch branch, never merged) printing Object.keys(validity) with values + blocked booleans right at the Prepare button render; one run names the failing key; remove the patch before any PR. Note: has_string_plan:false in the captured revise means the string plan edit may still be Unsaved in that capture - also log isDirty at that point."
     ]
    }
   }
