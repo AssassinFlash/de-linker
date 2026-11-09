@@ -25606,11 +25606,12 @@
   "state": "calculation-error",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: needs controlled engine failure"
+   "planner-report-chain.spec.ts (PR #1039) - energy RPC aborted once: notice surfaces, unconfirmed stored request gates the retry, discard+retry completes the chain",
+   "merged spec, review instance, 5.2m green"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -25620,7 +25621,9 @@
    "files-print",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "failure_injection": "PR #1039"
+  }
  },
  {
   "key": "configurator:calculation-error:en:390",
