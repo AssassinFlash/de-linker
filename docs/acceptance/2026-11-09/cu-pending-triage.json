@@ -64,7 +64,17 @@
      "direct canvas clicks at 4 distinct positions: counter stays 0 - the canvas click does not reach Terra Draw's ring mode (it binds to the map container's own events, not the raw canvas element)"
     ],
     "open": "the exact browser interaction that advances the ring needs a focused pass with MapDrawingController/MapViewport source study (the controller tests drive the SDK callbacks directly); candidates: keyboard arrow pan + button, maplibre fitBounds API through an exposed handle, or the address-search re-centre between corners (the addressSearch state row would supply the centre moves)",
-    "note": "the mount row and toolbar/status assertions are already green in PR #1020; only the ring-completion interaction is open"
+    "note": "the mount row and toolbar/status assertions are already green in PR #1020; only the ring-completion interaction is open",
+    "source_study": {
+     "map_options": "MapViewport constructs MapLibreMap with cooperativeGestures: true - plain drags do NOT pan (page-friendly); pan requires Ctrl+drag. This explains why the plain-drag probe moved nothing",
+     "click_to_add": "the collector binds map.on('click'): one physical release = at most one point (event.originalEvent.detail>1 rejected), gated on a completed single-pointer gesture ON the canvas (MapPrefixController.down). So the real-user path is plain map clicks - no button needed",
+     "reticle": ".lp-map-reticle is 24px at centre with pointer-events:none - it does not intercept",
+     "remaining_unknown": "direct canvas clicks at 40%/60% boundingBox positions still left the counter at 0 - most likely the #lp-design scroll container clips the canvas so part of the bounding box is off-viewport and the clicks landed outside the visible map; next pass: scrollIntoView the canvas, click its VISIBLE centre, verify with a screenshot that the click lands on map pixels"
+    },
+    "attempted_extra": [
+     "keyboard arrow pan (focus canvas + 5x arrows): counter stays 1 - cooperativeGestures also gates keyboard pan",
+     "Ctrl+drag pan: counter still 1 - the prefix controller's pointerdown capture likely consumes the gesture before maplibre pans during collecting mode"
+    ]
    }
   }
  }
