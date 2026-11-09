@@ -2,7 +2,7 @@
 /**
  * The host-insensitivity of a figure entry's binding fingerprint.
  *
- * @package Linker\Commerce\Tests\Unit
+ * @package Linker\Commerce\Tests\Unit\Products\Publication
  */
 
 declare( strict_types=1 );
@@ -13,6 +13,9 @@ use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
 
+/**
+ * Tests for Publication::figure_revision().
+ */
 final class FigureRevisionTest extends TestCase {
 
 	/**
@@ -23,7 +26,7 @@ final class FigureRevisionTest extends TestCase {
 		WP_Mock::userFunction( 'wp_json_encode' )
 			->andReturnUsing( static fn ( mixed $value ): string => (string) json_encode( $value ) );
 		WP_Mock::userFunction( 'wp_parse_url' )
-			->andReturnUsing( static fn ( string $url, ?int $component = null ): mixed => parse_url( $url, $component ) );
+			->andReturnUsing( static fn ( string $url, ?int $component = null ): mixed => parse_url( $url, $component ?? -1 ) );
 	}
 
 	/**

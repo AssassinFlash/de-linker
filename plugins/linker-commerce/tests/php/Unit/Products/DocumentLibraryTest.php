@@ -139,7 +139,7 @@ final class DocumentLibraryTest extends TestCase {
 		parent::setUp();
 		$this->plain_text();
 		WP_Mock::userFunction( 'wp_parse_url' )
-			->andReturnUsing( static fn ( string $url, ?int $component = null ): mixed => parse_url( $url, $component ) );
+			->andReturnUsing( static fn ( string $url, ?int $component = null ): mixed => parse_url( $url, $component ?? -1 ) );
 		WP_Mock::userFunction( 'get_option' )->andReturn( array() )->byDefault();
 		WP_Mock::userFunction( 'wp_cache_supports' )->andReturn( true )->byDefault();
 		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturn( true )->byDefault();
