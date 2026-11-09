@@ -23514,11 +23514,12 @@
   "state": "product-add-normal-hover-focus",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: hover/focus visual states need image reading"
+   "genie-card-actions.spec.ts - hover() asserts the background-color change and focus asserts outline solid + tab order on the primary/secondary card actions, EN/DE x 1440/390 x workspace/dock/hero",
+   "merged spec, green"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -23528,7 +23529,9 @@
    "marketing-entries",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "card_actions": "genie-card-actions.spec.ts - hover() asserts the background-color change and focus asserts outline solid + tab order on the primary/secondary card actions, EN/DE x 1440/390 x workspace/dock/hero"
+  }
  },
  {
   "key": "genie:product-add-normal-hover-focus:en:390",
@@ -23764,11 +23767,12 @@
   "state": "product-add-retry",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: needs a controlled upstream failure injection mid-add"
+   "genie-card-actions.spec.ts - outcome \"retry\": pre-submit failure (failed cart read) resolves instantly, data-state=retry asserted with status color and enabled actions",
+   "merged spec, green"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -23778,7 +23782,9 @@
    "marketing-entries",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "card_actions": "genie-card-actions.spec.ts - outcome \"retry\": pre-submit failure (failed cart read) resolves instantly, data-state=retry asserted with status color and enabled actions"
+  }
  },
  {
   "key": "genie:product-add-retry:en:390",
@@ -23846,11 +23852,12 @@
   "state": "product-add-unverified",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: needs challenge-timeout timing mid-add"
+   "genie-card-actions.spec.ts - outcome \"unverified\": the write endpoint returns 503 and the card state machine is asserted through it",
+   "merged spec, green"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -23860,7 +23867,9 @@
    "marketing-entries",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "card_actions": "genie-card-actions.spec.ts - outcome \"unverified\": the write endpoint returns 503 and the card state machine is asserted through it"
+  }
  },
  {
   "key": "genie:product-add-unverified:en:390",
