@@ -26,5 +26,20 @@
     "rerun the gate with the capture requesting an identical image variant on both bases (e.g. fixed DPR/accept headers) so the diff counts only true render differences",
     "the 44 cu-pass-pending rows and the replica pixel gate then run in one pass once an image-capable model session is available for visual confirmation of the declared dynamic regions"
   ],
-  "artifacts": "results.json and capture.json in this directory (full-page PNG pairs and red-difference images in /tmp/pixgate-1109, reclaimed after archiving the JSON)"
+  "artifacts": "results.json and capture.json in this directory (full-page PNG pairs and red-difference images in /tmp/pixgate-1109, reclaimed after archiving the JSON)",
+  "normalization_experiments": [
+    [
+      {
+        "run": "route-only: both bases served the local snapshot's bytes for every uploads URL",
+        "result": "de-390 improved 334089 -> 202771; home-1440 stayed ~149497 (bounds y1816-6917); de-1440 STILL size-mismatched 8613 vs 8634",
+        "reading": "serving the same bytes is not enough: live's LiteSpeed-rewritten DOM still carries srcset, so live selects a different VARIANT URL whose (locally-served) file has different intrinsic dimensions - the markup difference itself drives layout"
+      },
+      {
+        "run": "route + strip srcset/sizes after load",
+        "result": "INVALID: re-selection after first paint broke lazy-load layout (page height inflated to ~25000px, horizontal overflow at 390) - a distorted render is not comparable evidence",
+        "reading": "discarded; a valid normalization would need the attribute stripped before first paint, which no longer renders live's real DOM"
+      }
+    ]
+  ],
+  "conclusion": "the pixel gate cannot pass by capture-side normalization alone: the difference lives in production's served markup (LiteSpeed srcset rewrite) plus CDN negotiation, both part of the real live experience. Per the gate rules the testimonials image band is submitted to the owner as a declared dynamic region; alternatively a capture with LiteSpeed's rewrite disabled for the comparison window would isolate the replica surfaces"
 }
