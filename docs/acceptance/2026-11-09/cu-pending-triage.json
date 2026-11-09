@@ -179,7 +179,14 @@
    "strings_stage": {
     "progress": "\"Set up PV strings\" enabled after inverter pick (gate disabled={!inverterId}); needs force-click (the equipment section re-renders too frequently for Playwright actionability); the section opens showing \"PV strings and inputs / Assign the roof modules to strings and inverter inputs\"",
     "still_to_do": "drive the PvStringSetup editor (source: components/equipment/PvStringSetup.tsx; validity at lines ~179-206: controlled?fields.every(Boolean):valid - the plan assigns the roof array modules to strings/inputs; a valid plan feeds EquipmentSetup.valid and unlocks Prepare equipment selection)",
-    "probe_notes": "test.setTimeout(600_000) added (chain now exceeds 300s); PV-run wait 60s; all equipment-section clicks should use force:true"
+    "probe_notes": "test.setTimeout(600_000) added (chain now exceeds 300s); PV-run wait 60s; all equipment-section clicks should use force:true",
+    "editor_open": "WORKING: open details (summary \"PV strings and inputs\", force click) -> create button now visible -> click \"Set up PV strings\" (force) -> plan created -> fill \"Lowest design ambient temperature\"=-10 + \"Temperature source and location\" -> the Add-a-string editor shows: MPPT, Inverter input, \"Modules to add to this string\", and \"Add selected modules to string\" (disabled until selection); status \"0 of 8 roof modules assigned\"",
+    "final_steps": "fill MPPT=1 and Inverter input=1 -> select all 8 module checkboxes -> \"Add selected modules to string\" -> \"8 of 8 roof modules assigned\" -> PvOperatingSetup fields (operating validity) -> equipment Prepare unlocks -> double-save -> Check saved equipment selection -> Scenario (Review energy inputs, Use the shared profile range, Add operating period) -> Calculate saved scenario -> Generate planning report -> DraftTransferButton -> inquiry",
+    "gotchas": [
+     "the create button is :visible ONLY after the details opens (earlier force-clicks on hidden copies never created the plan - the empty-dump root cause)",
+     "multiple PvStringSetup instances exist (Single/Multiple system panels); always scope with :visible",
+     "equipment-section clicks need force:true (constant re-render)"
+    ]
    }
   }
  }
