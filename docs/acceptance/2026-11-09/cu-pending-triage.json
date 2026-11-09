@@ -306,6 +306,18 @@
           "row3_isolation": "open",
           "row4_consume": "open"
         }
+      },
+      "rows234_2026_11_10": {
+        "proven": "row2 tamper branch STABLE (two consecutive green runs): tampering the hidden linker_project_note_revisions field -> server 409 'The project notes have changed. Your other entries are still here.' with name+message retained verbatim on the re-rendered form",
+        "rate_limiter_finding": "PublicGuard connection limiter (3/hour, Business::enabled()=false on review so take() applies) is SHARED by all local e2e traffic from 127.0.0.1 - it caused the apparent flake (tokens decrementing across runs). The spec now DELETEs linker_commerce_limit_public_connection* via the wp() helper before submitting (WIP)",
+        "open": "the SECOND submit (revision restored to the true value, consent retained-checked, entries retained) is STILL refused with notes-changed - top suspect: the 409 flash retention re-renders the revision field with the TAMPERED value (Form::inquiry_notes_section($previous) renders $previous[REVISIONS_FIELD]), so the restore must run against the re-rendered field whose server-rendered value is the tampered one - the WIP restore did set .value but the refusal persisted; needs one source-read of the retained-revision render + possibly submitting with the FRESH server-rendered form after a clean reload instead of restoring",
+        "wip": "full row2/3/4 sequence (tamper->409->restore->success->isolation->consumed) staged in .scratch/planner-report-chain-WIP-rows234.spec.ts; main spec reverted to HEAD (chain green)",
+        "matrix_rows": {
+          "row1": "DONE",
+          "row2": "tamper+retain DONE; happy path DONE",
+          "row3": "assertions staged, unverified",
+          "row4": "assertions staged, unverified"
+        }
       }
     }
   }
