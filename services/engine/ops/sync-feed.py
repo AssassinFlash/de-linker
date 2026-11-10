@@ -83,7 +83,9 @@ def fetch_feed(url: str) -> bytes:
         except (urllib.error.URLError, OSError, TimeoutError) as error:
             last_error = error
             log(f"feed fetch failed ({type(error).__name__}: {error}); retrying")
-    raise RuntimeError(f"feed fetch failed after {FEED_FETCH_ATTEMPTS} attempts") from last_error
+    raise RuntimeError(
+        f"feed fetch failed after {FEED_FETCH_ATTEMPTS} attempts"
+    ) from last_error
 
 
 def restart_engine() -> subprocess.CompletedProcess[str]:
