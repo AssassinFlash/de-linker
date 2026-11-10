@@ -271,8 +271,19 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             )
             if isinstance(request, ResidentialInput):
                 design = residential.design(view.engine, request)
+                # The revision printed on the report is the loaded generation the
+                # numbers came from: the same value /resource/version reports, so
+                # a printed sheet can be checked against the engine that made it.
                 result: ResidentialResult | CommercialResult = residential.result(
-                    design, report.residential(design, now())
+                    design,
+                    report.residential(
+                        design,
+                        now(),
+                        str(loaded.publication.feed.get("source_revision") or ""),
+                        str(
+                            loaded.publication.feed.get("compatibility_revision") or ""
+                        ),
+                    ),
                 )
             else:
                 result = commercial.design(view.engine, request, now())

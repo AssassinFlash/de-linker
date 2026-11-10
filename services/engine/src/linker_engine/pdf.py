@@ -14,6 +14,7 @@ import io
 import os
 import re
 from functools import cache
+from pathlib import Path
 
 import reportlab
 from reportlab.lib import colors
@@ -49,6 +50,11 @@ ACCENT_HEX = "#084d46"
 ACCENT = colors.HexColor(ACCENT_HEX)
 LOGO_MAX_HEIGHT = 16 * mm
 LOGO_MAX_WIDTH = 60 * mm
+BRAND_MAX_HEIGHT = 9 * mm
+BRAND_MAX_WIDTH = 34 * mm
+# The brand mark the site itself uses, converted from
+# plugins/linker-commerce/assets/linker-logo-wordmark.webp (ReportLab reads no WebP).
+BRAND = Path(__file__).resolve().parents[2] / "data" / "brand" / "linker-wordmark.png"
 _DATA_URL = re.compile(r"^data:image/(png|jpeg);base64,(?P<data>[A-Za-z0-9+/=\s]+)$")
 
 
@@ -147,6 +153,27 @@ def logo_image(data_url: str) -> Image:
     except (binascii.Error, OSError, ValueError) as error:
         raise LogoError("the logo cannot be read as an image") from error
     scale = min(LOGO_MAX_HEIGHT / height, LOGO_MAX_WIDTH / width)
+    return Image(io.BytesIO(raw), width=width * scale, height=height * scale)
+
+
+@cache
+def _brand_bytes() -> bytes | None:
+    return BRAND.read_bytes() if BRAND.is_file() else None
+
+
+def brand_image() -> Image | None:
+    """The Linker wordmark every report carries, not only one with an installer logo.
+
+    The PDF is the tool's own document, so the brand belongs on it even when the
+    customer uploads no logo. A missing asset leaves the report without a mark
+    rather than failing the download. Each call builds its own flowable: a
+    reportlab Image carries layout state and must not be shared between builds.
+    """
+    raw = _brand_bytes()
+    if raw is None:
+        return None
+    width, height = ImageReader(io.BytesIO(raw)).getSize()
+    scale = min(BRAND_MAX_HEIGHT / height, BRAND_MAX_WIDTH / width)
     return Image(io.BytesIO(raw), width=width * scale, height=height * scale)
 
 
@@ -266,9 +293,13 @@ def render(
             styles["small"],
         ),
     ]
-    if logo:
+    # The Linker mark is on every report; an uploaded installer logo sits below it.
+    marks = [
+        mark for mark in (brand_image(), logo_image(logo) if logo else None) if mark
+    ]
+    if marks:
         top = Table(
-            [[heading, logo_image(logo)]],
+            [[heading, marks]],
             colWidths=[width - LOGO_MAX_WIDTH, LOGO_MAX_WIDTH],
         )
         top.setStyle(

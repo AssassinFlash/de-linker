@@ -86,7 +86,12 @@ def _bom_table(lines: list[Line], locale: Locale) -> ReportTable:
     )
 
 
-def residential(design: Design, generated_at: str) -> Report:
+def residential(
+    design: Design,
+    generated_at: str,
+    source_revision: str | None = None,
+    compatibility_revision: str | None = None,
+) -> Report:
     request = design.request
     locale = request.locale
     sections: list[ReportSection] = []
@@ -152,6 +157,24 @@ def residential(design: Design, generated_at: str) -> Report:
     if request.existing_inverter:
         site.append(
             ReportRow(label=t("row.existing", locale), value=request.existing_inverter)
+        )
+    if source_revision:
+        # The report names the engineering generation it was built from, so a
+        # printed copy can be traced to the data behind it. Short hashes: the
+        # full 64-hex revisions are unreadable on paper, and the prefix is what
+        # the engine's own /resource/version readback compares.
+        site.append(
+            ReportRow(
+                label=t("row.revision", locale),
+                value=t(
+                    "row.revision_value",
+                    locale,
+                    source=source_revision[:12],
+                    compatibility=(compatibility_revision or "")[:12],
+                )
+                if compatibility_revision
+                else t("row.revision_source", locale, source=source_revision[:12]),
+            )
         )
     sections.append(ReportSection(id="site", title=t("report.site", locale), rows=site))
 
@@ -220,52 +243,70 @@ def residential(design: Design, generated_at: str) -> Report:
 
     if design.metrics:
         m = design.metrics
+        metrics_rows = [
+            ReportRow(
+                label=t("row.autarky", locale),
+                value=_range(
+                    m.autarky_range.low,
+                    m.autarky_range.high,
+                    locale,
+                    percent=True,
+                ),
+            ),
+            ReportRow(
+                label=t("row.share", locale),
+                value=_range(
+                    m.self_consumption_range.low,
+                    m.self_consumption_range.high,
+                    locale,
+                    percent=True,
+                ),
+            ),
+            ReportRow(
+                label=t("row.autarky_without", locale),
+                value=_range(
+                    m.without_storage_autarky_range.low,
+                    m.without_storage_autarky_range.high,
+                    locale,
+                    percent=True,
+                ),
+            ),
+            ReportRow(
+                label=t("row.share_without", locale),
+                value=_range(
+                    m.without_storage_self_consumption_range.low,
+                    m.without_storage_self_consumption_range.high,
+                    locale,
+                    percent=True,
+                ),
+            ),
+            ReportRow(
+                label=t("row.storage_assumed", locale),
+                value=f"{fmt(m.usable_kwh, locale)} kWh",
+            ),
+            ReportRow(
+                label=t("row.metrics_basis", locale),
+                value=t("metrics.method", locale),
+            ),
+        ]
+        # The figures name the capacity they were computed for. Without a selected
+        # battery that is the sizing's upper limit (stated as an assumption) or,
+        # when no battery can be released at all, no storage.
+        sizing_upper = max(0.0, design.sizing.high_kwh - design.sizing.reserve_kwh)
+        if design.selected:
+            metrics_paragraphs: list[str] = []
+        elif m.usable_kwh <= 0 or abs(m.usable_kwh - sizing_upper) >= 0.01:
+            metrics_paragraphs = [t("metrics.no_storage", locale)]
+        else:
+            metrics_paragraphs = [
+                t("metrics.from_sizing", locale, kwh=fmt(m.usable_kwh, locale))
+            ]
         sections.append(
             ReportSection(
                 id="metrics",
                 title=t("report.metrics", locale),
-                rows=[
-                    ReportRow(
-                        label=t("row.autarky", locale),
-                        value=_range(
-                            m.autarky_range.low,
-                            m.autarky_range.high,
-                            locale,
-                            percent=True,
-                        ),
-                    ),
-                    ReportRow(
-                        label=t("row.share", locale),
-                        value=_range(
-                            m.self_consumption_range.low,
-                            m.self_consumption_range.high,
-                            locale,
-                            percent=True,
-                        ),
-                    ),
-                    ReportRow(
-                        label=t("row.autarky_without", locale),
-                        value=_range(
-                            m.without_storage_autarky_range.low,
-                            m.without_storage_autarky_range.high,
-                            locale,
-                            percent=True,
-                        ),
-                    ),
-                    ReportRow(
-                        label=t("row.share_without", locale),
-                        value=_range(
-                            m.without_storage_self_consumption_range.low,
-                            m.without_storage_self_consumption_range.high,
-                            locale,
-                            percent=True,
-                        ),
-                    ),
-                    ReportRow(
-                        label=t("row.metrics_basis", locale),
-                        value=t("metrics.method", locale),
-                    ),
-                ],
+                rows=metrics_rows,
+                paragraphs=metrics_paragraphs,
             )
         )
 
@@ -342,6 +383,25 @@ def residential(design: Design, generated_at: str) -> Report:
                 table=_bom_table(selected.lines, locale),
             )
         )
+    else:
+        # No released system: the Bill of materials section stays in the report
+        # and states why it cannot list components, with the conditions that
+        # would change the result. Omitting the section would read as a report
+        # that forgot the list instead of a design without a selection.
+        sections.append(
+            ReportSection(
+                id="bom",
+                title=t("report.bom", locale),
+                paragraphs=[
+                    t("bom.none", locale),
+                    *(
+                        [t("bom.relax", locale), *design.relaxations]
+                        if design.relaxations
+                        else []
+                    ),
+                ],
+            )
+        )
 
     if design.warnings:
         sections.append(
@@ -354,9 +414,13 @@ def residential(design: Design, generated_at: str) -> Report:
 
     assumptions = [
         t("limit.no_payback", locale),
-        t("limit.reference_module", locale, model=_module_name(design)),
         t("limit.household", locale),
     ]
+    module = _module_name(design)
+    if module:
+        # The reference module belongs to a string layout; without a released
+        # system no layout exists, and the sentence would name no module.
+        assumptions.insert(1, t("limit.reference_module", locale, model=module))
     if not request.planes:
         assumptions.append(t("limit.default_orientation", locale))
     assumptions += [
