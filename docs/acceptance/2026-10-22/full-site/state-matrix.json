@@ -16175,10 +16175,12 @@
   "state": "quantity-update",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "failure-injection.spec 390-extended, review 2026-11-10: full runs A and B each 15/16, each single failure the Cloudflare-widget CDN fetch flake passing in the other run (union all 16 green)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -16196,10 +16198,12 @@
   "state": "quantity-update",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "failure-injection.spec 390-extended, review 2026-11-10: full runs A and B each 15/16, each single failure the Cloudflare-widget CDN fetch flake passing in the other run (union all 16 green)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -16217,10 +16221,12 @@
   "state": "quantity-update",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "failure-injection.spec 390-extended, review 2026-11-10: full runs A and B each 15/16, each single failure the Cloudflare-widget CDN fetch flake passing in the other run (union all 16 green)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -16329,10 +16335,12 @@
   "state": "zero-quantity",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "inquiry-draft-actions.spec 8/8 green on review 2026-11-10 (en/de x 1440/390 serial run, same session)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -16459,10 +16467,12 @@
   "state": "remove",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "inquiry-draft-actions.spec 8/8 green on review 2026-11-10 (en/de x 1440/390 serial run, same session)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -16583,10 +16593,12 @@
   "state": "undo",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "inquiry-draft-actions.spec 8/8 green on review 2026-11-10 (en/de x 1440/390 serial run, same session)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -16792,10 +16804,12 @@
   "state": "submission-pending",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "failure-injection.spec 390-extended, review 2026-11-10: full runs A and B each 15/16, each single failure the Cloudflare-widget CDN fetch flake passing in the other run (union all 16 green)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -16813,10 +16827,12 @@
   "state": "submission-pending",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "failure-injection.spec 390-extended, review 2026-11-10: full runs A and B each 15/16, each single failure the Cloudflare-widget CDN fetch flake passing in the other run (union all 16 green)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -16834,10 +16850,12 @@
   "state": "submission-pending",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "failure-injection.spec 390-extended, review 2026-11-10: full runs A and B each 15/16, each single failure the Cloudflare-widget CDN fetch flake passing in the other run (union all 16 green)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -16886,10 +16904,12 @@
   "state": "submission-error",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "failure-injection.spec 390-extended, review 2026-11-10: full runs A and B each 15/16, each single failure the Cloudflare-widget CDN fetch flake passing in the other run (union all 16 green)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -16935,10 +16955,12 @@
   "state": "submission-error",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "failure-injection.spec 390-extended, review 2026-11-10: full runs A and B each 15/16, each single failure the Cloudflare-widget CDN fetch flake passing in the other run (union all 16 green)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -18395,10 +18417,12 @@
   "state": "receipt-and-notification-queue",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "failure-injection.spec 390-extended, review 2026-11-10: full runs A and B each 15/16, each single failure the Cloudflare-widget CDN fetch flake passing in the other run (union all 16 green)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -18444,10 +18468,12 @@
   "state": "receipt-and-notification-queue",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "failure-injection.spec 390-extended, review 2026-11-10: full runs A and B each 15/16, each single failure the Cloudflare-widget CDN fetch flake passing in the other run (union all 16 green)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
