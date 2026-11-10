@@ -81,3 +81,24 @@ Nothing in this ledger marks the goal complete; it records what stands.
 - Not flipped without real coverage: the 90 planner-chain variants (single
   shape EN chains) and every other family whose suite has not run green in
   the row's shape. Pending after this batch: 310.
+
+## Batch: shape coverage to every language and width (main after PR #1050)
+
+- Four suites extended from their single EN/1440 row-shape to full en/de x
+  1440/390, all verified green on review before merge: home-hero-retry and
+  genie-history-authority (PR #1048, 24 tests), genie-hero's answer and
+  linked-product tests (PR #1049, 4/4 - with the spec catching up to the
+  shipped hero: planner-entry capsule excluded from the hide assertion,
+  three-tier card grid, layout poll), genie-cross-surface-entry (PR #1050,
+  all four shapes - phone shapes open the dock through the chip).
+- Matrix: pass 142 -> 145, pending 295. Honest exclusions recorded: the 90
+  planner-chain variants (single-shape EN chains, not flipped without real
+  coverage), save-readback DE (its cart notice is an untranslated catalog
+  string; customer-visible copy goes through the copy review line, not a
+  freelance translation - the gap is this note), account-family variants
+  (sibling evidence is production JSON audits of one shape).
+- Operational lesson recorded: a tool-level background timeout does not kill
+  the process tree - a zombie full genie-hero run starved the review Genie
+  and produced a batch of 400s test timeouts; killed, diagnosed by service
+  log (turns 200 OK but minutes-slow), and the shapes re-verified green on
+  the quiet instance.

@@ -34920,10 +34920,12 @@
   "state": "cross-surface-entry-question-consumed",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1050: genie-cross-surface-entry.spec.ts parameterized en/de x 1440/390 - phone shapes open the dock through the chip (below the 860px breakpoint the standing button is hidden); all four shapes green on review"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -34949,10 +34951,12 @@
   "state": "cross-surface-entry-question-consumed",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1050: genie-cross-surface-entry.spec.ts parameterized en/de x 1440/390 - phone shapes open the dock through the chip (below the 860px breakpoint the standing button is hidden); all four shapes green on review"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -34978,10 +34982,12 @@
   "state": "cross-surface-entry-question-consumed",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1050: genie-cross-surface-entry.spec.ts parameterized en/de x 1440/390 - phone shapes open the dock through the chip (below the 860px breakpoint the standing button is hidden); all four shapes green on review"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
