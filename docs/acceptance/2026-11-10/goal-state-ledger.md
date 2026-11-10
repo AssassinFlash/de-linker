@@ -507,3 +507,85 @@ Open work lines (recorded, none hidden):
   work before being stopped.
 - PR #1077 (protection-posture corrections, 7 evidence-backed fixes) also
   merged this batch. Disk headroom now 1.3 Ti.
+
+## Batch 2026-11-11 (late): #548 projection gap closed end-to-end + production binding repair + VPS sync resilience
+
+Three parallel subagent lines dispatched, every claim re-verified by the main
+line before merge; one line overturned the main line's own local diagnosis.
+
+### #548 engineering-data projection gap — CLOSED (PR #1081, merged)
+
+- The recorded "85/85 feed products lack the layout fields" was true only of
+  local copies. Production always carried all six fields (main line curl:
+  n_mppt 45 · strings_per_mppt 30 · mppt_max_current_a 45 · mppt_max_isc_a 45 ·
+  mppt_voltage_range_v 45 · max_pv_input_v 39). Real root cause: `tools/pull`
+  search-replace rewrites citation URLs, `Publication::revision()` hashes
+  entries with them, so every figure binding and vendor declaration revision
+  diverged from the recorded one and both consumers dropped them (local feed
+  405 figures vs production 981).
+- Fix: `EvidenceBindings::repair_unchanged()` + `CompatibilityClaims::renew_unchanged()`
+  (identity + blob must match; replaced bytes are never adopted), CLI
+  `wp linker-commerce publication repair-bindings`, wired into `tools/pull`
+  after `bind-figures`. Spec 614 updated. Engine reader keys unchanged (34 of
+  45 inverters carry only the engine-side key names).
+- End-to-end on review (main line's own call): `POST /design/residential`
+  → `solution`, 7-line Stückliste, MPPT-correct strings; commercial with a
+  30-day 15-min profile + target_peak_kw → `sized` with released ET ×
+  GW61.4/GW112.6-BAT-AC systems (the 9 pairs below are what that path needs).
+
+### Production had the same disease, different trigger — repaired live
+
+- Production WP held identical claims/figures but its projection dropped 9
+  GoodWe AC battery pairs (ET 1946/1947/1948 × GW61.4/GW112.6) and product
+  1178's `phases` figure — stale binding bookkeeping, not missing data.
+- Deployed main via `just cutover deploy` (WindPress gate tripped once;
+  headless recompile then resume, probes green), ran `repair-bindings`
+  (dry-run predicted exactly 1+9, real run matched), feed readback:
+  figures 981→982, pairs 368→377, compat_revision aligned with review
+  (`932e2ff6…`). Second deploy shipped #1080's US5000 registry (merged after
+  the first deploy); verified `43.5 ~ 53.2` + V1.3 citation in the production
+  registry file.
+
+### VPS feed-sync fragility — root-caused and fixed (PR #1083; #1084 formatting)
+
+- The engine's 15-minute feed sync had failed 10 times since Nov 9: the
+  VPS→Hostinger transit (Cogent/Arelia hops, mtr evidence) intermittently
+  stalls connections for tens of seconds; `sync-feed.py` fetched once with no
+  retry. During the repair window this produced a real production incident:
+  engine revision `f41ad27c` vs Woo `932e2ff6` → `_scope()` fail-closed →
+  design endpoints 503 until a sync succeeded.
+- Fix: fetch retry (4 attempts, 0/5/15/30 s backoff, 90 s timeout, per-attempt
+  logging). Installed at the VPS stable ops path; manual sync converged,
+  engine readback `932e2ff6`, `ready=1` 200 with 85 prepared products, and a
+  real `POST /design/residential` on the production engine returned
+  `solution` + 7-line BOM.
+- Process slip recorded honestly: #1083 was merged once while CI was red
+  (formatter line length); #1084 carries the ruff-formatted fix. CI gate
+  re-verified before the follow-up merge.
+
+### US5000 manual V1.3 (PR #1080, merged) and the 410 verdict
+
+- Registry: `module_voltage_range_v` 43.5~53.5 → 43.5~53.2 (V1.3 PDF p.14),
+  16 citations re-aimed per-page (not by offset), note with V1.3 sha256.
+  Review instance: V1.3 manual hosted (attachment 9557), product 1134
+  `charge_discharge_current_recommend_a = 100` — all read back by the main line.
+- The "3 broken 410 links" were not broken files: US2000C/3000C/5000 are
+  draft in production AND review (verified both), so `DocumentAccess`
+  correctly refuses their documents (rule 609). Republishing the US series is
+  an open catalog decision, not a defect.
+- Registered, not yet modelled: Peak-current semantics changed in V1.3
+  (105~119 A @15 min / 120~200 A @15 s); US5000-B Breaker section (C/60 VDC/
+  125 A/Icu 10 kA); US3000C current-field semantics; product copy still says
+  "80 A recommended" (draft product, not customer-visible; fact fix with
+  V1.3 evidence when the series is republished or copy-reviewed).
+
+### Matrix and resources
+
+- dock-keyboard en/de 390: pending → pass (PR #1082, merged) via the
+  side-panel continuation path, with a real entrance-focus defect fixed in
+  `useHelperDialog` (composer focus polling) and regression proof. **The
+  state matrix now has zero pending rows.**
+- Worktrees: all three agent worktrees self-reclaimed (none remain); no stray
+  processes; the temporary attachment-list dump and /tmp registry JSONs
+  deleted. Production keeps one deploy-prev set per procedure. Disk 1.3 Ti
+  free.
