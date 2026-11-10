@@ -321,3 +321,34 @@ sentence ('Die Produkte der gespeicherten Lösung liegen jetzt in Ihrem
 Lösungsentwurf.') and passes. The item came from misreading PO multi-line
 format. Closed as invalid - the only remaining external condition is the
 PDF content read (image model).
+
+## Batch: hero add-to-draft proof wiring (PR #1064, merged; #1063 also merged)
+
+- The hero card's ADD path never sent its signed draft proof (the SAVE path
+  did): GenieCard.onAdd invoked (productId) alone, addToDraft ran with the
+  empty default token and the server correctly 409'd every hero add. The
+  one-line wiring fix landed with the full evidence chain in the PR
+  (server minting healthy, proofs present in the browser-received body,
+  loss was the last hop).
+- After #1063 merged (lifecycle assertions), #1064 went green without
+  touching any mail code - the mu-smoke mystery was exactly the two
+  count-sensitive InternalSmtpTest expectations awaiting the lifecycle
+  alignment, not an environment flake and not a main regression (my
+  earlier "main fails locally" evidence was contaminated by the agent's
+  uncommitted edits in the shared tree - lesson recorded below).
+- genie-hero full suite on c222 after the fix: 22/28. The four cards-send
+  tests (the original proof failures) all pass now. The remaining 6 are a
+  DIFFERENT pair: "out of sight, the way back continues the same
+  conversation in the dock" times out at 600 s in all four shapes, and
+  "#236 attachment states render in the hero" never shows
+  .linker-genie-attachment at 390. Own diagnosis lines; home-hero matrix
+  rows stay pending.
+- Parallel-agents lesson (hard-learned, now standing practice): subagents
+  share the parent's working tree. An agent's staged-but-uncommitted work
+  was swept into one of my commits (caught pre-push, reset), and its
+  unstaged fix was overwritten twice by branch checkouts (recovered from a
+  backup worktree). Standing rule from here: every parallel agent works in
+  its own git worktree and commits by explicit pathspec.
+- Misdiagnosis closed: the save-readback DE notice "empty PO" external
+  item was PO multi-line misreading; the MO has the sentence and the
+  4/4-green suite asserts it. Only PDF-content-read remains external.
