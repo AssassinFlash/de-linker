@@ -429,11 +429,25 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "Herstellerfreigaben und Dokumente",
     ),
     "report.bom": ("Bill of materials", "Stückliste"),
+    "bom.none": (
+        "No bill of materials yet: no released system matches every rule for these inputs.",
+        "Noch keine Stückliste: Für diese Eingaben erfüllt kein freigegebenes System alle Regeln.",
+    ),
+    "bom.relax": (
+        "What would change the result:",
+        "Was das Ergebnis ändern würde:",
+    ),
     "report.assumptions": ("Assumptions and limits", "Annahmen und Grenzen"),
     "report.next": ("Next steps", "Nächste Schritte"),
     "report.warnings": ("Notes", "Hinweise"),
     "row.postcode": ("Postcode", "Postleitzahl"),
     "row.position": ("Position", "Koordinaten"),
+    "row.revision": ("Revision", "Revision"),
+    "row.revision_value": (
+        "Design data {source} · compatibility {compatibility}",
+        "Auslegungsdaten {source} · Kompatibilität {compatibility}",
+    ),
+    "row.revision_source": ("Design data {source}", "Auslegungsdaten {source}"),
     "row.consumption": ("Annual consumption", "Jahresverbrauch"),
     "row.consumption_range": (
         "Annual consumption with additions",
@@ -499,6 +513,18 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "Eigenverbrauchsanteil ohne Speicher",
     ),
     "row.metrics_basis": ("Method", "Methode"),
+    "row.storage_assumed": (
+        "Storage capacity in these figures",
+        "Speicherkapazität in diesen Werten",
+    ),
+    "metrics.from_sizing": (
+        "No battery is selected yet, so the figures assume the storage sizing's upper limit of {kwh} kWh.",
+        "Eine Batterie ist noch nicht ausgewählt; die Werte gehen daher von der Obergrenze der Speicherauslegung von {kwh} kWh aus.",
+    ),
+    "metrics.no_storage": (
+        "The figures describe the system without storage; no released battery is part of this design.",
+        "Die Werte beschreiben die Anlage ohne Speicher; eine freigegebene Batterie gehört nicht zu dieser Auslegung.",
+    ),
     "metrics.basis": (
         "HTW Berlin Unabhängigkeitsrechner, tables of 2024-08-23",
         "Unabhängigkeitsrechner der HTW Berlin, Tabellen vom 23.08.2024",

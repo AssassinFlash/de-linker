@@ -1,7 +1,10 @@
 """The HTTP surface the configurator calls."""
 
+import io
+
 from conftest import TRIFTSTRASSE_5
 from fastapi.testclient import TestClient
+from pypdf import PdfReader
 
 RESIDENTIAL = {"plz": "80538", "annual_kwh": 5000, "pv_kwp": 10, "phase": 3}
 
@@ -79,6 +82,16 @@ def test_report_pdf(client: TestClient) -> None:
     assert response.status_code == 200
     assert response.headers["content-type"] == "application/pdf"
     assert response.content.startswith(b"%PDF")
+    # The served PDF names the generation it was built from, so a downloaded
+    # sheet can be traced back to the data behind its numbers.
+    text = "\n".join(
+        page.extract_text() for page in PdfReader(io.BytesIO(response.content)).pages
+    )
+    publication = client.post("/design/residential", json=RESIDENTIAL).json()[
+        "publication"
+    ]
+    assert publication["source_revision"][:12] in text
+    assert "Revision" in text
     bad = client.post(
         "/report/pdf",
         json={

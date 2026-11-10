@@ -39,6 +39,130 @@ def text_of(document: bytes) -> str:
     )
 
 
+def unselected(engine: Engine, locale: str = "en") -> Report:
+    """A design with no released system: the state the live review feed produces."""
+    request = ResidentialInput.model_validate(
+        {
+            "plz": "80538",
+            "annual_kwh": 5000,
+            "pv_kwp": 10,
+            "phase": 3,
+            "locale": locale,
+            "existing_inverter": "Unknown 9K",
+        }
+    )
+    return report.residential(
+        residential.design(engine, request), "2026-10-09T12:00:00Z"
+    )
+
+
+def test_self_sufficiency_and_self_consumption_survive_without_a_selection(
+    engine: Engine,
+) -> None:
+    """HTW figures follow from array, consumption and capacity, not from a chosen
+    inverter; a design with no released system still states them."""
+    built = unselected(engine)
+    metrics = {section.id: section for section in built.sections}["metrics"]
+    values = {row.label: row.value for row in metrics.rows}
+    assert values["Self-sufficiency with storage"].endswith("%")
+    assert values["Self-consumption with storage"].endswith("%")
+    # The assumed capacity is the sizing's own upper limit, named as an assumption.
+    assert values["Storage capacity in these figures"] == "7.5 kWh"
+    assert "7.5 kWh" in " ".join(metrics.paragraphs)
+
+
+def test_metrics_name_the_capacity_they_assume(engine: Engine) -> None:
+    """Two no-selection states differ: a sizing upper limit, or no storage at all."""
+    sizing = unselected(engine)
+    metrics = {section.id: section for section in sizing.sections}["metrics"]
+    assert "upper limit of 7.5 kWh" in metrics.paragraphs[0]
+
+    # 1 kWp is below HTW's 0.5 kWp per MWh: no battery is recommended at all, so
+    # the figures describe the system without storage and must not claim a capacity.
+    bare = report.residential(
+        residential.design(
+            engine,
+            ResidentialInput.model_validate(
+                {
+                    "plz": "80538",
+                    "annual_kwh": 5000,
+                    "pv_kwp": 1,
+                    "phase": 3,
+                    "existing_inverter": "Unknown 1K",
+                }
+            ),
+        ),
+        "2026-10-09T12:00:00Z",
+    )
+    bare_metrics = {section.id: section for section in bare.sections}["metrics"]
+    assert "without storage" in bare_metrics.paragraphs[0]
+    values = {row.label: row.value for row in bare_metrics.rows}
+    assert values["Storage capacity in these figures"] == "0 kWh"
+
+
+def test_the_bill_of_materials_states_that_no_system_was_selected(
+    engine: Engine,
+) -> None:
+    """The section is present and explains itself; a missing section reads as an
+    oversight, a stated one as a verdict."""
+    sections = {section.id: section for section in unselected(engine).sections}
+    bom = sections["bom"]
+    assert bom.table is None
+    assert bom.paragraphs[0].startswith("No bill of materials yet")
+    assert "What would change the result:" in bom.paragraphs
+
+
+def test_the_report_names_the_generation_it_was_built_from(engine: Engine) -> None:
+    built = report.residential(
+        residential.design(
+            engine,
+            ResidentialInput.model_validate(
+                {"plz": "80538", "annual_kwh": 5000, "pv_kwp": 10, "phase": 3}
+            ),
+        ),
+        "2026-10-09T12:00:00Z",
+        "9a687023a7b7b5ab769878739277eca058e1879f3a5cca7c12f9ef9968eee89c",
+        "e90acaa602fd9b0e23eb24696e48667f81a2cab9ff2c5f409c9ab1706221aa2c",
+    )
+    site = {row.label: row.value for row in built.sections[0].rows}
+    # Short prefixes: the printed sheet must stay readable; the engine's own
+    # /resource/version readback compares the same twelve characters.
+    assert site["Revision"] == ("Design data 9a687023a7b7 · compatibility e90acaa602fd")
+
+
+def test_the_pdf_carries_the_linker_mark_without_an_uploaded_logo(
+    engine: Engine,
+) -> None:
+    """The tool's own document carries the brand; the installer logo is optional."""
+    document = pdf.render(build(engine, "en"))
+    reader = PdfReader(io.BytesIO(document))
+    resources = cast(DictionaryObject, reader.pages[0]["/Resources"].get_object())
+    assert len(cast(DictionaryObject, resources["/XObject"].get_object())) >= 1
+    with_logo = pdf.render(build(engine, "en"), f"data:image/png;base64,{PNG}")
+    both = PdfReader(io.BytesIO(with_logo))
+    more = cast(
+        DictionaryObject,
+        cast(DictionaryObject, both.pages[0]["/Resources"].get_object())[
+            "/XObject"
+        ].get_object(),
+    )
+    assert len(more) > len(cast(DictionaryObject, resources["/XObject"].get_object()))
+
+
+def test_the_pdf_prints_the_revision_it_was_built_from(engine: Engine) -> None:
+    built = report.residential(
+        residential.design(
+            engine,
+            ResidentialInput.model_validate(
+                {"plz": "80538", "annual_kwh": 5000, "pv_kwp": 10, "phase": 3}
+            ),
+        ),
+        "2026-10-09T12:00:00Z",
+        "9a687023a7b7b5ab769878739277eca058e1879f3a5cca7c12f9ef9968eee89c",
+    )
+    assert "Design data 9a687023a7b7" in text_of(pdf.render(built))
+
+
 def test_every_rule_without_a_source_is_disclosed_somewhere() -> None:
     """A rule the report's assumptions do not name is either operational or
     disclosed with the roof planes; nothing unverified is silent."""

@@ -883,7 +883,7 @@ def design(engine: Engine, request: ResidentialInput) -> Design:
         raise DesignInputError("battery_id", "Requested battery is not eligible")
 
     selected: Selection | None = None
-    metrics: MetricsResult | None = None
+    cycling = 0.0
     reserve_only = (
         not sizing.recommended and request.backup != "none" and bool(sizing.reserve_kwh)
     )
@@ -936,31 +936,6 @@ def design(engine: Engine, request: ResidentialInput) -> Design:
         # A backup reserve is held back in daily operation (HTW Berlin's storage
         # sizing recommendations, rules.HTW_PAPER; planner-methods.md section 2.2(b)).
         cycling = max(0.0, usable - sizing.reserve_kwh)
-        figures = htw.metrics(request.pv_kwp, use, cycling)
-        outside = (
-            figures.outside_table
-            or use.low_kwh < rules.HTW_TABLE_MIN_KWH.value
-            or use.high_kwh > rules.HTW_TABLE_MAX_KWH.value
-            or request.heat_pump
-            or request.electric_vehicle
-        )
-        if outside:
-            warnings.append(t("warn.outside_table", locale))
-        metrics = MetricsResult(
-            usable_kwh=cycling,
-            autarky_range=Range(low=figures.autarky[0], high=figures.autarky[1]),
-            self_consumption_range=Range(
-                low=figures.self_consumption[0], high=figures.self_consumption[1]
-            ),
-            without_storage_autarky_range=Range(
-                low=figures.autarky_without[0], high=figures.autarky_without[1]
-            ),
-            without_storage_self_consumption_range=Range(
-                low=figures.self_consumption_without[0],
-                high=figures.self_consumption_without[1],
-            ),
-            basis=t("metrics.basis", locale),
-        )
         ac = chosen.inverter.ac_power_kw or 0.0
         if ac > rules.NA_PROTECTION_KVA.value:
             warnings.append(t("warn.na_protection", locale))
@@ -968,6 +943,39 @@ def design(engine: Engine, request: ResidentialInput) -> Design:
         warnings.append(
             t("warn.no_battery_release", locale, model=existing_product.model)
         )
+    else:
+        # No released system: the design still states self-sufficiency and
+        # self-consumption, because both follow from the array, the consumption
+        # and a storage capacity, not from a chosen inverter. The capacity is
+        # then the sizing's own upper limit (the top of the range the storage
+        # section reports), so the figures describe the design's storage range
+        # rather than equipment nobody selected.
+        cycling = max(0.0, sizing.high_kwh - sizing.reserve_kwh)
+    figures = htw.metrics(request.pv_kwp, use, cycling)
+    outside = (
+        figures.outside_table
+        or use.low_kwh < rules.HTW_TABLE_MIN_KWH.value
+        or use.high_kwh > rules.HTW_TABLE_MAX_KWH.value
+        or request.heat_pump
+        or request.electric_vehicle
+    )
+    if outside:
+        warnings.append(t("warn.outside_table", locale))
+    metrics = MetricsResult(
+        usable_kwh=cycling,
+        autarky_range=Range(low=figures.autarky[0], high=figures.autarky[1]),
+        self_consumption_range=Range(
+            low=figures.self_consumption[0], high=figures.self_consumption[1]
+        ),
+        without_storage_autarky_range=Range(
+            low=figures.autarky_without[0], high=figures.autarky_without[1]
+        ),
+        without_storage_self_consumption_range=Range(
+            low=figures.self_consumption_without[0],
+            high=figures.self_consumption_without[1],
+        ),
+        basis=t("metrics.basis", locale),
+    )
 
     if not sizing.recommended:
         # The proposal wording must match the result: a covered backup
