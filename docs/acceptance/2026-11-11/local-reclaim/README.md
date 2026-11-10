@@ -68,7 +68,11 @@ Readback after the last retirement:
   both `production-acceptance-*`, `geometric-production-*`, `genie` and
   `planner` — were copied to
   `~/de-linker-data/retired-instance-evidence/p548/` and 4 907 files were
-  sha256-compared with zero mismatches before the instance was retired.
+  sha256-compared with zero mismatches at copy time, before the instance was
+  retired. The destination holds **4 674 regular files and 2 symlinks** today
+  (632 MB). Those two counts differ by 233 files that this session could not
+  account for, and the source no longer exists to re-compare against — see
+  "Unresolved: the p548 evidence count" below.
 - **`t7`, `t9-pre-stack-backup`, `t113`**: never registered, idle since
   2026-10-09/10-12, no database. Their small unique bytes (13 product-fact
   backups, 44 mail-sink messages, a prototype pointer whose target is gone)
@@ -168,3 +172,27 @@ The six mu-plugins were checked by their removal records rather than assumed:
 So the only real citation debt is those three acceptance files, and the record
 above replaces the earlier blanket claim that every `p548/...` path needed
 repointing.
+
+## Unresolved: the p548 evidence count
+
+The copy was verified as 4 907 files with zero sha256 mismatches, and all three
+cited evidence files (`final-consumer/browser/record.json`,
+`final-consumer/legacy/verdict.json`, `try-again-evidence/report-final.json`)
+are present and readable. But the destination now holds 4 674 regular files and
+2 symlinks. 233 files are unaccounted for.
+
+What is known: the gap is not a missing directory — no directory under the
+destination is empty, `planner/workspace` (1 710 files), `planner/runtime-releases`
+(548) and `planner/managed-reference-native` (143) all carry content, and
+`runtime.json` survived. The likely explanation is the `-shm`/`-wal` companion
+files of `workspace.sqlite`, whose counts change as SQLite touches them, plus
+counting differences between the copy-time walk and today's. It is a hypothesis,
+not a finding.
+
+It cannot be settled here: the source instance was deleted in this session, so
+there is no second copy to re-hash against. This is exactly the kind of claim
+that should not be asserted without a check, which is why it is recorded as
+open rather than rounded to a confident number. Anyone needing the byte-level
+guarantee should treat the three cited files (verified present) as the evidence
+that matters, and re-derive any other file's authenticity from
+`20261105-1208` or from Git history.
