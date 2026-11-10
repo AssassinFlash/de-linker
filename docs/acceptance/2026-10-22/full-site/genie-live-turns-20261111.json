@@ -1,0 +1,62 @@
+{
+  "session": "genie-copy-and-rating-verification-20261111",
+  "environment": "production",
+  "url": "https://de-linker.com/",
+  "method": "Installed Google Chrome driven over CDP from Playwright (fresh guest profile, navigator.webdriver=false) plus DOM and network evidence. The bundled Playwright Chromium did not pass the site's Turnstile proof in two attempts ('Verification could not be completed. No request has been sent in this attempt.' after a 401 from the challenge platform), so every shape below ran on the installed browser. Guest identity only: no login, no inquiry submitted, no draft written. The only production write is the anonymous thumbs vote that each Helpful click itself sends, which is the behaviour under test.",
+  "captured_at_local": "2026-11-11 Asia/Shanghai",
+  "identity_context": "anonymous guest in every shape: body has no logged-in class, and the panel header shows 'Sign in / Create account' (EN) or 'Anmelden / Konto erstellen' (DE). Turnstile mode=enforce; each first turn went proofless POST 400 -> protection/prepare 200 -> protection/verify 200 -> real turn.",
+  "entry_paths": {
+    "width_1440": "dock: button.linker-genie-open[data-linker-genie-open] (aria-label 'Ask Genie' / 'Genie fragen') opens #linker-genie-mount. One real turn per shape.",
+    "width_390": "hero: .hero-prompt + .hero-send (aria-label 'Submit query', href /genie/ as the no-JS fallback) runs the turn inline, then .linker-genie-hero__continue ('Continue in the side panel' / German equivalent) hands the same thread to the dock bottom sheet, which is where the answer actions render.",
+    "why_390_differs": "Production CSS hides the standing dock below 861px: '@media (max-width: 860px) { .linker-genie { display: none } }'. The dock only becomes visible once its opener is expanded, so anything that waits for the dock bubble at 390 waits forever. The hero prompt is the real mobile entry."
+  },
+  "findings": [
+    {
+      "state": "copy-and-rating",
+      "shape": "en:390",
+      "result": "pass",
+      "evidence": "Real turn /genie/turn/757. Answer 496 chars, settled: 'Here are the SAJ H2 hybrid inverters in our product data; ... H2-30K-T3-DE: 29.999 kW AC output ... The cards show \"Net price after partner sign-in\"'. Under it the dock renders one .linker-genie-answer-actions row (350x44 at x=20, y=748.6, fully inside 390x844; document scrollWidth 390 = innerWidth, no horizontal overflow) holding one copy button and the vote group: copy = button.linker-genie-app__vote, aria-label 'Copy response', visible, enabled, 44x44 at x=20; .linker-genie-app__votes at x=66, 90x44, with 'Helpful' and 'Not helpful' both present, visible, enabled, aria-pressed='false'. Copy click -> span[role=status].linker-genie-copy-status 'Copied' (visible) and navigator.clipboard.readText() returns the answer text. Helpful click -> aria-pressed true, 'Not helpful' disabled=true immediately, POST /wp-json/linker-ai/v1/genie/turn/757/vote {\"vote\":1} answered 200.",
+      "notes": "Sequencing, not a product result: the first 390 attempt clicked 'Continue in the side panel' while the hero bubble still read 'Genie is thinking...', so the dock opened on its welcome state and did not display the in-flight turn for 120s. The turn itself completed server-side (turn 757), the full thread restored on the next load (2 messages, 1 assistant, 1 answer-actions row), and all control evidence above was taken on that restored thread. See defects_found 'handoff-during-thinking'."
+    },
+    {
+      "state": "copy-and-rating",
+      "shape": "de:1440",
+      "result": "pass",
+      "evidence": "Real turn /genie/turn/758 on /de/. Answer 710 chars, settled: 'Die SAJ-H2-Reihe erscheint in den Produktdaten als dreiphasige Hybrid-Wechselrichter fürs Wohngebäude ... SAJ H2-30K-T3-DE: AC-Leistung 29.999 kW ... Welches Modell davon schwebt Ihnen vor?' plus the guest price line. Labels are the shipped German strings, not English fallbacks: copy aria-label 'Antwort kopieren' (36x36, visible, enabled, x=1040), votes 'Hilfreich' and 'Nicht hilfreich' (36x36 each, at x=1120.7 and x=1158.7, both visible, enabled, aria-pressed='false'). Copy click -> role=status 'Kopiert'; clipboard holds the German answer from its first word. Helpful click -> aria-pressed true, 'Nicht hilfreich' disabled=true, POST /wp-json/linker-ai/v1/genie/turn/758/vote 200. Panel 400x600 at (1020,216); actions row 360x36, the answer is longer than the panel so the row is reached by scrolling inside it.",
+      "notes": "This shape's copy click landed while the answer reveal was still animating ('Vollständige Antwort anzeigen' was on screen): the clipboard still received the complete answer, which is CopyReply's documented behaviour ('Copy the complete answer, even while its local reveal is still running')."
+    },
+    {
+      "state": "copy-and-rating",
+      "shape": "de:390",
+      "result": "pass",
+      "evidence": "Real German turn /genie/turn/759, started in the hero (placeholder 'Suchen Sie nach Heimspeichersystemen, Batterie...'), answered inline (704 chars, settled: 'Der SAJ H2-10K-T3 gehört zur H2-Serie von SAJ ... Alle Modelle sind verfügbar; freigegebene Partnerkonten sehen auf den Karten die Nettopreise.'), then 'Continue in the side panel' handed the thread to the dock in 5 polls (~8s): panel 390x796 at y=48 with 2 messages, 1 assistant and 1 answer-actions row. Controls in German: copy 'Antwort kopieren' 44x44, votes 'Hilfreich' / 'Nicht hilfreich' 44x44 at x=108.7 and x=154.7. The answer is taller than the sheet, so the action row starts at y=962.6 and the customer scrolls to it; after that scroll it sits at y=444, 350x44, fully inside 390x844 (scrollWidth 390). Copy click -> 'Kopiert' plus the answer text in the clipboard. Helpful click -> aria-pressed true, 'Nicht hilfreich' disabled=true, POST /wp-json/linker-ai/v1/genie/turn/759/vote 200."
+    },
+    {
+      "state": "answer-actions-absent-in-hero",
+      "result": "designed",
+      "evidence": "The home hero renders Reply only: measured 0 .linker-genie-answer-actions, 0 copy buttons and 0 vote groups inside .linker-genie-hero__surface on the answered 390 hero in both languages. Copy and rating exist only in the dock app, which renders CopyReply + VoteButtons inside .linker-genie-answer-actions; the hero hands the same thread over through the visible 'Continue in the side panel' control. Source and observation agree, so this is not a mobile-only gap."
+    },
+    {
+      "state": "vote-latency",
+      "result": "pass-with-latency-note",
+      "evidence": "The vote POST sits behind its own Turnstile proof (protection/prepare 200 -> protection/verify 200) and the WordPress backend answers slowly on Hostinger: en:390 request at t=27.6s -> response at t=131.2s (103.7s); de:1440 t=49.2s -> t=223.6s (174.4s); de:390 t=64.7s -> t=239.6s (174.9s). The UI never waits on it: aria-pressed flips within 400ms of the click and the opposite button disables immediately, so the customer sees the vote land at once. Same family as the 96s wall time recorded on 2026-11-07. No retry prompt or error surfaced in any of the three shapes."
+    },
+    {
+      "state": "vote-state-not-restored",
+      "result": "observation",
+      "evidence": "After reloading each shape's thread, the same answer's buttons read aria-pressed='false' on both sides even though the vote had been accepted with 200. VoteButtons keeps the choice in component state only and never reads it back from the API, so the pressed state is local to the open session. Whether the server counts a second vote from the same guest after a reload was NOT tested: that would mean a second deliberate write, which this probe did not make."
+    }
+  ],
+  "open_items": [
+    "handoff-during-thinking: one occurrence from a deliberate mid-thinking click; needs a repeat before it is called a defect",
+    "mobile copy-and-rating on other page types at 390 (product pages, marketing pages) was not probed; only the homepage hero path is covered here",
+    "whether a guest can vote twice on the same answer across reloads is unverified"
+  ],
+  "defects_found": [
+    {
+      "id": "handoff-during-thinking",
+      "severity": "watch",
+      "detail": "Clicking 'Continue in the side panel' while the hero answer is still the 'Genie is thinking...' placeholder opens the dock on its welcome state ('Get help with your solar project', three suggestion chips) with a 'Current unsent draft' line, and the in-flight turn does not appear in the dock for at least 120s. The turn is not lost: turn 757 completed server-side and the full thread restored on the next load. Seen once, in an automated run that deliberately clicked during the thinking phase, so it is recorded as a candidate UX race to confirm, not as a proven product defect. Reproduction: at 390, send a hero question and click 'Continue in the side panel' as soon as it appears while the answer bubble still reads 'Genie is thinking...'."
+    }
+  ]
+}
