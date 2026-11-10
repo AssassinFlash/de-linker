@@ -55,8 +55,10 @@ for (const locale of ['en', 'de'] as const) {
 			turns++;
 			return route.abort();
 		});
+		// The app asks /genie/conversation?locale=..; anchor on the query
+		// (a trailing glob does not match it).
 		await page.route(
-			'**/wp-json/linker-ai/v1/genie/conversation',
+			/\/wp-json\/linker-ai\/v1\/genie\/conversation\?/,
 			(route) =>
 				route.fulfill({
 					json: {
@@ -67,10 +69,12 @@ for (const locale of ['en', 'de'] as const) {
 					},
 				})
 		);
+		// The app restores the thread only when the rail reports a current
+		// conversation (listed.currentId drives show()).
 		await page.route(
 			'**/wp-json/linker-ai/v1/genie/conversations',
 			(route) =>
-				route.fulfill({ json: { current_id: 0, conversations: [] } })
+				route.fulfill({ json: { current_id: 7, conversations: [] } })
 		);
 		await page.goto(`${instance().url}${locale === 'de' ? '/de/' : '/'}`);
 		const reject = page.getByRole('button', {
@@ -80,12 +84,13 @@ for (const locale of ['en', 'de'] as const) {
 		await expect(
 			page.locator('.hero-cinematic[data-linker-genie-hero="ready"]')
 		).toHaveCount(1);
-		const choosing = page.waitForEvent('filechooser');
+		// The attach control opens the conversation surface directly
+		// (genie-hero's flow); no file chooser is involved anymore.
 		await page
 			.locator('.hero-cinematic [data-linker-assistant-open="attach"]')
 			.click();
-		await (await choosing).setFiles([]);
 		const surface = page.locator('.linker-genie-hero__surface');
+		await expect(surface).toBeVisible({ timeout: 15_000 });
 		const grid = surface.locator('.linker-genie-hero__cards');
 		const cards = grid.locator('.linker-card');
 		await expect(cards).toHaveCount(4);
