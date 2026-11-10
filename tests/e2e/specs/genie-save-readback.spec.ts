@@ -23,7 +23,26 @@ import { instance, loginLink, wp } from '../lib/instance';
 import { seedConsentCookies } from '../lib/consent';
 
 /** The question whose live answer is proven to carry a product card. */
-const QUESTION = 'What does the SAJ H2-10K-T3 cost?';
+const QUESTIONS = {
+	en: {
+		ask: 'What does the SAJ H2-10K-T3 cost?',
+		products: '/products/',
+		save: 'Save solution',
+		saved: 'Saved to your account.',
+		account: '/my-account/saved-solutions/',
+		addToDraft: 'Add to solution draft',
+		notice: 'The products of the saved solution are in your solution draft.',
+	},
+	de: {
+		ask: 'Was kostet der SAJ H2-10K-T3?',
+		products: '/de/produkte/',
+		save: 'L\u00f6sung speichern',
+		saved: 'Im Konto gespeichert.',
+		account: '/de/mein-konto/gespeicherte-loesungen/',
+		addToDraft: 'Zum L\u00f6sungsentwurf hinzuf\u00fcgen',
+		notice: 'Die Produkte der gespeicherten L\u00f6sung liegen jetzt in Ihrem L\u00f6sungsentwurf.',
+	},
+} as const;
 
 /** The run's own account, made before and removed after. */
 const email = `genie-save-e2e-${Date.now()}@example.test`;
@@ -52,7 +71,11 @@ test.afterAll(() => {
  * @param page   The page.
  * @param launch The question to send.
  */
-async function askGenie(page: Page, launch: string): Promise<void> {
+async function askGenie(
+	page: Page,
+	launch: string,
+	saveLabel: string
+): Promise<void> {
 	await page.evaluate((message) => {
 		window.dispatchEvent(
 			new CustomEvent('linker-genie-ask', { detail: { message } })
@@ -64,47 +87,73 @@ async function askGenie(page: Page, launch: string): Promise<void> {
 	await expect(card.locator('.linker-card__model')).toBeVisible({
 		timeout: 30_000,
 	});
+	// The save action arrives with the stream's proof at the answer's very
+	// end - a slow German stream can keep it absent for minutes.
+	await expect(card.getByRole('button', { name: saveLabel })).toBeVisible({
+		timeout: 180_000,
+	});
 }
 
-test('the solution a customer saves from Genie is on their account and returns to the draft', async ({
-	page,
-	context,
-}) => {
-	test.setTimeout(400_000);
-	await seedConsentCookies(context);
-	await page.setViewportSize({ width: 1440, height: 900 });
-	await page.goto(loginLink(undefined, email));
+for (const locale of ['en', 'de'] as const) {
+	for (const width of [1440, 390]) {
+		const words = QUESTIONS[locale];
+		test(`${locale}-${width}: the solution a customer saves from Genie is on their account and returns to the draft`, async ({
+			page,
+			context,
+		}) => {
+			test.setTimeout(400_000);
+			await seedConsentCookies(context);
+			await page.setViewportSize({
+				width,
+				height: width === 390 ? 844 : 900,
+			});
+			await page.goto(loginLink(undefined, email));
 
-	await page.goto(instance().url + '/products/');
-	await askGenie(page, QUESTION);
-	const card = page.locator('.linker-genie-app article.linker-card').first();
+			await page.goto(instance().url + words.products);
+			await askGenie(page, words.ask, words.save);
+			const card = page
+				.locator('.linker-genie-app article.linker-card')
+				.first();
 
-	// The save posts the live card's proof; the account store answers with
-	// the saved solution's own id and address.
-	const saved = page.waitForResponse(
-		(response) =>
-			response.url().includes('/wp-json/linker-ai/v1/genie/solution') &&
-			response.request().method() === 'POST'
-	);
-	await card.getByRole('button', { name: 'Save solution' }).click();
-	const response = await saved;
-	expect(response.status(), 'the account save is confirmed').toBe(201);
-	const payload = (await response.json()) as { id: number; url: string };
-	expect(payload.id).toBeGreaterThan(0);
-	expect(payload.url).toContain('/my-account/saved-solutions/');
-	await expect(card).toContainText('Saved to your account.');
+			// The save posts the live card's proof; the account store answers
+			// with the saved solution's own id and address.
+			const saved = page.waitForResponse(
+				(response) =>
+					response
+						.url()
+						.includes('/wp-json/linker-ai/v1/genie/solution') &&
+					response.request().method() === 'POST'
+			);
+			await card.getByRole('button', { name: words.save }).click();
+			const response = await saved;
+			expect(response.status(), 'the account save is confirmed').toBe(
+				201
+			);
+			const payload = (await response.json()) as {
+				id: number;
+				url: string;
+			};
+			expect(payload.id).toBeGreaterThan(0);
+			expect(payload.url).toContain(words.account);
+			await expect(card).toContainText(words.saved);
 
-	// The consumer reads the solution back on their account screen.
-	await page.goto(instance().url + '/my-account/saved-solutions/');
-	const row = page.locator(`#linker-solution-${payload.id}`);
-	await expect(row).toBeVisible();
-	await expect(row).toContainText('H2-10K-T3');
-	await expect(row).toContainText('1 × ');
+			// The consumer reads the solution back on their account screen.
+			await page.goto(instance().url + words.account);
+			const row = page.locator(`#linker-solution-${payload.id}`);
+			await expect(row).toBeVisible();
+			await expect(row).toContainText('H2-10K-T3');
+			await expect(row).toContainText('1 × ');
 
-	// And returns it to the solution draft.
-	await row.getByRole('button', { name: 'Add to solution draft' }).click();
-	await expect(page).toHaveURL(/\/cart\//);
-	await expect(page.locator('.woocommerce-message')).toContainText(
-		'The products of the saved solution are in your solution draft.'
-	);
-});
+			// And returns it to the solution draft.
+			await row.getByRole('button', { name: words.addToDraft }).click();
+			// The draft's own page opens: the German endpoint segment is
+			// loesungsentwurf, the English one cart.
+			await expect(page).toHaveURL(
+				locale === 'de' ? /loesungsentwurf/ : /cart/
+			);
+			await expect(page.locator('.woocommerce-message')).toContainText(
+				words.notice
+			);
+		});
+	}
+}
