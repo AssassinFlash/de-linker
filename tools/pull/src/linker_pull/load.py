@@ -600,11 +600,19 @@ def _bind_publication(wp: WpCli, say: Say, active: list[str]) -> None:
     previous entries stay, as on live — and without them a migration that
     guards on "this citation was reviewed" refuses on an otherwise correct
     copy (`A cited FAQ no longer has its reviewed document binding`).
+
+    Additive binding alone leaves every already-bound entry stale: it keeps the
+    live revision and the feed serves none of those facts. The renewal after it
+    moves exactly the revisions whose document identity and bytes did not change
+    — nothing adopts a replaced file — and the same holds for the manufacturer
+    declarations, whose projection empties without it.
     """
     if not any(entry.split("/")[0] == "linker-commerce" for entry in active):
         return
     say("publication: binding this copy's figure and FAQ revisions")
     wp.run("linker-commerce", "publication", "bind-figures")
+    say("publication: renewing unchanged evidence versions")
+    wp.run("linker-commerce", "publication", "repair-bindings")
 
 
 def _active_plugins(wp: WpCli) -> list[str]:
