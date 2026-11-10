@@ -40,7 +40,12 @@ afterEach( () => {
 	document.body.replaceChildren();
 } );
 
-/** A sheet whose composer stays disabled while `enabled` is false. */
+/**
+ * A sheet whose composer stays disabled while `enabled` is false.
+ *
+ * @param root0         The props.
+ * @param root0.enabled Whether the composer is enabled.
+ */
 function Sheet( { enabled }: { enabled: boolean } ) {
 	const { panel } = useHelperDialog( {
 		open: true,
@@ -70,14 +75,18 @@ test( 'the composer takes the entrance focus once it is enabled', async () => {
 	await act( async () => {
 		await new Promise( ( resolve ) => setTimeout( resolve, 250 ) );
 	} );
-	expect( document.activeElement?.tagName ).not.toBe( 'A' );
+	expect( document.body.ownerDocument.activeElement?.tagName ).not.toBe(
+		'A'
+	);
 
 	rerender( <Sheet enabled /> );
 	await act( async () => {
 		await new Promise( ( resolve ) => setTimeout( resolve, 250 ) );
 	} );
 	expect(
-		document.activeElement?.classList.contains( 'linker-genie-app__input' ),
+		document.body.ownerDocument.activeElement?.classList.contains(
+			'linker-genie-app__input'
+		),
 		'the composer is the entrance'
 	).toBe( true );
 } );
@@ -97,11 +106,9 @@ test( 'the sheet is a modal dialog below the breakpoint', async () => {
 
 test( 'Escape closes the sheet and returns focus to the opener', async () => {
 	vi.spyOn( window, 'innerWidth', 'get' ).mockReturnValue( 390 );
-	let open = true;
 
 	function Harness() {
 		const [ shown, setShown ] = useState( false );
-		open = shown;
 		const { panel, remember } = useHelperDialog( {
 			open: shown,
 			workspace: false,
@@ -152,7 +159,8 @@ test( 'Escape closes the sheet and returns focus to the opener', async () => {
 		document.querySelector( '[data-linker-genie-mount]' ),
 		'the sheet closes on Escape'
 	).toBe( null );
-	expect( document.activeElement, 'focus returns to the opener' ).toBe(
-		opener
-	);
+	expect(
+		opener.ownerDocument.activeElement,
+		'focus returns to the opener'
+	).toBe( opener );
 } );
