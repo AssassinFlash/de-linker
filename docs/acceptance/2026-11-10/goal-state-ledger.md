@@ -375,3 +375,28 @@ PDF content read (image model).
   re-run 14/14) and PR #1067 (account 28/28 personally re-run, two real
   defects fixed: auth.css 390px list overflow, AdminAccessNotice AJAX
   overwriting the real verdict) - account family now zero pending.
+
+## Session closeout: matrix 278 -> 424 pass (pending 162 -> 5)
+
+Batch tally this continuation: PRs #1060-#1072 merged (13 today by this line, 31 overall
+with the morning session): quick-start field rhythm, pending-account 390 fixes, genie
+assessment determinism, mail-job lifecycle (E-line real fix, slot +21.43h -> 0s), hero
+proof wiring + identity-race fix (28/28), v2 draft-proof tokens (170KB -> 667B), DE filter
+param contract, report content (self-sufficiency/self-consumption/BOM/revision/wordmark,
+personally read back on the final PDF), account-states suite (account family zero pending,
+two real defects fixed en route), product-archive rows, inquiry 390 states, copy-and-rating
+production probes (3 live turns + real votes, 3 rows), research deliverable (13 vendor
+originals; SGS premise corrected, BAT-C/ET verdicts, terminal map closed).
+
+Final pending 5, each honest and non-force-fit:
+- files-and-feedback actual-file-manifest-open-and-content x3: the sibling evidence
+  requires /faq-download/ to render 143 PDF links; the review snapshot yields a different
+  manifest count (known review-vs-production data currency gap, same class as the FAQ
+  threshold finding). Needs a current production snapshot or production-side probe.
+- genie dock-keyboard 390 x2: the floating dock is hidden below 860px by design; the 390
+  surface is the hero. The dock-specific keyboard contract needs the side-panel
+  continuation path - recorded as a finding on both rows, left pending.
+
+Standing rules landed this session: parallelism as a top principle + agent worktree
+isolation (AGENTS.md), the node_modules symlink lesson, subagent-output personal
+verification discipline.
