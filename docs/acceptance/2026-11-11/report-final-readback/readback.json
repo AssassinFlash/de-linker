@@ -1,0 +1,220 @@
+{
+	"ticket": 1070,
+	"purpose": "Post-merge end-to-end read-back of the residential design report, EN and DE, from the main-tree engine. The pre-merge read-back used branch code plus a hand-applied engine, so this run is the archivable evidence for the configurator report line.",
+	"run": {
+		"date": "2026-11-11",
+		"engine": {
+			"url": "http://127.0.0.1:8890",
+			"pid": 87995,
+			"command": "/Users/chesterjohn/Documents/de-linker/services/engine/.venv/bin/uvicorn linker_engine.application:app --host 127.0.0.1 --port 8890",
+			"working_tree": "/Users/chesterjohn/Documents/de-linker",
+			"main_head": "264e07767",
+			"ticket_merge_commit": "152dd808b9ee7f9452ac924e2dc59ffdd2384abc",
+			"ticket_merge_commit_is_ancestor_of_head": true,
+			"health": "GET /health -> 200",
+			"resource_version": {
+				"version": "82e34263bb01d450098060cdeed4972f8368bf945b0db89f6b5be8c594ace61b",
+				"source_revision": "c6f964f0b599959edecfd226b9ccc086041e632bbf4e782c54b0dd2a2bb67053",
+				"compatibility_revision": "e90acaa602fd9b0e23eb24696e48667f81a2cab9ff2c5f409c9ab1706221aa2c"
+			}
+		},
+		"cold_start_workaround_needed": false,
+		"engine_503_observed": false,
+		"auth": {
+			"required_headers": [
+				"x-linker-service-token",
+				"x-linker-resource-subject"
+			],
+			"note": "The Gate middleware requires both on every POST. The brief named only the service token; the 64-hex resource subject is mandatory (gate.py:111-114) and a missing one returns 400, a missing token 401.",
+			"resource_subject": "7ab8098fa1b249868a5a933cf4be6b812a885511b4c68a03495764fa64d91409",
+			"resource_subject_source": "sha256(\"e2e-engine-contract\")"
+		},
+		"input": {
+			"endpoint": "POST /design/residential",
+			"body": {
+				"locale": "en|de",
+				"plz": "64331",
+				"annual_kwh": 5000,
+				"pv_kwp": 10,
+				"phase": 3
+			}
+		},
+		"publication": {
+			"engineering_contract": 2,
+			"source_revision": "c6f964f0b599959edecfd226b9ccc086041e632bbf4e782c54b0dd2a2bb67053",
+			"compatibility_revision": "e90acaa602fd9b0e23eb24696e48667f81a2cab9ff2c5f409c9ab1706221aa2c"
+		}
+	},
+	"verification_method": {
+		"pdf_to_image": "pdftoppm -png -r 100",
+		"image_pages_read": "every page of both PDFs was read as an image and inspected item by item",
+		"text_cross_check": "pdftotext -layout, used to transcribe labels and values verbatim rather than paraphrase from the rendering",
+		"hash_cross_check": "the two short hashes printed in the revision row were compared against publication.source_revision and publication.compatibility_revision from the same response"
+	},
+	"contract_items": [
+		"self-sufficiency range",
+		"self-consumption range",
+		"bill of materials or an honest statement",
+		"revision row with both hashes",
+		"Linker wordmark"
+	],
+	"en": {
+		"locale": "en",
+		"status": "no_candidate",
+		"selection_fingerprint": "3739f851c4856f9c4a2698bd12f4936e647a7d7527367c85165d119b8cda3a5e",
+		"report_generated_at": "2026-11-10T20:32:13Z",
+		"pdf": {
+			"file": "linker-design-report-64331-en.pdf",
+			"bytes": 95685,
+			"sha256": "d3b162bc6ddacd782156ca3ee617886c7b32bbce57fe689d6ee22ebb6f3043d6",
+			"pages": 2,
+			"http": 200,
+			"media_type": "application/pdf"
+		},
+		"title": "Design report",
+		"subtitle": "Solution Configurator, residential system",
+		"items": {
+			"self_sufficiency": {
+				"verified": true,
+				"section": "Self-sufficiency and self-consumption",
+				"rows": [
+					{ "label": "Self-sufficiency with storage", "value": "67 % – 77 %" },
+					{
+						"label": "Self-sufficiency without storage",
+						"value": "31 % – 41 %"
+					}
+				],
+				"note_verbatim": "No battery is selected yet, so the figures assume the storage sizing's upper limit of 7.5 kWh.",
+				"method_verbatim": "HTW Berlin Unabhängigkeitsrechner tables; the range covers the spread of real households (most within 5 percentage points of the table value)"
+			},
+			"self_consumption": {
+				"verified": true,
+				"section": "Self-sufficiency and self-consumption",
+				"rows": [
+					{ "label": "Self-consumption with storage", "value": "36 % – 41 %" },
+					{
+						"label": "Self-consumption without storage",
+						"value": "15 % – 20 %"
+					}
+				]
+			},
+			"bill_of_materials": {
+				"verified": true,
+				"branch": "honest statement, no fabricated parts list",
+				"section": "Bill of materials",
+				"rows": [],
+				"statement_verbatim": "No bill of materials yet: no released system matches every rule for these inputs."
+			},
+			"revision_row": {
+				"verified": true,
+				"section": "Site and inputs",
+				"label": "Revision",
+				"value_verbatim": "Design data c6f964f0b599 · compatibility e90acaa602fd",
+				"source_hash_prefix": "c6f964f0b599",
+				"compatibility_hash_prefix": "e90acaa602fd",
+				"matches_publication": true
+			},
+			"wordmark": {
+				"verified": true,
+				"text": "Linker",
+				"position": "page 1, top right, embedded raster image with a soft mask (248x94 rgb, 265 ppi, object 3)",
+				"page_1_footer": "Linker Solution Configurator · de-linker.com",
+				"page_2_footer": "Linker Solution Configurator · de-linker.com"
+			}
+		}
+	},
+	"de": {
+		"locale": "de",
+		"status": "no_candidate",
+		"selection_fingerprint": "ff5d92dee353a103778c8df54c10dff1542d0c0eb2f5fd16b65840f7ab25bf1e",
+		"report_generated_at": "2026-11-10T20:32:28Z",
+		"pdf": {
+			"file": "linker-design-report-64331-de.pdf",
+			"bytes": 96216,
+			"sha256": "064782ffb9f0863166dfaf477c05783e97319b000e80d7da46a4c9add50b9bf5",
+			"pages": 2,
+			"http": 200,
+			"media_type": "application/pdf"
+		},
+		"title": "Auslegungsbericht",
+		"subtitle": "Lösungskonfigurator, Anlage für ein Wohngebäude",
+		"items": {
+			"self_sufficiency": {
+				"verified": true,
+				"section": "Autarkiegrad und Eigenverbrauchsanteil",
+				"rows": [
+					{ "label": "Autarkiegrad mit Speicher", "value": "67 % – 77 %" },
+					{ "label": "Autarkiegrad ohne Speicher", "value": "31 % – 41 %" }
+				],
+				"note_verbatim": "Eine Batterie ist noch nicht ausgewählt; die Werte gehen daher von der Obergrenze der Speicherauslegung von 7,5 kWh aus.",
+				"method_verbatim": "Tabellen des Unabhängigkeitsrechners der HTW Berlin; die Spanne deckt die Streuung realer Haushalte ab (meist innerhalb von 5 Prozentpunkten des Tabellenwerts)"
+			},
+			"self_consumption": {
+				"verified": true,
+				"section": "Autarkiegrad und Eigenverbrauchsanteil",
+				"rows": [
+					{
+						"label": "Eigenverbrauchsanteil mit Speicher",
+						"value": "36 % – 41 %"
+					},
+					{
+						"label": "Eigenverbrauchsanteil ohne Speicher",
+						"value": "15 % – 20 %"
+					}
+				]
+			},
+			"bill_of_materials": {
+				"verified": true,
+				"branch": "honest statement, no fabricated parts list",
+				"section": "Stückliste",
+				"rows": [],
+				"statement_verbatim": "Noch keine Stückliste: Für diese Eingaben erfüllt kein freigegebenes System alle Regeln."
+			},
+			"revision_row": {
+				"verified": true,
+				"section": "Standort und Eingaben",
+				"label": "Revision",
+				"value_verbatim": "Auslegungsdaten c6f964f0b599 · Kompatibilität e90acaa602fd",
+				"source_hash_prefix": "c6f964f0b599",
+				"compatibility_hash_prefix": "e90acaa602fd",
+				"matches_publication": true
+			},
+			"wordmark": {
+				"verified": true,
+				"text": "Linker",
+				"position": "page 1, top right, same embedded image as English",
+				"page_1_footer": "Linker Lösungskonfigurator · de-linker.com",
+				"page_2_footer": "Linker Lösungskonfigurator · de-linker.com"
+			}
+		}
+	},
+	"findings": {
+		"all_five_items_present_in_both_languages": true,
+		"language_separation_clean": "No English report text appears in the German PDF and no German appears in the English one. Only the wordmark, the source names (PVGIS, HTW Berlin, GeoNames) and the method reference remain language-neutral as proper nouns.",
+		"numbers_identical_across_locales": true,
+		"no_candidate_is_the_honest_branch": "Both locales return status no_candidate for these inputs. The BOM section then renders the honest statement instead of a parts list, which is the contract's declared fallback rather than a rendering failure.",
+		"bom_reachability_probe": {
+			"ran": true,
+			"inputs": [
+				{ "plz": "64331", "annual_kwh": 4500, "pv_kwp": 8, "phase": 1 },
+				{ "plz": "80331", "annual_kwh": 4000, "pv_kwp": 6, "phase": 1 }
+			],
+			"result": "every probe also returned no_candidate, so no BOM table could be exercised in this run",
+			"consequence": "the populated BOM table remains unverified end-to-end at this revision; this read-back proves the honest-statement branch only"
+		},
+		"no_candidate_root_cause": {
+			"verdict": "load-data property of the review instance, not a rendering defect",
+			"evidence": [
+				"All 42 inverters in the candidate set were excluded, each with the identical rule pattern: engineering_data failed, battery_release failed, pv_input and dc_ac_ratio not evaluated.",
+				"The review feed the engine loaded (LINKER_ENGINE_FEED=/Users/chesterjohn/de-linker-local/review/engine/feed.json) holds 85 products and none of their keys carry the datasheet fields the string layout needs. strings.py layout() returns engineering_data precisely when n_mppt, mppt_voltage_range_v, max_pv_input_v, mppt_max_isc_a or mppt_max_current_a is missing.",
+				"The same feed contains 0 batteries, so battery_release can never pass at this revision.",
+				"The rule results are also visible in the response body: rules[] show htw_min_pv passing and the two HTW capacity rows not evaluated, and relaxations[] is empty."
+			],
+			"reading": "The report therefore cannot contain a parts list on this instance for any input, and the honest statement is the correct output. Whether the datasheet fields are absent from the source data or merely not projected into the review feed was not determined and is out of scope for this read-back."
+		},
+		"economics_absent": "Both PDFs state that the report contains no payback period, cash flow or feed-in tariff, matching the 2026-11-08 ruling."
+	},
+	"open_items": [
+		"A populated bill-of-materials table was not reachable with any input tried, so its rendering is not covered by this read-back."
+	]
+}
