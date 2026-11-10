@@ -269,6 +269,75 @@ final class PublicationCommand {
 	}
 
 	/**
+	 * Renew recorded evidence versions whose cited bytes did not change.
+	 *
+	 * `bind-figures` preserves every recorded binding, and a declaration holds
+	 * the document version an editor confirmed. Both then keep a version that a
+	 * pulled instance's URL rewrite moved, so the fact drops out of the
+	 * engineering feed and every declaration reads as unconfirmed even though it
+	 * cites the same bytes. This renews only those: the recorded document
+	 * identity and blob must equal the current ones, so no value ever adopts a
+	 * replaced file.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--dry-run]
+	 * : Count the renewable entries without writing.
+	 *
+	 * @subcommand repair-bindings
+	 * @param array<int,string>   $args Positional arguments.
+	 * @param array<string,mixed> $assoc_args Native CLI options.
+	 */
+	public function repair_bindings( array $args, array $assoc_args ): void {
+		unset( $args );
+		$dry_run  = isset( $assoc_args['dry-run'] );
+		$manifest = Publication::manifest();
+		$figures  = array();
+		$claims   = array();
+		foreach ( $manifest['products'] as $product ) {
+			$id    = (int) $product['product_id'];
+			$count = \Linker\Commerce\Products\Publication\EvidenceBindings::repair_unchanged( $id, $dry_run );
+			if ( $count > 0 ) {
+				$figures[ $id ] = $count;
+			}
+			$count = \Linker\Commerce\Products\Publication\CompatibilityClaims::renew_unchanged( $id, $manifest, $dry_run );
+			if ( $count > 0 ) {
+				$claims[ $id ] = $count;
+			}
+		}
+		$total = array_sum( $figures ) + array_sum( $claims );
+		$count = (string) wp_json_encode(
+			array(
+				'figures'      => $figures,
+				'declarations' => $claims,
+			),
+			JSON_PRETTY_PRINT
+		);
+		if ( $dry_run ) {
+			\WP_CLI::log( $count );
+			\WP_CLI::success(
+				sprintf(
+					'%d figure binding(s) and %d declaration(s) cite unchanged bytes and can be renewed.',
+					array_sum( $figures ),
+					array_sum( $claims )
+				)
+			);
+			return;
+		}
+		if ( $total > 0 ) {
+			( new PreparationJobs() )->changed();
+		}
+		\WP_CLI::log( $count );
+		\WP_CLI::success(
+			sprintf(
+				'%d figure binding(s) and %d declaration(s) renewed; replaced files remain unbound.',
+				array_sum( $figures ),
+				array_sum( $claims )
+			)
+		);
+	}
+
+	/**
 	 * Install and read back the native PDF gate.
 	 *
 	 * @subcommand install-gate
