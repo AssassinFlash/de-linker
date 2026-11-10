@@ -62,6 +62,9 @@ final class AdminAccessNoticeTest extends TestCase {
 		WP_Mock::userFunction( 'wp_get_session_token', array( 'return' => fn (): string => $this->token ) );
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
 		WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
+		// The decision's request check reads the admin request's own script name.
+		WP_Mock::passthruFunction( 'wp_unslash' );
+		WP_Mock::passthruFunction( 'sanitize_text_field' );
 		WP_Session_Tokens::get_instance( 42 )->update(
 			$this->token,
 			array(
@@ -114,6 +117,48 @@ final class AdminAccessNoticeTest extends TestCase {
 		$notice->protect( true );
 		$this->token = 'other-session';
 		$this->assertFalse( AdminAccessNotice::requested() );
+	}
+
+	/**
+	 * WooCommerce's guard passes `false` from the scripts it exempts, without
+	 * judging the visitor: that answer must not erase the denial the customer
+	 * was just given. The account page's own AJAX calls are such requests.
+	 *
+	 * @dataProvider exempt_scripts
+	 * @param string $script Exempt script basename.
+	 */
+	public function test_an_exempt_woo_request_does_not_overwrite_the_recorded_denial( string $script ): void {
+		$notice = new AdminAccessNotice();
+		WP_Mock::expectFilterAdded( 'wp_redirect', array( $notice, 'destination' ) );
+		$notice->protect( true );
+		$this->assertTrue( AdminAccessNotice::requested() );
+
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- The test seeds the request global a web server sets, not user input.
+		$previous                   = $_SERVER['SCRIPT_FILENAME'] ?? null;
+		$_SERVER['SCRIPT_FILENAME'] = '/var/www/wp-admin/' . $script;
+		try {
+			$this->assertFalse( $notice->protect( false ) );
+		} finally {
+			if ( null === $previous ) {
+				unset( $_SERVER['SCRIPT_FILENAME'] );
+			} else {
+				$_SERVER['SCRIPT_FILENAME'] = $previous;
+			}
+		}
+
+		$this->assertTrue( AdminAccessNotice::requested() );
+	}
+
+	/**
+	 * The scripts WooCommerce exempts from its guard.
+	 *
+	 * @return array<string, array{string}>
+	 */
+	public static function exempt_scripts(): array {
+		return array(
+			'admin-ajax.php' => array( 'admin-ajax.php' ),
+			'admin-post.php' => array( 'admin-post.php' ),
+		);
 	}
 
 	/** The configured Polylang cookie chooses its German page, not a literal cookie name. */

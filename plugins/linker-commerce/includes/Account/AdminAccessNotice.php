@@ -30,10 +30,17 @@ final class AdminAccessNotice {
 	/**
 	 * Keeps Woo's access decision and marks its next redirect, only when denied.
 	 *
+	 * WooCommerce applies this filter from `admin_init` on every admin request,
+	 * including the two scripts it deliberately exempts — `admin-ajax.php` and
+	 * `admin-post.php` — where it passes `false` because it refuses to interfere
+	 * there. Recording that `false` would erase a denial the customer was just
+	 * given (any AJAX call the account page makes would do it), so the decision
+	 * is kept only on a request where Woo is actually deciding.
+	 *
 	 * @param bool $prevent Woo's final access decision.
 	 */
 	public function protect( bool $prevent ): bool {
-		if ( is_user_logged_in() ) {
+		if ( is_user_logged_in() && $this->decided() ) {
 			$token    = wp_get_session_token();
 			$sessions = \WP_Session_Tokens::get_instance( get_current_user_id() );
 			$session  = $sessions->get( $token );
@@ -46,6 +53,17 @@ final class AdminAccessNotice {
 			add_filter( 'wp_redirect', array( $this, 'destination' ) );
 		}
 		return $prevent;
+	}
+
+	/**
+	 * Whether this request is one WooCommerce's guard actually judges. Its two
+	 * exempt scripts return early, so a `false` from them is not a decision.
+	 */
+	private function decided(): bool {
+		$script = isset( $_SERVER['SCRIPT_FILENAME'] )
+			? basename( sanitize_text_field( wp_unslash( $_SERVER['SCRIPT_FILENAME'] ) ) )
+			: '';
+		return ! in_array( $script, array( 'admin-post.php', 'admin-ajax.php' ), true );
 	}
 
 	/**

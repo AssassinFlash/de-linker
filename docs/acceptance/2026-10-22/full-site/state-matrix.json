@@ -21293,10 +21293,12 @@
   "state": "inquiries-empty",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -21306,7 +21308,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (en 390): inquiries-empty rendered and read back"
+   }
+  }
  },
  {
   "key": "account:inquiries-empty:de:1440",
@@ -21314,10 +21321,12 @@
   "state": "inquiries-empty",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -21327,7 +21336,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (de 1440): inquiries-empty rendered and read back"
+   }
+  }
  },
  {
   "key": "account:inquiries-empty:de:390",
@@ -21335,10 +21349,12 @@
   "state": "inquiries-empty",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -21348,7 +21364,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (de 390): inquiries-empty rendered and read back"
+   }
+  }
  },
  {
   "key": "account:inquiries-populated:en:1440",
@@ -21380,10 +21401,12 @@
   "state": "inquiries-populated",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -21393,7 +21416,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (en 390): inquiries-populated rendered and read back"
+   }
+  }
  },
  {
   "key": "account:inquiries-populated:de:1440",
@@ -21401,10 +21429,12 @@
   "state": "inquiries-populated",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -21414,7 +21444,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (de 1440): inquiries-populated rendered and read back"
+   }
+  }
  },
  {
   "key": "account:inquiries-populated:de:390",
@@ -21422,10 +21457,12 @@
   "state": "inquiries-populated",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -21435,7 +21472,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (de 390): inquiries-populated rendered and read back"
+   }
+  }
  },
  {
   "key": "account:inquiry-details-and-statuses:en:1440",
@@ -21811,10 +21853,12 @@
   "state": "saved-solutions-empty",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -21824,7 +21868,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (en 390): saved-solutions-empty rendered and read back"
+   }
+  }
  },
  {
   "key": "account:saved-solutions-empty:de:1440",
@@ -21832,10 +21881,12 @@
   "state": "saved-solutions-empty",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -21845,7 +21896,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (de 1440): saved-solutions-empty rendered and read back"
+   }
+  }
  },
  {
   "key": "account:saved-solutions-empty:de:390",
@@ -21853,10 +21909,12 @@
   "state": "saved-solutions-empty",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -21866,7 +21924,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (de 390): saved-solutions-empty rendered and read back"
+   }
+  }
  },
  {
   "key": "account:saved-solutions-populated:en:1440",
@@ -22377,10 +22440,12 @@
   "state": "documents-empty",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -22390,7 +22455,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (en 390): documents-empty rendered and read back"
+   }
+  }
  },
  {
   "key": "account:documents-empty:de:1440",
@@ -22398,10 +22468,12 @@
   "state": "documents-empty",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -22411,7 +22483,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (de 1440): documents-empty rendered and read back"
+   }
+  }
  },
  {
   "key": "account:documents-empty:de:390",
@@ -22419,10 +22496,12 @@
   "state": "documents-empty",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -22432,7 +22511,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (de 390): documents-empty rendered and read back"
+   }
+  }
  },
  {
   "key": "account:documents-populated:en:1440",
@@ -22692,10 +22776,12 @@
   "state": "account-details",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -22705,7 +22791,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (en 390): account-details rendered and read back"
+   }
+  }
  },
  {
   "key": "account:account-details:de:1440",
@@ -22739,10 +22830,12 @@
   "state": "account-details",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -22752,7 +22845,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (de 390): account-details rendered and read back"
+   }
+  }
  },
  {
   "key": "account:validation:en:1440",
@@ -22784,10 +22882,12 @@
   "state": "validation",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -22797,7 +22897,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (en 390): validation rendered and read back"
+   }
+  }
  },
  {
   "key": "account:validation:de:1440",
@@ -22805,10 +22910,12 @@
   "state": "validation",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -22818,7 +22925,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (de 1440): validation rendered and read back"
+   }
+  }
  },
  {
   "key": "account:validation:de:390",
@@ -22826,10 +22938,12 @@
   "state": "validation",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -22839,7 +22953,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (de 390): validation rendered and read back"
+   }
+  }
  },
  {
   "key": "account:save-pending-error-success:en:1440",
@@ -22972,10 +23091,12 @@
   "state": "logout",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -22985,7 +23106,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (en 390): logout rendered and read back"
+   }
+  }
  },
  {
   "key": "account:logout:de:1440",
@@ -22993,10 +23119,12 @@
   "state": "logout",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23006,7 +23134,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (de 1440): logout rendered and read back"
+   }
+  }
  },
  {
   "key": "account:logout:de:390",
@@ -23014,10 +23147,12 @@
   "state": "logout",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23027,7 +23162,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (de 390): logout rendered and read back"
+   }
+  }
  },
  {
   "key": "account:customer-admin-explanation:en:1440",
@@ -23058,10 +23198,12 @@
   "state": "customer-admin-explanation",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23071,7 +23213,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (en 390): customer-admin-explanation rendered and read back"
+   }
+  }
  },
  {
   "key": "account:customer-admin-explanation:de:1440",
@@ -23079,10 +23226,12 @@
   "state": "customer-admin-explanation",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23092,7 +23241,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (de 1440): customer-admin-explanation rendered and read back"
+   }
+  }
  },
  {
   "key": "account:customer-admin-explanation:de:390",
@@ -23100,10 +23254,12 @@
   "state": "customer-admin-explanation",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23113,7 +23269,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (de 390): customer-admin-explanation rendered and read back"
+   }
+  }
  },
  {
   "key": "genie:workspace:en:1440",
@@ -35002,10 +35163,12 @@
   "state": "owner-other-customer-guest-access",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -35016,7 +35179,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (en 390): owner-other-customer-guest-access rendered and read back"
+   }
+  }
  },
  {
   "key": "account:owner-other-customer-guest-access:de:1440",
@@ -35024,10 +35192,12 @@
   "state": "owner-other-customer-guest-access",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -35038,7 +35208,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (de 1440): owner-other-customer-guest-access rendered and read back"
+   }
+  }
  },
  {
   "key": "account:owner-other-customer-guest-access:de:390",
@@ -35046,10 +35221,12 @@
   "state": "owner-other-customer-guest-access",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance c332 e2e 2026-11-11",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec.ts 28/28 green on review instance c332 2026-11-11 (en/de x 1440/390: empty inquiries/documents/saved solutions, a listed and opened own inquiry, account-details save read-back, the company form's six required-field refusals, one-click sign-out with its notice, the /wp-admin -> ?admin-access=staff explanation, and cross-account/guest isolation of documents, saved solutions and inquiries)"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -35060,7 +35237,12 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "account_states_20261111": {
+    "result": "passed",
+    "scope": "account-states.spec.ts (de 390): owner-other-customer-guest-access rendered and read back"
+   }
+  }
  },
  {
   "key": "genie:consumer-draft-readback:en:1440",
