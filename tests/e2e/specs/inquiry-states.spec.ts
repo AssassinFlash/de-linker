@@ -143,6 +143,7 @@ interface Fixture {
 	owner: Customer;
 	other: Customer;
 	product: string;
+	guestEmail: string;
 	order: Receipt;
 	guest: Receipt;
 	old: Receipt;
@@ -224,6 +225,7 @@ function makeFixture(language: Language, tag: string): Fixture {
 		owner,
 		other,
 		product: created.product,
+		guestEmail,
 		order: created.order,
 		guest: created.guest,
 		old: created.old,
@@ -450,21 +452,37 @@ for (const language of LANGUAGES) {
 				}
 				return { page };
 			};
+			/**
+			 * The inquiry's data must not be in the page at all — the whole
+			 * document, not only what renders, because a hidden leak is still a
+			 * leak. The order key is the exception: a visitor who supplies it
+			 * gets it echoed back inside the verification and sign-in forms'
+			 * own fields, so only the cases that never carried a key assert its
+			 * absence.
+			 */
 			const leakCheck = async (
 				page: Page,
-				name: string
+				name: string,
+				keySupplied: boolean
 			): Promise<boolean> => {
-				const body = await text(page, '#theme-main');
-				const leaked =
-					body.includes(fixture.owner.email) ||
-					body.includes('E2E Solar GmbH') ||
-					body.includes(fixture.product) ||
-					body.includes(fixture.order.key);
+				const html = await page.evaluate(
+					() => document.documentElement.outerHTML
+				);
+				const signals = [
+					fixture.owner.email,
+					'E2E Solar GmbH',
+					fixture.product,
+					fixture.guestEmail,
+				];
+				if (!keySupplied) {
+					signals.push(fixture.order.key);
+				}
+				const found = signals.filter((signal) => html.includes(signal));
 				expect(
-					leaked,
-					`${name} names no inquiry data (owner, company, product or key)`
-				).toBe(false);
-				return leaked;
+					found,
+					`${name} carries none of the inquiry's data in its document`
+				).toEqual([]);
+				return found.length > 0;
 			};
 			try {
 				for (const entry of recoveries) {
@@ -483,7 +501,7 @@ for (const language of LANGUAGES) {
 					await expect(
 						page.locator('.linker-form-success')
 					).toHaveCount(0);
-					await leakCheck(page, entry.name);
+					await leakCheck(page, entry.name, false);
 					cases.push({
 						name: entry.name,
 						url: entry.url,
@@ -509,7 +527,7 @@ for (const language of LANGUAGES) {
 					await expect(
 						page.locator('.woocommerce-thankyou-order-received')
 					).toBeHidden();
-					await leakCheck(page, 'guest-key-anonymous');
+					await leakCheck(page, 'guest-key-anonymous', false);
 					cases.push({
 						name: 'guest-key-anonymous',
 						url: fixture.guest.url,
@@ -533,7 +551,7 @@ for (const language of LANGUAGES) {
 					await expect(
 						page.locator('.woocommerce-thankyou-order-received')
 					).toBeHidden();
-					await leakCheck(page, 'owner-key-anonymous');
+					await leakCheck(page, 'owner-key-anonymous', true);
 					cases.push({
 						name: 'owner-key-anonymous',
 						url: fixture.order.url,
@@ -565,7 +583,7 @@ for (const language of LANGUAGES) {
 					await expect(
 						page.locator('.linker-form-success')
 					).toHaveCount(0);
-					await leakCheck(page, 'other-customer-key');
+					await leakCheck(page, 'other-customer-key', true);
 					cases.push({
 						name: 'other-customer-key',
 						url: fixture.order.url,
@@ -617,14 +635,15 @@ for (const language of LANGUAGES) {
 				}
 
 				if (390 === width) {
-					for (const context of contexts.slice(0, 1)) {
-						const page = context.pages()[0];
-						if (page) {
+					// Every shape this phone-tier row stands for fits: the
+					// recovery notice, both gates and the owner's confirmation.
+					for (const context of contexts) {
+						for (const page of context.pages()) {
 							expect(
 								await page.evaluate(
 									() => document.documentElement.scrollWidth
 								),
-								`the confirmation page fits ${width}px`
+								`${await page.title()} fits ${width}px`
 							).toBeLessThanOrEqual(width);
 						}
 					}
