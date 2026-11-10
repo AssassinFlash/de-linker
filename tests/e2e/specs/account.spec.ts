@@ -352,72 +352,79 @@ for (const { locale, account, lost } of LOCALES) {
 		});
 	}
 
-	test(`${locale}: account details save names its error and keeps the typing`, async ({
-		page,
-	}) => {
-		const login = createCustomer(Date.now(), locale);
-		await page.goto(url(account));
-		await page.fill('#username', login);
-		await page.fill('#password', PASSWORD);
-		await page.locator('button[name="login"]').click();
-		await page.waitForLoadState('load');
+	for (const width of [1440, 390]) {
+		test(`${locale}-${width}: account details save names its error and keeps the typing`, async ({
+			page,
+		}) => {
+			await page.setViewportSize({
+				width,
+				height: width === 390 ? 844 : 900,
+			});
+			const login = createCustomer(Date.now(), locale);
+			await page.goto(url(account));
+			await page.fill('#username', login);
+			await page.fill('#password', PASSWORD);
+			await page.locator('button[name="login"]').click();
+			await page.waitForLoadState('load');
 
-		const edit = await page
-			.goto(url(`${account}edit-account/`))
-			.then(() => true)
-			.catch(() => false);
-		expect(edit, 'the account details page opens').toBe(true);
-		const first = page.locator(
-			'#account_first_name, input[name="account_first_name"]'
-		);
-		const email = page.locator(
-			'#account_email, input[name="account_email"]'
-		);
-		await expect(first).toBeVisible();
+			const edit = await page
+				.goto(url(`${account}edit-account/`))
+				.then(() => true)
+				.catch(() => false);
+			expect(edit, 'the account details page opens').toBe(true);
+			const first = page.locator(
+				'#account_first_name, input[name="account_first_name"]'
+			);
+			const email = page.locator(
+				'#account_email, input[name="account_email"]'
+			);
+			await expect(first).toBeVisible();
 
-		// A save the server refuses: a changed email asks for the current
-		// password; without it the error is named and the typing stays.
-		// (A malformed email never leaves the browser: the field is typed
-		// email and native validation holds the form — no server state.)
-		await first.fill('Saved');
-		await email.fill(`${login}-new@example.test`);
-		await page
-			.locator(
-				'button[name="save_account_details"], button[type="submit"]'
-			)
-			.first()
-			.click();
-		await page.waitForLoadState('load');
-		await expect(
-			page.locator('.woocommerce-error').first(),
-			'the refused save names its error'
-		).toBeVisible();
-		await expect(first, 'the refused save keeps the typing').toHaveValue(
-			'Saved'
-		);
-		await shot(page, `${locale}-account-save-error`);
+			// A save the server refuses: a changed email asks for the current
+			// password; without it the error is named and the typing stays.
+			// (A malformed email never leaves the browser: the field is typed
+			// email and native validation holds the form — no server state.)
+			await first.fill('Saved');
+			await email.fill(`${login}-new@example.test`);
+			await page
+				.locator(
+					'button[name="save_account_details"], button[type="submit"]'
+				)
+				.first()
+				.click();
+			await page.waitForLoadState('load');
+			await expect(
+				page.locator('.woocommerce-error').first(),
+				'the refused save names its error'
+			).toBeVisible();
+			await expect(
+				first,
+				'the refused save keeps the typing'
+			).toHaveValue('Saved');
+			await shot(page, `${locale}-account-save-error`);
 
-		// The corrected save: the profile's own email, the required last
-		// name, and no password fields touched (Woo takes them all or
-		// none) — the save confirms on the same card.
-		await email.fill(`${login}@example.test`);
-		await page
-			.locator('#account_last_name, input[name="account_last_name"]')
-			.first()
-			.fill('Tester');
-		await page
-			.locator(
-				'button[name="save_account_details"], button[type="submit"]'
-			)
-			.first()
-			.click();
-		await page.waitForLoadState('load');
-		await expect(
-			page.locator('.woocommerce-message, [role="status"]').first(),
-			'the save is confirmed'
-		).toBeVisible();
-		await shot(page, `${locale}-account-save-success`);
-	});
+			// The corrected save: the profile's own email, the required last
+			// name, and no password fields touched (Woo takes them all or
+			// none) — the save confirms on the same card.
+			await email.fill(`${login}@example.test`);
+			await page
+				.locator('#account_last_name, input[name="account_last_name"]')
+				.first()
+				.fill('Tester');
+			await page
+				.locator(
+					'button[name="save_account_details"], button[type="submit"]'
+				)
+				.first()
+				.click();
+			await page.waitForLoadState('load');
+			await expect(
+				page.locator('.woocommerce-message, [role="status"]').first(),
+				'the save is confirmed'
+			).toBeVisible();
+			await shot(page, `${locale}-account-save-success`);
+		});
+	}
 }
 
 test('en: the register form carries its client constraints and refuses a bad email server-side', async ({
