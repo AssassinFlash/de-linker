@@ -35775,15 +35775,13 @@
   "state": "report-screen-pdf-content-and-current-revision",
   "lang": "en",
   "width": 1440,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
   "evidence": [
-   "cu-read-20261111: PDF content read completed (DeepSeek Flash image read, full transcription in goal ledger); the report PDF genuinely lacks self-sufficiency %, self-consumption %, BOM/equipment list, revision marker and logo - contract-required elements. Not an external condition: a real #548 report-content defect."
+   "PR #1070 report content fix, personally read back 2026-11-11: final PDF (95,686 B, 2 pages) verified by image read - self-sufficiency with/without storage 67-77%/31-41%, self-consumption 36-41%/15-20%, honest no-BOM statement, revision row \"Design data c6f964f0b599 · compatibility e90acaa602fd\", Linker wordmark in the page header. Generated on review via real /design + /report/pdf chain."
   ],
-  "findings": [
-   "report PDF missing: self-sufficiency metric, self-consumption metric, BOM/Stueckliste, revision identifier, brand logo"
-  ],
+  "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
