@@ -22668,10 +22668,12 @@
   "state": "save-pending-error-success",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1056: account.spec.ts account-details save test width loop 1440/390 over en/de - 4/4 green on review (18.2s)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -22717,10 +22719,12 @@
   "state": "save-pending-error-success",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1056: account.spec.ts account-details save test width loop 1440/390 over en/de - 4/4 green on review (18.2s)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
