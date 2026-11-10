@@ -20426,10 +20426,12 @@
   "state": "reset-password",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1055: account.spec.ts reset tests width loop 1440/390 over en/de - lost-password 4/4 (34s), wrong-or-spent key 4/4 (25.9s) green on review"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -20474,10 +20476,12 @@
   "state": "reset-password",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1055: account.spec.ts reset tests width loop 1440/390 over en/de - lost-password 4/4 (34s), wrong-or-spent key 4/4 (25.9s) green on review"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -32756,10 +32760,12 @@
   "state": "password-reset-token-states",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1055: account.spec.ts reset tests width loop 1440/390 over en/de - lost-password 4/4 (34s), wrong-or-spent key 4/4 (25.9s) green on review"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -32806,10 +32812,12 @@
   "state": "password-reset-token-states",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1055: account.spec.ts reset tests width loop 1440/390 over en/de - lost-password 4/4 (34s), wrong-or-spent key 4/4 (25.9s) green on review"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
