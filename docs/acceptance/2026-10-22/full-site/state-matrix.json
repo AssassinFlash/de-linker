@@ -23947,10 +23947,12 @@
   "state": "product-card",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-hero.spec 28/28 on c222 (PR #1068): the answer-and-cards test renders product cards in the hero at en/de x 1440/390 with prices/login-gate states"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23991,10 +23993,12 @@
   "state": "product-card",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-hero.spec 28/28 on c222 (PR #1068): the answer-and-cards test renders product cards in the hero at en/de x 1440/390 with prices/login-gate states"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -25189,10 +25193,12 @@
   "state": "history-and-restore",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-history-authority.spec en/de x 1440/390 green (#1048 parameterization, restored opposite-language artifacts follow current guest authority; failed read clears)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -25249,10 +25255,12 @@
   "state": "history-and-restore",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-history-authority.spec en/de x 1440/390 green (#1048 parameterization, restored opposite-language artifacts follow current guest authority; failed read clears)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -25483,10 +25491,12 @@
   "state": "human-handoff",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-hero.spec #243 contact card 28/28 on c222: \"Can I talk to a person?\" -> contact card sends and confirms team routing (sales@de-linker.com), en/de x 1440/390"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -25503,10 +25513,12 @@
   "state": "human-handoff",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-hero.spec #243 contact card 28/28 on c222: \"Can I talk to a person?\" -> contact card sends and confirms team routing (sales@de-linker.com), en/de x 1440/390"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -25523,10 +25535,12 @@
   "state": "human-handoff",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-hero.spec #243 contact card 28/28 on c222: \"Can I talk to a person?\" -> contact card sends and confirms team routing (sales@de-linker.com), en/de x 1440/390"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
