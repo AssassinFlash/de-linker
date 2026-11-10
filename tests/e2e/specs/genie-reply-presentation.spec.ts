@@ -314,16 +314,20 @@ test('history: a restored long answer starts at its beginning without replay', a
 			`Paragraph ${index + 1}. This is an already received answer in the conversation.`
 	).join('\n\n');
 	const stream = `event: block\ndata: ${JSON.stringify({ type: 'text', text, refs: [] })}\n\nevent: done\ndata: {"ok":true}\n\n`;
-	await page.route('**/wp-json/linker-ai/v1/genie/conversation', (route) =>
-		route.fulfill({
-			json: {
-				messages: [{ role: 'user', content: 'Earlier question' }],
-				stream,
-			},
-		})
+	// The app asks /genie/conversation?locale=.. (anchor on the query) and
+	// restores the thread only when the rail reports a current conversation.
+	await page.route(
+		/\/wp-json\/linker-ai\/v1\/genie\/conversation\?/,
+		(route) =>
+			route.fulfill({
+				json: {
+					messages: [{ role: 'user', content: 'Earlier question' }],
+					stream,
+				},
+			})
 	);
 	await page.route('**/wp-json/linker-ai/v1/genie/conversations', (route) =>
-		route.fulfill({ json: { conversations: [] } })
+		route.fulfill({ json: { current_id: 7, conversations: [] } })
 	);
 	await page.setViewportSize({ width: 390, height: 900 });
 	await page.emulateMedia({ reducedMotion: 'no-preference' });

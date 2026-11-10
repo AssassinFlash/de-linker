@@ -68,6 +68,10 @@ for (const locale of ['en', 'de'] as const) {
 							ref: `p${PRODUCT}.document.0`,
 							label: oldLabel,
 							url: pdf,
+							document_id:
+								'doc-f0681559f735c3ff1331400c2c9a76482fe28a40c1f7eb86bb40d788fc9cb84f',
+							document_revision:
+								'd9604dd2408f140406278423557de0c3c20580e88a6df6df9505789496eb06b6',
 						},
 					],
 					['done', { ok: true }],
@@ -133,6 +137,10 @@ for (const locale of ['en', 'de'] as const) {
 									ref: `p${PRODUCT}.document.0`,
 									label: 'SAJ eSolar AIO3 Datasheet (EN) · p. 1',
 									url: pdf,
+									document_id:
+										'doc-f0681559f735c3ff1331400c2c9a76482fe28a40c1f7eb86bb40d788fc9cb84f',
+									document_revision:
+										'd9604dd2408f140406278423557de0c3c20580e88a6df6df9505789496eb06b6',
 								},
 							],
 							['done', { ok: true }],
@@ -147,8 +155,12 @@ for (const locale of ['en', 'de'] as const) {
 						});
 					}
 				);
+				// The app asks /genie/conversation?locale=en; a trailing-glob
+				// route does not match the query string (the real backend
+				// would answer an empty thread and the restore would test
+				// nothing).
 				await page.route(
-					'**/wp-json/linker-ai/v1/genie/conversation',
+					/\/wp-json\/linker-ai\/v1\/genie\/conversation\?/,
 					(route) =>
 						route.fulfill({
 							json: {
@@ -161,7 +173,11 @@ for (const locale of ['en', 'de'] as const) {
 					'**/wp-json/linker-ai/v1/genie/conversations',
 					(route) =>
 						route.fulfill({
-							json: { current_id: 0, conversations: [] },
+							// The app restores the thread only when the rail
+							// reports a current conversation (App.tsx:
+							// listed.currentId drives show()); current_id 0
+							// would leave the app in its empty ask state.
+							json: { current_id: 7, conversations: [] },
 						})
 				);
 				await page.goto(
@@ -178,13 +194,17 @@ for (const locale of ['en', 'de'] as const) {
 								'.hero-cinematic[data-linker-genie-hero="ready"]'
 							)
 						).toHaveCount(1);
-						const choosing = page.waitForEvent('filechooser');
+						// The attach control opens the conversation surface
+						// directly (genie-hero's flow); no file chooser is
+						// involved anymore.
 						await page
 							.locator(
 								'.hero-cinematic [data-linker-assistant-open="attach"]'
 							)
 							.click();
-						await (await choosing).setFiles([]);
+						await expect(
+							page.locator('.linker-genie-hero__surface')
+						).toBeVisible({ timeout: 15_000 });
 						return page.locator('.linker-genie-hero__surface');
 					}
 					if (surface === 'dock') {
