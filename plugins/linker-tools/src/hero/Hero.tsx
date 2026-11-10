@@ -139,6 +139,20 @@ export function HeroConversation( {
 	} = useVerificationStage( phase === 'waiting' );
 	const [ refused, setRefused ] = useState( '' );
 	const [ recoveryBlocked, setRecoveryBlocked ] = useState( false );
+	// The context changes underneath this subtree: the cold identity lookup
+	// settles after the hero is already open (a pick or a question made in
+	// that window mounts it while it is still loading). Rendering reads
+	// `context.phase` and `context.identity`, so the subtree has to re-render
+	// when either arrives; without it the hero stayed in its loading state and
+	// the question or file the visitor had already given it was never sent.
+	const [ , setContextRevision ] = useState( 0 );
+	useEffect(
+		() =>
+			context?.subscribe( () =>
+				setContextRevision( ( revision ) => revision + 1 )
+			),
+		[ context ]
+	);
 	const [ hydrated, setHydrated ] = useState( false );
 	const [ recoveryAttempt, setRecoveryAttempt ] = useState( 0 );
 	// The stored thread moved while Genie was answering (#373). The question

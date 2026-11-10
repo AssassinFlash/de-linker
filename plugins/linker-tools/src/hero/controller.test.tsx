@@ -3,6 +3,7 @@ import {
 	installNativeIdentityFixture,
 	seedOwnedFailure,
 	currentOwnedRaw,
+	NATIVE_SCOPE,
 } from '../genie/testing/nativeIdentity';
 
 /**
@@ -577,6 +578,59 @@ test( 'a folded hero still sends a picked file after the picker is cleared', asy
 		content: 'Attached: datasheet.pdf',
 	} );
 	expect( uploads ).toHaveLength( 1 );
+} );
+
+test( 'a pick made before the identity lookup settles still sends its file', async () => {
+	// The hero's controls are bound before the cold entry-context lookup
+	// answers (controller.tsx sets `ready` at bind time). A file picked in that
+	// window is the customer's choice: it must ride once, not vanish.
+	let release!: () => void;
+	const gate = new Promise< void >( ( resolve ) => {
+		release = resolve;
+	} );
+	const fetchMock = vi.fn( async ( url: unknown ) => {
+		if ( String( url ).includes( '/entry-context' ) ) {
+			await gate;
+			return {
+				ok: true,
+				json: async () => ( { scope: NATIVE_SCOPE } ),
+			};
+		}
+		throw new Error( `Unexpected unit HTTP: ${ String( url ) }` );
+	} );
+	vi.stubGlobal( 'fetch', fetchMock );
+	const answers = session();
+	await start( answers.session );
+
+	const input =
+		document.querySelector< HTMLInputElement >( 'input[type="file"]' )!;
+	const file = new File( [ '%PDF-1.4\n%%EOF' ], 'datasheet.pdf', {
+		type: 'application/pdf',
+	} );
+	const live = installLivePickerFile( input, file );
+
+	// The lookup has not answered: the composer is still disabled.
+	const prompt =
+		document.querySelector< HTMLTextAreaElement >( '.hero-prompt' )!;
+	expect( prompt.disabled ).toBe( true );
+	expect( answers.send ).not.toHaveBeenCalled();
+
+	await act( async () => {
+		fireEvent.change( input );
+	} );
+	expect( live.length ).toBe( 0 );
+	// Held, not dropped: no turn yet, and no dead-end "Choose a file" panel.
+	expect( answers.send ).not.toHaveBeenCalled();
+
+	await act( async () => {
+		release();
+	} );
+	await waitFor( () => expect( answers.send ).toHaveBeenCalledTimes( 1 ) );
+	const { uploads } = answers.send.mock.calls[ 0 ][ 0 ];
+	expect( uploads ).toHaveLength( 1 );
+	expect(
+		document.querySelector( '.linker-genie-app__photo-prompt' )
+	).toBeNull();
 } );
 
 test( 'a folded hero sends the editor question with the copied file', async () => {

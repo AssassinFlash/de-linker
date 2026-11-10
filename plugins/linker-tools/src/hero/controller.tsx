@@ -353,11 +353,9 @@ export function startHero(
 	}
 
 	function openPicker(): void {
-		if ( ! context.capture() ) {
-			retainedMode = 'attach';
-			update( { type: 'ask' } );
-			return;
-		}
+		// The picker opens whatever the identity lookup is doing: a choice made
+		// during it is held by onPickerChange, not lost. Refusing to open only
+		// showed a picker that never appeared.
 		// One accepted set for both buttons: prepare.ts refuses what Genie
 		// cannot read, and the nameplate button may still receive a PDF.
 		picker.accept = ACCEPT;
@@ -512,16 +510,19 @@ export function startHero(
 	}
 
 	function onPickerChange(): void {
-		if ( ! context.capture() ) {
-			picker.value = '';
-			return;
-		}
-		context.acceptEditor();
 		// FileList is live: clearing the input empties the same object.
 		// Copy the files, and the editor text, before that clear.
 		const question = prompt!.value;
 		const files = picker.files ? Array.from( picker.files ) : [];
 		picker.value = '';
+		// A pick can land while the cold identity lookup is still running (the
+		// composer is disabled, the page's own buttons are not). The files are
+		// the customer's choice and ride once: hold them through the lookup
+		// instead of dropping them, the same way useAttachments does. Dropping
+		// them left the customer with a picker that silently did nothing.
+		if ( context.capture() ) {
+			context.acceptEditor();
+		}
 		if ( files.length > 0 ) {
 			runAsk( question, files );
 		}

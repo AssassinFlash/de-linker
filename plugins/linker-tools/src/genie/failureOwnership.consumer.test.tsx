@@ -902,7 +902,7 @@ test( 'ordinary editing missing-file recovery requires reselect or explicit Remo
 } );
 
 for ( const mode of [ 'attach', 'voice' ] as const ) {
-	test( `first home ${ mode } intent opens native loading and resumes only an explicit action after Retry`, async () => {
+	test( `first home ${ mode } intent opens native loading and stays held until an explicit action after Retry`, async () => {
 		scopeUnavailable = true;
 		const start = vi.fn();
 		vi.stubGlobal(
@@ -932,13 +932,58 @@ for ( const mode of [ 'attach', 'voice' ] as const ) {
 			)
 		);
 		await waitFor( () => expect( ui.field().disabled ).toBe( false ) );
-		await screen.findByRole( 'button', {
-			name: mode === 'attach' ? 'Choose a file' : 'Dictate',
-		} );
 		expect( start ).not.toHaveBeenCalled();
 		expect( sendTurn ).not.toHaveBeenCalled();
 	} );
 }
+
+test( 'first home voice intent recovers into its retained Dictate prompt', async () => {
+	scopeUnavailable = true;
+	vi.stubGlobal(
+		'SpeechRecognition',
+		class {
+			start() {}
+			stop() {}
+		}
+	);
+	const ui = home();
+	stop = ui.stop;
+	await act( async () =>
+		fireEvent.click( screen.getByRole( 'button', { name: 'Voice' } ) )
+	);
+	await screen.findByRole( 'button', { name: 'Try again' } );
+	scopeUnavailable = false;
+	await act( async () =>
+		fireEvent.click( screen.getByRole( 'button', { name: 'Try again' } ) )
+	);
+	await waitFor( () => expect( ui.field().disabled ).toBe( false ) );
+	await screen.findByRole( 'button', { name: 'Dictate' } );
+} );
+
+test( 'first home attach intent recovers with the armed file picker and no dead-end panel', async () => {
+	scopeUnavailable = true;
+	const ui = home();
+	stop = ui.stop;
+	await act( async () =>
+		fireEvent.click( screen.getByRole( 'button', { name: 'Attach' } ) )
+	);
+	await screen.findByRole( 'button', { name: 'Try again' } );
+	scopeUnavailable = false;
+	await act( async () =>
+		fireEvent.click( screen.getByRole( 'button', { name: 'Try again' } ) )
+	);
+	await waitFor( () => expect( ui.field().disabled ).toBe( false ) );
+	// The attach path no longer keeps a dead-end retained panel: the file
+	// picker opens on demand and a pick made during the outage is held by
+	// the controller (controller.test.tsx covers the hold). Recovery shows
+	// a usable composer, the armed picker and nothing fires on its own.
+	await waitFor( () =>
+		expect(
+			document.querySelector< HTMLInputElement >( 'input[type=file]' )
+		).not.toBeNull()
+	);
+	expect( sendTurn ).not.toHaveBeenCalled();
+} );
 for ( const outcome of [
 	'success',
 	'refusal',

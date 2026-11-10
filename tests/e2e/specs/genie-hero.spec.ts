@@ -33,13 +33,16 @@ const TESTER = 'linker-e2e-232@example.test';
 
 /**
  * The local instance's counters, cleared so the hero's inquiry and contact
- * sends are not refused by the hour's limiter or the mail throttle; the test
- * mail option keeps every recipient at the tester (AGENTS.md §5).
+ * sends are not refused by the hour's limiter or the mail throttle, and the
+ * attachment states are not refused by the file allowance a long suite run
+ * has already spent (Genie/Attachments.php takes one unit per file, twenty an
+ * hour). The test mail option keeps every recipient at the tester
+ * (AGENTS.md §5).
  */
 function freshCounters(): void {
 	wp([
 		'eval',
-		"global $wpdb; $wpdb->query( \"DELETE FROM {$wpdb->options} WHERE option_name LIKE 'linker\\_tools\\_limit\\_genie\\_inquiry%' OR option_name LIKE 'linker\\_tools\\_limit\\_genie\\_contact%' OR option_name LIKE 'linker\\_commerce\\_limit\\_public\\_receipts%'\" ); delete_option( 'linker_commerce_mail_sends' );",
+		"global $wpdb; $wpdb->query( \"DELETE FROM {$wpdb->options} WHERE option_name LIKE 'linker\\_tools\\_limit\\_genie\\_inquiry%' OR option_name LIKE 'linker\\_tools\\_limit\\_genie\\_contact%' OR option_name LIKE 'linker\\_tools\\_limit\\_genie\\_upload%' OR option_name LIKE 'linker\\_commerce\\_limit\\_public\\_receipts%'\" ); delete_option( 'linker_commerce_mail_sends' );",
 	]);
 }
 
@@ -107,6 +110,10 @@ async function fresh(
 		viewport,
 		reducedMotion: 'reduce',
 	});
+	// A context of its own starts with none of the suite's cookies: the
+	// answered banner must be seeded here, or its overlay covers the hero's
+	// way back and swallows the click.
+	await seedConsentCookies(context);
 	const page = await context.newPage();
 	await page.goto(instance().url + pageBase(lang), {
 		waitUntil: 'load',
@@ -117,6 +124,11 @@ async function fresh(
 	await expect(
 		page.locator('.hero-cinematic[data-linker-genie-hero="ready"]')
 	).toHaveCount(1);
+	// Bound is not ready: the hero mounts its conversation while the cold
+	// identity lookup is still running, and the composer stays disabled until
+	// it answers. A question typed or a file picked before that belongs to the
+	// previous page's identity, so the suite waits for the composer.
+	await expect(page.locator('.hero-prompt')).toBeEnabled();
 	return page;
 }
 
@@ -146,9 +158,20 @@ async function header(page: Page): Promise<string> {
 	return page.locator('.linker-genie-hero__bar').innerText();
 }
 
-/** Waits for a real answer. */
+/**
+ * Waits for a real answer, and for the turn to settle behind it.
+ *
+ * The reply text streams in before the proxy has stored the conversation: it
+ * writes the thread once the whole answer has been read. Anything that hands
+ * the conversation to the dock straight after the first visible words races
+ * that write and reads an empty thread, so the wait ends on the turn's own
+ * end - the waiting row is gone and the reply stands.
+ */
 async function answered(page: Page): Promise<void> {
 	await expect(page.locator('.linker-genie-reply').last()).toBeVisible({
+		timeout: 240_000,
+	});
+	await expect(page.locator('.linker-genie-wait')).toHaveCount(0, {
 		timeout: 240_000,
 	});
 }
@@ -168,10 +191,6 @@ async function scrollTranscript(page: Page, top: 'start' | 'end') {
 		}, top);
 	await page.waitForTimeout(200);
 }
-
-test.beforeEach(async ({ context }) => {
-	await seedConsentCookies(context);
-});
 
 for (const lang of LANGS) {
 	for (const viewport of VIEWPORTS) {
@@ -425,6 +444,10 @@ for (const lang of LANGS) {
 				browser,
 			}) => {
 				test.setTimeout(900_000);
+				// Four picks ride one hourly file allowance (twenty an
+				// hour): a suite that already read files on this instance
+				// refuses the later states before they reach the service.
+				freshCounters();
 
 				// Exact nameplate: the card confirms the model in our range.
 				let page = await fresh(browser, lang, viewport);
@@ -465,7 +488,10 @@ for (const lang of LANGS) {
 				await scrollAttachment(page);
 				await shot(page, `hero-${at}-nameplate-unreadable`);
 				// The manual-model exit fills the hero's own follow-up field.
+				// Scoped to the card: the answer's own ask chips are the model's
+				// wording and can carry the same label, which is not this exit.
 				await page
+					.locator('.linker-genie-attachment')
 					.getByRole('button', {
 						name:
 							'de' === lang
