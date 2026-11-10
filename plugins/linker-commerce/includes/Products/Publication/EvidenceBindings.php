@@ -179,18 +179,25 @@ final class EvidenceBindings {
 		if ( array() === $previous || ! is_array( $raw ) ) {
 			return 0;
 		}
-		$allowed = self::documents_by_citation_path( $id );
-		$next    = $previous;
-		$renewed = 0;
+		$stale = array();
+		$next  = $previous;
 		foreach ( $raw as $key => $entry ) {
 			$old = $previous[ $key ] ?? null;
 			if ( ! is_array( $entry ) || ! is_array( $entry['citation'] ?? null ) || ! is_array( $old ) ) {
 				continue;
 			}
-			$revision = Publication::figure_revision( $entry );
-			if ( ( $old['figure_revision'] ?? '' ) === $revision ) {
-				continue;
+			if ( ( $old['figure_revision'] ?? '' ) !== Publication::figure_revision( $entry ) ) {
+				$stale[ $key ] = $entry;
 			}
+		}
+		if ( array() === $stale ) {
+			return 0;
+		}
+		// Only a product with a stale entry pays for reading its documents.
+		$allowed = self::documents_by_citation_path( $id );
+		$renewed = 0;
+		foreach ( $stale as $key => $entry ) {
+			$old      = $previous[ $key ];
 			$document = self::cited_document( $entry, $allowed );
 			if (
 				null === $document
@@ -201,7 +208,7 @@ final class EvidenceBindings {
 			}
 			$next[ $key ] = array_merge(
 				$old,
-				array( 'figure_revision' => $revision )
+				array( 'figure_revision' => Publication::figure_revision( $entry ) )
 			);
 			++$renewed;
 		}
