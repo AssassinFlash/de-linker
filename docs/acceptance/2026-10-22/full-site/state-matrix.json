@@ -34143,10 +34143,12 @@
   "state": "language-switch-query-filter-pagination",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance probes 2026-11-11: /de/produkte/?application=home carries the query into both hreflang alternates (en-> /products/?application=home, de-> itself) and product-page=2 pagination keeps the filter; /products/ mirrors the same alternates"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -34182,10 +34184,12 @@
   "state": "language-switch-query-filter-pagination",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance probes 2026-11-11: /de/produkte/?application=home carries the query into both hreflang alternates (en-> /products/?application=home, de-> itself) and product-page=2 pagination keeps the filter; /products/ mirrors the same alternates"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -34321,10 +34325,12 @@
   "state": "language-switch-account-endpoint-and-fragment",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance probe 2026-11-11: /de/mein-konto/ with fragment answers 200 (German account endpoint resolves with its fragment)"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
