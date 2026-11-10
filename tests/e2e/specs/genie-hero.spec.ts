@@ -107,6 +107,10 @@ async function fresh(
 		viewport,
 		reducedMotion: 'reduce',
 	});
+	// A context of its own starts with none of the suite's cookies: the
+	// answered banner must be seeded here, or its overlay covers the hero's
+	// way back and swallows the click.
+	await seedConsentCookies(context);
 	const page = await context.newPage();
 	await page.goto(instance().url + pageBase(lang), {
 		waitUntil: 'load',
@@ -117,6 +121,11 @@ async function fresh(
 	await expect(
 		page.locator('.hero-cinematic[data-linker-genie-hero="ready"]')
 	).toHaveCount(1);
+	// Bound is not ready: the hero mounts its conversation while the cold
+	// identity lookup is still running, and the composer stays disabled until
+	// it answers. A question typed or a file picked before that belongs to the
+	// previous page's identity, so the suite waits for the composer.
+	await expect(page.locator('.hero-prompt')).toBeEnabled();
 	return page;
 }
 
@@ -168,10 +177,6 @@ async function scrollTranscript(page: Page, top: 'start' | 'end') {
 		}, top);
 	await page.waitForTimeout(200);
 }
-
-test.beforeEach(async ({ context }) => {
-	await seedConsentCookies(context);
-});
 
 for (const lang of LANGS) {
 	for (const viewport of VIEWPORTS) {
@@ -465,7 +470,10 @@ for (const lang of LANGS) {
 				await scrollAttachment(page);
 				await shot(page, `hero-${at}-nameplate-unreadable`);
 				// The manual-model exit fills the hero's own follow-up field.
+				// Scoped to the card: the answer's own ask chips are the model's
+				// wording and can carry the same label, which is not this exit.
 				await page
+					.locator('.linker-genie-attachment')
 					.getByRole('button', {
 						name:
 							'de' === lang
