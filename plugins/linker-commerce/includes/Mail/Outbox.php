@@ -199,6 +199,10 @@ final class Outbox {
 				'mail-job-' . $job_id,
 				function () use ( $job_id ): void {
 					clean_post_cache( $job_id );
+					if ( JobStore::FAILED_STATUS === get_post_status( $job_id ) ) {
+						$this->jobs->terminate_failed( $job_id );
+						return;
+					}
 					$job = $this->jobs->load( $job_id );
 					if ( null !== $job ) {
 						$this->attempt( $job['message'], $job['attempts'], $job_id );
@@ -282,9 +286,27 @@ final class Outbox {
 			$this->hold_review_reminder( $job_id );
 			return false;
 		}
+		if ( $job_id > 0 && JobStore::FAILED_STATUS === get_post_status( $job_id ) ) {
+			$this->jobs->terminate_failed( $job_id );
+			return false;
+		}
+		if ( $job_id > 0 && $attempts > count( self::RETRY_DELAYS ) ) {
+			$reason = '' !== $this->error ? $this->error : $this->jobs->error( $job_id );
+			$reason = '' !== $reason ? $reason : 'Maximum delivery attempts exceeded.';
+			$this->jobs->fail( $job_id, $attempts, $reason );
+			wc_get_logger()->error(
+				sprintf( 'Email "%s" to %s not sent after %d attempts: %s', $message->subject, implode( ', ', $message->to ), $attempts, $reason ),
+				array( 'source' => self::LOG_SOURCE )
+			);
+			return false;
+		}
 		if ( ! \Linker\Commerce\Inquiry\Assessment\SendAuthorization::allows( $message, $job_id ) ) {
 			if ( $job_id < 1 ) {
-				$this->jobs->create( $message ); }
+				$this->jobs->create( $message );
+			} elseif ( NativeAttempt::expired( $job_id ) ) {
+				$this->fail_orphan( $message, $attempts, $job_id );
+				CapacityHealth::failed();
+			}
 			return false;
 		}
 		try {
@@ -293,6 +315,9 @@ final class Outbox {
 			throw new PreTransportFailure( $error ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Fixed phase diagnostic; the native cause is never output.
 		}
 		if ( $job_id > 0 && '' === $attempt_token ) {
+			if ( NativeAttempt::expired( $job_id ) ) {
+				$this->fail_orphan( $message, $attempts, $job_id );
+			}
 			CapacityHealth::failed();
 			return false;
 		}
@@ -314,9 +339,11 @@ final class Outbox {
 		// Test mode rewrites the recipients on the way out alone. $message is
 		// what was queued, and it keeps the recipients the routing data names
 		// (Mail\TestMode); only this attempt's copy is redirected.
-		$delivery       = $this->test_mode->redirect( $message );
-		$this->fallback = Throttle::PHP === $transport;
-		$transport_id   = '';
+		$delivery          = $this->test_mode->redirect( $message );
+		$this->fallback    = Throttle::PHP === $transport;
+		$transport_id      = '';
+		$fallback_now      = 0;
+		$fallback_reserved = false;
 		try {
 			$sent = $this->deliver( $delivery );
 			if ( $sent ) {
@@ -330,12 +357,13 @@ final class Outbox {
 						'Internal SMTP failed; PHP fallback requires its own available budget. Reason: ' . $reason . '.',
 						array( 'source' => self::LOG_SOURCE )
 					);
-						$fallback_now = time();
-						$wait_until   = \Linker\Commerce\Inquiry\Assessment\SendAuthorization::allows( $message, $job_id ) ? $this->throttle->reserve( $fallback_now, Throttle::PHP, $critical, $message->category ) : PHP_INT_MAX;
+					$fallback_now = time();
+					$wait_until   = \Linker\Commerce\Inquiry\Assessment\SendAuthorization::allows( $message, $job_id ) ? $this->throttle->reserve( $fallback_now, Throttle::PHP, $critical, $message->category ) : PHP_INT_MAX;
 					if ( $wait_until === $fallback_now ) {
-						$this->fallback = true;
-						$sent           = $this->deliver( $delivery );
-						$transport_id   = $sent ? $this->transport_message_id : '';
+						$fallback_reserved = true;
+						$this->fallback    = true;
+						$sent              = $this->deliver( $delivery );
+						$transport_id      = $sent ? $this->transport_message_id : '';
 					}
 				}
 			}
@@ -347,6 +375,9 @@ final class Outbox {
 		}
 
 		if ( $sent ) {
+			if ( $fallback_reserved && Throttle::SMTP === $transport ) {
+				$this->throttle->release( $now, Throttle::SMTP, $message->category );
+			}
 			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::delivered( $message, $job_id, $transport_id );
 			if ( $job_id > 0 ) {
 				$this->jobs->delete( $job_id );
@@ -364,6 +395,10 @@ final class Outbox {
 			return true;
 		}
 
+		$this->throttle->release( $now, $transport, $message->category );
+		if ( $fallback_reserved ) {
+			$this->throttle->release( $fallback_now, Throttle::PHP, $message->category );
+		}
 		++$attempts;
 		if ( $job_id > 0 ) {
 			$this->jobs->resolve_attempt( $job_id, $attempt_token );
@@ -385,6 +420,22 @@ final class Outbox {
 			array( 'source' => self::LOG_SOURCE )
 		);
 		return false;
+	}
+
+	/**
+	 * Terminate a job whose open native attempt witness timed out.
+	 *
+	 * @param Message $message  Message.
+	 * @param int     $attempts Attempts recorded before the orphaned attempt.
+	 * @param int     $job_id   Job id.
+	 */
+	private function fail_orphan( Message $message, int $attempts, int $job_id ): void {
+		$reason = 'Orphaned delivery attempt timed out.';
+		$this->jobs->fail( $job_id, $attempts + 1, $reason );
+		wc_get_logger()->error(
+			sprintf( 'Email "%s" to %s not sent after %d attempts: %s', $message->subject, implode( ', ', $message->to ), $attempts + 1, $reason ),
+			array( 'source' => self::LOG_SOURCE )
+		);
 	}
 
 	/**

@@ -269,6 +269,25 @@ final class JobStore {
 				'post_status' => self::FAILED_STATUS,
 			)
 		);
+		$this->capacity->failed( $id );
+	}
+
+	/**
+	 * Last recorded error of a job.
+	 *
+	 * @param int $id Job id.
+	 */
+	public function error( int $id ): string {
+		return (string) get_post_meta( $id, self::ERROR_META, true );
+	}
+
+	/**
+	 * Ensure a job already in FAILED_STATUS has no pending retries or transient attempt state.
+	 *
+	 * @param int $id Job id.
+	 */
+	public function terminate_failed( int $id ): void {
+		$this->capacity->failed( $id );
 	}
 
 	/**

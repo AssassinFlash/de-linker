@@ -92,6 +92,37 @@ final class Throttle {
 	}
 
 	/**
+	 * Release a reservation whose synchronous transport returned a definite failure.
+	 *
+	 * @param int    $now       Unix time of the reservation.
+	 * @param string $transport Transport channel reserved.
+	 * @param string $category  Producer category reserved.
+	 */
+	public function release( int $now, string $transport = self::PHP, string $category = Message::STANDARD ): void {
+		if ( ! in_array( $transport, array( self::PHP, self::SMTP ), true ) ) {
+			return;
+		}
+		$this->ledger->transact(
+			static function ( array $state ) use ( $now, $transport, $category ): array {
+				$entries = is_array( $state['entries'] ?? null ) ? array_values( $state['entries'] ) : array();
+				for ( $i = count( $entries ) - 1; $i >= 0; --$i ) {
+					$entry = $entries[ $i ];
+					if ( is_array( $entry ) && 'attempt' === ( $entry['origin'] ?? '' ) && ( $entry['time'] ?? 0 ) === $now && ( $entry['transport'] ?? '' ) === $transport && ( $entry['category'] ?? Message::STANDARD ) === $category ) {
+						array_splice( $entries, $i, 1 );
+						break;
+					}
+				}
+				$state['entries'] = $entries;
+				return array(
+					'state' => $state,
+					'slot'  => $now,
+				);
+			},
+			true
+		);
+	}
+
+	/**
 	 * Find or reserve one slot under the storage mutex.
 	 *
 	 * @param int    $now       Unix time.

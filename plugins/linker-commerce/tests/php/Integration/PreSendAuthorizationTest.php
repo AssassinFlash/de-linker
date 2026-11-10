@@ -153,9 +153,43 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 				self::assertStringContainsString( 'full original content.', $job['message']->body );
 			}do_action( \Linker\Commerce\Mail\Outbox::HOOK, $entry['id'] );
 			self::assertNull( ( new \Linker\Commerce\Mail\JobStore() )->load( $entry['id'] ) );}
+		$order->read_meta_data( true );
+		self::assertSame( 'complete', $order->get_meta( Queue::PENDING ), 'Delivery of all required inquiry jobs completes pending state immediately.' );
+		self::assertFalse( as_has_scheduled_action( Queue::EXPIRE, array( $order->get_id() ), \Linker\Commerce\Mail\Outbox::GROUP ) );
 		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $order->get_id() );
 		$order->read_meta_data( true );
 		self::assertSame( 'complete', $order->get_meta( Queue::PENDING ) );
+	}
+
+	/** An orphaned open attempt on an inquiry job terminates on recovery and stops re-enqueuing Outbox::HOOK. */
+	public function test_orphaned_inquiry_job_terminates_and_transitions_inquiry_to_manual(): void {
+		$this->provider( 'normal' );
+		$order = $this->submit();
+		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $order->get_id() );
+		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
+		self::assertIsArray( $state );
+		$team_id = $state['jobs']['team']['id'];
+		$loaded  = ( new \Linker\Commerce\Mail\JobStore() )->load( $team_id );
+		self::assertNotNull( $loaded );
+		update_post_meta(
+			$team_id,
+			\Linker\Commerce\Mail\NativeAttempt::META,
+			array(
+				'token'   => wp_generate_uuid4(),
+				'message' => hash( 'sha256', (string) wp_json_encode( $loaded['message']->to_array() ) ),
+				'state'   => 'open',
+				'at'      => time() - \Linker\Commerce\Mail\NativeAttempt::TIMEOUT - 5,
+			)
+		);
+		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $order->get_id() );
+		clean_post_cache( $team_id );
+		self::assertSame( \Linker\Commerce\Mail\JobStore::FAILED_STATUS, get_post_status( $team_id ) );
+		self::assertFalse( as_has_scheduled_action( \Linker\Commerce\Mail\Outbox::HOOK, array( $team_id ), \Linker\Commerce\Mail\Outbox::GROUP ) );
+		$after = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
+		self::assertIsArray( $after );
+		self::assertSame( 'manual', $after['status'] );
+		$order->read_meta_data( true );
+		self::assertSame( 'held', $order->get_meta( Queue::PENDING ) );
 	}
 	/** Service result.
 	 *

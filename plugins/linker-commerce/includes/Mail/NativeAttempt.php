@@ -10,6 +10,8 @@ namespace Linker\Commerce\Mail;
 /** Fixed operational state, not another message, permission or capacity reservation. */
 final class NativeAttempt {
 	public const META = '_linker_mail_native_attempt';
+	/** Maximum worker execution window before an open witness is orphaned (AS/PHPMailer 300 s limit). */
+	public const TIMEOUT = 300;
 
 	/**
 	 * Enter before any quota reservation; retain an open witness after unknown IO.
@@ -31,6 +33,7 @@ final class NativeAttempt {
 					'token'   => wp_generate_uuid4(),
 					'message' => hash( 'sha256', (string) wp_json_encode( $message->to_array() ) ),
 					'state'   => 'open',
+					'at'      => time(),
 				);
 				self::save( $job, $state );
 				return $state['token'];
@@ -72,13 +75,40 @@ final class NativeAttempt {
 	}
 
 	/**
+	 * Whether an unresolved open attempt has exceeded the worker execution timeout.
+	 *
+	 * @param int      $job Original job.
+	 * @param int|null $now Reference Unix time.
+	 */
+	public static function expired( int $job, ?int $now = null ): bool {
+		wp_cache_delete( $job, 'post_meta' );
+		$state = get_post_meta( $job, self::META, true );
+		if ( '' === $state ) {
+			return false;
+		}
+		if ( ! self::valid( $state ) ) {
+			return true;
+		}
+		if ( 'open' !== $state['state'] ) {
+			return false;
+		}
+		$at = $state['at'] ?? 0;
+		return $at <= ( $now ?? time() ) - self::TIMEOUT;
+	}
+
+	/**
 	 * Validate the entire constant-size native witness, never arbitrary post data.
 	 *
 	 * @param mixed $state Raw native metadata.
-	 * @phpstan-assert-if-true array{token:string,message:string,state:'open'|'ready'} $state
+	 * @phpstan-assert-if-true array{token:string,message:string,state:'open'|'ready',at?:int} $state
 	 */
 	private static function valid( mixed $state ): bool {
-		return is_array( $state ) && array_keys( $state ) === array( 'token', 'message', 'state' ) && is_string( $state['token'] ) && wp_is_uuid( $state['token'], 4 ) && is_string( $state['message'] ) && 1 === preg_match( '/^[0-9a-f]{64}$/', $state['message'] ) && in_array( $state['state'], array( 'open', 'ready' ), true );
+		if ( ! is_array( $state ) ) {
+			return false;
+		}
+		$keys  = array_keys( $state );
+		$timed = array( 'token', 'message', 'state', 'at' ) === $keys && is_int( $state['at'] ) && $state['at'] > 0;
+		return ( array( 'token', 'message', 'state' ) === $keys || $timed ) && is_string( $state['token'] ) && wp_is_uuid( $state['token'], 4 ) && is_string( $state['message'] ) && 1 === preg_match( '/^[0-9a-f]{64}$/', $state['message'] ) && in_array( $state['state'], array( 'open', 'ready' ), true );
 	}
 
 	/**
@@ -100,8 +130,8 @@ final class NativeAttempt {
 	 * The UUID, digest and fixed state are a constant-size operational witness.
 	 * Existing capacity accounts complete Message bytes, not physical SQL metadata.
 	 *
-	 * @param int                  $job Original job.
-	 * @param array<string,string> $state Fixed operational witness.
+	 * @param int                      $job Original job.
+	 * @param array<string,int|string> $state Fixed operational witness.
 	 * @throws \RuntimeException A failed readback never permits transport.
 	 */
 	private static function save( int $job, array $state ): void {
