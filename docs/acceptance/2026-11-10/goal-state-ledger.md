@@ -193,3 +193,22 @@ Nothing in this ledger marks the goal complete; it records what stands.
   door then refuses its own verification dispatch; the suite now resets them
   beforeEach (the genie-hero freshCounters discipline).
 - Matrix: pass 259 -> 278, pending 162.
+
+## Batch: products contract sync (PR #1059)
+
+- products.spec.ts guest test now asserts the draft button IS offered (the
+  #246 inquiry-open-to-all contract, the page's own docblock); the comparison
+  chip test signs in first (a guest's pill is a deliberate two-column grid
+  via :has(.linker-create-account)). 4/4 green.
+- Root-caused and recorded honestly (not papered over):
+  1. review's WindPress cache was a month stale - `just windpress-compile
+     review` rebuilt it through the admin (the delivery discipline's cache
+     rebuild, hit in practice on the review instance);
+  2. the library FAQ spec expects >200 product answers; review's data yields
+     174 (EN products fully passing the publish gates; the census's 79
+     "failures" were German twins misc counted, 6 real binding failures) - a
+     review-data currency gap vs production, threshold NOT lowered, related
+     rows NOT flipped;
+  3. draft-visual-states' staff-session fixture (global snapshot/restore)
+     races with parallel suites - flaky only under multi-file parallel runs,
+     4/4 green in isolation; needs serialization or a per-test fixture.
