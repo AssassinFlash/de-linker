@@ -1,0 +1,18 @@
+{
+ "session": "product-manifest-probe-20261111",
+ "environment": "production, read-only GETs",
+ "method": "Direct HTTP probes (status + content-type + bytes) against de-linker.com, matching the misc/product-stock 20261108 probe method",
+ "verified": [
+  {
+   "state": "files-and-feedback actual-file-manifest-open-and-content",
+   "checks": "/faq-download/ renders 143 unique PDF links (datasheets DE+EN, manuals, catalogs); live-manifest samples: chint_dtsu666_catalog_en.pdf 200 application/pdf 505644B; delinker-goodwe_batc208-datasheet.pdf 200 532308B; chint_dtsu666_dssu666_user_manual_en.pdf 200 1208796B; H2-10-30K-T2T3-datasheet-EN-BEU.pdf 200 430739B",
+   "result": "pass",
+   "shapes": [
+    "en:390",
+    "de:1440",
+    "de:390"
+   ],
+   "note": "manifest content is width/language independent (one page serves all shapes); probed once, applied to the three pending shape rows"
+  }
+ ]
+}

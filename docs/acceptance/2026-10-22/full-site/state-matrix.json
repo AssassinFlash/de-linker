@@ -37376,10 +37376,12 @@
   "state": "actual-file-manifest-open-and-content",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "verified-production-20261111",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/product-manifest-probe-20261111.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -37397,10 +37399,12 @@
   "state": "actual-file-manifest-open-and-content",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
+  "status": "verified-production-20261111",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/product-manifest-probe-20261111.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -37418,10 +37422,12 @@
   "state": "actual-file-manifest-open-and-content",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "verified-production-20261111",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/product-manifest-probe-20261111.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
