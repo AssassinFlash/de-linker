@@ -1,0 +1,202 @@
+[
+ {
+  "id": "922",
+  "date": "2026-10-26",
+  "title": "GW_Battery Compatibility Overview-DE"
+ },
+ {
+  "id": "1889",
+  "date": "2026-10-26",
+  "title": "GW_Battery Compatibility Overview-EMEA_EN"
+ },
+ {
+  "id": "923",
+  "date": "2026-10-26",
+  "title": "GW_Battery Compatibility Overview-ES"
+ },
+ {
+  "id": "924",
+  "date": "2026-10-26",
+  "title": "GW_Battery Compatibility Overview-FR"
+ },
+ {
+  "id": "925",
+  "date": "2026-10-26",
+  "title": "GW_Battery Compatibility Overview-IT"
+ },
+ {
+  "id": "926",
+  "date": "2026-10-26",
+  "title": "GW_Battery Compatibility Overview-NL"
+ },
+ {
+  "id": "929",
+  "date": "2026-10-26",
+  "title": "GW_Battery Compatibility Overview-TR"
+ },
+ {
+  "id": "542",
+  "date": "2026-10-26",
+  "title": "GW_Battery Compatibility Overview_Global-EN"
+ },
+ {
+  "id": "3260",
+  "date": "2025-10-15",
+  "title": "GW_Commercial & Industrial Smart Inverter Solutions_Quick Guide-ET 50-100kW-EN"
+ },
+ {
+  "id": "3589",
+  "date": "2025-10-15",
+  "title": "GW_Commercial & Industrial Smart Inverter Solutions_User Manual-ET 50-100kW-DE"
+ },
+ {
+  "id": "3259",
+  "date": "2025-10-15",
+  "title": "GW_Commercial & Industrial Smart Inverter Solutions_User Manual-ET 50-100kW-EN"
+ },
+ {
+  "id": "2691",
+  "date": "2026-10-26",
+  "title": "GW_Compatibility list of GoodWe inverters and IoT products-EN"
+ },
+ {
+  "id": "3686",
+  "date": "2025-10-15",
+  "title": "GW_ET 50-100kW_Certificate-CE LVD_IEC 62109"
+ },
+ {
+  "id": "4169",
+  "date": "2026-04-08",
+  "title": "GW_ET 50-100kW_Certificate-EN 50549-1_FD C11-519-11"
+ },
+ {
+  "id": "4168",
+  "date": "2026-04-08",
+  "title": "GW_ET 50-100kW_Certificate-EN 50549-2_FD C11-519-12"
+ },
+ {
+  "id": "3759",
+  "date": "2025-10-29",
+  "title": "GW_ET 50-100kW_Certificate-IEC 60068"
+ },
+ {
+  "id": "3760",
+  "date": "2025-10-29",
+  "title": "GW_ET 50-100kW_Certificate-IEC 61727_IEC 62116"
+ },
+ {
+  "id": "3789",
+  "date": "2025-10-30",
+  "title": "GW_ET 50-100kW_Certificate-IEC 62109-CB"
+ },
+ {
+  "id": "3687",
+  "date": "2025-10-15",
+  "title": "GW_ET 50-100kW_Certificate-IEC 63027"
+ },
+ {
+  "id": "3791",
+  "date": "2025-10-30",
+  "title": "GW_ET 50-100kW_Certificate-SFS-EN 50549-1"
+ },
+ {
+  "id": "3792",
+  "date": "2025-10-30",
+  "title": "GW_ET 50-100kW_Certificate-SFS-EN 50549-2"
+ },
+ {
+  "id": "4166",
+  "date": "2026-04-08",
+  "title": "GW_ET 50-100kW_Certificate-Sunspec"
+ },
+ {
+  "id": "3683",
+  "date": "2025-10-15",
+  "title": "GW_ET 50-100kW_Certificate_EU Declaration of Conformity_POLY"
+ },
+ {
+  "id": "4386",
+  "date": "2026-07-14",
+  "title": "GW_ET 50-100kW_User Manual-DE"
+ },
+ {
+  "id": "4387",
+  "date": "2026-07-14",
+  "title": "GW_ET 50-100kW_User Manual-EN"
+ },
+ {
+  "id": "4388",
+  "date": "2026-07-14",
+  "title": "GW_ET 50-100kW_User Manual-ES"
+ },
+ {
+  "id": "4616",
+  "date": "2026-09-22",
+  "title": "GW_ET 75-100kW_Certificate-IRR"
+ },
+ {
+  "id": "3689",
+  "date": "2025-10-15",
+  "title": "GW_ET 75-100kW_Certificate-NRS 097-2-1"
+ },
+ {
+  "id": "4167",
+  "date": "2026-04-08",
+  "title": "GW_ET 75-100kW_Certificate-TR3.3.1"
+ },
+ {
+  "id": "3688",
+  "date": "2025-10-15",
+  "title": "GW_ET 75-100kW_Certificate-VDE 4105"
+ },
+ {
+  "id": "4116",
+  "date": "2026-03-11",
+  "title": "GW_ET 75-100kW_Certificate-VDE4110_VDE4120"
+ },
+ {
+  "id": "3685",
+  "date": "2025-12-03",
+  "title": "GW_ET 75-100kW_Datasheet-EN"
+ },
+ {
+  "id": "4617",
+  "date": "2026-09-22",
+  "title": "GW_ET 80-100kW_Certificate-1-PPDS"
+ },
+ {
+  "id": "4618",
+  "date": "2026-09-22",
+  "title": "GW_ET 80-100kW_Certificate-2-PPDS"
+ },
+ {
+  "id": "3761",
+  "date": "2025-10-29",
+  "title": "GW_ET 80-100kW_Certificate-IEC 62891_EN 50530_IEC 61683"
+ },
+ {
+  "id": "4239",
+  "date": "2026-06-15",
+  "title": "GW_ET 80-100kW_Datasheet-AU"
+ },
+ {
+  "id": "3870",
+  "date": "2025-12-03",
+  "title": "GW_ET 80-100kW_Datasheet_EMEA-EN"
+ },
+ {
+  "id": "4809",
+  "date": "2026-11-10",
+  "title": "GW_Product Coastline Installation Statement-EN"
+ },
+ {
+  "id": "4740",
+  "date": "2026-11-09",
+  "title": "GW_Products Suitable for Coastal Areas-EN"
+ },
+ {
+  "id": "4536",
+  "date": "2026-08-17",
+  "title": "GW_Third-Party EMS Protocol-MODBUS-EN"
+ }
+]

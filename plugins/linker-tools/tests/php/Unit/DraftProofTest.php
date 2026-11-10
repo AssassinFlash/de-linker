@@ -164,6 +164,19 @@ final class DraftProofTest extends TestCase {
 		$this->assertArrayNotHasKey( '6', $block['draft_proofs'] );
 	}
 
+	/** The v2 token stays small and dies with any manifest change. */
+	public function test_v2_token_is_slim_and_refuses_a_changed_manifest(): void {
+		$proof = $this->proof();
+		$token = $this->token( $proof );
+		$this->assertLessThan( 2000, strlen( $token ), 'a v2 proof carries a manifest revision, not the dependency list' );
+		$result = $proof->verify( $token );
+		$this->assertIsArray( $result );
+		$this->assertArrayHasKey( 'products', $result['publication'], 'verification injects the fresh dependency list for downstream checks' );
+
+		$this->manifest['documents'][0]['document_revision'] = 'bytes-2';
+		$this->assertInstanceOf( WP_Error::class, $proof->verify( $token ), 'any published change invalidates outstanding v2 proofs' );
+	}
+
 	/** Complete current candidate and evidence set.
 	 *
 	 * @return array<string,mixed>
@@ -185,6 +198,11 @@ final class DraftProofTest extends TestCase {
 					'document_id'       => 'd1',
 					'document_revision' => 'bytes-1',
 					'product_id'        => 5,
+				),
+				array(
+					'document_id'       => 'd1',
+					'document_revision' => 'bytes-1',
+					'product_id'        => 6,
 				),
 			),
 			'compatibility_revision' => 'rules-1',

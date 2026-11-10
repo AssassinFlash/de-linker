@@ -2551,10 +2551,12 @@
   "state": "multiple-filters",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -2564,7 +2566,15 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "archive-states-20261111": {
+    "status": "pass",
+    "detail": "specs/product-archive-states.spec.ts (en 390: the filter drawer stacks two facets): the phone filter button (aria-expanded false->true) opens the drawer (is-mobile-open), the brand facet closes it and leaves ?brand=goodwe with applied count 1 and one chip; a second facet from the drawer yields both params, applied 2, two chips, a card count no larger than the brand-only set, and no card whose .sf-card-brand is not GoodWe; no horizontal overflow at 390",
+    "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
+    "spec": "tests/e2e/specs/product-archive-states.spec.ts",
+    "evidence": "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+   }
+  }
  },
  {
   "key": "product-archive:multiple-filters:de:1440",
@@ -3161,10 +3171,12 @@
   "state": "compare-selection",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -3174,7 +3186,15 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "archive-states-20261111": {
+    "status": "pass",
+    "detail": "specs/product-archive-states.spec.ts (en 390: two cards fill the comparison tray): two [data-compare-product] controls set aria-pressed=true, the chip becomes visible reading 2/4, its href carries ids=<first>,<second>, sessionStorage linkerCompareIds holds the pair, the chip top equals the header bottom, a reload keeps 2/4, unpicking one leaves 1/",
+    "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
+    "spec": "tests/e2e/specs/product-archive-states.spec.ts",
+    "evidence": "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+   }
+  }
  },
  {
   "key": "product-archive:compare-selection:de:1440",
@@ -3210,10 +3230,12 @@
   "state": "compare-selection",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -3232,6 +3254,13 @@
      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-mobile-compare-header.json"
     ],
     "source_continuity": "Current compare-selection.js44e588/product-family.jscc5d076/products.cssc88bd7/faq.csscb1a561/ENDEcompareLC exact accepted663/664 hashes; libraryspecificURLdelta under currentcandidate, search rendering unchanged andexisting44JSmodulechecks passed."
+   },
+   "archive-states-20261111": {
+    "status": "pass",
+    "detail": "same contract on /de/produkte/ at 390: labels are \"Vergleichen: ...\", the chip reads \"Vergleichen 2/4\" and addresses /de/produkte-vergleichen/?ids=6530,6529",
+    "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
+    "spec": "tests/e2e/specs/product-archive-states.spec.ts",
+    "evidence": "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
    }
   }
  },
@@ -3272,10 +3301,12 @@
   "state": "add-to-draft",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "not-applicable-today",
+  "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -3285,7 +3316,16 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "archive-states-20261111": {
+    "status": "not-applicable-today",
+    "detail": "specs/product-archive-states.spec.ts: 24 a[data-card-atc][hidden] placeholders, 0 rendered, all href=\"#\"; a synthetic click on every placeholder opens no document and writes no woocommerce_session cookie; the product page carries the operable add control. The only repository reference to data-card-atc is the markup in ProductShortcodes::card(); protection.js, catalog-ui.js, product-family.js and compare-selection.js never touch it. Production /products/ (anonymous fetch 2026-11-11) prints the same 24 hidden placeholders.",
+    "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
+    "spec": "tests/e2e/specs/product-archive-states.spec.ts",
+    "evidence": "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+   }
+  },
+  "notes": "The archive prints an inert add-to-draft placeholder and makes no client-side request a loading state could strand: the state does not exist on this surface, so the row closes on measurement rather than a fabricated interaction. The test pins the absence, so a revealed placeholder or a new client-side listing fails it and reopens the row. Evidence: docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
  },
  {
   "key": "product-archive:add-to-draft:de:1440",
@@ -3293,10 +3333,12 @@
   "state": "add-to-draft",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "not-applicable-today",
+  "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -3306,7 +3348,16 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "archive-states-20261111": {
+    "status": "not-applicable-today",
+    "detail": "same measured placeholder contract on /de/produkte/ at 1440",
+    "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
+    "spec": "tests/e2e/specs/product-archive-states.spec.ts",
+    "evidence": "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+   }
+  },
+  "notes": "The archive prints an inert add-to-draft placeholder and makes no client-side request a loading state could strand: the state does not exist on this surface, so the row closes on measurement rather than a fabricated interaction. The test pins the absence, so a revealed placeholder or a new client-side listing fails it and reopens the row. Evidence: docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
  },
  {
   "key": "product-archive:add-to-draft:de:390",
@@ -3314,10 +3365,12 @@
   "state": "add-to-draft",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "not-applicable-today",
+  "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -3327,7 +3380,16 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "archive-states-20261111": {
+    "status": "not-applicable-today",
+    "detail": "same measured placeholder contract on /de/produkte/ at 390",
+    "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
+    "spec": "tests/e2e/specs/product-archive-states.spec.ts",
+    "evidence": "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+   }
+  },
+  "notes": "The archive prints an inert add-to-draft placeholder and makes no client-side request a loading state could strand: the state does not exist on this surface, so the row closes on measurement rather than a fabricated interaction. The test pins the absence, so a revealed placeholder or a new client-side listing fails it and reopens the row. Evidence: docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
  },
  {
   "key": "product-archive:loading-error:en:1440",
@@ -3366,10 +3428,12 @@
   "state": "loading-error",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "not-applicable-today",
+  "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -3379,7 +3443,16 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "archive-states-20261111": {
+    "status": "not-applicable-today",
+    "detail": "specs/product-archive-states.spec.ts: with **/wp-json/**, **/admin-ajax.php** and **/*wc-ajax* aborted, /products/ renders 24 cards, the full brand rail and its pagination, 0 aria-busy, 0 skeleton/is-loading, 0 empty-state nodes, and 0 such requests are attempted on the whole run; a filtered address still answers with applied 2 and cards",
+    "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
+    "spec": "tests/e2e/specs/product-archive-states.spec.ts",
+    "evidence": "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+   }
+  },
+  "notes": "The archive prints an inert add-to-draft placeholder and makes no client-side request a loading state could strand: the state does not exist on this surface, so the row closes on measurement rather than a fabricated interaction. The test pins the absence, so a revealed placeholder or a new client-side listing fails it and reopens the row. Evidence: docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
  },
  {
   "key": "product-archive:loading-error:de:1440",
@@ -3387,10 +3460,12 @@
   "state": "loading-error",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "not-applicable-today",
+  "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -3400,7 +3475,16 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "archive-states-20261111": {
+    "status": "not-applicable-today",
+    "detail": "same aborted-request render at 1440 on /de/produkte/, 0 attempted requests",
+    "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
+    "spec": "tests/e2e/specs/product-archive-states.spec.ts",
+    "evidence": "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+   }
+  },
+  "notes": "The archive prints an inert add-to-draft placeholder and makes no client-side request a loading state could strand: the state does not exist on this surface, so the row closes on measurement rather than a fabricated interaction. The test pins the absence, so a revealed placeholder or a new client-side listing fails it and reopens the row. Evidence: docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
  },
  {
   "key": "product-archive:loading-error:de:390",
@@ -3408,10 +3492,12 @@
   "state": "loading-error",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "not-applicable-today",
+  "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -3421,7 +3507,16 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "archive-states-20261111": {
+    "status": "not-applicable-today",
+    "detail": "same aborted-request render at 390 on /de/produkte/, 0 attempted requests",
+    "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
+    "spec": "tests/e2e/specs/product-archive-states.spec.ts",
+    "evidence": "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+   }
+  },
+  "notes": "The archive prints an inert add-to-draft placeholder and makes no client-side request a loading state could strand: the state does not exist on this surface, so the row closes on measurement rather than a fabricated interaction. The test pins the absence, so a revealed placeholder or a new client-side listing fails it and reopens the row. Evidence: docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
  },
  {
   "key": "product:in-stock-guest:en:1440",
@@ -3748,10 +3843,12 @@
   "state": "out-of-stock",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -3760,7 +3857,15 @@
    "files-print",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "archive-states-20261111": {
+    "status": "pass",
+    "detail": "specs/product-archive-states.spec.ts with the WP-CLI stock fixture (flip + finally restore + readback): .pdp-avail-label reads \"Currently unavailable\" with .pdp-dot.is-wait; the visible add control opens the request page where Woo answers \"is not available at the moment and cannot be added to the solution draft\" with 0 draft rows",
+    "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
+    "spec": "tests/e2e/specs/product-archive-states.spec.ts",
+    "evidence": "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+   }
+  }
  },
  {
   "key": "product:out-of-stock:de:1440",
@@ -3768,10 +3873,12 @@
   "state": "out-of-stock",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -3780,7 +3887,15 @@
    "files-print",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "archive-states-20261111": {
+    "status": "pass",
+    "detail": "same fixture on /de/produkt/ at 1440: \"Derzeit nicht verfügbar\" with is-wait; the refusal reads \"ist derzeit nicht verfügbar und kann nicht zum Lösungsentwurf hinzugefügt werden\" with 0 draft rows",
+    "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
+    "spec": "tests/e2e/specs/product-archive-states.spec.ts",
+    "evidence": "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+   }
+  }
  },
  {
   "key": "product:out-of-stock:de:390",
@@ -3788,10 +3903,12 @@
   "state": "out-of-stock",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -3800,7 +3917,15 @@
    "files-print",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "archive-states-20261111": {
+    "status": "pass",
+    "detail": "same fixture on /de/produkt/ at 390",
+    "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
+    "spec": "tests/e2e/specs/product-archive-states.spec.ts",
+    "evidence": "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+   }
+  }
  },
  {
   "key": "product:approved-price:en:1440",
@@ -34652,10 +34777,12 @@
   "state": "filtered-pagination-count-consistency",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -34666,7 +34793,15 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "archive-states-20261111": {
+    "status": "pass",
+    "detail": "specs/product-archive-states.spec.ts (en 390: a filtered listing's pages and counts agree): the open archive reads 24 cards per page, 3 pages, last page 5; ?application=home declares 2 pages, page 1 keeps the facet and chip, the next link carries application=home, page 2 lists 9 cards, no id repeats, the page sum equals the deduplicated ids, and page 3 (past the last) 301s to product-page=2 with the facet intact; ?application=home&brand=goodwe gives 23 cards, applied 2, and no pagination",
+    "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
+    "spec": "tests/e2e/specs/product-archive-states.spec.ts",
+    "evidence": "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+   }
+  }
  },
  {
   "key": "product-archive:filtered-pagination-count-consistency:de:1440",
@@ -34674,10 +34809,12 @@
   "state": "filtered-pagination-count-consistency",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -34688,7 +34825,15 @@
    "consumer-readback",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "archive-states-20261111": {
+    "status": "pass",
+    "detail": "same contract on /de/produkte/ at 1440 (the review-e2e leg this row was waiting for)",
+    "environment": "review instance (LINKER_E2E_INSTANCE=review, 127.0.0.1:8889), anonymous customer, consent cookies seeded",
+    "spec": "tests/e2e/specs/product-archive-states.spec.ts",
+    "evidence": "docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json"
+   }
+  }
  },
  {
   "key": "product-archive:filtered-pagination-count-consistency:de:390",
