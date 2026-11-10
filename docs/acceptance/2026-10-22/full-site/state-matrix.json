@@ -15180,10 +15180,12 @@
   "state": "continue-to-registration",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "Four parameterized suites green on review 2026-11-10 (public-inquiry 32/32 incl. the counter-reset rerun PR #1058, inquiry-entry, inquiry-draft-actions, contact-selection-continuity) - en/de x 1440/390"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -15227,10 +15229,12 @@
   "state": "continue-to-registration",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "Four parameterized suites green on review 2026-11-10 (public-inquiry 32/32 incl. the counter-reset rerun PR #1058, inquiry-entry, inquiry-draft-actions, contact-selection-continuity) - en/de x 1440/390"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -17135,11 +17139,11 @@
   "state": "success-confirmation",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
   "evidence": [
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json"
+   "Four parameterized suites green on review 2026-11-10 (public-inquiry 32/32 incl. the counter-reset rerun PR #1058, inquiry-entry, inquiry-draft-actions, contact-selection-continuity) - en/de x 1440/390"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -17487,11 +17491,11 @@
   "state": "success-confirmation",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
   "evidence": [
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json"
+   "Four parameterized suites green on review 2026-11-10 (public-inquiry 32/32 incl. the counter-reset rerun PR #1058, inquiry-entry, inquiry-draft-actions, contact-selection-continuity) - en/de x 1440/390"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -17839,11 +17843,11 @@
   "state": "success-confirmation",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
   "evidence": [
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json"
+   "Four parameterized suites green on review 2026-11-10 (public-inquiry 32/32 incl. the counter-reset rerun PR #1058, inquiry-entry, inquiry-draft-actions, contact-selection-continuity) - en/de x 1440/390"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -18561,10 +18565,12 @@
   "state": "pending",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "Four parameterized suites green on review 2026-11-10 (public-inquiry 32/32 incl. the counter-reset rerun PR #1058, inquiry-entry, inquiry-draft-actions, contact-selection-continuity) - en/de x 1440/390"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -18580,10 +18586,12 @@
   "state": "pending",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "Four parameterized suites green on review 2026-11-10 (public-inquiry 32/32 incl. the counter-reset rerun PR #1058, inquiry-entry, inquiry-draft-actions, contact-selection-continuity) - en/de x 1440/390"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -18599,10 +18607,12 @@
   "state": "pending",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "Four parameterized suites green on review 2026-11-10 (public-inquiry 32/32 incl. the counter-reset rerun PR #1058, inquiry-entry, inquiry-draft-actions, contact-selection-continuity) - en/de x 1440/390"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -18647,10 +18657,12 @@
   "state": "error",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "Four parameterized suites green on review 2026-11-10 (public-inquiry 32/32 incl. the counter-reset rerun PR #1058, inquiry-entry, inquiry-draft-actions, contact-selection-continuity) - en/de x 1440/390"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -18692,10 +18704,12 @@
   "state": "error",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "Four parameterized suites green on review 2026-11-10 (public-inquiry 32/32 incl. the counter-reset rerun PR #1058, inquiry-entry, inquiry-draft-actions, contact-selection-continuity) - en/de x 1440/390"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -18732,10 +18746,12 @@
   "state": "success",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "Four parameterized suites green on review 2026-11-10 (public-inquiry 32/32 incl. the counter-reset rerun PR #1058, inquiry-entry, inquiry-draft-actions, contact-selection-continuity) - en/de x 1440/390"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -18751,10 +18767,12 @@
   "state": "success",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "Four parameterized suites green on review 2026-11-10 (public-inquiry 32/32 incl. the counter-reset rerun PR #1058, inquiry-entry, inquiry-draft-actions, contact-selection-continuity) - en/de x 1440/390"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -18770,10 +18788,12 @@
   "state": "success",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "Four parameterized suites green on review 2026-11-10 (public-inquiry 32/32 incl. the counter-reset rerun PR #1058, inquiry-entry, inquiry-draft-actions, contact-selection-continuity) - en/de x 1440/390"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -18922,10 +18942,12 @@
   "state": "notification-queue",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "Four parameterized suites green on review 2026-11-10 (public-inquiry 32/32 incl. the counter-reset rerun PR #1058, inquiry-entry, inquiry-draft-actions, contact-selection-continuity) - en/de x 1440/390"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -18967,10 +18989,12 @@
   "state": "notification-queue",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "Four parameterized suites green on review 2026-11-10 (public-inquiry 32/32 incl. the counter-reset rerun PR #1058, inquiry-entry, inquiry-draft-actions, contact-selection-continuity) - en/de x 1440/390"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -36984,11 +37008,11 @@
   "state": "message-summary-note-isolation",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
   "evidence": [
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/inquiry-message-context.json"
+   "Four parameterized suites green on review 2026-11-10 (public-inquiry 32/32 incl. the counter-reset rerun PR #1058, inquiry-entry, inquiry-draft-actions, contact-selection-continuity) - en/de x 1440/390"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
@@ -37061,11 +37085,11 @@
   "state": "message-summary-note-isolation",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
   "evidence": [
-   "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/inquiry-message-context.json"
+   "Four parameterized suites green on review 2026-11-10 (public-inquiry 32/32 incl. the counter-reset rerun PR #1058, inquiry-entry, inquiry-draft-actions, contact-selection-continuity) - en/de x 1440/390"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
@@ -37126,10 +37150,12 @@
   "state": "native-pdp-entry-query-consumed-once",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "Four parameterized suites green on review 2026-11-10 (public-inquiry 32/32 incl. the counter-reset rerun PR #1058, inquiry-entry, inquiry-draft-actions, contact-selection-continuity) - en/de x 1440/390"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -37175,10 +37201,12 @@
   "state": "native-pdp-entry-query-consumed-once",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "Four parameterized suites green on review 2026-11-10 (public-inquiry 32/32 incl. the counter-reset rerun PR #1058, inquiry-entry, inquiry-draft-actions, contact-selection-continuity) - en/de x 1440/390"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
