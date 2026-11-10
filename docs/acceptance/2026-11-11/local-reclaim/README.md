@@ -137,6 +137,34 @@ the rule requires.
   waiter), so they are not a leak, but the directory is now much larger than
   the 3 live instances.
 - Repository documents still cite `/Users/chesterjohn/de-linker-local/p548/...`
-  paths that now resolve under
-  `~/de-linker-data/retired-instance-evidence/p548/...`. The bytes are
-  preserved; the citations need repointing.
+  paths. Those citations were checked one by one after the merge and only the
+  three acceptance files below need repointing; everything else is either
+  reproducible or was already gone.
+
+## Cited p548 paths, checked one by one
+
+`docs/` cites 105 paths under `p548/wordpress/`. Read back after the retirement:
+
+| cited | count | state |
+| --- | --- | --- |
+| `wp-content/uploads/…` | 83 | all 83 present in the retained live-site snapshot `20261105-1208/uploads/`, so the bytes are one `cp` away |
+| `wp-content/plugins/…`, `wp-includes/…` | 15 | WooCommerce and WordPress source; rebuilt by `just up` from released packages |
+| `wp-content/mu-plugins/…` | 6 | temporary fixtures whose own acceptance records state they were already removed |
+| evidence files under `final-consumer/` and `try-again-evidence/` | 3 | **need repointing** to `~/de-linker-data/retired-instance-evidence/p548/` |
+
+The six mu-plugins were checked by their removal records rather than assumed:
+
+- `linker-planner-cua-recovery-548.php` and `linker-planner-cua-ack-548.php` —
+  `docs/acceptance/2026-10-22/548/handover-native/*-cleanup.json` each carry
+  `"fixture_removed": true` with a 2026-10-23 timestamp;
+- `548-genie-ui-1101.php` — its INDEX entry reads "temporary controller/MU
+  removed" and "absent";
+- `linker-native-claim-775b68665fdf.php` — its INDEX entry reads "One
+  temporary MU…absent";
+- `548-genie-race-1102.php` — its INDEX entry reads "MU85B removed";
+- `000-linker-local-isolation.php` — not a fixture: `just up` writes it into
+  every instance, so it is regenerated rather than lost.
+
+So the only real citation debt is those three acceptance files, and the record
+above replaces the earlier blanket claim that every `p548/...` path needed
+repointing.
