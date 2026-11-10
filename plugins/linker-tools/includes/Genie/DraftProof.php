@@ -19,9 +19,9 @@ class DraftProof {
 	/**
 	 * Optional current-source, identity and clock seams for fixtures.
 	 *
-	 * @param callable():array<string,mixed>|null $manifest Woo manifest reader.
-	 * @param callable():(string|WP_Error)|null   $binding Existing private identity.
-	 * @param callable():int|null                 $clock Current time.
+	 * @param callable():array<string,mixed>|null            $manifest Woo manifest reader.
+	 * @param callable():(string|WP_Error)|null              $binding Existing private identity.
+	 * @param callable():int|null                            $clock Current time.
 	 * @param callable():(array<string,mixed>|WP_Error)|null $dependencies Fresh publication dependencies reader.
 	 */
 	public function __construct( private $manifest = null, private $binding = null, private $clock = null, private $dependencies = null ) {}
@@ -114,8 +114,8 @@ class DraftProof {
 		// dependencies are rebuilt here and compared by that revision, with
 		// exactly the any-change-invalidates semantics the embedded list had.
 		if ( 2 === ( $result['publication']['v'] ?? null ) ) {
-			$guard   = new PublicationGuard( is_callable( $this->manifest ) ? $this->manifest : null );
-			$fresh   = is_callable( $this->dependencies ) ? ( $this->dependencies )() : $guard->dependencies();
+			$guard = new PublicationGuard( is_callable( $this->manifest ) ? $this->manifest : null );
+			$fresh = is_callable( $this->dependencies ) ? ( $this->dependencies )() : $guard->dependencies();
 			if ( $fresh instanceof WP_Error || ! hash_equals( (string) ( $result['publication']['manifest_revision'] ?? '' ), Publication::revision( $fresh ) ) ) {
 				return self::changed();
 			}
@@ -183,8 +183,8 @@ class DraftProof {
 			'kind'        => 'genie',
 			'selected'    => array( 'lines' => $lines ),
 			'publication' => array(
-				'v'                    => 2,
-				'manifest_revision'    => Publication::revision( $dependencies ),
+				'v'                 => 2,
+				'manifest_revision' => Publication::revision( $dependencies ),
 			),
 		);
 		$result['selection_fingerprint'] = Publication::revision( $result );
