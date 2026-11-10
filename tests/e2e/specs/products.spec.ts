@@ -179,10 +179,13 @@ test.describe('the products', () => {
 				withoutFreightEstimate(text),
 				'no price reaches a guest'
 			).not.toMatch(PRICE);
+			// Anyone can add a product for an inquiry; approval controls only
+			// prices (#246, the inquiry-open-to-all ruling) - the draft button
+			// is the guest's inquiry path, so it IS offered.
 			expect(
 				text,
-				'a guest is not offered the solution draft button'
-			).not.toMatch(DRAFT_BUTTON[locale]);
+				'the draft button is the guest-wide inquiry path'
+			).toMatch(DRAFT_BUTTON[locale]);
 		});
 
 		test(`${locale}: an approved customer sees the price and the draft button`, async ({
@@ -508,7 +511,14 @@ test.describe('the products', () => {
 	for (const locale of ['en', 'de'] as Locale[]) {
 		test(`${locale}: the comparison chip clears the action pill at 390`, async ({
 			page,
+			browser,
 		}) => {
+			// The pill's flex layout is the signed-in shape; a guest's pill
+			// carries the registration link and switches to a deliberate
+			// two-column grid (:has(.linker-create-account)).
+			ensureCustomer();
+			await approveCustomer(browser, CUSTOMER);
+			await page.goto(signInLink());
 			await page.setViewportSize({ width: 390, height: 844 });
 			await page.goto(`${instance().url}${PRODUCT[locale]}`);
 			await page.locator('.pdp-tool[data-compare-product]').click();
