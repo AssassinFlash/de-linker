@@ -491,3 +491,19 @@ Open work lines (recorded, none hidden):
 - Local storage reclaim (58 dirs / 179 GB / 18 snapshots) executing now; production
   reclamation decisions recorded in the baseline.
 - The two 390 dock-keyboard rows need the side-panel continuation path.
+
+## Local reclamation executed and archived (PR #1078, merged)
+
+- ~/de-linker-local 179.3 -> 13.0 GB (166.4 GB freed): 52 registered instances
+  retired via just retire --write, 3 unregistered stale dirs removed, MySQL
+  55 -> 3 schemas (2,980 -> 245 MB). The p548 instance's unique evidence was
+  migrated byte-verified (57 files, 0 mismatches) before its retirement.
+- ~/de-linker-data: 285 MB honestly (hard-link snapshot trees own only
+  17-52 MB exclusive bytes each; per-snapshot saving figures would be false).
+- The three running instances (review/c222/c332) untouched and verified
+  healthy throughout. Main line tracked the run independently (du sampled
+  across nine points) and landed the report when the agent's own commit
+  stage overran; the agent verified the merged PR content was genuinely its
+  work before being stopped.
+- PR #1077 (protection-posture corrections, 7 evidence-backed fixes) also
+  merged this batch. Disk headroom now 1.3 Ti.
