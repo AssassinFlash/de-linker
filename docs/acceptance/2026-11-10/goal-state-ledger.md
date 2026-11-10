@@ -263,3 +263,27 @@ Nothing in this ledger marks the goal complete; it records what stands.
   linker-mail log, cron+AS runner in the poll).
 - genie-hero long run on c222 in flight at batch close (regression
   coverage; no rows depend on it this batch).
+
+## Follow-up: clean-review failure-injection run + hero finding (post #1061)
+
+- PR #1061 merged after the ruff import-order fix (the only real CI error;
+  the scope-gate failure was its downstream echo).
+- review was reset from the production snapshot (2026-11-05) and rebuilt
+  (present + windpress-compile). The full failure-injection run on the clean
+  instance: 9/16, 7 failures - ALL at the seam's real verification round-trip
+  ("Verification could not be completed"), spread across languages and
+  widths: the dummy Turnstile secret still calls Cloudflare siteverify over
+  the network, and the machine's network is flaky today (GitHub API TLS
+  timeouts observed in parallel). The mail chain itself was proven healthy
+  on the clean instance (same-second delivery, subject-scoped assertions
+  passing).
+- Next bounded slice for the fi landing: an env-gated local short-circuit of
+  the siteverify round-trip under the dummy profile (same philosophy as the
+  deterministic assessment channel; production never sets it), then the
+  16/16 run and the spec PR. The spec changes stay in the working tree.
+- genie-hero on c222: 20/28, all 8 failures share ONE assertion - the
+  draft-added confirmation text ("In your solution draft." / "Im
+  Lösungsentwurf.") never appears after the hero card send, EN and DE alike.
+  Same copy family as the known empty-PO save-readback notice but wider
+  (English fails too), so NOT just a missing translation. Own diagnosis
+  line; no rows flipped (home-hero:en:390 stays pending).
