@@ -1,6 +1,6 @@
 /**
- * Restored history prices follow the current customer's authority (matrix row
- * genie:history-current-permissions-and-locale).
+ * Restored history prices follow the current customer's authority (matrix rows
+ * genie:history-current-permissions-and-locale, all languages and widths).
  *
  * The same saved conversation - a card whose snapshot price is a partner's
  * net figure - is restored under an approved, a pending, a restricted account
@@ -10,7 +10,7 @@
  * itself fails, the card keeps no price at all - a failed authority clears
  * the old price instead of leaving it behind.
  *
- * English, the workspace surface, 1440 px: the row's own shape. The
+ * The workspace surface, English and German, 1440 and 390. The
  * opposite-language history and the restored document labels are the
  * genie-history-artifacts suite's coverage.
  */
@@ -26,6 +26,8 @@ import { expect, test, type Page } from '@playwright/test';
 import { instance, loginLink, wp } from '../lib/instance';
 import { seedConsentCookies } from '../lib/consent';
 
+type Lang = 'en' | 'de';
+
 /** The product whose page pins the expected lines (genie-prices' product). */
 const PRODUCT = 4107;
 
@@ -33,13 +35,19 @@ const PRODUCT = 4107;
 const STATES = ['approved', 'pending', 'restricted'] as const;
 type State = (typeof STATES)[number];
 
-/** The page's own sentence where the price stands, by account state. */
-const LINES: Record<State, string> = {
-	approved: '', // The net figure itself, matched below.
-	pending: 'Account under review. Prices after approval.',
-	restricted: 'Not available for your account',
-};
-const GUEST_LINE = 'Net price after partner sign-in';
+/** The page's own sentence where the price stands, by account and language. */
+const LINES = {
+	en: {
+		pending: 'Account under review. Prices after approval.',
+		restricted: 'Not available for your account',
+		guest: 'Net price after partner sign-in',
+	},
+	de: {
+		pending: 'Ihr Konto wird geprüft. Preise nach Freigabe.',
+		restricted: 'Für Ihr Konto nicht verfügbar',
+		guest: 'Nettopreis nach Partner-Anmeldung',
+	},
+} as const;
 
 /** The run's own accounts, made before and removed after. */
 const accounts = {} as Record<State, { email: string; id: number }>;
@@ -72,9 +80,10 @@ test.afterAll(() => {
  * price a partner once saw. The turn route stays unanswered - restoration
  * makes no model request.
  *
- * @param page The page.
+ * @param page  The page.
+ * @param lang  The page's language.
  */
-async function serveHistory(page: Page): Promise<void> {
+async function serveHistory(page: Page, lang: Lang): Promise<void> {
 	const stream = [
 		[
 			'meta',
@@ -83,14 +92,17 @@ async function serveHistory(page: Page): Promise<void> {
 				fallback: false,
 				attempts: 1,
 				failures: [],
-				language: 'en',
+				language: lang,
 			},
 		],
 		[
 			'block',
 			{
 				type: 'text',
-				text: 'The historical answer with its product card.',
+				text:
+					'en' === lang
+						? 'The historical answer with its product card.'
+						: 'Die frühere Antwort mit ihrer Produktkarte.',
 				refs: [],
 			},
 		],
@@ -116,8 +128,8 @@ async function serveHistory(page: Page): Promise<void> {
 			body: '{"code":"history_only"}',
 		})
 	);
-	// The app asks with ?locale=en; a plain glob would not match the query
-	// and the real backend would answer an empty thread.
+	// The app asks /genie/conversation?locale=..; a plain glob would not
+	// match the query and the real backend would answer an empty thread.
 	await page.route(
 		/\/wp-json\/linker-ai\/v1\/genie\/conversation\?/,
 		(route) =>
@@ -126,7 +138,10 @@ async function serveHistory(page: Page): Promise<void> {
 					messages: [
 						{
 							role: 'user',
-							content: 'Which inverters do you offer?',
+							content:
+								'en' === lang
+									? 'Which inverters do you offer?'
+									: 'Welche Wechselrichter bieten Sie an?',
 						},
 					],
 					stream,
@@ -134,71 +149,86 @@ async function serveHistory(page: Page): Promise<void> {
 			})
 	);
 	await page.route('**/wp-json/linker-ai/v1/genie/conversations', (route) =>
+		// The app restores the thread only when the rail reports a
+		// current conversation.
 		route.fulfill({
-			json: { current_id: 0, conversations: [] },
+			json: { current_id: 7, conversations: [] },
 		})
 	);
 }
 
 /** The workspace page with the conversation restored. */
-async function restored(page: Page): Promise<void> {
-	await page.setViewportSize({ width: 1440, height: 900 });
-	await page.goto(instance().url + '/genie/', { waitUntil: 'load' });
+async function restored(page: Page, lang: Lang, width: number): Promise<void> {
+	await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+	await page.goto(
+		instance().url + ('de' === lang ? '/de/genie/' : '/genie/'),
+		{ waitUntil: 'load' }
+	);
 	await expect(page.locator('.linker-genie-app:visible')).toBeVisible();
 }
 
-for (const state of [...STATES, 'guest' as const]) {
-	test(`${state}: the restored card carries this account's own current line`, async ({
-		page,
-		context,
-	}) => {
-		test.setTimeout(120_000);
-		await seedConsentCookies(context);
-		await serveHistory(page);
-		if ('guest' !== state) {
-			await page.goto(loginLink(undefined, accounts[state].email));
-		}
-		await restored(page);
+for (const lang of ['en', 'de'] as const) {
+	for (const width of [1440, 390] as const) {
+		for (const state of [...STATES, 'guest' as const]) {
+			test(`${state}-${lang}-${width}: the restored card carries this account's own current line`, async ({
+				page,
+				context,
+			}) => {
+				test.setTimeout(120_000);
+				await seedConsentCookies(context);
+				await serveHistory(page, lang);
+				if ('guest' !== state) {
+					await page.goto(
+						loginLink(undefined, accounts[state].email)
+					);
+				}
+				await restored(page, lang, width);
 
-		const card = page
-			.locator('.linker-genie-app article.linker-card')
-			.first();
-		await expect(card).toBeVisible({ timeout: 30_000 });
-		const line = card.locator('.linker-card__price');
-		if ('approved' === state) {
-			await expect(line).toHaveText(/1[.,]680/);
-			await expect(line).toHaveClass(/--net/);
-		} else {
-			await expect(line).toHaveText(
-				'guest' === state ? GUEST_LINE : LINES[state]
+				const card = page
+					.locator('.linker-genie-app article.linker-card')
+					.first();
+				await expect(card).toBeVisible({ timeout: 30_000 });
+				const line = card.locator('.linker-card__price');
+				if ('approved' === state) {
+					await expect(line).toHaveText(/1[.,]680/);
+					await expect(line).toHaveClass(/--net/);
+				} else {
+					await expect(line).toHaveText(
+						LINES[lang][state as 'pending' | 'restricted' | 'guest']
+					);
+					await expect(line).toHaveClass(/--note/);
+				}
+				// The snapshot figure a partner once saw never survives a
+				// restore.
+				await expect(card).not.toContainText('9.999,99');
+			});
+		}
+
+		test(`${lang}-${width}: a failed authority read clears the old price instead of leaving it`, async ({
+			page,
+			context,
+		}) => {
+			test.setTimeout(120_000);
+			await seedConsentCookies(context);
+			await serveHistory(page, lang);
+			// The ability every restored card is re-priced through never
+			// answers (its URL carries a query string, so the pattern
+			// anchors on the path).
+			await page.route(
+				/\/wp-abilities\/v1\/abilities\/linker\/get-product\/run\?/,
+				(route) => route.abort()
 			);
-			await expect(line).toHaveClass(/--note/);
-		}
-		// The snapshot figure a partner once saw never survives a restore.
-		await expect(card).not.toContainText('9.999,99');
-	});
+			await restored(page, lang, width);
+
+			const card = page
+				.locator('.linker-genie-app article.linker-card')
+				.first();
+			await expect(card).toBeVisible({ timeout: 30_000 });
+			await expect(
+				card.locator('.linker-card__price'),
+				'no authority line and no snapshot price remain'
+			).toHaveCount(0);
+			await expect(card).not.toContainText('9.999,99');
+		});
+	}
 }
-
-test('a failed authority read clears the old price instead of leaving it', async ({
-	page,
-	context,
-}) => {
-	test.setTimeout(120_000);
-	await seedConsentCookies(context);
-	await serveHistory(page);
-	// The ability every restored card is re-priced through never answers
-	// (its URL carries a query string, so the pattern anchors on the path).
-	await page.route(
-		/\/wp-abilities\/v1\/abilities\/linker\/get-product\/run\?/,
-		(route) => route.abort()
-	);
-	await restored(page);
-
-	const card = page.locator('.linker-genie-app article.linker-card').first();
-	await expect(card).toBeVisible({ timeout: 30_000 });
-	await expect(
-		card.locator('.linker-card__price'),
-		'no authority line and no snapshot price remain'
-	).toHaveCount(0);
-	await expect(card).not.toContainText('9.999,99');
-});
