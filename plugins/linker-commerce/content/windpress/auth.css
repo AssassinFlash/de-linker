@@ -198,11 +198,16 @@
 .linker-account :is(.woocommerce-error, .woocommerce-message, .woocommerce-info) ul { margin: 0; padding-left: 18px; }
 
 /* A WooCommerce notice is a list of messages (the register card can produce
- * several at once, #225). The frame's flex row above suits a single message;
- * the list becomes a grid with the icon in its own column and every message
- * in the second column, one row each. Scoped to the register card: the login
- * and lost-password cards keep the single-message layout they had. */
-.linker-auth .linker-auth-register :is(ul.woocommerce-error, ul.woocommerce-message, ul.woocommerce-info) {
+ * several at once, #225; the account's company form names every missing field
+ * at once). The frame's flex row above suits a single message: applied to a
+ * list it makes one flex item per message, and six messages squeezed side by
+ * side push the page wider than the phone it is read on (measured 485px in a
+ * 390px viewport). A list notice is therefore a grid wherever it appears —
+ * the icon in its own column, every message in the second column, one row
+ * each — while the single-message element below keeps the flex row. */
+.linker-auth :is(ul.woocommerce-error, ul.woocommerce-message, ul.woocommerce-info),
+.linker-gate :is(ul.woocommerce-error, ul.woocommerce-message, ul.woocommerce-info),
+.linker-account :is(ul.woocommerce-error, ul.woocommerce-message, ul.woocommerce-info) {
 	display: grid;
 	grid-template-columns: auto minmax(0, 1fr);
 	column-gap: 12px;
@@ -210,16 +215,20 @@
 	padding-left: 0;
 }
 
-.linker-auth .linker-auth-register :is(ul.woocommerce-error, ul.woocommerce-message, ul.woocommerce-info)::before { grid-column: 1; grid-row: 1; }
+.linker-auth :is(ul.woocommerce-error, ul.woocommerce-message, ul.woocommerce-info)::before,
+.linker-gate :is(ul.woocommerce-error, ul.woocommerce-message, ul.woocommerce-info)::before,
+.linker-account :is(ul.woocommerce-error, ul.woocommerce-message, ul.woocommerce-info)::before { grid-column: 1; grid-row: 1; }
 
-.linker-auth .linker-auth-register :is(ul.woocommerce-error, ul.woocommerce-message, ul.woocommerce-info) > li { grid-column: 2; }
+.linker-auth :is(ul.woocommerce-error, ul.woocommerce-message, ul.woocommerce-info) > li,
+.linker-gate :is(ul.woocommerce-error, ul.woocommerce-message, ul.woocommerce-info) > li,
+.linker-account :is(ul.woocommerce-error, ul.woocommerce-message, ul.woocommerce-info) > li { grid-column: 2; min-width: 0; }
 
 .linker-auth .woocommerce-notices-wrapper:empty,
 .linker-account .woocommerce-notices-wrapper:empty { display: none; }
 
 /* WooCommerce's own notice element (wc_print_notice), used unwrapped by the
- * lost-password confirmation. The register card's list notices keep the grid
- * of the rule above. */
+ * lost-password confirmation. It is not a list, so it keeps the flex row; the
+ * lists above never take this rule. */
 .linker-auth > .linker-auth-inner :is(.woocommerce-message, .woocommerce-info, .woocommerce-error):not(ul) { display: flex; }
 
 /* ── The guest chain: the frame ────────────────────────────────────────── */
