@@ -25425,10 +25425,12 @@
   "state": "validation",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -25445,10 +25447,12 @@
   "state": "validation",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -25465,10 +25469,12 @@
   "state": "validation",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -25615,10 +25621,12 @@
   "state": "calculation-pending",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -25635,10 +25643,12 @@
   "state": "calculation-pending",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -25655,10 +25665,12 @@
   "state": "calculation-pending",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -25700,10 +25712,12 @@
   "state": "calculation-error",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -25720,10 +25734,12 @@
   "state": "calculation-error",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -25740,10 +25756,12 @@
   "state": "calculation-error",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -25921,10 +25939,12 @@
   "state": "incompatible-result",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -25941,10 +25961,12 @@
   "state": "incompatible-result",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -25961,10 +25983,12 @@
   "state": "incompatible-result",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26006,10 +26030,12 @@
   "state": "whole-parts-add",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26026,10 +26052,12 @@
   "state": "whole-parts-add",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26046,10 +26074,12 @@
   "state": "whole-parts-add",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26091,10 +26121,12 @@
   "state": "draft-readback",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26111,10 +26143,12 @@
   "state": "draft-readback",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26131,10 +26165,12 @@
   "state": "draft-readback",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26448,10 +26484,12 @@
   "state": "logo-upload",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26468,10 +26506,12 @@
   "state": "logo-upload",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26488,10 +26528,12 @@
   "state": "logo-upload",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26533,10 +26575,12 @@
   "state": "restart",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26553,10 +26597,12 @@
   "state": "restart",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26573,10 +26619,12 @@
   "state": "restart",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -35174,10 +35222,12 @@
   "state": "report-screen-pdf-content-and-current-revision",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -35195,10 +35245,12 @@
   "state": "report-screen-pdf-content-and-current-revision",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -35216,10 +35268,12 @@
   "state": "report-screen-pdf-content-and-current-revision",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1053: planner-report-chain.spec.ts parameterized en/de - the complete customer chain drives the German configurator end to end; both languages green on review (5.2m each)"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
