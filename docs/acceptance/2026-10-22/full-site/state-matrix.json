@@ -764,10 +764,12 @@
   "state": "search-results",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance direct probes 2026-11-11: EN ?s=saj -> 200 search-results page with result entries; DE /de/?s=saj -> 200 \"Suchergebnisse\" in German; empty query xyzzy-nonexistent -> no-results state; product-scoped search 200"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -795,10 +797,12 @@
   "state": "search-results",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance direct probes 2026-11-11: EN ?s=saj -> 200 search-results page with result entries; DE /de/?s=saj -> 200 \"Suchergebnisse\" in German; empty query xyzzy-nonexistent -> no-results state; product-scoped search 200"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
