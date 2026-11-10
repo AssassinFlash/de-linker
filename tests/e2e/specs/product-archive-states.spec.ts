@@ -44,10 +44,6 @@ const COMPARE_LABEL: Record<Locale, RegExp> = {
 	en: /Compare/i,
 	de: /Vergleichen/i,
 };
-const ADD_LABEL: Record<Locale, RegExp> = {
-	en: /Add to solution draft/i,
-	de: /Zum Lösungsentwurf hinzufügen/i,
-};
 const AVAILABILITY: Record<Locale, [RegExp, RegExp]> = {
 	en: [/In stock/, /Currently unavailable/],
 	de: [/Auf Lager/, /Derzeit nicht verfügbar/],
@@ -72,10 +68,8 @@ interface ArchiveFacts {
 	ids: string[];
 	applied: string;
 	chips: string[];
-	pages: number[];
 	lastPage: number | null;
 	nextHref: string | null;
-	available: string[];
 }
 
 async function archiveFacts(
@@ -100,12 +94,8 @@ async function archiveFacts(
 			chips: Array.from(
 				document.querySelectorAll('#linker-products .wbchip')
 			).map((el) => (el.textContent ?? '').trim()),
-			pages: pageNumbers,
 			lastPage: pageNumbers.length ? Math.max(...pageNumbers) : null,
 			nextHref: next?.getAttribute('href') ?? null,
-			available: Array.from(
-				document.querySelectorAll('[data-card-availability]')
-			).map((el) => (el.textContent ?? '').trim()),
 		};
 	});
 }
@@ -623,29 +613,49 @@ for (const [locale, width] of [
 			'eval',
 			`echo wc_get_product( ${id} )->get_stock_status();`,
 		]).trim();
-		const flip = (status: string) =>
+		/** The status the instance currently reports for the product. */
+		const status = () =>
 			wp([
 				'eval',
-				`$p = wc_get_product( ${id} ); $p->set_stock_status( '${status}' ); $p->save();`,
+				`echo wc_get_product( ${id} )->get_stock_status();`,
+			]).trim();
+		const flip = (state: string) =>
+			wp([
+				'eval',
+				`$p = wc_get_product( ${id} ); $p->set_stock_status( '${state}' ); $p->save();`,
 			]);
 
 		try {
-			flip('outofstock');
 			await page.setViewportSize({
 				width,
 				height: width === 390 ? 844 : 900,
 			});
+			const readAvailability = () =>
+				page.evaluate(() => {
+					const line = document.querySelector('.pdp-avail-label');
+					const dot = line?.querySelector('.pdp-dot');
+					return {
+						label: line?.textContent?.trim() ?? '',
+						className: dot?.className ?? '',
+						color: dot ? getComputedStyle(dot).backgroundColor : '',
+					};
+				});
+
+			// The in-stock state the same product shows otherwise: the
+			// unavailable wording and the wait dot must be this state's, not
+			// the page's only rendering.
+			flip('instock');
+			await page.goto(`${instance().url}${PRODUCT[locale]}`);
+			const inStock = await readAvailability();
+			expect(
+				inStock.label,
+				'the in-stock state is the page default'
+			).toMatch(AVAILABILITY[locale][0]);
+
+			flip('outofstock');
 			await page.goto(`${instance().url}${PRODUCT[locale]}`);
 
-			const availability = await page.evaluate(() => {
-				const line = document.querySelector('.pdp-avail-label');
-				const dot = line?.querySelector('.pdp-dot');
-				return {
-					label: line?.textContent?.trim() ?? '',
-					className: dot?.className ?? '',
-					color: dot ? getComputedStyle(dot).backgroundColor : '',
-				};
-			});
+			const availability = await readAvailability();
 			expect(
 				availability.label,
 				'the page names the unavailable state'
@@ -656,6 +666,10 @@ for (const [locale, width] of [
 			expect(availability.color, 'the wait dot has a colour').not.toBe(
 				''
 			);
+			expect(
+				availability.color,
+				'the two states differ in colour'
+			).not.toBe(inStock.color);
 
 			// The add control is still offered (the page's own contract for
 			// anyone who reaches a product directly), and the add is refused
@@ -685,14 +699,18 @@ for (const [locale, width] of [
 			);
 			expect(draftRows, 'the draft stays empty').toBe(0);
 		} finally {
+			// Leave the instance as it was found. A page render can leave the
+			// persistent object cache holding the flipped status after the
+			// write, so a mismatch is corrected once from a flushed cache
+			// rather than left behind for the next suite.
 			flip(before);
-			expect(
+			if (status() !== before) {
 				wp([
 					'eval',
-					`echo wc_get_product( ${id} )->get_stock_status();`,
-				]).trim(),
-				'the stock state is restored'
-			).toBe(before);
+					`wp_cache_flush(); $p = wc_get_product( ${id} ); $p->set_stock_status( '${before}' ); $p->save();`,
+				]);
+			}
+			expect(status(), 'the stock state is restored').toBe(before);
 		}
 	});
 }
