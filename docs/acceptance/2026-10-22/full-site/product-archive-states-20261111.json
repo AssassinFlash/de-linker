@@ -1,0 +1,35 @@
+{
+  "phase": "product-archive-and-product-states-390",
+  "date": "2026-11-11",
+  "environment": "review instance, LINKER_E2E_INSTANCE=review (WordPress 127.0.0.1:8889), anonymous customer, consent cookies seeded, Chromium 1.64.0",
+  "method": "tests/e2e/specs/product-archive-states.spec.ts — 14 tests, one worker, real WP-CLI stock fixture with restore",
+  "result": "14 passed (1.4m)",
+  "cases": {
+    "product-archive:multiple-filters:en:390": "the phone bar's filter button (aria-expanded false→true) opens the drawer (is-mobile-open); a brand facet closes it and leaves ?brand=goodwe with applied count 1 and one chip; a second facet from the drawer yields both params, applied count 2, two chips, a card count no larger than the brand-only set, and no card whose .sf-card-brand is not GoodWe; no horizontal overflow at 390",
+    "product-archive:compare-selection:en:390": "two [data-compare-product] controls set aria-pressed=true, the chip becomes visible with 2/4, href carries ids=<first>,<second>, sessionStorage linkerCompareIds holds the pair, the chip's top equals the header's bottom, a reload keeps 2/4, unpicking one leaves 1/",
+    "product-archive:compare-selection:de:390": "same contract on /de/produkte/: labels are 'Vergleichen: …', the chip reads 'Vergleichen 2/4' and addresses /de/produkte-vergleichen/?ids=6530,6529, stored ids are the same pair",
+    "product-archive:add-to-draft:en:390": "24 a[data-card-atc][hidden] placeholders, 0 rendered, all href='#', a synthetic click on every placeholder opens no document and writes no woocommerce_session cookie; the product page's own visible add control exists",
+    "product-archive:add-to-draft:de:1440": "same contract on /de/produkte/ at 1440: placeholders hidden and inert, the DE product page carries the visible add control",
+    "product-archive:add-to-draft:de:390": "same contract on /de/produkte/ at 390",
+    "product-archive:loading-error:en:390": "with **/wp-json/**, **/admin-ajax.php** and **/*wc-ajax* aborted, /products/ renders 24 cards, the full brand rail and its pagination, with 0 aria-busy, 0 skeleton/is-loading and 0 empty-state nodes; 0 such requests are attempted on the whole run; a filtered address still answers with applied count 2 and cards",
+    "product-archive:loading-error:de:1440": "same aborted-request render at 1440 on /de/produkte/, 0 attempted requests",
+    "product-archive:loading-error:de:390": "same aborted-request render at 390 on /de/produkte/, 0 attempted requests",
+    "product-archive:filtered-pagination-count-consistency:en:390": "open archive page size read from the page (24 of 53 cards, 3 pages, last page 5); ?application=home declares 2 pages, page 1 keeps the facet and its chip, the next link carries application=home, page 2 lists 9 cards, no id repeats across pages, the sum equals the deduplicated ids, page 3 (past the last) lands on product-page=2 with the facet intact; ?application=home&brand=goodwe gives 23 cards, applied 2, two chips and no pagination",
+    "product-archive:filtered-pagination-count-consistency:de:1440": "same contract on /de/produkte/ at 1440",
+    "product:out-of-stock:en:390": "WP-CLI flips the shared slug's product to outofstock: .pdp-avail-label reads 'Currently unavailable', .pdp-dot carries is-wait, the visible add control opens the request page where Woo answers 'is not available at the moment and cannot be added to the solution draft', 0 draft rows; stock restored to the prior status and read back",
+    "product:out-of-stock:de:1440": "same fixture on /de/produkt/: 'Derzeit nicht verfügbar' with is-wait; the refusal reads 'ist derzeit nicht verfügbar und kann nicht zum Lösungsentwurf hinzugefügt werden', 0 draft rows; restore read back",
+    "product:out-of-stock:de:390": "same fixture on /de/produkt/ at 390"
+  },
+  "measured_facts": {
+    "archive_page_size": "24 cards per page, 53 cards across 3 pages, last page 5 (EN and DE identical)",
+    "filtered_counts": "?application=home: 24 + 9 cards over 2 pages, applied 1; ?brand=goodwe: 24 + 14 over 2 pages; ?application=home&brand=goodwe: 23 cards, 1 page, applied 2; ?power=high: 8 cards, 1 page",
+    "out_of_range": "?application=home&product-page=3 (and 99) answer 301 to product-page=2 with the filter kept, both languages",
+    "archive_makes_no_client_requests": "0 wp-json/admin-ajax/wc-ajax requests attempted with route patterns armed at 390 and 1440",
+    "archive_add_placeholder_has_no_consumer": "the only repository reference to data-card-atc is the markup in ProductShortcodes::card(); protection.js, catalog-ui.js, product-family.js and compare-selection.js never touch it; production /products/ prints the same 24 hidden placeholders (fetched 2026-11-11)",
+    "family_card_identity_switches": "data-product-id follows the family picker's selected member, so cross-filter id sets are not comparable; the brand assertion reads .sf-card-brand instead"
+  },
+  "boundary": "Review instance only (no production write; production was read anonymously for the placeholder check). The stock fixture flips the shared product through WP-CLI and restores it in a finally block, read back afterwards. add-to-draft and loading-error close as not-applicable-today on measurement: the archive ships no operable add control and no client-side request whose failure could strand it. The two tests pin that absence, so a future client-side listing or a revealed placeholder fails them and reopens the rows.",
+  "followups": {
+    "i18n_query_param_mismatch": "DE /de/produkte/ prints ?anwendung=home links and a rel=alternate pointing at /products/?anwendung=home, but only ?application= is honoured (anwendung yields applied 0 and the unfiltered list). EN and DE filters therefore work through the shared English key; the German alias is not a working parameter. Not fixed here (out of this ticket's scope: an i18n routing change with its own acceptance), recorded so the row is not read as proving the German query vocabulary."
+  }
+}
