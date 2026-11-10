@@ -60,7 +60,7 @@ final class PreTransportRecovery {
 		}
 	}
 
-	/** The existing independent minute heartbeat repairs only a stored unscheduled phase and reclaims timed-out orphan attempts. */
+	/** The existing independent minute heartbeat repairs only a stored unscheduled phase. */
 	public function recover(): void {
 		try {
 			$jobs = ConnectionFence::run(
@@ -78,52 +78,8 @@ final class PreTransportRecovery {
 			foreach ( $jobs as $job ) {
 				$this->resume( (int) $job );
 			}
-			$this->reclaim_orphans();
 		} catch ( \Throwable $failure ) {
 			self::diagnostic();
-		}
-	}
-
-	/**
-	 * Reclaim open attempt witnesses whose worker exceeded the execution timeout.
-	 */
-	private function reclaim_orphans(): void {
-		$candidates = ConnectionFence::run(
-			static fn (): array => get_posts(
-				array(
-					'post_type'   => JobStore::POST_TYPE,
-					'post_status' => 'private',
-					'meta_key'    => NativeAttempt::META, // phpcs:ignore WordPress.DB.SlowDBQuery -- Bounded to the native capacity envelope.
-					'fields'      => 'ids',
-					'numberposts' => array_sum( array_column( Capacity::LIMITS, 'count' ) ),
-				)
-			)
-		);
-		foreach ( $candidates as $candidate ) {
-			$id = (int) $candidate;
-			if ( $this->jobs->held( $id ) || ! NativeAttempt::expired( $id ) ) {
-				continue;
-			}
-			Lock::run(
-				'mail-job-' . $id,
-				function () use ( $id ): void {
-					clean_post_cache( $id );
-					if ( 'private' !== get_post_status( $id ) || $this->jobs->held( $id ) || ! NativeAttempt::expired( $id ) ) {
-						return;
-					}
-					$loaded   = $this->jobs->load( $id );
-					$attempts = ( null !== $loaded ? $loaded['attempts'] : 0 ) + 1;
-					$reason   = 'Orphaned delivery attempt timed out.';
-					$this->jobs->fail( $id, $attempts, $reason );
-					CapacityHealth::failed();
-					if ( null !== $loaded ) {
-						wc_get_logger()->error(
-							sprintf( 'Email "%s" to %s not sent after %d attempts: %s', $loaded['message']->subject, implode( ', ', $loaded['message']->to ), $attempts, $reason ),
-							array( 'source' => Outbox::LOG_SOURCE )
-						);
-					}
-				}
-			);
 		}
 	}
 

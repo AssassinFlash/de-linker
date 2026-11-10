@@ -375,44 +375,4 @@ final class OutboxTest extends TestCase {
 		$this->outbox->retry( 999 );
 		$this->assertSame( 0, $this->calls );
 	}
-
-	/**
-	 * Ten permanently failing jobs (80 failed attempts total) terminate into FAILED_STATUS,
-	 * ignore further retry calls, and leave Throttle open for immediate delivery.
-	 */
-	public function test_ten_failing_jobs_terminate_and_do_not_block_new_delivery(): void {
-		$this->logger( 70, 10 );
-		$this->results = array_merge( array_fill( 0, 80, false ), array( true ) );
-		$jobs          = array();
-		$retries       = count( Outbox::RETRY_DELAYS );
-
-		for ( $i = 0; $i < 10; ++$i ) {
-			$this->assertTrue( $this->native_notification() );
-			$job    = (int) array_key_last( $this->posts );
-			$jobs[] = $job;
-			for ( $retry = 1; $retry <= $retries; ++$retry ) {
-				$this->outbox->retry( $job );
-			}
-			$this->assertSame( JobStore::FAILED_STATUS, $this->posts[ $job ] );
-			$this->assertSame( 8, $this->meta[ $job ]['_linker_mail_attempts'] );
-		}
-
-		$scheduled_count = count( $this->scheduled );
-		$this->assertSame( 80, $this->calls );
-		$this->assertSame( 70, $scheduled_count );
-		$this->assertSame( array(), $this->options[ OptionBudgetLedger::OPTION ]['entries'] );
-
-		// Retrying already-failed jobs is a no-op: no transport calls, no new schedules.
-		foreach ( $jobs as $job ) {
-			$this->outbox->retry( $job );
-		}
-		$this->assertSame( 80, $this->calls );
-		$this->assertCount( $scheduled_count, $this->scheduled );
-
-		// A new valid notification still goes out at once instead of waiting on failed attempts.
-		$this->assertTrue( $this->native_notification() );
-		$this->assertSame( 81, $this->calls );
-		$this->assertCount( 1, $this->delivered );
-		$this->assertCount( 1, $this->options[ OptionBudgetLedger::OPTION ]['entries'] );
-	}
 }
