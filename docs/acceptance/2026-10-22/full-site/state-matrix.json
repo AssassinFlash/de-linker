@@ -23506,10 +23506,12 @@
   "state": "home-hero",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-hero.spec 28/28 green on c222 2026-11-10/11 after PR #1068 (identity-lookup race fixed: HeroConversation subscribes to the draft context, picker holds files picked during the lookup; suite covers home-hero, disclosure, every control, answer+cards, close/continue, out-of-sight way back, attachments, contact/inquiry cards across en/de x 1440/390)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23599,10 +23601,12 @@
   "state": "first-ai-disclosure",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-hero.spec 28/28 green on c222 2026-11-10/11 after PR #1068 (identity-lookup race fixed: HeroConversation subscribes to the draft context, picker holds files picked during the lookup; suite covers home-hero, disclosure, every control, answer+cards, close/continue, out-of-sight way back, attachments, contact/inquiry cards across en/de x 1440/390)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -25006,10 +25010,12 @@
   "state": "voice",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-hero.spec voice entry x4 shapes 28/28 (PR #1068, c222) + controller retained-mode/Dictate unit tests 62/62 (voice during identity lookup recovers into its Dictate prompt)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -25026,10 +25032,12 @@
   "state": "voice",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-hero.spec voice entry x4 shapes 28/28 (PR #1068, c222) + controller retained-mode/Dictate unit tests 62/62 (voice during identity lookup recovers into its Dictate prompt)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -25046,10 +25054,12 @@
   "state": "voice",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-hero.spec voice entry x4 shapes 28/28 (PR #1068, c222) + controller retained-mode/Dictate unit tests 62/62 (voice during identity lookup recovers into its Dictate prompt)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
