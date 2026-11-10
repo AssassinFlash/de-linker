@@ -447,3 +447,30 @@ Matrix final state this session: pass 424 / verified-production 448 total / pend
   fields strings.py requires (n_mppt, mppt_voltage_range_v, max_pv_input_v, ...) -
   a systematic #548 data-projection gap that keeps every input no_candidate.
   Recorded as the open engineering-data line, not papered over.
+
+## Batch: completion-criterion items landed (PRs #1073-#1076, all merged)
+
+- #1073: post-merge EN/DE report read-back archived (full transcription, PDFs in
+  docs/acceptance/2026-11-11/report-final-readback/); honest open item = the
+  datasheet-field projection gap keeping every design no_candidate (85/85 feed
+  products measured).
+- #1074: resource-load baseline (production + local + CI, 8 mechanisms). Two
+  load-bearing findings: M1 - the #1063 lifecycle fix was NET-REVERTED in main
+  (985bf4c0d, committed during the contamination recovery, removed the entire
+  fix) with the defect live-reproduced on c222; M5/M6 - local storage over
+  limits (58 instance dirs / 179 GB, 18 snapshots vs the 3+7+1 rule).
+- #1076: the re-land of the lifecycle fix (verbatim cherry-pick + three test
+  counts aligned to the release semantics; 69/69 integration tests, PHPStan/
+  PHPCS clean). The net-revert incident and its cause are documented above and
+  in the PR.
+- #1075: security dual proof (production, unarmed): abuse limiter fires at
+  exactly 20/window (400x20 -> 429, matches BROWSER_MINUTE in source), human
+  2s-cadence control passes without quota rejection, private endpoints 401/403,
+  isolation ledger aggregates the 429s by named dimension with no PII, secret
+  scan zero real hits. Real-person passage reused orders #8703/#8704.
+- Security finding F1 recorded: the 2026-11-10 protection-posture doc wrongly
+  says Turnstile unconfigured on production - the keys live in wp-config
+  constants, health() shows mode=enforce/ready; correction noted in the proof,
+  original file untouched (out of branch ownership).
+- Review engine overlay healed to 3/3 (stale cable-facts revisions updated,
+  independently re-verified by main: feed.json overlay = pv_module + 2 cables).
