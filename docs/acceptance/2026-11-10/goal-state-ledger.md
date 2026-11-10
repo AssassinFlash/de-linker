@@ -474,3 +474,20 @@ Matrix final state this session: pass 424 / verified-production 448 total / pend
   original file untouched (out of branch ownership).
 - Review engine overlay healed to 3/3 (stale cable-facts revisions updated,
   independently re-verified by main: feed.json overlay = pv_module + 2 cables).
+
+## Session final state (2026-11-11)
+
+Matrix: 424 pass + 448 verified-production + 126 partially-verified (each with named
+verified_checks; the CU backlog that once held 43 rows is closed) + 15 not-applicable-
+today + 13 ruled not-applicable + 2 pending (genie dock-keyboard 390 x2, both with the
+hidden-below-860px finding and unlock path). All four completion-criterion items have
+production evidence archived under docs/acceptance/2026-11-11/.
+
+Open work lines (recorded, none hidden):
+- #548 engineering-data projection gap: 85/85 feed products lack the layout datasheet
+  fields, keeping every design no_candidate (the honest no-BOM report statement).
+- #548 remaining feature domains of the unified workbench (map/3D, energy timeseries,
+  installation topology, terminal maps, country/DSO rules) continue per map #548.
+- Local storage reclaim (58 dirs / 179 GB / 18 snapshots) executing now; production
+  reclamation decisions recorded in the baseline.
+- The two 390 dock-keyboard rows need the side-panel continuation path.
