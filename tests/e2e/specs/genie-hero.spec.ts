@@ -33,13 +33,16 @@ const TESTER = 'linker-e2e-232@example.test';
 
 /**
  * The local instance's counters, cleared so the hero's inquiry and contact
- * sends are not refused by the hour's limiter or the mail throttle; the test
- * mail option keeps every recipient at the tester (AGENTS.md §5).
+ * sends are not refused by the hour's limiter or the mail throttle, and the
+ * attachment states are not refused by the file allowance a long suite run
+ * has already spent (Genie/Attachments.php takes one unit per file, twenty an
+ * hour). The test mail option keeps every recipient at the tester
+ * (AGENTS.md §5).
  */
 function freshCounters(): void {
 	wp([
 		'eval',
-		"global $wpdb; $wpdb->query( \"DELETE FROM {$wpdb->options} WHERE option_name LIKE 'linker\\_tools\\_limit\\_genie\\_inquiry%' OR option_name LIKE 'linker\\_tools\\_limit\\_genie\\_contact%' OR option_name LIKE 'linker\\_commerce\\_limit\\_public\\_receipts%'\" ); delete_option( 'linker_commerce_mail_sends' );",
+		"global $wpdb; $wpdb->query( \"DELETE FROM {$wpdb->options} WHERE option_name LIKE 'linker\\_tools\\_limit\\_genie\\_inquiry%' OR option_name LIKE 'linker\\_tools\\_limit\\_genie\\_contact%' OR option_name LIKE 'linker\\_tools\\_limit\\_genie\\_upload%' OR option_name LIKE 'linker\\_commerce\\_limit\\_public\\_receipts%'\" ); delete_option( 'linker_commerce_mail_sends' );",
 	]);
 }
 
@@ -430,6 +433,10 @@ for (const lang of LANGS) {
 				browser,
 			}) => {
 				test.setTimeout(900_000);
+				// Four picks ride one hourly file allowance (twenty an
+				// hour): a suite that already read files on this instance
+				// refuses the later states before they reach the service.
+				freshCounters();
 
 				// Exact nameplate: the card confirms the model in our range.
 				let page = await fresh(browser, lang, viewport);
