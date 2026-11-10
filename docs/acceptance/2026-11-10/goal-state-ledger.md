@@ -39,3 +39,29 @@ The honest open-items record the original completion definition demands:
    closed them falsely.
 
 Nothing in this ledger marks the goal complete; it records what stands.
+
+## Batch 2026-11-10 CU close-out (main = 9d1a5c7c6)
+
+- The last four orchestrable CU rows entered the e2e chain, all verified on
+  review first-run or after one diagnosed assertion fix: saved-solution
+  consumer readback (PR #1042, 27.6s), home hero retry (PR #1043, 12.9s),
+  restored-history price authority across four account states + failed-read
+  clearing (PR #1045, 19.7s), hero entry question consumed once across
+  surfaces (PR #1046, 18.9s). Matrix: pass 109→113, cu-pass-pending 5→1.
+- The one remaining cu-pass-pending row is the configurator PDF content read:
+  genuinely image-dependent, awaiting the owner switching this session to an
+  image-capable model. Recorded in the matrix row's evidence; not closable by
+  text assertions and not falsely closed.
+- Two defects found and fixed in passing (both pre-existing, both root-caused):
+  1. ci-content/i18n-coverage failed on every PR since #1032 (PR #1044:
+    'Discard stored request' bound to its planner source; coverage clean).
+  2. The restore-path suites (genie-history-artifacts fully, plus three tests
+    in card-layout/reply-presentation) had been silently void: the conversation
+    glob never matched ?locale, the rail mock's current_id 0 never triggered
+    the restore, the hero open drove the retired filechooser flow, the
+    document fixture predated document_id/revision (PR #1047; 12/12 + 12/12
+    green on review, differential run isolated the damage to exactly the
+    restore-path tests).
+- Resource close-out: tracked evidence refreshed by local reruns restored,
+  this batch's untracked outputs removed, no stray playwright/chromium
+  processes, disk 1.1 Ti free.
