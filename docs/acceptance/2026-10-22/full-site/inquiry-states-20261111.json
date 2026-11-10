@@ -1,0 +1,369 @@
+{
+ "phase": "inquiry-states-complete",
+ "date": "2026-11-11",
+ "suite": "tests/e2e/specs/inquiry-states.spec.ts",
+ "environment": "review instance 127.0.0.1:8889 (live snapshot), Chromium, 1 worker",
+ "matrix_rows": [
+  "inquiry:confirmation-key-invalid-expired-and-owner:de:1440",
+  "inquiry:confirmation-key-invalid-expired-and-owner:de:390",
+  "inquiry:confirmation-key-invalid-expired-and-owner:en:1440",
+  "inquiry:confirmation-key-invalid-expired-and-owner:en:390",
+  "inquiry:signed-in-summary:de:1440",
+  "inquiry:signed-in-summary:de:390",
+  "inquiry:signed-in-summary:en:1440",
+  "inquiry:signed-in-summary:en:390"
+ ],
+ "cases": {
+  "keys-de-1440": {
+   "state": "inquiry:confirmation-key-invalid-expired-and-owner",
+   "language": "de",
+   "width": 1440,
+   "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)",
+   "cases": [
+    {
+     "name": "invalid-key",
+     "url": "http://127.0.0.1:8889/de/proforma-anfrage/anfrage-eingegangen/9262/?key=<fixture-order-key>_wrongkey",
+     "notice": true,
+     "success": false,
+     "leak": false
+    },
+    {
+     "name": "missing-key",
+     "url": "http://127.0.0.1:8889/de/proforma-anfrage/anfrage-eingegangen/9262/",
+     "notice": true,
+     "success": false,
+     "leak": false
+    },
+    {
+     "name": "unknown-order",
+     "url": "http://127.0.0.1:8889/de/proforma-anfrage/anfrage-eingegangen/999999991/",
+     "notice": true,
+     "success": false,
+     "leak": false
+    },
+    {
+     "name": "guest-key-anonymous",
+     "url": "http://127.0.0.1:8889/de/proforma-anfrage/anfrage-eingegangen/9264/?key=<fixture-order-key>",
+     "gate": "verify-email",
+     "notice": false,
+     "success": false,
+     "leak": false
+    },
+    {
+     "name": "owner-key-anonymous",
+     "url": "http://127.0.0.1:8889/de/proforma-anfrage/anfrage-eingegangen/9262/?key=<fixture-order-key>",
+     "gate": "sign-in",
+     "notice": false,
+     "success": false,
+     "leak": false
+    },
+    {
+     "name": "other-customer-key",
+     "url": "http://127.0.0.1:8889/de/proforma-anfrage/anfrage-eingegangen/9262/?key=<fixture-order-key>",
+     "gate": "notice-only-signed-in",
+     "notice": false,
+     "success": false,
+     "leak": false
+    },
+    {
+     "name": "owner",
+     "url": "http://127.0.0.1:8889/de/proforma-anfrage/anfrage-eingegangen/9262/?key=<fixture-order-key>",
+     "gate": null,
+     "notice": false,
+     "success": true,
+     "leak": false
+    },
+    {
+     "name": "owner-backdated",
+     "url": "http://127.0.0.1:8889/de/proforma-anfrage/anfrage-eingegangen/9263/?key=<fixture-order-key>",
+     "gate": null,
+     "notice": false,
+     "success": true,
+     "leak": false
+    }
+   ]
+  },
+  "keys-de-390": {
+   "state": "inquiry:confirmation-key-invalid-expired-and-owner",
+   "language": "de",
+   "width": 390,
+   "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)",
+   "cases": [
+    {
+     "name": "invalid-key",
+     "url": "http://127.0.0.1:8889/de/proforma-anfrage/anfrage-eingegangen/9265/?key=<fixture-order-key>_wrongkey",
+     "notice": true,
+     "success": false,
+     "leak": false
+    },
+    {
+     "name": "missing-key",
+     "url": "http://127.0.0.1:8889/de/proforma-anfrage/anfrage-eingegangen/9265/",
+     "notice": true,
+     "success": false,
+     "leak": false
+    },
+    {
+     "name": "unknown-order",
+     "url": "http://127.0.0.1:8889/de/proforma-anfrage/anfrage-eingegangen/999999991/",
+     "notice": true,
+     "success": false,
+     "leak": false
+    },
+    {
+     "name": "guest-key-anonymous",
+     "url": "http://127.0.0.1:8889/de/proforma-anfrage/anfrage-eingegangen/9267/?key=<fixture-order-key>",
+     "gate": "verify-email",
+     "notice": false,
+     "success": false,
+     "leak": false
+    },
+    {
+     "name": "owner-key-anonymous",
+     "url": "http://127.0.0.1:8889/de/proforma-anfrage/anfrage-eingegangen/9265/?key=<fixture-order-key>",
+     "gate": "sign-in",
+     "notice": false,
+     "success": false,
+     "leak": false
+    },
+    {
+     "name": "other-customer-key",
+     "url": "http://127.0.0.1:8889/de/proforma-anfrage/anfrage-eingegangen/9265/?key=<fixture-order-key>",
+     "gate": "notice-only-signed-in",
+     "notice": false,
+     "success": false,
+     "leak": false
+    },
+    {
+     "name": "owner",
+     "url": "http://127.0.0.1:8889/de/proforma-anfrage/anfrage-eingegangen/9265/?key=<fixture-order-key>",
+     "gate": null,
+     "notice": false,
+     "success": true,
+     "leak": false
+    },
+    {
+     "name": "owner-backdated",
+     "url": "http://127.0.0.1:8889/de/proforma-anfrage/anfrage-eingegangen/9266/?key=<fixture-order-key>",
+     "gate": null,
+     "notice": false,
+     "success": true,
+     "leak": false
+    }
+   ]
+  },
+  "keys-en-1440": {
+   "state": "inquiry:confirmation-key-invalid-expired-and-owner",
+   "language": "en",
+   "width": 1440,
+   "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)",
+   "cases": [
+    {
+     "name": "invalid-key",
+     "url": "http://127.0.0.1:8889/proforma-request/inquiry-received/9256/?key=<fixture-order-key>_wrongkey",
+     "notice": true,
+     "success": false,
+     "leak": false
+    },
+    {
+     "name": "missing-key",
+     "url": "http://127.0.0.1:8889/proforma-request/inquiry-received/9256/",
+     "notice": true,
+     "success": false,
+     "leak": false
+    },
+    {
+     "name": "unknown-order",
+     "url": "http://127.0.0.1:8889/proforma-request/inquiry-received/999999991/",
+     "notice": true,
+     "success": false,
+     "leak": false
+    },
+    {
+     "name": "guest-key-anonymous",
+     "url": "http://127.0.0.1:8889/proforma-request/inquiry-received/9258/?key=<fixture-order-key>",
+     "gate": "verify-email",
+     "notice": false,
+     "success": false,
+     "leak": false
+    },
+    {
+     "name": "owner-key-anonymous",
+     "url": "http://127.0.0.1:8889/proforma-request/inquiry-received/9256/?key=<fixture-order-key>",
+     "gate": "sign-in",
+     "notice": false,
+     "success": false,
+     "leak": false
+    },
+    {
+     "name": "other-customer-key",
+     "url": "http://127.0.0.1:8889/proforma-request/inquiry-received/9256/?key=<fixture-order-key>",
+     "gate": "notice-only-signed-in",
+     "notice": false,
+     "success": false,
+     "leak": false
+    },
+    {
+     "name": "owner",
+     "url": "http://127.0.0.1:8889/proforma-request/inquiry-received/9256/?key=<fixture-order-key>",
+     "gate": null,
+     "notice": false,
+     "success": true,
+     "leak": false
+    },
+    {
+     "name": "owner-backdated",
+     "url": "http://127.0.0.1:8889/proforma-request/inquiry-received/9257/?key=<fixture-order-key>",
+     "gate": null,
+     "notice": false,
+     "success": true,
+     "leak": false
+    }
+   ]
+  },
+  "keys-en-390": {
+   "state": "inquiry:confirmation-key-invalid-expired-and-owner",
+   "language": "en",
+   "width": 390,
+   "product": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)",
+   "cases": [
+    {
+     "name": "invalid-key",
+     "url": "http://127.0.0.1:8889/proforma-request/inquiry-received/9259/?key=<fixture-order-key>_wrongkey",
+     "notice": true,
+     "success": false,
+     "leak": false
+    },
+    {
+     "name": "missing-key",
+     "url": "http://127.0.0.1:8889/proforma-request/inquiry-received/9259/",
+     "notice": true,
+     "success": false,
+     "leak": false
+    },
+    {
+     "name": "unknown-order",
+     "url": "http://127.0.0.1:8889/proforma-request/inquiry-received/999999991/",
+     "notice": true,
+     "success": false,
+     "leak": false
+    },
+    {
+     "name": "guest-key-anonymous",
+     "url": "http://127.0.0.1:8889/proforma-request/inquiry-received/9261/?key=<fixture-order-key>",
+     "gate": "verify-email",
+     "notice": false,
+     "success": false,
+     "leak": false
+    },
+    {
+     "name": "owner-key-anonymous",
+     "url": "http://127.0.0.1:8889/proforma-request/inquiry-received/9259/?key=<fixture-order-key>",
+     "gate": "sign-in",
+     "notice": false,
+     "success": false,
+     "leak": false
+    },
+    {
+     "name": "other-customer-key",
+     "url": "http://127.0.0.1:8889/proforma-request/inquiry-received/9259/?key=<fixture-order-key>",
+     "gate": "notice-only-signed-in",
+     "notice": false,
+     "success": false,
+     "leak": false
+    },
+    {
+     "name": "owner",
+     "url": "http://127.0.0.1:8889/proforma-request/inquiry-received/9259/?key=<fixture-order-key>",
+     "gate": null,
+     "notice": false,
+     "success": true,
+     "leak": false
+    },
+    {
+     "name": "owner-backdated",
+     "url": "http://127.0.0.1:8889/proforma-request/inquiry-received/9260/?key=<fixture-order-key>",
+     "gate": null,
+     "notice": false,
+     "success": true,
+     "leak": false
+    }
+   ]
+  },
+  "summary-de-1440": {
+   "state": "inquiry:signed-in-summary",
+   "language": "de",
+   "width": 1440,
+   "url": "http://127.0.0.1:8889/de/proforma-anfrage/",
+   "folded": {
+    "open": false,
+    "summary": "Ihre Kontaktdaten Maria Beispiel · <fixture-account-email> Ändern",
+    "fieldsVisible": false
+   },
+   "opened": {
+    "open": true,
+    "name": "Maria Beispiel",
+    "email": "<fixture-account-email>",
+    "company": "E2E Solar GmbH"
+   }
+  },
+  "summary-de-390": {
+   "state": "inquiry:signed-in-summary",
+   "language": "de",
+   "width": 390,
+   "url": "http://127.0.0.1:8889/de/proforma-anfrage/",
+   "folded": {
+    "open": false,
+    "summary": "Ihre Kontaktdaten Maria Beispiel · <fixture-account-email> Ändern",
+    "fieldsVisible": false
+   },
+   "opened": {
+    "open": true,
+    "name": "Maria Beispiel",
+    "email": "<fixture-account-email>",
+    "company": "E2E Solar GmbH"
+   }
+  },
+  "summary-en-1440": {
+   "state": "inquiry:signed-in-summary",
+   "language": "en",
+   "width": 1440,
+   "url": "http://127.0.0.1:8889/proforma-request/",
+   "folded": {
+    "open": false,
+    "summary": "Your reply details Maria Beispiel · <fixture-account-email> Change",
+    "fieldsVisible": false
+   },
+   "opened": {
+    "open": true,
+    "name": "Maria Beispiel",
+    "email": "<fixture-account-email>",
+    "company": "E2E Solar GmbH"
+   }
+  },
+  "summary-en-390": {
+   "state": "inquiry:signed-in-summary",
+   "language": "en",
+   "width": 390,
+   "url": "http://127.0.0.1:8889/proforma-request/",
+   "folded": {
+    "open": false,
+    "summary": "Your reply details Maria Beispiel · <fixture-account-email> Change",
+    "fieldsVisible": false
+   },
+   "opened": {
+    "open": true,
+    "name": "Maria Beispiel",
+    "email": "<fixture-account-email>",
+    "company": "E2E Solar GmbH"
+   }
+  }
+ },
+ "method": "tests/e2e/specs/inquiry-states.spec.ts on the review instance (live snapshot, Chromium, one worker). Every record is made through WP-CLI inside the one test that reads it and deleted with it; the fixture's status-notification hooks are removed for the fixture request alone, so no mail job is queued for an inquiry nobody sent.",
+ "observations": {
+  "signed_in_summary": "A signed-in customer whose billing name, email and company are stored reads one closed <details> row 'Your reply details / Ihre Kontaktdaten' carrying 'Maria Beispiel · <email>' and 'Change / Ändern'; the field block is hidden, the message field and the send button stay open, and the guest-only consent line and guest box are absent. Opening the row shows the stored name, email and company prefilled. This is the owner ruling of 2026-10-17 (a signed-in customer's details fold into one row), not the guest form.",
+  "confirmation_key": "The confirmation link carries WooCommerce's order key. A wrong key, a missing key and an order id that does not exist all answer the recovery notice and no inquiry data (owner, company, product, key). A correct key still needs the owner: an anonymous visitor meets WooCommerce's own gate — email verification for a guest inquiry, the sign-in form for a customer-owned one — with the recovery notice hidden by the storefront sheet (it is display:none whenever the order wrapper is absent), and another signed-in customer reads the same gate notice without a login form, because WooCommerce's global/form-login.php returns for any signed-in user. The owner, and the owner of an inquiry backdated by 400 days, open the confirmation with the custom success card, the one-business-day promise and the product; no payment-method line appears.",
+  "grace_period": "WooCommerce skips the email-verification step within ten minutes of an order (woocommerce_order_email_verification_grace_period); the guest fixture is therefore an hour old, which is what opening an emailed link means. Keys do not expire: they are the order key, so the backdated inquiry opens for its owner exactly like a fresh one."
+ },
+ "scope_boundary": "Local review instance, Chromium only, EN and DE at 1440 and 390. Does not prove touch devices beyond the 390 emulation, mail delivery, or the verification-code round trip a visitor would complete from the gate."
+}

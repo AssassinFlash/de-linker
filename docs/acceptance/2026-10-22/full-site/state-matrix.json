@@ -15743,7 +15743,8 @@
   "environment": "production",
   "url": null,
   "evidence": [
-   "inquiry-zero-blocking-20261108.json"
+   "inquiry-zero-blocking-20261108.json",
+   "inquiry-states.spec.ts 2026-11-11 on review (1440): the folded reply-details row for a signed-in customer, fields hidden and prefilled on open — the state this row names, which the guest zero-blocking evidence did not reach; evidence docs/acceptance/2026-10-22/full-site/inquiry-states-20261111.json"
   ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
@@ -15754,7 +15755,12 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "inquiry_states_20261111_local": {
+    "status": "pass",
+    "detail": "inquiry-states.spec.ts 2026-11-11 on review (1440): the folded reply-details row for a signed-in customer, fields hidden and prefilled on open — the state this row names, which the guest zero-blocking evidence did not reach; evidence docs/acceptance/2026-10-22/full-site/inquiry-states-20261111.json"
+   }
+  }
  },
  {
   "key": "inquiry:signed-in-summary:en:390",
@@ -15762,10 +15768,12 @@
   "state": "signed-in-summary",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance (live snapshot), Chromium, EN/DE at 1440 and 390",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "inquiry-states.spec.ts 2026-11-11 on review: signed-in customer sees one closed 'Your reply details' row with name · email and Change; fields hidden, opening prefills name/email/company; 8/8 suite green, evidence docs/acceptance/2026-10-22/full-site/inquiry-states-20261111.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -15775,7 +15783,12 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "inquiry_states_20261111": {
+    "status": "pass",
+    "detail": "inquiry-states.spec.ts 2026-11-11 on review: signed-in customer sees one closed 'Your reply details' row with name · email and Change; fields hidden, opening prefills name/email/company; 8/8 suite green, evidence docs/acceptance/2026-10-22/full-site/inquiry-states-20261111.json"
+   }
+  }
  },
  {
   "key": "inquiry:signed-in-summary:de:1440",
@@ -15783,10 +15796,12 @@
   "state": "signed-in-summary",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance (live snapshot), Chromium, EN/DE at 1440 and 390",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "inquiry-states.spec.ts 2026-11-11 on review: German equivalent ('Ihre Kontaktdaten' / 'Ändern') of the closed reply-details row, fields hidden and prefilled on open; 8/8 suite green, evidence docs/acceptance/2026-10-22/full-site/inquiry-states-20261111.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -15796,7 +15811,12 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "inquiry_states_20261111": {
+    "status": "pass",
+    "detail": "inquiry-states.spec.ts 2026-11-11 on review: German equivalent ('Ihre Kontaktdaten' / 'Ändern') of the closed reply-details row, fields hidden and prefilled on open; 8/8 suite green, evidence docs/acceptance/2026-10-22/full-site/inquiry-states-20261111.json"
+   }
+  }
  },
  {
   "key": "inquiry:signed-in-summary:de:390",
@@ -15804,10 +15824,12 @@
   "state": "signed-in-summary",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance (live snapshot), Chromium, EN/DE at 1440 and 390",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "inquiry-states.spec.ts 2026-11-11 on review: German folded reply-details row at 390, fields hidden and prefilled on open, no horizontal overflow; 8/8 suite green, evidence docs/acceptance/2026-10-22/full-site/inquiry-states-20261111.json"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -15817,7 +15839,12 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "inquiry_states_20261111": {
+    "status": "pass",
+    "detail": "inquiry-states.spec.ts 2026-11-11 on review: German folded reply-details row at 390, fields hidden and prefilled on open, no horizontal overflow; 8/8 suite green, evidence docs/acceptance/2026-10-22/full-site/inquiry-states-20261111.json"
+   }
+  }
  },
  {
   "key": "inquiry:invalid-fields:en:1440",
@@ -37323,7 +37350,8 @@
   "url": null,
   "evidence": [
    "docs/acceptance/2026-10-22/full-site/inquiry-confirmation-key-states-20261108.json",
-   "docs/acceptance/2026-10-22/full-site/inquiry-received-key-states-20261107.json"
+   "docs/acceptance/2026-10-22/full-site/inquiry-received-key-states-20261107.json",
+   "inquiry-states.spec.ts 2026-11-11 on review (1440): invalid/missing/unknown-order keys answer the recovery notice with no inquiry data, guest verify-email and owner sign-in gates, other signed-in customer notice-only, owner and a 400-day-old inquiry open; evidence docs/acceptance/2026-10-22/full-site/inquiry-states-20261111.json"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
@@ -37342,6 +37370,10 @@
     "evidence": [
      "docs/acceptance/2026-10-22/full-site/inquiry-confirmation-key-states-20261108.json"
     ]
+   },
+   "inquiry_states_20261111_local": {
+    "status": "pass",
+    "detail": "inquiry-states.spec.ts 2026-11-11 on review (1440): invalid/missing/unknown-order keys answer the recovery notice with no inquiry data, guest verify-email and owner sign-in gates, other signed-in customer notice-only, owner and a 400-day-old inquiry open; evidence docs/acceptance/2026-10-22/full-site/inquiry-states-20261111.json"
    }
   }
  },
@@ -37351,10 +37383,12 @@
   "state": "confirmation-key-invalid-expired-and-owner",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance (live snapshot), Chromium, EN/DE at 1440 and 390",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "inquiry-states.spec.ts 2026-11-11 on review at 390: invalid, missing and unknown-order keys answer the recovery notice with no inquiry data; correct key still gates on the owner (verify-email for a guest inquiry, sign-in for a customer-owned one, notice only for another signed-in customer); owner and a 400-day-old inquiry open; evidence docs/acceptance/2026-10-22/full-site/inquiry-states-20261111.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -37365,7 +37399,12 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "inquiry_states_20261111": {
+    "status": "pass",
+    "detail": "inquiry-states.spec.ts 2026-11-11 on review at 390: invalid, missing and unknown-order keys answer the recovery notice with no inquiry data; correct key still gates on the owner (verify-email for a guest inquiry, sign-in for a customer-owned one, notice only for another signed-in customer); owner and a 400-day-old inquiry open; evidence docs/acceptance/2026-10-22/full-site/inquiry-states-20261111.json"
+   }
+  }
  },
  {
   "key": "inquiry:confirmation-key-invalid-expired-and-owner:de:1440",
@@ -37378,7 +37417,8 @@
   "url": null,
   "evidence": [
    "docs/acceptance/2026-10-22/full-site/inquiry-confirmation-key-states-20261108.json",
-   "docs/acceptance/2026-10-22/full-site/inquiry-received-key-states-20261107.json"
+   "docs/acceptance/2026-10-22/full-site/inquiry-received-key-states-20261107.json",
+   "inquiry-states.spec.ts 2026-11-11 on review (1440): German equivalent of the same key states; evidence docs/acceptance/2026-10-22/full-site/inquiry-states-20261111.json"
   ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
@@ -37397,6 +37437,10 @@
     "evidence": [
      "docs/acceptance/2026-10-22/full-site/inquiry-confirmation-key-states-20261108.json"
     ]
+   },
+   "inquiry_states_20261111_local": {
+    "status": "pass",
+    "detail": "inquiry-states.spec.ts 2026-11-11 on review (1440): German equivalent of the same key states; evidence docs/acceptance/2026-10-22/full-site/inquiry-states-20261111.json"
    }
   }
  },
@@ -37406,10 +37450,12 @@
   "state": "confirmation-key-invalid-expired-and-owner",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review instance (live snapshot), Chromium, EN/DE at 1440 and 390",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "inquiry-states.spec.ts 2026-11-11 on review at 390: German recovery notice for invalid/missing/unknown keys with no inquiry data; guest verify-email and owner sign-in gates, other signed-in customer notice-only; owner and a 400-day-old inquiry open; evidence docs/acceptance/2026-10-22/full-site/inquiry-states-20261111.json"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -37420,7 +37466,12 @@
    "brief-consumers",
    "provenance"
   ],
-  "verified_checks": {}
+  "verified_checks": {
+   "inquiry_states_20261111": {
+    "status": "pass",
+    "detail": "inquiry-states.spec.ts 2026-11-11 on review at 390: German recovery notice for invalid/missing/unknown keys with no inquiry data; guest verify-email and owner sign-in gates, other signed-in customer notice-only; owner and a 400-day-old inquiry open; evidence docs/acceptance/2026-10-22/full-site/inquiry-states-20261111.json"
+   }
+  }
  },
  {
   "key": "inquiry:message-summary-note-isolation:en:1440",
