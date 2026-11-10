@@ -26617,10 +26617,12 @@
   "state": "initial-map",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26636,10 +26638,12 @@
   "state": "initial-map",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26655,10 +26659,12 @@
   "state": "initial-map",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26698,10 +26704,12 @@
   "state": "address-search",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26717,10 +26725,12 @@
   "state": "address-search",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26736,10 +26746,12 @@
   "state": "address-search",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26779,10 +26791,12 @@
   "state": "permission-error",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26798,10 +26812,12 @@
   "state": "permission-error",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26817,10 +26833,12 @@
   "state": "permission-error",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26860,10 +26878,12 @@
   "state": "outline-draw",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26879,10 +26899,12 @@
   "state": "outline-draw",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26898,10 +26920,12 @@
   "state": "outline-draw",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26941,10 +26965,12 @@
   "state": "edit-vertices",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26960,10 +26986,12 @@
   "state": "edit-vertices",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -26979,10 +27007,12 @@
   "state": "edit-vertices",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -27022,10 +27052,12 @@
   "state": "obstacles",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -27041,10 +27073,12 @@
   "state": "obstacles",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -27060,10 +27094,12 @@
   "state": "obstacles",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -27103,10 +27139,12 @@
   "state": "undo-redo",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -27122,10 +27160,12 @@
   "state": "undo-redo",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -27141,10 +27181,12 @@
   "state": "undo-redo",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -27184,10 +27226,12 @@
   "state": "orientation-pitch",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -27203,10 +27247,12 @@
   "state": "orientation-pitch",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -27222,10 +27268,12 @@
   "state": "orientation-pitch",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -27270,10 +27318,12 @@
   "state": "mobile-gestures",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -27294,10 +27344,12 @@
   "state": "mobile-gestures",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -27318,10 +27370,12 @@
   "state": "mobile-gestures",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -27366,10 +27420,12 @@
   "state": "save-return-to-configurator",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -27385,10 +27441,12 @@
   "state": "save-return-to-configurator",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -27404,10 +27462,12 @@
   "state": "save-return-to-configurator",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -27447,10 +27507,12 @@
   "state": "validation-error",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -27466,10 +27528,12 @@
   "state": "validation-error",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -27485,10 +27549,12 @@
   "state": "validation-error",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1052: planner-map-chain.spec.ts parameterized en/de - German decimal commas, catalog words; all 8 tests green on review (5.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
