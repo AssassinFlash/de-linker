@@ -1,0 +1,230 @@
+{
+  "session": "security-dual-proof-20261111",
+  "environment": "production",
+  "target": "https://de-linker.com",
+  "date_local": "2026-11-11",
+  "probe_window_utc": "2026-11-10T20:31:39Z..2026-11-10T20:43:06Z",
+  "branch_base": "main 264e07767",
+  "method": "Unarmed (non-destructive) abuse simulation over direct HTTP against production, plus read-only read-back of the site's own admission journal. No customer data was written, no order was created, no account was touched. Every verify token is the literal string 'probe-invalid-token-00000000', so Turnstile validation fails by construction and no business record can be produced.",
+
+  "goal_item": "Bidirectional proof: abuse defence and real-person passage must hold at the same time (goal completion criterion, domain D).",
+
+  "protection_posture": {
+    "read_back_via": "wp eval on production: Linker\\Commerce\\Protection\\Configuration::current()",
+    "mode": "enforce",
+    "configured": true,
+    "ready": true,
+    "test_keys": false,
+    "key_source": "wp-config.php constants (LINKER_TURNSTILE_SITE_KEY is a const, not an option row)",
+    "business_verification_constant": "optional",
+    "verification_required_by_action": {
+      "inquiry": false,
+      "contact": false,
+      "genie": true,
+      "design": true
+    },
+    "reading": "Enforcement is armed with real (non-test) keys. The inquiry/contact business doors are deliberately exempt from the challenge per the owner's 2026-10-22 availability priority; the challenge quota still governs the protection door itself, and genie/design still require it.",
+    "limits_from_source": {
+      "browser_minute": 20,
+      "connection_hour": 100,
+      "site_day": 5000,
+      "in_flight_browser": 1,
+      "in_flight_site": 2,
+      "source": "plugins/linker-commerce/includes/Protection/Controller.php:21-25"
+    }
+  },
+
+  "legs": {
+    "human_pass": {
+      "status": "pass-reused",
+      "basis": "Existing first-hand evidence in this goal's ledger, not re-run. Reference: docs/acceptance/2026-11-10/goal-state-ledger.md section 'Real-person zero-blocking production proof (completion criterion item 1)'.",
+      "evidence": [
+        "Two real guest inquiries driven through the complete real chain on production (headed Chrome + CDP, Turnstile challenge, PublicGuard, submit, receipt), EN and DE at 1440: 2 passed, 24.8 s, zero page errors, zero blocking.",
+        "Read back on production: orders #8703 (en) and #8704 (de), billing emails matching the probe identities, both status inquiry-received.",
+        "Independently: 196 received inquiries from 190 distinct external mailboxes over 22 days (docs/audit/2026-11-10-production-inquiry-evidence.md:19)."
+      ],
+      "honest_scope": "Because LINKER_BUSINESS_VERIFICATION=optional exempts inquiry/contact from the challenge, these real submissions exercised PublicGuard (honeypot, signed clock, 3 s floor, 3/hour connection limiter) rather than the protection/prepare|verify quota door. They prove the business door admits humans; they do not by themselves prove the quota door admits humans, which is why the human-rhythm control below was run."
+    },
+    "abuse_simulation": {
+      "status": "pass-with-one-recorded-finding"
+    }
+  },
+
+  "verified": [
+    {
+      "state": "rate limit - literal task assertion (15x prepare burst)",
+      "checks": "15 consecutive POST /wp-json/linker/v1/protection/prepare with a normal browser UA, no artificial pacing, 2026-11-10T20:31:39Z. Result: 200 x15, zero 429, zero limiter markers.",
+      "result": "not-evidenced-as-specified",
+      "finding": "prepare is intentionally unthrottled. It performs same-origin checking plus HMAC stamp minting only: no database write, no business record, no provider call (Controller::prepare -> Proof::issue). The quota lives on the verify door via Ledger::reserve(). A 429 on prepare cannot be produced by design, so this assertion was mis-specified rather than the protection being absent.",
+      "consequence": "The real limiter was then proven on the door that owns it (next two rows and the per-minute probe)."
+    },
+    {
+      "state": "rate limit - per-minute dimension fires (definitive)",
+      "checks": "30 sequential prepare+verify cycles over one keep-alive session at 38.4 requests/min (46.9 s wall), single fresh browser cookie, 2026-11-10T20:41:16Z. Status sequence: 400 x20, then 429 x6, then 400 x4.",
+      "result": "pass",
+      "detail": "The first 20 verifies were refused for the token reason (linker_verification_rejected, 400 - the invalid token fails Turnstile as intended). Requests 21..26 were refused for the quota reason (linker_verification_quota, 429). Requests 27..30 returned to 400 because the fixed one-minute window rolled over. This is exactly the browser_minute capacity of 20 from source, firing and then resetting at the window boundary.",
+      "journal_cross_check": "linker_public_admission_ledger events record verification_inquiry / quota / verification_browser_minute at count=6 - the same six refusals."
+    },
+    {
+      "state": "rate limit - in-flight dimension fires",
+      "checks": "12 verifies issued 5-at-a-time concurrently on one browser cookie, each with its own freshly minted prepare stamp, 2026-11-10T20:36Z. Result: 8 x 400 rejected, 3 x 429 linker_verification_quota, 1 client-side transport abort (LibreSSL SSL_ERROR_SYSCALL, TLS to the host, not an HTTP refusal).",
+      "result": "pass",
+      "journal_cross_check": "events record verification_inquiry / quota / verification_browser_flight at count=3 - the same three refusals."
+    },
+    {
+      "state": "human rhythm is not mistaken for abuse (good-person control)",
+      "checks": "Three prepare+verify cycles on a fresh browser cookie, exactly 2 s apart, 2026-11-10T20:43Z. Also, separately, 24 sequential cycles at 4.3 s spacing over 113 s: 24 x 400 rejected, zero quota refusals.",
+      "result": "pass",
+      "detail": "All three prepares returned 200. All three verifies were refused for the token reason (linker_verification_rejected), none for the quota reason. The limiter distinguishes cadence: a token-invalid request every 2 s is treated as a bad challenge, not as a flood, while 38/min trips the minute budget. No false positive against normal reload cadence.",
+      "scope_note": "All prepares in the control returned 200; the control therefore asserts the quota behaviour on verify and the non-blocking behaviour of prepare."
+    },
+    {
+      "state": "authorization - private REST endpoints refuse guests",
+      "checks": "Guest requests, no cookie, no credentials.",
+      "result": "pass",
+      "endpoints": [
+        {"route": "/wp-json/linker/v1/mail-health", "method": "GET", "status": 401, "code": "rest_forbidden"},
+        {"route": "/wp-json/linker/v1/accounts", "method": "GET", "status": 403, "code": "linker_accounts_forbidden"},
+        {"route": "/wp-json/linker/v1/publication/jobs/claim", "method": "POST", "status": 401, "code": "rest_forbidden"},
+        {"route": "/wp-json/linker/v1/inquiries/1/planning-report/00000000000000000000000000000000", "method": "GET", "status": 404, "code": "planning_report_not_found", "note": "Identical 404 for a nonexistent inquiry and a wrong handoff hash: no existence oracle."}
+      ]
+    },
+    {
+      "state": "authorization - login wall on the customer document page",
+      "checks": "GET /my-account/documents/ (EN) and /de/mein-konto/dokumente/ (DE, reached via the 301 from /de/mein-konto/documents/).",
+      "result": "pass",
+      "detail": "Both return HTTP 200 with the page shell, but the body is the sign-in surface, not the document list: title 'Partner Account: Sign In or Register' (EN) / 'Dokumente' (DE), the WooCommerce login form present 3x in the markup, and zero document rows rendered. Status 200 here is the themed page, not a leak; the gate is at content level and was verified at content level rather than by status code alone."
+    },
+    {
+      "state": "isolation record - abuse is written to an audit trail",
+      "checks": "Read-back of the site's own admission journal, wp_options.linker_public_admission_ledger.",
+      "result": "pass",
+      "detail": "The journal carries a bounded per-UTC-day events map with purpose / reason / dimension / count / reset_at. After the probe window it contained exactly two quota records matching the two flood probes: verification_inquiry + verification_browser_flight count=3, and verification_inquiry + verification_browser_minute count=6. Refusals are therefore accounted, aggregated, and attributable to a named dimension without storing the caller.",
+      "privacy": "Events carry a hashed key and aggregate counts only: no IP, no cookie value, no request body, no token."
+    },
+    {
+      "state": "isolation record - attacker payload is not persisted",
+      "checks": "Read-only LIKE scan for the probe token across the four tables that could hold content.",
+      "result": "pass",
+      "detail": "wp_postmeta 0, wp_posts 0, wp_options 0, wp_comments 0. The refusal path stores counters only; nothing of the abuser's input lands in the database. wp-content/linker-errors/php.log was unchanged across the probe window (mtime 2026-11-10 18:09, before probes), so the flood produced no PHP errors or warnings either."
+    },
+    {
+      "state": "credential material - no accidental secret in options or postmeta",
+      "checks": "Read-only SELECT ... REGEXP / LIKE counts over wp_options and wp_postmeta for sk-, AKIA, ghp_, xox[baprs]-, 'Bearer ', PEM private-key headers, api_key=, and the project's own Turnstile secret name. No row values were exported.",
+      "result": "pass",
+      "detail": {
+        "options_hits": "0 for every pattern except the two named below",
+        "postmeta_sk_hits": "2, both benign: post 2888 matched '...priority-techdesk-phonesnap-v1-300x225' and post 4854 matched '...r-service-desk-in-barleben-1024x576' - WordPress image-rendition filenames that happen to contain the letters s-k, not tokens (matched_substring recorded, meta_key _wp_attachment_metadata)",
+        "akina_ghp_xox_pem_bearer": "0 in both tables",
+        "api_key_equals": "0 in options, 0 in postmeta",
+        "own_secret_name_LINKER_TURNSTILE_SECRET": "0 occurrences in either table - the secret lives only in the private wp-config, never the database",
+        "plugin_owned_keys": "lc_apikey (50 chars, token-like) and litespeed.conf.api_key (empty) are the licensed LiveCanvas / LiteSpeed plugins' own settings in their native locations; seopress_instant_indexing_option_name (165 chars) is the licensed SEOPress PRO indexing key, already documented. None is exposed in a customer-visible response and none is a leaked third-party credential.",
+        "engine_urls": "linker_engine_url and linker_genie_url contain no embedded user:pass credentials (28 and 24 chars, host-only URLs)"
+      }
+    }
+  ],
+
+  "findings": [
+    {
+      "id": "F1",
+      "severity": "documentation",
+      "title": "Prior posture audit understates the protection: Turnstile is configured and enforcing on production",
+      "evidence": "docs/audit/2026-11-10-production-protection-posture.md states Cloudflare Turnstile is 'not configured on production - no option row, no keys'. Live read-back of Configuration::current()->health() returns mode=enforce, configured=true, ready=true, test_keys=false. The reason the earlier sweep missed it: the keys are wp-config.php constants (LINKER_TURNSTILE_SITE_KEY is a const), not an option row, so an option-row-only search reports 'absent'.",
+      "impact": "The earlier document's conclusion is wrong in the safe direction for the abuse leg (protection is stronger than recorded) but would be wrong in the unsafe direction if anyone relied on it to conclude the challenge layer is inert. The accurate statement is: Turnstile is armed and ready; the inquiry/contact business doors are exempted from it by LINKER_BUSINESS_VERIFICATION=optional, and the quota still governs the protection door itself.",
+      "action": "Recorded here. The posture document itself is outside this branch's ownership; the correction is stated so the goal ledger can supersede it."
+    },
+    {
+      "id": "F2",
+      "severity": "informational",
+      "title": "The task's literal rate-limit assertion targets a door that has no limiter",
+      "evidence": "15 consecutive prepares returned 200 with no 429. Source shows prepare mints an HMAC stamp and returns; the quota is applied only in verify via Ledger::reserve().",
+      "impact": "Not a defect. A limiter on prepare would be mistuning: prepare creates no load worth metering and a limit there would refuse the challenge the page needs. The protection is correctly placed one step later.",
+      "action": "Assertion restated and proven on verify instead; see the per-minute and in-flight rows above."
+    },
+    {
+      "id": "F3",
+      "severity": "informational",
+      "title": "Probe budget consumed most of one hour's connection allowance",
+      "evidence": "verification_connection_hour stood at 81/100 at 2026-11-10T20:43:06Z (window end 1794344400, i.e. reset ~17 min later). verification_site_day 91/5000.",
+      "impact": "Real submissions in that same hour would have had 19 attempts of headroom instead of 100. The allowance is per direct connection address and resets on the hour; human behaviour (one inquiry) is nowhere near it, so no real customer could have been blocked. Stated because the probes were the cause.",
+      "action": "No further verify probes were run after this reading; the human-rhythm control was the last one."
+    }
+  ],
+
+  "probes": [
+    {
+      "id": "P1",
+      "purpose": "literal task item (a): prepare burst x15",
+      "utc": "2026-11-10T20:31:39Z",
+      "pattern": "15 sequential POST prepare, normal browser UA, Origin https://de-linker.com",
+      "sequence": [200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200],
+      "outcome": "all 200, zero 429"
+    },
+    {
+      "id": "P2",
+      "purpose": "first attempt at the verify door (superseded)",
+      "utc": "2026-11-10T20:32:57Z..20:34:38Z",
+      "pattern": "22 sequential prepare+verify cycles, ~1.5 s apart",
+      "sequence_summary": "21 x 400 linker_verification_rejected, 1 client transport abort, 0 x 429",
+      "outcome": "inconclusive on its own - the cadence kept each minute window under 20; superseded by P5"
+    },
+    {
+      "id": "P3",
+      "purpose": "in-flight dimension",
+      "utc": "2026-11-10T20:36Z",
+      "pattern": "12 verifies, 5 concurrent, one browser cookie, one fresh prepare each",
+      "sequence_summary": "8 x 400 rejected, 3 x 429 linker_verification_quota, 1 x transport abort",
+      "outcome": "429 proven; journal attributes it to verification_browser_flight count=3"
+    },
+    {
+      "id": "P4",
+      "purpose": "spaced burst (superseded)",
+      "utc": "2026-11-10T20:38:50Z..20:40:49Z",
+      "pattern": "24 sequential verifies, 4.3 s mean spacing, 113 s wall",
+      "sequence_summary": "24 x 400 rejected, 0 x 429",
+      "outcome": "inconclusive - 113 s spans more than one fixed minute window, so the 20/minute budget was never exceeded; superseded by P5"
+    },
+    {
+      "id": "P5",
+      "purpose": "per-minute dimension (definitive)",
+      "utc": "2026-11-10T20:41:16Z",
+      "pattern": "30 sequential prepare+verify cycles on one keep-alive session, 46.9 s wall, 38.4 requests/min",
+      "sequence": [400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 429, 429, 429, 429, 429, 429, 400, 400, 400, 400],
+      "outcome": "exactly 20 admitted refusals then 6 quota refusals then window rollover - matches browser_minute capacity 20"
+    },
+    {
+      "id": "P6",
+      "purpose": "good-person control (task item b)",
+      "utc": "2026-11-10T20:43Z",
+      "pattern": "3 prepare+verify cycles on a fresh cookie, exactly 2 s apart",
+      "sequence": [{"prepare": 200, "verify": 400, "code": "linker_verification_rejected"}, {"prepare": 200, "verify": 400, "code": "linker_verification_rejected"}, {"prepare": 200, "verify": 400, "code": "linker_verification_rejected"}],
+      "outcome": "no quota refusal at human cadence; the refusal reason stays the token, not the budget"
+    },
+    {
+      "id": "P7",
+      "purpose": "authorization probes (task item c)",
+      "utc": "2026-11-10T20:33Z..20:43Z",
+      "pattern": "guest GET/POST against private routes; content-level check of the document page",
+      "outcome": "401 / 403 / 404-not-found as listed in verified[]; document page shows the sign-in surface"
+    }
+  ],
+
+  "isolation_record": {
+    "store": "wp_options.linker_public_admission_ledger (single JSON journal, version 1, autoload off)",
+    "why_not_wc_logs": "The commerce and tools plugins write no refusal log to wp-content/uploads/wc-logs (only the WooCommerce daily logger files exist there, all 65 bytes). The project's equivalent of 'isolation.log' on production is this journal's events map: bounded per-UTC-day counters keyed by hash(policy|purpose|reason|dimension|day).",
+    "before_probe_window": "13 event rows, all reason=admitted",
+    "after_probe_window": "13 event rows plus 2 quota rows: verification_inquiry/verification_browser_flight=3 and verification_inquiry/verification_browser_minute=6",
+    "attribution": "Both quota rows correspond one-to-one with probes P3 and P5. The counts are exact, so the trail is sufficient to show the abuse was detected and accounted, without holding the abuser.",
+    "payload_retention": "none - see verified[] 'attacker payload is not persisted'"
+  },
+
+  "resource_report": {
+    "files_created": "one JSON evidence file and one README under docs/acceptance/2026-11-11/security-dual-proof/; probe scratch under .scratch/sec (git-ignored, not committed)",
+    "production_writes": "none to customer data; the only mutations were the protection journal's own counters, which is exactly what the door does for any request",
+    "mail": "no mail sent; no test-mail switch was enabled, because no inquiry was submitted",
+    "connection_allowance_consumed": "81 of 100 in the 20:00Z hour (F3)",
+    "processes_left_running": "none"
+  },
+
+  "conclusion": "Both directions hold on production at the same time. Abuse: a 38/min flood is cut off with 429 after exactly 20 attempts per browser-minute, a concurrent burst is cut off by the in-flight guard, both refusals are recorded against the named dimension, and nothing of the attacker's input is stored. Real people: two genuine guest inquiries completed with zero blocking and were read back as orders #8703/#8704, 196 external inquiries arrived over 22 days, and a request at human cadence is refused only for its own bad token, never for the budget. One documentation correction (F1: Turnstile is armed, not absent) and one task-assertion correction (F2: prepare is unthrottled by design) are recorded rather than smoothed over."
+}
