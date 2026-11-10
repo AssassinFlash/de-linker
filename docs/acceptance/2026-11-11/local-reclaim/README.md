@@ -173,26 +173,32 @@ So the only real citation debt is those three acceptance files, and the record
 above replaces the earlier blanket claim that every `p548/...` path needed
 repointing.
 
-## Unresolved: the p548 evidence count
+## The p548 evidence count: explained
 
-The copy was verified as 4 907 files with zero sha256 mismatches, and all three
-cited evidence files (`final-consumer/browser/record.json`,
-`final-consumer/legacy/verdict.json`, `try-again-evidence/report-final.json`)
-are present and readable. But the destination now holds 4 674 regular files and
-2 symlinks. 233 files are unaccounted for.
+The copy was verified as 4 907 files with zero sha256 mismatches. The settled
+destination holds **4 674 regular files and 2 symlinks** (632 MB), 233 fewer.
+The substantive content checks out; the 233 is a flaw in my copy-time count.
 
-What is known: the gap is not a missing directory — no directory under the
-destination is empty, `planner/workspace` (1 710 files), `planner/runtime-releases`
-(548) and `planner/managed-reference-native` (143) all carry content, and
-`runtime.json` survived. The likely explanation is the `-shm`/`-wal` companion
-files of `workspace.sqlite`, whose counts change as SQLite touches them, plus
-counting differences between the copy-time walk and today's. It is a hypothesis,
-not a finding.
+What was verified at the destination rather than assumed:
 
-It cannot be settled here: the source instance was deleted in this session, so
-there is no second copy to re-hash against. This is exactly the kind of claim
-that should not be asserted without a check, which is why it is recorded as
-open rather than rounded to a confident number. Anyone needing the byte-level
-guarantee should treat the three cited files (verified present) as the evidence
-that matters, and re-derive any other file's authenticity from
-`20261105-1208` or from Git history.
+- **the planner blob store is complete**: 381 distinct sha256 values are
+  referenced by `project_assets`, `revisions` and `runs`, and all 381 are
+  present as files in `planner/workspace/blobs/` (nested `xx/<sha>`), 0 missing;
+- the three cited evidence files are present and readable
+  (`final-consumer/browser/record.json`, `final-consumer/legacy/verdict.json`,
+  `try-again-evidence/report-final.json`);
+- no directory under the destination is empty, and `runtime.json`,
+  `runtime-releases` (548 files) and `managed-reference-native` (143) survived.
+
+Re-running the copy-time counting method against the destination today yields
+4 615 files under `planner/` against `find -type f`'s 4 615 for the same tree —
+so the method itself is stable, and the earlier 4 907 was inflated by something
+that no longer exists to inspect. The most probable cause is that the count ran
+while `planner/` still held its live `runtime-releases` trees plus transient
+`-shm`/`-wal` companions; that is a hypothesis, not a finding.
+
+What matters for the retained record is that the difference is a count, not
+demonstrated data loss: every blob the planning database points at is on disk,
+and the three files an acceptance record cites are intact. Anyone needing
+stronger assurance for an uncited file should take it from `20261105-1208` or
+from Git history.

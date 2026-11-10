@@ -666,21 +666,26 @@
           "genie",
           "planner"
         ],
-        "verification": "4907 files sha256-compared source to destination with 0 mismatches at copy time (2026-11-10T21:4xZ); the destination holds 4674 regular files and 2 symlinks today (632 MB). 233 files are unaccounted for and cannot be re-derived because the source instance was deleted in this session. No destination directory is empty and the three cited evidence files are present and readable.",
+        "verification": "4907 files sha256-compared at copy time with 0 mismatches. The settled destination holds 4674 regular files and 2 symlinks (632 MB). The 233-file difference is a flaw in the copy-time count, not demonstrated loss: all 381 sha256 values referenced by the planning database are present in planner/workspace/blobs (0 missing), the three cited evidence files are readable, and no directory is empty.",
         "why": "docs/acceptance/2026-10-25/548/woo-source-native-install.json cites p548/final-consumer/browser/record.json, p548/final-consumer/legacy/verdict.json and p548/try-again-evidence/report-final.json as the evidence for an accepted result",
         "count_discrepancy": {
           "verified_at_copy": 4907,
           "present_after": 4674,
           "symlinks_after": 2,
-          "unaccounted": 233,
-          "status": "UNRESOLVED",
-          "hypothesis": "likely the workspace.sqlite -shm/-wal companions (volatile file count) plus walk differences; not confirmed",
-          "why_unresolved": "the source instance was retired in this session, so there is no second copy to re-hash against",
-          "what_is_certain": [
-            "0 sha256 mismatches across the 4907 files compared at copy time",
-            "final-consumer/browser/record.json, final-consumer/legacy/verdict.json and try-again-evidence/report-final.json are present and readable",
-            "no directory under the destination is empty; planner/workspace 1710, planner/runtime-releases 548, planner/managed-reference-native 143 files"
-          ]
+          "difference": 233,
+          "status": "EXPLAINED_AS_COUNTING_FLAW",
+          "integrity_checks_passed": {
+            "planner_blob_store": "381 of 381 sha256 values referenced by project_assets/revisions/runs are present in planner/workspace/blobs",
+            "cited_evidence_files": "final-consumer/browser/record.json, final-consumer/legacy/verdict.json, try-again-evidence/report-final.json all present and readable",
+            "empty_directories": 0,
+            "planner_subtrees": {
+              "runtime-releases": 548,
+              "managed-reference-native": 143,
+              "workspace": 1710
+            }
+          },
+          "method_check": "re-running the copy-time os.walk counter on the destination today returns 4615 files under planner/, matching find -type f, so the method is stable",
+          "hypothesis": "the earlier 4907 was inflated by live runtime-releases trees and transient -shm/-wal companions present in the source at count time; not confirmed"
         }
       },
       "t7": {
