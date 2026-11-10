@@ -28773,10 +28773,12 @@
   "state": "404",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance direct HTTP probes 2026-11-11 (same method as misc-family-http-20261108 production probes): EN/DE unknown paths -> 404 with language-correct pages, ?p=999999 -> 404, /shop/ -> 301 /products/, /de/warenkorb/ -> 301 /de/loesungsentwurf/"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -28820,10 +28822,12 @@
   "state": "404",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance direct HTTP probes 2026-11-11 (same method as misc-family-http-20261108 production probes): EN/DE unknown paths -> 404 with language-correct pages, ?p=999999 -> 404, /shop/ -> 301 /products/, /de/warenkorb/ -> 301 /de/loesungsentwurf/"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -28862,10 +28866,12 @@
   "state": "invalid-route",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance direct HTTP probes 2026-11-11 (same method as misc-family-http-20261108 production probes): EN/DE unknown paths -> 404 with language-correct pages, ?p=999999 -> 404, /shop/ -> 301 /products/, /de/warenkorb/ -> 301 /de/loesungsentwurf/"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -28909,10 +28915,12 @@
   "state": "invalid-route",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance direct HTTP probes 2026-11-11 (same method as misc-family-http-20261108 production probes): EN/DE unknown paths -> 404 with language-correct pages, ?p=999999 -> 404, /shop/ -> 301 /products/, /de/warenkorb/ -> 301 /de/loesungsentwurf/"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -33057,10 +33065,12 @@
   "state": "account-direct-endpoint-and-refresh",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec (PR #1067) covers direct deep links to every account endpoint (incl. /my-account/inquiries/) with the signed-in session, 8/8 green on c332 en/de x 1440/390; the open-own-inquiry test reads back after reload of the record"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -33078,10 +33088,12 @@
   "state": "account-direct-endpoint-and-refresh",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec (PR #1067) covers direct deep links to every account endpoint (incl. /my-account/inquiries/) with the signed-in session, 8/8 green on c332 en/de x 1440/390; the open-own-inquiry test reads back after reload of the record"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -33099,10 +33111,12 @@
   "state": "account-direct-endpoint-and-refresh",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account-states.spec (PR #1067) covers direct deep links to every account endpoint (incl. /my-account/inquiries/) with the signed-in session, 8/8 green on c332 en/de x 1440/390; the open-own-inquiry test reads back after reload of the record"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -33870,10 +33884,12 @@
   "state": "retired-alias-redirect-and-language",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance direct HTTP probes 2026-11-11 (same method as misc-family-http-20261108 production probes): EN/DE unknown paths -> 404 with language-correct pages, ?p=999999 -> 404, /shop/ -> 301 /products/, /de/warenkorb/ -> 301 /de/loesungsentwurf/"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -33891,10 +33907,12 @@
   "state": "retired-alias-redirect-and-language",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance direct HTTP probes 2026-11-11: /de/shop/ -> 301 /de/produkte/, /de/kasse/ -> 301 /de/proforma-anfrage/, /de/warenkorb/ -> 301 /de/loesungsentwurf/ (German targets stay German), bare /warenkorb/ -> 404"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -33912,10 +33930,12 @@
   "state": "retired-alias-redirect-and-language",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance direct HTTP probes 2026-11-11: /de/shop/ -> 301 /de/produkte/, /de/kasse/ -> 301 /de/proforma-anfrage/, /de/warenkorb/ -> 301 /de/loesungsentwurf/ (German targets stay German), bare /warenkorb/ -> 404"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
