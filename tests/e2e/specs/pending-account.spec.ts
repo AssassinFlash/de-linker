@@ -74,6 +74,7 @@ for (const language of ['en', 'de'] as const) {
 					viewport: { width, height: 900 },
 					reducedMotion: 'reduce',
 				});
+				await seedConsentCookies(context);
 				await context.addInitScript(() =>
 					localStorage.setItem(
 						'linker-genie-peek-dismissed-until',
@@ -114,7 +115,9 @@ for (const language of ['en', 'de'] as const) {
 				// PublicGuard's minimum fill time is three seconds.
 				await page.waitForTimeout(3_300);
 				await Promise.all([
-					page.waitForURL(/\/mein-konto\/?$/, { timeout: 60_000 }),
+					page.waitForURL((url) => url.pathname === account, {
+						timeout: 60_000,
+					}),
 					page.locator('button[name="register"]').click(),
 				]);
 				await expect(
@@ -371,6 +374,16 @@ for (const language of ['en', 'de'] as const) {
 					page.locator('.linker-account-main')
 				).toBeVisible();
 				await shot(page, `${prefix}-restricted-account`);
+				await page.goto(base + product);
+				await expect(priceBlock).toContainText(
+					language === 'de'
+						? 'Für Ihr Konto nicht verfügbar'
+						: 'Not available for your account'
+				);
+				await expect(
+					priceBlock.locator('.woocommerce-Price-amount')
+				).toHaveCount(0);
+				await shot(page, `${prefix}-restricted-product`);
 				run('rejected', reason);
 				await page.goto(base + account);
 				await expect(page.locator('#username')).toBeVisible();

@@ -152,6 +152,11 @@ def _serve(
     """
     uv = _uv()
     service_environment = without_research_credentials()
+    # Local determinism profile: the inquiry mail verdict answers from a
+    # synthetic Jev response instead of a real provider call inside the
+    # shell's 10 s window (services/genie app.py reads it; production never
+    # sets it, so every local submit does not spend provider quota).
+    service_environment["LINKER_GENIE_ASSESS_DETERMINISTIC"] = "1"
     if only is not None and only not in ("engine", "genie"):
         raise ProcessError("unknown local service selection")
     selected = tuple(

@@ -31,6 +31,7 @@ from uuid import UUID
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, StreamingResponse
+import httpx
 from linker_judges.budget import BudgetError, take
 from pydantic import BaseModel, ConfigDict
 
@@ -825,4 +826,33 @@ def _event(name: str, payload: object) -> str:
 @app.post("/inquiries/assess")
 async def assess_inquiry(body: AssessmentInput) -> dict[str, object]:
     """Authenticated shell background jobs only; never a browser submit call."""
+    if os.environ.get("LINKER_GENIE_ASSESS_DETERMINISTIC") == "1":
+        # Local instances only (tools/local sets this env; production never
+        # does): the mail verdict otherwise spends a real Jev call inside the
+        # shell's 10 s window on every e2e submit. Same parser, synthetic
+        # provider answer - the wire contract is still exercised end to end.
+        return await assess(
+            body,
+            key="deterministic-local",
+            transport=httpx.MockTransport(
+                lambda request: httpx.Response(
+                    200,
+                    json={
+                        "model": "typesafe/jev-1.13-20260917",
+                        "answers": {
+                            "classification": {
+                                "type": "choice",
+                                "choice": "normal",
+                                "confidence": 1,
+                            },
+                            "basis": {
+                                "type": "choice",
+                                "choice": "business_request",
+                                "confidence": 1,
+                            },
+                        },
+                    },
+                )
+            ),
+        )
     return await assess(body)
