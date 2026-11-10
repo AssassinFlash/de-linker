@@ -350,6 +350,16 @@ for (const language of LANGUAGES) {
 					),
 					fieldsVisible: await fields.isVisible(),
 				};
+				if (390 === width) {
+					// The folded row is the shape this tier is judged on, so it
+					// fits before the row is opened as well as after.
+					expect(
+						await page.evaluate(
+							() => document.documentElement.scrollWidth
+						),
+						`the folded details fit ${width}px`
+					).toBeLessThanOrEqual(width);
+				}
 
 				await summary.click();
 				expect(
@@ -383,7 +393,7 @@ for (const language of LANGUAGES) {
 						await page.evaluate(
 							() => document.documentElement.scrollWidth
 						),
-						`the folded and opened details fit ${width}px`
+						`the opened details fit ${width}px`
 					).toBeLessThanOrEqual(width);
 				}
 				await shot(page, `summary-${tag}`);
