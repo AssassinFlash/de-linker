@@ -1,0 +1,752 @@
+{
+  "schema": "linker-local-reclaim-v1",
+  "captured_at_utc": "2026-11-10T21:55:21Z",
+  "scope": "M5/M6 over-limit reclamation found by docs/acceptance/2026-11-11/resource-load-baseline",
+  "authority": [
+    "docs/agents/local-storage.md (retention boundaries, delete-before checks, completion readback)",
+    "AGENTS.md section 0 (resource lifecycle: purpose/owner/limit/reclaim condition before creating; reclaim on completion)"
+  ],
+  "deletion_scope": [
+    "/Users/chesterjohn/de-linker-local",
+    "/Users/chesterjohn/de-linker-data"
+  ],
+  "never_touched": [
+    "repository worktrees",
+    "production hosts (hostinger-de-linker, linker-services)"
+  ],
+  "disk": {
+    "local_root": {
+      "path": "/Users/chesterjohn/de-linker-local",
+      "before_gb": 179.3,
+      "after_gb": 13.0,
+      "freed_gb": 166.4
+    },
+    "data_root": {
+      "path": "/Users/chesterjohn/de-linker-data",
+      "before_gb": 39.13,
+      "after_gb": 38.85,
+      "freed_mb": 285,
+      "note": "Only 285 MB moved. The 4.2 GB site snapshots and cutover backups are rsync --link-dest hard-link trees: each copy holds just 17-52 MB of exclusive bytes, so deleting one frees almost nothing until the last link goes. Reported as measured, not as directory-size arithmetic."
+    },
+    "host_volume": {
+      "mount": "/System/Volumes/Data",
+      "avail_before_gib": 1118.3,
+      "avail_after_gib": 1292.0,
+      "gained_gib": 173.7,
+      "note": "The gain exceeds the sum of the two roots because other sessions on this Mac also freed space during the window. The local root figure is the attributable part."
+    }
+  },
+  "instances": {
+    "before": {
+      "dirs": 58,
+      "registered": 55,
+      "unregistered": 3,
+      "running": 3,
+      "total_gb": 179.3
+    },
+    "after": {
+      "dirs": 3,
+      "registered": 3,
+      "unregistered": 0,
+      "running": 3,
+      "total_gb": 13.0
+    },
+    "retired_count": 52,
+    "removed_unregistered_count": 3,
+    "retired": [
+      {
+        "name": "a538",
+        "size_mb": 4372.9,
+        "mtime": "2026-10-22T15:25",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "a543",
+        "size_mb": 4373.7,
+        "mtime": "2026-10-22T16:29",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "b2genie",
+        "size_mb": 4377.7,
+        "mtime": "2026-10-29T12:48",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "b2inquiry",
+        "size_mb": 4387.9,
+        "mtime": "2026-10-29T12:54",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "b3inquiry",
+        "size_mb": 199.8,
+        "mtime": "2026-10-29T15:17",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "b533cur",
+        "size_mb": 201.1,
+        "mtime": "2026-10-23T07:53",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "b533snap",
+        "size_mb": 4376.6,
+        "mtime": "2026-10-23T08:43",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "b568",
+        "size_mb": 4384.4,
+        "mtime": "2026-10-22T20:08",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "c533camp",
+        "size_mb": 199.7,
+        "mtime": "2026-10-23T03:27",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "c542",
+        "size_mb": 4373.5,
+        "mtime": "2026-10-22T23:49",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "ci_preflight",
+        "size_mb": 206.6,
+        "mtime": "2026-10-30T23:48",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "ci_probe",
+        "size_mb": 201.5,
+        "mtime": "2026-10-30T01:35",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "fullmatrix",
+        "size_mb": 4451.5,
+        "mtime": "2026-11-04T23:27",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "g511",
+        "size_mb": 4374.5,
+        "mtime": "2026-10-22T00:28",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "g516",
+        "size_mb": 4374.4,
+        "mtime": "2026-10-22T01:44",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "g519",
+        "size_mb": 4373.7,
+        "mtime": "2026-10-22T03:06",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "g520",
+        "size_mb": 4376.8,
+        "mtime": "2026-10-22T05:19",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "g521",
+        "size_mb": 4373.6,
+        "mtime": "2026-10-22T05:20",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "g522",
+        "size_mb": 4375.2,
+        "mtime": "2026-10-22T07:13",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "g563i",
+        "size_mb": 4373.8,
+        "mtime": "2026-10-23T00:45",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "geniestates",
+        "size_mb": 4423.5,
+        "mtime": "2026-11-04T23:28",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "h537",
+        "size_mb": 4374.6,
+        "mtime": "2026-10-22T15:15",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "home_image_loading",
+        "size_mb": 4445.1,
+        "mtime": "2026-10-23T08:48",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "i542",
+        "size_mb": 4379.9,
+        "mtime": "2026-10-22T16:25",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "i574",
+        "size_mb": 199.3,
+        "mtime": "2026-10-23T00:31",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "i574cur",
+        "size_mb": 4373.1,
+        "mtime": "2026-10-23T08:07",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "m545",
+        "size_mb": 4375.3,
+        "mtime": "2026-10-22T17:39",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "m545c",
+        "size_mb": 199.8,
+        "mtime": "2026-10-22T17:08",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "m565",
+        "size_mb": 4376.2,
+        "mtime": "2026-10-22T19:53",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "m565ci",
+        "size_mb": 200.1,
+        "mtime": "2026-10-22T22:34",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "marketingnav",
+        "size_mb": 4375.1,
+        "mtime": "2026-10-22T06:53",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "p533copy",
+        "size_mb": 199.2,
+        "mtime": "2026-10-23T04:46",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "p533legacy",
+        "size_mb": 4374.5,
+        "mtime": "2026-10-23T05:12",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "p533mail",
+        "size_mb": 200.4,
+        "mtime": "2026-10-23T04:34",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "p548",
+        "size_mb": 5029.4,
+        "mtime": "2026-10-29T15:40",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "presetp1",
+        "size_mb": 4376.8,
+        "mtime": "2026-10-22T17:03",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "privacyviz",
+        "size_mb": 4395.2,
+        "mtime": "2026-10-21T21:42",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "r533cur",
+        "size_mb": 4373.0,
+        "mtime": "2026-10-23T09:12",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "r549",
+        "size_mb": 4373.6,
+        "mtime": "2026-10-22T17:19",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "r569",
+        "size_mb": 4384.2,
+        "mtime": "2026-10-22T20:30",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "s533",
+        "size_mb": 4372.9,
+        "mtime": "2026-10-22T17:54",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "s533rem",
+        "size_mb": 199.7,
+        "mtime": "2026-10-23T02:37",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "s533rest",
+        "size_mb": 199.2,
+        "mtime": "2026-10-23T04:33",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "sec533",
+        "size_mb": 199.7,
+        "mtime": "2026-10-29T16:43",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "sharedarchives",
+        "size_mb": 4379.1,
+        "mtime": "2026-10-22T05:56",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "si533",
+        "size_mb": 4383.1,
+        "mtime": "2026-10-22T22:06",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "smoke",
+        "size_mb": 199.3,
+        "mtime": "2026-11-04T18:38",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "sweepproduct",
+        "size_mb": 4379.5,
+        "mtime": "2026-10-29T16:10",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "sweepseo",
+        "size_mb": 4377.8,
+        "mtime": "2026-10-29T17:59",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "v563",
+        "size_mb": 4373.1,
+        "mtime": "2026-10-23T02:24",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "w496",
+        "size_mb": 4377.3,
+        "mtime": "2026-10-21T19:47",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "w497",
+        "size_mb": 4374.2,
+        "mtime": "2026-10-21T19:15",
+        "registered": true,
+        "decision": "retired",
+        "basis": "just retire --write: stopped (nothing was running), Redis prefix unlinked, linker_<name> dropped, directory removed, registry entry removed"
+      },
+      {
+        "name": "t113",
+        "size_mb": 0.0,
+        "mtime": "2026-10-12T15:52",
+        "registered": false,
+        "decision": "removed_without_retirement",
+        "basis": "unregistered stale directory outside the instance contract; unique small artifacts copied to ~/de-linker-data/retired-instance-evidence/<name>/ and byte-verified first"
+      },
+      {
+        "name": "t7",
+        "size_mb": 183.0,
+        "mtime": "2026-10-09T21:30",
+        "registered": false,
+        "decision": "removed_without_retirement",
+        "basis": "unregistered stale directory outside the instance contract; unique small artifacts copied to ~/de-linker-data/retired-instance-evidence/<name>/ and byte-verified first"
+      },
+      {
+        "name": "t9-pre-stack-backup",
+        "size_mb": 200.4,
+        "mtime": "2026-10-09T21:11",
+        "registered": false,
+        "decision": "removed_without_retirement",
+        "basis": "unregistered stale directory outside the instance contract; unique small artifacts copied to ~/de-linker-data/retired-instance-evidence/<name>/ and byte-verified first"
+      }
+    ],
+    "kept": [
+      {
+        "name": "review",
+        "size_mb": 4396.8,
+        "reason": "running instance: planner worker + PHP workers + engine/genie listening; rebuilt in this session's reclamation, must not be touched"
+      },
+      {
+        "name": "c222",
+        "size_mb": 4393.1,
+        "reason": "running instance: planner worker + PHP workers + engine/genie listening; rebuilt in this session's reclamation, must not be touched"
+      },
+      {
+        "name": "c332",
+        "size_mb": 4389.8,
+        "reason": "running instance: planner worker + PHP workers + engine/genie listening; rebuilt in this session's reclamation, must not be touched"
+      }
+    ],
+    "consistency_readback": {
+      "directories_equals_registry_equals_schemas": true,
+      "detail": "ls */ == instances.toml keys == information_schema linker_* schemas == {review, c222, c332}",
+      "retiring_markers_left": 0
+    }
+  },
+  "mysql": {
+    "before": {
+      "schemas": 55,
+      "data_mb": 2979.8
+    },
+    "after": {
+      "schemas": 3,
+      "data_mb": 245.2
+    },
+    "note": "Only linker_review, linker_c222 and linker_c332 remain; each retirement dropped its schema and read it back as absent before the directory was removed."
+  },
+  "redis": {
+    "before_prefixes_with_keys": "every retired instance plus 3 live ones",
+    "after_prefixes_with_keys": {
+      "linker_review": 20222,
+      "linker_c222": 12945,
+      "linker_c332": 8193,
+      "linker_probe80": 131
+    },
+    "unlinked_by_retirement": 105186,
+    "orphan_test_prefixes_reclaimed": {
+      "linker_pytesta_11493_c1c9da": 179,
+      "linker_pytestb_11493_c1c9da": 96,
+      "linker_pytestb_64344_ec9b0a": 94,
+      "linker_pytesta_33867_daf1c6": 6
+    },
+    "kept_unknown_owner": {
+      "prefix": "linker_probe80",
+      "keys": 131,
+      "reason": "no repository origin found and no running process owns it; local-storage.md keeps prefixes of unknown ownership rather than guessing"
+    },
+    "method": "SCAN + UNLINK in 128-key batches, prefix asserted on every key; no FLUSHDB/FLUSHALL"
+  },
+  "database_snapshots": {
+    "before": 18,
+    "after": 10,
+    "rule": "most recent 3 complete versions + last 1 per UTC day for 7 days + 1 explicit baseline; duplicates count once",
+    "deleted": [
+      "db-20261108T114920Z.sql.gz",
+      "db-20261107T133050Z.sql.gz",
+      "db-20261107T100509Z.sql.gz",
+      "db-20261107T052016Z.sql.gz",
+      "db-20261106T100510Z.sql.gz",
+      "db-20261106T042009Z.sql.gz",
+      "db-20261103T201819Z.sql.gz",
+      "db-20261102T184723Z.sql.gz"
+    ],
+    "freed_mb": 61.9,
+    "kept": {
+      "by_rule": [
+        "db-20261109T012943Z.sql.gz",
+        "db-20261108T155816Z.sql.gz",
+        "db-20261108T122224Z.sql.gz",
+        "db-20261107T161856Z.sql.gz",
+        "db-20261106T224939Z.sql.gz",
+        "db-20261105T173045Z.sql.gz",
+        "db-20261104T180637Z.sql.gz"
+      ],
+      "protected_otherwise": [
+        "db-20261108T061315Z.sql.gz -> referenced by cutover-workspace/staging/.deploy.json.stale-20261108-pre1004",
+        "db-20261108T111200Z.sql.gz -> referenced by cutover-workspace/staging/.deploy.json.stale-20261108-1004",
+        "db-20261106T095015Z.sql.gz -> legacy record, unknown source; never a deletion candidate"
+      ]
+    },
+    "integrity_check": "every deleted file matched its recorded sha256, its recorded size and read back as valid gzip immediately before unlink; the ledger was rewritten atomically in its native shape",
+    "native_rotation_defect_found": "snapshot._prune reads every recorded snapshot in the ledger and raises CutoverError if one record is incomplete; db-20261106T095015Z (legacy: bytes/created/reason, no sha256/stamp) triggers exactly that, so every automatic rotation run has been aborting and preserving all older snapshots. The retention rule was applied with the same select_retained() function offline instead. Fixing the ledger record or the prune precondition is left as a follow-up because it changes code outside this reclamation."
+  },
+  "site_copies_and_backups": {
+    "cutover_backups_before": 6,
+    "cutover_backups_after": 4,
+    "removed_by_native_prune": [
+      "cutover-20261101-2033",
+      "cutover-20261030-1635"
+    ],
+    "removed_by": "linker_cutover.backup_retention.prune (the shipped rotation, not a manual rm)",
+    "kept": {
+      "recent_three": [
+        "cutover-20261105-0633",
+        "cutover-20261104-0607",
+        "cutover-20261102-1032"
+      ],
+      "baseline": "cutover-20261021-2259 (registered baseline in .backup-retention.json)"
+    },
+    "pull_snapshots_before": 4,
+    "pull_snapshots_after": 3,
+    "pull_snapshot_removed": "20261104-1914",
+    "pull_snapshot_kept": [
+      "20261104-2329",
+      "20261105-1142",
+      "20261105-1208"
+    ],
+    "pull_snapshot_basis": "3-recent rule for live-site snapshots; 20261105-1208 is the one loaded by review, c222 and c332, and it stays"
+  },
+  "data_root_cleanup": {
+    "removed": [
+      {
+        "path": "partial/builds/20261009T150647Z",
+        "size_mb": 51,
+        "basis": "failed build: 307 of 383 documents failed to index, dated 2026-10-09, zero references in the repository; three complete later builds supersede it"
+      },
+      {
+        "path": "index/builds/20261108T200919Z-470760000",
+        "size_mb": 662,
+        "basis": "intermediate build of the same 143-document corpus, superseded by 20261108T205220Z-672808000 twenty-seven minutes later; no repository, workspace or instance reference"
+      },
+      {
+        "path": "20261104-1914",
+        "size_mb": 52,
+        "basis": "fourth-oldest live-site snapshot; outside the 3-recent rule; no instance or workspace reference (verified separately from the baseline JSON, which merely lists it)"
+      },
+      {
+        "path": "__pycache__ (30 directories)",
+        "size_mb": 3.9,
+        "basis": "rebuildable bytecode from released Python sources"
+      }
+    ],
+    "kept_research_evidence": [
+      "privacy-visual-20261021",
+      "incident-20261022",
+      "weekly-20261108",
+      "judge-models",
+      "index",
+      "pdf",
+      "parsed",
+      "apify-oem",
+      "planner-production",
+      "vps-recovery-*",
+      "eval",
+      "fixtures under every campaign-*, deploy-proof-*, acceptance-* directory",
+      "all other dated research and acceptance directories"
+    ],
+    "kept_reason": "each is a unique, task-produced evidence set; deleting any of them would destroy the only record of an accepted result"
+  },
+  "preserved_evidence": {
+    "root": "/Users/chesterjohn/de-linker-data/retired-instance-evidence",
+    "total_mb": 642,
+    "added_this_session": {
+      "p548": {
+        "size_mb": 635,
+        "directories": [
+          "final-consumer",
+          "try-again-evidence",
+          "production-acceptance-20261029T063924Z",
+          "production-acceptance-20261029T064054Z",
+          "geometric-production-20261029T074047Z",
+          "genie",
+          "planner"
+        ],
+        "verification": "4907 regular files sha256-compared source to destination, 0 mismatches",
+        "why": "docs/acceptance/2026-10-25/548/woo-source-native-install.json cites p548/final-consumer/browser/record.json, p548/final-consumer/legacy/verdict.json and p548/try-again-evidence/report-final.json as the evidence for an accepted result"
+      },
+      "t7": {
+        "size_mb": 0.8,
+        "contents": "13 product-fact backups from 2026-10-09 plus its secrets.env",
+        "verification": "diff -r identical"
+      },
+      "t9-pre-stack-backup": {
+        "size_mb": 0.5,
+        "contents": "44 local mail sink messages plus its secrets.env",
+        "verification": "diff -r identical"
+      },
+      "t113": {
+        "size_mb": 0.004,
+        "contents": "prototype-location.txt, whose target path no longer exists"
+      }
+    },
+    "pre_existing": [
+      "g516classic",
+      "g520c",
+      "i18n765",
+      "legal764",
+      "s728"
+    ]
+  },
+  "blockers_resolved": [
+    {
+      "item": "g511",
+      "symptom": "retire refused with 'registered port still in use'",
+      "cause": "port 9210 in its registry entry has been held for weeks by an unrelated QQ process",
+      "resolution": "reallocated its three ports inside the registry lock to a measured-free triple 9450/9451/9452, then retired through the same path; it was never bypassed"
+    },
+    {
+      "item": "g511 marker",
+      "symptom": "after the port change, 'registration changed; retirement stopped'",
+      "cause": "the failed attempt left a .lifecycle/g511.retiring.json recording the old ports",
+      "resolution": "confirmed the directory, schema and processes were all intact, archived the stale marker to /tmp/reclaim-scratch/, then retired; Redis prefix 10614 keys unlinked"
+    },
+    {
+      "item": "planner-group",
+      "symptom": "ModuleNotFoundError: No module named 'pydantic'",
+      "cause": "this worktree's services/engine/.venv had never been synced, and retire drains through it",
+      "resolution": "uv sync --locked --offline, then a serial retry (the drain control call takes ~9 s against a 10 s budget, so parallel runs time out)"
+    },
+    {
+      "item": "p548",
+      "symptom": "'owned engine release selection could not be verified'",
+      "cause": "its planner/runtime-releases/*/.venv symlinks point at a worktree deleted in October",
+      "resolution": "after copying all planner state to the evidence root, removed runtime.json so retire treats it as a stateless instance; planner state itself is preserved in the evidence root"
+    }
+  ],
+  "not_reclaimed": [
+    {
+      "item": "review, c222, c332",
+      "size_mb": 12873,
+      "reason": "the three running instances; all three answer HTTP 200 after the reclamation"
+    },
+    {
+      "item": "linker_probe80 Redis prefix",
+      "keys": 131,
+      "reason": "unknown ownership; the rule keeps unknown prefixes"
+    },
+    {
+      "item": "18 -> 10 database snapshots and 4 -> 3 pull snapshots",
+      "reason": "already at or below the documented boundary after this pass; further deletion would break the 3+7+1 rule"
+    },
+    {
+      "item": "privacy-visual-20261021, incident-20261022, weekly-20261108",
+      "reason": "6.4 GB / 5.2 GB / 4.6 GB of unique task evidence referenced by research and acceptance documents; the size is the point, not a leak"
+    }
+  ],
+  "verification": {
+    "instances_serve": {
+      "review": 200,
+      "c222": 200,
+      "c332": 200
+    },
+    "three_way_consistency": "directories == registry == MySQL schemas == 3",
+    "retiring_markers": 0,
+    "leftovers": "no instance directory, schema, registry entry or Redis prefix remains for any retired name",
+    "resource_report": "no process started by this session remains: the retirement runs are one-shot CLI invocations that exited"
+  }
+}
