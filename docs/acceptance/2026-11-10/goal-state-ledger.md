@@ -416,3 +416,20 @@ verification discipline.
 
 Matrix final state this session: pass 424 / verified-production 448 total / pending 2
 (both with findings and unlock paths).
+
+## Real-person zero-blocking production proof (completion criterion item 1)
+
+- Two real guest inquiries submitted on production through the complete real chain
+  (headed real Chrome + CDP, Turnstile challenge -> PublicGuard -> submit -> receipt),
+  EN and DE, 1440. Both reached the inquiry-received receipt with ZERO page errors and
+  zero blocking (2 passed, 24.8 s; HUMANPASS en/de logged).
+- Read back on production: orders #8703 (en) and #8704 (de), billing emails matching the
+  probe identities, both status=inquiry-received.
+- Test-mail discipline: the recipient-rewrite switch (linker_commerce_test_mail_to ->
+  chester@de-linker.com) was enabled before the probes and deleted after, read back as
+  absent. Outbox jobs are transient on production (delivered posts deleted by design),
+  so routing evidence is the switch state + the received orders.
+- Two earlier "failures" were probe artifacts, honestly recorded: a hidden-element
+  textContent misread (the draft-pending notice), and the legitimate business validation
+  "Bitte fuegen Sie ein Produkt hinzu oder schreiben Sie eine Nachricht" (a message is
+  required when the draft has no products) - not product defects.
