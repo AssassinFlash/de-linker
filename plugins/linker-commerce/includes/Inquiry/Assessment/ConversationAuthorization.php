@@ -159,8 +159,30 @@ final class ConversationAuthorization {
 	 * @param int $job Private native job.
 	 */
 	public static function recover_job( int $job ): void {
-		$loaded = ( new JobStore() )->load( $job );
+		$store  = new JobStore();
+		$loaded = $store->load( $job );
 		$source = self::source( $job );
+		if ( null !== $loaded && 'private' === get_post_status( $job ) ) {
+			if ( \Linker\Commerce\Mail\NativeAttempt::expired( $job ) ) {
+				$store->fail( $job, $loaded['attempts'] + 1, 'Orphaned delivery attempt timed out.' );
+				\Linker\Commerce\Mail\CapacityHealth::failed();
+			} elseif ( $loaded['attempts'] > count( Outbox::RETRY_DELAYS ) ) {
+				$error = $store->error( $job );
+				$store->fail( $job, $loaded['attempts'], '' !== $error ? $error : 'Maximum delivery attempts exceeded.' );
+			}
+		}
+		if ( JobStore::FAILED_STATUS === get_post_status( $job ) ) {
+			AuthorizationStore::edit(
+				'conversation-' . $job,
+				static function ( array &$state ): void {
+					if ( ! in_array( $state['status'] ?? '', array( 'erased', 'delivered', 'quarantined', 'manual' ), true ) ) {
+						$state['status'] = 'manual';
+					}
+				}
+			);
+			update_post_meta( $job, self::PENDING, 'manual' );
+			return;
+		}
 		if ( null === $loaded || null === $source || ! self::current( $source ) ) {
 			AuthorizationStore::edit(
 				'conversation-' . $job,
@@ -198,7 +220,7 @@ final class ConversationAuthorization {
 		if ( ! is_array( $state ) ) {
 			return;
 		}
-		if ( 'normal' === ( $state['status'] ?? '' ) ) {
+		if ( 'normal' === ( $state['status'] ?? '' ) && 'private' === get_post_status( $job ) && ! \Linker\Commerce\Mail\NativeAttempt::unresolved( $job ) ) {
 			as_enqueue_async_action( Outbox::HOOK, array( $job ), Outbox::GROUP, true );
 		} elseif ( 'pending' === ( $state['status'] ?? '' ) ) {
 			as_schedule_single_action( max( time(), (int) $state['next_at'] ), self::PROCESS, array( $job ), Outbox::GROUP, true );

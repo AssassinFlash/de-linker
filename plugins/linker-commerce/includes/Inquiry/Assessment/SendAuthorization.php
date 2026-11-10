@@ -79,7 +79,7 @@ final class SendAuthorization {
 			return;
 		}
 		$order->read_meta_data( true );
-		if ( ( NotificationHold::held( $order ) && ! self::owns_hold( $order ) ) || $order->get_meta( Reviews::ERASED ) ) {
+		if ( ( NotificationHold::held( $order ) && ! self::owns_hold( $order ) ) || $order->get_meta( Reviews::ERASED ) || 'complete' === $order->get_meta( Queue::PENDING ) ) {
 			return;
 		}
 		$state = AuthorizationStore::read( $id );
@@ -118,12 +118,23 @@ final class SendAuthorization {
 						return;
 					}
 					$pending = false;
+					$store   = new JobStore();
 					foreach ( $current['jobs'] ?? array() as $purpose => $entry ) {
 						if ( ! empty( $entry['delivered_at'] ) || ( 'receipt' === $purpose && ! empty( $current['team_only'] ) ) ) {
 							continue;
 						}
-						$job = (int) ( $entry['id'] ?? 0 );
-						if ( $job < 1 || null === ( new JobStore() )->load( $job ) || JobStore::FAILED_STATUS === get_post_status( $job ) ) {
+						$job    = (int) ( $entry['id'] ?? 0 );
+						$loaded = $job > 0 ? $store->load( $job ) : null;
+						if ( null !== $loaded && 'private' === get_post_status( $job ) ) {
+							if ( \Linker\Commerce\Mail\NativeAttempt::expired( $job ) ) {
+								$store->fail( $job, $loaded['attempts'] + 1, 'Orphaned delivery attempt timed out.' );
+								\Linker\Commerce\Mail\CapacityHealth::failed();
+							} elseif ( $loaded['attempts'] > count( Outbox::RETRY_DELAYS ) ) {
+								$error = $store->error( $job );
+								$store->fail( $job, $loaded['attempts'], '' !== $error ? $error : 'Maximum delivery attempts exceeded.' );
+							}
+						}
+						if ( $job < 1 || null === $loaded || JobStore::FAILED_STATUS === get_post_status( $job ) ) {
 							$current['status'] = 'manual';
 							if ( isset( $current['jobs']['receipt'] ) && empty( $current['jobs']['receipt']['delivered_at'] ) ) {
 								$order->update_meta_data( ReceiptLimit::SKIPPED_META, 'delivery_unconfirmed' );
@@ -146,8 +157,9 @@ final class SendAuthorization {
 				return;
 			}
 			foreach ( $state['jobs'] ?? array() as $purpose => $entry ) {
-				if ( empty( $entry['delivered_at'] ) && ( 'receipt' !== $purpose || empty( $state['team_only'] ) ) ) {
-					as_enqueue_async_action( Outbox::HOOK, array( (int) $entry['id'] ), Outbox::GROUP, true );
+				$job = (int) ( $entry['id'] ?? 0 );
+				if ( $job > 0 && empty( $entry['delivered_at'] ) && ( 'receipt' !== $purpose || empty( $state['team_only'] ) ) && 'private' === get_post_status( $job ) && ! \Linker\Commerce\Mail\NativeAttempt::unresolved( $job ) ) {
+					as_enqueue_async_action( Outbox::HOOK, array( $job ), Outbox::GROUP, true );
 				}
 			}
 			return;
@@ -267,6 +279,8 @@ final class SendAuthorization {
 				);
 				if ( ! $saved ) {
 					wc_get_logger()->warning( 'Inquiry sending authorization is unavailable; native content remains pending.', array( 'source' => 'linker-inquiry-assessment' ) );
+				} else {
+					as_unschedule_all_actions( Queue::EXPIRE, array( $id ), Outbox::GROUP );
 				}
 				self::recover( $id );
 			}
@@ -568,12 +582,32 @@ final class SendAuthorization {
 		}
 		$id      = (int) ( $message->origin['record'] ?? 0 );
 		$purpose = $message->origin['purpose'] ?? '';
+		$done    = false;
 		AuthorizationStore::edit(
 			$id,
-			static function ( array &$state ) use ( $message, $purpose, $job, $id, $message_id ): void {
+			static function ( array &$state ) use ( $message, $purpose, $job, $id, $message_id, &$done ): void {
 				self::record_transport( $state, $message, $purpose, $job, $id, $message_id );
+				if ( 'normal' !== ( $state['status'] ?? '' ) || empty( $state['jobs'] ) ) {
+					return;
+				}
+				foreach ( $state['jobs'] as $key => $entry ) {
+					if ( 'receipt' === $key && ! empty( $state['team_only'] ) ) {
+						continue;
+					}
+					if ( empty( $entry['delivered_at'] ) ) {
+						return;
+					}
+				}
+				$done = true;
 			}
 		);
+		if ( $done ) {
+			$order = CurrentSource::order( $id );
+			if ( $order instanceof WC_Order && 'complete' !== $order->get_meta( Queue::PENDING ) ) {
+				$order->update_meta_data( Queue::PENDING, 'complete' );
+				$order->save_meta_data();
+			}
+		}
 	}
 
 	/**

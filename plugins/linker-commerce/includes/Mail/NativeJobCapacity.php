@@ -82,6 +82,18 @@ final class NativeJobCapacity implements JobCapacity {
 	}
 
 	/**
+	 * Unschedule retries and clear transient attempt state when a job enters terminal failure.
+	 *
+	 * @param int $id Original job.
+	 */
+	public function failed( int $id ): void {
+		delete_post_meta( $id, NativeAttempt::META );
+		delete_post_meta( $id, PreTransportRecovery::META );
+		clean_post_cache( $id );
+		as_unschedule_all_actions( Outbox::HOOK, array( $id ), Outbox::GROUP );
+	}
+
+	/**
 	 * Rescheduling cannot lose the old pending action if the replacement fails.
 	 *
 	 * @param int $id Original job.
