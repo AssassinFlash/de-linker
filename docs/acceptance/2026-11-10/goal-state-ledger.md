@@ -144,3 +144,16 @@ Nothing in this ledger marks the goal complete; it records what stands.
 - Operational note recorded: the shared public-connection limiter must be
   reset between chain runs (3/hour shared across runs) - already a handover
   discipline, now hit in practice.
+
+## Batch: authentication flows in every shape (PR #1054)
+
+- account.spec.ts: the rejected sign-in parameterized over en/de x 1440/390
+  (4/4 green, 40.8s); the signed-out notice verified on the German account
+  at both widths and the English phone shape inside the partner journey
+  (14.5s). Matrix: pass 241 -> 247, pending 193.
+- Honesty note: four historical authentication de:1440 rows
+  (invalid-sign-in, pending-submit, registration-success,
+  password-email-confirmation) sit at pass with EMPTY evidence from an
+  earlier session's bulk flip - an earlier attempt to backfill them with
+  run-family evidence was rejected as unverifiable and reverted; the rows
+  stay flagged here for dedicated re-verification instead.
