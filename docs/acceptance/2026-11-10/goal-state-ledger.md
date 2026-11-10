@@ -433,3 +433,17 @@ Matrix final state this session: pass 424 / verified-production 448 total / pend
   textContent misread (the draft-pending notice), and the legitimate business validation
   "Bitte fuegen Sie ein Produkt hinzu oder schreiben Sie eine Nachricht" (a message is
   required when the draft has no products) - not product defects.
+
+## Post-merge report read-back (PR #1073, merged) + overlay healed
+
+- PR #1073 archived the post-merge EN/DE report read-back (full transcription,
+  both PDFs + readback.json in docs/acceptance/2026-11-11/report-final-readback/).
+  Honest open item preserved: the report's "no bill of materials" statement is
+  correct on this data - every design is no_candidate.
+- The review engine feed overlay is healed to 3/3 (Trina pv_module + both nexans
+  cables; stale _linker_cable_facts source revisions updated by the fix agent,
+  independently re-verified by main: feed.json overlay = [pv_module, cable, cable]).
+- Second-layer gap measured by main: 85/85 feed products lack the layout datasheet
+  fields strings.py requires (n_mppt, mppt_voltage_range_v, max_pv_input_v, ...) -
+  a systematic #548 data-projection gap that keeps every input no_candidate.
+  Recorded as the open engineering-data line, not papered over.
