@@ -157,3 +157,10 @@ Nothing in this ledger marks the goal complete; it records what stands.
   earlier session's bulk flip - an earlier attempt to backfill them with
   run-family evidence was rejected as unverifiable and reverted; the rows
   stay flagged here for dedicated re-verification instead.
+
+## Batch: the reset chain at every width (PR #1055)
+
+- account.spec.ts: both reset tests (lost-password through the new-password
+  card; wrong-or-spent key refusal) gained the 1440/390 width loop over
+  their en/de loop - 8/8 green on review. Matrix: pass 247 -> 251,
+  pending 189 (reset-password and password-reset-token-states phone shapes).
