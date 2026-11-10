@@ -1102,7 +1102,9 @@ export function HeroConversation( {
 										( line ) =>
 											line.product_id === productId
 									) }
-									onAdd={ addCardToDraft }
+									onAdd={ ( id ) =>
+										addCardToDraft( id, cardProofs[ id ] )
+									}
 									onSave={ ( id, title ) =>
 										saveCardSolution(
 											id,
