@@ -24025,10 +24025,12 @@
   "state": "save-pending-error-success",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-card-actions.spec.ts save branch (savingFails->unverified, saveSucceeds->added) runs locale x width x surface; the suite was fully green in the 2026-11-10 differential run on review"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -24045,10 +24047,12 @@
   "state": "save-pending-error-success",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-card-actions.spec.ts save branch (savingFails->unverified, saveSucceeds->added) runs locale x width x surface; the suite was fully green in the 2026-11-10 differential run on review"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -24065,10 +24069,12 @@
   "state": "save-pending-error-success",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-card-actions.spec.ts save branch (savingFails->unverified, saveSucceeds->added) runs locale x width x surface; the suite was fully green in the 2026-11-10 differential run on review"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -34914,10 +34920,12 @@
   "state": "consumer-saved-solution-readback",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1057: genie-save-readback.spec.ts parameterized en/de x 1440/390 - all four shapes green on review (save-button stream-end wait, German endpoints and page wording)"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -34935,10 +34943,12 @@
   "state": "consumer-saved-solution-readback",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1057: genie-save-readback.spec.ts parameterized en/de x 1440/390 - all four shapes green on review (save-button stream-end wait, German endpoints and page wording)"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -34956,10 +34966,12 @@
   "state": "consumer-saved-solution-readback",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1057: genie-save-readback.spec.ts parameterized en/de x 1440/390 - all four shapes green on review (save-button stream-end wait, German endpoints and page wording)"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
