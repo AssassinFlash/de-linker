@@ -23545,10 +23545,12 @@
   "state": "product-add-normal-hover-focus",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-card-actions.spec.ts runs locale x width x surface (workspace/dock/hero): all shapes green in the 2026-11-10 differential run on review (42-test batch, this suite fully green)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23565,10 +23567,12 @@
   "state": "product-add-normal-hover-focus",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-card-actions.spec.ts runs locale x width x surface (workspace/dock/hero): all shapes green in the 2026-11-10 differential run on review (42-test batch, this suite fully green)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23585,10 +23589,12 @@
   "state": "product-add-normal-hover-focus",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-card-actions.spec.ts runs locale x width x surface (workspace/dock/hero): all shapes green in the 2026-11-10 differential run on review (42-test batch, this suite fully green)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23798,10 +23804,12 @@
   "state": "product-add-retry",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-card-actions.spec.ts runs locale x width x surface (workspace/dock/hero): all shapes green in the 2026-11-10 differential run on review (42-test batch, this suite fully green)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23818,10 +23826,12 @@
   "state": "product-add-retry",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-card-actions.spec.ts runs locale x width x surface (workspace/dock/hero): all shapes green in the 2026-11-10 differential run on review (42-test batch, this suite fully green)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23838,10 +23848,12 @@
   "state": "product-add-retry",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-card-actions.spec.ts runs locale x width x surface (workspace/dock/hero): all shapes green in the 2026-11-10 differential run on review (42-test batch, this suite fully green)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23883,10 +23895,12 @@
   "state": "product-add-unverified",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-card-actions.spec.ts runs locale x width x surface (workspace/dock/hero): all shapes green in the 2026-11-10 differential run on review (42-test batch, this suite fully green)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23903,10 +23917,12 @@
   "state": "product-add-unverified",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-card-actions.spec.ts runs locale x width x surface (workspace/dock/hero): all shapes green in the 2026-11-10 differential run on review (42-test batch, this suite fully green)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23923,10 +23939,12 @@
   "state": "product-add-unverified",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-card-actions.spec.ts runs locale x width x surface (workspace/dock/hero): all shapes green in the 2026-11-10 differential run on review (42-test batch, this suite fully green)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -24052,10 +24070,12 @@
   "state": "parts-card",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-parts.spec.ts runs lang x width; green on review 2026-11-10 (8/8 after the strict-mode anchor fix)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -24072,10 +24092,12 @@
   "state": "parts-card",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-parts.spec.ts runs lang x width; green on review 2026-11-10 (8/8 after the strict-mode anchor fix)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -24092,10 +24114,12 @@
   "state": "parts-card",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-parts.spec.ts runs lang x width; green on review 2026-11-10 (8/8 after the strict-mode anchor fix)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -24834,10 +24858,12 @@
   "state": "service-error-retry",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-failure-ownership.spec.ts runs locale x width x surface (home/workspace): green in the 2026-11-10 differential run on review"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -24854,10 +24880,12 @@
   "state": "service-error-retry",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-failure-ownership.spec.ts runs locale x width x surface (home/workspace): green in the 2026-11-10 differential run on review"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -24874,10 +24902,12 @@
   "state": "service-error-retry",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-failure-ownership.spec.ts runs locale x width x surface (home/workspace): green in the 2026-11-10 differential run on review"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -37100,11 +37130,11 @@
   "state": "ordinary-draft-failure-owner-isolation",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
   "evidence": [
-   "genie-failure-isolation-discovery.md"
+   "genie-failure-ownership.spec.ts runs locale x width x surface (home/workspace): green in the 2026-11-10 differential run on review"
   ],
   "findings": [
    "Local diagnostic consumers confirm unscoped ordinary failure text and PDF recovery across identity changes; repair and final browser/production readback pending."
@@ -37184,11 +37214,11 @@
   "state": "ordinary-draft-failure-owner-isolation",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
   "evidence": [
-   "genie-failure-isolation-discovery.md"
+   "genie-failure-ownership.spec.ts runs locale x width x surface (home/workspace): green in the 2026-11-10 differential run on review"
   ],
   "findings": [
    "Local diagnostic consumers confirm unscoped ordinary failure text and PDF recovery across identity changes; repair and final browser/production readback pending."

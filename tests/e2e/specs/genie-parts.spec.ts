@@ -485,7 +485,14 @@ for (const lang of ['en', 'de'] as Lang[]) {
 				buffer: Buffer.from('PK\u0003\u0004not a workbook'),
 			});
 			await send(page);
-			await expect(page.getByText(WORDS[lang].unreadable)).toBeVisible({
+			// The same sentence stands in the reply body, the revealed full
+			// reply and the attachment status; anchor on the status line so
+			// strict mode cannot trip on the other two.
+			await expect(
+				page
+					.locator('.linker-genie-attachment__status')
+					.filter({ hasText: WORDS[lang].unreadable })
+			).toBeVisible({
 				timeout: 60_000,
 			});
 			await expect(
