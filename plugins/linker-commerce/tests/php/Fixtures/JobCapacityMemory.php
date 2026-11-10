@@ -61,6 +61,13 @@ final class JobCapacityMemory implements JobCapacity {
 	public function deleted( int $id ): void {}
 
 	/**
+	 * Terminal failure cleanup is a no-op on the in-memory unit fixture.
+	 *
+	 * @param int $id Failed in-memory fixture id.
+	 */
+	public function failed( int $id ): void {}
+
+	/**
 	 * Record the unit's next attempt without pretending to prove SQL atomicity.
 	 *
 	 * @param int $id In-memory job.

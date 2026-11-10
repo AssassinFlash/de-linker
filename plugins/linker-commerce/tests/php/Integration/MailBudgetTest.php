@@ -150,4 +150,98 @@ final class MailBudgetTest extends IntegrationTestCase {
 		$this->assertNotNull( $readback );
 		$this->assertSame( $message->to_array(), $readback['message']->to_array() );
 	}
+
+	/**
+	 * Ten retry-exhausted and orphaned jobs terminate into FAILED_STATUS, unschedule
+	 * their pending retries, and leave Throttle at now for immediate delivery.
+	 */
+	public function test_ten_failed_and_orphaned_jobs_terminate_without_blocking_throttle(): void {
+		$emails = WC()->mailer()->get_emails();
+		$email  = $emails[ \Linker\Commerce\Digest\DigestEmail::class ];
+		$this->assertInstanceOf( \WC_Email::class, $email );
+		$message = \Linker\Commerce\Mail\Capture::run(
+			$email,
+			function () use ( $email ): void {
+				$this->assertTrue( $email->send( self::TESTER, 'Lifecycle fixture notice', 'Normal body.', '', array() ) );
+			}
+		);
+		$this->assertInstanceOf( Message::class, $message );
+		$store       = new \Linker\Commerce\Mail\JobStore();
+		$exhausted   = array();
+		$orphans     = array();
+		$attempts    = count( \Linker\Commerce\Mail\Outbox::RETRY_DELAYS ) + 1;
+		$expired_at  = time() - \Linker\Commerce\Mail\NativeAttempt::TIMEOUT - 10;
+		$digest_hash = hash( 'sha256', (string) wp_json_encode( $message->to_array() ) );
+
+		for ( $i = 0; $i < 5; ++$i ) {
+			$id = $store->create( $message );
+			$this->assertGreaterThan( 0, $id );
+			$store->record_failure( $id, $attempts, 'Simulated permanent transport failure.' );
+			$exhausted[] = $id;
+		}
+		for ( $i = 0; $i < 5; ++$i ) {
+			$id = $store->create( $message );
+			$this->assertGreaterThan( 0, $id );
+			$witness = 0 === $i % 2
+				? array(
+					'token'   => wp_generate_uuid4(),
+					'message' => $digest_hash,
+					'state'   => 'open',
+					'at'      => $expired_at,
+				)
+				: array(
+					'token'   => wp_generate_uuid4(),
+					'message' => $digest_hash,
+					'state'   => 'open',
+				);
+			update_post_meta( $id, \Linker\Commerce\Mail\NativeAttempt::META, $witness );
+			$this->assertTrue( \Linker\Commerce\Mail\NativeAttempt::expired( $id ) );
+			$orphans[] = $id;
+		}
+
+		// Recovery reclaims all 5 timed-out orphan witnesses; Outbox terminates all 5 exhausted jobs.
+		( new \Linker\Commerce\Mail\PreTransportRecovery( $store ) )->recover();
+		foreach ( $exhausted as $id ) {
+			/** This action is documented in Mail\Module::register(). */
+			do_action( \Linker\Commerce\Mail\Outbox::HOOK, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Existing native original-job consumer.
+		}
+
+		$all_jobs   = array_merge( $exhausted, $orphans );
+		$failed_ids = array_column( $store->failed(), 'id' );
+		foreach ( $all_jobs as $id ) {
+			clean_post_cache( $id );
+			$this->assertSame( \Linker\Commerce\Mail\JobStore::FAILED_STATUS, get_post_status( $id ) );
+			$this->assertFalse( as_has_scheduled_action( \Linker\Commerce\Mail\Outbox::HOOK, array( $id ), \Linker\Commerce\Mail\Outbox::GROUP ) );
+			$this->assertSame( '', get_post_meta( $id, \Linker\Commerce\Mail\NativeAttempt::META, true ) );
+			$this->assertSame( '', get_post_meta( $id, \Linker\Commerce\Mail\PreTransportRecovery::META, true ) );
+			$this->assertContains( $id, $failed_ids );
+		}
+		$this->assertSame( 'notification_not_accepted', get_option( \Linker\Commerce\Mail\CapacityHealth::OPTION )['reason'] );
+
+		// Re-invoking the hook on terminal jobs neither attempts transport nor schedules retries.
+		foreach ( $all_jobs as $id ) {
+			/** This action is documented in Mail\Module::register(). */
+			do_action( \Linker\Commerce\Mail\Outbox::HOOK, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Existing native original-job consumer.
+			$this->assertFalse( as_has_scheduled_action( \Linker\Commerce\Mail\Outbox::HOOK, array( $id ), \Linker\Commerce\Mail\Outbox::GROUP ) );
+		}
+
+		// Throttle remains completely unblocked and delivers a new message at once.
+		$now = time();
+		$this->assertSame( $now, ( new Throttle() )->next_slot( $now ) );
+		$live_id = $store->create( $message );
+		$this->assertGreaterThan( 0, $live_id );
+		$delivered = 0;
+		$observe   = static function () use ( &$delivered ): void {
+			++$delivered;
+		};
+		add_action( 'wp_mail_succeeded', $observe );
+		try {
+			/** This action is documented in Mail\Module::register(). */
+			do_action( \Linker\Commerce\Mail\Outbox::HOOK, $live_id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Existing native original-job consumer.
+		} finally {
+			remove_action( 'wp_mail_succeeded', $observe );
+		}
+		$this->assertSame( 1, $delivered );
+		$this->assertNull( $store->load( $live_id ) );
+	}
 }
