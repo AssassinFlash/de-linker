@@ -310,3 +310,14 @@ Nothing in this ledger marks the goal complete; it records what stands.
   product decision with no precedent, not patched around here.
 - 4 rows flipped (draft:update-failure en/de 390, product:
   add-pending-success-error en/de 390) on the A+B union evidence.
+
+## Correction: the save-readback DE notice "external condition" was a misdiagnosis
+
+The ledger previously held "save-readback German notification PO msgstr is
+empty" as an external copy item. Checked directly: the PO has the German
+sentence (multi-line msgstr), the compiled MO has it too, and the
+genie-save-readback suite (4/4 green, #1057) asserts exactly this German
+sentence ('Die Produkte der gespeicherten Lösung liegen jetzt in Ihrem
+Lösungsentwurf.') and passes. The item came from misreading PO multi-line
+format. Closed as invalid - the only remaining external condition is the
+PDF content read (image model).
