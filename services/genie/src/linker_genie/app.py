@@ -29,9 +29,9 @@ from pathlib import Path
 from typing import Literal
 from uuid import UUID
 
+import httpx
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, StreamingResponse
-import httpx
 from linker_judges.budget import BudgetError, take
 from pydantic import BaseModel, ConfigDict
 
