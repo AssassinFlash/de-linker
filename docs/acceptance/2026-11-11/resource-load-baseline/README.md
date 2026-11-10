@@ -36,8 +36,11 @@ Two consequences for how this baseline must be read:
 
 - **M2 · Worker-orphan reconciliation (PR #1036, issue #1030).** `just down` now
   also stops a live `worker_host serve` bound to the instance. Checked today:
-  zero instance processes running, zero orphaned `worker_host` processes. One
-  valid before (10-hour orphan on `review`) and a valid after.
+  **3 workers, 3 distinct live instances, 0 orphans** — each worker's
+  `LINKER_PLANNER_CONFIG` points at an instance whose PHP, engine and genie
+  ports all still listen (`review` 8889/8890/8891, `c222` 8925/8926/8927,
+  `c332` 9187/9188/9189). Binding each worker to a live instance is a stronger
+  check than counting processes, and it is the exact mechanism #1036 keyed on.
 - **M3 · Production queue health.** Action Scheduler: 2807 complete, 17 pending,
   **0 overdue, 0 failed, 0 claims**; `linker_commerce_mail_attempt` has 130
   complete, 1 canceled, **0 pending**. The one-minute recovery heartbeat
@@ -102,11 +105,13 @@ rolling day pushes `next_slot` a full day forward, exactly as `c222` shows.
 ## Still observational
 
 - **M5 · Local instances: over limit.** 58 instance directories, 179 GB, 55
-  registry entries, **0 running**. `docs/agents/local-storage.md` allows one
-  instance per in-progress task, plus one for baseline comparison. Three
-  directories are not even in the registry (`t113` empty, `t7` 183 MB,
-  `t9-pre-stack-backup` 200 MB, both idle since 2026-10-09). Local MySQL holds
-  55 `linker_*` schemas at roughly 76–89 MB each.
+  registry entries — but only **3 instances actually running** (`review`,
+  `c222`, `c332`), holding 28 PHP workers between them.
+  `docs/agents/local-storage.md` allows one instance per in-progress task, plus
+  one for baseline comparison, so 58 resident copies for 3 running instances is
+  far past the boundary. Three directories are not even in the registry
+  (`t113` empty, `t7` 183 MB, `t9-pre-stack-backup` 200 MB, both idle since
+  2026-10-09). Local MySQL holds 55 `linker_*` schemas at roughly 76–89 MB each.
 - **M6 · Local snapshots: over limit.** 18 database snapshots spanning eight
   days against a "3 recent + last 1 per day for 7 days + 1 baseline" rule; four
   each on 2026-11-06 and 2026-11-08. `~/de-linker-data` is 39 GB, including five
@@ -127,6 +132,10 @@ reclamation of a month of finished-task copies is the owner's call.
   production observation.
 - The 38 held production jobs were neither released nor deleted.
 - One sample per host; no time series.
+- A first pass of this document reported zero running local instances, because
+  the process filter misspelled the real command line. The corrected figures
+  come from reading `LINKER_PLANNER_CONFIG` per worker and matching listening
+  ports against the registry. The wrong version never left this branch.
 
 ## Recommendation
 

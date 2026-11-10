@@ -96,11 +96,17 @@
     "captured_at_utc": "2026-11-10T20:35:00Z",
     "host_disk": { "mount": "/System/Volumes/Data", "size": "3.6Ti", "used": "2.5Ti", "avail": "1.1Ti", "use_pct": 70 },
     "instance_dirs": 58,
-    "instance_dirs_with_wp_config": 58,
+    "instance_dirs_with_wp_config": 57,
     "total_instance_disk": "179G",
     "registry_entries": 55,
     "registry_file": "/Users/chesterjohn/de-linker-local/instances.toml",
-    "running_instance_processes": 0,
+    "running_instances": 3,
+    "running_instance_detail": [
+      { "name": "review", "php_port": 8889, "engine_port": 8890, "genie_port": 8891, "php_workers": 7, "worker_started": "2026-11-11 04:37:56" },
+      { "name": "c222", "php_port": 8925, "engine_port": 8926, "genie_port": 8927, "php_workers": 7, "worker_started": "2026-11-10 19:03:05" },
+      { "name": "c332", "php_port": 9187, "engine_port": 9188, "genie_port": 9189, "php_workers": 7, "worker_started": "2026-11-10 21:48:31" }
+    ],
+    "running_php_workers_total": 28,
     "typical_instance_size": "4.3G",
     "largest_instance": { "name": "p548", "size": "4.9G" },
     "named_instances": {
@@ -235,11 +241,17 @@
         "observation": "stop() also stops any live worker_host serve bound to the instance (TERM-first, shared stop grace); start() clears untrack state."
       },
       "today_check": {
-        "running_instance_processes": 0,
+        "worker_host_processes": 3,
+        "worker_host_bindings": [
+          "pid 8053 -> /Users/chesterjohn/de-linker-local/review/planner/runtime.json (instance listening on 8889/8890/8891)",
+          "pid 71236 -> /Users/chesterjohn/de-linker-local/c222/planner/runtime.json (instance listening on 8925/8926/8927)",
+          "pid 82939 -> /Users/chesterjohn/de-linker-local/c332/planner/runtime.json (instance listening on 9187/9188/9189)"
+        ],
         "orphaned_worker_host_processes": 0,
-        "command": "ps aux | grep -E 'linker_local|php -S 127.0.0.1' | wc -l -> 0"
+        "binding_check": "Read LINKER_PLANNER_CONFIG from each worker's environment and matched it to an instance whose PHP, engine and genie ports are all still listening.",
+        "command": "ps eww -p <pid> | grep '^LINKER_PLANNER_CONFIG='; lsof -nP -iTCP -sTCP:LISTEN"
       },
-      "conclusion": "Zero orphans after a day of use, and the mechanism is present in main. Effective."
+      "conclusion": "Three workers, three distinct live instances, zero orphans. This is a stronger check than counting processes: the binding that #1036 keyed on is intact for every worker."
     },
     {
       "id": "M3-production-queue-health",
@@ -267,8 +279,8 @@
       "id": "M5-local-instance-retention",
       "claim": "Local dev instances stay within the local-storage.md boundary",
       "status": "OBSERVATIONAL - OVER LIMIT",
-      "after": { "instance_dirs": 58, "registry_entries": 55, "running": 0, "disk": "179G" },
-      "conclusion": "Not a mechanism that has been proven; the boundary is exceeded. Reclamation is a separate decision for the owner."
+      "after": { "instance_dirs": 58, "registry_entries": 55, "running": 3, "disk": "179G" },
+      "conclusion": "Not a mechanism that has been proven; the boundary is exceeded — 58 resident copies for 3 running instances. Reclamation is a separate decision for the owner."
     },
     {
       "id": "M6-local-snapshot-retention",
@@ -297,6 +309,7 @@
     "Only one production sample was taken today; the 'before' for M1 is the PR's own numbers, which describe removed code, so M1 has no valid before/after pair at all.",
     "No production burst was induced to force budget saturation; the reproduction is on a local instance. Production saturation remains a hypothesis backed by an identical formula and an identical 64-entry ledger shape.",
     "The 38 held jobs on production were not released or deleted; this session was read-only. Whether they should be released is an owner decision.",
-    "Local instance and snapshot over-limit findings were not remediated; reclamation is out of scope for an evidence-only baseline."
+    "Local instance and snapshot over-limit findings were not remediated; reclamation is out of scope for an evidence-only baseline.",
+    "A first pass of this document claimed zero running local instances because the process filter misspelled the actual command line. The corrected figures come from reading LINKER_PLANNER_CONFIG per worker and matching listening ports to the registry; the wrong version never left this branch."
   ]
 }
