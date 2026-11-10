@@ -114,3 +114,15 @@ Nothing in this ledger marks the goal complete; it records what stands.
   pending 259.
 - Remaining planner variants: map-chain 33 and report-chain 39 need the
   same treatment (bigger label surface: 21 and 37 strings) - next batches.
+
+## Batch: the roof map chain in German (PR #1052)
+
+- planner-map-chain parameterized over en/de (8 tests green on review).
+  Three root causes root-caused by EN/DE diff probes before fixing: German
+  number fields take a decimal comma (dot decimals left lat/lng invalid and
+  the workspace-switch guard blocked the whole chain), two German
+  substring/label collisions, and a hydration wait before the first section
+  navigation.
+- Matrix: pass 181 -> 214 (all 33 roof language/width variants), pending 226.
+- Remaining planner variant block: report-chain 39 rows (37-label surface -
+  the biggest of the three), same method.
