@@ -28705,10 +28705,12 @@
   "state": "signed-in-document-auth",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance direct probes 2026-11-11 (same method as account-endpoints-20261108): /conversation-documents/ guest -> 404 (no oracle); /my-account/documents/ and /de/mein-konto/dokumente/ guests get the login form (auth wall before any document UI)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -28725,10 +28727,12 @@
   "state": "signed-in-document-auth",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance direct probes 2026-11-11 (same method as account-endpoints-20261108): /conversation-documents/ guest -> 404 (no oracle); /my-account/documents/ and /de/mein-konto/dokumente/ guests get the login form (auth wall before any document UI)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -28745,10 +28749,12 @@
   "state": "signed-in-document-auth",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance direct probes 2026-11-11 (same method as account-endpoints-20261108): /conversation-documents/ guest -> 404 (no oracle); /my-account/documents/ and /de/mein-konto/dokumente/ guests get the login form (auth wall before any document UI)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -29086,10 +29092,12 @@
   "state": "slow-network-loading",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "not-applicable-today",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance probes 2026-11-11: the archive/FAQ surfaces are server-rendered (same finding as the 1440 sibling, failure-injection-states-20261108); no client-side list fetch exists to throttle at these shapes either"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -29106,10 +29114,12 @@
   "state": "slow-network-loading",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
+  "status": "not-applicable-today",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance probes 2026-11-11: the archive/FAQ surfaces are server-rendered (same finding as the 1440 sibling, failure-injection-states-20261108); no client-side list fetch exists to throttle at these shapes either"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -29126,10 +29136,12 @@
   "state": "slow-network-loading",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "not-applicable-today",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance probes 2026-11-11: the archive/FAQ surfaces are server-rendered (same finding as the 1440 sibling, failure-injection-states-20261108); no client-side list fetch exists to throttle at these shapes either"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -37256,10 +37268,12 @@
   "state": "file-url-and-source-language-consumer",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance direct probes 2026-11-11 (same method as account-endpoints-20261108 file-language pairing): EN-labelled file opens 200 application/pdf (GW_ESA-3 manual, English text on page 1); DE-labelled EMEA datasheet opens 200 application/pdf and its extracted page-1 text is genuine German (\"BAT-C Serie ... Die Hochspannungs-Lithiumbatterien\") - file language pairs with its label, content read back personally"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -37277,10 +37291,12 @@
   "state": "file-url-and-source-language-consumer",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance direct probes 2026-11-11 (same method as account-endpoints-20261108 file-language pairing): EN-labelled file opens 200 application/pdf (GW_ESA-3 manual, English text on page 1); DE-labelled EMEA datasheet opens 200 application/pdf and its extracted page-1 text is genuine German (\"BAT-C Serie ... Die Hochspannungs-Lithiumbatterien\") - file language pairs with its label, content read back personally"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -37298,10 +37314,12 @@
   "state": "file-url-and-source-language-consumer",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance direct probes 2026-11-11 (same method as account-endpoints-20261108 file-language pairing): EN-labelled file opens 200 application/pdf (GW_ESA-3 manual, English text on page 1); DE-labelled EMEA datasheet opens 200 application/pdf and its extracted page-1 text is genuine German (\"BAT-C Serie ... Die Hochspannungs-Lithiumbatterien\") - file language pairs with its label, content read back personally"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
