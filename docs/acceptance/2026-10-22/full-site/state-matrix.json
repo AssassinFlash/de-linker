@@ -19171,7 +19171,9 @@
   "status": "pass",
   "environment": "review instance e2e (de legs) 2026-11-08",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1054: account.spec.ts rejected-sign-in parameterized en/de x 1440/390, German refusal asserted (4/4 green, 40.8s)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -20622,10 +20624,12 @@
   "state": "signed-out-notice",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1054: account.spec.ts signed-out flow on the German account at both widths + the English phone shape (journey test green, 14.5s)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -20642,10 +20646,12 @@
   "state": "signed-out-notice",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1054: account.spec.ts signed-out flow on the German account at both widths + the English phone shape (journey test green, 14.5s)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -20662,10 +20668,12 @@
   "state": "signed-out-notice",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1054: account.spec.ts signed-out flow on the German account at both widths + the English phone shape (journey test green, 14.5s)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -20884,10 +20892,12 @@
   "state": "rejected-sign-in-and-session-revocation",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1054: account.spec.ts rejected-sign-in parameterized en/de x 1440/390, German refusal asserted (4/4 green, 40.8s)"
+  ],
   "findings": [],
   "reclassified_from": "account:overview-rejected:en:390",
   "expected_result": "Rejected customers cannot sign in; show the current rejection/recovery state and invalidate an existing customer session. Do not invent a rejected dashboard.",
@@ -20906,10 +20916,12 @@
   "state": "rejected-sign-in-and-session-revocation",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1054: account.spec.ts rejected-sign-in parameterized en/de x 1440/390, German refusal asserted (4/4 green, 40.8s)"
+  ],
   "findings": [],
   "reclassified_from": "account:overview-rejected:de:1440",
   "expected_result": "Rejected customers cannot sign in; show the current rejection/recovery state and invalidate an existing customer session. Do not invent a rejected dashboard.",
@@ -20928,10 +20940,12 @@
   "state": "rejected-sign-in-and-session-revocation",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1054: account.spec.ts rejected-sign-in parameterized en/de x 1440/390, German refusal asserted (4/4 green, 40.8s)"
+  ],
   "findings": [],
   "reclassified_from": "account:overview-rejected:de:390",
   "expected_result": "Rejected customers cannot sign in; show the current rejection/recovery state and invalidate an existing customer session. Do not invent a rejected dashboard.",
