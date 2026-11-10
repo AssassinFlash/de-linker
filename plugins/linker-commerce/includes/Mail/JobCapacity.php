@@ -36,13 +36,6 @@ interface JobCapacity {
 	public function deleted( int $id ): void;
 
 	/**
-	 * Unschedule pending retries and clear transient attempt state on terminal failure.
-	 *
-	 * @param int $id Original native job.
-	 */
-	public function failed( int $id ): void;
-
-	/**
 	 * Replace the original job's pending attempt under the native transaction boundary.
 	 *
 	 * @param int $id Original job.

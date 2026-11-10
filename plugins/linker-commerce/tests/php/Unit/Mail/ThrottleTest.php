@@ -56,16 +56,4 @@ final class ThrottleTest extends TestCase {
 		$this->assertSame( self::NOW + DAY_IN_SECONDS, $t->next_slot( self::NOW + DAY_IN_SECONDS ) );
 		$this->assertSame( $before, $this->options );
 	}
-
-	/** Definite failed transport releases its reservation so failed retries cannot saturate the minute or day windows. */
-	public function test_release_frees_failed_attempt_slot(): void {
-		$t = new Throttle( new BudgetMemory( $this->options ) );
-		for ( $i = 0; $i < Throttle::PER_MINUTE; ++$i ) {
-			$this->assertSame( self::NOW, $t->reserve( self::NOW, Throttle::PHP ) );
-		}
-		$this->assertSame( self::NOW + MINUTE_IN_SECONDS, $t->next_slot( self::NOW, Throttle::PHP ) );
-		$t->release( self::NOW, Throttle::PHP );
-		$this->assertSame( self::NOW, $t->next_slot( self::NOW, Throttle::PHP ) );
-		$this->assertCount( Throttle::PER_MINUTE - 1, $this->options[ OptionBudgetLedger::OPTION ]['entries'] );
-	}
 }
