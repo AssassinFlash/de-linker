@@ -3831,10 +3831,12 @@
   "state": "approved-price",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 full lifecycle 390 green 2026-11-10 (pending-account.spec en/de 390: register->pending gate->inquiry->approve price->restricted product gate->reject)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -3880,10 +3882,12 @@
   "state": "approved-price",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 full lifecycle 390 green 2026-11-10 (pending-account.spec en/de 390: register->pending gate->inquiry->approve price->restricted product gate->reject)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -3923,10 +3927,12 @@
   "state": "pending-price-gate",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 full lifecycle 390 green 2026-11-10 (pending-account.spec en/de 390: register->pending gate->inquiry->approve price->restricted product gate->reject)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -3970,10 +3976,12 @@
   "state": "pending-price-gate",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 full lifecycle 390 green 2026-11-10 (pending-account.spec en/de 390: register->pending gate->inquiry->approve price->restricted product gate->reject)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -4012,10 +4020,12 @@
   "state": "restricted-price-gate",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 full lifecycle 390 green 2026-11-10 (pending-account.spec en/de 390: register->pending gate->inquiry->approve price->restricted product gate->reject)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -4059,10 +4069,12 @@
   "state": "restricted-price-gate",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 full lifecycle 390 green 2026-11-10 (pending-account.spec en/de 390: register->pending gate->inquiry->approve price->restricted product gate->reject)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -14432,10 +14444,12 @@
   "state": "quantity-edit",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e, draft-visual-states 4/4 green 2026-11-10 (en/de 1440/390, serial run)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -14452,10 +14466,12 @@
   "state": "quantity-edit",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e, draft-visual-states 4/4 green 2026-11-10 (en/de 1440/390, serial run)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -14472,10 +14488,12 @@
   "state": "quantity-edit",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e, draft-visual-states 4/4 green 2026-11-10 (en/de 1440/390, serial run)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -14514,10 +14532,12 @@
   "state": "quantity-zero",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e, inquiry-draft-actions 4/4 green 2026-11-10 (en/de 1440/390, serial run)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -14534,10 +14554,12 @@
   "state": "quantity-zero",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e, inquiry-draft-actions 4/4 green 2026-11-10 (en/de 1440/390, serial run)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -14554,10 +14576,12 @@
   "state": "quantity-zero",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e, inquiry-draft-actions 4/4 green 2026-11-10 (en/de 1440/390, serial run)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -14705,10 +14729,12 @@
   "state": "undo",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e, inquiry-draft-actions 4/4 green 2026-11-10 (en/de 1440/390, serial run)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -14752,10 +14778,12 @@
   "state": "undo",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e, inquiry-draft-actions 4/4 green 2026-11-10 (en/de 1440/390, serial run)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -14795,10 +14823,12 @@
   "state": "updating-disabled",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e, draft-visual-states 4/4 green 2026-11-10 (en/de 1440/390, serial run)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -14842,10 +14872,12 @@
   "state": "updating-disabled",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e, draft-visual-states 4/4 green 2026-11-10 (en/de 1440/390, serial run)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -14982,10 +15014,12 @@
   "state": "product-hover-focus",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e, inquiry-draft-actions 4/4 green 2026-11-10 (en/de 1440/390, serial run)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -15029,10 +15063,12 @@
   "state": "product-hover-focus",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance e2e, inquiry-draft-actions 4/4 green 2026-11-10 (en/de 1440/390, serial run)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -20741,10 +20777,12 @@
   "state": "overview-pending",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 full lifecycle 390 green 2026-11-10 (pending-account.spec en/de 390: register->pending gate->inquiry->approve price->restricted product gate->reject)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -20788,10 +20826,12 @@
   "state": "overview-pending",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 full lifecycle 390 green 2026-11-10 (pending-account.spec en/de 390: register->pending gate->inquiry->approve price->restricted product gate->reject)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -20832,10 +20872,12 @@
   "state": "overview-restricted",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 full lifecycle 390 green 2026-11-10 (pending-account.spec en/de 390: register->pending gate->inquiry->approve price->restricted product gate->reject)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -20853,10 +20895,12 @@
   "state": "overview-restricted",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 pending-account de-1440 run 2026-11-09 (restricted account overview: status reason + gate badge + main visible)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -20874,10 +20918,12 @@
   "state": "overview-restricted",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 full lifecycle 390 green 2026-11-10 (pending-account.spec en/de 390: register->pending gate->inquiry->approve price->restricted product gate->reject)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -21016,10 +21062,12 @@
   "state": "overview-approved",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 full lifecycle 390 green 2026-11-10 (pending-account.spec en/de 390: register->pending gate->inquiry->approve price->restricted product gate->reject)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -21065,10 +21113,12 @@
   "state": "overview-approved",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 full lifecycle 390 green 2026-11-10 (pending-account.spec en/de 390: register->pending gate->inquiry->approve price->restricted product gate->reject)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -22962,10 +23012,12 @@
   "state": "workspace",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 genie-reply-presentation.spec 10/10 green 2026-11-10 (locale x width x surface dock/workspace: waiting, markdown answer, reader-controlled scroll)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23343,10 +23395,12 @@
   "state": "thinking",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 genie-reply-presentation.spec 10/10 green 2026-11-10 (locale x width x surface dock/workspace: waiting, markdown answer, reader-controlled scroll)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23388,10 +23442,12 @@
   "state": "thinking",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 genie-reply-presentation.spec 10/10 green 2026-11-10 (locale x width x surface dock/workspace: waiting, markdown answer, reader-controlled scroll)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23432,10 +23488,12 @@
   "state": "answer-text",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 genie-reply-presentation.spec 10/10 green 2026-11-10 (locale x width x surface dock/workspace: waiting, markdown answer, reader-controlled scroll)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23476,10 +23534,12 @@
   "state": "answer-text",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 genie-reply-presentation.spec 10/10 green 2026-11-10 (locale x width x surface dock/workspace: waiting, markdown answer, reader-controlled scroll)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23699,10 +23759,12 @@
   "state": "product-add-pending",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 genie-card-actions.spec 12/12 green 2026-11-10 (locale x width x surface: data-state pending disabled + added success asserted per shape)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23719,10 +23781,12 @@
   "state": "product-add-pending",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 genie-card-actions.spec 12/12 green 2026-11-10 (locale x width x surface: data-state pending disabled + added success asserted per shape)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23739,10 +23803,12 @@
   "state": "product-add-pending",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 genie-card-actions.spec 12/12 green 2026-11-10 (locale x width x surface: data-state pending disabled + added success asserted per shape)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23783,10 +23849,12 @@
   "state": "product-add-success",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 genie-card-actions.spec 12/12 green 2026-11-10 (locale x width x surface: data-state pending disabled + added success asserted per shape)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23803,10 +23871,12 @@
   "state": "product-add-success",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 genie-card-actions.spec 12/12 green 2026-11-10 (locale x width x surface: data-state pending disabled + added success asserted per shape)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -23823,10 +23893,12 @@
   "state": "product-add-success",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 genie-card-actions.spec 12/12 green 2026-11-10 (locale x width x surface: data-state pending disabled + added success asserted per shape)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -24552,10 +24624,12 @@
   "state": "attachments-image-pdf",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 genie-attachments.spec 4/4 green 2026-11-10 (en/de x 1440/390, real nameplate image + PDF datasheet attachments)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -24572,10 +24646,12 @@
   "state": "attachments-image-pdf",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 genie-attachments.spec 4/4 green 2026-11-10 (en/de x 1440/390, real nameplate image + PDF datasheet attachments)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -24592,10 +24668,12 @@
   "state": "attachments-image-pdf",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 genie-attachments.spec 4/4 green 2026-11-10 (en/de x 1440/390, real nameplate image + PDF datasheet attachments)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -24836,10 +24914,12 @@
   "state": "long-conversation-scroll",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 genie-reply-presentation.spec 10/10 green 2026-11-10 (locale x width x surface dock/workspace: waiting, markdown answer, reader-controlled scroll)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -24883,10 +24963,12 @@
   "state": "long-conversation-scroll",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "c222 genie-reply-presentation.spec 10/10 green 2026-11-10 (locale x width x surface dock/workspace: waiting, markdown answer, reader-controlled scroll)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -34858,10 +34940,12 @@
   "state": "consumer-draft-readback",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1057: genie-save-readback.spec 4/4 green en/de x 1440/390 (merged) - save from Genie lands on account and reads back on the draft page (/loesungsentwurf|/cart)"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -34879,10 +34963,12 @@
   "state": "consumer-draft-readback",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1057: genie-save-readback.spec 4/4 green en/de x 1440/390 (merged) - save from Genie lands on account and reads back on the draft page (/loesungsentwurf|/cart)"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -34900,10 +34986,12 @@
   "state": "consumer-draft-readback",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1057: genie-save-readback.spec 4/4 green en/de x 1440/390 (merged) - save from Genie lands on account and reads back on the draft page (/loesungsentwurf|/cart)"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",

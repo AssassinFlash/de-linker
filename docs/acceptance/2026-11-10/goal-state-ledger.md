@@ -212,3 +212,54 @@ Nothing in this ledger marks the goal complete; it records what stands.
   3. draft-visual-states' staff-session fixture (global snapshot/restore)
      races with parallel suites - flaky only under multi-file parallel runs,
      4/4 green in isolation; needs serialization or a per-test fixture.
+
+## Batch: quick start field rhythm + choice labels reality (PR #1060, merged)
+
+- The rewritten "choice labels" test exposed a real visual defect, not a
+  measurement artifact: `.lp-quickstart-form` had ZERO rules in the WindPress
+  planner volume (the global `.lp-field` sets margin 0 and every other planner
+  form adds its own rhythm), so quick start rows rendered flush - the next
+  field's label sat pixel-exact on the previous select's bottom (DOM probe:
+  prev.bottom == own.top == 819.78, margin/padding 0).
+- Fix: same 16px sibling rule as `.lp-new-project`; deployed via
+  `just present review` + `just windpress-compile review` (cache mtime
+  1794302771 -> 1794304842, anchor classes present).
+- Test now targets the one-screen quick start reality (native select, >1
+  option, >=8px row breathing, native selectOption response). choice labels
+  4/4 green, full visual-details suite 28/28 green. PR #1060 CI green, merged.
+
+## Batch: matrix flips + pending-account fixes + genie determinism (PR pending)
+
+- 44 matrix rows flipped to pass (278 -> 322 cumulative; pending 162 -> 118):
+  draft x12 (inquiry-draft-actions 8/8 + draft-visual-states 8/8 on review,
+  assertion scope verified per state), price gates + account overview x13
+  (pending-account en/de x 390 green on c222 after two test defects fixed:
+  hardcoded /mein-konto/ waitForURL that always failed EN, and the custom
+  browser context never receiving the consent seed so the CookieYes overlay
+  blocked every 390 interaction), genie x19 (reply-presentation 10/10,
+  card-actions 12/12, attachments 4/4, consumer-draft-readback via merged
+  #1057 run - all assertion-mapped before flipping).
+- pending-account restricted phase now also asserts the product-page price
+  gate ("Not available for your account" / "Für Ihr Konto nicht verfügbar",
+  no price amount) - the restricted-price-gate rows flipped on this.
+- Genie inquiry-assessment determinism channel (services/genie app.py +
+  tools/local env): LINKER_GENIE_ASSESS_DETERMINISTIC=1 on local serves the
+  verdict through the same parser with a synthetic Jev answer. Root cause:
+  every local inquiry-notification send spent a REAL OpenRouter Jev call
+  inside the shell's 10 s window (Queue::WAIT_SECONDS); the window was
+  missed on review all afternoon (genie log: repeated undetermined
+  "deadline"). Production is untouched (env never set there). Genie pytest
+  20/20; verdict->handoff->mail chain proven delivering.
+- failure-injection 390 extension: 13/16 in the full run; de 1440 add
+  passed isolated. de 390 inquiry/contact remain RED and are NOT flipped,
+  NOT shipped: review's mail pipeline state is polluted (jobs created and
+  authorized, attempt actions scheduled +8 h ahead, nothing due; throttle/
+  ledger options already deleted without restoring delivery). This is an
+  instance-state pollution loop, documented as an E-line finding: failed/
+  orphaned mail jobs have no lifecycle recovery and their retry loop
+  self-sustains throttle saturation. Next batch: reset review from
+  snapshot, then land the fi spec changes (already written: ledger+throttle
+  reset beforeEach, subject-scoped mail assertions via persistent
+  linker-mail log, cron+AS runner in the poll).
+- genie-hero long run on c222 in flight at batch close (regression
+  coverage; no rows depend on it this batch).
