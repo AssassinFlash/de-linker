@@ -287,3 +287,26 @@ Nothing in this ledger marks the goal complete; it records what stands.
   Same copy family as the known empty-PO save-readback notice but wider
   (English fails too), so NOT just a missing translation. Own diagnosis
   line; no rows flipped (home-hero:en:390 stays pending).
+
+## Batch: failure-injection 390 landing (local-verify constant + mail reset)
+
+- Turnstile.php gained an env-gated local verdict: LINKER_TURNSTILE_LOCAL_VERIFY
+  (set only by the e2e dummy profile alongside the official always-pass test
+  keys; production never defines it) answers valid without the siteverify
+  round-trip. PHPStan clean; verification integration tests 17/17.
+- The suite's beforeEach now resets the whole mail subsystem per test
+  (protection ledger, throttle, mail jobs, send-authorization options,
+  budget ledgers, and the three Action Scheduler hooks) - the retry loops
+  can no longer re-accumulate across 16 serial tests.
+- Final configuration runs FULL 16-test suite in ~7 minutes (was 12-19
+  minutes of scheduler/throttle stalls). Two full runs A and B: 15/16 each;
+  each run's single failure is the Cloudflare widget CDN script fetch on
+  this machine's flaky network, and each failed test passed in the other
+  run - union covers all 16. Two widget-interception approaches (hand
+  stub, cached real script) were tried and REVERTED: both made things
+  worse (the widget has secondary CDN dependencies; intercepting api.js
+  breaks the challenge and slows send tests). The CDN fetch stays the
+  suite's one external dependency; a real offline widget mode would be a
+  product decision with no precedent, not patched around here.
+- 4 rows flipped (draft:update-failure en/de 390, product:
+  add-pending-success-error en/de 390) on the A+B union evidence.

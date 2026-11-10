@@ -193,6 +193,10 @@ export const TURNSTILE_PROFILE: Record<string, string> = {
 	LINKER_TURNSTILE_SITE_KEY: '1x00000000000000000000AA',
 	LINKER_TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA',
 	LINKER_TURNSTILE_HOSTNAME: 'example.com',
+	// The dummy keys always pass at Cloudflare; this constant makes the
+	// server answer that verdict locally (Turnstile.php) so the suite stops
+	// depending on this machine's network for every verification.
+	LINKER_TURNSTILE_LOCAL_VERIFY: '1',
 };
 
 /**
