@@ -65,3 +65,19 @@ Nothing in this ledger marks the goal complete; it records what stands.
 - Resource close-out: tracked evidence refreshed by local reruns restored,
   this batch's untracked outputs removed, no stray playwright/chromium
   processes, disk 1.1 Ti free.
+
+## Matrix write-back batch (main = 06b46f6e3)
+
+- 17 language/width variants flipped to pass, each on a parameterized suite
+  green on review this batch: card-actions 9 (product-add hover/retry/unverified
+  x en:390/de:1440/de:390), failure-ownership 5 (service-error-retry 3,
+  ordinary-draft-owner-isolation 2 - its de:1440 was already pass),
+  parts-card 3. genie-parts' csv de:1440 strict-mode ambiguity fixed in the
+  same commit (sentence stands in three places; anchored on the attachment
+  status), suite 8/8 after the fix.
+- Correction of that commit's message: it says 20 variants; the honest count
+  is 17 (the linked-product variants are home-family rows covered by
+  genie-hero, which was not run green this batch and stays pending).
+- Not flipped without real coverage: the 90 planner-chain variants (single
+  shape EN chains) and every other family whose suite has not run green in
+  the row's shape. Pending after this batch: 310.
