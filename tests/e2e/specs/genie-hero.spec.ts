@@ -264,7 +264,11 @@ for (const lang of LANGS) {
 					'.hero-badge',
 					'.hero-title',
 					'.hero-subtitle',
-					'.hero-capsules',
+					// The suggestion capsules only: the home-hero planner entry
+					// (LC template, data-linker-planner-entry) shares the class
+					// and is a configurator entry, not part of the resting
+					// Genie hero, so it is not required to hide.
+					'.hero-capsules:not([data-linker-planner-entry])',
 					'.hero-footnote',
 				]) {
 					await expect(page.locator(selector)).toBeHidden();
@@ -279,16 +283,35 @@ for (const lang of LANGS) {
 					.toBeGreaterThan(0);
 				expect(page.url()).toBe(instance().url + path);
 
-				// Four columns at 1440, two on a phone (owner ruling).
-				const columns = await page
-					.locator('.linker-genie-hero__cards')
-					.evaluate(
-						(element) =>
-							getComputedStyle(element).gridTemplateColumns.split(
-								' '
-							).length
-					);
-				expect(columns).toBe(viewport.width > 860 ? 4 : 2);
+				// Four columns above the dock's 860px breakpoint, two down to
+				// the prototype's 600px, and one full-width column below it
+				// (hero.css: a phone's two-column action ran out of room for
+				// whole words). A grid not yet laid out reports 'none' - poll
+				// until the browser has actually laid the tracks out.
+				const grid = page.locator('.linker-genie-hero__cards');
+				await expect(grid).toBeVisible();
+				await expect
+					.poll(
+						() =>
+							grid.evaluate((element) =>
+								getComputedStyle(element)
+									.gridTemplateColumns === 'none'
+									? 0
+									: getComputedStyle(
+											element
+										).gridTemplateColumns.split(' ').length
+							),
+						{ timeout: 15_000 }
+					)
+					.toBeGreaterThan(0);
+				const columns = await grid.evaluate(
+					(element) =>
+						getComputedStyle(element).gridTemplateColumns.split(' ')
+							.length
+				);
+				expect(columns).toBe(
+					viewport.width > 860 ? 4 : viewport.width > 600 ? 2 : 1
+				);
 
 				await scrollTranscript(page, 'start');
 				await shot(page, `hero-${at}-answer`);
