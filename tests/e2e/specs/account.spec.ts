@@ -140,198 +140,217 @@ for (const { locale, account, lost } of LOCALES) {
 		await shot(page, `${locale}-wrong-password`);
 	});
 
-	test(`${locale}: the lost-password request answers and its link opens the new-password card`, async ({
-		page,
-	}) => {
-		const login = createCustomer(Date.now(), locale);
-		await page.goto(url(lost));
-		const field = page.locator(
-			'input#user_login, input[name="user_login"]'
-		);
-		await expect(
-			field.first(),
-			'the reset form asks for the account'
-		).toBeVisible();
-		await field.first().fill(login);
-		await page.locator('button[type="submit"]').first().click();
-		await page.waitForLoadState('load');
-		await expect(
-			page.locator('.woocommerce-message, .woocommerce-info').first(),
-			'the request is answered'
-		).toBeVisible();
-		await expect(
-			page.locator('.woocommerce-error'),
-			'an existing account is not refused'
-		).toHaveCount(0);
-		await shot(page, `${locale}-lost-password`);
+	for (const width of [1440, 390]) {
+		test(`${locale}-${width}: the lost-password request answers and its link opens the new-password card`, async ({
+			page,
+		}) => {
+			await page.setViewportSize({
+				width,
+				height: width === 390 ? 844 : 900,
+			});
+			const login = createCustomer(Date.now(), locale);
+			await page.goto(url(lost));
+			const field = page.locator(
+				'input#user_login, input[name="user_login"]'
+			);
+			await expect(
+				field.first(),
+				'the reset form asks for the account'
+			).toBeVisible();
+			await field.first().fill(login);
+			await page.locator('button[type="submit"]').first().click();
+			await page.waitForLoadState('load');
+			await expect(
+				page.locator('.woocommerce-message, .woocommerce-info').first(),
+				'the request is answered'
+			).toBeVisible();
+			await expect(
+				page.locator('.woocommerce-error'),
+				'an existing account is not refused'
+			).toHaveCount(0);
+			await shot(page, `${locale}-lost-password`);
 
-		// The link the mail carries, opened for real. The key is the account's
-		// own (get_password_reset_key through WP-CLI) and the fixture is the
-		// account this test just created — never a made-up key the chain would
-		// only have to reject.
-		const id = wp(['user', 'get', login, '--field=ID']).trim();
-		if (!/^\d+$/.test(id)) {
-			throw new Error(`the fixture account has no id: ${id}`);
-		}
-		const key = wp([
-			'eval',
-			`$u = get_user_by( 'login', '${login}' ); echo get_password_reset_key( $u );`,
-		]).trim();
-		expect(key, 'the fixture account carries a reset key').not.toBe('');
+			// The link the mail carries, opened for real. The key is the account's
+			// own (get_password_reset_key through WP-CLI) and the fixture is the
+			// account this test just created — never a made-up key the chain would
+			// only have to reject.
+			const id = wp(['user', 'get', login, '--field=ID']).trim();
+			if (!/^\d+$/.test(id)) {
+				throw new Error(`the fixture account has no id: ${id}`);
+			}
+			const key = wp([
+				'eval',
+				`$u = get_user_by( 'login', '${login}' ); echo get_password_reset_key( $u );`,
+			]).trim();
+			expect(key, 'the fixture account carries a reset key').not.toBe('');
 
-		await page.goto(
-			url(
-				`${lost}?show-reset-form=true&key=${encodeURIComponent(key)}&id=${id}`
-			)
-		);
-		await page.waitForLoadState('load');
+			await page.goto(
+				url(
+					`${lost}?show-reset-form=true&key=${encodeURIComponent(key)}&id=${id}`
+				)
+			);
+			await page.waitForLoadState('load');
 
-		// The redesigned card, with Woo's own hidden credentials inside it.
-		const card = page.locator('.linker-auth-inner--solo .linker-auth-card');
-		await expect(
-			card,
-			'the reset link lands on the card, not on bare WooCommerce markup'
-		).toBeVisible();
-		await expect(
-			card.locator('h1'),
-			'the card titles the new password'
-		).toHaveText(
-			locale === 'de'
-				? 'Wählen Sie ein neues Passwort'
-				: 'Choose a new password'
-		);
-		await expect(page.locator('#password_1')).toBeVisible();
-		await expect(page.locator('#password_2')).toBeVisible();
-		await expect(
-			page.locator('input[name="reset_key"]'),
-			'the key from the link rides along'
-		).toHaveValue(key);
-		await expect(
-			page.locator('input[name="reset_login"]'),
-			'the login from the link rides along'
-		).toHaveValue(login);
-		await expect(
-			page.locator('input[name="woocommerce-reset-password-nonce"]'),
-			'the form posts with WooCommerce own nonce'
-		).not.toHaveValue('');
-		await shot(page, `${locale}-reset-form`);
+			// The redesigned card, with Woo's own hidden credentials inside it.
+			const card = page.locator(
+				'.linker-auth-inner--solo .linker-auth-card'
+			);
+			await expect(
+				card,
+				'the reset link lands on the card, not on bare WooCommerce markup'
+			).toBeVisible();
+			await expect(
+				card.locator('h1'),
+				'the card titles the new password'
+			).toHaveText(
+				locale === 'de'
+					? 'Wählen Sie ein neues Passwort'
+					: 'Choose a new password'
+			);
+			await expect(page.locator('#password_1')).toBeVisible();
+			await expect(page.locator('#password_2')).toBeVisible();
+			await expect(
+				page.locator('input[name="reset_key"]'),
+				'the key from the link rides along'
+			).toHaveValue(key);
+			await expect(
+				page.locator('input[name="reset_login"]'),
+				'the login from the link rides along'
+			).toHaveValue(login);
+			await expect(
+				page.locator('input[name="woocommerce-reset-password-nonce"]'),
+				'the form posts with WooCommerce own nonce'
+			).not.toHaveValue('');
+			await shot(page, `${locale}-reset-form`);
 
-		// A password below the site's minimum never leaves the page: the meter
-		// is WooCommerce's own (min_password_strength 3) and it holds the form's
-		// button. There is no server-side strength gate to reach — WooCommerce
-		// refuses nothing weaker than the empty string.
-		await page.fill('#password_1', 'abc');
-		await page.fill('#password_2', 'abc');
-		await expect(
-			page.locator(
-				'form.woocommerce-ResetPassword button[type="submit"]'
-			),
-			'WooCommerce own meter holds a weak password on the page'
-		).toBeDisabled();
+			// A password below the site's minimum never leaves the page: the meter
+			// is WooCommerce's own (min_password_strength 3) and it holds the form's
+			// button. There is no server-side strength gate to reach — WooCommerce
+			// refuses nothing weaker than the empty string.
+			await page.fill('#password_1', 'abc');
+			await page.fill('#password_2', 'abc');
+			await expect(
+				page.locator(
+					'form.woocommerce-ResetPassword button[type="submit"]'
+				),
+				'WooCommerce own meter holds a weak password on the page'
+			).toBeDisabled();
 
-		// Two different passwords: the chain's own line names the mismatch and
-		// the form stays put (no round trip, no lost key).
-		await page.fill('#password_1', NEW_PASSWORD);
-		await page.fill('#password_2', `${NEW_PASSWORD}x`);
-		await page.locator('button[type="submit"]').click();
-		await expect(
-			page.locator('[data-password-mismatch]'),
-			'the mismatch is named under the field it belongs to'
-		).toBeVisible();
-		await expect(page).toHaveURL(/show-reset-form/);
-		await shot(page, `${locale}-reset-mismatch`);
+			// Two different passwords: the chain's own line names the mismatch and
+			// the form stays put (no round trip, no lost key).
+			await page.fill('#password_1', NEW_PASSWORD);
+			await page.fill('#password_2', `${NEW_PASSWORD}x`);
+			await page.locator('button[type="submit"]').click();
+			await expect(
+				page.locator('[data-password-mismatch]'),
+				'the mismatch is named under the field it belongs to'
+			).toBeVisible();
+			await expect(page).toHaveURL(/show-reset-form/);
+			await shot(page, `${locale}-reset-mismatch`);
 
-		// The real save: the same card resets the password, WooCommerce's own
-		// confirmation opens the sign-in card, and the new password signs in —
-		// the whole chain, with the account this test created.
-		await page.fill('#password_2', NEW_PASSWORD);
-		await page.locator('button[type="submit"]').click();
-		await page.waitForLoadState('load');
-		await expect(
-			page.locator('.woocommerce-message, .woocommerce-info').first(),
-			'the reset is confirmed on the sign-in card'
-		).toBeVisible();
-		await expect(page.locator('#username')).toBeVisible();
-		await shot(page, `${locale}-reset-done`);
+			// The real save: the same card resets the password, WooCommerce's own
+			// confirmation opens the sign-in card, and the new password signs in —
+			// the whole chain, with the account this test created.
+			await page.fill('#password_2', NEW_PASSWORD);
+			await page.locator('button[type="submit"]').click();
+			await page.waitForLoadState('load');
+			await expect(
+				page.locator('.woocommerce-message, .woocommerce-info').first(),
+				'the reset is confirmed on the sign-in card'
+			).toBeVisible();
+			await expect(page.locator('#username')).toBeVisible();
+			await shot(page, `${locale}-reset-done`);
 
-		await page.fill('#username', login);
-		await page.fill('#password', NEW_PASSWORD);
-		await page.locator('button[name="login"]').focus();
-		await page.keyboard.press('Enter');
-		await page.waitForLoadState('load');
-		await expect(
-			page.locator('a[href*="action=logout"]'),
-			'the password the reset saved is the one that signs in'
-		).not.toHaveCount(0);
-	});
+			await page.fill('#username', login);
+			await page.fill('#password', NEW_PASSWORD);
+			await page.locator('button[name="login"]').focus();
+			await page.keyboard.press('Enter');
+			await page.waitForLoadState('load');
+			await expect(
+				page.locator('a[href*="action=logout"]'),
+				'the password the reset saved is the one that signs in'
+			).not.toHaveCount(0);
+		});
+	}
+	for (const width of [1440, 390]) {
+		test(`${locale}-${width}: a wrong or spent reset key never offers the new-password form`, async ({
+			page,
+		}) => {
+			await page.setViewportSize({
+				width,
+				height: width === 390 ? 844 : 900,
+			});
+			const login = createCustomer(Date.now(), locale);
+			const id = wp(['user', 'get', login, '--field=ID']).trim();
+			if (!/^\d+$/.test(id)) {
+				throw new Error(`the fixture account has no id: ${id}`);
+			}
+			const key = wp([
+				'eval',
+				`$u = get_user_by( 'login', '${login}' ); echo get_password_reset_key( $u );`,
+			]).trim();
+			expect(key, 'the fixture account carries a reset key').not.toBe('');
+			const reset = `${lost}?show-reset-form=true&key=${encodeURIComponent(
+				key
+			)}&id=${id}`;
 
-	test(`${locale}: a wrong or spent reset key never offers the new-password form`, async ({
-		page,
-	}) => {
-		const login = createCustomer(Date.now(), locale);
-		const id = wp(['user', 'get', login, '--field=ID']).trim();
-		if (!/^\d+$/.test(id)) {
-			throw new Error(`the fixture account has no id: ${id}`);
-		}
-		const key = wp([
-			'eval',
-			`$u = get_user_by( 'login', '${login}' ); echo get_password_reset_key( $u );`,
-		]).trim();
-		expect(key, 'the fixture account carries a reset key').not.toBe('');
-		const reset = `${lost}?show-reset-form=true&key=${encodeURIComponent(
-			key
-		)}&id=${id}`;
+			// The redesigned card answers in one of two modes. A key that is not
+			// the account's own never reaches the new-password form: the same
+			// card asks for the account instead (the request form).
+			await page.goto(
+				url(
+					`${lost}?show-reset-form=true&key=${encodeURIComponent(
+						`not-${key}`
+					)}&id=${id}`
+				)
+			);
+			await page.waitForLoadState('load');
+			const card = page.locator(
+				'.linker-auth-inner--solo .linker-auth-card'
+			);
+			await expect(card, 'the card itself answers').toBeVisible();
+			await expect(
+				page
+					.locator('input#user_login, input[name="user_login"]')
+					.first(),
+				'a wrong key gets the request form'
+			).toBeVisible();
+			await expect(
+				page.locator('#password_1'),
+				'a wrong key never sees password fields'
+			).toHaveCount(0);
+			await shot(page, `${locale}-reset-wrong-key`);
 
-		// The redesigned card answers in one of two modes. A key that is not
-		// the account's own never reaches the new-password form: the same
-		// card asks for the account instead (the request form).
-		await page.goto(
-			url(
-				`${lost}?show-reset-form=true&key=${encodeURIComponent(
-					`not-${key}`
-				)}&id=${id}`
-			)
-		);
-		await page.waitForLoadState('load');
-		const card = page.locator('.linker-auth-inner--solo .linker-auth-card');
-		await expect(card, 'the card itself answers').toBeVisible();
-		await expect(
-			page.locator('input#user_login, input[name="user_login"]').first(),
-			'a wrong key gets the request form'
-		).toBeVisible();
-		await expect(
-			page.locator('#password_1'),
-			'a wrong key never sees password fields'
-		).toHaveCount(0);
-		await shot(page, `${locale}-reset-wrong-key`);
+			// The account's own key opens the new-password form and saves once.
+			await page.goto(url(reset));
+			await page.waitForLoadState('load');
+			await expect(page.locator('#password_1')).toBeVisible();
+			await page.fill('#password_1', NEW_PASSWORD);
+			await page.fill('#password_2', NEW_PASSWORD);
+			await page.locator('button[type="submit"]').click();
+			await page.waitForLoadState('load');
+			await expect(
+				page.locator('.woocommerce-message, .woocommerce-info').first(),
+				'the account own key saves once'
+			).toBeVisible();
 
-		// The account's own key opens the new-password form and saves once.
-		await page.goto(url(reset));
-		await page.waitForLoadState('load');
-		await expect(page.locator('#password_1')).toBeVisible();
-		await page.fill('#password_1', NEW_PASSWORD);
-		await page.fill('#password_2', NEW_PASSWORD);
-		await page.locator('button[type="submit"]').click();
-		await page.waitForLoadState('load');
-		await expect(
-			page.locator('.woocommerce-message, .woocommerce-info').first(),
-			'the account own key saves once'
-		).toBeVisible();
-
-		// The spent key no longer opens the new-password form: the same
-		// address falls back to the request form.
-		await page.goto(url(reset));
-		await page.waitForLoadState('load');
-		await expect(
-			page.locator('input#user_login, input[name="user_login"]').first(),
-			'the spent key gets the request form'
-		).toBeVisible();
-		await expect(
-			page.locator('#password_1'),
-			'the spent key never sees password fields'
-		).toHaveCount(0);
-		await shot(page, `${locale}-reset-spent-key`);
-	});
+			// The spent key no longer opens the new-password form: the same
+			// address falls back to the request form.
+			await page.goto(url(reset));
+			await page.waitForLoadState('load');
+			await expect(
+				page
+					.locator('input#user_login, input[name="user_login"]')
+					.first(),
+				'the spent key gets the request form'
+			).toBeVisible();
+			await expect(
+				page.locator('#password_1'),
+				'the spent key never sees password fields'
+			).toHaveCount(0);
+			await shot(page, `${locale}-reset-spent-key`);
+		});
+	}
 
 	test(`${locale}: account details save names its error and keeps the typing`, async ({
 		page,
