@@ -24,6 +24,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import urllib.error
 import urllib.request
 from collections.abc import Callable, Iterator, Sequence
 from pathlib import Path
@@ -55,16 +56,34 @@ def log(message: str) -> None:
     )
 
 
+FEED_FETCH_ATTEMPTS = 4
+# Backoff ladder for the feed fetch. The VPS→Hostinger transit (Cogent/Arelia
+# hops, mtr 2026-11-11) intermittently stalls the TLS handshake for tens of
+# seconds; a single attempt fails the whole sync and leaves the engine on the
+# previous compatibility for another 15-minute timer window.
+FEED_FETCH_BACKOFF_S = (0, 5, 15, 30)
+FEED_FETCH_TIMEOUT_S = 90
+
+
 def fetch_feed(url: str) -> bytes:
-    request = urllib.request.Request(
-        url,
-        headers={
-            "User-Agent": "linker-engine-feed-sync/2.0",
-            "Cache-Control": "no-cache",
-        },
-    )
-    with urllib.request.urlopen(request, timeout=60) as response:
-        return bytes(response.read())
+    last_error: Exception | None = None
+    for delay in FEED_FETCH_BACKOFF_S[:FEED_FETCH_ATTEMPTS]:
+        if delay:
+            time.sleep(delay)
+        request = urllib.request.Request(
+            url,
+            headers={
+                "User-Agent": "linker-engine-feed-sync/2.0",
+                "Cache-Control": "no-cache",
+            },
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=FEED_FETCH_TIMEOUT_S) as response:
+                return bytes(response.read())
+        except (urllib.error.URLError, OSError, TimeoutError) as error:
+            last_error = error
+            log(f"feed fetch failed ({type(error).__name__}: {error}); retrying")
+    raise RuntimeError(f"feed fetch failed after {FEED_FETCH_ATTEMPTS} attempts") from last_error
 
 
 def restart_engine() -> subprocess.CompletedProcess[str]:
