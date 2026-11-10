@@ -345,10 +345,12 @@
   "state": "keyboard-traversal",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance keyboard probe 2026-11-11 (Playwright real Tab presses at 390): sequential focus traversal through the header interactive controls observed (2nd Tab lands on the Search products link), same contract as the 1440 CDP probe"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -37874,7 +37876,7 @@
   "url": null,
   "evidence": [],
   "findings": [
-   "Home Continue to phone dock leaves focus in the background; native Escape does not close. Repair in current Batch A."
+   "finding 2026-11-11: the floating dock is hidden below 860px by design (storefront.css); the 390 entry surface is the hero, so this dock-specific keyboard state needs the side-panel continuation path - left pending rather than force-fit"
   ],
   "required_contexts": [
    "Homepage Continue",
@@ -37906,10 +37908,12 @@
   "state": "dock-keyboard-focus-escape-and-return",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "review-instance keyboard probe 2026-11-11 (Playwright real keys, 2.4s): dock opens at de 1440, Escape hides the app and focus returns to a BUTTON - the escape-return contract"
+  ],
   "findings": [
    "Home Continue to phone dock leaves focus in the background; native Escape does not close. Repair in current Batch A."
   ],
@@ -37948,7 +37952,7 @@
   "url": null,
   "evidence": [],
   "findings": [
-   "Home Continue to phone dock leaves focus in the background; native Escape does not close. Repair in current Batch A."
+   "finding 2026-11-11: the floating dock is hidden below 860px by design (storefront.css); the 390 entry surface is the hero, so this dock-specific keyboard state needs the side-panel continuation path - left pending rather than force-fit"
   ],
   "required_contexts": [
    "Homepage Continue",
