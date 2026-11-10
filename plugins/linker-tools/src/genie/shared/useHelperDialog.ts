@@ -103,14 +103,48 @@ export function useHelperDialog( {
 			[ ...root.querySelectorAll< HTMLElement >( CONTROLS ) ].filter(
 				usable
 			);
-		const focusInitial = () => {
+		// The composer is the dialog's own entrance, and the app disables it
+		// until the identity lookup behind the conversation settles (App.tsx).
+		// Focusing the first control instead started the sheet's keyboard on
+		// the guest "Sign in" link, which the mount prints above the app.
+		const timers: number[] = [];
+		const focusComposer = () => {
+			const active = root.ownerDocument.activeElement;
+			if ( active && root.contains( active ) ) {
+				// Focus is already in the dialog; never pull it away.
+				return true;
+			}
 			const field = root.querySelector< HTMLTextAreaElement >(
 				'.linker-genie-app__input'
 			);
-			( field && usable( field )
-				? field
-				: ( controls()[ 0 ] ?? root )
-			).focus( { preventScroll: true } );
+			if ( ! field || ! usable( field ) ) {
+				return false;
+			}
+			field.focus( { preventScroll: true } );
+			return true;
+		};
+		const focusInitial = () => {
+			if ( focusComposer() ) {
+				return;
+			}
+			// A composer that is not there yet, or still disabled, is not a
+			// missing entrance: the app is mounting or the lookup is running.
+			// Wait for it rather than hand the dialog to the first control.
+			let waited = 0;
+			const retry = window.setInterval( () => {
+				waited += 100;
+				if ( ! focusComposer() && waited < 5000 ) {
+					return;
+				}
+				window.clearInterval( retry );
+				const active = root.ownerDocument.activeElement;
+				if ( ! active || ! root.contains( active ) ) {
+					( controls()[ 0 ] ?? root ).focus( {
+						preventScroll: true,
+					} );
+				}
+			}, 100 );
+			timers.push( retry );
 		};
 		const frame = requestAnimationFrame( focusInitial );
 		const key = ( event: KeyboardEvent ) => {
@@ -153,6 +187,7 @@ export function useHelperDialog( {
 		document.addEventListener( 'keydown', key );
 		return () => {
 			cancelAnimationFrame( frame );
+			timers.forEach( ( timer ) => window.clearInterval( timer ) );
 			document.removeEventListener( 'keydown', key );
 			background.forEach( ( item ) => {
 				if ( item.node.inert ) {

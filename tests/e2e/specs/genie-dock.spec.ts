@@ -237,3 +237,170 @@ test.describe('the Genie dock', () => {
 		}
 	});
 });
+
+/**
+ * The dock's keyboard contract at 390 (state-matrix rows
+ * `genie:dock-keyboard-focus-escape-and-return:en:390` and `:de:390`).
+ *
+ * The floating dock is hidden below 860px by design (genie.css), so the 390
+ * surface is the hero and the path that carries the dock's keyboard is the
+ * side-panel continuation: the hero's "Continue in the side panel" hands the
+ * conversation to the dock, which genie.css turns into a bottom sheet and
+ * useHelperDialog turns into a modal dialog. The rows' contract is applied
+ * there, not re-invented: the sheet takes the keyboard, Tab stays inside it,
+ * a nested Help disclosure takes Escape first and gives focus back to its
+ * summary, the next Escape closes the sheet, and focus returns to where the
+ * keyboard was before the sheet.
+ */
+const LOCALES = [
+	{ lang: 'en', base: '/', continueLabel: 'Continue in the side panel' },
+	{
+		lang: 'de',
+		base: '/de/',
+		continueLabel: 'In der Seitenleiste fortsetzen',
+	},
+] as const;
+
+for (const locale of LOCALES) {
+	test.describe(`the Genie sheet's keyboard at 390 · ${locale.lang}`, () => {
+		test.use({ viewport: { width: 390, height: 844 } });
+
+		test('the side panel takes focus, traps Tab, and Escape returns it', async ({
+			page,
+		}) => {
+			await page.goto(`${instance().url}${locale.base}`);
+			await expect(
+				page.locator('.hero-cinematic[data-linker-genie-hero="ready"]')
+			).toHaveCount(1);
+			// The hero is the page's surface at this width; the dock's bubble
+			// is hidden by genie.css, and this test fails loudly if that
+			// changes rather than silently testing the desktop dock.
+			await expect(page.locator('.linker-genie-open')).not.toBeVisible();
+
+			// Unfold the hero's conversation from the keyboard alone, then
+			// hand it to the dock — the continuation path the matrix row names.
+			await page.fill('.hero-prompt', 'Which inverter fits 10 kWp?');
+			await page.press('.hero-prompt', 'Enter');
+			const handover = page.getByRole('button', {
+				name: locale.continueLabel,
+			});
+			await expect(handover, 'the way into the side panel').toBeVisible({
+				timeout: 15_000,
+			});
+			await handover.click();
+
+			// The sheet: the mount is the dialog, modal at this width, with
+			// the background inert and the page's scroll held.
+			const dialog = page.locator('[data-linker-genie-mount]');
+			await expect(dialog, 'the side panel is up').toHaveAttribute(
+				'role',
+				'dialog',
+				{ timeout: 30_000 }
+			);
+			await expect(dialog).toHaveAttribute('aria-modal', 'true');
+			// The sheet is the fixed panel; `.linker-genie` itself stays a
+			// zero-height positioning box at this width, so its visibility
+			// says nothing about the sheet.
+			await expect(
+				page.locator('.linker-genie-panel'),
+				'the sheet is on screen'
+			).toBeVisible();
+			await expect
+				.poll(
+					() =>
+						page.evaluate(
+							() => document.querySelectorAll('[inert]').length
+						),
+					'the page behind the sheet is inert'
+				)
+				.toBeGreaterThan(0);
+			expect(
+				await page.evaluate(() => document.body.style.overflow),
+				'the page scroll is held behind the sheet'
+			).toBe('hidden');
+
+			// Initial focus is the conversation's own entrance, not the
+			// guest links the mount prints above it. The app disables the
+			// composer until the identity lookup settles, so this is also
+			// the assertion that the wait for it lands.
+			const composer = page.locator('#linker-genie-input');
+			await expect(composer, 'the composer takes the focus').toBeFocused({
+				timeout: 15_000,
+			});
+
+			// Tab stays inside: the sheet is modal, so no Tab may reach the
+			// page behind it, and the guest account links inside it remain
+			// reachable (the row's "guest account links" context).
+			let guestReached = false;
+			for (let i = 0; i < 14; i++) {
+				await page.keyboard.press('Tab');
+				const focus = await page.evaluate(() => ({
+					inside: !!document.activeElement?.closest(
+						'[data-linker-genie-mount]'
+					),
+					guest: !!document.activeElement?.closest(
+						'.linker-guest-account-links'
+					),
+					active: document.activeElement?.outerHTML.slice(0, 120),
+				}));
+				expect(focus.inside, `Tab ${i}: ${focus.active}`).toBe(true);
+				guestReached ||= focus.guest;
+			}
+			expect(
+				guestReached,
+				'the guest account links stay keyboard reachable inside the sheet'
+			).toBe(true);
+
+			// A nested disclosure takes Escape first and gives focus back to
+			// its own summary; the sheet stays open.
+			const help = page.locator('.linker-genie-help');
+			await help.locator('summary').click();
+			await expect(help).toHaveAttribute('open', '');
+			await page.keyboard.press('Escape');
+			await expect(
+				help,
+				'Escape closes the nested disclosure first'
+			).not.toHaveAttribute('open', '');
+			await expect(
+				help.locator('summary'),
+				'and gives focus back to its summary'
+			).toBeFocused();
+			await expect(
+				dialog,
+				'the sheet is still open after the nested Escape'
+			).toHaveAttribute('aria-modal', 'true');
+
+			// The next Escape is the sheet's own: it closes, releases the
+			// page, and focus returns to where the keyboard was.
+			await page.keyboard.press('Escape');
+			await expect(page.locator('.linker-genie-panel')).not.toBeVisible({
+				timeout: 15_000,
+			});
+			await expect(dialog).toBeHidden();
+			await expect
+				.poll(() =>
+					page.evaluate(
+						() => document.querySelectorAll('[inert]').length
+					)
+				)
+				.toBe(0);
+			expect(
+				await page.evaluate(() => document.body.style.overflow),
+				'the page scroll is released'
+			).toBe('');
+			await expect(
+				page.locator('.hero-prompt'),
+				'focus returns to the hero entry that handed the conversation over'
+			).toBeFocused();
+
+			// The returned focus is usable: the hero takes the conversation
+			// back in place, so closing the sheet never strands the keyboard.
+			await page.fill('.hero-prompt', 'And which battery pairs with it?');
+			await page.press('.hero-prompt', 'Enter');
+			await expect(
+				page.locator('.linker-genie-hero__surface'),
+				'the hero reopens from the keyboard'
+			).toBeVisible({ timeout: 15_000 });
+		});
+	});
+}

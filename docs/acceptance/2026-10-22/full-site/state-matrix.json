@@ -37877,12 +37877,15 @@
   "state": "dock-keyboard-focus-escape-and-return",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-dock.spec.ts 'the side panel takes focus, traps Tab, and Escape returns it' (en 390x844) - green on the instance cdock390 built from snapshot 20261105-1208 (2 passed, 7.8s). The spec drives the side-panel continuation: hero prompt -> Enter -> 'Continue in the side panel' -> the dock's bottom sheet. Asserts role=dialog + aria-modal=true, page inert, body scroll held, composer as the entrance focus, 14 Tabs all inside the mount with the guest account links reachable, nested Help taking the first Escape and giving focus back to its summary, the second Escape closing the sheet and releasing inert/scroll, and focus returning to .hero-prompt, which then reopens the hero from the keyboard. Regression proof: with useHelperDialog reverted to main and the bundle rebuilt, both locales fail at the composer entrance assertion."
+  ],
   "findings": [
-   "finding 2026-11-11: the floating dock is hidden below 860px by design (storefront.css); the 390 entry surface is the hero, so this dock-specific keyboard state needs the side-panel continuation path - left pending rather than force-fit"
+   "finding 2026-11-11: the floating dock is hidden below 860px by design (storefront.css); the 390 entry surface is the hero, so this dock-specific keyboard state needs the side-panel continuation path - left pending rather than force-fit",
+   "resolved 2026-11-11: the side-panel continuation path the pending finding named was exercised at 390 and the contract holds. Found and fixed next to it: the sheet's entrance focus landed on the guest 'Sign in' link because useHelperDialog focused the first usable control while the app disables the composer behind the identity lookup; the hook now waits for the composer and never takes focus from inside the dialog."
   ],
   "required_contexts": [
    "Homepage Continue",
@@ -37902,9 +37905,12 @@
    "provenance"
   ],
   "applicability": {
-   "status": "pending",
+   "status": "applicable-observed",
    "predicate": "Genie helper can be opened at this width; phone modal and desktop nonmodal boundaries are validated separately.",
-   "evidence": []
+   "evidence": [
+    "the hero's 'Continue in the side panel' hands the conversation to the dock, which genie.css (max-width:860px) renders as the bottom sheet; useHelperDialog owns its keyboard"
+   ],
+   "result": "The dock's keyboard contract was exercised through the side-panel continuation at 390: modal boundary, Tab trap, nested Escape priority, and escape-return to the hero entry."
   },
   "verified_checks": {}
  },
@@ -37953,12 +37959,15 @@
   "state": "dock-keyboard-focus-escape-and-return",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-dock.spec.ts 'the side panel takes focus, traps Tab, and Escape returns it' (de 390x844) - green on the instance cdock390 built from snapshot 20261105-1208 (2 passed, 7.8s). The spec drives the side-panel continuation: hero prompt -> Enter -> 'In der Seitenleiste fortsetzen' -> the dock's bottom sheet. Asserts role=dialog + aria-modal=true, page inert, body scroll held, composer as the entrance focus, 14 Tabs all inside the mount with the guest account links reachable, nested Help taking the first Escape and giving focus back to its summary, the second Escape closing the sheet and releasing inert/scroll, and focus returning to .hero-prompt, which then reopens the hero from the keyboard. Regression proof: with useHelperDialog reverted to main and the bundle rebuilt, both locales fail at the composer entrance assertion."
+  ],
   "findings": [
-   "finding 2026-11-11: the floating dock is hidden below 860px by design (storefront.css); the 390 entry surface is the hero, so this dock-specific keyboard state needs the side-panel continuation path - left pending rather than force-fit"
+   "finding 2026-11-11: the floating dock is hidden below 860px by design (storefront.css); the 390 entry surface is the hero, so this dock-specific keyboard state needs the side-panel continuation path - left pending rather than force-fit",
+   "resolved 2026-11-11: the side-panel continuation path the pending finding named was exercised at 390 and the contract holds. Found and fixed next to it: the sheet's entrance focus landed on the guest 'Sign in' link because useHelperDialog focused the first usable control while the app disables the composer behind the identity lookup; the hook now waits for the composer and never takes focus from inside the dialog."
   ],
   "required_contexts": [
    "Homepage Continue",
@@ -37978,9 +37987,12 @@
    "provenance"
   ],
   "applicability": {
-   "status": "pending",
+   "status": "applicable-observed",
    "predicate": "Genie helper can be opened at this width; phone modal and desktop nonmodal boundaries are validated separately.",
-   "evidence": []
+   "evidence": [
+    "the hero's 'Continue in the side panel' hands the conversation to the dock, which genie.css (max-width:860px) renders as the bottom sheet; useHelperDialog owns its keyboard"
+   ],
+   "result": "The dock's keyboard contract was exercised through the side-panel continuation at 390: modal boundary, Tab trap, nested Escape priority, and escape-return to the hero entry."
   },
   "verified_checks": {}
  },
