@@ -158,9 +158,20 @@ async function header(page: Page): Promise<string> {
 	return page.locator('.linker-genie-hero__bar').innerText();
 }
 
-/** Waits for a real answer. */
+/**
+ * Waits for a real answer, and for the turn to settle behind it.
+ *
+ * The reply text streams in before the proxy has stored the conversation: it
+ * writes the thread once the whole answer has been read. Anything that hands
+ * the conversation to the dock straight after the first visible words races
+ * that write and reads an empty thread, so the wait ends on the turn's own
+ * end - the waiting row is gone and the reply stands.
+ */
 async function answered(page: Page): Promise<void> {
 	await expect(page.locator('.linker-genie-reply').last()).toBeVisible({
+		timeout: 240_000,
+	});
+	await expect(page.locator('.linker-genie-wait')).toHaveCount(0, {
 		timeout: 240_000,
 	});
 }
