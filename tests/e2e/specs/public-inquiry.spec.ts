@@ -29,6 +29,18 @@ test.afterAll(() => {
 	restoreTurnstile();
 });
 
+// The shared protection counters (contact/inquiry doors) are per-instance and
+// a 32-test sweep exhausts them mid-suite - the contact door then refuses its
+// own verification dispatch. Reset the two public-door counters before each
+// test so every shape is judged on its own merits (the genie-hero suite's
+// freshCounters discipline).
+test.beforeEach(() => {
+	wp([
+		'eval',
+		"global $wpdb; $wpdb->query( \"DELETE FROM {$wpdb->options} WHERE option_name LIKE 'linker\\_commerce\\_limit\\_public\\_connection%' OR option_name LIKE 'linker\\_commerce\\_limit\\_public\\_receipts%' OR option_name LIKE 'linker\\_tools\\_limit\\_genie\\_contact%'\" );",
+	]);
+});
+
 // Each step below states its own bound. This is their sum with margin — the
 // cookie handshake (100 s), the submit's success notice (60 s), one explicit
 // assessment run (3 × the claimed model attempt), plus page loads and evidence.
