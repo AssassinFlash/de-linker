@@ -110,6 +110,74 @@ final class CompatibilityClaims {
 	}
 
 	/**
+	 * Renew declaration document versions whose cited bytes did not change.
+	 *
+	 * `bind_row()` refuses a declaration whose recorded `document_revision` is
+	 * not the current one, which is what an editor's explicit confirmation
+	 * guarantees. A pulled instance rewrites every document URL's host and with
+	 * it the revision, so every unchanged declaration reads as unconfirmed and
+	 * the whole compatibility projection empties. This renews exactly the
+	 * revisions whose document identity and blob still match — the same bytes
+	 * the declaration was confirmed against — and only when the renewed row then
+	 * binds. A replaced file keeps its old revision and stays unconfirmed.
+	 *
+	 * @param int                 $owner    Canonical inverter product.
+	 * @param array<string,mixed> $manifest Current Woo authority.
+	 * @param bool                $dry_run  Count renewable declarations without writing.
+	 * @return int Declarations renewed (or renewable, on a dry run).
+	 */
+	public static function renew_unchanged( int $owner, array $manifest, bool $dry_run = false ): int {
+		$claims = get_post_meta( $owner, self::META_KEY, true );
+		if ( ! self::shape( $claims ) ) {
+			return 0;
+		}
+		$docs    = array_column( $manifest['documents'], null, 'document_id' );
+		$next    = $claims;
+		$renewed = 0;
+		foreach ( array( 'pairs', 'requirements' ) as $kind ) {
+			foreach ( $claims[ $kind ] as $position => $row ) {
+				if ( ! is_array( $row ) || ! is_array( $row['documents'] ?? null ) ) {
+					continue;
+				}
+				$candidate = $row;
+				$changed   = false;
+				foreach ( $candidate['documents'] as $index => $reference ) {
+					if ( ! is_array( $reference ) || ! is_string( $reference['document_id'] ?? null ) ) {
+						continue;
+					}
+					$document = $docs[ $reference['document_id'] ] ?? null;
+					if (
+						! is_array( $document )
+						|| ( $reference['blob_sha256'] ?? null ) !== $document['blob_sha256']
+						|| ( $reference['document_revision'] ?? null ) === $document['document_revision']
+					) {
+						continue;
+					}
+					$candidate['documents'][ $index ]['document_revision'] = $document['document_revision'];
+					$changed = true;
+				}
+				if ( ! $changed ) {
+					continue;
+				}
+				try {
+					self::bind_row( $owner, $candidate, $kind, $manifest, false );
+				} catch ( \RuntimeException $error ) {
+					// Some other part of this declaration is still unresolved:
+					// renewing its document version would not release it.
+					continue;
+				}
+				$next[ $kind ][ $position ] = $candidate;
+				++$renewed;
+			}
+		}
+		if ( $renewed > 0 && ! $dry_run ) {
+			update_post_meta( $owner, self::META_KEY, $next );
+		}
+
+		return $renewed;
+	}
+
+	/**
 	 * Validate a claim, binding bytes only on an explicit editor/migration action.
 	 *
 	 * @param int                 $owner Canonical inverter product.

@@ -152,6 +152,153 @@ final class EvidenceBindings {
 	}
 
 	/**
+	 * Renew bindings whose entry changed while their source document did not.
+	 *
+	 * An entry's revision moves when its own text changes (a citation rewritten
+	 * from a document label to its URL, a missing unit added); the bytes it
+	 * cites can stay the same. Such a binding is a bookkeeping miss, not stale
+	 * evidence, and `capture()` never repairs it: `adopt_existing` keeps every
+	 * recorded entry and the ordinary path only binds entries whose revision
+	 * moved *with* new bytes. This repairs exactly the miss and nothing else:
+	 * both the document identity and its blob must equal the recorded binding,
+	 * so no value ever adopts a replaced file.
+	 *
+	 * @param int  $id      Canonical Woo product.
+	 * @param bool $dry_run Count the renewable bindings without writing.
+	 * @return int Bindings renewed (or renewable, on a dry run).
+	 */
+	public static function repair_unchanged( int $id, bool $dry_run = false ): int {
+		$id = Publication::canonical_id( $id );
+		if ( ! Publication::is_published( $id ) ) {
+			return 0;
+		}
+		$previous = get_post_meta( $id, self::META_KEY, true );
+		$previous = is_array( $previous ) ? $previous : array();
+		$raw      = get_post_meta( $id, SelectionFacts::FIGURES_META_KEY, true );
+		$raw      = is_string( $raw ) ? json_decode( $raw, true ) : $raw;
+		if ( array() === $previous || ! is_array( $raw ) ) {
+			return 0;
+		}
+		$stale = array();
+		$next  = $previous;
+		foreach ( $raw as $key => $entry ) {
+			$old = $previous[ $key ] ?? null;
+			if ( ! is_array( $entry ) || ! is_array( $entry['citation'] ?? null ) || ! is_array( $old ) ) {
+				continue;
+			}
+			if ( ( $old['figure_revision'] ?? '' ) !== Publication::figure_revision( $entry ) ) {
+				$stale[ $key ] = $entry;
+			}
+		}
+		if ( array() === $stale ) {
+			return 0;
+		}
+		// Only a product with a stale entry pays for reading its documents.
+		$allowed = self::documents_by_citation_path( $id );
+		$renewed = 0;
+		foreach ( $stale as $key => $entry ) {
+			$old      = $previous[ $key ];
+			$document = self::cited_document( $entry, $allowed );
+			if (
+				null === $document
+				|| ( $old['document_id'] ?? '' ) !== $document['document_id']
+				|| ( $old['blob_sha256'] ?? '' ) !== $document['blob_sha256']
+			) {
+				continue;
+			}
+			$next[ $key ] = array_merge(
+				$old,
+				array( 'figure_revision' => Publication::figure_revision( $entry ) )
+			);
+			++$renewed;
+		}
+		if ( $renewed > 0 && ! $dry_run ) {
+			update_post_meta( $id, self::META_KEY, $next );
+		}
+
+		return $renewed;
+	}
+
+	/**
+	 * The current documents of one product, by the path their aliases cite, and
+	 * by file name for entries whose citation names the document instead.
+	 *
+	 * @param int $id Canonical Woo product.
+	 * @return array{paths:array<string,array<string,mixed>>,names:array<string,array<string,array<string,mixed>>>}
+	 */
+	private static function documents_by_citation_path( int $id ): array {
+		$paths = array();
+		$names = array();
+		DocumentFiles::begin_read();
+		try {
+			foreach ( Publication::document_rows( $id ) as $row ) {
+				$file = DocumentFiles::resolve( (string) ( $row['url'] ?? '' ) );
+				if ( null === $file ) {
+					continue;
+				}
+				$identity = DocumentFiles::id( $file['url'] );
+				$document = array(
+					'document_id' => $identity,
+					'blob_sha256' => $file['blob_sha256'],
+				);
+				foreach ( array_merge( array( $file['url'] ), (array) ( $row['aliases'] ?? array() ) ) as $url ) {
+					$alias = is_string( $url ) ? DocumentFiles::resolve( $url ) : null;
+					if ( null !== $alias && $alias['blob_sha256'] === $file['blob_sha256'] ) {
+						$path           = rawurldecode( (string) wp_parse_url( $alias['url'], PHP_URL_PATH ) );
+						$paths[ $path ] = $document;
+						$names[ strtolower( basename( $path ) ) ][ $identity ] = $document;
+					}
+				}
+				foreach ( (array) ( $row['citation_aliases'] ?? array() ) as $name ) {
+					if ( is_string( $name ) ) {
+						$names[ strtolower( $name ) ][ $identity ] = $document;
+					}
+				}
+			}
+		} finally {
+			DocumentFiles::end_read();
+		}
+
+		return array(
+			'paths' => $paths,
+			'names' => $names,
+		);
+	}
+
+	/**
+	 * The one current document an entry cites, resolved the way the feed does it:
+	 * by path for a URL, by file name only when exactly one document answers.
+	 *
+	 * @param array<string,mixed>                                                                                  $entry   Current Woo figure.
+	 * @param array{paths:array<string,array<string,mixed>>,names:array<string,array<string,array<string,mixed>>>} $allowed Current documents of the product.
+	 * @return array<string,mixed>|null
+	 */
+	private static function cited_document( array $entry, array $allowed ): ?array {
+		$url = $entry['citation']['url'] ?? null;
+		if ( is_string( $url ) ) {
+			return $allowed['paths'][ self::citation_path( $entry ) ] ?? null;
+		}
+		$doc = $entry['citation']['doc'] ?? null;
+		if ( ! is_string( $doc ) ) {
+			return null;
+		}
+		$matches = $allowed['names'][ strtolower( $doc ) ] ?? array();
+
+		return 1 === count( $matches ) ? reset( $matches ) : null;
+	}
+
+	/**
+	 * The citation path of an entry, normalized as `figure_revision()` does it.
+	 *
+	 * @param array<string,mixed> $entry Current Woo figure.
+	 */
+	private static function citation_path( array $entry ): string {
+		$url = $entry['citation']['url'] ?? null;
+
+		return is_string( $url ) ? rawurldecode( (string) wp_parse_url( $url, PHP_URL_PATH ) ) : '';
+	}
+
+	/**
 	 * Neither a URL nor a ready acknowledgement proves old values in new bytes.
 	 *
 	 * @param int                 $id Product ID.

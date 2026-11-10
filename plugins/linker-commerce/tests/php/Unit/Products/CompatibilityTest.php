@@ -51,6 +51,13 @@ final class CompatibilityTest extends TestCase {
 		WP_Mock::userFunction( 'sanitize_textarea_field' )->andReturnUsing( static fn ( string $value ): string => trim( $value ) );
 		WP_Mock::userFunction( 'get_post_meta' )->andReturnUsing( fn ( int $id, string $key ): mixed => CompatibilityClaims::META_KEY === $key ? ( $this->claims[ $id ] ?? '' ) : '' );
 		WP_Mock::userFunction( 'metadata_exists' )->andReturnUsing( fn ( string $type, int $id, string $key ): bool => CompatibilityClaims::META_KEY === $key && isset( $this->claims[ $id ] ) );
+		WP_Mock::userFunction( 'update_post_meta' )->andReturnUsing(
+			function ( int $id, string $key, mixed $value ): bool {
+				$this->assertSame( CompatibilityClaims::META_KEY, $key );
+				$this->claims[ $id ] = $value;
+				return true;
+			}
+		);
 		$fixture  = json_decode( (string) file_get_contents( dirname( __DIR__, 6 ) . '/services/engine/tests/fixtures/feed.json' ), true );
 		$products = array();
 		foreach ( $fixture['products'] as $product ) {
@@ -361,6 +368,50 @@ final class CompatibilityTest extends TestCase {
 			}
 		}
 		unset( $document );
+		$this->assertNull( Compatibility::for_products( $inverter, $battery, $this->manifest ) );
+	}
+
+	/**
+	 * A pulled instance's URL rewrite moves every document revision, so each
+	 * declaration reads as unconfirmed and the whole projection empties. The
+	 * renewal restores exactly the declarations whose cited bytes are unchanged.
+	 */
+	public function test_an_unchanged_document_version_is_renewed_only_for_the_same_bytes(): void {
+		$inverter = $this->product_id( 'H2-10K-T3' );
+		$battery  = $this->product_id( 'B2-10.0-HV1' );
+		$before   = $this->claims[ $inverter ];
+		$this->assertNotNull( Compatibility::for_products( $inverter, $battery, $this->manifest ) );
+
+		foreach ( $this->manifest['documents'] as &$document ) {
+			$document['document_revision'] = str_repeat( 'e', 64 );
+		}
+		unset( $document );
+		$this->assertNull( Compatibility::for_products( $inverter, $battery, $this->manifest ) );
+
+		$this->assertGreaterThan( 0, CompatibilityClaims::renew_unchanged( $inverter, $this->manifest, true ) );
+		$this->assertSame( $before, $this->claims[ $inverter ], 'A dry run writes nothing.' );
+
+		$this->assertGreaterThan( 0, CompatibilityClaims::renew_unchanged( $inverter, $this->manifest ) );
+		$answer = Compatibility::for_products( $inverter, $battery, $this->manifest );
+		$this->assertNotNull( $answer );
+		foreach ( $this->claims[ $inverter ]['pairs'] as $row ) {
+			foreach ( $row['documents'] as $reference ) {
+				$this->assertSame( str_repeat( 'e', 64 ), $reference['document_revision'] );
+			}
+		}
+	}
+
+	/** A replaced file keeps its unconfirmed version and the declaration stays withdrawn. */
+	public function test_a_replaced_document_is_never_renewed(): void {
+		$inverter = $this->product_id( 'H2-10K-T3' );
+		$battery  = $this->product_id( 'B2-10.0-HV1' );
+		foreach ( $this->manifest['documents'] as &$document ) {
+			$document['document_revision'] = str_repeat( 'e', 64 );
+			$document['blob_sha256']       = str_repeat( 'f', 64 );
+		}
+		unset( $document );
+
+		$this->assertSame( 0, CompatibilityClaims::renew_unchanged( $inverter, $this->manifest ) );
 		$this->assertNull( Compatibility::for_products( $inverter, $battery, $this->manifest ) );
 	}
 
