@@ -216,7 +216,8 @@
         "saturated": true,
         "oldest_entry_gmt": "2026-11-10T10:08:19Z",
         "computed_next_slot_gmt": "2026-11-11T10:08:19Z",
-        "offset_hours": 13.51,
+        "offset_hours_at_capture": 13.51,
+        "offset_note": "The absolute next_slot is the stable figure (oldest of the 64 retained entries + 24 h). The hour offset shrinks as wall-clock time advances; recomputing later yields a smaller offset against the same next_slot.",
         "stalled_mail_attempts_pending": 62,
         "oldest_pending_gmt": "2026-11-10 16:53:43",
         "method": "Read linker_c222.wp_options.linker_commerce_mail_transport_sends, applied the live Throttle::slot() formula from main (PER_DAY 80 - PHP_RESERVE 16 = 64)"

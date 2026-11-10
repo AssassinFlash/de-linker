@@ -82,7 +82,7 @@ live `Throttle::slot()` formula from `main` to that ledger:
 | entries in the PHP ledger | 64 (saturated) |
 | oldest entry | 2026-11-10T10:08:19Z |
 | computed `next_slot` | 2026-11-11T10:08:19Z |
-| offset from now | **+13.51 h** |
+| offset from capture time | **+13.51 h** |
 | stalled `mail_attempt` actions pending | 62 |
 | oldest of those pending | 2026-11-10 16:53:43 |
 
