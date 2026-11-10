@@ -400,3 +400,19 @@ Final pending 5, each honest and non-force-fit:
 Standing rules landed this session: parallelism as a top principle + agent worktree
 isolation (AGENTS.md), the node_modules symlink lesson, subagent-output personal
 verification discipline.
+
+## Final two rows: probed honestly, left pending with evidence
+
+- files-and-feedback actual-file-manifest x3: FLIPPED. Production read-only probes
+  (143 unique PDF links + the same 4 sample files as the 20261108 sibling, all
+  200 application/pdf with matching bytes) - probe JSON recorded at
+  docs/acceptance/2026-10-22/full-site/product-manifest-probe-20261111.json.
+- genie dock-keyboard 390 x2: five probe attempts across the hero surface, side-panel
+  continuation and composer focus paths; the floating dock's keyboard contract cannot
+  be exercised at 390 because the dock is hidden below 860px by design, and the hero's
+  Escape behavior differs (close button, not the dock's escape-return). Rows stay
+  pending with the hidden-below-860px finding recorded - force-fitting the hero onto a
+  dock-specific contract would be a false pass.
+
+Matrix final state this session: pass 424 / verified-production 448 total / pending 2
+(both with findings and unlock paths).
