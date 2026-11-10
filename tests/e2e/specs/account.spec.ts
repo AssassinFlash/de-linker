@@ -569,6 +569,62 @@ test('en: an approved partner saves account details and company, and signs out',
 		'the page says the visitor has been signed out'
 	).toBeVisible();
 	await shot(page, 'en-signed-out');
+
+	// The same one-click sign-out and its notice on the German account: the
+	// matrix rows signed-out-notice de:1440/de:390 and the en:390 shape ride
+	// the same flow (the notice text is the page's own catalog string).
+	const deLogin = createCustomer(Date.now(), 'de');
+	for (const width of [1440, 390]) {
+		await page.setViewportSize({
+			width,
+			height: width === 390 ? 844 : 900,
+		});
+		await page.goto(url('/de/mein-konto/'));
+		await page.fill('#username', deLogin);
+		await page.fill('#password', PASSWORD);
+		await page.locator('button[name="login"]').focus();
+		await page.keyboard.press('Enter');
+		await page.waitForLoadState('load');
+		await page.waitForFunction(
+			() =>
+				document.querySelectorAll('a[href*="action=logout"]').length >=
+				1,
+			null,
+			{ timeout: 30_000 }
+		);
+		const deLogout = await page
+			.locator('a[href*="action=logout"]')
+			.first()
+			.getAttribute('href');
+		await page.goto(deLogout ?? url('/de/mein-konto/'));
+		await page.waitForLoadState('load');
+		await expect(page.locator('#username')).toBeVisible();
+		await expect(page.locator('.woocommerce-info')).toContainText(
+			/Sie wurden abgemeldet/
+		);
+		await shot(page, `de-${width}-signed-out`);
+	}
+	// The English phone shape closes the same loop.
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto(url('/my-account/'));
+	await page.fill('#username', login);
+	await page.fill('#password', PASSWORD);
+	await page.locator('button[name="login"]').focus();
+	await page.keyboard.press('Enter');
+	await page.waitForLoadState('load');
+	await page.waitForFunction(
+		() => document.querySelectorAll('a[href*="action=logout"]').length >= 1,
+		null,
+		{ timeout: 30_000 }
+	);
+	const mobileLogout = await page
+		.locator('a[href*="action=logout"]')
+		.first()
+		.getAttribute('href');
+	await page.goto(mobileLogout ?? url('/my-account/'));
+	await page.waitForLoadState('load');
+	await expect(page.locator('.woocommerce-info')).toBeVisible();
+	await shot(page, 'en-390-signed-out');
 });
 
 test('en: a fresh account reads the designed empty states', async ({
@@ -810,42 +866,60 @@ test('de: the restricted gate speaks German and links its own address', async ({
 	await shot(page, 'de-restricted-inquiry-gate');
 });
 
-test('en: a rejected account cannot sign in and reads the refusal', async ({
-	page,
-}) => {
-	const login = createCustomer(Date.now(), 'en');
-	wp(['user', 'meta', 'update', login, 'linker_approval_status', 'rejected']);
-	wp([
-		'user',
-		'meta',
-		'update',
-		login,
-		'linker_approval_reason',
-		'E2E: not a business customer',
-	]);
+for (const { locale, account } of LOCALES) {
+	for (const width of [1440, 390]) {
+		test(`${locale}-${width}: a rejected account cannot sign in and reads the refusal`, async ({
+			page,
+		}) => {
+			await page.setViewportSize({
+				width,
+				height: width === 390 ? 844 : 900,
+			});
+			const login = createCustomer(Date.now(), locale);
+			wp([
+				'user',
+				'meta',
+				'update',
+				login,
+				'linker_approval_status',
+				'rejected',
+			]);
+			wp([
+				'user',
+				'meta',
+				'update',
+				login,
+				'linker_approval_reason',
+				'E2E: not a business customer',
+			]);
 
-	await page.goto(url('/my-account/'));
-	await page.fill('#username', login);
-	await page.fill('#password', PASSWORD);
-	await page.locator('button[name="login"]').focus();
-	await page.keyboard.press('Enter');
-	await page.waitForLoadState('load');
+			await page.goto(url(account));
+			await page.fill('#username', login);
+			await page.fill('#password', PASSWORD);
+			await page.locator('button[name="login"]').focus();
+			await page.keyboard.press('Enter');
+			await page.waitForLoadState('load');
 
-	const error = page.locator('.woocommerce-error');
-	await expect(
-		error.first(),
-		'the rejection is the sign-in refusal'
-	).toBeVisible();
-	await expect(error.first(), 'the refusal names the way back').toContainText(
-		/not approved for sign-in/
-	);
-	await expect(
-		page.locator('#username'),
-		'the rejected account stays on the form'
-	).toBeVisible();
-	await expect(
-		page.locator('a[href*="action=logout"]'),
-		'no session was opened'
-	).toHaveCount(0);
-	await shot(page, 'en-rejected-sign-in');
-});
+			const error = page.locator('.woocommerce-error');
+			await expect(
+				error.first(),
+				'the rejection is the sign-in refusal'
+			).toBeVisible();
+			await expect(
+				error.first(),
+				'the refusal names the way back'
+			).toContainText(
+				/nicht zur Anmeldung freigegeben|not approved for sign-in/
+			);
+			await expect(
+				page.locator('#username'),
+				'the rejected account stays on the form'
+			).toBeVisible();
+			await expect(
+				page.locator('a[href*="action=logout"]'),
+				'no session was opened'
+			).toHaveCount(0);
+			await shot(page, `${locale}-rejected-sign-in`);
+		});
+	}
+}
