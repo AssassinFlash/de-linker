@@ -19394,10 +19394,12 @@
   "state": "invalid-sign-in",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account.spec.ts en/de x 1440/390 loops, review-instance green this session: wrong-password refusal is locale-parametrized; lost-password/reset-key tests run locale x width; pending-account.spec en/de x 390 register lifecycle green on c222"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -19441,10 +19443,12 @@
   "state": "invalid-sign-in",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account.spec.ts en/de x 1440/390 loops, review-instance green this session: wrong-password refusal is locale-parametrized; lost-password/reset-key tests run locale x width; pending-account.spec en/de x 390 register lifecycle green on c222"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -20237,10 +20241,12 @@
   "state": "pending-submit",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "pending-account.spec en 390 green on c222 2026-11-10 (register -> pending workspace -> inquiry submit)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -20282,10 +20288,12 @@
   "state": "pending-submit",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "pending-account.spec de 390 green on c222 2026-11-10 (register -> pending workspace -> inquiry submit)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -20324,10 +20332,12 @@
   "state": "registration-success",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "pending-account.spec en 390 green on c222 2026-11-10 (two-step registration establishes the session; registration mail subject asserted)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -20369,10 +20379,12 @@
   "state": "registration-success",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "pending-account.spec de 390 green on c222 2026-11-10 (two-step registration establishes the session; registration mail subject asserted)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -20579,10 +20591,12 @@
   "state": "password-email-confirmation",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account.spec.ts en/de x 1440/390 loops, review-instance green this session: wrong-password refusal is locale-parametrized; lost-password/reset-key tests run locale x width; pending-account.spec en/de x 390 register lifecycle green on c222"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -20624,10 +20638,12 @@
   "state": "password-email-confirmation",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "account.spec.ts en/de x 1440/390 loops, review-instance green this session: wrong-password refusal is locale-parametrized; lost-password/reset-key tests run locale x width; pending-account.spec en/de x 390 register lifecycle green on c222"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
