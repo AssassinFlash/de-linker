@@ -172,3 +172,14 @@ Nothing in this ledger marks the goal complete; it records what stands.
 - Remaining spec-backed pending: genie save-pending-error-success and the
   consumer-saved-solution-readback de/390 shapes (need the same width/locale
   extension on the genie side).
+
+## Batch: the saved-solution consumer chain in every shape (PR #1057)
+
+- genie-save-readback parameterized over en/de x 1440/390 (all four green);
+  two real findings fixed on the way: the German notice's actual wording
+  ('liegen jetzt in', the PO's empty msgid had the string under another
+  key) and the save action arriving at the stream's very end (askGenie now
+  waits for the button - the sequential-run 400s timeouts' root cause).
+- genie save-pending-error-success 3 variants flipped on the already-green
+  card-actions suite (locale x width x surface).
+- Matrix: pass 253 -> 259, pending 181.
