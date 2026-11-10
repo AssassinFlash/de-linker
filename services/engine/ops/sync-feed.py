@@ -78,7 +78,9 @@ def fetch_feed(url: str) -> bytes:
             },
         )
         try:
-            with urllib.request.urlopen(request, timeout=FEED_FETCH_TIMEOUT_S) as response:
+            with urllib.request.urlopen(
+                request, timeout=FEED_FETCH_TIMEOUT_S
+            ) as response:
                 return bytes(response.read())
         except (urllib.error.URLError, OSError, TimeoutError) as error:
             last_error = error
