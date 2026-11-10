@@ -1,0 +1,318 @@
+{
+  "schema": "linker-resource-load-baseline-v1",
+  "captured_at_utc": "2026-11-10T20:38:19Z",
+  "captured_by": "load-baseline session (read-only)",
+  "scope": "Goal completion criterion: 资源负载机制有前后实测数据证明有效",
+  "method": "Read-only collection over SSH (hostinger-de-linker, linker-services), local filesystem, local MySQL, and GitHub API. No cleanup, no restart, no production write.",
+  "verdict_summary": {
+    "mechanisms_proven_effective": 3,
+    "mechanisms_proven_ineffective": 1,
+    "items_still_observational": 4,
+    "headline": "PR #1063 was merged with a net diff of 0 lines: its own second commit removed the fix it claimed. The mail throttle budget leak it described is therefore still live and has been reproduced locally at the exact saturation threshold."
+  },
+
+  "layer_production_hostinger": {
+    "host": "hostinger-de-linker (46.202.156.7:65002, user u388076051)",
+    "captured_at_utc": "2026-11-10T20:31:53Z",
+    "uptime": "61 days 19:57",
+    "nproc": 64,
+    "load_average": { "1m": 38.68, "5m": 74.22, "15m": 71.02 },
+    "load_attribution": "Whole shared node across tenant accounts, not this account. This account ran 6 lsphp processes, each at 0.0 %CPU at capture time.",
+    "memory_mb": { "total": 514831, "used": 342684, "free": 12056, "buff_cache": 282301, "available": 172147 },
+    "swap_mb": { "total": 257415, "used": 9133, "free": 248282 },
+    "disk": { "mount": "/dev/sda4", "size": "21T", "used": "13T", "avail": "8.2T", "use_pct": 61 },
+    "account_disk": "11 G under /home/u388076051",
+    "domain_disk": {
+      "de-linker.com": "4.6G",
+      "sunriver-inverter.com": "2.6G",
+      "metal-divider.com": "2.2G",
+      "staging.metal-divider.com": "1.2G"
+    },
+    "deploy_discipline": {
+      "deploy_prev_generations": 1,
+      "deploy_prev_marker": "20261109T012936497720Z-2937f6347",
+      "stale_deploy_dir_absent": true,
+      "verdict": "keep-only-previous-version discipline holds; no deploy hoarding"
+    }
+  },
+
+  "layer_production_wordpress": {
+    "site_root": "/home/u388076051/domains/de-linker.com/public_html",
+    "plugin": "linker-commerce 0.2.0 (active)",
+    "wp_cron_events": 46,
+    "recovery_heartbeat": {
+      "hook": "linker_inquiry_assessment_recover",
+      "interval": "1 minute",
+      "next_run_gmt": "2026-11-10 20:38:34",
+      "alive": true
+    },
+    "mail_jobs": {
+      "post_type": "linker_mail_job",
+      "private": 38,
+      "draft": 0,
+      "all_38_window_gmt": "2026-10-22 06:17:02 - 2026-10-22 06:38:02",
+      "all_38_carry_incident_hold": true,
+      "hold_meta_key": "_linker_incident_hold",
+      "interpretation": "Deliberate incident holds from the 2026-10-22 event, preserved by NotificationHold. Not a new accumulation and not a dead-letter pile."
+    },
+    "action_scheduler": {
+      "complete": 2807,
+      "pending": 17,
+      "canceled": 1,
+      "failed": 0,
+      "claims": 0,
+      "pending_overdue": 0,
+      "pending_age_gmt": { "oldest": "2026-11-10 20:58:04", "newest": "2026-11-14 01:41:01", "now": "2026-11-10 20:34:56" },
+      "mail_attempt_hook_by_status": {
+        "complete": 130,
+        "canceled": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "verdict": "No overdue work, no stuck claims, no pending mail attempts. Production queue is healthy."
+    }
+  },
+
+  "layer_production_engine_vps": {
+    "host": "linker-services (72.62.97.95, root)",
+    "captured_at_utc": "2026-11-10T20:34:42Z",
+    "uptime": "24 days 14:34",
+    "nproc": 1,
+    "load_average": { "1m": 0.10, "5m": 0.05, "15m": 0.01 },
+    "memory_mb": { "total": 3915, "used": 1126, "available": 2788, "swap": 0 },
+    "disk": { "mount": "/dev/sda1", "size": "48G", "used": "5.4G", "avail": "43G", "use_pct": 12 },
+    "resident_services": [
+      { "service": "worker_host serve (planner)", "user": "linker-*", "since": "Nov07", "cpu_time": "39:59", "pct_cpu": 0.7, "pct_mem": 5.6 },
+      { "service": "uvicorn linker_engine.application :8911", "user": "linker-*", "since": "Nov07", "cpu_time": "8:07", "pct_cpu": 0.1, "pct_mem": 6.0 },
+      { "service": "uvicorn linker_genie.app :8902", "user": "root", "since": "Nov08", "cpu_time": "4:18", "pct_cpu": 0.1, "pct_mem": 3.1 },
+      { "service": "uvicorn linker_engine.application :8901", "user": "root", "since": "Nov09", "cpu_time": "3:48", "pct_cpu": 0.1, "pct_mem": 5.1 }
+    ],
+    "top_non_service": "xray 1.0 %CPU (unrelated system agent)",
+    "verdict": "Exactly one process per service, no accumulation, load near idle on a single core."
+  },
+
+  "layer_local_instances": {
+    "root": "/Users/chesterjohn/de-linker-local",
+    "captured_at_utc": "2026-11-10T20:35:00Z",
+    "host_disk": { "mount": "/System/Volumes/Data", "size": "3.6Ti", "used": "2.5Ti", "avail": "1.1Ti", "use_pct": 70 },
+    "instance_dirs": 58,
+    "instance_dirs_with_wp_config": 57,
+    "total_instance_disk": "179G",
+    "registry_entries": 55,
+    "registry_file": "/Users/chesterjohn/de-linker-local/instances.toml",
+    "running_instances": 3,
+    "running_instance_detail": [
+      { "name": "review", "php_port": 8889, "engine_port": 8890, "genie_port": 8891, "php_workers": 7, "worker_started": "2026-11-11 04:37:56" },
+      { "name": "c222", "php_port": 8925, "engine_port": 8926, "genie_port": 8927, "php_workers": 7, "worker_started": "2026-11-10 19:03:05" },
+      { "name": "c332", "php_port": 9187, "engine_port": 9188, "genie_port": 9189, "php_workers": 7, "worker_started": "2026-11-10 21:48:31" }
+    ],
+    "running_php_workers_total": 28,
+    "typical_instance_size": "4.3G",
+    "largest_instance": { "name": "p548", "size": "4.9G" },
+    "named_instances": {
+      "review": { "size": "4.3G", "mtime": "2026-11-11 03:26" },
+      "c222": { "size": "4.3G", "mtime": "2026-11-10 18:27" },
+      "c332": { "size": "4.3G", "mtime": "2026-11-10 21:48" }
+    },
+    "unregistered_dirs": [
+      { "name": "t113", "size": "4.0K", "mtime": "2026-10-12 15:52", "note": "empty stub, predates registry discipline" },
+      { "name": "t7", "size": "183M", "mtime": "2026-10-09 21:30", "note": "stale, one month idle" },
+      { "name": "t9-pre-stack-backup", "size": "200M", "mtime": "2026-10-09 21:11", "note": "stale pre-stack restore point, one month idle" }
+    ],
+    "local_mysql": {
+      "schemas": 55,
+      "prefix": "linker_",
+      "aggregate_size_mb": 4300,
+      "per_schema_range_mb": "76-89",
+      "largest": [
+        { "schema": "linker_c222", "mb": 89 },
+        { "schema": "linker_si533", "mb": 86 },
+        { "schema": "linker_p548", "mb": 85 }
+      ]
+    },
+    "retention_boundary_check": {
+      "documented_rule": "docs/agents/local-storage.md: each in-progress task defaults to 1 instance, baseline comparison may add 1; reuse before creating",
+      "actual": "58 instance directories, 0 running",
+      "verdict": "OVER LIMIT",
+      "detail": "No in-progress task justifies 58 resident copies; the rule's own escape hatch (recorded purpose, owner, deadline, reclaim condition) is not satisfied for the majority."
+    }
+  },
+
+  "layer_local_snapshots_and_backups": {
+    "data_root": "/Users/chesterjohn/de-linker-data",
+    "total": "39G",
+    "snapshots_dir": "/Users/chesterjohn/de-linker-data/snapshots",
+    "db_snapshot_count": 18,
+    "db_snapshot_range_gmt": "2026-11-02T18:47:23Z - 2026-11-09T01:29:43Z",
+    "db_snapshot_size_range_mb": "7.2-8.6",
+    "hashes_recorded": true,
+    "retention_ledger": ".snapshot-retention.json (origin linker-cutover-snapshot-retention-v1)",
+    "documented_rule": "docs/agents/local-storage.md: most recent 3 complete versions, plus last 1 per day for 7 days, plus 1 explicit restore baseline; duplicates count once",
+    "verdict": "OVER LIMIT",
+    "detail": "18 daily database snapshots against a 7-day-per-day + 3-recent rule. 2026-11-06 alone holds 4, 2026-11-08 holds 4.",
+    "large_site_copies": [
+      { "dir": "privacy-visual-20261021", "size": "6.4G" },
+      { "dir": "incident-20261022", "size": "5.2G" },
+      { "dir": "weekly-20261108", "size": "4.6G" },
+      { "dir": "cutover-20261021-2259", "size": "4.2G" },
+      { "dir": "20261104-1914", "size": "4.2G" }
+    ],
+    "large_site_copies_note": "Each dates from a specific finished task; none carries a current owner or deadline. Recorded as over-limit, not deleted, because this session is evidence-only."
+  },
+
+  "layer_ci": {
+    "workflow_files": [".github/workflows/check.yml", ".github/workflows/cache-retirement.yml"],
+    "actions_cache_entries": 7,
+    "actions_cache_total_mb": 798,
+    "retirement_mechanism": "cache-retirement.yml fires on pull_request_target[closed] and on check workflow_run for PR branches; retires caches of idle closed PRs",
+    "pr_1063_final_run": {
+      "run_id": 42843479385,
+      "created_at_utc": "2026-11-10T15:21:29Z",
+      "completed_at_utc": "2026-11-10T15:29:15Z",
+      "wall_clock": "7m 46s",
+      "conclusion": "success",
+      "jobs_run": 20,
+      "longest_job": "engine 7m 21s",
+      "note": "Green CI on a zero-line change proves the pipeline is fast, not that any mail lifecycle fix works."
+    },
+    "cache_timeout_ceilings": "per-job timeout-minutes 5-20; no job approached its ceiling in the sampled run",
+    "verdict": "Healthy; caches bounded and auto-retired"
+  },
+
+  "mechanism_ledger": [
+    {
+      "id": "M1-mail-budget-release",
+      "claim": "Exhausted and orphaned mail jobs terminate without permanently blocking the transport throttle (PR #1063)",
+      "status": "INEFFECTIVE - FIX NOT PRESENT IN MAIN",
+      "before": {
+        "source": "PR #1063 description, measured on the review instance 2026-11-10",
+        "budget_entries": 64,
+        "limit_derivation": "PER_DAY 80 - PHP_RESERVE 16 = 64",
+        "next_slot_gmt": "2026-11-11T11:49:50Z",
+        "offset_hours": 21.43,
+        "stalled_actions": [11383, 11384]
+      },
+      "claimed_after": {
+        "source": "PR #1063 description, same session",
+        "budget_entries": 0,
+        "next_slot_offset": "0s",
+        "unit_and_integration_tests": "55/55 unit (300 assertions), 12/12 integration, PHPStan 0, PHPCS 14/14 clean"
+      },
+      "actual_main_state": {
+        "net_pr_diff_lines": 0,
+        "proof_commands": [
+          "git diff 521843db8~1 985bf4c0d  -> empty",
+          "git diff e26263441^1 e26263441    -> empty",
+          "git show 521843db8 -- Throttle.php | grep -c release -> 1 (added)",
+          "git show 985bf4c0d -- Throttle.php | grep -c '^-.*release' -> 1 (removed)"
+        ],
+        "throttle_release_method_present": false,
+        "native_attempt_timeout_reclaim_present": false,
+        "commit_shape": "521843db8 'fix(mail): terminate exhausted and orphaned mail jobs' (+22/-0 across 14 files) followed by 985bf4c0d 'fix(tests): align InternalSmtpTest expectations' which removes 459 lines, reverting the fix and keeping only test deletions"
+      },
+      "reproduction_today": {
+        "instance": "linker_c222",
+        "budget_entries_php": 64,
+        "saturated": true,
+        "oldest_entry_gmt": "2026-11-10T10:08:19Z",
+        "computed_next_slot_gmt": "2026-11-11T10:08:19Z",
+        "offset_hours_at_capture": 13.51,
+        "offset_note": "The absolute next_slot is the stable figure (oldest of the 64 retained entries + 24 h). The hour offset shrinks as wall-clock time advances; recomputing later yields a smaller offset against the same next_slot.",
+        "stalled_mail_attempts_pending": 62,
+        "oldest_pending_gmt": "2026-11-10 16:53:43",
+        "method": "Read linker_c222.wp_options.linker_commerce_mail_transport_sends, applied the live Throttle::slot() formula from main (PER_DAY 80 - PHP_RESERVE 16 = 64)"
+      },
+      "production_state": {
+        "budget_entries": "not saturated at capture; mail_attempt pending 0, failed 0",
+        "why": "Production inquiry volume is low and the 38 held jobs never re-enter the throttle",
+        "risk": "The same saturation is reachable in production under any burst that reaches 64 PHP sends in 24 h"
+      },
+      "conclusion": "The 'after' numbers in PR #1063 describe code that does not exist in main or production. They must not be counted as evidence of an effective mechanism. The defect is live and reproduced."
+    },
+    {
+      "id": "M2-worker-orphan-reconciliation",
+      "claim": "Orphaned planner worker processes bound to a dead instance are reconciled on stop/start (PR #1036, issue #1030)",
+      "status": "PROVEN EFFECTIVE",
+      "before": {
+        "source": "PR #1036 description",
+        "observation": "`just down` left an orphaned worker_host serve python child alive; pid file recorded only the uv parent. Orphan kept polling a stale execution identity and let an admitted weather run sit unclaimed through its 120s deadline."
+      },
+      "after": {
+        "source": "PR #1036 merged 2026-11-09T20:43:32Z; re-read today",
+        "observation": "stop() also stops any live worker_host serve bound to the instance (TERM-first, shared stop grace); start() clears untrack state."
+      },
+      "today_check": {
+        "worker_host_logical_instances": 3,
+        "worker_host_total_processes": 6,
+        "worker_process_note": "Each worker is a `uv run` parent plus its python child; #1036 exists precisely because the pid file recorded only the parent.",
+        "worker_host_bindings": [
+          "pid 8053 -> /Users/chesterjohn/de-linker-local/review/planner/runtime.json (instance listening on 8889/8890/8891)",
+          "pid 71236 -> /Users/chesterjohn/de-linker-local/c222/planner/runtime.json (instance listening on 8925/8926/8927)",
+          "pid 82939 -> /Users/chesterjohn/de-linker-local/c332/planner/runtime.json (instance listening on 9187/9188/9189)"
+        ],
+        "orphaned_worker_host_processes": 0,
+        "binding_check": "Read LINKER_PLANNER_CONFIG from each worker's environment and matched it to an instance whose PHP, engine and genie ports are all still listening.",
+        "command": "ps eww -p <pid> | grep '^LINKER_PLANNER_CONFIG='; lsof -nP -iTCP -sTCP:LISTEN"
+      },
+      "conclusion": "Three workers, three distinct live instances, zero orphans. This is a stronger check than counting processes: the binding that #1036 keyed on is intact for every worker."
+    },
+    {
+      "id": "M3-production-queue-health",
+      "claim": "Action Scheduler backlog and mail queue stay bounded in production",
+      "status": "PROVEN EFFECTIVE",
+      "before": { "source": "docs/audit/2026-11-10-production-resource-baseline.md", "observation": "no production resource emergency; node load is other tenants'" },
+      "after": {
+        "pending": 17,
+        "pending_overdue": 0,
+        "failed": 0,
+        "claims": 0,
+        "mail_attempt_pending": 0,
+        "recovery_cron_interval": "1 minute, alive"
+      },
+      "conclusion": "Queue bounded, nothing overdue, no stuck claims. Effective."
+    },
+    {
+      "id": "M4-deploy-retention",
+      "claim": "Only the previous code generation is retained on the host",
+      "status": "PROVEN EFFECTIVE",
+      "after": { "deploy_prev_generations": 1, "marker": "20261109T012936497720Z-2937f6347", "extra_deploy_dirs": 0 },
+      "conclusion": "Atomic-switch rollback point is a single generation. Effective."
+    },
+    {
+      "id": "M5-local-instance-retention",
+      "claim": "Local dev instances stay within the local-storage.md boundary",
+      "status": "OBSERVATIONAL - OVER LIMIT",
+      "after": { "instance_dirs": 58, "registry_entries": 55, "running": 3, "disk": "179G" },
+      "conclusion": "Not a mechanism that has been proven; the boundary is exceeded — 58 resident copies for 3 running instances. Reclamation is a separate decision for the owner."
+    },
+    {
+      "id": "M6-local-snapshot-retention",
+      "claim": "Database snapshots follow the 3-recent + 7-daily + 1-baseline rule",
+      "status": "OBSERVATIONAL - OVER LIMIT",
+      "after": { "db_snapshots": 18, "span_days": 8, "worst_day": "2026-11-06 and 2026-11-08 each hold 4" },
+      "conclusion": "Rotation exists (.snapshot-retention.json) but the count exceeds the documented boundary. Evidence-only here."
+    },
+    {
+      "id": "M7-ci-cache-retention",
+      "claim": "CI dependency caches are bounded and retired with closed PRs",
+      "status": "PROVEN EFFECTIVE",
+      "after": { "cache_entries": 7, "total_mb": 798, "retirement_workflow": "cache-retirement.yml on pull_request_target[closed]" },
+      "conclusion": "Bounded growth with an automatic retirement path. Effective."
+    },
+    {
+      "id": "M8-shared-node-load-attribution",
+      "claim": "Account-level CPU on the shared host stays low regardless of node-wide load",
+      "status": "OBSERVATIONAL",
+      "after": { "node_load_1m": 38.68, "node_nproc": 64, "account_processes": 6, "account_pct_cpu": "0.0 each" },
+      "conclusion": "Consistent with the 2026-11-10 baseline; the node figure is other tenants' work and outside our control. No action threshold crossed."
+    }
+  ],
+
+  "honest_gaps": [
+    "Only one production sample was taken today; the 'before' for M1 is the PR's own numbers, which describe removed code, so M1 has no valid before/after pair at all.",
+    "No production burst was induced to force budget saturation; the reproduction is on a local instance. Production saturation remains a hypothesis backed by an identical formula and an identical 64-entry ledger shape.",
+    "The 38 held jobs on production were not released or deleted; this session was read-only. Whether they should be released is an owner decision.",
+    "Local instance and snapshot over-limit findings were not remediated; reclamation is out of scope for an evidence-only baseline.",
+    "A first pass of this document claimed zero running local instances because the process filter misspelled the actual command line. The corrected figures come from reading LINKER_PLANNER_CONFIG per worker and matching listening ports to the registry; the wrong version never left this branch."
+  ]
+}
