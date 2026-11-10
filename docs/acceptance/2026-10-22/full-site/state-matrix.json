@@ -6703,10 +6703,12 @@
   "state": "forms-and-validation",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "this session's green suites cover every form family the state names: contact/inquiry (failure-injection A+B union + public-inquiry), registration two-step (pending-account en/de x 390), login invalid-credentials and password-reset required fields (account.spec en/de x 1440/390, review)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -6748,10 +6750,12 @@
   "state": "forms-and-validation",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "this session's green suites cover every form family the state names: contact/inquiry (failure-injection A+B union + public-inquiry), registration two-step (pending-account en/de x 390), login invalid-credentials and password-reset required fields (account.spec en/de x 1440/390, review)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
