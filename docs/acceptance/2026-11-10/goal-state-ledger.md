@@ -183,3 +183,13 @@ Nothing in this ledger marks the goal complete; it records what stands.
 - genie save-pending-error-success 3 variants flipped on the already-green
   card-actions suite (locale x width x surface).
 - Matrix: pass 253 -> 259, pending 181.
+
+## Batch: the public doors at every shape (PR #1058)
+
+- The four parameterized public-door suites swept green on review
+  (public-inquiry 32/32 including the counter-reset rerun, inquiry-entry,
+  inquiry-draft-actions, contact-selection-continuity). Root cause on the way:
+  the shared per-instance public-door counters exhaust mid-sweep - the contact
+  door then refuses its own verification dispatch; the suite now resets them
+  beforeEach (the genie-hero freshCounters discipline).
+- Matrix: pass 259 -> 278, pending 162.
