@@ -126,3 +126,21 @@ Nothing in this ledger marks the goal complete; it records what stands.
 - Matrix: pass 181 -> 214 (all 33 roof language/width variants), pending 226.
 - Remaining planner variant block: report-chain 39 rows (37-label surface -
   the biggest of the three), same method.
+
+## Batch: the full planner chain in German (PR #1053)
+
+- planner-report-chain parameterized over en/de: the complete customer
+  chain (site -> roof -> strings -> profiles -> PVGIS -> PV -> equipment ->
+  scenario -> report -> transfer -> Woo draft) drives the German configurator
+  end to end; en and de both 5.2m green on review. Nine root causes fixed on
+  the way, each verified against the live German DOM (the duplicated
+  hardcoded fill that waits forever, four option labels, three English-only
+  assertions, the Betrieb/Speicher substring collisions, the hidden-tab
+  report select copy, the MPPT sprintf self-collision, the English-only
+  confirmation segment). This closes the planner trilogy: brief-chain (#1051),
+  map-chain (#1052), report-chain (#1053) all bilingual.
+- Matrix: pass 214 -> 241, pending 199. The planner-variant block that was
+  90 rows at the start of the day is fully retired where the chains cover it.
+- Operational note recorded: the shared public-connection limiter must be
+  reset between chain runs (3/hour shared across runs) - already a handover
+  discipline, now hit in practice.
