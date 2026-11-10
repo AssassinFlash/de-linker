@@ -164,3 +164,11 @@ Nothing in this ledger marks the goal complete; it records what stands.
   card; wrong-or-spent key refusal) gained the 1440/390 width loop over
   their en/de loop - 8/8 green on review. Matrix: pass 247 -> 251,
   pending 189 (reset-password and password-reset-token-states phone shapes).
+
+## Batch: the account save at every width (PR #1056)
+
+- The account-details save test gained the 1440/390 width loop over en/de
+  (4/4 green, 18.2s). Matrix: pass 251 -> 253, pending 187.
+- Remaining spec-backed pending: genie save-pending-error-success and the
+  consumer-saved-solution-readback de/390 shapes (need the same width/locale
+  extension on the genie side).
