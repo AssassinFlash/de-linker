@@ -26,7 +26,8 @@
     "out_of_range": "?application=home&product-page=3 (and 99) answer 301 to product-page=2 with the filter kept, both languages",
     "archive_makes_no_client_requests": "0 wp-json/admin-ajax/wc-ajax requests attempted with route patterns armed at 390 and 1440",
     "archive_add_placeholder_has_no_consumer": "the only repository reference to data-card-atc is the markup in ProductShortcodes::card(); protection.js, catalog-ui.js, product-family.js and compare-selection.js never touch it; production /products/ prints the same 24 hidden placeholders (fetched 2026-11-11)",
-    "family_card_identity_switches": "data-product-id follows the family picker's selected member, so cross-filter id sets are not comparable; the brand assertion reads .sf-card-brand instead"
+    "family_card_identity_switches": "data-product-id follows the family picker's selected member, so cross-filter id sets are not comparable; the brand assertion reads .sf-card-brand instead",
+    "out_of_stock_leaves_the_archive_picker": "with the shared product (4107) flipped to outofstock, the archive's 53 cards stay 53 but its [data-linker-select-product=\"4107\"] picker entry drops 1 -> 0 across all three pages, and no [data-card-availability] reads a wait label: woocommerce_hide_out_of_stock_items=yes keeps the product out of the merged family card, which is the archive-side half of the 2026-10-11 stock ruling"
   },
   "boundary": "Review instance only (no production write; production was read anonymously for the placeholder check). The stock fixture flips the shared product through WP-CLI and restores it in a finally block, read back afterwards. add-to-draft and loading-error close as not-applicable-today on measurement: the archive ships no operable add control and no client-side request whose failure could strand it. The two tests pin that absence, so a future client-side listing or a revealed placeholder fails them and reopens the rows.",
   "followups": {
