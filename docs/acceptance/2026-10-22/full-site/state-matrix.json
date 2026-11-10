@@ -35684,13 +35684,15 @@
   "state": "report-screen-pdf-content-and-current-revision",
   "lang": "en",
   "width": 1440,
-  "status": "cu-pass-pending",
+  "status": "pending",
   "environment": null,
   "url": null,
   "evidence": [
-   "deferred-to-cu: PDF content read needs image reading - the only remaining row; awaiting the owner switching this session to an image-capable model (external condition, recorded in goal-state ledger)"
+   "cu-read-20261111: PDF content read completed (DeepSeek Flash image read, full transcription in goal ledger); the report PDF genuinely lacks self-sufficiency %, self-consumption %, BOM/equipment list, revision marker and logo - contract-required elements. Not an external condition: a real #548 report-content defect."
   ],
-  "findings": [],
+  "findings": [
+   "report PDF missing: self-sufficiency metric, self-consumption metric, BOM/Stueckliste, revision identifier, brand logo"
+  ],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [

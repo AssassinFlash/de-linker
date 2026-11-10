@@ -352,3 +352,26 @@ PDF content read (image model).
 - Misdiagnosis closed: the save-readback DE notice "empty PO" external
   item was PO multi-line misreading; the MO has the sentence and the
   4/4-green suite asserts it. Only PDF-content-read remains external.
+
+## Batch: engine 503 healed end-to-end + the PDF content read (real verdict)
+
+- The engine's /design 503 had two stacked local causes: (1) the snapshot's
+  EvidenceBindings for exactly the 3 reference products were stale (the
+  figures themselves are current and byte-consistent with production; the
+  security design never renews a recorded binding), healed by deleting the
+  stale bindings and re-adopting - figures_for(8349) 0 -> 30/30; (2) the
+  engine reads a feed.json snapshot that needed a rebuild after the heal
+  (plus one cold-start race in `serve`: fetch the feed only after WP
+  answers, not during warm-up). Design 200, report PDF generated.
+- The last cu-pass-pending row (report PDF content + revision) is now READ:
+  a DeepSeek Flash image read transcribed the full page. Honest verdict -
+  the row does NOT pass: the report PDF genuinely lacks self-sufficiency %,
+  self-consumption %, the BOM/Stueckliste, any revision identifier and the
+  logo. These are contract-required elements (AGENTS.md §1 tool contract);
+  this is a real #548 report-content defect, not an image-model condition.
+  Row moved to pending with findings; the external-condition framing is
+  gone. No external conditions remain on the matrix.
+- Also landed this session: PR #1066 (product-archive 14 rows, personally
+  re-run 14/14) and PR #1067 (account 28/28 personally re-run, two real
+  defects fixed: auth.css 390px list overflow, AdminAccessNotice AJAX
+  overwriting the real verdict) - account family now zero pending.
