@@ -102,3 +102,15 @@ Nothing in this ledger marks the goal complete; it records what stands.
   and produced a batch of 400s test timeouts; killed, diagnosed by service
   log (turns 200 OK but minutes-slow), and the shapes re-verified green on
   the quiet instance.
+
+## Batch: project-brief in German (PR #1051)
+
+- planner-brief-chain parameterized over en/de (13 tests, all green on
+  review 51.7s); every German word from the shipped catalog, no new copy.
+  Root-caused on the way: the direct-goto sites built the DE configurator
+  URL without its /de prefix (a 404 - the single cause of the three first
+  DE failures), then a doubled slash in the staged-URL regex.
+- Matrix: pass 145 -> 181 (all 36 project-brief language/width variants),
+  pending 259.
+- Remaining planner variants: map-chain 33 and report-chain 39 need the
+  same treatment (bigger label surface: 21 and 37 strings) - next batches.
