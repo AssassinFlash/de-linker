@@ -2134,10 +2134,12 @@
   "state": "retry",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1048: home-hero-retry.spec.ts parameterized en/de x 1440/390 - German alert and Erneut versuchen verified on /de/ and at 390 (24 tests green, 1.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -2154,10 +2156,12 @@
   "state": "retry",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1048: home-hero-retry.spec.ts parameterized en/de x 1440/390 - German alert and Erneut versuchen verified on /de/ and at 390 (24 tests green, 1.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -2174,10 +2178,12 @@
   "state": "retry",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1048: home-hero-retry.spec.ts parameterized en/de x 1440/390 - German alert and Erneut versuchen verified on /de/ and at 390 (24 tests green, 1.9m)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -34778,10 +34784,12 @@
   "state": "history-current-permissions-and-locale",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1048: genie-history-authority.spec.ts parameterized en/de x 1440/390 - German price sentences on /de/genie/ and at 390 (24 tests green, 1.9m)"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -34807,10 +34815,12 @@
   "state": "history-current-permissions-and-locale",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1048: genie-history-authority.spec.ts parameterized en/de x 1440/390 - German price sentences on /de/genie/ and at 390 (24 tests green, 1.9m)"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
@@ -34836,10 +34846,12 @@
   "state": "history-current-permissions-and-locale",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "PR #1048: genie-history-authority.spec.ts parameterized en/de x 1440/390 - German price sentences on /de/genie/ and at 390 (24 tests green, 1.9m)"
+  ],
   "findings": [],
   "added_by": "2026-10-22 coverage-contract review",
   "coverage_contract": "coverage-contract.md",
