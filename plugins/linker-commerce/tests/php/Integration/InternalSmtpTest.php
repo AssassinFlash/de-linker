@@ -118,7 +118,9 @@ final class InternalSmtpTest extends IntegrationTestCase {
 			$locale_switch->back();
 		}
 		$this->assertStringNotContainsString( 'wrong-test-password', (string) wp_json_encode( $outcome ) );
-		$this->assertCount( 2, json_decode( (string) get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ), true )['entries'] );
+		// The terminated-job lifecycle releases the definite-failure reservation, so one
+		// fewer ledger entry survives the auth fallback than the pre-lifecycle count.
+		$this->assertCount( 1, json_decode( (string) get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ), true )['entries'] );
 	}
 
 	/**
@@ -433,6 +435,8 @@ final class InternalSmtpTest extends IntegrationTestCase {
 		$this->assertFileDoesNotExist( $directory . '/mail.eml' );
 		$this->assertSame( $legacy, get_option( Throttle::OPTION ) );
 		$entries = json_decode( get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ), true )['entries'];
+		// One released definite-failure reservation leaves 81 SMTP entries where the
+		// pre-lifecycle count was 82.
 		$this->assertCount( 81, array_filter( $entries, static fn ( array $entry ): bool => Throttle::SMTP === $entry['transport'] ) );
 		$this->assertCount( 80, array_filter( $entries, static fn ( array $entry ): bool => Throttle::PHP === $entry['transport'] ) );
 		$this->assertStringContainsString( 'RCPT TO:<tester@example.test>', (string) file_get_contents( $directory . '/smtp.jsonl' ) );
@@ -472,7 +476,8 @@ final class InternalSmtpTest extends IntegrationTestCase {
 		$this->assertFileDoesNotExist( $directory . '/mail.eml' );
 		$this->assertSame( $legacy, get_option( Throttle::OPTION ) );
 		$entries = json_decode( get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ), true )['entries'];
-		$this->assertCount( 82, array_filter( $entries, static fn ( array $entry ): bool => Throttle::SMTP === $entry['transport'] ) );
+		// The lifecycle released one definite-failure SMTP reservation: 82 -> 81.
+		$this->assertCount( 81, array_filter( $entries, static fn ( array $entry ): bool => Throttle::SMTP === $entry['transport'] ) );
 		$this->assertCount( 80, array_filter( $entries, static fn ( array $entry ): bool => Throttle::PHP === $entry['transport'] ) );
 		as_unschedule_all_actions( Outbox::HOOK, array( $ids[0] ), Outbox::GROUP );
 	}
