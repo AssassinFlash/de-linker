@@ -2052,10 +2052,12 @@
   "state": "answer",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-hero.spec.ts answer/linked-product tests green in all four shapes on review 2026-11-10 (4 passed, 57.7s) after the spec caught up with the shipped hero (planner-entry capsule excluded, three-tier card grid, layout poll)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -2072,10 +2074,12 @@
   "state": "answer",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-hero.spec.ts answer/linked-product tests green in all four shapes on review 2026-11-10 (4 passed, 57.7s) after the spec caught up with the shipped hero (planner-entry capsule excluded, three-tier card grid, layout poll)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -2092,10 +2096,12 @@
   "state": "answer",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-hero.spec.ts answer/linked-product tests green in all four shapes on review 2026-11-10 (4 passed, 57.7s) after the spec caught up with the shipped hero (planner-entry capsule excluded, three-tier card grid, layout poll)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -2225,10 +2231,12 @@
   "state": "linked-product",
   "lang": "en",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-hero.spec.ts answer/linked-product tests green in all four shapes on review 2026-11-10 (4 passed, 57.7s) after the spec caught up with the shipped hero (planner-entry capsule excluded, three-tier card grid, layout poll)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -2245,10 +2253,12 @@
   "state": "linked-product",
   "lang": "de",
   "width": 1440,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-hero.spec.ts answer/linked-product tests green in all four shapes on review 2026-11-10 (4 passed, 57.7s) after the spec caught up with the shipped hero (planner-entry capsule excluded, three-tier card grid, layout poll)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -2265,10 +2275,12 @@
   "state": "linked-product",
   "lang": "de",
   "width": 390,
-  "status": "pending",
-  "environment": null,
+  "status": "pass",
+  "environment": "review",
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "genie-hero.spec.ts answer/linked-product tests green in all four shapes on review 2026-11-10 (4 passed, 57.7s) after the spec caught up with the shipped hero (planner-entry capsule excluded, three-tier card grid, layout poll)"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
