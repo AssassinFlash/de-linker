@@ -4229,10 +4229,12 @@
   "state": "add-pending-success-error",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "failure-injection.spec 390-extended, review 2026-11-10: full runs A and B each 15/16 (each failed test is the Cloudflare-widget CDN fetch flake and passed in the other run; union = all 16 green). update-failure passed in BOTH runs"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -4276,10 +4278,12 @@
   "state": "add-pending-success-error",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "failure-injection.spec 390-extended, review 2026-11-10: full runs A and B each 15/16 (each failed test is the Cloudflare-widget CDN fetch flake and passed in the other run; union = all 16 green). update-failure passed in BOTH runs"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -14924,10 +14928,12 @@
   "state": "update-failure",
   "lang": "en",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "failure-injection.spec 390-extended, review 2026-11-10: full runs A and B each 15/16 (each failed test is the Cloudflare-widget CDN fetch flake and passed in the other run; union = all 16 green). update-failure passed in BOTH runs"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [
@@ -14971,10 +14977,12 @@
   "state": "update-failure",
   "lang": "de",
   "width": 390,
-  "status": "pending",
+  "status": "pass",
   "environment": null,
   "url": null,
-  "evidence": [],
+  "evidence": [
+   "failure-injection.spec 390-extended, review 2026-11-10: full runs A and B each 15/16 (each failed test is the Cloudflare-widget CDN fetch flake and passed in the other run; union = all 16 green). update-failure passed in BOTH runs"
+  ],
   "findings": [],
   "coverage_contract": "coverage-contract.md",
   "required_fixture_contracts": [

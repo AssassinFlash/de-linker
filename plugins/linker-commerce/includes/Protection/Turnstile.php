@@ -46,6 +46,14 @@ final class Turnstile {
 		if ( '' === $token || strlen( $token ) > self::TOKEN_LIMIT || 1 !== preg_match( '/\A[a-zA-Z0-9_-]{1,32}\z/', $action ) || ! wp_is_uuid( $request_id, 4 ) ) {
 			return new Verification( 'invalid', 'input' );
 		}
+		if ( defined( 'LINKER_TURNSTILE_LOCAL_VERIFY' ) && LINKER_TURNSTILE_LOCAL_VERIFY ) {
+			// Local e2e determinism: the e2e Turnstile profile pairs the
+			// official always-pass dummy keys with this constant, so the
+			// siteverify round-trip stops depending on this machine's
+			// network (the dummy keys pass at Cloudflare anyway; production
+			// never defines the constant and always calls the provider).
+			return new Verification( 'valid', 'verified' );
+		}
 		$response = wp_remote_post(
 			self::ENDPOINT,
 			array(
