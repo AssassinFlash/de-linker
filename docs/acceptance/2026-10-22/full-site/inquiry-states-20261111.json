@@ -366,5 +366,6 @@
   "grace_period": "WooCommerce skips the email-verification step within ten minutes of an order (woocommerce_order_email_verification_grace_period); the guest fixture is therefore an hour old, which is what opening an emailed link means. Keys do not expire: they are the order key, so the backdated inquiry opens for its owner exactly like a fresh one."
  },
  "scope_boundary": "Local review instance, Chromium only, EN and DE at 1440 and 390. Does not prove touch devices beyond the 390 emulation, mail delivery, or the verification-code round trip a visitor would complete from the gate.",
- "run": "8 passed (2.0m), review instance, 2026-11-11"
+ "run": "8 passed (2.1m), review instance, 2026-11-11; PR #1072 check success on fcfe5db3",
+ "boundary_confirmation": "Re-run after the folded-state 390 fit check was added: all eight shapes green again. PR #1072 CI (check) passed on the final commit."
 }
