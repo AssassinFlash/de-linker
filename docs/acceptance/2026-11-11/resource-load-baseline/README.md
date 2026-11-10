@@ -36,11 +36,13 @@ Two consequences for how this baseline must be read:
 
 - **M2 · Worker-orphan reconciliation (PR #1036, issue #1030).** `just down` now
   also stops a live `worker_host serve` bound to the instance. Checked today:
-  **3 workers, 3 distinct live instances, 0 orphans** — each worker's
-  `LINKER_PLANNER_CONFIG` points at an instance whose PHP, engine and genie
-  ports all still listen (`review` 8889/8890/8891, `c222` 8925/8926/8927,
-  `c332` 9187/9188/9189). Binding each worker to a live instance is a stronger
-  check than counting processes, and it is the exact mechanism #1036 keyed on.
+  **3 worker instances, 6 processes (a `uv run` parent plus its python child
+  each), 0 orphans** — every worker's `LINKER_PLANNER_CONFIG` points at an
+  instance whose PHP, engine and genie ports all still listen (`review`
+  8889/8890/8891, `c222` 8925/8926/8927, `c332` 9187/9188/9189). Binding each
+  worker to a live instance is a stronger check than counting processes, and it
+  is the exact mechanism #1036 keyed on — the parent/child split is why that
+  fix had to look past the pid file.
 - **M3 · Production queue health.** Action Scheduler: 2807 complete, 17 pending,
   **0 overdue, 0 failed, 0 claims**; `linker_commerce_mail_attempt` has 130
   complete, 1 canceled, **0 pending**. The one-minute recovery heartbeat

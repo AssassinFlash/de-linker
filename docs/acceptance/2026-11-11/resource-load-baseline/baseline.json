@@ -242,7 +242,9 @@
         "observation": "stop() also stops any live worker_host serve bound to the instance (TERM-first, shared stop grace); start() clears untrack state."
       },
       "today_check": {
-        "worker_host_processes": 3,
+        "worker_host_logical_instances": 3,
+        "worker_host_total_processes": 6,
+        "worker_process_note": "Each worker is a `uv run` parent plus its python child; #1036 exists precisely because the pid file recorded only the parent.",
         "worker_host_bindings": [
           "pid 8053 -> /Users/chesterjohn/de-linker-local/review/planner/runtime.json (instance listening on 8889/8890/8891)",
           "pid 71236 -> /Users/chesterjohn/de-linker-local/c222/planner/runtime.json (instance listening on 8925/8926/8927)",
