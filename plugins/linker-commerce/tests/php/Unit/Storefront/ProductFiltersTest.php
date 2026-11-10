@@ -251,6 +251,96 @@ final class ProductFiltersTest extends TestCase {
 	}
 
 	/**
+	 * The German name for Application answers as its contract key does: a
+	 * German visitor who arrives with `?anwendung=home` gets the filtered
+	 * list, one chip and applied 1, not the unfiltered archive
+	 * (docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json,
+	 * followups.i18n_query_param_mismatch).
+	 *
+	 * @covers \Linker\Commerce\Storefront\ProductFilters::requested
+	 */
+	public function test_a_facet_named_in_german_selects_its_contract_key(): void {
+		$_GET = array( 'anwendung' => 'home' );
+
+		$filters  = new ProductFilters();
+		$selected = $filters->requested();
+
+		$this->assertSame( array( 'application' => 'home' ), $selected );
+		$this->assertSame( 1, $filters->applied_count( false, $selected ) );
+	}
+
+	/**
+	 * The address a German-named facet is served under names the contract
+	 * key: the alias is replaced, every other parameter (the brand facet, the
+	 * paging, an unrelated flag) is kept.
+	 *
+	 * @covers \Linker\Commerce\Storefront\ProductFilters::normalized_target
+	 */
+	public function test_a_german_facet_name_is_redirected_to_its_contract_key(): void {
+		$this->mock_query_args();
+
+		$target = ( new ProductFilters() )->normalized_target(
+			'https://example.test/de/produkte/?anwendung=home&brand=goodwe&product-page=2&cbq=1',
+			array(
+				'anwendung'    => 'home',
+				'brand'        => 'goodwe',
+				'product-page' => '2',
+				'cbq'          => '1',
+			)
+		);
+
+		$this->assertSame( 'https://example.test/de/produkte/?brand=goodwe&product-page=2&cbq=1&application=home', $target );
+	}
+
+	/**
+	 * An address already speaking the contract is never redirected; one that
+	 * carries both names is corrected to the contract key the rail applied.
+	 *
+	 * @covers \Linker\Commerce\Storefront\ProductFilters::normalized_target
+	 */
+	public function test_the_contract_address_is_left_alone(): void {
+		$this->mock_query_args();
+
+		$filters = new ProductFilters();
+
+		$this->assertSame(
+			'',
+			$filters->normalized_target( 'https://example.test/de/produkte/?application=home', array( 'application' => 'home' ) )
+		);
+		$this->assertSame(
+			'https://example.test/de/produkte/?application=home',
+			$filters->normalized_target(
+				'https://example.test/de/produkte/?anwendung=commercial&application=home',
+				array(
+					'anwendung'   => 'commercial',
+					'application' => 'home',
+				)
+			)
+		);
+	}
+
+	/**
+	 * A nonscalar German value carries no facet: nothing is applied and the
+	 * dead parameter is dropped from the address (`?anwendung[]=home`).
+	 *
+	 * @covers \Linker\Commerce\Storefront\ProductFilters::requested
+	 */
+	public function test_a_nonscalar_german_value_is_not_a_facet(): void {
+		$this->mock_query_args();
+
+		$_GET = array( 'anwendung' => array( 'home' ) );
+
+		$filters = new ProductFilters();
+
+		$this->assertSame( array(), $filters->requested() );
+		$this->assertSame(
+			'https://example.test/de/produkte/',
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- passes this test's own fixture, not request data.
+			$filters->normalized_target( 'https://example.test/de/produkte/?anwendung%5B%5D=home', $_GET )
+		);
+	}
+
+	/**
 	 * The search box is not a filter: the applied count reads the category
 	 * (one on a category archive, none on the shop) and the facets, never
 	 * the term (the live bar's own arithmetic: "Filters · 0" on /products/,
@@ -412,6 +502,44 @@ final class ProductFiltersTest extends TestCase {
 				'Saj'    => 2,
 			),
 			$counts_by_label( $facets['brand'] )
+		);
+	}
+
+	/**
+	 * WordPress's own query-argument arithmetic, byte-faithful enough for the
+	 * alias tests: `remove_query_arg` drops the named keys, `add_query_arg`
+	 * appends `key=value` with the value urlencoded.
+	 */
+	private function mock_query_args(): void {
+		WP_Mock::userFunction(
+			'wp_parse_url',
+			array(
+				'return' => static fn ( string $url, int $component = -1 ): mixed => -1 === $component ? parse_url( $url ) : parse_url( $url, $component ),
+			)
+		);
+		WP_Mock::userFunction(
+			'remove_query_arg',
+			array(
+				'return' => static function ( array $keys, string $url ): string {
+					$parts = parse_url( $url );
+					$query = array();
+					parse_str( (string) ( $parts['query'] ?? '' ), $query );
+					foreach ( $keys as $key ) {
+						unset( $query[ $key ] );
+					}
+					$base = (string) ( $parts['scheme'] ?? '' ) . '://' . (string) ( $parts['host'] ?? '' ) . (string) ( $parts['path'] ?? '' );
+					return '' === (string) http_build_query( $query ) ? $base : $base . '?' . http_build_query( $query );
+				},
+			)
+		);
+		WP_Mock::userFunction(
+			'add_query_arg',
+			array(
+				'return' => static function ( string $key, string $value, string $url ): string {
+					$separator = str_contains( $url, '?' ) ? '&' : '?';
+					return $url . $separator . $key . '=' . $value;
+				},
+			)
 		);
 	}
 

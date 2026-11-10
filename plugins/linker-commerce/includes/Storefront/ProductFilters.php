@@ -23,8 +23,27 @@ use Linker\Commerce\Products\SelectionFacts;
  * The visitor's request states the facets as the old filter's addresses
  * did (application, brand, phase, power, kw_min, kw_max, kwh_min, kwh_max,
  * sort), so an indexed link keeps working.
+ *
+ * The query names are a routing contract, not page copy: the rail prints the
+ * German labels (Anwendung, Marke, Leistung) on a German page and the same
+ * contract keys in every language, which is what WordPress and Polylang do
+ * with query arguments (they translate paths, never argument names) and what
+ * the addresses this archive inherited already say. A German visitor can
+ * still arrive with the German name for Application written into a link, a
+ * bookmark or a share; that name is accepted and the address is corrected to
+ * the contract key, so a facet is never silently dropped
+ * (docs/acceptance/2026-10-22/full-site/product-archive-states-20261111.json,
+ * followups.i18n_query_param_mismatch: `?anwendung=home` yielded applied 0
+ * and the unfiltered list).
  */
 final class ProductFilters {
+
+	/**
+	 * Request names accepted beside the contract keys, mapped to the key the
+	 * rail prints. Only the names attested in a customer-visible address are
+	 * here; a facet the map does not name is not a facet.
+	 */
+	private const QUERY_ALIASES = array( 'anwendung' => 'application' );
 
 	/**
 	 * The power buckets, as the old filter's addresses named them: low up
@@ -49,7 +68,106 @@ final class ProductFilters {
 	 * Adds the plugin's hooks.
 	 */
 	public function register(): void {
+		// Before the family paging normalization, so the corrected address is
+		// the one that rule sees (and only one redirect answers a request).
+		add_action( 'template_redirect', array( $this, 'normalize_query' ), 0 );
 		add_action( 'pre_get_posts', array( $this, 'filter' ), 99 );
+	}
+
+	/**
+	 * The request's query with the accepted German names folded into the
+	 * contract keys the rail prints. A contract key already in the request
+	 * wins; a name whose value is not a scalar carries no facet and is
+	 * dropped; every other parameter keeps its value.
+	 *
+	 * @param array<string, mixed> $query Unslashed request query.
+	 * @return array<string, mixed>
+	 */
+	public static function canonical_query( array $query ): array {
+		$canonical = array();
+		foreach ( $query as $name => $value ) {
+			$key = self::QUERY_ALIASES[ $name ] ?? $name;
+			if ( $key !== $name && ! \is_scalar( $value ) ) {
+				continue;
+			}
+			if ( $key !== $name && \array_key_exists( $key, $query ) ) {
+				continue;
+			}
+			$canonical[ $key ] = $value;
+		}
+		return $canonical;
+	}
+
+	/**
+	 * Sends a product archive request that names a facet in German to the
+	 * address the rail prints, keeping every other parameter, so the
+	 * visitor's address, its hreflang alternates and any share of it carry
+	 * the contract key only.
+	 */
+	public function normalize_query(): void {
+		if ( ! $this->is_product_archive_request() ) {
+			return;
+		}
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the filter rail is a plain GET navigation, like the addresses it keeps.
+		$query     = wp_unslash( $_GET );
+		$requested = \function_exists( 'pll_get_requested_url' ) ? (string) pll_get_requested_url() : '';
+		$target    = $this->normalized_target( $requested, $query );
+		if ( '' !== $target && wp_safe_redirect( $target, 301 ) ) {
+			exit;
+		}
+	}
+
+	/**
+	 * The request's own address with every German facet name replaced by its
+	 * contract key, or '' when the request names none of them.
+	 *
+	 * An alias is always dropped, so the visible address carries the contract
+	 * vocabulary only; its value is re-added under the contract key when the
+	 * request does not carry that key itself (an address with both keeps the
+	 * key's value, which is the one the rail applied). An alias whose value is
+	 * not a facet (`?anwendung[]=home`, `?anwendung=`) is dropped without a
+	 * replacement.
+	 *
+	 * @param string               $requested The requested URL.
+	 * @param array<string, mixed> $query     Unslashed request query.
+	 */
+	public function normalized_target( string $requested, array $query ): string {
+		if ( '' === $requested ) {
+			return '';
+		}
+		$aliased = array_intersect_key( self::QUERY_ALIASES, $query );
+		if ( array() === $aliased ) {
+			return '';
+		}
+		$canonical = self::canonical_query( $query );
+		$folded    = array();
+		foreach ( $aliased as $key ) {
+			$value = $canonical[ $key ] ?? null;
+			if ( \array_key_exists( $key, $query ) || ! \is_scalar( $value ) ) {
+				continue;
+			}
+			$value = sanitize_key( (string) $value );
+			if ( '' !== $value ) {
+				$folded[ $key ] = $value;
+			}
+		}
+		$target = (string) remove_query_arg( array_keys( self::QUERY_ALIASES ), $requested );
+		foreach ( $folded as $key => $value ) {
+			$target = (string) add_query_arg( $key, rawurlencode( $value ), $target );
+		}
+		return $target;
+	}
+
+	/**
+	 * Whether this request is the shop or a product taxonomy's main page —
+	 * the surfaces the rail belongs to.
+	 */
+	private function is_product_archive_request(): bool {
+		$method = (string) wp_unslash( $_SERVER['REQUEST_METHOD'] ?? 'GET' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- compared only to fixed method names.
+		if ( is_admin() || wp_doing_ajax() || ( \defined( 'REST_REQUEST' ) && REST_REQUEST ) || ! \in_array( $method, array( 'GET', 'HEAD' ), true ) ) {
+			return false;
+		}
+		return \function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) && is_main_query() && ! is_search() && ! is_404();
 	}
 
 	/**
@@ -97,12 +215,17 @@ final class ProductFilters {
 	/**
 	 * The facets the request states, and the search box's `q`.
 	 *
+	 * The request is read through {@see canonical_query()}: a facet named in
+	 * German answers the same as its contract key, so the count, the chips,
+	 * the rail's active states, the sort form's hidden inputs and the paging
+	 * all describe one selection.
+	 *
 	 * @return array{application?: string, brand?: string, phase?: string, power?: string, kw_min?: float, kw_max?: float, kwh_min?: float, kwh_max?: float, q?: string} The selected facet values.
 	 */
 	public function requested(): array {
 		$selected = array();
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the filter rail is a plain GET navigation, like the addresses it keeps.
-		$get = wp_unslash( $_GET );
+		$get = self::canonical_query( wp_unslash( $_GET ) );
 		foreach ( array( 'application', 'brand', 'phase', 'power' ) as $facet ) {
 			$value = isset( $get[ $facet ] ) && \is_scalar( $get[ $facet ] ) ? sanitize_key( (string) $get[ $facet ] ) : '';
 			if ( '' !== $value ) {
