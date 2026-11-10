@@ -932,9 +932,17 @@ for ( const mode of [ 'attach', 'voice' ] as const ) {
 			)
 		);
 		await waitFor( () => expect( ui.field().disabled ).toBe( false ) );
-		await screen.findByRole( 'button', {
-			name: mode === 'attach' ? 'Choose a file' : 'Dictate',
-		} );
+		if ( 'voice' === mode ) {
+			await screen.findByRole( 'button', { name: 'Dictate' } );
+		} else {
+			// The attach path no longer keeps a dead-end retained panel: the
+			// file picker opens on demand and a pick made during the outage
+			// is held by the controller (controller.test.tsx covers the hold).
+			// Recovery shows a usable composer and nothing fires on its own.
+			expect(
+				document.querySelector< HTMLInputElement >( 'input[type=file]' )
+			).not.toBeNull();
+		}
 		expect( start ).not.toHaveBeenCalled();
 		expect( sendTurn ).not.toHaveBeenCalled();
 	} );
