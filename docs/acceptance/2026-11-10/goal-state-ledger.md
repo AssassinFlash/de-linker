@@ -700,3 +700,23 @@ across the DST boundary (documented contract, agent hit it with a naive CSV).
 - Detection gap exposed (U2 evidence): the 15-min feed-sync timer was the
   first automated detector; nothing pushes an alert. Prioritize U2 with
   this incident as the threshold evidence.
+
+## U1 closed at snapshot level; U5+U7 landed (2026-11-11, PRs #1090 #1088 merged)
+
+- Natural-inquiry gate (U1): two genuine guest inquiries (#8680, #8685) read
+  back end-to-end from the 23:36 UTC snapshot + host mail logs — record,
+  classification (jev, 0.98–1.0), authorization binding, team+receipt jobs
+  delivered with witnesses matching mail.log Message-IDs verbatim, transport
+  accounting including an SMTP-fail→PHP fallback double debit. The IMAP
+  receipt leg stays honestly unverified (no credentials exist anywhere
+  reachable). Audit's "196 external inquiries" corrected: 185 attack + 5
+  test/internal + 6 real external at that cutoff; the real external count is
+  7 inquiries / 5 mailboxes. #568's 87-item list is a subset, hold-markers
+  are not proxies.
+- Secret scanning (U5): gitleaks 8.30.1 pinned-sha, PR-scope + weekly
+  full-history jobs, shape-bound allowlist, planted-key reverse test, wired
+  into the check gate (main has no branch protection; the gate is the
+  summary). Baseline: 2,575 commits, 480 findings, zero credentials.
+- Dangling evidence (U7): the four `2026-10-22/533/` links never existed in
+  git; the recovery drill is downgraded from verified to unverified in the
+  spec, with the other three links annotated.
