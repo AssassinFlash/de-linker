@@ -954,3 +954,23 @@ mutation-proven by swapping the old .mo back in. Structural causes recorded
 for decision: zh_CN is not in the i18n build chain at all (hand-maintained,
 no obsolete marking), and the German digest has the same class of issue
 (one identity-mapped Chinese string, one missing German entry).
+
+## Review instance knowledge readiness restored (PR #1101 open)
+
+The open item above is closed for the review instance: ready.knowledge 0/88 →
+85/85 (the other 3 of 88 are engineering references and never count in the
+knowledge denominator). Two causes, both real: the local index had been built
+from the online snapshot, so its 85 publication_ready_products matched 0 of the
+instance's 88 current revisions; and no local process acknowledges knowledge at
+all. The fix reads Genie's own authenticated POST /knowledge/loaded — the same
+readback the production worker acknowledges from — through a new
+`publication ack-knowledge --genie=<url>`, which refuses an index built for
+another source, identity or set of serving rules before claiming, and leaves
+every native ACK check untouched. `serve` now runs it once Genie is up. The
+prebuilt-index case sends the claimed lease's activation epoch, not the index's
+own (0); no check was relaxed for it. table_without_scope (112 rows, 23
+documents) is a per-table coverage report and does not block readiness: status
+follows materialization_complete, and preparation_complete=false records the
+honest gap. Verified end to end on the shared instance: a real Genie turn
+answered the HS2-8K AC power from a datasheet page with grounded=true. Note:
+production still reads knowledge 0/88 for the same reason.

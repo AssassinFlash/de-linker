@@ -26,7 +26,7 @@ brew services start redis
 | `just reset <name>` | 删库、删目录、清掉本实例的 Redis 键、重建（端口不变），可反复执行；2026-10-09 实测 11–43 秒（同上，随机器负载） |
 | `just login <name> [--user <login>]` | 打印一次性登录链接：10 分钟内有效，用一次即作废；默认用户 `local-admin` |
 | `just status` | 列出实例：地址、库、服务器与服务是否在跑、WordPress/WooCommerce 版本、链接到哪个检出 |
-| `just serve <name>` | 用 uv 启动 `services/engine` 与 `services/genie`，地址写进实例。engine 需要的两份数据由它备好：检出里的 `plugins/linker-commerce/data/compatibility.json`，以及站点自己服务的工程 feed（`linker/v1/engineering-feed`，取回写进实例的 `engine/feed.json`）——站点答不上来就报错，不留一个没有数据的 engine。engine 就绪后，serve 用 `wp linker-commerce publication ack-engineering --engine=<url>` 把 engine 实际加载的那一代回执给站点，见下文。Genie 的文档索引同样由它备好：设了 `GENIE_INDEX` 就用它，否则用 `$LINKER_DATA/index/builds/` 下最新的构建（默认 `~/de-linker-data`），输出里会打印用的是哪个版本，可与 VPS 的 `current` 对照。一个都找不到时，在启动任何服务之前就报错，并写明怎么取到索引（从 VPS rsync，或 `just index`） |
+| `just serve <name>` | 用 uv 启动 `services/engine` 与 `services/genie`，地址写进实例。engine 需要的两份数据由它备好：检出里的 `plugins/linker-commerce/data/compatibility.json`，以及站点自己服务的工程 feed（`linker/v1/engineering-feed`，取回写进实例的 `engine/feed.json`）——站点答不上来就报错，不留一个没有数据的 engine。engine 就绪后，serve 用 `wp linker-commerce publication ack-engineering --engine=<url>` 把 engine 实际加载的那一代回执给站点，Genie 就绪后用 `wp linker-commerce publication ack-knowledge --genie=<url>` 把 Genie 实际打开的索引代回执给站点，见下文。Genie 的文档索引同样由它备好：设了 `GENIE_INDEX` 就用它，否则用 `$LINKER_DATA/index/builds/` 下最新的构建（默认 `~/de-linker-data`），输出里会打印用的是哪个版本，可与 VPS 的 `current` 对照。一个都找不到时，在启动任何服务之前就报错，并写明怎么取到索引（从 VPS rsync，或 `just index`） |
 | `just wp <name> <args…>` | 对实例运行 WP-CLI，例如 `just wp a plugin list` |
 
 名字只能用小写字母、数字与 `_`，字母开头（它同时是库名、目录名）。每条工作线（每张票）用自己的实例，例如 `just up t7`。
@@ -123,7 +123,23 @@ wp linker-commerce publication ack-engineering --engine=http://127.0.0.1:<engine
 
 把 engine **实际加载**的那一代回执给站点。原因是拉取链路：`pull load` 按地址改写重写 uploads URL，`repair-bindings` 随之续期，每个 `product_revision` 都变，生产 worker 留下的 engineering 回执全部失配；本机没有 ACK 的 worker，于是每个新拉的实例在有人手 ACK 之前，`/planning/runs/equipment` 对任何真实选型都回 `409 product_evidence_changed`（`docs/acceptance/2026-11-11/review-readiness-fix.md`）。本地 engine 从本实例取了当前 feed，它认证后的 `/resource/version?ready=1` 就是生产 worker ACK 时的同一份证据，因此可以授予本地 WP 就绪；`acknowledge()` 仍逐条核对 revision，拒绝伪造或过期。这一步幂等，失败只在输出里报告，不会让一个本来能起的 `serve` 失败。
 
-命令只支持 `--consumer=engineering`。`knowledge` 就绪需要 recipe-aware 的索引代（`recipe_revision`、`index_version`、模型身份），engine 回执给不出，属于另一条链路。
+命令只支持 `--consumer=engineering`。`knowledge` 就绪需要 recipe-aware 的索引代（`recipe_revision`、`index_version`、模型身份），engine 回执给不出——它由 Genie 自己的加载态来 ACK，见下。
+
+### knowledge 就绪：`publication ack-knowledge`
+
+Genie 就绪、`linker_genie_url` 写好之后，`serve` 再跑一次
+
+```bash
+wp linker-commerce publication ack-knowledge --genie=http://127.0.0.1:<Genie 端口>
+```
+
+它读 Genie 认证后的 `POST /knowledge/loaded`——**服务进程实际打开的那个索引**，返回 `index_version`、`source_revision`、`model_identity_revision`、`recipe_revision`、`expected_serving_revision`、`serving_revision`、`activation_epoch`、`products`、`materialization_complete`、`preparation_complete` 与 `unprepared_documents`，正是 recipe-aware 回执的字段全集（生产 worker 也是从同一个端点 ACK 的）。同一份拉取链路会让 knowledge 的 88 个商品全部 pending，原因与 engineering 相同：生产回执名的是另一代源。
+
+命令在 claim 之前先拒绝三种索引：源不同（`genie_source_mismatch`）、模型身份不同（`genie_identity_mismatch`）、商品 revision 过期或未知（`genie_products_stale`）；`serving_revision` 与 `expected_serving_revision` 不等（索引为另一套 serving 规则构建）由 `GenieLoadedState` 在解析时按 `invalid_genie_state` 拒绝。`acknowledge()` 随后逐条核对源、租约、recipe、索引代、模型身份与每个 `product_revision`。幂等；失败只报告，不阻断 `serve`。
+
+本地预构建的索引不在准备租约里编译，因此回执里的 `activation_epoch` 取**本次 claim 的租约纪元**，索引自身记录的纪元只作为 `index_activation_epoch` 写进输出供对照。
+
+`table_without_scope` 是逐表覆盖的诊断，不阻止就绪：`acknowledge()` 的 `status` 由 `materialization_complete` 决定，`preparation_complete=false` 只让回执如实报出"仍有文档关联缺少已证段落"，并把诊断原文留在队列里。
 
 ## 测试
 

@@ -272,6 +272,8 @@ def _serve(
         urls.append(f"{service.name} {url}")
         if service.name == "engine":
             urls.append(_acknowledge_engineering(wp, url, token))
+        if service.name == "genie":
+            urls.append(_acknowledge_knowledge(wp, url, token))
     if index is not None:
         urls.append(index.line())
     return urls
@@ -304,6 +306,32 @@ def _acknowledge_engineering(wp: WpCli, engine: str, token: str) -> str:
     except WpCliError as error:
         return f"engineering readiness: not acknowledged ({error})"
     return "engineering readiness: acknowledged"
+
+
+def _acknowledge_knowledge(wp: WpCli, genie: str, token: str) -> str:
+    """Acknowledge the index this instance's own Genie has open.
+
+    Knowledge readiness is recipe-aware (compiler, index generation, serving
+    rules, model identity) and an engine feed readback carries none of them, so
+    the same fresh pull that leaves engineering stale also leaves every
+    knowledge product pending: Genie opens a build made for another source
+    revision and nothing acknowledges the one this instance publishes. Genie's
+    authenticated `/knowledge/loaded` is the serving process's own readback of
+    the generation it runs — the evidence the production worker acknowledges
+    from — and the native ACK still verifies every field and product revision.
+    Idempotent, and reported rather than raised like the engineering step.
+    """
+    try:
+        wp.run(
+            "linker-commerce",
+            "publication",
+            "ack-knowledge",
+            f"--genie={genie}",
+            env={"LINKER_GENIE_SERVICE_TOKEN": token},
+        )
+    except WpCliError as error:
+        return f"knowledge readiness: not acknowledged ({error})"
+    return "knowledge readiness: acknowledged"
 
 
 def genie_environment(instance: Instance, index: Path, token: str) -> dict[str, str]:

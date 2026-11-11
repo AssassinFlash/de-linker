@@ -195,12 +195,17 @@ country_assessment.rule_review =
 
 ## 未解决项（如实记录）
 
-- **`ready.knowledge` 仍为 0/88**。它与本缺陷无关：knowledge 需要 recipe-aware
-  的索引代（`recipe_revision` + `expected_serving_revision` +
-  `index_version`），本地没有构建该索引的 worker，且既有回执里 116 条
-  `table_without_scope` 诊断会强制 `preparation_complete=false`。它不阻塞
-  Equipment（`prepared_view` 只看 `ready.engineering`），但 Genie 的知识检索
-  在本实例上不是 ready 状态。修复它需要构建本机索引代，属于另一条链路。
+- **`ready.knowledge` 仍为 0/88**（本票收口时的状态，已由后续工作解决）。
+  knowledge 需要 recipe-aware 的索引代（`recipe_revision` +
+  `expected_serving_revision` + `index_version`），本地没有构建该索引的 worker，
+  且既有回执里的 `table_without_scope` 诊断会把 `preparation_complete` 报成
+  false（本票收口时读到 116 条；重建索引后为 112 条）。它不阻塞 Equipment
+  （`prepared_view` 只看 `ready.engineering`），但 Genie
+  的知识检索在本实例上不是 ready 状态。修复它需要构建本机索引代。
+  后续结果见 `docs/acceptance/2026-11-11/review-knowledge-readiness.md`：索引已按本
+  实例 manifest 重建，`publication ack-knowledge --genie=<url>` 把它 ACK 成
+  **knowledge 85/85**（88 个商品里 3 个 reference 不进 knowledge 分母）；
+  `table_without_scope` 是逐表覆盖的诚实报告，不影响就绪。
 - **成因会复发（已固化，见下节）**。凡是从线上快照拉取的实例，只要跑过
   `bind-figures` / `repair-bindings`，`product_revision` 就会整体改变，回执随即
   全部失配；而本机没有任何 worker 会重新 ACK。`tools/pull` 的
@@ -225,7 +230,9 @@ country_assessment.rule_review =
   `plugins/linker-commerce/includes/Products/Publication/EngineLoadedState.php`
   与 `includes/Cli/PublicationCommand.php`。
 - 只支持 `--consumer=engineering`；`--consumer=knowledge` 显式拒绝并说明原因
-  （需要 recipe-aware 索引代）。knowledge 仍是本实例的未解决项。
+  （需要 recipe-aware 索引代）。knowledge 由另一条命令 `publication
+  ack-knowledge --genie=<url>` 处理，见
+  `docs/acceptance/2026-11-11/review-knowledge-readiness.md`。
 - `tools/local` 的 `serve` 在 engine readiness 探测通过、`linker_engine_url`
   写好之后调用它（`tools/local/src/linker_local/services.py`
   `_acknowledge_engineering`）。幂等；失败只在输出里报告，不让本来能起的
