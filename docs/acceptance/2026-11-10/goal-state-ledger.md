@@ -1589,3 +1589,18 @@ SE next by real account data and DSO-level evidence open for all countries.
 Resources: all agent worktrees reclaimed (only main tree remains), temp
 diffs/probes deleted, disk 1.3 TiB free, no stray processes; production VPS
 12% disk with the alerting timer active and heartbeating.
+
+## Correction: the Mac knowledge worker builds from PRODUCTION, not review
+
+The BAT-C entry said the review-side Genie knowledge rebuild is "left to the
+automatic publication worker" — that premise was wrong. The launchd worker's
+env points LINKER_PUBLICATION_JOBS_URL at https://de-linker.com (production);
+it builds indexes from production jobs only. Review's genie_source_mismatch
+therefore never self-resolves: each site's publication manifest embeds its own
+URLs, so review's source hash can never equal an index built from the
+production manifest. This is structural, and the ack refusal is the guardrail
+working correctly: review's Genie keeps answering from the production-built
+index of the same aligned document set, with citations pointing at production
+URLs — the standing behavior, now stated accurately. No mechanism change; a
+review-source index would be a manual full rebuild for no acceptance need
+currently outstanding.
