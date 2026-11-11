@@ -63,6 +63,7 @@ const WORDS = {
 		fr: 'France: generation-unit Pmax',
 		nl: 'Netherlands: grid-feeding storage unit',
 		de: 'Germany: EEG solar installed power',
+		at: 'Austria: TOR Erzeuger Typ A maximum capacity',
 		mismatch:
 			"The selected rule does not match this project's country. No rule result will be added until they match.",
 		frVoltage: 'Voltage at the grid connection point',
@@ -101,6 +102,7 @@ const WORDS = {
 		fr: 'Frankreich: Pmax der Erzeugungseinheit',
 		nl: 'Niederlande: netzeinspeisende Speichereinheit',
 		de: 'Deutschland: installierte PV-Leistung nach EEG',
+		at: 'Österreich: Maximalkapazität nach TOR Erzeuger Typ A',
 		mismatch:
 			'Die ausgewählte Regel passt nicht zum Land dieses Projekts. Ein Regelergebnis wird erst ergänzt, wenn beides übereinstimmt.',
 		frVoltage: 'Spannung am Netzanschlusspunkt',
@@ -201,6 +203,7 @@ for (const lang of ['en', 'de'] as const) {
 			words.fr,
 			words.nl,
 			words.de,
+			words.at,
 		]);
 
 		// A French reading on a German project stays visible as a project
