@@ -1147,3 +1147,26 @@ table with the 10 runs, and how to obtain real-customer-load evidence
 (cannot be self-fabricated; re-running synthetic projects would not change
 the evidence's nature and would add permanent CAS occupancy at 10.5 MB per
 annual trace).
+
+## Mac planner-maintenance launchd: real root cause found and fixed (PR #1108 merged, X line)
+
+The .previous.plist observation was half right: the plist copies are
+byte-identical and point at the current release — but the interpreter path
+was pinned inside a since-recycled knowledge-worker release (1418dc26e14c),
+so the job exit-78'd on every fire since 11-07 and CAS never reclaimed.
+Systemic: the installer defaults to Path(sys.executable), and
+planner-worker.md's "retain the shared interpreter" promise is not honored
+by release rotation — the knowledge-publication unit has the same
+EX_CONFIG. Fixed at the root: installer gains stable_interpreter()
+(rejects any path containing a releases/ segment, keeps symlinks
+unresolved), verify_interpreter() (imports the maintenance source before
+installing), confirm_installed() (launchctl readback of the written path),
+and --python; the doc now requires a dedicated environment outside all
+releases. Instance repaired with a dedicated 243 MB venv
+(~/de-linker-ops/planner-maintenance, uv-rebuildable); readback exit 0,
+and a real maintenance round deleted exactly the 705 objects / 7.77 MB the
+pre-fix read-only plan predicted — retention boundaries unchanged, archive
+rotated N=3, CAS 499→490 MB, both planner services healthy. Follow-ups
+recorded: knowledge-publication unit carries the same defect (separate
+line), and the next natural 02:00–03:00 UTC timer window is the first
+unattended verification.
