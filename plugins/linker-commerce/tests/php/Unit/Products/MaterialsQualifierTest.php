@@ -137,6 +137,43 @@ final class MaterialsQualifierTest extends TestCase {
 	}
 
 	/**
+	 * A key outside the reviewed set keeps its row exactly as before, so the
+	 * condition cannot silently reshape other products' visible specs.
+	 */
+	public function test_a_key_outside_the_reviewed_set_is_unchanged(): void {
+		WP_Mock::userFunction(
+			'wc_get_product',
+			array(
+				'return' => fn ( int $id ) => $this->product( $id ),
+			)
+		);
+		$this->seed_registry(
+			array(
+				'mat_test_bat_other' => array(
+					'bindings'    => array( 'woo_product_ids' => array( 9103 ) ),
+					'identity'    => array(
+						'kind'         => 'battery_system',
+						'manufacturer' => 'GoodWe',
+						'model'        => 'GW-TEST-OTHER',
+					),
+					'material_id' => 'mat_test_bat_other',
+					'technical'   => array(
+						'specifications' => array(
+							'cycle_life' => array(
+								'value'     => '6000',
+								'unit'      => 'cycles',
+								'qualifier' => array( 'en' => 'At 25 °C.' ),
+							),
+						),
+					),
+				),
+			),
+		);
+
+		$this->assertSame( '6000 cycles', Materials::specs( $this->product( 9103 ) )['cycles']['value'] );
+	}
+
+	/**
 	 * The shipped BAT-C rows carry the manual's own conditions: the rating is
 	 * Australia-only (note 2, p. 83) and the certification list is explicitly
 	 * partial (note 5). Data-level, so a later edit cannot quietly drop them.

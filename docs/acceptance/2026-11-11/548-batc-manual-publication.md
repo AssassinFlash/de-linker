@@ -104,15 +104,19 @@ IEC62040/N140/EU 2023/1542/UN38.3
 
 原先这两行的限定只写在 `note` 字段里，而 `note` 不被任何渲染路径读取——等于限定对客户不存在。
 本批改为 `qualifier`，并扩展 `Materials::spec_text()`：原来只对 `temp` 一个 key 拼 qualifier，
-现在对任意 key 生效。这是本条唯一代码改动。
+现在按显式白名单 `QUALIFIED_ROWS`（`temp` + 本批三行）生效。
+
+**为什么是白名单而不是全 key。** registry 里共 38 行带 `qualifier`、覆盖 16 个 key。若改成"任意 key
+都拼"，会同时改动**另外 24 个产品、36 行**的客户可见规格文案（最长 +228 字符），这些限定从未按
+页面评审过。白名单把本批的影响面限制在 BAT-C 三行，`temp` 保持原行为；扩表需要单独评审。
 
 ## 4. 改动清单
 
 | 文件 | 改动 |
 | --- | --- |
 | `plugins/linker-commerce/data/material-registry.json` | 两行额定值改挂 `qualifier`（EN/DE）、新增 `certification`（含 note 5 的“未列全”限定） |
-| `plugins/linker-commerce/includes/Products/Materials.php` | `spec_text()` 的 qualifier 从仅 `temp` 扩到全部 key |
-| `plugins/linker-commerce/tests/php/Unit/Products/MaterialsQualifierTest.php` | 新增：限定必须出现、不得变成 label、已发布数据必须带页码与限定 |
+| `plugins/linker-commerce/includes/Products/Materials.php` | `spec_text()` 的 qualifier 从仅 `temp` 改为显式白名单 `QUALIFIED_ROWS`（`temp` + 本批三行） |
+| `plugins/linker-commerce/tests/php/Unit/Products/MaterialsQualifierTest.php` | 新增 4 项：限定必须出现、不得变成 label、白名单外的 key 不变、已发布数据必须带页码与限定 |
 
 `revision` / `schema` / `source_manifest` / `rejected_inputs` / `unresolved_inputs` 未改，与既有
 取证提交 `3b30a4230`、`df5bb5940` 一致（该字段标源快照而非内容哈希，仓库内无读取方）。
@@ -154,8 +158,8 @@ parse 合计 3,594 s），且本机有自动 worker（`com.linker.knowledge-publ
 ## 7. 门禁
 
 ```
-phpunit（worktree，全量）    2314 tests, 8918 assertions, 543 skipped → OK
-phpunit（新测试）            MaterialsQualifierTest 3 tests / 28 assertions → OK
+phpunit（worktree，全量）    2315 tests, 8919 assertions, 543 skipped → OK
+phpunit（新测试）            MaterialsQualifierTest 4 tests / 29 assertions → OK
 phpcs                       clean（0 error 0 warning）
 phpstan (level 8)           No errors
 commerce-terms              hits=28 baselined=28 findings=0 → clean
