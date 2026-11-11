@@ -84,7 +84,11 @@ the public proxy, the existing engine/Genie service or product data.
 ## Explicit local policy
 
 The owned development runner creates a 16 MiB JSON / 8 MiB CSV policy, page
-ceiling 100, JSON nesting 32, 100,000 aligned intervals and two attempts.
+ceiling 100, JSON nesting 32, 100,000 aligned intervals and two attempts. It
+also enables the equipment search executor at the published budget of 1000
+work units: registering an executor is a policy decision, so an instance
+without it answers `503 service_unconfigured` to the planner's own search
+button rather than to a customer mistake.
 These are adjustable development resource ceilings, not engineering rules,
 an assertion of production capacity or a definition of commercial/European
 scope. Base64 CSV plus provenance fits within the declared JSON headroom.

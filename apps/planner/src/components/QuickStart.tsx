@@ -997,6 +997,9 @@ function QuickStartRun({
 			done("qualify", __("Requirements checked", "linker-tools"));
 
 			// 8. Report: the PDF and the solution draft both come from here.
+			// The adopted candidate is this project's equipment source, exactly
+			// as the workbench's report form treats it: naming a separate run
+			// there contradicts the saved choice and the engine refuses it.
 			step("report");
 			const report = await startRun("runs/report", {
 				expected_revision: confirmed.revision,
@@ -1004,21 +1007,20 @@ function QuickStartRun({
 					locale: config.locale.toLowerCase().startsWith("de") ? "de" : "en",
 					energy_run_id: null,
 					pv_run_id: null,
-					equipment_run_id: qualified.id,
+					equipment_run_id: null,
 					logo: null,
 				},
 			});
 			if (!current()) return;
-			if (report?.state === "succeeded") setReportRun(report);
-			done(
-				"report",
-				report?.state === "succeeded"
-					? undefined
-					: __(
-							"The equipment result is ready; the PDF needs the energy result as well.",
-							"linker-tools",
-						),
-			);
+			// The PDF no longer depends on an energy result, so a failure here is
+			// the step's own failure and must name it instead of blaming a
+			// calculation this screen never promised to run.
+			if (!report || report.state !== "succeeded") {
+				blocked("report", runFailure(report));
+				return;
+			}
+			setReportRun(report);
+			done("report");
 		} catch (error) {
 			if (!current()) return;
 			if (

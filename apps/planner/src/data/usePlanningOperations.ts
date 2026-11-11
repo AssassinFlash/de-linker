@@ -47,6 +47,16 @@ export type PlanningReply =
 
 /** The same durable mutation path handles new and explicitly retried intents.
  * A grant permits recovery discovery, never automatic submission or authority. */
+
+// A request the engine has been offered stays owned until its reply is read,
+// including across the page that started it. Navigation unmounts that page but
+// not the dispatch, so the journal entry is still being settled; another view
+// of the same project must not offer it as a stored request the customer has to
+// discard by hand. Keys are the journal's own identity: scope:path:key.
+const inflight = new Set<string>();
+const inflightKey = (scope: string, path: string, key: string) =>
+	scope + ":" + path + ":" + key.toLowerCase();
+
 export function usePlanningOperations({
 	projectId,
 	session,
@@ -97,9 +107,11 @@ export function usePlanningOperations({
 		setRecords([]);
 		setChecking(true);
 		return () => {
+			// Navigation must not abandon a request the server has already been
+			// offered. The journal entry and the engine's own receipt own it from
+			// the moment it is written: the reply below still acknowledges and
+			// clears it without touching this page's unmounted state.
 			lifetime.current++;
-			flight.current?.abort();
-			flight.current = null;
 		};
 	}, [projectId, session.query_scope]);
 	useEffect(() => {
@@ -120,6 +132,11 @@ export function usePlanningOperations({
 			const confirmed = new Set(JSON.parse(confirmedKey) as string[]);
 			for (const record of found) {
 				if (!current()) return;
+				// A request this browser is still dispatching needs no recovery:
+				// its own reply clears the entry, and offering it here would lock
+				// every later action behind a request that is already running.
+				if (inflight.has(inflightKey(record.scope, record.path, record.key)))
+					continue;
 				if (
 					record.path === "battery/scenario" &&
 					record.resultId !== null &&
@@ -175,9 +192,16 @@ export function usePlanningOperations({
 		const controller = new AbortController(),
 			instance = lifetime.current;
 		flight.current = controller;
+		// React state belongs to this page; the journal and the engine receipt
+		// belong to the request. A page that goes away keeps the reply path but
+		// stops reporting, so a navigation can never strand an accepted run as an
+		// unconfirmed stored request.
 		const current = () =>
 			flight.current === controller &&
 			instance === lifetime.current &&
+			client.isCurrentScope(session.query_scope);
+		const owned = () =>
+			flight.current === controller &&
 			client.isCurrentScope(session.query_scope);
 		const pending: PlanningIntent = {
 			path,
@@ -191,14 +215,22 @@ export function usePlanningOperations({
 		setBusy(true);
 		setError(null);
 		setIntent(pending);
+		const flightId = inflightKey(originScope, path, pending.key);
+		inflight.add(flightId);
 		let dispatched = false;
 		try {
+			// The request is marked in flight before the journal write, so a
+			// second mounted view of this project cannot report the entry as a
+			// stored request while this dispatch is still producing its reply.
 			await store.write(
 				originScope,
 				path,
 				body,
 				JSON.parse(scopeKey) as string[],
 			);
+			// A page that goes away while the journal write is still pending must
+			// not dispatch: the request would reach the server with nobody left
+			// to read its reply. It stays a stored request, as before.
 			if (!current()) return;
 			setStorageFailed(false);
 			setRecords((previous) => [
@@ -215,7 +247,7 @@ export function usePlanningOperations({
 				session.query_scope,
 				controller.signal,
 			);
-			if (!current()) return;
+			if (!owned()) return;
 			let reply: PlanningReply;
 			if (path === "battery/scenario")
 				reply = {
@@ -248,7 +280,6 @@ export function usePlanningOperations({
 						: reply.run.id;
 			if (expectedResultId !== null && resultId !== expectedResultId)
 				throw new ApiError(502, "invalid_energy_receipt");
-			setIntent({ ...pending, resultId });
 			try {
 				await store.acknowledge(originScope, path, body, resultId);
 				if (path !== "battery/scenario")
@@ -256,12 +287,34 @@ export function usePlanningOperations({
 			} catch {
 				if (current()) setStorageFailed(true);
 			}
-			if (!current()) return;
+			if (!current()) return undefined;
+			setIntent({ ...pending, resultId });
 			setRefresh((value) => value + 1);
 			return reply;
 		} catch (cause) {
-			if (flight.current !== controller || instance !== lifetime.current)
-				return;
+			if (flight.current !== controller) return;
+			// The journal entry outlives this page. A refusal that proves the
+			// request did no work must clear it here, or the next view would offer
+			// a request the server already turned down as one to retry.
+			const release = async () => {
+				try {
+					await store.clear(originScope, path, body);
+				} catch {
+					if (current()) setStorageFailed(true);
+					return;
+				}
+				if (current()) {
+					setRecords((rows) =>
+						rows.filter(
+							(row) =>
+								row.scope !== originScope ||
+								row.path !== path ||
+								row.body !== body,
+						),
+					);
+					setIntent(null);
+				}
+			};
 			if (
 				cause instanceof ApiError &&
 				([401, 403].includes(cause.status) || cause.code === "session_changed")
@@ -269,7 +322,17 @@ export function usePlanningOperations({
 				recheck();
 				return;
 			}
-			if (!current()) return;
+			if (!current()) {
+				if (
+					dispatched &&
+					(isPreMutationInputRefusal(cause) ||
+						(cause instanceof ApiError &&
+							cause.status === 409 &&
+							cause.code === "evaluation_revision_changed"))
+				)
+					await release();
+				return;
+			}
 			if (
 				cause instanceof ApiError &&
 				cause.code === "planning_operation_pending" &&
@@ -294,26 +357,11 @@ export function usePlanningOperations({
 						cause instanceof ApiError &&
 						cause.status === 409 &&
 						cause.code === "evaluation_revision_changed"))
-			) {
-				try {
-					await store.clear(originScope, path, body);
-				} catch {
-					if (current()) setStorageFailed(true);
-				}
-				if (current()) {
-					setRecords((rows) =>
-						rows.filter(
-							(row) =>
-								row.scope !== originScope ||
-								row.path !== path ||
-								row.body !== body,
-						),
-					);
-					setIntent(null);
-				}
-			}
+			)
+				await release();
 			return;
 		} finally {
+			inflight.delete(flightId);
 			if (flight.current === controller) {
 				flight.current = null;
 				if (instance === lifetime.current) setBusy(false);

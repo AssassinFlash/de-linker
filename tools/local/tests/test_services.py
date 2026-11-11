@@ -73,6 +73,9 @@ def test_planner_config_is_private_isolated_and_preserves_operator_changes(
     assert values_a["directory"] == str(a.dir / "planner/workspace")
     assert values_a["max_csv_bytes"] < values_a["max_body_bytes"]
     assert values_a["schema_version"] == 1
+    # The engine registers the search executor only when the policy names it;
+    # without it the shipped quick start's own button answers 503.
+    assert values_a["equipment_search"] == {"work_budget": 1000}
     assert stat.S_IMODE(path_a.stat().st_mode) == 0o600
     changed = {**values_a, "max_page_size": 17}
     path_a.write_text(json.dumps(changed))

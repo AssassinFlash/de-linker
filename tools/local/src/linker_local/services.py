@@ -496,6 +496,11 @@ def planner_environment(instance: Instance) -> dict[str, str]:
             "absolute_kwh": 1e-7,
             "absolute_kw": 1e-7,
             "relative": 1e-9,
+            # The shipped quick start and equipment workspace ask this instance
+            # for a combination search; without the limit the engine registers
+            # no search executor and answers 503 instead of the planner's own
+            # answer. The published budget is the one the sweep evidence uses.
+            "equipment_search": {"work_budget": 1000},
         }
         publish_once(config, payload)
     return {"LINKER_PLANNER_CONFIG": str(config)}

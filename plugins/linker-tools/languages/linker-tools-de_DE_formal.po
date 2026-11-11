@@ -14299,11 +14299,6 @@ msgstr "Die gewählte Kombination konnte nicht gespeichert werden. Ihre offenen 
 
 #: ../../apps/planner/src/components/QuickStart.tsx
 #: build/planner/assets/planner.js
-msgid "The equipment result is ready; the PDF needs the energy result as well."
-msgstr "Das Geräteergebnis ist fertig; das PDF benötigt zusätzlich das Energieergebnis."
-
-#: ../../apps/planner/src/components/QuickStart.tsx
-#: build/planner/assets/planner.js
 msgid "The full workbench adds roof geometry, imported interval data and the detailed engineering checks. Nothing on this screen is lost by opening it."
 msgstr "Der vollständige Arbeitsbereich ergänzt Dachgeometrie, importierte Intervall-Daten und die detaillierten technischen Prüfungen. Beim Öffnen geht nichts von diesem Bildschirm verloren."
 

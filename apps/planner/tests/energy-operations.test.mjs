@@ -188,8 +188,8 @@ async function rig(t, respond, options = {}) {
 		},
 	});
 	await client.bootstrap();
-	const { createRoot } = await import("react-dom/client"),
-		root = createRoot(dom.element);
+	const { createRoot } = await import("react-dom/client");
+	let root = createRoot(dom.element);
 	function Probe() {
 		api = usePlanningOperations({ ...props, client, recheck: () => {} });
 		return React.createElement(
@@ -242,6 +242,12 @@ async function rig(t, respond, options = {}) {
 		},
 		async unmount() {
 			await act(async () => root.unmount());
+		},
+		/** Come back to the same project in a fresh page, as navigation does. */
+		async remount() {
+			root = createRoot(dom.element);
+			await render();
+			await until(() => !api.checking);
 		},
 	};
 }
@@ -338,6 +344,71 @@ test("unmount while persistence is pending never sends a mutation and retains th
 	assert.equal(r.calls.length, 0);
 	assert.equal(saved.length, 1);
 	assert.equal(JSON.parse(saved[0].body).expected_revision, 2);
+});
+
+test("navigating away from an in-flight calculation neither aborts it nor leaves a stored request behind", async (t) => {
+	// Production walk 2026-11-11: clicking a side-bar link while the equipment
+	// search was running aborted the request, left an unconfirmed journal entry
+	// and locked "Find equipment combinations" until the customer discarded it.
+	const gate = deferred();
+	const r = await rig(
+		t,
+		async () => {
+			await gate.promise;
+			return json(result);
+		},
+		{ projectId: result.project_id },
+	);
+	let pending;
+	await act(async () => {
+		pending = r.api.start("runs/energy", {
+			expected_revision: result.revision,
+		});
+	});
+	await until(() => r.calls.length === 1);
+	await r.unmount();
+	// The request the server already accepted keeps its reply path: it is read,
+	// acknowledged and cleared although the page that started it is gone.
+	await act(async () => {
+		gate.resolve();
+		await pending;
+	});
+	await r.remount();
+	assert.equal(r.api.records.length, 0, "no stored request to discard");
+	assert.deepEqual(await r.durable.list([scope], projectId), []);
+});
+
+test("coming back while the calculation is still running shows no stored request", async (t) => {
+	const gate = deferred();
+	const r = await rig(
+		t,
+		async () => {
+			await gate.promise;
+			return json(result);
+		},
+		{ projectId: result.project_id },
+	);
+	let pending;
+	await act(async () => {
+		pending = r.api.start("runs/energy", {
+			expected_revision: result.revision,
+		});
+	});
+	await until(() => r.calls.length === 1);
+	await r.unmount();
+	await r.remount();
+	assert.equal(
+		r.api.records.length,
+		0,
+		"a request this browser is still dispatching is not recovery work",
+	);
+	await act(async () => {
+		gate.resolve();
+		await pending;
+	});
+	await until(() =>
+		r.durable.list([scope], projectId).then((rows) => rows.length === 0),
+	);
 });
 
 test("a verified account transition discovers the guest intent but never submits it automatically", async (t) => {
