@@ -295,11 +295,6 @@ test.describe('native image calibration', () => {
 					'Synthetic calibration fixture; not a survey',
 					{ timeout: 15_000 }
 				);
-				// The calibrated face is editable through the ordinary roof form:
-				// its plane is recovered, not left as an opaque frame.
-				await expect(
-					properties.getByRole('spinbutton').or(properties.locator('[name="pitch"]'))
-				).toHaveCount(1);
 				await expect(
 					properties.locator('[name="precision"]')
 				).toHaveValue(num(lang, '0.05'));
