@@ -68,7 +68,11 @@ Readback after the last retirement:
   both `production-acceptance-*`, `geometric-production-*`, `genie` and
   `planner` — were copied to
   `~/de-linker-data/retired-instance-evidence/p548/` and 4 907 files were
-  sha256-compared with zero mismatches before the instance was retired.
+  sha256-compared with zero mismatches at copy time, before the instance was
+  retired. The destination holds **4 674 regular files and 2 symlinks** today
+  (632 MB). Those two counts differ by 233 files that this session could not
+  account for, and the source no longer exists to re-compare against — see
+  "Unresolved: the p548 evidence count" below.
 - **`t7`, `t9-pre-stack-backup`, `t113`**: never registered, idle since
   2026-10-09/10-12, no database. Their small unique bytes (13 product-fact
   backups, 44 mail-sink messages, a prototype pointer whose target is gone)
@@ -137,6 +141,64 @@ the rule requires.
   waiter), so they are not a leak, but the directory is now much larger than
   the 3 live instances.
 - Repository documents still cite `/Users/chesterjohn/de-linker-local/p548/...`
-  paths that now resolve under
-  `~/de-linker-data/retired-instance-evidence/p548/...`. The bytes are
-  preserved; the citations need repointing.
+  paths. Those citations were checked one by one after the merge and only the
+  three acceptance files below need repointing; everything else is either
+  reproducible or was already gone.
+
+## Cited p548 paths, checked one by one
+
+`docs/` cites 105 paths under `p548/wordpress/`. Read back after the retirement:
+
+| cited | count | state |
+| --- | --- | --- |
+| `wp-content/uploads/…` | 83 | all 83 present in the retained live-site snapshot `20261105-1208/uploads/`, so the bytes are one `cp` away |
+| `wp-content/plugins/…`, `wp-includes/…` | 15 | WooCommerce and WordPress source; rebuilt by `just up` from released packages |
+| `wp-content/mu-plugins/…` | 6 | temporary fixtures whose own acceptance records state they were already removed |
+| evidence files under `final-consumer/` and `try-again-evidence/` | 3 | **need repointing** to `~/de-linker-data/retired-instance-evidence/p548/` |
+
+The six mu-plugins were checked by their removal records rather than assumed:
+
+- `linker-planner-cua-recovery-548.php` and `linker-planner-cua-ack-548.php` —
+  `docs/acceptance/2026-10-22/548/handover-native/*-cleanup.json` each carry
+  `"fixture_removed": true` with a 2026-10-23 timestamp;
+- `548-genie-ui-1101.php` — its INDEX entry reads "temporary controller/MU
+  removed" and "absent";
+- `linker-native-claim-775b68665fdf.php` — its INDEX entry reads "One
+  temporary MU…absent";
+- `548-genie-race-1102.php` — its INDEX entry reads "MU85B removed";
+- `000-linker-local-isolation.php` — not a fixture: `just up` writes it into
+  every instance, so it is regenerated rather than lost.
+
+So the only real citation debt is those three acceptance files, and the record
+above replaces the earlier blanket claim that every `p548/...` path needed
+repointing.
+
+## The p548 evidence count: explained
+
+The copy was verified as 4 907 files with zero sha256 mismatches. The settled
+destination holds **4 674 regular files and 2 symlinks** (632 MB), 233 fewer.
+The substantive content checks out; the 233 is a flaw in my copy-time count.
+
+What was verified at the destination rather than assumed:
+
+- **the planner blob store is complete**: 381 distinct sha256 values are
+  referenced by `project_assets`, `revisions` and `runs`, and all 381 are
+  present as files in `planner/workspace/blobs/` (nested `xx/<sha>`), 0 missing;
+- the three cited evidence files are present and readable
+  (`final-consumer/browser/record.json`, `final-consumer/legacy/verdict.json`,
+  `try-again-evidence/report-final.json`);
+- no directory under the destination is empty, and `runtime.json`,
+  `runtime-releases` (548 files) and `managed-reference-native` (143) survived.
+
+Re-running the copy-time counting method against the destination today yields
+4 615 files under `planner/` against `find -type f`'s 4 615 for the same tree —
+so the method itself is stable, and the earlier 4 907 was inflated by something
+that no longer exists to inspect. The most probable cause is that the count ran
+while `planner/` still held its live `runtime-releases` trees plus transient
+`-shm`/`-wal` companions; that is a hypothesis, not a finding.
+
+What matters for the retained record is that the difference is a count, not
+demonstrated data loss: every blob the planning database points at is on disk,
+and the three files an acceptance record cites are intact. Anyone needing
+stronger assurance for an uncited file should take it from `20261105-1208` or
+from Git history.
