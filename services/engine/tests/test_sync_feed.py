@@ -37,6 +37,9 @@ def load_sync() -> ModuleType:
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    # The retry ladder stays at four attempts, but tests do not sleep through
+    # its production backoff (0/5/15/30 s) on every failure-path case.
+    module.__dict__["FEED_FETCH_BACKOFF_S"] = (0, 0, 0, 0)
     return module
 
 
@@ -318,3 +321,35 @@ def test_fetch_failure_keeps_both_files(tmp_path: Path, feed_url: str) -> None:
     assert restart.calls == 0
     assert feed.read_bytes() == b"old feed"
     assert contract.read_bytes() == b"old contract"
+
+
+def test_fetch_retries_a_transient_failure_and_completes(tmp_path: Path) -> None:
+    document = feed_document()
+    (tmp_path / "feed.json").write_text(json.dumps(document))
+    hits = {"count": 0}
+
+    class TwiceFlaky(QuietHandler):
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            super().__init__(*args, directory=str(tmp_path), **kwargs)
+
+        def do_GET(self) -> None:  # noqa: N802 - the stdlib spelling
+            hits["count"] += 1
+            if hits["count"] <= 2:
+                self.send_error(404)
+                return
+            super().do_GET()
+
+    server = HTTPServer(("127.0.0.1", 0), TwiceFlaky)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        address = server.server_address
+        url = f"http://{str(address[0])}:{int(address[1])}/feed.json"
+        code, restart, logs, feed, contract = run(load_sync(), tmp_path, url)
+    finally:
+        server.shutdown()
+        thread.join()
+        server.server_close()
+    assert code == 0, logs
+    assert hits["count"] == 3
+    assert json.loads(feed.read_text())["products"] == document["products"]
