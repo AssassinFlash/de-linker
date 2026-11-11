@@ -9,7 +9,7 @@
 
 | # | 目标 | 结论 |
 | --- | --- | --- |
-| 1 | SGS Annex（`250008RECO14-CER`） | **公开副本未取得**：GoodWe 官方下载中心与德国分销 BayWa 都只发布与在托管件字节相同的 1 页封面；SGS 证书目录的实际交互搜索受人机验证限制。不得外推 164 页 Annex 的内容。 |
+| 1 | SGS Annex（`250008RECO14-CER`） | **Annex 存在性与文件名已确定，文件本体公开不可得**（2026-11-11 第四轮）：ZEREZ 登记库确认文件名 `Annex to Certificate 250008RECO14-CER_Rev_0_4110_20.pdf`（类型 `Evaluation Report`），承载报告号 `250008RECO14` / `250008RECO14-TG4`；下载被 ZEREZ 的 `Evaluation Report` 类型权限统一挡住。GoodWe 六国站目录 40 条证书零 Annex 条目。不得外推 164 页 Annex 的内容。 |
 | 2 | BAT-C 60–112 kWh 定量资料 | **取得**：GoodWe 官方 `GW_BAT-C 61.4-112.6kWh_User Manual-EN`（V1.0, 2026-10-10，87 页）。有全系列定量参数表（含 92.1 kWh 型号、最大 0.9C/1.1C、180/220 A、循环寿命、效率），**无绘制的 SOC×温度降额曲线**（手册脚注只声明降额存在）。 |
 | 3 | ET 75–100 kW 运行包络 | **部分**：所持三份文档（数据表 V2.1、Solution Manual V1.3、User Manual V1.2）经与 GoodWe 官方下载中心逐字节比对**均为当前版**；三份均只定性提及降额，定量多维包络只在未公开的 SGS Annex 测试报告里。 |
 | 4 | SAJ HS3/CB2 端子图 | **确认所持即当前官方原件**：HS3 V4 与 CB2 手册均与 saj-electric.com hubfs 官方文件字节相同，且无更新版本；两份手册自身已含最全的公开端子/针脚定义，不存在更全的独立端子图。 |
@@ -30,7 +30,15 @@ Actor 统一为 `apify/website-content-crawler`（浏览器渲染 Firefox、`max
 
 ---
 
-## 1. SGS Annex（证书 `250008RECO14-CER`）——公开副本未取得，官方查询受限
+## 1. SGS Annex（证书 `250008RECO14-CER`）——存在性与文件名已确定；本体公开不可得
+
+> **2026-11-11 第四轮更新**：本节结论已被 `docs/research/2026-11-11-sgs-annex-hunt/REPORT.md` 取代（更精确）。
+> 核心变化：(a) 证书封面的 QR 码解出 SGS procert 官方验证通道，得到此前未知的**报告号 `250008RECO14` / `250008RECO14-TG4`**、
+> 认证方案 `SGS ECPE`、程序 `PE.T-ECPE 68`、订单 `TEC-CERT250600198-11`；(b) 德国官方登记库 **ZEREZ** 确认 Annex
+> 文件名 `Annex to Certificate 250008RECO14-CER_Rev_0_4110_20.pdf`（类型 `Evaluation Report`）并登记 9 台机组；
+> (c) GoodWe 六国站按 `type` 参数重枚举后实为 **40 条证书**（旧记 8 条），仍零 Annex 条目；
+> (d) 公开下载的唯一障碍是 ZEREZ 对 `Evaluation Report` 类型的统一权限（244 条抽样 60 条公开数为 0）。
+> 下文为第一轮原始记录，保留作证据链。
 
 背景：在托管件 `GW_ET-75-100kW_Certificate_VDE-AR-N-4110-4120.pdf`（1 页，629,561 B，sha256 `da4d0f336bb0b6e7828ad18f4e89534698383d0191c28a4c4dedbb7a94f4c61f`）正文写明证书由 1 页 + 164 页 Annex（Rev.0/2026-01-30）组成。
 
@@ -96,6 +104,15 @@ Actor 统一为 `apify/website-content-crawler`（浏览器渲染 Firefox、`max
 
 判定：EN 权威当前原件已在手且经哈希锁定；缺口只剩 Annex。此前记录的端子表原文疑点（COM2 reserved 含 5 与同表 5=CAN-L 冲突、STS 分支 5/6 与 7/8 重复）在当前版中未变化，仍属“原厂表述疑点”，无更正版可取。
 
+**2026-11-11 第四轮补充**（见 `docs/research/2026-11-11-sgs-annex-hunt/REPORT.md`）：
+- Annex 的载体与坐标现已确定：文件名 `Annex to Certificate 250008RECO14-CER_Rev_0_4110_20.pdf`（类型 `Evaluation Report`），
+  登记在 ZEREZ `ZE-PWRY-PB3X-0007`；承载报告 `250008RECO14` + `250008RECO14-TG4`；认证依据含 FGW TR 8 Rev.10 等。
+- ZEREZ 机组级定量字段可公开读取（`ZE-PWRY-PB3X-0007`）：Pmax 110 / Prated 100 / Pmax@0.9 = 99 / I"k 144.4 A / 230 V；
+  `matrixParameters`、`inertiaParameters` 为空 → **曲线族不在登记库**。
+- 同 4 个 ET 机型另有 TÜV Rheinland 单元证书 `AK 50720980 0001`（TR 3.3.1 REVISION 6，报告 `CN26FI6E 001`），
+  该文件已取回并哈希（见 REPORT §4.1），可作为可行上架件。
+- **结论不变的部分**：跨 DC 输入/温度/网压/频率/P-Q 的定量包络仍未取得，不得由任何现有材料外推。
+
 ## 4. SAJ HS3 / CB2 端子图——所持即当前官方原件；无更全独立端子图
 
 **HS3**：官方 hubfs `https://www.saj-electric.com/hubfs/Guides%20and%20Manuals/HS3/HS3-T/HS3-(3K-12K)-T2-(W%2CG)-(B%2CP)X_User_Manual_EU_TH_V4_en.pdf`（HTTP 200，11,804,387 B）sha256 `2c1dd5c1e2f7efd96eba4f24aa3804ee135936ac90bcccfd1a681f2188868f46`，与在托管件 `SAJ_HS3_3-12K-T2_User-Manual_EN_V4.pdf`（125 页，PDF 创建 2025-09-28）**逐字节相同**。V5 及其他 V4 命名变体探测均 404 → **V4 即最新**。
@@ -117,8 +134,20 @@ Actor 统一为 `apify/website-content-crawler`（浏览器渲染 Firefox、`max
    官方手册证实该型号存在（9 模组 92.1 kWh），但它只出现在 AU 数据表与 AU 产品页；EMEA 产品页、
    EMEA 数据表、DE 兼容总表三处均不列。GoodWe 为 EMEA 发布的 BAT-C 只有 61.4 与 112.6 两个容量，
    即我们现有两款。
-3. **SGS Annex 证据边界**：证书编号 `250008RECO14-CER`（Rev.0/2026-01-30）仅用于公开来源核验；公开副本未取得，官方交互查询受人机验证限制，不向厂商索取，不外推 Annex 内容。
+3. **SGS Annex 证据边界**（2026-11-11 第四轮更新，见 `docs/research/2026-11-11-sgs-annex-hunt/REPORT.md`）：
+   - 存在性、文件名、载体、报告号现已**确定可引用**：ZEREZ 登记库记录 `ZE-PWRY-PB3X-0007`（证书 `250008RECO14-CER`）下挂
+     `Annex to Certificate 250008RECO14-CER_Rev_0_4110_20.pdf`，类型 `Evaluation Report`；承载报告号为
+     `250008RECO14` 与 `250008RECO14-TG4`（SGS procert 记录页）；认证程序 `PE.T-ECPE 68` / `SGS ECPE`，
+     订单 `TEC-CERT250600198-11`，签发方 SGS Tecnos, S.A.U.（Madrid）。
+   - **文件本体在公开渠道仍不可获取**，边界为 ZEREZ 对 `Evaluation Report` 类型的系统性权限控制
+     （全库 244 条抽样 60 条公开链接为 0；对照 `Perturbations Test Report` 抽样 30 条全部公开）。
+   - 同一证书在 ZEREZ 登记 9 台机组：8 台 GoodWe（GW75K/80K/99.99K/100K × ET/BT）+ 1 台 FENECON `FINV-100-1-DAH`
+     （走独立证书链 `250008RECO14-M1-CER`，2026-04-10 签发）。
+   - **仍不得外推 Annex 内部曲线族内容**，不得据此做工程放行。
 4. HS3 针脚级端子规格（p.78/p.81）可并入下一次 SAJ 规格批次。
+5. **TÜV `AK 50720980 0001`（TR 3.3.1 REVISION 6）可作为上架候选**（2026-11-11 新取回，见 `docs/research/2026-11-11-sgs-annex-hunt/REPORT.md` §4.1）：
+   2 页，1,493,134 B，sha256 `aa907efe4963e26e639bea7c8c283af0eb3c776cdceb7926c86edd42f5b7c1de`，
+   覆盖 GW75K/80K/99.99K/100K-ET-G10，固件 010101。按 609 流程托管+版本+关联这 4 款在售产品。
 
 ## 6. 资源报告（AGENTS.md §0）
 
