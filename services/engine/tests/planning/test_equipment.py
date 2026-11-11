@@ -11,6 +11,7 @@ import json
 from dataclasses import replace
 from pathlib import Path
 from types import SimpleNamespace
+from typing import cast
 
 import pytest
 from conftest import (
@@ -50,6 +51,7 @@ from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.product_sources import ProductSources
 from linker_engine.planning.records import Actor
 from linker_engine.planning.report_inputs import ReportOptions
+from linker_engine.planning.report_kernel import ReportKernel, ReportService
 from linker_engine.planning.report_model import build_report
 from linker_engine.planning.report_sources import ReportInputsChanged, report_sources
 from linker_engine.planning.worker import Worker
@@ -2549,6 +2551,204 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
         assert (
             workspace.get(owner, pid).inputs["equipment_candidate"] == original_choice
         )
+
+
+def test_report_from_an_adopted_candidate_needs_no_second_equipment_run(
+    feed: FixtureObject,
+    engine: Engine,
+    workspace: Workspace,
+    owner: Actor,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The one-screen quick start reaches its PDF, production walk 2026-11-11 §B.
+
+    That screen adopts the chosen combination as the project's candidate and
+    then asked for the report with the qualification run named as well. The
+    report's own contract reads an adopted candidate as the project's single
+    equipment source, so the extra run is refused and the customer got 422 with
+    no PDF. This pins both halves: the screen's actual options produce a
+    complete report source, and naming a second run stays refused.
+    """
+    publication = Publication(feed)
+    shared = SimpleNamespace(
+        engine=replace(engine, products=Products.from_feed(feed)),
+        publication=publication,
+        version="fixture",
+    )
+    source = ProductSources(lambda: shared)
+
+    def current(self: Publication) -> FixtureObject:
+        manifest = publication_manifest(feed)
+        for row in manifest["products"]:
+            row["ready"]["engineering"] = True
+        return manifest
+
+    monkeypatch.setattr(Publication, "read", current)
+    feed["figure_projection_version"] = 2
+    feed["compatibility_origin"] = "woocommerce"
+    equipment = EquipmentService(
+        workspace, EquipmentKernel(workspace, source), max_attempts=1
+    )
+    search = EquipmentService(
+        workspace,
+        EquipmentSearchKernel(
+            workspace, source, EquipmentSearchLimits(work_budget=1000)
+        ),
+        max_attempts=1,
+    )
+    app = create_private_app(
+        workspace,
+        EnergyService(
+            workspace,
+            EnergyKernel(workspace, TOLERANCE, max_intervals=10),
+            max_attempts=1,
+        ),
+        credential=lambda: TOKEN,
+        limits=HttpLimits(100_000, 10_000, 10, 32),
+        equipment=equipment,
+        equipment_search=search,
+        product_provider=lambda: shared,
+    )
+    reports = ReportService(workspace, ReportKernel(workspace, source), max_attempts=1)
+    registry = service_registry(
+        EnergyService(
+            workspace,
+            EnergyKernel(workspace, TOLERANCE, max_intervals=10),
+            max_attempts=1,
+        ),
+        None,
+        None,
+        equipment,
+        search,
+        reports,
+    )
+    worker = Worker(
+        Jobs(workspace),
+        "quickstart-report-path",
+        {"evaluate": registry},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+        routing=registry.routing(8),
+    )
+    with TestClient(app) as client:
+        created = client.post(
+            "/projects/create",
+            json={
+                "schema_version": 1,
+                "title": "Quick start commercial",
+                "inputs": {
+                    **inputs(feed, 3),
+                    "equipment_requirements": {
+                        "schema_version": 1,
+                        "grid_phase": 3,
+                        "operating_mode": "grid_connected",
+                        "pv_dc_kw": 10,
+                        "required_usable_kwh": 15,
+                        "required_discharge_ac_kw": 5,
+                    },
+                },
+                "key": "quickstart-project",
+            },
+            headers=headers(),
+        )
+        assert created.status_code == 200, created.text
+        pid = created.json()["id"]
+        found = client.post(
+            "/runs/equipment-search",
+            json={
+                "schema_version": 1,
+                "project_id": pid,
+                "expected_revision": 1,
+                "key": "quickstart-search",
+            },
+            headers=headers(),
+        )
+        assert found.status_code == 200, found.text
+        assert worker.run_once()
+        searched = workspace.run(owner, found.json()["id"])
+        assert searched.state == "succeeded", searched.error
+        candidate = next(
+            row
+            for row in json_object(searched.result)["search"]["candidates"]
+            if row["status"] == "satisfied"
+        )
+        adopted = {
+            "equipment_selection": {
+                **candidate["selection"],
+                "pv_dc_kw": 10,
+                "required_usable_kwh": 15,
+                "required_discharge_ac_kw": 5,
+            },
+            "equipment_candidate": {
+                "run_id": searched.id,
+                "candidate_id": candidate["id"],
+                "assessment_sha256": candidate["assessment_sha256"],
+            },
+        }
+        revised = client.post(
+            "/projects/revise",
+            json={
+                "schema_version": 1,
+                "project_id": pid,
+                "expected_revision": 1,
+                "inputs": {**inputs(feed, 3), **adopted},
+                "key": "quickstart-adopt",
+            },
+            headers=headers(),
+        )
+        assert revised.status_code == 200, revised.text
+        qualified = client.post(
+            "/runs/equipment",
+            json={
+                "schema_version": 1,
+                "project_id": pid,
+                "expected_revision": revised.json()["revision"],
+                "key": "quickstart-check",
+            },
+            headers=headers(),
+        )
+        assert qualified.status_code == 200, qualified.text
+        assert worker.run_once()
+        run = workspace.run(owner, qualified.json()["id"])
+        assert run.state == "succeeded", run.error
+
+        project = workspace.get(owner, pid)
+        options = ReportOptions(
+            locale="en",
+            energy_run_id=None,
+            pv_run_id=None,
+            equipment_run_id=None,
+            logo=None,
+        )
+        # The screen's own options: the candidate is the equipment source and
+        # the report source is complete enough to render a PDF.
+        report = json_object(report_sources(workspace, source, owner, project, options))
+        assert report["candidate"] == adopted["equipment_candidate"]
+        detail = EquipmentCandidateStore(workspace).read(
+            owner, searched.id, str(candidate["id"])
+        )
+        assert report["equipment"] == detail["assessment"]
+        assert [row["run_id"] for row in report["source_runs"]] == [searched.id]
+        report_run = reports.evaluate(
+            owner, pid, project.revision, options, key="quickstart-report"
+        )
+        assert worker.run_once()
+        published = workspace.run(owner, report_run.id)
+        assert published.state == "succeeded", published.error
+        asset = json_object(published.result)["prepared_asset"]
+        assert workspace.blobs.read(cast(str, asset["content_sha256"]))[:5] == b"%PDF-"
+
+        # Naming the qualification run as well contradicts the adopted choice
+        # and is what produced the 422; the refusal stays.
+        with pytest.raises(InvalidInput, match="differs from the adopted"):
+            report_sources(
+                workspace,
+                source,
+                owner,
+                project,
+                options.model_copy(update={"equipment_run_id": run.id}),
+            )
 
 
 def test_search_enumerates_documented_counts_and_keeps_budget_exhaustion_visible(
