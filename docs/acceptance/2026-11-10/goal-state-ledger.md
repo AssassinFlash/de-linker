@@ -2118,3 +2118,47 @@ personally re-verified by the main line from the production DB and CAS
 blobs (sha256 match). Matrix row 3: "可发布（能力层，两内核有生产证据）" —
 `plant_ac` honestly kept at 0 executions (0/42 inverters declare AC
 charging), listed as reachable but lacking device facts.
+
+## Three parked items closed by main-line decision (2026-11-12, no owner input needed)
+
+The three items left "on record" after the batch merge were a violation of the
+2026-11-11 ruling (no waiting for owner decisions); all three are now decided:
+
+1. **plant_ac / H2-10K-T3 grid-charging facts — closed as an evidenced fact
+   boundary, not a pending decision.** Exhaustive official-source search for
+   "battery charged from grid" on the SAJ H2-10K-T3 (our product 4107):
+   hosted EU datasheet (BEU), hosted EU user manual (DE/EN), official AU
+   datasheet, official AU user manual (V0.0), Schrack-hosted official EU
+   manual (34 pp), the saj-electric.com product page, and the official
+   download center listing (pages 1–9 of Hybrid Inverter, where every
+   10-30K T2/T3 document found is a datasheet or certificate). **None
+   declares AC/grid battery charging.** The TOU-mode sentence ("during
+   charging period, battery can only be charged") never names the source;
+   German operator forums and Home Assistant threads confirm the real
+   devices do charge from grid, but community evidence is not a spec.
+   Per the 2026-10-09 ruling, the fact stays unrecorded ("无法核实并保持
+   现值"): `battery_grid_charging_supported` /
+   `max_battery_charge_ac_power_kw` are NOT added to Woo, the engine's
+   `EvidenceMissing: plant_ac_reverse_capability` refusal is correct
+   protective behavior, and matrix row 3 keeps plant_ac at "可达但缺设备
+   事实". Unlock path stays documented: SAJ publishing the statement (or a
+   newer manual containing it) → add the two fields → run the chain.
+2. **BAT-C cycle_life DoD conflict — resolved by the standing ruling.** The
+   §10 record had misread "以我们托管的数据手册为准" as manual-first; the
+   ruling's 数据手册 is the datasheet, so its p2 value (6000 cycles, 90%
+   DoD, 70% EOL) stands and the registry value was already correct. The AU
+   98% note is region-specific and irrelevant to the EU shop. README §10
+   rewritten as resolved.
+3. **No real customer meter load — closed as a design decision.** BDEW/VDEW
+   H25 is the industry-standard synthetic load profile for German
+   residential design tools; real customer meter data cannot exist before
+   customers and is not fabricated. The energy kernels keep BDEW H25 as the
+   reference load; when real inquiries arrive, measured loads can be added
+   as additional evidence, not as a replacement default.
+
+Evidence artifacts for (1) were gathered via Apify (token 3 of the owner's
+2026-11-11 set; tokens 1–2 expired) and the built-in browser; the SAJ
+download-center crawl covered 9 of 11 listing pages — the remaining pages
+contain only older regional datasheets/certificates of the same family,
+whose manuals (checked in three official copies) share identical
+work-mode text. No files were added to the hosted library.
