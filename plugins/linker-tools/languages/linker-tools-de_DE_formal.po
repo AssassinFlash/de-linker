@@ -14851,6 +14851,10 @@ msgid "This image could not be used. Choose a PNG, JPEG or WebP file up to 8 MB.
 msgstr "Dieses Bild konnte nicht verwendet werden. Wählen Sie eine Datei im Format PNG, JPEG oder WebP bis 8 MB."
 
 #: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "This drawing is a reference only, so it cannot measure the roof. Mark a measurable plan or slope view whose second span agrees, or keep the drawing beside an already measured roof face."
+msgstr "Diese Zeichnung ist nur eine Referenz und kann das Dach daher nicht vermessen. Markieren Sie einen messbaren Grundriss oder eine Schrägansicht, deren zweite Strecke übereinstimmt, oder bewahren Sie die Zeichnung neben einer bereits aufgemessenen Dachfläche auf."
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
 msgid "Two points and one real length give a single scale. A second independent span checks it; a perspective photo stays a reference and cannot measure the roof."
 msgstr "Zwei Punkte und eine tatsächliche Länge ergeben einen einheitlichen Maßstab. Eine zweite unabhängige Strecke prüft ihn; ein perspektivisches Foto bleibt eine Referenz und kann das Dach nicht vermessen."
 

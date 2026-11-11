@@ -460,6 +460,18 @@ export function ImageCalibrationWorkspace({
 			}
 			const calibration = buildFromFields(values);
 			if (!calibration) return;
+			// A perspective photo, or a scale its own second span contradicts,
+			// stays a reference: one uniform scale cannot measure it, so it may
+			// not create engineering geometry.
+			if (calibration.measurement_status !== "usable_uniform_scale") {
+				setError(
+					__(
+						"This drawing is a reference only, so it cannot measure the roof. Mark a measurable plan or slope view whose second span agrees, or keep the drawing beside an already measured roof face.",
+						"linker-tools",
+					),
+				);
+				return;
+			}
 			const ring = trace.map((point) => pixelToUv(point, calibration));
 			// Drawing datum: the outline's own lower-left corner becomes UV (0, 0).
 			const minU = Math.min(...ring.map(([u]) => u)),

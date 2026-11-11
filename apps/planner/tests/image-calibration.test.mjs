@@ -237,7 +237,7 @@ test("a two-point scale and a traced outline become one calibrated roof", async 
 	assert.equal(harness.activity(), false);
 });
 
-test("a perspective photo is refused as an engineering measurement", async (t) => {
+test("a perspective photo never becomes engineering geometry", async (t) => {
 	const harness = await mount();
 	t.after(async () => {
 		await act(async () => harness.root.unmount());
@@ -265,16 +265,16 @@ test("a perspective photo is refused as an engineering measurement", async (t) =
 		document.querySelector('[name="withCheck"]').click();
 	});
 	await submit();
-	assert.equal(
-		document.querySelector("h3").textContent,
-		"Outline",
-		document.querySelector(".lp-notice")?.textContent ?? "",
-	);
+	assert.equal(document.querySelector("h3").textContent, "Outline");
 	await clickText("Roof outline (0 points)");
 	await mark(100, 100);
 	await mark(700, 100);
 	await mark(700, 700);
 	await mark(100, 700);
+	assert.match(
+		document.querySelector(".lp-import-review").textContent,
+		/Reference only/,
+	);
 	await typeInto("rights", "Owner photo; reference only");
 	await act(async () => {
 		document.querySelector('[name="retention"]').checked = true;
@@ -282,16 +282,14 @@ test("a perspective photo is refused as an engineering measurement", async (t) =
 			.querySelector('[name="retention"]')
 			.dispatchEvent(new window.Event("change", { bubbles: true }));
 	});
-	assert.match(
-		document.querySelector(".lp-import-review").textContent,
-		/Reference only/,
-	);
 	await submit();
-	const calibration = harness.geometry().sources[0]?.calibration;
-	assert.ok(calibration);
-	assert.equal(calibration.view, "perspective_photo");
-	assert.equal(calibration.measurement_status, "reference_only");
-	assert.equal(calibration.applied_pitch_deg, null);
+	// One uniform scale cannot rectify a photo, so it may not create a roof.
+	assert.equal(harness.edits(), 0);
+	assert.match(
+		document.querySelector(".lp-notice").textContent,
+		/reference only, so it cannot measure the roof/,
+	);
+	assert.equal(harness.geometry().roofs.length, 0);
 });
 
 test("the declared tolerance default follows the page language", async (t) => {
