@@ -769,3 +769,18 @@ throughout). Second-outage watcher armed.
   recomputed. Still open (recorded): native failure-state captures, exit
   guards; runs/weather|direct-beam|geometric-pv are version_unavailable on
   this instance (deployment boundary, needs a configured instance).
+
+## Review instance engineering readiness restored (PR #1096 merged)
+
+Root cause of the all-false ready.engineering: after repair-bindings renewed
+the figure revisions, the pulled engineering consumer's 88 product_revisions
+all mismatched, and no local worker exists to re-ACK. Fixed through the real
+claim→acknowledge seam (no forged option): 0/88 → 88/88 ready, equipment runs
+409 → 200 succeeded, and country-rule result review became reachable (this
+also unlocked the gap L line had recorded). Two open items recorded by the
+line: ready.knowledge is still 0/88 locally (needs a recipe-aware index
+build; 116 table_without_scope diagnostics force preparation_complete=false),
+and the cause recurs on any fresh pull+repair instance — the durable fix
+(a linker-local startup ACK or a publication ack-engineering subcommand)
+needs a semantic ruling on whether a local engine's loaded state may grant
+local WP readiness, plus tests.
