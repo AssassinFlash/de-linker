@@ -2070,3 +2070,51 @@ quantified instead of guessed. Full record:
   fixed by aligning to `2023-01-01T00:00Z`.
 - **Rating:** matrix row 3 moves to `可发布（能力层，两内核有生产证据）`.
   Not "three kernels": plant_ac has no production run and the row says so.
+## BAT-C PDP spec rows merged (PR #1124, merged 68b6a9153)
+
+The two BAT-C product pages now carry the manual's certification and rated
+rows: `emc` registry specs (IEC/EN 61000-6-1/2/3/4, manual p. 82), a
+`Certification` group (Safety + EMC/EMV), and the Australia-only rated
+charge/discharge current and per-product power (100/100 A; 30.7 / 56.3 kW),
+each with its qualifier note so nothing reads as an unconditional European
+rating. Production write executed and personally read back on EN and DE
+(decimal commas intact). Registry delta verified exact: 2 new spec keys,
+285 materials otherwise untouched; the migration is idempotent (compare,
+replace or skip, never duplicate) and dry-run by default. CI initially red
+on 11 lanes — all diagnosed as the GitHub/Azure runner DNS outage (apt-get
+dependency steps, zero code failures; local python3.12 re-run 71/71 OK),
+green after the outage window passed.
+
+## Image calibration merged (PR #1126)
+
+First increment of workspace image calibration: two-point scale +
+independent second span + outline tracing on the calibrated image, recorded
+into `geometry.sources[].calibration` (Optional on both engines — every
+saved revision predating it stays valid). Perspective photos and
+second-span failures are hard-gated `reference_only` and cannot create
+engineering geometry. Horizontal plans convert slope length once through a
+declared pitch (cross-slope stays true length); the declared bearing places
+the drawing in the roof face's own frame. Engine/browser parity verified
+line-by-line by the main line, including the three second-review defects
+(V-axis orientation, RoofForm editability, reference-only refusal) all
+present and regression-covered. e2e EN/DE × 1440/390 4/4 on the review
+instance; CI green after the same DNS outage window. 54 new DE entries,
+Sie-form, independently written.
+
+## Two-kernel energy evidence + verifier tolerance fix merged (PR #1128)
+
+1954/1955 readiness re-read on 11-12: both knowledge+engineering true
+(11-11's false was C-line in-flight state), pool 88/88, signature
+71699e7cb1066ab9. `shared_dc_energy_replay_v1` executed twice on
+production: rev20 51/52 checks (the failed one is the tolerance defect
+below), rev21 52/52 clean, closure residuals 1.7e-14 / −3.8e-13 kWh,
+BDEW/VDEW H25 load, seasonal physics correct. Real defect found and fixed:
+`hard_allowance` ULP values REPLACED the configured tolerance, judging the
+same physical identity nine orders of magnitude apart between kernels;
+split into `exact=True` (identity, zero allowance) and
+`arithmetic_allowance` (added to the configured tolerance). The first fix
+attempt was caught by CI's anti-forgery test and corrected. All evidence
+personally re-verified by the main line from the production DB and CAS
+blobs (sha256 match). Matrix row 3: "可发布（能力层，两内核有生产证据）" —
+`plant_ac` honestly kept at 0 executions (0/42 inverters declare AC
+charging), listed as reachable but lacking device facts.
