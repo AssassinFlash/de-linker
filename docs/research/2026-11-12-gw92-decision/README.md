@@ -118,8 +118,10 @@ EMEA 下载中心没有第二个 BAT-C 60–112 数据表，也没有任何覆�
 sha256 `2a76fb0815a2b6adbaee9159b958e24549e480d90b519cd5181209448cd45eb7`，
 表头 `Technische Daten | GW61.4-BAT-AC-G10 | GW112.6-BAT-AC-G10`，`92.1` 与 `92,1` 全文 0 次。
 
-AU 站同类分页计数为 User Manual 24 / **Datasheet 17** / Certificate 8 / Compatibility 8 / Maintenance 1 / Others 2，
-数据表比 EMEA 多 5 项——92.1 的覆盖就落在 AU 的那 17 项里（其中 `id=3631` 已核，见 §2）。
+AU 站同类分页的**计数**（取自页面 tab 计数器，非逐项枚举）为 User Manual 24 / **Datasheet 17** /
+Certificate 8 / Compatibility 8 / Maintenance 1 / Others 2；数据表比 EMEA 多 5 项。
+AU 站的该分页接口需要先带 country/lang 子筛选才返回列表（只给 `type=10` 返回 `count: 0` 与语言选择器），
+因此没有逐项枚举；已核的是 AU 产品页实际挂的那一份 `id=3631`（见 §2），它覆盖 92.1。
 
 ### 3.1 兼容性总表：Global 与 EMEA 不一致
 
@@ -166,25 +168,27 @@ Certificate 分页全 8 项（`type=12`）：
    产品-资料关联授权，派生数据不授权）。手册虽然已托管并与 1954/1955 关联，但手册是四型号共用件，
    它不是"该型号的数据表"，用它单独支撑一个新的产品页等于让产品事实来自跨区域手册，
    与"托管数据表即产品事实源"的既有纪律不符。
-3. **交付清单同样只有手册背书。** `tools/migrate/548-batc-small-delivery-source.json` 记录的
-   包装清单（`GW92.1-BAT-AC-G10：×8` 模组间线束）出自 ET 50–100 kW 手册 p.33 的表格，
-   没有第二份独立原件可交叉验证。
+3. **交付清单同样只由这一份手册背书。** `tools/migrate/548-batc-small-delivery-source.json` 记录的
+   包装清单（`GW92.1-BAT-AC-G10：×8` 模组间线束）source 就是同一份手册
+   （`id=4626`，`blob_sha256=c29cbf25…`，`version V1.0 2026-10-10`，`pdf_page 33`），
+   没有第二份独立原件可交叉验证。用同一份跨区域手册既当规格源又当交付源，不构成"目录在售"。
 
 ## 5. 竞品映射：欧洲安装商向目录列什么
 
-| 站点 | 市场 | 列出的 BAT-C 型号 | 92.1 |
-| --- | --- | --- | --- |
-| `photovoltaikshop.eu`（兼容性索引） | DE | `GW61.4` / `GW102.4` / `GW112.6` | 无 |
-| `memodo.de` | DE | BAT112（112.6 kWh） | 无 |
-| `solarmarkt.ch` | CH | `GW112.6-BAT-AC-G10` | 无 |
-| `solarics.de` | DE | `GW112.6-BAT-AC-G10` | 无 |
-| `shop.krannich-solar.com`（B2B） | DE | 搜索 `BAT-AC-G10` 只回 `GW5.1-BAT-D-G20` B-Ware，无 BAT-C 大容量 | 无 |
-| `solarproof.com.au` | AU | **`GW92.1-BAT-AC-G10` 92.1 kWh** | 有 |
+| 站点 | 市场 | 证据方式 | 列出的 BAT-C 型号 | 92.1 |
+| --- | --- | --- | --- | --- |
+| `photovoltaikshop.eu/kompatibilitaet/speicher/goodwe/` | DE | 直接抓取索引页 | `GW61.4` / `GW102.4` / `GW112.6` | 无 |
+| `solarmarkt.ch`（`gw112-6-bat-ac-g10` 商品页） | CH | 直接抓取 | `GW112.6`（`112.6` 命中 5 次，`92.1`/`102.4` 各 0） | 无 |
+| `memodo.de`（`goodwe-bat112/13739` 商品页） | DE | 直接抓取 | `112,6 kWh` 命中 3 次 | 无 |
+| `shop.krannich-solar.com`（B2B） | DE | 站内搜索 `BAT-AC-G10` | 只回 `GW5.1-BAT-D-G20` B-Ware，无 BAT-C 大容量 | 无 |
+| `solarics.de` | DE | 抓取被 429 拒绝 | **未核实**，不计入样本 | — |
+| `solarproof.com.au/products/GW921-BAT-AC-G10.php` | AU | 直接抓取 | **`GW92.1-BAT-AC-G10` 92.1 kWh**（`92.1kWh` 命中 7 次） | 有 |
 
 结论：
 - **中间容量在欧洲是常见做法**（`photovoltaikshop.eu` 的德国兼容索引把 102.4 与两个端型号并列），
   但欧洲渠道列出的是 **102.4**，不是 92.1。
-- **在被查的 5 家欧洲安装商向站点中，0 家列 92.1**；唯一找到的 92.1 零售条目在澳洲。
+- **在被核实的 4 家欧洲安装商向站点中，0 家列 92.1**；唯一找到的 92.1 零售条目在澳洲。
+  `solarics.de` 因 429 未核实，已从样本中剔除，不计为"无"。
 - 因此"中间容量有价值"支持的是 102.4（若日后要补中间容量），不支持 92.1。
 
 ## 6. 顺带发现：102.4 也不在 EMEA 产品页/数据表，我们的两款与 EMEA 目录完全对齐
