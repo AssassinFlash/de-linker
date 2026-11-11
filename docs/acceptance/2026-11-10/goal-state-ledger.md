@@ -1997,3 +1997,24 @@ now has an executability verdict instead of a run count. Full record:
   is untouched. Unblocking is either restoring 1954's engineering readiness or
   adding the two facts to a ready battery — both are Woo equipment data (C line),
   outside this line's write boundary.
+
+## SGS Annex hunt merged: existence proven, permission wall proven (PR #1127, merged 1480aa434)
+
+The owner's exhaustive-channel standard was met: ten channel classes all
+executed, and the verdict upgraded from "unobtainable" to a characterized
+boundary. ZEREZ (the German TSOs' central unit/component certificate
+register) holds the exact record ZE-PWRY-PB3X-0007: Annex file named, SGS
+Tecnos (Madrid) issuer, ECPE scheme, second report number 250008RECO14-TG4
+newly surfaced, 9 units registered under the cert (8 GoodWe + 1 FENECON). A
+controlled experiment proves the block is by-file-type permission, not
+absence: the same certificate's Cover Sheet downloads publicly byte-identical
+to our hosted copy, while Evaluation Report class shows 0/60 sampled public
+links vs 30/30 for Perturbations reports. Bonus acquisitions: TÜV
+AK 50720980 0001 (TR 3.3.1 Rev.6, same four ET models) publicly obtained —
+main line personally re-downloaded and re-hashed it, byte-identical — plus
+publicly readable unit point values (Pmax 110 / Prated 100 / I"k 144.4 A) and
+two prior-record corrections (ET cert page holds 40 entries, not 8; the
+"broken pagination" was a missing type param). Hard boundary unchanged: the
+curve-family contents stay un-derived; no engineering release from these
+materials. Remaining paths (institutional ZEREZ account, vendor provision)
+recorded as fact, not as a solicitation suggestion.
