@@ -2,6 +2,10 @@
 
 The plist contains a private env-file path, never secrets. The file is not sourced
 as shell code: its explicit KEY=value entries become process environment values.
+
+Both the interpreter and the worker source must live outside every `releases/`
+root: a schedule pinned into one keeps running only until that release is reaped,
+then exits 78 (EX_CONFIG) on every wakeup.
 """
 
 from __future__ import annotations
@@ -9,6 +13,7 @@ from __future__ import annotations
 import argparse
 import os
 import plistlib
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -16,6 +21,225 @@ from urllib.parse import urlsplit
 from urllib.request import getproxies
 
 LABEL = "com.linker.knowledge-publication"
+
+
+def missing_definition(result: subprocess.CompletedProcess[str]) -> bool:
+    # Actual launchctl print on this Mac returns 113 with this exact diagnostic
+    # for an absent label. Other nonzero responses do not establish absence.
+    return (
+        result.returncode == 113
+        and f'Could not find service "{LABEL}"' in result.stderr
+    )
+
+
+def stable_interpreter(python: Path) -> Path:
+    """Reject an interpreter that a release rotation can delete under the plist.
+
+    Each service prunes its own ``releases/`` to a bounded number of versions
+    (``ops/release.sh`` keeps the live one, its rollback target and one spare).
+    An interpreter there satisfies the renderer while that release is current and
+    then disappears, leaving launchd exiting 78 (EX_CONFIG) before the worker
+    starts. The schedule therefore needs a dedicated environment outside every
+    release root, which no rotation reaps.
+    """
+    resolved = python.resolve()
+    # Inspect both the given and the resolved path: a symlink can lead into a
+    # release root, and a release root can hold a symlink out of it.
+    if "releases" in python.parts or "releases" in resolved.parts:
+        raise ValueError("interpreter must outlive release rotation")
+    # Keep the given path. Resolving a virtual environment's bin/python symlink
+    # selects the base interpreter, which cannot see that environment's packages.
+    return python
+
+
+def stable_source(source: Path) -> Path:
+    """Reject a worker source that another service's release rotation can delete.
+
+    The interpreter alone is not enough here: the plist names this root for the
+    launcher script, the worker, ``index/`` and its own working directory. Pinning
+    the interpreter outside rotation while leaving the source inside only moves
+    the exit 78 deadline to the next prune.
+    """
+    resolved = source.resolve()
+    if "releases" in source.parts or "releases" in resolved.parts:
+        raise ValueError("worker source must outlive release rotation")
+    return source
+
+
+def verify_interpreter(python: Path, source: Path) -> None:
+    """Prove the exact scheduled entrypoint imports before a scheduler owns it.
+
+    A readable file is not a working interpreter for this worker: preparation
+    needs the locked ``index`` group (Docling, ONNX runtime,
+    sentence-transformers) and the runtime package. Invoking the real entrypoint
+    turns a silent post-install exit 78 into an installation error.
+    """
+    entrypoint = source / "ops/publication_worker.py"
+    completed = subprocess.run(
+        [str(python), "-B", str(entrypoint), "--help"],
+        cwd=str(source),
+        env={
+            "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+            "PYTHONDONTWRITEBYTECODE": "1",
+            # The dedicated environment is not the editable install a release
+            # carried; the schedule names the source explicitly instead.
+            "PYTHONPATH": str(source / "src"),
+        },
+        capture_output=True,
+        text=True,
+        timeout=300,
+    )
+    if completed.returncode:
+        detail = completed.stderr.strip().splitlines()[-1:] or ["unknown failure"]
+        raise RuntimeError(
+            "interpreter cannot run the publication worker: " + detail[0]
+        )
+
+
+def rendered(
+    env_file: Path, settings: dict[str, object], python: Path, source: Path
+) -> bytes:
+    python = stable_interpreter(python)
+    source = stable_source(source)
+    if not python.is_absolute() or not python.is_file():
+        raise ValueError("existing absolute interpreter required")
+    if not (source / "ops/install_publication_worker.py").is_file():
+        raise ValueError("existing absolute worker source required")
+    program = [
+        str(python),
+        "-B",
+        str(source / "ops/install_publication_worker.py"),
+        "run",
+        str(env_file),
+        "--worker-id",
+        str(settings["worker_id"]),
+        "--lease-seconds",
+        str(settings["lease_seconds"]),
+        "--loaded-url",
+        str(settings["loaded_url"]),
+    ]
+    if settings["host"]:
+        program += ["--host", str(settings["host"])]
+    return plistlib.dumps(
+        {
+            "Label": LABEL,
+            "ProgramArguments": program,
+            "StartInterval": settings["interval_seconds"],
+            "RunAtLoad": True,
+            "WorkingDirectory": str(source),
+            # The worker imports the runtime package from this source rather than
+            # a release's editable .pth, which used to name a pruned directory.
+            "EnvironmentVariables": {
+                "PYTHONDONTWRITEBYTECODE": "1",
+                "PYTHONPATH": str(source / "src"),
+            },
+        }
+    )
+
+
+def confirm_installed(domain: str, target: Path, arguments: list[str]) -> None:
+    """Read back the definition the scheduler actually owns.
+
+    A label can hold a different *file* than the one on disk: the installer
+    retains a ``.previous.plist``, and bootstrapping that one leaves its path
+    loaded while the edited plist is never consulted. Comparing the loaded path
+    and argument list makes the installed file the one that runs.
+    """
+    observed = subprocess.run(
+        ["launchctl", "print", domain + "/" + LABEL],
+        capture_output=True,
+        text=True,
+        timeout=10,
+    )
+    if observed.returncode:
+        raise RuntimeError("installed_schedule_readback_failed")
+    loaded_path = re.search(r"^\s*path = (.+)$", observed.stdout, re.M)
+    if loaded_path is None or Path(loaded_path.group(1).strip()) != target:
+        raise RuntimeError("installed_schedule_owns_a_different_definition")
+    if loaded_arguments(observed.stdout) != arguments:
+        raise RuntimeError("installed_schedule_arguments_not_loaded")
+
+
+def loaded_arguments(text: str) -> list[str] | None:
+    """An unrecognised native print format is unknown, never permission to stop."""
+    section = re.search(r"^\s*arguments = \{\n(.*?)^\s*\}", text, re.M | re.S)
+    if section is None:
+        return None
+    return [
+        re.sub(r"^\d+\s*=\s*", "", line.strip()).strip('"')
+        for line in section.group(1).splitlines()
+        if line.strip()
+    ]
+
+
+def refuse_running_job(domain: str) -> None:
+    """Refuse to boot out a worker that is mid-run.
+
+    A build holds a two-hour lease and its own cache work; killing it discards
+    that progress and leaves the recovery journal for the next invocation. Wait
+    for the idle gap between scheduled runs instead.
+    """
+    observed = subprocess.run(
+        ["launchctl", "print", domain + "/" + LABEL],
+        capture_output=True,
+        text=True,
+        timeout=10,
+    )
+    if missing_definition(observed):
+        return
+    running = re.search(r"^\s*pid = ([0-9]+)$", observed.stdout, re.M)
+    if running or re.search(r"^\s*state = running$", observed.stdout, re.M):
+        raise RuntimeError("scheduled worker is running; replace it while idle")
+
+
+def install_definition(content: bytes) -> None:
+    target = Path.home() / "Library" / "LaunchAgents" / f"{LABEL}.plist"
+    domain = f"gui/{os.getuid()}"
+    arguments = plistlib.loads(content)["ProgramArguments"]
+    refuse_running_job(domain)
+    prior = target.read_bytes() if target.exists() else None
+    if prior is not None:
+        target.with_suffix(".previous.plist").write_bytes(prior)
+    try:
+        target.write_bytes(content)
+        # Retire the loaded definition only after the disk file is the new one,
+        # so a failure here leaves an inspectable plist rather than a stale job.
+        subprocess.run(
+            ["launchctl", "bootout", f"{domain}/{LABEL}"],
+            check=False,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=15,
+        )
+        subprocess.run(
+            ["launchctl", "bootstrap", domain, str(target)], check=True, timeout=15
+        )
+        confirm_installed(domain, target, arguments)
+    except BaseException as error:
+        subprocess.run(
+            ["launchctl", "bootout", f"{domain}/{LABEL}"],
+            check=False,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=15,
+        )
+        # Restore the disk definition for inspection but never bootstrap it. This
+        # installer replaces a definition precisely because it is wrong, and the
+        # prior one on this host was a release path that exits 78 on every wakeup;
+        # reloading it here would re-arm the failure the install was repairing.
+        if prior is None:
+            target.unlink(missing_ok=True)
+        else:
+            target.write_bytes(prior)
+        observed = subprocess.run(
+            ["launchctl", "print", domain + "/" + LABEL],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        if not missing_definition(observed):
+            error.add_note("schedule unload unconfirmed; no definition is loaded")
+        raise
 
 
 def main() -> int:
@@ -31,6 +255,16 @@ def main() -> int:
     parser.add_argument("--worker-id", required=True)
     parser.add_argument("--loaded-url", required=True)
     parser.add_argument("--host")
+    parser.add_argument(
+        "--python",
+        type=Path,
+        help="stable interpreter for the scheduled worker (default: this one)",
+    )
+    parser.add_argument(
+        "--source",
+        type=Path,
+        help="immutable worker source outside every release root (default: this one)",
+    )
     parser.add_argument("--install", action="store_true")
     args = parser.parse_args()
     env_file = args.env_file.expanduser().resolve(strict=True)
@@ -38,52 +272,26 @@ def main() -> int:
         parser.error("private env file must have mode 0600")
     if args.interval_seconds <= 0 or args.lease_seconds <= 0:
         parser.error("interval and lease must be positive")
-    program = [
-        sys.executable,
-        str(Path(__file__).resolve()),
-        "run",
-        str(env_file),
-        "--worker-id",
-        args.worker_id,
-        "--lease-seconds",
-        str(args.lease_seconds),
-        "--loaded-url",
-        args.loaded_url,
-    ]
-    if args.host:
-        program += ["--host", args.host]
-    plist = {
-        "Label": LABEL,
-        "ProgramArguments": program,
-        "StartInterval": args.interval_seconds,
-        "RunAtLoad": True,
-        "WorkingDirectory": str(Path(__file__).resolve().parents[1]),
+    python = (args.python or Path(sys.executable)).expanduser()
+    source = (args.source or Path(__file__).resolve().parents[1]).expanduser()
+    settings: dict[str, object] = {
+        "interval_seconds": args.interval_seconds,
+        "lease_seconds": args.lease_seconds,
+        "worker_id": args.worker_id,
+        "loaded_url": args.loaded_url,
+        "host": args.host,
     }
-    target = Path.home() / "Library" / "LaunchAgents" / f"{LABEL}.plist"
+    try:
+        content = rendered(env_file, settings, python, source)
+    except ValueError as error:
+        parser.error(str(error))
     if args.install:
-        target.parent.mkdir(parents=True, exist_ok=True)
-        # Read the current launch definition before replacing it. Retain only one
-        # small previous plist for recovery; secrets are in neither definition.
-        subprocess.run(
-            ["launchctl", "print", f"gui/{os.getuid()}/{LABEL}"],
-            check=False,
-            capture_output=True,
-        )
-        if target.exists():
-            previous = target.with_suffix(".previous.plist")
-            previous.write_bytes(target.read_bytes())
-        target.write_bytes(plistlib.dumps(plist))
-        subprocess.run(
-            ["launchctl", "bootout", f"gui/{os.getuid()}/{LABEL}"],
-            check=False,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
-        subprocess.run(
-            ["launchctl", "bootstrap", f"gui/{os.getuid()}", str(target)], check=True
-        )
+        if sys.platform != "darwin":
+            parser.error("launchd installation requires the Mac build host")
+        verify_interpreter(stable_interpreter(python), stable_source(source))
+        install_definition(content)
     else:
-        sys.stdout.buffer.write(plistlib.dumps(plist))
+        sys.stdout.buffer.write(content)
     return 0
 
 
