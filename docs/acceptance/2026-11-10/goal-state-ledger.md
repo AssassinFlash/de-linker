@@ -1124,3 +1124,26 @@ stays exactly as it is and as verified: staff-side single-record release
 dual proof) and the customer-facing answer "write to sales@" — which is
 the offline follow-up model, not a defect. U3 is closed permanently; the
 throttled-inquiry copy pointing to the team inbox is correct by design.
+
+## Energy-domain production evidence completed with corrected scope (PR #1107 merged, Y line)
+
+Both prior tallies missed this domain: the three energy kernels stamp
+models["replay"], not models["task"] — mutually exclusive across all 143
+production runs, so 10 runs fell into the None bucket in every
+models.task-grouped table (W-line's own §2 table totals 133, not 143).
+Found: 10x single_ac_energy_replay_v1, all succeeded attempt=1, 18.1 s
+mean, 92 verification items per run passing at worst_violation 3.4e-13;
+three sampled runs re-derived against the spec with zero deltas on four
+recomputable quantities, energy closure to 2.4e-12 kWh, and the only
+DST-crossing run in the store cutting its interval boundary exactly at the
+UTC 01:00 jump. No product defects. Scope-limiting findings recorded, and
+the "releasable (capability layer)" rating stands for this kernel only:
+just 1/10 runs inside the post-11-05 window, every input is our own
+synthetic fixture (rights_basis: not measured consumption; only PV is real
+PVGIS), and plant_ac/shared_dc energy replays have zero production runs
+(single-test support only) — they must not inherit the same rating. Two
+decision items recorded for the owner/main line: backfilling W-line's §2
+table with the 10 runs, and how to obtain real-customer-load evidence
+(cannot be self-fabricated; re-running synthetic projects would not change
+the evidence's nature and would add permanent CAS occupancy at 10.5 MB per
+annual trace).
