@@ -1386,3 +1386,27 @@ planner-maintenance's first unattended in-window run, 2026-11-12 02:00–03:00
 UTC. Resource note: my session temp files (/tmp/pr1112.diff, woo probe bodies)
 removed; disk 1.2 Ti free; live agent worktrees /tmp/ac-compat (AC line) and
 /tmp/at-country (AT line) intentionally retained until their PRs land.
+
+## Domain 6 compatibility half closed (PR #1113, merged bd08bbcc8, main-line verified)
+
+The last "needs-reverification" half of domain 6 is done: 10 e2e cases
+(EN/DE × 4 contract states + 2 overlay layers) drive the real workbench and
+compare the DOM against the engine's own answer captured from that run's
+runs/read polling — assertions state "the screen shows what the contract
+answered", not pre-written expectations. Mutation-checked both directions
+(demanding met on not_released and further on released both fail EN/DE).
+The most valuable finding: verdict=released with a violated condition
+(1 module vs the contract's 2–5) correctly renders "Requirements not met" —
+document release and configuration compliance are visibly independent lines.
+Also corrected a standing misreading: the 10-05 addendum-7 "Source document ·
+Page 2" comes from the Woo-materialised module, not the overlay; the overlay's
+customer-visible form is the design-contract disclosure sentence. Matrix row 6
+now fully releasable (identity half #1111 + compatibility half #1113).
+
+Instance gap found by the line and fixed by main line this round: review's
+runtime.json predated the equipment_search default (planner_environment writes
+it only when the file doesn't exist, by design — "preserve operator changes"),
+so /planning/runs/equipment-search 503'd and the commercial quickstart spec
+was red on that instance. Applied the sanctioned operator path (add the
+section + just serve review); /planning/version now reports equipment_search
+over an authenticated probe; consumer spec rerun recorded separately.
