@@ -659,3 +659,27 @@ backoff for transport faults only (HTTP answers, including refusals, fail
 closed on first response), with a stall-once server test. VPS resource
 readback the same hour: four services active, disk 12 %, deploy-prev
 retention per procedure.
+
+## Production incident 2026-11-11 ~00:35–ongoing: host-side MySQL outage
+
+The Hostinger shared host drove load to ~49–69 (15-min average) around
+00:35–00:45 UTC and its MySQL disappeared (3306 closed, socket absent, no
+process visible from the account). The site is globally unreachable; the VPS
+engine keeps serving design endpoints from its loaded contract (932e2ff6).
+Hostinger's status page carries no matching incident, so this is
+host-specific. A previous session's db-watch loop (broken sleep, 80 rapid
+wp probes) was killed; a correct 30 s-interval watcher runs on the host.
+Recovery beyond waiting needs hPanel/Hostinger support — owner-side
+credentials, escalated to the owner.
+
+F-line (production commercial walk, killed mid-run against the down site)
+still delivered a decisive product finding before the outage: **the deployed
+planner UI never sends `target_peak_kw` or `load_profile_csv`** — the two
+inputs the engine requires for a `sized` commercial result. Customers can
+therefore only ever reach `indicative` on the commercial chain even though
+the engine (production-verified today) returns sized systems with released
+equipment when given the inputs. Dispatched as its own implementation line
+against the review instance. Also recorded from the same walk: first-load
+"Opening your workspace…" can take long enough to look stuck;
+rest-nonce 400 needs a look; CSV import rejects ambiguous local times
+across the DST boundary (documented contract, agent hit it with a naive CSV).
