@@ -1072,3 +1072,17 @@ outage survived and post-mortemed, engineering and knowledge consumers
 both production-ready end-to-end, the commercial chain shipped and
 verified on production, and every discovered defect fixed or ruled
 by-design with evidence.
+
+## CI planner-scope split fixed (PR #1105 merged, V line)
+
+Root cause of the verify-planner false red: `plan` publishes the cumulative
+diff (payload BASE_SHA → head) while `verify-planner` proved only the PR's
+own contribution (merge first-parent diff) — after main advances
+apps/planner, the two quantities diverge, the job exits at the invocation
+check, and reruns reuse the same stale payload so the red never heals.
+`planner_build_flag()` now diffs BASE_SHA → merge, the exact quantity plan
+declares, with all existing guards intact (real two-parent merge, second
+parent = PR head, first parent = recorded base or descendant; None on
+rebase/fork). Five real-git scenarios pass, the new test is
+mutation-proven, CI 28 green on the merged head. This unblocks every
+future PR that lands after main touches apps/planner.
