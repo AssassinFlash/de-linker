@@ -208,8 +208,27 @@ def job_request(action: str, body: dict[str, Any]) -> dict[str, Any]:
             "Content-Type": "application/json",
         },
     )
-    with urllib.request.urlopen(request, timeout=30) as response:
-        return dict(json.load(response))
+    # The same VPS→Hostinger transit stalls that fetch_feed retries through
+    # (2026-11-11 00:28 UTC: a read timeout here failed the whole sync with no
+    # retry). Only transport faults retry; an HTTP answer — including an auth
+    # or permission refusal — fails closed on the first response.
+    last_error: Exception | None = None
+    for delay in FEED_FETCH_BACKOFF_S[:FEED_FETCH_ATTEMPTS]:
+        if delay:
+            time.sleep(delay)
+        try:
+            with urllib.request.urlopen(request, timeout=30) as response:
+                return dict(json.load(response))
+        except urllib.error.HTTPError as error:
+            with contextlib.suppress(Exception):
+                error.close()
+            raise
+        except (urllib.error.URLError, OSError, TimeoutError) as error:
+            last_error = error
+            log(f"jobs {action} failed ({type(error).__name__}: {error}); retrying")
+    raise RuntimeError(
+        f"jobs {action} failed after {FEED_FETCH_ATTEMPTS} attempts"
+    ) from last_error
 
 
 def reusable_generation(
