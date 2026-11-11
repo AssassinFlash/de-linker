@@ -1478,7 +1478,7 @@ TEXT = {
     ),
     "country_rule_modification_outside_4_1_a_other_rules_open": (
         "Article 4(1)(a) names type C and type D only; for this type the cited article gives no reading and other rules stay open",
-        "Artikel 4 Absatz 1 Buchstabe a nennt nur Typ C und Typ D; für diesen Typ ergibt der zitierte Artikel keine Aussage, weitere Regeln bleiben offen",
+        "Artikel 4 Absatz 1 Buchstabe a nennt nur Typ C und Typ D; für diesen Typ ergibt die zitierte Bestimmung keine Aussage, weitere Regeln bleiben offen",
     ),
     "country_rule_not_applicable_type_a": (
         "The cited clause names types B, C and D only, so it states nothing for type A",

@@ -909,7 +909,12 @@ def test_se_connection_duty_keeps_the_43_5_kw_notice_rule_separate() -> None:
         ),
     )
     assert review is not None
-    duty = [check for check in review["checks"] if check["id"] == "se_connection_duty"]
+    duty = [
+        check
+        for check in cast(list[Object], review["checks"])
+        if check["id"] == "se_connection_duty"
+    ]
+    assert len(duty) == 1
     assert duty[0]["outcome"] == "missing_inputs"
     assert duty[0]["missing_inputs"] == ["se_export_power_kw"]
     assert duty[0]["source_id"] == "se_ellagen_1997_857"
