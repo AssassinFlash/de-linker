@@ -214,6 +214,9 @@ test.describe('native image calibration', () => {
 					.click();
 				await mark(page, 100, 100);
 				await mark(page, 580, 100);
+				// The drawing's page-down faces south, so the roof's down-slope
+				// bearing is 180 and the traced page-down edge becomes V.
+				await panel.locator('[name="bearing"]').fill(num(lang, '180'));
 				await panel
 					.locator('[name="check_length"]')
 					.fill(num(lang, '9.6'));
