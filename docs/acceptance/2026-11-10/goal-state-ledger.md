@@ -1086,3 +1086,28 @@ parent = PR head, first parent = recorded base or descendant; None on
 rebase/fork). Five real-git scenarios pass, the new test is
 mutation-proven, CI 28 green on the merged head. This unblocks every
 future PR that lands after main touches apps/planner.
+
+## Direct-beam production assessment: prior verdict corrected (PR #1106 merged, W line)
+
+The D-line matrix's "no production execution" was a misjudgment: production
+/planning/version registers both executors and 143 decrypted run manifests
+show direct-beam 1x and geometric 7x, all succeeded attempt=1 (including a
+real clear_pitched_roof_v1 through the expanded isolation path). The
+misjudge came from jobs.kind having only "evaluate". The REAL gaps, now
+measured with witness inputs.work (actuals, not estimates): the normal
+geometric channel ran at 95.6% of its 220k module-step budget (a bigger
+roof would fail into GeometricPvExpandedScopeRequired, and expanded admits
+only single-roof/single-array/unshaded 1x1-2x2 grids — multi-array or
+shaded roofs currently have NO viable path); the host's hardest limit is
+commit headroom (0.42 GiB free, no swap, four units OOMPolicy=stop);
+bounds_checks is the first direct-beam budget to blow (82% of work at the
+2M sample cap, VPS-extrapolated ≈149 s single-run, RSS only 48 MB).
+Measured with local-vs-VPS clock calibration (1.30x). Decision recorded,
+not taken this batch: raising max_module_steps needs either memory
+headroom or expanded admission widening — a stability/capability tradeoff
+on a host with 0.42 GiB commit left; the assessment is the input. Also
+recorded: the Mac planner-maintenance launchd points at .previous.plist
+(CAS daily reclaim may be running an older version — needs a fix
+decision), and the 2026-11-04 planner_maintenance budget bug is already
+fixed upstream (stale record). Two-namespace deploy and frozen-runtime
+hash pitfalls documented for the next operator.
