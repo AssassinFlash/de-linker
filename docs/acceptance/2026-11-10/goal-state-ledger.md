@@ -1355,3 +1355,22 @@ worktree, where the live copy lives — recovered full content from the agent's
 wire.jsonl Write record to confirm, then removed the stale main-tree copy
 again). No work lost. Standing rule for me: before deleting any untracked
 file, grep the active subagents' wire.jsonl for its path.
+
+## Domain 4 acceptance closed and merged (PR #1112, verified by main line)
+
+Both long-recorded gaps have real-layer evidence now, verified on the actual
+diff before merge (not just the agent's handover): the claim outbox case runs
+a real WP snapshot + real Action Scheduler + real engine and measures the
+actual backoff series (observed 59/120/240/479/899/899 s vs the 1-2-4-8-15 min
+policy), proves refused delivery keeps the event and the guest's ownership,
+and proves only a confirmed engine receipt deletes it (guest→user read back at
+three engine points). Launch protection gained 7 integration cases on the real
+executable pair covering every spec clause (a)-(d), including the
+order-of-refusal guard (the only subprocess ever spawned is `worker_host
+release`) and a byte-fingerprint check that the store is untouched. No
+spec-implementation divergence found; no implementation code changed.
+Known boundary (existing repo pattern, not a regression): explicit-instance
+integration tests are not in CI lanes and run by named command; the 34
+pre-existing cases in test_planner_native.py were not re-run this round —
+the file change is append-only (one new case + `closing` import), CI python-lane
+green. Matrix row 4 now reads releasable with both gaps closed.
