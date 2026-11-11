@@ -10,7 +10,7 @@
 | 3 | PV 发电与能量时序 | 可发布（能力层） | W 线纠正：direct-beam 1 次+geometric 7 次生产实跑全成功（#1106）；Y 线补能量域 10 次生产证据+合同核对零缺陷（#1107，但 9/10 在 11-05 前窗口外、输入为自有合成夹具、另两内核零生产执行——评级限单内核）；configurator 12 行已全部翻绿（#1089/#1110） |
 | 4 | 项目工作台与修订 | 可发布 | 两处维持记录已解除（2026-11-11，`docs/acceptance/2026-11-11/548-domain4-claim-launch/`）：recovery outbox 在真 WP+真 Action Scheduler+真引擎上验证了持久化/退避 1-2-4-8-15 分钟/失败保留/确认后删除与引擎回执；launch protection 在真实可执行对上验证了 (a) 存储版本拒绝、(b) 不同运行时 worker 与 HTTP 拒绝、(c) 未标版本已填充存储拒绝、(d) 拒绝先于 drain/stop/同步/重启/option 写入 |
 | 5 | 商务链贯穿 | 可发布 | G 线三层测试落地（#1089，变异证明）；商用 PDF 修复生产四组合验证+8 行翻绿（#1102/#1110）；BOM 表渲染已在 #1110 的 PDF 正文核对中覆盖 |
-| 6 | 产品身份与兼容 | 可发布（身份）／需补验（兼容） | 身份半已关闭（#1111：git 零改动+四组合逐字一致+更严回归 spec）；兼容合同运行时证据=生产 377 对 pairs（#1081 修复后）；工程覆盖层 1 条 Trina 规则在 feed 内；11-05 后的兼容合同原生验收仍缺 |
+| 6 | 产品身份与兼容 | 可发布 | 身份半已关闭（#1111：git 零改动+四组合逐字一致+更严回归 spec）；兼容合同运行时证据=生产 377 对 pairs（#1081 修复后）；兼容半原生验收已补（`548-compatibility-native/conclusion.md`，`planner-equipment-release.spec.ts` 10 用例 EN/DE 全绿+变异证明）：released 条件与文档引用逐字、not_released 不冒充通过、released 但条件被违反仍报 not met、覆盖层 Trina 在 `products/current` 与 `/design/residential` 两层可验 |
 | 7 | 服务托管 | 可发布 | 配额已按工作量实测（#1106：normal geometric 95.6% 用量、expanded 28%、direct-beam 0.03% RSS 48MB）；调度单元 launchd 双修防轮转（#1108/#1109）；knowledge/engineering 双消费者生产就绪（#1101/#1103） |
 | 8 | 国家/DSO 规则 | 需补验 | L 线 e2e 已补 EN+DE UI 链+engine 拒绝合同（#1094，N 线解除 readiness 后规则结果页可达）；扩国与 DSO 放行仍按 #562 方法论逐国补证据 |
 
