@@ -76,7 +76,7 @@ geometry.sources[].calibration = {            # 可选；缺失＝未记录，�
 - 引擎测试：`services/engine/tests/planning/test_image_calibration.py` 14 项（含浏览器契约逐字节一致、写入器契约必需性）。
 - e2e：`tests/e2e/specs/planner-image-calibration.spec.ts`，EN/DE × 1440/390 **4/4 通过**（review 实例，真实引擎/网关/项目修订）：上传 1200×800 图纸 → 两点定尺 600 px = 12 m → 面板显示 `0.02 m per pixel` 与 `Usable uniform scale` → 480 px 独立校核 9.6 m（0 %）→ 描 4 点轮廓、面积 144 m² → 加入设计 → 保存 → 重开读回屋面与来源声明（德语断言同样跑 `0,05` 的小数逗号）。
 - planner DOM 测试现有 4 项（新增德语小数默认值一项）。
-- 德语：52 条新词条写入 `linker-tools-de_DE_formal.po`（Sie 体），`just i18n-tools` 重新生成 `.mo` 与 5 个 script JSON；`i18n-coverage`、`german-copy`、`commerce-terms`、`internal-home-urls` 全绿。
+- 德语：54 条新词条写入 `linker-tools-de_DE_formal.po`（Sie 体），`just i18n-tools` 重新生成 `.mo` 与 5 个 script JSON；`i18n-coverage`、`german-copy`、`commerce-terms`、`internal-home-urls` 全绿。
 
 ## e2e 实走发现并已修复的两个真实缺陷
 
