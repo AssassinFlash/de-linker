@@ -1557,3 +1557,35 @@ not by rotation: no rotation request, no follow-up, no waiting state. U2's
 alerting itself is unaffected (it reads whatever credential the env file
 holds). The credential-rotation class is hereby not an owner-blocked item —
 it is out of scope, like U3.
+
+## AT live-instance walkthrough closed; version-skew lesson recorded (2026-11-11)
+
+The deferred AT walkthrough ran on review and FAILED first — which is why it
+was required. Symptom: en+de form chains died at save with the engine logging
+422 on operations/replay/projects/revise. Root cause was version skew, not a
+code defect: review's linker-tools plugin is a symlink to the main tree, so
+the moment #1115's build merged, WP served the AT bundle (new optional fields
+sent explicitly), while the engine process still ran the pre-AT checkout whose
+strict model rejected them. Resolution followed the sanctioned paired-upgrade
+path — serve refused the cross-executable swap exactly as the launch
+protection in #1112 specifies, then `down` + `up` + `serve` from current main
+restarted the pair; rerun 3/3 passed (en+de form save/readback through the
+real gateway and engine, plus the engine contract case). Standing lesson:
+because review's plugin is main-tree-linked, every engine-contract merge must
+pair it with a review re-serve before e2e; a 422-on-save there means skew
+until proven otherwise. Genie knowledge on review stays unacknowledged
+(source mismatch after the BAT-C meta change) and is left to the automatic
+publication worker, as recorded in the BAT-C entry.
+
+## Batch close 2026-11-11 (evening): six PRs merged, four parallel lines
+
+#1112 domain-4 acceptance, #1113 domain-6 compatibility native, #1114 digest
+i18n, #1115 Austria package, #1116 U2 outage alerting (production live,
+personally read back), #1117 BAT-C publication. Security line: U1/U2/U5/U7
+closed, U3 out of scope by ruling, credential-rotation class ruled
+permanently out of scope by the owner (c557ba364); only U4 (aliyun account)
+remains owner-side. Domain matrix: 1–7 releasable, 8 has AT in-package with
+SE next by real account data and DSO-level evidence open for all countries.
+Resources: all agent worktrees reclaimed (only main tree remains), temp
+diffs/probes deleted, disk 1.3 TiB free, no stray processes; production VPS
+12% disk with the alerting timer active and heartbeating.
