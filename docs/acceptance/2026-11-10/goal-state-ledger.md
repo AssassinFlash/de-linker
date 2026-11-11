@@ -735,3 +735,16 @@ across the DST boundary (documented contract, agent hit it with a naive CSV).
   every 5 min into state/site-probe.log (one-week cap). First live reading
   correctly recorded the outage; a doubled-code formatting bug was fixed
   (#1092, pending CI at writing) and will be redeployed to the VPS on merge.
+
+## Outage resolved by provider reboot; recovery checklist all green (01:20 UTC)
+
+Hostinger rebooted the host (~01:13 UTC, uptime reset from 62 days); MySQL
+returned with it. Checklist: DB up, site EN/DE 200, feed sync success, engine
+compat 932e2ff6 with 88 prepared products, repair-bindings dry-run 0, HPOS
+orders 265, action-scheduler pending 17. The probe (PRs #1091/#1092 both
+merged and deployed) recorded the whole arc: 000000 during the outage (the
+doubled code, fixed), 000 mid-recovery, then clean single-code 200s. Host
+load re-climbed to 42 within 7 minutes of the reboot before subsiding —
+the provider reboot treated the symptom; root cause is host-side and
+escalated to the owner with ticket-ready evidence (account processes idle
+throughout). Second-outage watcher armed.
