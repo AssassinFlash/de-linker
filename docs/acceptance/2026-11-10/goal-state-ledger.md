@@ -1227,3 +1227,16 @@ recipe identity (the first copy did exactly that: `bf9693f8…` instead of
 `67a500b5…`); and `uv sync --project` without `UV_PROJECT_ENVIRONMENT` puts
 the environment back inside the release directory. The pre-fix definition is
 retained as `com.linker.knowledge-publication.previous.plist`.
+
+The first unattended fire after the repair (14:27, `runs = 2`) exited 1 with
+`phase=run_job error=ConnectError` against `de-linker.com`; the RunAtLoad run
+before it and a kickstart after it both exited 0, and replaying the identical
+command line by hand also exits 0. The site answers a tiny manifest in 3–14 s
+on this link, and the claim client allows 120 s, so this reads as an
+intermittent connect failure rather than a defect in this change — swapping an
+interpreter cannot affect TCP, the ACK path was untouched, and production
+never moved (85/85 knowledge ready throughout). It matters only for how a
+single nonzero exit should be read: a failed claim loses nothing, because Woo
+keeps the job pending and the next 900-second poll re-claims it, so one exit 1
+between zeros is not a stalled pipeline. Real stalls show up as `runs`
+advancing with no successful claim for many intervals, not as one error line.
