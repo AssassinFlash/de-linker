@@ -143,7 +143,7 @@ native admission 撤回阻止派发、journal 写失败阻止上传、
 关窗/换 scope 不能接受迟到结果、零高基准绕过被拒高度但保留更正路径、
 跨 Back 保留原始 locale 输入与洞。这些是恢复语义，不替代 3.1 的原生链。
 
-## 4. 遮挡链：规格边界，且今天单测全绿
+## 4. 遮挡链：有客户入口但按版本门控，今天单测全绿
 
 `direct_beam_*` 与 `geometric_pv_*`：
 
@@ -154,14 +154,31 @@ pytest test_direct_beam_index.py test_direct_beam_job.py
 38 passed in 432.57s
 ```
 
-**没有任何客户入口调用它们**：`/planning` 的 `runs/direct-beam` 与
-`runs/geometric-pv` 只在 `runtime_config` 显式配置
-`direct_beam_visibility` / `geometric_pv_generation` 时才注册，review 实例的
-`planner/runtime.json` 未配置这两项，实测返回 `503 version_unavailable`。
+**修正一处先前的判断：这两条链有面向客户的界面，不是"没有通路"。**
+`apps/planner/src/components/energy/EnergyWorkspace.tsx:1207-1213` 有独立的
+"Direct-beam visibility / Direktstrahl-Sichtbarkeit" 视图，`:1361-1382` 挂载
+`DirectBeamSetup`，其 `:728` 有"Calculate direct-beam visibility"按钮；
+`geometric-pv` 同理挂在"PV generation"视图下（`:1194-1200`、`:1432-1433`）。
+
+但它们是**版本门控**的：
+
+- `DirectBeamSetup.tsx:76-78`：`supported = runtime.models.direct_beam_visibility
+  === DIRECT_BEAM_TASK && limits !== null`；
+- 不支持时 `:261-266` 显式渲染提示
+  "This geometric method is unavailable in the current service version.
+  Saved selections and earlier results remain available."
+- 服务端 `runtime_config.direct_beam_service()` / `geometric_pv_service()`
+  在 `direct_beam_visibility` / `geometric_pv_generation` 未配置时返回 `None`，
+  `create_private_app` 因此不注册对应路由，`/planning/runtime` 的 `models`
+  也不含这两个键，前端据此判定不支持。
+
+review 实例的 `planner/runtime.json` 确实没有这两段，实测
+`POST /planning/runs/weather` 返回 `503 version_unavailable`，说明门控真实生效。
 生产侧同样没有执行记录（与 `548-domain-gap-matrix.md` 第 3 行一致）。
 
-因此：**"无生产执行"是事实，但不是本域的缺口**——两条链没有面向客户的通路，
-规格也没有承诺它们在当前产品里可用。单测绿是它们当前的全部验收，符合现状。
+因此准确的表述是：**"无生产执行"成立；客户界面存在但当前部署未启用，
+并按规格显示"本服务版本不可用"的显式提示**。单测绿是该能力当前的全部验收，
+这与"能力已实现但未启用"的现状相符，不构成本域的验收缺口。
 
 ## 5. 辐照取源链：本实例未配置 weather（部署边界，非代码缺口）
 
