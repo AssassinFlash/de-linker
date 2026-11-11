@@ -26,7 +26,9 @@ type InputContract = Literal[
     "installation_conductor_manufacturer_v1",
     "installation_mounting_quantities_v1",
     "installation_protection_evidence_v1",
+    "geometry_image_calibration_v1",
 ]
+CALIBRATION_INPUT_CONTRACT: InputContract = "geometry_image_calibration_v1"
 MOUNTING_QUANTITIES_INPUT_CONTRACT: InputContract = (
     "installation_mounting_quantities_v1"
 )
@@ -66,12 +68,21 @@ SUPPORTED_INPUT_CONTRACTS: tuple[str, ...] = (
     CONDUCTOR_MANUFACTURER_INPUT_CONTRACT,
     MOUNTING_QUANTITIES_INPUT_CONTRACT,
     PROTECTION_EVIDENCE_INPUT_CONTRACT,
+    CALIBRATION_INPUT_CONTRACT,
 )
 
 
 def required_contracts(inputs: Mapping[str, object]) -> tuple[str, ...]:
     installation = inputs.get("installation")
     required = []
+    geometry = inputs.get("geometry")
+    if isinstance(geometry, Mapping):
+        sources = geometry.get("sources")
+        if any(
+            isinstance(source, Mapping) and source.get("calibration") is not None
+            for source in (sources if isinstance(sources, list) else [])
+        ):
+            required.append(CALIBRATION_INPUT_CONTRACT)
     if "country_rule_inputs" in inputs:
         required.append(ENGINEERING_V10_INPUT_CONTRACT)
     if "grid_connection" in inputs:

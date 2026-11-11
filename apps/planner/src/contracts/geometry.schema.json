@@ -1,6 +1,81 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$defs": {
+    "CalibrationCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "points": {
+          "$ref": "#/$defs/CalibrationPoints"
+        },
+        "declared_length_m": {
+          "$ref": "#/$defs/Positive"
+        },
+        "residual_ratio": {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        "status": {
+          "enum": [
+            "within_tolerance",
+            "exceeds_tolerance"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "points",
+        "declared_length_m",
+        "residual_ratio",
+        "status"
+      ],
+      "title": "CalibrationCheck",
+      "type": "object"
+    },
+    "CalibrationImage": {
+      "additionalProperties": false,
+      "description": "The image as displayed; its bytes are not uploaded by this increment.",
+      "properties": {
+        "media_type": {
+          "enum": [
+            "image/png",
+            "image/jpeg",
+            "image/webp"
+          ],
+          "title": "Media Type",
+          "type": "string"
+        },
+        "pixel_width": {
+          "$ref": "#/$defs/PositiveInteger"
+        },
+        "pixel_height": {
+          "$ref": "#/$defs/PositiveInteger"
+        }
+      },
+      "required": [
+        "media_type",
+        "pixel_width",
+        "pixel_height"
+      ],
+      "title": "CalibrationImage",
+      "type": "object"
+    },
+    "CalibrationPoints": {
+      "additionalProperties": false,
+      "properties": {
+        "first": {
+          "$ref": "#/$defs/PixelPoint"
+        },
+        "second": {
+          "$ref": "#/$defs/PixelPoint"
+        }
+      },
+      "required": [
+        "first",
+        "second"
+      ],
+      "title": "CalibrationPoints",
+      "type": "object"
+    },
     "CoordinateSystem": {
       "additionalProperties": false,
       "properties": {
@@ -158,6 +233,17 @@
         "calibration_note": {
           "$ref": "#/$defs/Text"
         },
+        "calibration": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ImageCalibration"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "rights_basis": {
           "enum": [
             "user_attestation",
@@ -194,6 +280,100 @@
     "Identifier": {
       "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
       "type": "string"
+    },
+    "ImageCalibration": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "$ref": "#/$defs/SchemaVersion"
+        },
+        "method": {
+          "const": "two_point_uniform_scale_v1",
+          "title": "Method",
+          "type": "string"
+        },
+        "view": {
+          "enum": [
+            "horizontal_plan",
+            "roof_slope_elevation",
+            "perspective_photo"
+          ],
+          "title": "View",
+          "type": "string"
+        },
+        "image": {
+          "$ref": "#/$defs/CalibrationImage"
+        },
+        "control_points": {
+          "$ref": "#/$defs/CalibrationPoints"
+        },
+        "known_length_m": {
+          "$ref": "#/$defs/Positive"
+        },
+        "m_per_pixel": {
+          "$ref": "#/$defs/Positive"
+        },
+        "rotation_deg": {
+          "exclusiveMaximum": 360,
+          "minimum": 0,
+          "title": "Rotation Deg",
+          "type": "number"
+        },
+        "check": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CalibrationCheck"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "check_tolerance_ratio": {
+          "$ref": "#/$defs/Positive"
+        },
+        "applied_pitch_deg": {
+          "anyOf": [
+            {
+              "exclusiveMaximum": 90,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Applied Pitch Deg"
+        },
+        "measurement_status": {
+          "enum": [
+            "usable_uniform_scale",
+            "reference_only"
+          ],
+          "title": "Measurement Status",
+          "type": "string"
+        },
+        "note": {
+          "$ref": "#/$defs/Text"
+        }
+      },
+      "required": [
+        "schema_version",
+        "method",
+        "view",
+        "image",
+        "control_points",
+        "known_length_m",
+        "m_per_pixel",
+        "rotation_deg",
+        "check",
+        "check_tolerance_ratio",
+        "applied_pitch_deg",
+        "measurement_status",
+        "note"
+      ],
+      "title": "ImageCalibration",
+      "type": "object"
     },
     "Keepout": {
       "additionalProperties": false,
@@ -470,6 +650,14 @@
         "prohibited"
       ],
       "type": "string"
+    },
+    "PixelPoint": {
+      "items": {
+        "type": "number"
+      },
+      "maxItems": 2,
+      "minItems": 2,
+      "type": "array"
     },
     "Positive": {
       "exclusiveMinimum": 0,

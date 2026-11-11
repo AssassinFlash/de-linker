@@ -34,11 +34,12 @@
     "src/components/commercial/CommercialSizing.tsx": "2993a43efba25b3101dabf7c65da554413cc8bd237bc192263de8e4795deeeae",
     "src/components/design/ArrayForm.tsx": "54f886e193b5ce0d86485647558d3fb7e985311ef8ac5f033ecbe16a61568dc2",
     "src/components/design/CoordinatesForm.tsx": "093c2aceb0e682de4929c98128b878f8b37fb668a1f2b5083420f0d7ef760a35",
-    "src/components/design/DesignEditor.tsx": "030e57e0ff7a536dbfa5df97a14ea70a85dcb3d7d8ba7a9975150df84a5aae5c",
+    "src/components/design/DesignEditor.tsx": "2263d3059280c73a0bf1cf81f86f2de074757a38c7f406598da1bf60be383005",
     "src/components/design/GeometryForm.tsx": "6ef4d753543846dd21ee6429043152a7f12987caa11579a43b52d6812a58d117",
     "src/components/design/GeometryImportFields.tsx": "1915b44a1b1d1f35a9212287d09dce3b3e48e64c54c00386b81b171da65c664c",
     "src/components/design/GeometryImportSettings.tsx": "46be6f7d30710d3caa8e91c02c1127f675bcf32ecc63e03d4e29471aa01c3fab",
     "src/components/design/GeometryIntake.tsx": "80a4eeee8e825153cef27407d61b2970da25b01a98edd214e364f601f7f99ddc",
+    "src/components/design/ImageCalibrationWorkspace.tsx": "9eac6a06a10be8073cf1800a652b3e77d2a023b8623af5114f4a7050fffddcc4",
     "src/components/design/LayoutReviewPanel.tsx": "8b9649009e93c7c113024ce98e6a3483c7e151b746d8cd067e8bdb1b05963b6e",
     "src/components/design/LayoutRulesForm.tsx": "a0b3dd404aad3f3ba1b108b44c6279ca90eabd25752fbe370c1a057f36515509",
     "src/components/design/LazyMapViewport.tsx": "2d4d7999253517cd9479573000377b8317c78e8dc680fce68fe10aa7eb67e042",
@@ -161,7 +162,7 @@
     "src/contracts/geometry-import-selections.schema.json": "130b9bbdc9101823273298687710bfd6fd95be84b7ddc4561f8c0c508772a959",
     "src/contracts/geometry-numerics.json": "6746de02fb949989ec09115c1acdc47864a6415426a672fec354de2116b81f52",
     "src/contracts/geometry-policy.json": "30cbe9f4b0493466c5763a5841d5c57efa8b16d7db9fa0832c25918a40f0de7d",
-    "src/contracts/geometry.schema.json": "ca0ddb47944371ac3cc14ab1130a6944c188a53773211856e05c7aff1dcbb226",
+    "src/contracts/geometry.schema.json": "bee1f695ab0d7a7cc4ef7ac9bf06f600a4168c8e4a46f523694cce4978a50af1",
     "src/contracts/grid-connection.schema.json": "27ca794ff4b2f9cc4f1f9887064056f44616ad312b47864fe662bde08323d2d5",
     "src/contracts/installation.schema.json": "2b3c801d5b16b7eaccfa0428f47b6008ef795f4ecfb36a9fe3052e8a96aadb18",
     "src/contracts/planning-report-options.schema.json": "65c1c5f80f9c769c5c6f013e36ecdb3386dc79e84e27ffd026b6ad41eea61caa",
@@ -170,7 +171,7 @@
     "src/contracts/plant-search-plan.schema.json": "e34e7fb73615bb046c8efb17cb17116bc90a0391b6d38e6aa23ef7bb15eab5f2",
     "src/contracts/profile-import.schema.json": "c16463c3196ae14c073ee9619ecec5149fe6642f4a83ad1c98164ca112220165",
     "src/contracts/profile-selections.schema.json": "be9081511116b82a5f45904d31421f2652c9c90c65a00bbf5123c75ac842c35c",
-    "src/contracts/project-input-contracts.json": "5e77f7f7f0e30ec222009307a04a0560b7ff0f9267aafed57abe4bf87b37f9e5",
+    "src/contracts/project-input-contracts.json": "e530024c59080ec0851bc833e4210ad6414ee9bcee910b82fbfed3c15081633f",
     "src/contracts/pv-generation.schema.json": "8489c002875f20bc025e60f0c4b24138b335cd5c8f4beb85af0ebfd35f041b9f",
     "src/contracts/pv-plant-string-plan.schema.json": "42f64d6b97a462924d5570e756b5c027fd57badac9d596d5eb6f32cf6d0cb572",
     "src/contracts/pv-string-plan.schema.json": "23e51185083b66fa8c520edd30165fab8f771288b4f8fc6c9239ae9b98206413",
@@ -256,7 +257,7 @@
     "src/domain/geoJsonChoices.ts": "b89839a3fe4e62a6be7451afee4bd6313bc3bf1677a7363b7452b287de158f21",
     "src/domain/geographic.ts": "d1277cb6ac4e87d39f00a69b9c6a239bed07e7229035b53620993a719b788c19",
     "src/domain/geometricPv.ts": "0449c82d7af9ad7151f5db5f2dec7f397eeb5ffb490b0ea6988b66dc9a1ccf28",
-    "src/domain/geometry.ts": "d927d69386956aaf8fe569e07b74550a9c4c1cd8b6ae2d6ee1a531cecf4d89ce",
+    "src/domain/geometry.ts": "8eda5c713320ac4202317e785cbf3636311789a0ed077192111f0866daf65724",
     "src/domain/geometryCommands.ts": "865f9c036f860ae884e8e9c802e45776aa373a0306d3d794dc500f662cf8dfee",
     "src/domain/geometryEditing.ts": "c5fce2ba2cb3152457eede65613a210174dd9910aaf08161fa4f7151237e3446",
     "src/domain/geometryImports.ts": "677b680cc627a09858f50bd6312b0171b3bf94f3739c63b0be4edb5548b5782b",
@@ -265,6 +266,7 @@
     "src/domain/geometrySelection.ts": "82e230d7eaa64d45a3d03d73c5159568a2704b9009383c301815a1e3ac0fcf7e",
     "src/domain/gridConnection.ts": "8d2551e86db4002a61b2b3935ceca4748e94815c0dbcffe1124f4782297427a8",
     "src/domain/history.ts": "9efecbf6b98fb9d23756de544fcf70a168c0adbb1fd7945bd808d5e3ccde8325",
+    "src/domain/imageCalibration.ts": "0a101310a74644abb23e14dcfea77cf22a0c0506b3da6198ffec12295d183192",
     "src/domain/installation.ts": "6832369b01dc735e22bacf27780b160f23fdaf5ca909e4b882c3bed226acdd37",
     "src/domain/installationConductorComparison.ts": "b15387e9e012b95121a91e924b67dffedec34ccd99b1939831db0bc99b85c28e",
     "src/domain/installationElectrical.ts": "620e8a34c50ad5ed6b27e4d25e673796ecdf0f75237b5451616bfd8c0e1b14fe",
@@ -304,13 +306,13 @@
     "vite.config.ts": "124325835376cd0382f1a8c0652d2264597cb7ae6f054f05b7e1807bbf98916d"
   },
   "build": {
-    "assets/EnergyFlowChart-BOvEcxUQ.js": "d3d6ccfba536b0040c7c659da84b24755f7e28f5a6a37fcd442c7e89a97ddf4a",
-    "assets/MapViewport-DTlC1rwp.js": "e4e58b7cda4d4fb102f838106c480f453af9b20f10e569373f955b7eafa91a30",
-    "assets/SceneViewport-CLeILIfn.js": "769e7af8a419d928aee14b7748eb615c38a094432f19ea214ad9df5d04314385",
-    "assets/planner-core-lEt1Ixkw.js": "17dd0175505a57286339b0561d024c7a70ac18ee5e2fc3aac267b56364abf092",
-    "assets/planner.js": "93026317acb25a0a0a465832f3efc088a5094e4b22ca3fbca91f906337a184e0",
+    "assets/EnergyFlowChart-Bv5DDGeV.js": "e25f47878fae12b84d877f0bbb3d5f057931d7f046a6c91a195e1dd529bb0c71",
+    "assets/MapViewport-bzgtn4nP.js": "a3c19209dafcd27c8ab26bcb7a134cabcb0b203554df38732385ee881185d717",
+    "assets/SceneViewport-C4DFw3Py.js": "34323b1b2f9aa8500d008bc253d6dc5d6e7435b1c8050ec39c507617882a8de0",
+    "assets/planner-core-9BPLa0Md.js": "5c75f79cc99aba9ff5e0add1a3a118aaa2b9965e1a98ce5696e370eaad870bf6",
+    "assets/planner.js": "4249aff510124d32dca52b1b520439458436f27ad0a1814c139a91fc9e6872e9",
     "assets/rolldown-runtime-BWaJ3C7D.js": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
-    "vite-manifest.json": "d748c40aad4a5c8545396026e61323df25593ba1e7e65f0bd5937ab247095f65",
+    "vite-manifest.json": "81854e1e811178784db1e2e6e9e9f5312d6dda937cd5238e96ea50e7d653a3d6",
     "windpress.scan.txt": "92e63ca3570028815849a2a8f76c1f64b29f819485773a08f4f044db21d8c6de"
   },
   "project_input_contracts": [
@@ -326,6 +328,7 @@
     "project_engineering_v10",
     "installation_conductor_manufacturer_v1",
     "installation_mounting_quantities_v1",
-    "installation_protection_evidence_v1"
+    "installation_protection_evidence_v1",
+    "geometry_image_calibration_v1"
   ]
 }

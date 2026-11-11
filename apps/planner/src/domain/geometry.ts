@@ -1,3 +1,5 @@
+import type { ImageCalibration } from "./imageCalibration.ts";
+
 /** Shared metric design data. No Three objects, camera state or GPU resources. */
 export type Vec2 = readonly [number, number];
 export type Vec3 = readonly [number, number, number];
@@ -16,6 +18,9 @@ export interface Source {
 	acquired_at_utc: string | null;
 	spatial_precision_m: number | null;
 	calibration_note: string;
+	/** Optional: a source without a recorded drawing calibration omits it, and
+	 * every saved revision that predates this field stays valid verbatim. */
+	calibration?: ImageCalibration | null;
 	rights_basis: "user_attestation" | "referenced_licence" | "synthetic";
 	permissions: {
 		derive: "permitted" | "unknown" | "prohibited";
