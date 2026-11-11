@@ -18,14 +18,16 @@
  *   one reading per revision, and an outside-version date stored as entered
  *   (it is a rule outcome, not a write error).
  *
- * Not asserted here — a recorded gap, not a skip: the rule *result*
- * (`country_assessment.rule_review` → `CountryRuleResult`) renders only inside
- * the equipment qualification result. On this instance `/planning/runs/equipment`
- * answers `409 product_evidence_changed` for a real current inverter selection,
- * because the publication manifest reports `ready.engineering: false` for every
- * product, so the prepared product set the run needs is empty. Until that
- * instance's engineering publication is ready, the rendered result page cannot
- * be reached, and the outcome contract stays covered at its own layer by
+ * Not asserted here: the rule *result* (`country_assessment.rule_review` →
+ * `CountryRuleResult`) renders only inside the equipment qualification result,
+ * which this spec does not drive. The run used to be blocked on this instance —
+ * the manifest reported `ready.engineering: false` for every product, so
+ * `/planning/runs/equipment` answered `409 product_evidence_changed` for a real
+ * current inverter selection. That was a stale preparation receipt, not a code
+ * defect: after the engineering receipt was re-acknowledged against the
+ * engine's actually loaded source, the same call succeeds with `rule_review` in
+ * its result (`docs/acceptance/2026-11-11/review-readiness-fix.md`). The
+ * outcome contract stays covered at its own layer by
  * `services/engine/tests/planning/test_country_rules.py`.
  */
 import { expect, test, type Locator, type Page } from '@playwright/test';
