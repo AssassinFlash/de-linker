@@ -72,6 +72,14 @@ e2e 断言写成 `/^Saved · revision \d+$/`（德语 `/^Gespeichert · Version 
 依赖从 `tests/e2e` 解析，不需要二次安装。截图前后 `scroll` 一致
 （`captureBeyondViewport: false`，与基线同法）。
 
+## 实例状态与副作用
+
+- 采集建 2 个访客项目（每语言一个，两宽度复用同一项目），矩阵记
+  `new_projects_created: 2`。e2e 每行独立建项目（4 行 = 4 个访客项目），与
+  `planner-map-chain` / `planner-commercial-chain` 等既有 planner spec 同法。
+- 未新建实例、未重启 review 栈、未部署、未改生产（`production_changed: false`、
+  `new_instances_created: 0`）。未发送任何邮件或询盘。
+
 ## 边界
 
 本记录只覆盖身份披露。域 6 的「产品兼容」另一半（兼容合同、工程覆盖层的运行时
