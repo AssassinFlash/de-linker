@@ -1374,3 +1374,15 @@ integration tests are not in CI lanes and run by named command; the 34
 pre-existing cases in test_planner_native.py were not re-run this round —
 the file change is append-only (one new case + `closing` import), CI python-lane
 green. Matrix row 4 now reads releasable with both gaps closed.
+
+## Ops line: knowledge-publication unattended half fully closed (2026-11-11)
+
+Beyond exit-0 ticks every 15 min since the launchd fix, the worker's output is
+real: VPS `/opt/linker-engine/state/current` now points at
+`publication-generation-h2paznez` published Nov 10 23:34 (previous generation
+`6oanuc1k` retained as the single rollback copy — bounded retention holds).
+Decision item 3 therefore reduces to one remaining, time-gated check:
+planner-maintenance's first unattended in-window run, 2026-11-12 02:00–03:00
+UTC. Resource note: my session temp files (/tmp/pr1112.diff, woo probe bodies)
+removed; disk 1.2 Ti free; live agent worktrees /tmp/ac-compat (AC line) and
+/tmp/at-country (AT line) intentionally retained until their PRs land.
