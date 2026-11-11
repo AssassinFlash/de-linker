@@ -72,19 +72,50 @@ proof cannot be inferred from a passing backend fixture.
 
 ## Implementation checkpoints within this same goal
 
-The current backend increment implements retained, trusted TMY intake,
-`pv_preparation.weather_asset_id` selection, private `/runs/pv` enqueue/receipt,
-the frozen numerical executor, atomic owned-profile publication and the shared
-energy/PV worker registry. `RuntimeConfig.pv_preparation` explicitly supplies
-the resource limits to enable the extra executor; existing installed energy
-policies remain readable. Private version/worker readiness/CLI identity all
-cover the registered set. Native WordPress/browser projection is unchanged.
+Retained, trusted TMY intake, `pv_preparation.weather_asset_id` selection,
+private `/runs/pv` enqueue/receipt, the frozen numerical executor, atomic
+owned-profile publication and the shared energy/PV worker registry are
+implemented. `RuntimeConfig.pv_preparation` explicitly supplies the resource
+limits to enable the extra executor; existing installed energy policies remain
+readable. Private version/worker readiness/CLI identity all cover the registered
+set.
 
-This checkpoint does not implement fresh external acquisition or its durable
-start/recovery journal, nor the native model/source/task controls. Those are
-required stages of this specification and full goal, not deferred follow-up
-tickets or implied existing features. Their acquired primary contract and
-actual component/thermal facts are in
+Fresh external acquisition and its durable start/recovery journal are also
+implemented, not deferred. `planning/weather_journal.py` persists one
+`weather_downloads` row per run with the frozen manifest and plan hashes, the
+start time and the absolute deadline; `begin` returns the existing intent for a
+repeat of the same frozen plan and conflicts on a different one; `current`
+rejects an intent that no longer matches its durable row after a restart;
+`captured_source` replays an already validated original without another fetch;
+`retain_capture` re-checks the frozen request, interpretation and byte budget
+before it records the capture; `_retain_rejection` retains a rejected original
+and its safe reason as an operator-only diagnostic while leaving
+`capture_sha256` empty. `planning/weather_http_host.py` runs the transfer in a
+disposable child process with its own watchdog and deadline, and
+`planning/pvgis_http_transfer.py` performs a single verified-TLS HTTPS GET
+against the official JRC API. Production proof exists: a 2014–2023 Berlin PVGIS
+5.3 TMY request completed through the native planner RPC with the complete
+dependency and evidence chain (`docs/acceptance/2026-11-05/workbench-engineering-chain.md`,
+addendum 7).
+
+The native model/source/task controls are implemented in the planner app:
+`WeatherSetup`, `PvSetup` and `WeatherProgress` own the source and model
+choices, `PreparationResult` selects a prepared result into the draft, and
+`EnergyWorkspace` lists preparation runs in the calculation history by
+`task_kind`. The gateway routes `runs/weather`, `runs/weather/status`,
+`weather/assets` and `weather/preview`; the UI polls the visible acquisition
+state, renders the typed rejection reason, and retries a failed request through
+the ordinary planning retry.
+
+What is still absent is the dedicated provider-operation control surface:
+`runs/weather/resume`, `runs/weather/stop` and `runs/weather/acknowledge` are
+deliberately not routed (`plugins/linker-tools/tests/php/Unit/PlannerTaskGatewayTest.php`
+asserts they do not match the RPC pattern). A stalled provider fetch is
+therefore bounded by the frozen deadline and the worker lease, and can be
+cancelled or retried as an ordinary task, but there is no separate resume or
+provider-level stop.
+
+The acquired primary contract and actual component/thermal facts are in
 `research/2026-10-24-pv-managed-intake/FINDINGS.md`. The running p548 instance
 must retain its accepted version until the paired workflow is ready for a
 controlled install and native acceptance.
@@ -142,13 +173,13 @@ This increment establishes selected-time geometric visibility only. It does
 not model diffuse/reflected irradiance, partial-shading electrical mismatch,
 bypass diodes, actual MPPT, annual shading loss or a complete equipment/country
 assessment. The existing unshaded PV reference and equipment replay retain
-their declared scopes. The next complete numerical chain must explicitly bind
-a separately versioned irradiance/electrical model to the same geometry and
-weather axes, preserve direct/sky/ground contributions separately, produce a
-reproducible power-profile witness, and pass that owned profile through the
-existing PV publication and energy/report consumers. A small set of selected
-visibility rows cannot stand in for the complete time series or establish a
-manufacturer performance curve.
+their declared scopes. The separately versioned irradiance/electrical chain
+that binds an explicit model to the same geometry and weather axes, preserves
+direct/sky/ground contributions separately, produces a reproducible
+power-profile witness and passes that owned profile through the existing PV
+publication and energy/report consumers is described in the two sections
+below. A small set of selected visibility rows still cannot stand in for the
+complete time series or establish a manufacturer performance curve.
 
 ## Full-axis direct-only geometric PV reference scenario
 
@@ -156,7 +187,10 @@ The separate model `opaque_direct_uniform_pvlib_reference_v1` uses every row of
 one retained owned TMY source. Its executor is
 `prepare_geometric_pv_reference_v1`, its native command is `runs/geometric-pv`,
 and its published AC asset purpose is `geometric_pv_reference_profile_v1`.
-The existing unshaded reference keeps its model identity and unchanged
+It is the first of three declared model/policy pairs sharing that task; the
+obstructed-diffuse and forward series I–V pairs are described in the later
+section of the same name. The existing unshaded reference keeps its model
+identity and unchanged
 no-geometry-factor calculation path. This model consumes the established ray
 geometry and pvlib component/thermal/conversion methods described in
 `research/2026-10-23-modern-workbench/CAPABILITY-MAP.md` section 8 and
@@ -238,3 +272,48 @@ named scenario's calculation-to-profile seam, not the complete W12 goal:
 obstructed diffuse light, cell/sub-string/bypass circuits, string I–V and real
 MPPT, actual hardware operating performance, full shading precision and
 equipment/country qualification remain outside this model.
+
+## Obstructed-diffuse and forward series I–V scenarios
+
+Two later scenarios reuse the same task, command and published purpose
+(`prepare_geometric_pv_reference_v1`, `runs/geometric-pv`,
+`geometric_pv_reference_profile_v1`); they differ only in the declared model,
+diffuse policy and electrical policy pair, and
+`planning/geometric_pv_inputs.py` refuses any other pairing.
+
+`opaque_perez_component_visibility_pvlib_reference_v1` with
+`cosine_weighted_perez_component_visibility_v1` replaces the direct-only
+treatment of diffuse light. Under the pinned pvlib 0.16.1 Perez decomposition,
+isotropic sky, circumsolar, a positive horizon term and ground-reflected
+irradiance are each scaled by a cosine-weighted visible fraction; circumsolar
+uses the same direct-beam visibility. A negative Perez horizon term is a signed
+correction from the pinned coefficient set and is retained unchanged. Rays with
+no positive cosine on the module normal are excluded, so ground light does not
+illuminate a module back. A recomposed sky below zero is clamped to zero and
+the removed amount is recorded. Each module is still treated as uniformly
+irradiated, and its cell temperature uses the mean plane-of-array irradiance.
+
+`opaque_perez_series_iv_forward_reference_v1` additionally replaces the
+independent-module electrical sum with
+`whole_module_forward_series_iv_single_string_per_tracker_v1`: one fitted
+forward-quadrant single-diode curve per module (Batzelis-seeded De Soto fit,
+`planning/pv_iv_model.py`), combined at a common string current, one string per
+tracker evaluated inside the cited voltage and current limits, followed by the
+declared converter scenario. Every physical input comes from Woo; no cell-series
+count is inferred.
+
+Both scenarios keep the same honest limits. Partial-cell and sub-string shading,
+bypass-diode conduction, reverse breakdown, parallel strings on one tracker,
+real MPPT dynamics, a validated manufacturer performance curve, a sampling
+error bound, and equipment/country release remain unassessed; the worker writes
+that list into the witness `not_assessed` field. That list is model-dependent:
+it names `occluded_sky_and_ground_diffuse_irradiance` only for the direct-only
+model; it names `cell_substring_bypass_diode_and_string_iv_response` when no
+series model is used, and `cell_substring_bypass_diode_and_reverse_breakdown`
+once the forward series I–V model is, so the retained wording never claims a
+string I–V it did not calculate. Their implementation is covered by the
+engine's own numerical and job tests
+(`services/engine/tests/planning/test_pv_generation.py`,
+`test_pv_series_operating.py`, `test_geometric_pv_job.py`). Neither scenario has
+production execution evidence; production proof would have to come from an
+actual run, not from those tests.
