@@ -1240,3 +1240,24 @@ single nonzero exit should be read: a failed claim loses nothing, because Woo
 keeps the job pending and the next 900-second poll re-claims it, so one exit 1
 between zeros is not a stalled pipeline. Real stalls show up as `runs`
 advancing with no successful claim for many intervals, not as one error line.
+
+## knowledge-publication launchd: same disease plus two more pinned surfaces (PR #1109 merged, Z line)
+
+Explains both contradictory records: T-line's exit-0 readback was real —
+the installer writes sys.executable, so repairing from inside the release
+re-baked the release path and re-armed the defect; X-line's later 78 was
+the next manifestation. The unit pinned THREE things inside
+releases/db0fddffa-main (interpreter, runner script, WorkingDirectory) —
+pinning only the interpreter would have moved the deadline to the next
+prune. Installer now carries six guards (stable_interpreter +
+stable_source — the one this service uniquely needs — verify_interpreter
+running the real entrypoint, confirm_installed launchctl readback,
+refuse_running_job so an install can't discard an in-flight lease, and
+failed installs restore the prior plist on disk without reloading it).
+Instance repaired to a dedicated 14 MB source + rebuildable 1.3 GB venv
+with ZERO releases/ paths in the definition; runs=3 exit 0; genie recipe
+and serving identity preserved exactly. One unattended fire exited 1 on a
+transient ConnectError to the site (surrounding fires exit 0, hand replay
+exit 0, production knowledge stayed 85/85) — recorded so the next operator
+doesn't misread it. Both Mac scheduler units are now rotation-proof; the
+systemic installer-level fix pattern exists for any future unit.
