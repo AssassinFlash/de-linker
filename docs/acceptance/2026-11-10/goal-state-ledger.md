@@ -924,3 +924,17 @@ accepts either mark, refuses two in one value (grouping has no reading to
 guess at), and `NumberField` exposes it as an opt-in `notation` prop used only
 by the brief's Latitude and Longitude. Every other numeric field keeps its
 locale's own convention, asserted by a test.
+
+## Brief coordinate decimal-mark fix (PR #1099 merged, P line)
+
+The recorded symptom ("empty Latitude/Longitude report a format error") was
+wrong — empties were always legal (`coordinate_basis: not_provided`). The
+real blocker, found by live DOM testing on review: `parseDecimal` enforces
+the interface language's decimal separator, but coordinates conventionally
+always use the point — so typing 48.1689 on the German page (or 48,1689 on
+the English one) invalidated the field and disabled Save. Undetected because
+prior e2e only ran English. Fixed with a `point-or-comma` notation accepted
+by the two coordinate fields only (either mark, both present → rejected,
+never a group-guess); all other numeric fields keep the locale convention,
+locked by tests. Red→green proof, planner 314 pass, CI green on the merged
+head including a byte-reproducible Linux build.
