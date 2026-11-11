@@ -73,16 +73,22 @@ def test_scale_follows_from_its_control_points() -> None:
     ("change", "message"),
     [
         ({"m_per_pixel": 0.021}, "recorded scale does not follow"),
-        ({"control_points": {"first": [100, 700], "second": [100, 700]}},
-         "control points must differ"),
-        ({"control_points": {"first": [100, 700], "second": [5000, 700]}},
-         "lies outside the image"),
+        (
+            {"control_points": {"first": [100, 700], "second": [100, 700]}},
+            "control points must differ",
+        ),
+        (
+            {"control_points": {"first": [100, 700], "second": [5000, 700]}},
+            "lies outside the image",
+        ),
         ({"note": " "}, "written summary"),
         ({"applied_pitch_deg": None}, "records its conversion pitch"),
         ({"measurement_status": "reference_only"}, "contradicts its evidence"),
     ],
 )
-def test_contradictory_records_are_refused(change: dict[str, Any], message: str) -> None:
+def test_contradictory_records_are_refused(
+    change: dict[str, Any], message: str
+) -> None:
     with pytest.raises(ValidationError, match=message):
         ImageCalibration.model_validate(calibration(**change))
 
@@ -103,9 +109,7 @@ def test_a_failing_or_missing_second_span_stays_reference_only() -> None:
     assert abs(failing.check.residual_ratio - 1 / 3) <= RESIDUAL_ABSOLUTE_TOLERANCE
     assert measurement_status(failing.view, failing.check) == "reference_only"
     assert measurement_status("roof_slope_elevation", None) == "reference_only"
-    assert (
-        measurement_status("perspective_photo", failing.check) == "reference_only"
-    )
+    assert measurement_status("perspective_photo", failing.check) == "reference_only"
     with pytest.raises(ValidationError, match="contradicts its evidence"):
         ImageCalibration.model_validate(
             calibration(
@@ -175,9 +179,9 @@ def test_the_document_accepts_a_calibrated_source_and_keeps_legacy_ones() -> Non
 
     # The same saved revision without the field keeps its original meaning.
     assert read_geometry(fixture).sources[0].calibration is None
-    assert "calibration" not in GeometryDocument.model_validate(fixture).sources[0].model_dump(
-        exclude_unset=True
-    )
+    assert "calibration" not in GeometryDocument.model_validate(fixture).sources[
+        0
+    ].model_dump(exclude_unset=True)
 
 
 def test_a_calibrated_source_requires_its_writer_contract() -> None:
@@ -196,9 +200,12 @@ def test_a_calibrated_source_requires_its_writer_contract() -> None:
     assert required_contracts({"geometry": {"sources": [{"id": "source_a"}]}}) == ()
     assert required_contracts({"geometry": {"sources": []}}) == ()
     assert required_contracts({}) == ()
-    assert required_contracts(
-        {"geometry": {"sources": [{"id": "source_a", "calibration": None}]}}
-    ) == ()
+    assert (
+        required_contracts(
+            {"geometry": {"sources": [{"id": "source_a", "calibration": None}]}}
+        )
+        == ()
+    )
     assert required_contracts(
         {"geometry": {"sources": [{"id": "source_a", "calibration": calibration()}]}}
     ) == (CALIBRATION_INPUT_CONTRACT,)
