@@ -52,9 +52,9 @@ final class CommercialDesignTest extends TestCase {
 	/**
 	 * One engine reply, recording the request the seam built.
 	 *
-	 * @param int    $status Engine status.
-	 * @param string $body   Engine body.
-	 * @param array  $sent   Receives the last request.
+	 * @param int                 $status Engine status.
+	 * @param string              $body   Engine body.
+	 * @param array<string,mixed> $sent   Receives the last request.
 	 */
 	private function replying( int $status, string $body, array &$sent = array() ): CommercialDesign {
 		return new CommercialDesign(
@@ -72,7 +72,11 @@ final class CommercialDesignTest extends TestCase {
 		);
 	}
 
-	/** The browser command whose exact fields the engine declares. */
+	/**
+	 * The browser command whose exact fields the engine declares.
+	 *
+	 * @return array<string,mixed>
+	 */
 	private function command(): array {
 		return array(
 			'plz'                 => '80331',
