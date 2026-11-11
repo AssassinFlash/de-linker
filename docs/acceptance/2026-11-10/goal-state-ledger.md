@@ -638,3 +638,14 @@ closed as correct rule-609 behavior for draft products' documents.
 Follow-ups that remain open regardless (modelled only if the series ever
 publishes): V1.3 peak-current semantics, US5000-B breaker section, US3000C
 current-field wording, and the "80 A recommended" copy line.
+
+## Security line dispatch (2026-11-11, E-line survey archived)
+
+E-line's 7 remaining items triaged: U1 (natural-inquiry full-chain readback),
+U5 (CI secret scanning) and U7 (dangling spec evidence links) dispatched now
+(I/J lines); U2 (alerting thresholds) and U3 (customer-side appeal tool)
+queued behind copy review; U4 (edge rate-limit, needs the aliyun account) and
+U6 (old Exa key revocation, needs the owner's passkey) are genuinely
+owner-blocked and recorded as such — they are not skippable, they wait on
+owner-side access. U1's口径 is decided per the map contract: complete the
+natural-inquiry readback, no downgrade to acceptance-inquiry-only.
