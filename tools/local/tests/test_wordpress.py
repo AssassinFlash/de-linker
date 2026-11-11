@@ -1,10 +1,12 @@
 from pathlib import Path
+from typing import cast
 
 import pytest
 
 from linker_local import wordpress
 from linker_local.checkout import Checkout
 from linker_local.instance import Instance
+from linker_local.wpcli import WpCli
 
 
 def write(path: Path, text: str = "") -> None:
@@ -134,3 +136,28 @@ def test_reads_the_installed_versions(instance: Instance) -> None:
 
 def test_reads_no_versions_from_an_empty_instance(instance: Instance) -> None:
     assert set(wordpress.versions(instance).values()) == {None}
+
+
+def test_a_snapshot_with_a_database_warns_that_it_is_not_installed(
+    instance: Instance, tmp_path: Path
+) -> None:
+    snapshot_dir = tmp_path / "snapshot"
+    write(snapshot_dir / "uploads" / "2026" / "11" / "cover.png", "png")
+    write(snapshot_dir / "db.sql.gz", "dump")
+    said: list[str] = []
+
+    wordpress.install_snapshot(instance, cast(WpCli, None), snapshot_dir, said.append)
+
+    assert any("NOT installed" in line for line in said)
+
+
+def test_a_snapshot_without_a_database_stays_quiet(
+    instance: Instance, tmp_path: Path
+) -> None:
+    snapshot_dir = tmp_path / "snapshot"
+    write(snapshot_dir / "uploads" / "2026" / "11" / "cover.png", "png")
+    said: list[str] = []
+
+    wordpress.install_snapshot(instance, cast(WpCli, None), snapshot_dir, said.append)
+
+    assert not any("NOT installed" in line for line in said)

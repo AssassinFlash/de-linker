@@ -262,6 +262,11 @@ def install_snapshot(
     if slugs:
         wp.run("plugin", "activate", *slugs)
         say(f"snapshot plugins {', '.join(slugs)}")
+    if (snapshot_dir / "db.sql.gz").is_file():
+        say(
+            "snapshot database NOT installed (--snapshot carries files only); "
+            "run `just pull load <instance>` for the site's content and theme"
+        )
 
 
 def link_plugins(instance: Instance, checkout: Checkout) -> list[str]:

@@ -388,7 +388,7 @@ e2e name *args:
 # first use, then (re)starts it with this checkout's plugins.
 linker_local := "uv run --locked --project tools/local linker-local"
 
-# Create the instance if needed, then (re)start it; --snapshot <dir> installs a snapshot's plugins and uploads.
+# Create the instance if needed, then (re)start it; --snapshot <dir> installs a snapshot's plugins and uploads (its db.sql.gz is not installed — `just pull load <name>` does that; the instance warns when it sees one).
 [positional-arguments]
 up name *options: php-install
     PHP={{ php }} {{ linker_local }} up "$@"
