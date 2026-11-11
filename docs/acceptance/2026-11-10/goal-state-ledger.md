@@ -866,3 +866,17 @@ on production: rest-nonce 400 is inert core-WP noise. Evidence:
 docs/acceptance/2026-11-11/commercial-production-walk.md (+ 46 MB of
 screenshots under /tmp until batch close). F's probe projects deleted
 in-site; Chrome CDP cleaned; no mail touched.
+
+## Readiness recurrence fixed durably (PR #1097 merged, O line)
+
+`wp linker-commerce publication ack-engineering --engine=<url>` ships the
+N-line manual fix as a first-class command: reads the engine's real loaded
+state, verifies source_revision against the manifest, then claim→acknowledge
+through the unmodified trust protocol. linker-local's serve wires it after
+engine readiness (idempotent, failure only reported). Verified on review by
+re-breaking all 88 receipts and restoring 0/88 → 88/88, twice-stable,
+idempotent second run writes nothing; CI 16 lanes green. Bonus real fix: 5
+pre-existing PHPStan errors in tools/migrate (wpdb %i placeholders) that
+main's local result-cache had been masking — proven pre-existing by
+reverting the PR and re-running. Knowledge consumer deliberately not covered
+(needs a local recipe-aware index generation; recorded).
