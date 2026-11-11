@@ -649,3 +649,13 @@ U6 (old Exa key revocation, needs the owner's passkey) are genuinely
 owner-blocked and recorded as such — they are not skippable, they wait on
 owner-side access. U1's口径 is decided per the map contract: complete the
 natural-inquiry readback, no downgrade to acceptance-inquiry-only.
+
+## Second transit-stall exposure fixed (2026-11-11, PR #1086)
+
+The 00:28 UTC sync failure was not the feed fetch (no retry logs, dead in
+43 s): `job_request` — the publication jobs call, timeout=30, no retry — hit
+the same VPS→Hostinger transit congestion. It now reuses the four-attempt
+backoff for transport faults only (HTTP answers, including refusals, fail
+closed on first response), with a stall-once server test. VPS resource
+readback the same hour: four services active, disk 12 %, deploy-prev
+retention per procedure.
