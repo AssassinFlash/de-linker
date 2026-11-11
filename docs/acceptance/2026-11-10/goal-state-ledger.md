@@ -1277,3 +1277,19 @@ verified deleted by per-ID 404 readback (empty list alone was not taken
 as proof). The rest-nonce 400 console noise remains by prior ruling
 (core-WP, inert); quick-panel's weather/pv/scenario/energy steps blocked
 for missing roof inputs is design behavior and out of this flip.
+
+## ToolIdentity recheck: no regression, gap closed (PR #1111 merged, AB line)
+
+The 11-06→11-09 UI rework never touched the identity components (git log
+from the baseline commit: zero changes to ToolIdentity/CreditText and the
+13 lp-tool-* style rules; only ProjectEditor/QuickStart/Workspace/report
+chain moved), and live re-verification on review confirms it: product
+names, attribution, both boundary statements verbatim, all 10 attribution
+links with matching rel/target, saved-revision framing, zero horizontal
+overflow — EN/DE × 1440/390, all identical to the 10-22 baseline. A new
+4-row e2e regression spec asserts link 4-tuples exactly and full-block
+innerText equality across widths (stricter than the baseline's links:10);
+revision asserted as a pattern, not a constant (it is the project's edit
+count, and saves require an explicit click — both recorded). Domain 6's
+identity half is closed; its compatibility half (runtime evidence for the
+contract and engineering overlay) remains the recorded gap.
