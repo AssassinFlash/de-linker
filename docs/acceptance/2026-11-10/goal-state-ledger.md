@@ -1293,3 +1293,17 @@ revision asserted as a pattern, not a constant (it is the project's edit
 count, and saves require an explicit click — both recorded). Domain 6's
 identity half is closed; its compatibility half (runtime evidence for the
 contract and engineering overlay) remains the recorded gap.
+
+## Day-close: 548 domain matrix refreshed to end-of-day state (36eb3b85f)
+
+All eight domains re-scored against the day's evidence: 1/2/3/5 now
+releasable-at-capability-layer (map e2e re-run green, roof-import 4-cell
+e2e new, obstruction/energy production evidence corrected and quantified,
+commerce chain production-verified end-to-end incl. PDF); 4 releasable
+(unchanged); 6 identity half closed with stricter regression, compatibility
+contract carries production pairs but awaits post-11-05 native acceptance;
+7 releasable with quotas now measured and both Mac schedulers
+rotation-proof; 8 upgraded from needs-implementation to needs-reverification
+(e2e coverage landed; country expansion remains evidence-gated per the
+established methodology). The matrix is the at-a-glance companion to this
+ledger's per-line records.
