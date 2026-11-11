@@ -10,7 +10,7 @@
 | 3 | PV 发电与能量时序 | 可发布（能力层） | direct-beam/geometric-pv 无生产执行；configurator 12 行 partially-verified 未翻绿 |
 | 4 | 项目工作台与修订 | 可发布 | recovery outbox 仅单测；launch protection 无独立验收 |
 | 5 | 商务链贯穿 | 需补验 | ReportDownload→ReportAccess 零测试（G 线处理）；BOM 表渲染不在读回覆盖 |
-| 6 | 产品身份与兼容 | 需补验 | ToolIdentity 10-23 后未随 UI 改版重做原生验收 |
+| 6 | 产品身份与兼容 | 需补验（身份半已补） | 身份披露 11-11 已复验无回归，见 `2026-11-11/548-identity-recheck/`，断言已进回归（`specs/planner-identity.spec.ts`）；兼容合同与工程覆盖层的运行时证据仍缺 11-05 之后的验收 |
 | 7 | 服务托管 | 可发布 | 生产配额未按工作量实测 |
 | 8 | 国家/DSO 规则 | 需实现 | 仅 3 国 5 条判读；DSO 边界诚实拒绝；e2e 零覆盖 |
 

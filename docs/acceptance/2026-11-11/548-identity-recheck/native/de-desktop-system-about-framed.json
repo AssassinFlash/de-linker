@@ -1,0 +1,187 @@
+{
+ "before": {
+  "details": true,
+  "identity": "Lösungskonfigurator\nvon Linker\n\nLinker bündelt Ihre Angaben in einem bearbeitbaren Projekt für die PV- und Speicherplanung.\n\nÜber dieses Werkzeug\n\nLinker verbindet die Projektverwaltung mit den Bearbeitungsfunktionen. Ihre Angaben und der Entwurf bleiben im selben Projekt; dort können Sie Änderungen speichern und verfügbare Arbeitsstände wiederherstellen.\n\nAlle Entwurfsansichten verwenden dieselbe Projektgeometrie. Die erfassten Angaben zur Quellengenauigkeit und zu Nutzungsrechten bleiben unverändert. Die Darstellung ersetzt keine fachtechnische Freigabe.\n\nSoftware und Datenquellen\n\nOberfläche und Projektdaten: React, TanStack Query und Ajv. 3D-Ansichten: Three.js und React Three Fiber. Kartendarstellung: MapLibre GL JS.\n\nStraßenkarte: OpenFreeMap. © OpenMapTiles; © OpenStreetMap-Mitwirkende.\n\nDatenschutzhinweise von OpenFreeMap",
+  "identityBox": {
+   "x": 0,
+   "y": 1599.25,
+   "width": 1440,
+   "height": 364,
+   "top": 1599.25,
+   "right": 1440,
+   "bottom": 1963.25,
+   "left": 0
+  },
+  "links": [
+   {
+    "label": "React",
+    "href": "https://react.dev/",
+    "rel": "noopener noreferrer",
+    "target": "_blank"
+   },
+   {
+    "label": "TanStack Query",
+    "href": "https://tanstack.com/query",
+    "rel": "noopener noreferrer",
+    "target": "_blank"
+   },
+   {
+    "label": "Ajv",
+    "href": "https://ajv.js.org",
+    "rel": "noopener noreferrer",
+    "target": "_blank"
+   },
+   {
+    "label": "Three.js",
+    "href": "https://threejs.org/",
+    "rel": "noopener noreferrer",
+    "target": "_blank"
+   },
+   {
+    "label": "React Three Fiber",
+    "href": "https://r3f.docs.pmnd.rs/getting-started/introduction",
+    "rel": "noopener noreferrer",
+    "target": "_blank"
+   },
+   {
+    "label": "MapLibre GL JS",
+    "href": "https://maplibre.org/maplibre-gl-js/docs/",
+    "rel": "noopener noreferrer",
+    "target": "_blank"
+   },
+   {
+    "label": "OpenFreeMap",
+    "href": "https://openfreemap.org/",
+    "rel": "noopener noreferrer",
+    "target": "_blank"
+   },
+   {
+    "label": "© OpenMapTiles",
+    "href": "https://www.openmaptiles.org/",
+    "rel": "noopener noreferrer",
+    "target": "_blank"
+   },
+   {
+    "label": "© OpenStreetMap-Mitwirkende",
+    "href": "https://www.openstreetmap.org/copyright",
+    "rel": "noopener noreferrer",
+    "target": "_blank"
+   },
+   {
+    "label": "Datenschutzhinweise von OpenFreeMap",
+    "href": "https://openfreemap.org/privacy/",
+    "rel": "noopener noreferrer",
+    "target": "_blank"
+   }
+  ],
+  "fonts": "loaded",
+  "revision": "Gespeichert · Version 3",
+  "viewport": [
+   1440,
+   1000
+  ],
+  "widths": [
+   1440,
+   1440
+  ],
+  "scroll": [
+   0,
+   2559
+  ],
+  "overflow": 0,
+  "url": "http://127.0.0.1:8889/de/loesungskonfigurator/?project=db5d288590e946208b1e30954cbd9d7a"
+ },
+ "after": {
+  "details": true,
+  "identity": "Lösungskonfigurator\nvon Linker\n\nLinker bündelt Ihre Angaben in einem bearbeitbaren Projekt für die PV- und Speicherplanung.\n\nÜber dieses Werkzeug\n\nLinker verbindet die Projektverwaltung mit den Bearbeitungsfunktionen. Ihre Angaben und der Entwurf bleiben im selben Projekt; dort können Sie Änderungen speichern und verfügbare Arbeitsstände wiederherstellen.\n\nAlle Entwurfsansichten verwenden dieselbe Projektgeometrie. Die erfassten Angaben zur Quellengenauigkeit und zu Nutzungsrechten bleiben unverändert. Die Darstellung ersetzt keine fachtechnische Freigabe.\n\nSoftware und Datenquellen\n\nOberfläche und Projektdaten: React, TanStack Query und Ajv. 3D-Ansichten: Three.js und React Three Fiber. Kartendarstellung: MapLibre GL JS.\n\nStraßenkarte: OpenFreeMap. © OpenMapTiles; © OpenStreetMap-Mitwirkende.\n\nDatenschutzhinweise von OpenFreeMap",
+  "identityBox": {
+   "x": 0,
+   "y": 318.25,
+   "width": 1440,
+   "height": 364,
+   "top": 318.25,
+   "right": 1440,
+   "bottom": 682.25,
+   "left": 0
+  },
+  "links": [
+   {
+    "label": "React",
+    "href": "https://react.dev/",
+    "rel": "noopener noreferrer",
+    "target": "_blank"
+   },
+   {
+    "label": "TanStack Query",
+    "href": "https://tanstack.com/query",
+    "rel": "noopener noreferrer",
+    "target": "_blank"
+   },
+   {
+    "label": "Ajv",
+    "href": "https://ajv.js.org",
+    "rel": "noopener noreferrer",
+    "target": "_blank"
+   },
+   {
+    "label": "Three.js",
+    "href": "https://threejs.org/",
+    "rel": "noopener noreferrer",
+    "target": "_blank"
+   },
+   {
+    "label": "React Three Fiber",
+    "href": "https://r3f.docs.pmnd.rs/getting-started/introduction",
+    "rel": "noopener noreferrer",
+    "target": "_blank"
+   },
+   {
+    "label": "MapLibre GL JS",
+    "href": "https://maplibre.org/maplibre-gl-js/docs/",
+    "rel": "noopener noreferrer",
+    "target": "_blank"
+   },
+   {
+    "label": "OpenFreeMap",
+    "href": "https://openfreemap.org/",
+    "rel": "noopener noreferrer",
+    "target": "_blank"
+   },
+   {
+    "label": "© OpenMapTiles",
+    "href": "https://www.openmaptiles.org/",
+    "rel": "noopener noreferrer",
+    "target": "_blank"
+   },
+   {
+    "label": "© OpenStreetMap-Mitwirkende",
+    "href": "https://www.openstreetmap.org/copyright",
+    "rel": "noopener noreferrer",
+    "target": "_blank"
+   },
+   {
+    "label": "Datenschutzhinweise von OpenFreeMap",
+    "href": "https://openfreemap.org/privacy/",
+    "rel": "noopener noreferrer",
+    "target": "_blank"
+   }
+  ],
+  "fonts": "loaded",
+  "revision": "Gespeichert · Version 3",
+  "viewport": [
+   1440,
+   1000
+  ],
+  "widths": [
+   1440,
+   1440
+  ],
+  "scroll": [
+   1281,
+   2559
+  ],
+  "overflow": 0,
+  "url": "http://127.0.0.1:8889/de/loesungskonfigurator/?project=db5d288590e946208b1e30954cbd9d7a"
+ },
+ "captureBeyondViewport": false
+}
