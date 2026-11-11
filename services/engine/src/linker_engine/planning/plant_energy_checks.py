@@ -82,10 +82,12 @@ def verify(
             task_codes.add(code)
         violation = max(residual, 0.0) if bound else abs(residual)
         absolute = tolerance.absolute_kwh if energy else tolerance.absolute_kw
-        allowance = (
-            hard_allowance
-            if hard_allowance is not None
-            else absolute + tolerance.relative * abs(scale)
+        # A hard allowance states extra ledger arithmetic for one equation; it
+        # adds to the configured numerical tolerance rather than replacing it,
+        # so one physical identity cannot pass or fail by nine orders of
+        # magnitude between the single-AC and joint kernels.
+        allowance = absolute + tolerance.relative * abs(scale) + (
+            hard_allowance if hard_allowance is not None else 0.0
         )
         if not all(math.isfinite(v) for v in (violation, scale, allowance)):
             raise NumericalFailure("joint replay has nonfinite verification arithmetic")

@@ -302,3 +302,26 @@ s = read_profile(csv, m, load_timezone("Europe/Berlin"))
 print(len(s.intervals), round(s.total_kwh,3), s.source.native_max_interval_seconds)
 PY
 ```
+
+---
+
+## 追加说明（2026-11-12）
+
+本文件是 2026-11-11 的判定记录，**不修改**。
+
+上文"两内核因设备事实门不可执行"的结论在当时的池上成立；11-12 C 线完成
+`1954`/`1955` 写入后，`shared_dc` 已补上 2 次生产执行。
+
+后续的重试记录、生产读回、以及同轮发现的跨内核容差缺陷修复见
+[`retry-2026-11-12.md`](retry-2026-11-12.md)。
+
+要点（详见该文件）：
+
+- `1954`/`1955` 的 `ready.engineering` 在 C 线写入后**恢复为 true**（池 88，签名 `71699e7c`），
+  证实上文"false 是 C 线在途状态"的判断；
+- `shared_dc_energy_replay_v1` 生产执行 2 次，均 succeeded，
+  闭合 1.73e-14 / −3.77e-13 kWh，负载为 BDEW H25 官方画像；
+- `plant_ac_energy_replay_v1` **仍为 0 次**，阻塞点从"设备事实门"收窄为
+  "缺 AC 充电能力事实（0/42 台逆变器）"；
+- 上文 §4 记录的"0/1763"是 11-11 池上的实测，11-12 重扫的可行链
+  `4107 + 1954 @ mps=6, BAT1` 依然可用（`usable_window_kwh = 60.0`）。

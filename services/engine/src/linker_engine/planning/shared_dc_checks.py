@@ -59,14 +59,15 @@ def verify(
         if not math.isfinite(residual) or not math.isfinite(scale):
             raise NumericalFailure("nonfinite shared DC ledger arithmetic")
         violation = max(residual, 0.0) if bound else abs(residual)
+        # A hard allowance states extra ledger arithmetic for one equation; it
+        # adds to the configured numerical tolerance rather than replacing it.
+        # Replacing it made the same physical identity pass or fail by nine
+        # orders of magnitude between kernels.
         allowance = (
-            hard_allowance
-            if hard_allowance is not None
-            else (
-                (tolerance.absolute_kwh if unit == "kWh" else tolerance.absolute_kw)
-                + tolerance.relative * abs(scale)
-                + arithmetic
-            )
+            (tolerance.absolute_kwh if unit == "kWh" else tolerance.absolute_kw)
+            + tolerance.relative * abs(scale)
+            + arithmetic
+            + (hard_allowance if hard_allowance is not None else 0.0)
         )
         if (
             not math.isfinite(allowance)
