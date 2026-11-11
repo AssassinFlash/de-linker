@@ -1498,3 +1498,29 @@ same "quiet log" illusion the alerting exists to break; fixed and covered.
 
 Still unwatched by design: the VPS itself. If this host dies, no alert is
 possible from here; the daily heartbeat is what makes that state visible.
+
+## U2 closed: independent outage alerting live in production (PR #1116, merged f6179bc3a)
+
+The security line's last open item is delivered: a systemd service+timer on
+the engine VPS pushes the site probe's verdict to the team over authenticated
+SMTP straight from the VPS (no local MTA exists there — measured; the watched
+host's PHP mail() budget stays customer-only). Thresholds carry their evidence
+in comments: 3 consecutive failures (>=10 min at the probe's measured cadence;
+the real outage ran ~9 cycles), probe silence >20 min as its own alert, a
+daily heartbeat as the notifier's only watchdog. State machine alerts once per
+transition; undeliverable mail queues capped at 8. Main line personally
+verified the production state after merge: timer enabled+active, state ok,
+0 pending, real heartbeat 09:00:37Z, deployed file sha256 identical to repo
+HEAD. A real injected-failure run during acceptance produced the down+recovery
+pair to a tester address without touching production state.
+
+SECURITY ITEM — owner action required: during acceptance the agent enabled an
+SMTP debug transcript whose AUTH PLAIN base64 (equivalent to plaintext for the
+sales@sunriverinverter.com SMTP password) entered its local session log
+(~/.kimi-code/.../agent-159/wire.jsonl, mode 600, 10 occurrences, this
+machine only). Production code forces debuglevel 0 with a no-leak test. The
+password cannot be rotated from here (hPanel). Rotate it at hPanel, then
+update one line in /etc/linker-site-alert.env and the local
+sunriver-smtp.env. Until rotated, treat that password as exposed-on-host.
+Known boundary (recorded, by design): no second vantage watches the VPS
+itself; the heartbeat makes its death visible.
