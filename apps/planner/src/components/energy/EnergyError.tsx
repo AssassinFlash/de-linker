@@ -162,7 +162,7 @@ export function energyErrorText(error: unknown): string {
 			);
 		case "geometric_pv_expanded_scope_required":
 			return __(
-				"This saved design is outside the supported larger-roof calculation scope. Review the larger-roof conditions in the PV reference setup, or reduce the setup to the standard calculation budget before trying again.",
+				"This saved design exceeds the calculation budget for the complete weather year. Reduce the roof scope or the midpoint sampling grids, or check that the module planes match the selected roof type, then try again.",
 				"linker-tools",
 			);
 		case "report_inputs_changed":

@@ -7,10 +7,11 @@ from typing import cast
 from .asset_publication import AssetPublication, AssetResult
 from .assets import Asset, Assets
 from .canonical import Object, digest, encode
+from .direct_beam_geometry import build_scene
 from .errors import GeometricPvExpandedScopeRequired, InvalidInput, VersionUnavailable
 from .execution_identity import execution_key, request_execution_key
 from .frozen_run import frozen_manifest
-from .geometric_pv_admission import admitted_limits
+from .geometric_pv_admission import admitted_limits, scene_matches_class
 from .geometric_pv_generation import generate_geometric_pv
 from .geometric_pv_inputs import (
     KIND,
@@ -141,9 +142,7 @@ class GeometricPvKernel:
     ) -> str:
         parameters = self.parameters()
         if expanded:
-            if (
-                self.pitched_limits if pitched else self.expanded_limits
-            ) is None or generation != MODEL_V3:
+            if (self.pitched_limits if pitched else self.expanded_limits) is None:
                 raise VersionUnavailable("expanded geometric PV is not configured")
             parameters["execution_class"] = (
                 "clear_pitched_roof_v1" if pitched else "clear_flat_roof_v1"
@@ -164,26 +163,35 @@ class GeometricPvKernel:
 
     def expanded_execution_keys(self) -> tuple[str, ...]:
         return tuple(
-            self.execution_key_for(MODEL_V3, expanded=True, pitched=pitched)
+            self.execution_key_for(model, expanded=True, pitched=pitched)
             for pitched, limits in (
                 (False, self.expanded_limits),
                 (True, self.pitched_limits),
             )
             if limits is not None
+            for model in (MODEL_V1, MODEL_V2, MODEL_V3)
         )
 
     def selected_budget(
         self, inputs: Object, weather: WeatherSeries, request: GeometricPvInputs
     ) -> tuple[GeometricPvLimits, str | None]:
+        """The class follows the declared module planes, then the declared work."""
+        scene = build_scene(inputs.get("geometry"))
         for pitched, limits in (
-            (False, self.expanded_limits),
             (True, self.pitched_limits),
+            (False, self.expanded_limits),
         ):
-            if limits is None:
+            if limits is None or not scene_matches_class(scene, pitched=pitched):
                 continue
             try:
                 selected = admitted_limits(
-                    inputs, weather, request, self.limits, limits, pitched=pitched
+                    inputs,
+                    weather,
+                    request,
+                    self.limits,
+                    limits,
+                    pitched=pitched,
+                    scene=scene,
                 )
             except GeometricPvExpandedScopeRequired:
                 continue
@@ -196,7 +204,7 @@ class GeometricPvKernel:
             )
         if self.expanded_limits is not None or self.pitched_limits is not None:
             raise GeometricPvExpandedScopeRequired(
-                "geometric PV exceeds configured roof scopes"
+                "geometric PV exceeds configured work envelopes"
             )
         return self.limits, None
 

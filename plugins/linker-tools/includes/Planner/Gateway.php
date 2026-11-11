@@ -256,6 +256,9 @@ final class Gateway {
 			if ( ! array_key_exists( $profile, $version['limits'] ) ) {
 				continue;
 			}
+			// Measured deployment ceilings: 96 modules over a complete 8,760
+			// interval year, the sampling upper bound that implies, and the
+			// isolated cgroup envelope's string/row bounds.
 			$expanded = $version['limits'][ $profile ];
 			$bounds   = array(
 				'max_module_steps' => 841000,

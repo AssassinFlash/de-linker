@@ -248,3 +248,37 @@ def test_analytic_union_midpoints_local_frames_and_fail_closed_boundaries() -> N
             DirectBeamSampling(coarse_cells_per_edge=4, fine_cells_per_edge=8),
             limits.model_copy(update={"max_bounds_checks": 1}),
         )
+
+
+def test_bounds_allowance_prices_the_declared_scene_up_to_the_ceiling() -> None:
+    """A flat ceiling refused legal occluded roofs; the scene prices itself."""
+    from linker_engine.planning.direct_beam_visibility import (
+        BOUNDS_CHECKS_PER_DECLARED_OBJECT,
+        BOUNDS_CHECKS_UNCONDITIONAL,
+        VisibilityBudget,
+        bounds_allowance,
+    )
+
+    limits = DirectBeamLimits(
+        max_selected_rows=24,
+        max_samples=2_000_000,
+        max_ray_face_checks=20_000_000,
+        max_bounds_checks=100_000_000,
+        index_leaf_size=8,
+    )
+    objects = 105
+    # A small scene is priced by its own declared objects: every object once per
+    # upper-bound sample, plus the tree nodes above the leaves.
+    assert bounds_allowance(limits, 4, objects) == 4 * (
+        objects * BOUNDS_CHECKS_PER_DECLARED_OBJECT + BOUNDS_CHECKS_UNCONDITIONAL
+    )
+    # The operator ceiling still bounds any single task when the structural
+    # allowance for the declared scene would exceed it.
+    samples = 4_214_016
+    assert bounds_allowance(limits, samples, objects) == limits.max_bounds_checks
+    tight = limits.model_copy(update={"max_bounds_checks": 1_000})
+    assert bounds_allowance(tight, samples, objects) == 1_000
+    budget = VisibilityBudget(limits, bounds_allowance(limits, 4, objects))
+    assert budget.max_bounds_checks == 4 * (objects + BOUNDS_CHECKS_UNCONDITIONAL)
+    unchanged = VisibilityBudget(limits)
+    assert unchanged.max_bounds_checks == limits.max_bounds_checks
