@@ -25,7 +25,7 @@ namespace {
 		 */
 		public static $registered_commands = array();
 
-		public static function error( string $message ): void {
+		public static function error( string $message ): never {
 			throw new \WP_CLI\ExitException( $message );
 		}
 

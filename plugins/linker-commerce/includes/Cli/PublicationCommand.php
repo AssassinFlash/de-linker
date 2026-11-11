@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Cli;
 
 use Linker\Commerce\Products\Publication;
+use Linker\Commerce\Products\Publication\EngineLoadedState;
 use Linker\Commerce\Products\Publication\PreparationJobs;
 
 /** No original file is deleted; the emergency withdrawal block remains intact. */
@@ -207,6 +208,194 @@ final class PublicationCommand {
 	public function reconcile(): void {
 		( new PreparationJobs() )->reconcile();
 		\WP_CLI::success( 'Current preparation jobs reconciled.' );
+	}
+
+	/**
+	 * Acknowledge the generation this instance's own engine actually loaded.
+	 *
+	 * A pulled instance rewrites every upload address, so renewing the evidence
+	 * bindings changes every product revision; the receipts a production worker
+	 * left behind then name a generation that no longer exists, and no local
+	 * process acknowledges the new one. Planning rejects every selection on such
+	 * an instance (`product_evidence_changed`) until someone does.
+	 *
+	 * The engine loaded the current feed from this site, and its authenticated
+	 * readback is the same evidence the production preparation worker
+	 * acknowledges with — a local engine's loaded state grants this instance's
+	 * readiness under that same trust. Only the products the engine reports as
+	 * loaded are acknowledged; the native ACK still verifies every revision
+	 * against the current source and refuses anything else.
+	 *
+	 * ## OPTIONS
+	 *
+	 * --engine=<url>
+	 * : Base URL of the engine that loaded this instance's feed, e.g. http://127.0.0.1:8890.
+	 *
+	 * [--consumer=<consumer>]
+	 * : Only engineering is supported: knowledge readiness needs a recipe-aware
+	 *   index generation (recipe_revision, index_version, model identity) that an
+	 *   engine readback cannot supply.
+	 *
+	 * @subcommand ack-engineering
+	 * @param array<int,string>   $args       Positional arguments.
+	 * @param array<string,mixed> $assoc_args Native CLI options.
+	 */
+	public function ack_engineering( array $args, array $assoc_args ): void {
+		unset( $args );
+		$consumer = (string) ( $assoc_args['consumer'] ?? 'engineering' );
+		if ( 'engineering' !== $consumer ) {
+			\WP_CLI::error(
+				sprintf(
+					'unsupported_consumer: %s readiness needs a recipe-aware index generation (recipe_revision, index_version, model identity) that an engine readback cannot supply; only engineering is acknowledged.',
+					$consumer
+				)
+			);
+		}
+		$engine = $assoc_args['engine'] ?? '';
+		if ( ! is_string( $engine ) || '' === $engine ) {
+			\WP_CLI::error( 'invalid_engine_url: --engine=<url> is required, e.g. http://127.0.0.1:8890.' );
+		}
+		$loaded = EngineLoadedState::read( $engine );
+		if ( $loaded instanceof \WP_Error ) {
+			\WP_CLI::error( $loaded->get_error_code() . ': ' . $loaded->get_error_message() );
+		}
+		$manifest = Publication::manifest();
+		$report   = array(
+			'engine'                        => rtrim( $engine, '/' ),
+			'engine_version'                => $loaded['version'],
+			'consumer'                      => $consumer,
+			'claim'                         => 'none',
+			'source_revision'               => $manifest['source_revision'],
+			'loaded_source_revision'        => $loaded['source_revision'],
+			'compatibility_revision'        => $manifest['compatibility_revision'],
+			'loaded_compatibility_revision' => $loaded['compatibility_revision'],
+			'products'                      => $this->loaded_products_difference( $manifest, $loaded['products'] ),
+		);
+		if ( $loaded['source_revision'] !== $manifest['source_revision'] ) {
+			\WP_CLI::log( (string) wp_json_encode( $report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+			\WP_CLI::error(
+				sprintf(
+					'engine_source_mismatch: the engine loaded %s, this site publishes %s; nothing was acknowledged.',
+					$loaded['source_revision'],
+					$manifest['source_revision']
+				)
+			);
+		}
+		$jobs  = new PreparationJobs();
+		$claim = $jobs->claim( $consumer, 'cli-ack-' . getmypid(), 120 );
+		if ( $claim instanceof \WP_Error ) {
+			\WP_CLI::log( (string) wp_json_encode( $report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+			\WP_CLI::error( 'claim_failed: ' . $claim->get_error_code() . ': ' . $claim->get_error_message() );
+		}
+		$job = $claim['job'] ?? null;
+		if ( null === $job ) {
+			// An earlier ACK already covers this source, or another worker holds
+			// the live lease; neither is this invocation's to change.
+			$state                  = get_option( PreparationJobs::OPTION, array() );
+			$current                = is_array( $state ) ? ( $state['engineering'] ?? array() ) : array();
+			$report['acknowledged'] = $this->acknowledged( $manifest );
+			\WP_CLI::log( (string) wp_json_encode( $report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+			if ( 'ready' === ( $current['status'] ?? '' ) ) {
+				\WP_CLI::success(
+					sprintf(
+						'engineering is already acknowledged for this source: %d of %d products ready.',
+						$report['acknowledged'],
+						$report['products']['expected']
+					)
+				);
+				return;
+			}
+			\WP_CLI::error(
+				sprintf(
+					'job_not_claimable: the engineering job is %s with a lease until %d; nothing was acknowledged.',
+					(string) ( $current['status'] ?? 'unknown' ),
+					(int) ( $current['lease_expires_at'] ?? 0 )
+				)
+			);
+		}
+		$ack = $jobs->acknowledge(
+			array(
+				'job_id'            => $job['job_id'],
+				'lease_token'       => $job['lease_token'],
+				'source_revision'   => $job['source_revision'],
+				'loaded_revision'   => $loaded['source_revision'],
+				'prepared_products' => $loaded['products'],
+				'status'            => 'ready',
+			)
+		);
+		if ( $ack instanceof \WP_Error ) {
+			\WP_CLI::log( (string) wp_json_encode( $report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+			\WP_CLI::error( 'ack_rejected: ' . $ack->get_error_code() . ': ' . $ack->get_error_message() );
+		}
+		$report['claim']        = 'acknowledged';
+		$report['ack']          = $ack;
+		$report['acknowledged'] = $this->acknowledged( $manifest );
+		\WP_CLI::log( (string) wp_json_encode( $report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+		if ( true !== ( $ack['complete'] ?? false ) ) {
+			\WP_CLI::error(
+				sprintf(
+					'acknowledgement_incomplete: the engine loaded %d of %d current products; the receipt is recorded but readiness stays below the source.',
+					$report['products']['loaded'],
+					$report['products']['expected']
+				)
+			);
+		}
+		\WP_CLI::success(
+			sprintf(
+				'engineering ready for %d of %d current products from the generation the engine loaded.',
+				$report['acknowledged'],
+				$report['products']['expected']
+			)
+		);
+	}
+
+	/**
+	 * How the engine's loaded products differ from the current source.
+	 *
+	 * @param array<string,mixed>                                 $manifest Current source.
+	 * @param list<array{product_id:int,product_revision:string}> $loaded Engine readback.
+	 * @return array{expected:int,loaded:int,matching:int,stale:list<int>,missing:list<int>,unknown:list<int>}
+	 */
+	private function loaded_products_difference( array $manifest, array $loaded ): array {
+		$expected = array_column( $manifest['products'], 'product_revision', 'product_id' );
+		$matching = 0;
+		$stale    = array();
+		$unknown  = array();
+		$seen     = array();
+		foreach ( $loaded as $product ) {
+			$id     = $product['product_id'];
+			$seen[] = $id;
+			if ( ! isset( $expected[ $id ] ) ) {
+				$unknown[] = $id;
+			} elseif ( $expected[ $id ] === $product['product_revision'] ) {
+				++$matching;
+			} else {
+				$stale[] = $id;
+			}
+		}
+		return array(
+			'expected' => count( $expected ),
+			'loaded'   => count( $loaded ),
+			'matching' => $matching,
+			'stale'    => $stale,
+			'missing'  => array_values( array_map( 'intval', array_diff( array_keys( $expected ), $seen ) ) ),
+			'unknown'  => $unknown,
+		);
+	}
+
+	/**
+	 * Products whose engineering receipt matches the current source.
+	 *
+	 * @param array<string,mixed> $manifest Current source.
+	 */
+	private function acknowledged( array $manifest ): int {
+		$count = 0;
+		foreach ( $manifest['products'] as $product ) {
+			if ( PreparationJobs::readiness( (int) $product['product_id'], (string) $product['product_revision'] )['engineering'] ) {
+				++$count;
+			}
+		}
+		return $count;
 	}
 
 	/**
