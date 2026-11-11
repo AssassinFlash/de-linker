@@ -211,12 +211,16 @@ done: {"ok": true}
 
 ## 未解决项
 
-1. **`identify` 端点对 worker 凭据返回 403**。实测
-   `POST /wp-json/linker/v1/publication/identify` 用 `worker.env` 的凭据得 403，
-   而 `jobs/claim` 同一凭据得 400（业务校验，说明已通过鉴权）。本次构建没有触发
-   该路径（`identify` 只在 leased batch 且需要模型识别时使用，日志显示
-   `phase: identify` 实际走的是批量端点且成功），所以**不影响本次发布**；但这
-   是一个独立的鉴权缺陷，若将来有构建需要单条 `identify` 会失败。
+1. ~~**`identify` 端点对 worker 凭据返回 403**~~ → **不是缺陷，是凭据作用域的正确行为**（2026-11-11 U 线复核，见下节"identify 403 复核"）。
+
+   原判断（"同一凭据 `jobs/claim` 得 400 说明鉴权通过，所以 `identify` 403 是鉴权缺陷"）把
+   **漏了形状这一维**：403 来自 `mu-plugins/linker-publication-worker-access.php` 的
+   purpose 凭据作用域，不是来自 `manage_woocommerce` 判定。该 MU 只放行
+   `jobs/claim`、`jobs/ack` 和 **JSON `texts` 批量形状**的 `identify`；`{models:[…]}` 与
+   `{text:…}` 是**公开 oracle**（匿名 200），故意不在 worker 凭据作用域内。
+   修复该"缺陷"等于把公开 oracle 的权限交给 worker 密钥。
+
+   **没有任何代码改动**：作用域判定本身正确，缺的是文档与一条可辨别的回归断言。
 2. **worker 的自动发布依赖本机 release 目录存在**。这次我把它指回
    `db0fddffa-main`（身份与生产运行时一致）。一旦生产运行时升级（paired release），
    该 release 的 serving 身份就与新运行时不再匹配，worker 会按设计拒绝发布，
@@ -224,6 +228,35 @@ done: {"ok": true}
 3. 本次发布由我手动运行的受管 worker 完成（`worker-id manual-prod-knowledge-…`），
    **不是** launchd 那一份。launchd 那份已在发布后修复并读回运行中，下一次定时
    触发会走它（对已 ready 的同一代是幂等 no-op）。
+
+## identify 403 复核（2026-11-11）
+
+对生产 `https://de-linker.com` 用 `~/de-linker-ops/knowledge-worker/worker.env`
+的凭据实测（只读 POST，未领取租约、未产生任何写入）：
+
+| 请求 | 结果 | 说明 |
+| --- | --- | --- |
+| `identify` `{texts:[…]}` + worker 凭据 | **409 `stale_job`** | 穿过 MU 与 `manage_woocommerce`，到达租约业务层 |
+| `identify` `{}` + worker 凭据 | 403 `rest_forbidden` | 空体不含 `texts`，不在作用域内 |
+| `identify` `{models:[…]}` + worker 凭据 | 403 `rest_forbidden` | 公开 oracle 形状，故意排外 |
+| `identify` `{text:…}` + worker 凭据 | 403 `rest_forbidden` | 同上 |
+| `identify` `{texts:[…]}` 匿名 | 401 `identity_authentication_required` | 批量形状必须原生身份 |
+| `identify` `{models:[…]}` 匿名 | **200**（`HS2-8K-T2-X` → `product_id 1184`） | 公开 oracle 正常 |
+| `identify` `{text:…}` 匿名 | **200** | 同上 |
+| `jobs/claim` `{}` + worker 凭据 | 400 `invalid_job_request` | 与 T 线观察一致 |
+
+结论：`identify` 的**批量**路径对 worker 凭据完全可用（409 是租约不匹配，不是鉴权），
+单条/模型路径是公开读、worker 无需也无权使用。T 线当初的 403 之所以出现，是因为
+探测体不含 `texts`（`{}` 或 `{models}`），落到了作用域拒绝分支。
+
+依据：`docs/acceptance/2026-10-31/548/INDEX.md:805,819` 记录该作用域扩张的原始裁定
+（"新增正向红测确认……现在仅精确 identify 路径的 JSON texts 数组模式获一次 root HTTP
+dispatch"），以及 `mu-plugins/linker-publication-worker-access.php:149-158` 的实现。
+
+文档缺口（本次修复）：`docs/specs/614-publication-contract.md` 与
+`docs/agents/publication-worker-access.md` 都只写了 `claim`/`ack` 两项，未提
+leased `identify` 批量，读文档的人因此会以为批量也被禁止。两处已补，并写明
+401/403/409/400 的语义差别，避免下次再把作用域拒绝误读成凭据缺陷。
 
 ## 资源报告
 

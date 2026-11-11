@@ -45,9 +45,17 @@ final class PublicationWorkerAccessTest extends TestCase {
 		);
 	}
 
-	/** An allowed batch operation cannot widen the key to the public single-window oracle. */
+	/**
+	 * An allowed batch operation cannot widen the key to the public single-window oracle.
+	 *
+	 * The empty body is the operator-reported probe: it answers 403 here while
+	 * `jobs/claim` answers a business 400, which proves the credential authenticated
+	 * and only the batch shape is in scope. Widening this refusal would expose the
+	 * public exact-label oracle to the worker key.
+	 */
 	public function test_identify_scope_requires_a_json_batch_without_single_mode_aliases(): void {
 		foreach ( array(
+			array( 'json' => array() ),
 			array( 'params' => array( 'texts' => array( 'MODEL-12' ) ) ),
 			array( 'json' => array( 'text' => 'MODEL-12' ) ),
 			array(
