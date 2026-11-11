@@ -270,9 +270,40 @@ def _serve(
             urls.append("planner worker ready")
         wp.run("option", "update", service.option, url)
         urls.append(f"{service.name} {url}")
+        if service.name == "engine":
+            urls.append(_acknowledge_engineering(wp, url, token))
     if index is not None:
         urls.append(index.line())
     return urls
+
+
+def _acknowledge_engineering(wp: WpCli, engine: str, token: str) -> str:
+    """Acknowledge the generation the engine just loaded, as the pull needs it.
+
+    A pulled instance rewrites every upload address, so `repair-bindings` renews
+    every product revision and the receipts a production worker left behind name
+    a generation that no longer exists. Nothing local used to acknowledge the new
+    one, so every fresh pull answered `product_evidence_changed` on every
+    equipment selection until someone acknowledged by hand
+    (docs/acceptance/2026-11-11/review-readiness-fix.md).
+
+    The engine loaded this site's current feed and its authenticated readback is
+    the evidence the production worker acknowledges with, so it grants this
+    instance's readiness under the same trust; the native ACK still verifies
+    every product revision against the current source. The step is idempotent
+    and never breaks a working `serve`: its outcome is reported, not raised.
+    """
+    try:
+        wp.run(
+            "linker-commerce",
+            "publication",
+            "ack-engineering",
+            f"--engine={engine}",
+            env={"LINKER_ENGINE_SERVICE_TOKEN": token},
+        )
+    except WpCliError as error:
+        return f"engineering readiness: not acknowledged ({error})"
+    return "engineering readiness: acknowledged"
 
 
 def genie_environment(instance: Instance, index: Path, token: str) -> dict[str, str]:

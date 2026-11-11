@@ -169,11 +169,11 @@
 				throw new RuntimeException( 'Cannot start the guarded transaction.' );
 			}
 			$started = true;
-			$locked  = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE ID IN (%d,%d) ORDER BY ID FOR UPDATE", $ids[0], $ids[1] ) );
+			$locked  = $wpdb->get_col( $wpdb->prepare( 'SELECT ID FROM %i WHERE ID IN (%d,%d) ORDER BY ID FOR UPDATE', $wpdb->posts, $ids[0], $ids[1] ) );
 			if ( array_map( 'intval', $locked ) !== $ids ) {
 				throw new RuntimeException( 'The audited product pair no longer exists.' );
 			}
-			$wpdb->get_col( $wpdb->prepare( "SELECT meta_id FROM {$wpdb->postmeta} WHERE post_id IN (%d,%d) ORDER BY meta_id FOR UPDATE", $ids[0], $ids[1] ) );
+			$wpdb->get_col( $wpdb->prepare( 'SELECT meta_id FROM %i WHERE post_id IN (%d,%d) ORDER BY meta_id FOR UPDATE', $wpdb->postmeta, $ids[0], $ids[1] ) );
 			if ( '' !== $wpdb->last_error ) {
 				throw new RuntimeException( 'Could not lock the product metadata.' );
 			}

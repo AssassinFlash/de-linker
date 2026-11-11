@@ -201,25 +201,49 @@ country_assessment.rule_review =
   `table_without_scope` 诊断会强制 `preparation_complete=false`。它不阻塞
   Equipment（`prepared_view` 只看 `ready.engineering`），但 Genie 的知识检索
   在本实例上不是 ready 状态。修复它需要构建本机索引代，属于另一条链路。
-- **成因会复发**。凡是从线上快照拉取的实例，只要跑过
+- **成因会复发（已固化，见下节）**。凡是从线上快照拉取的实例，只要跑过
   `bind-figures` / `repair-bindings`，`product_revision` 就会整体改变，回执随即
   全部失配；而本机没有任何 worker 会重新 ACK。`tools/pull` 的
   `_bind_publication()` 只做绑定续期，明确不碰 readiness（它当时也没有已加载的
   引擎可读）。所以**每一个新拉的实例在有人手动 ACK 之前，planning 的 equipment
   链路都是 409**。
 
-  本次按任务边界只修实例并留证据，没有自行扩大改动范围。可选的持久化解法（需
-  主线裁定，不宜由本线单方面改生产契约）：
+  本票按任务边界只修实例并留证据，未扩大改动范围；持久化解法由后续的 O 线
+  落实，见下节。
 
-  1. 在 `linker-local`（`tools/local`）启动引擎后增加一步：读
-     `/resource/version?ready=1`，校验 `source_revision` 等于站点 manifest，
-     再经 WP-CLI 调 `PreparationJobs::claim()/acknowledge()`。等价于把生产
-     systemd worker 的 ACK 段搬进本地 `just up`，只影响本地工具，不下发生产。
-  2. 或者给 `wp linker-commerce publication` 增加 `ack-engineering --engine=<url>`
-     子命令，实现同上，供人工与工具复用。
+## 已固化：`publication ack-engineering` + `just serve` 接线
 
-  两者都需要先决定「本地引擎的加载态能否授予本地 WP 的就绪」这一语义，并配
-  PHPUnit 与 tools/local 测试，因此没有在本票里顺手实现。
+主线裁定：本地引擎的加载态可以授予本地 WP 就绪，与生产 worker 同一信任模型。
+据此把本票的手动步骤固化成正式命令，并接进 `just serve` 的收尾。
+
+- `wp linker-commerce publication ack-engineering --engine=<base-url>`：读
+  engine 认证后的 `/resource/version?ready=1`，校验 `source_revision` 等于本站
+  manifest，再走 `PreparationJobs::claim()` → `acknowledge()`。`acknowledge()`
+  原有的防伪造校验全部保留（`loaded_revision`、逐条 `product_revision`、
+  `job_id`/`lease_token`/租约/source 全部要匹配），所以命令只是把**实际加载态**
+  送进既有协议，没有新增信任面。实现见
+  `plugins/linker-commerce/includes/Products/Publication/EngineLoadedState.php`
+  与 `includes/Cli/PublicationCommand.php`。
+- 只支持 `--consumer=engineering`；`--consumer=knowledge` 显式拒绝并说明原因
+  （需要 recipe-aware 索引代）。knowledge 仍是本实例的未解决项。
+- `tools/local` 的 `serve` 在 engine readiness 探测通过、`linker_engine_url`
+  写好之后调用它（`tools/local/src/linker_local/services.py`
+  `_acknowledge_engineering`）。幂等；失败只在输出里报告，不让本来能起的
+  `serve` 失败。
+- 测试：`plugins/linker-commerce/tests/php/Unit/Cli/PublicationCommandAckTest.php`
+  （成功、source 不匹配拒绝、引擎不可达、非法读回形状、knowledge 显式不支持、
+  已 ready 幂等）与 `tools/local/tests/test_engine_acknowledgement.py`
+  （命令参数与 token、serve 的调用顺序与失败降级）。
+
+review 实例上的实测对照（先把 88 条 engineering 回执 revision 全部置为失效，
+复现 pull+repair 后的状态）：
+
+| 检查项 | 修复前 | 命令执行后 |
+| --- | --- | --- |
+| manifest `ready.engineering` | 0 / 88 | **88 / 88** |
+| engine 回执逐条比对 | — | `matching 88`, `stale []`, `missing []`, `unknown []` |
+| ACK | — | `{"accepted":true,"complete":true}` |
+| 再跑一次（幂等） | — | `engineering is already acknowledged for this source: 88 of 88` |
 
 ## 资源报告
 

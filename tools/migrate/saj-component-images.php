@@ -204,7 +204,7 @@
 				throw new RuntimeException( 'Cannot start the guarded transaction.' );
 			}
 			$started = true;
-			$locked  = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE ID IN (%d,%d,%d,%d,%d,%d) ORDER BY ID FOR UPDATE", $ids[0], $ids[1], $ids[2], $ids[3], $ids[4], $ids[5] ) );
+			$locked  = $wpdb->get_col( $wpdb->prepare( 'SELECT ID FROM %i WHERE ID IN (%d,%d,%d,%d,%d,%d) ORDER BY ID FOR UPDATE', $wpdb->posts, $ids[0], $ids[1], $ids[2], $ids[3], $ids[4], $ids[5] ) );
 			if ( count( $locked ) !== count( $ids ) ) {
 				throw new RuntimeException( 'An audited product no longer exists.' );
 			}
