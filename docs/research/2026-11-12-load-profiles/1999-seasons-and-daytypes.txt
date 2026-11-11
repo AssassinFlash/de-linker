@@ -1,0 +1,18 @@
+
+Die zu den Profilen zugehörigen Zeiträume des Jahres wurden nach Analyse der stündlichen
+Summenlastgänge der drei Hauptgruppen H0, L0 und G0 bestimmt. Haupteinflußgröße da-
+bei sind die Lichtverhältnisse am Morgen und vor allem in den Abendstunden.
+Die Profile gelten für folgende Zeiträume:
+
+Winter           01.11. bis 20.03.
+Sommer           15.05. bis 14.09.
+Übergang         21.03. bis 14.05. und 15.09. bis 31.10.
+
+Alle in dem betreffenden Versorgungsgebiet geltenden Feiertage erhalten das Sonntagspro-
+fil; der 24. 12. und 31. 12. erhalten das Samstagsprofil, sofern sie nicht auf einen Sonntag
+fallen. Der durch den zusätzlichen Schalttag verursachte Mehrverbrauch in einem Schaltjahr
+wird in den Profilen nicht gesondert erfaßt, sondern ergibt sich nach der Jahresablesung mit
+der Abrechnung des Gesamtverbrauchs.
+
+Es liegt auf der Hand, daß auch andere zeitliche Zuordnungen möglich sind. So werden von
+einigen Unternehmen, die bereits eigene Lastprofile anwenden, andere Zeiträume angesetzt.

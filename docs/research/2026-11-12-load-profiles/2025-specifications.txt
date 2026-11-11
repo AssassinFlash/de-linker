@@ -1,0 +1,27 @@
+1      Grundlegende Informationen
+Im Jahr 1999 hatte der Verband der Elektrizitätswirtschaft e.V. (VDEW) als Vorgängerverband
+des Bundesverbands der Energie- und Wasserwirtschaft e.V. (BDEW) repräsentative Standard-
+lastprofile für die Strombilanzierung veröffentlicht und der Branche zur Nutzung bereitgestellt.
+Stromverteilernetzbetreiber konnten diese Profile freiwillig für ihre eigene Bilanzierung nut-
+zen. Aufgrund von gesellschaftlichen und energiewirtschaftlichen Veränderungen in den ver-
+gangenen rund 25 Jahren sind die Standardlastprofile aus dem Jahr 1999 zunehmend schlech-
+ter für eine präzise Bilanzierung geeignet. Anzuführen sind beispielsweise geänderte Ladenöff-
+nungszeiten, Prosuming sowie flexible Verbrauchseinrichtungen, die sich auf die Last- und Er-
+zeugungsverläufe auswirken. Vor diesem Hintergrund hat die BTU EVU Beratung GmbH im
+Auftrag des BDEW neue Standardlastprofile auf Basis aktueller Daten aus den Jahren 2018 bis
+2023 erarbeitet. Der BDEW stellt diese neuen Profile der Branche als freiwillige Unterstützung
+zur Nutzung in der Strombilanzierung bereit.
+Jedem Netzbetreiber steht es weiterhin frei, bei der Bilanzierung auf die aktualisierten Profile
+aus dem Jahr 2025, die alten Profile aus dem Jahr 1999, eigene Profile oder eine Mischung der
+verschiedenen Optionen zurückzugreifen. Jeder Netzbetreiber ist angehalten, vor Einsatz der
+neuen Profile deren Wirkung für das jeweilige Netz individuell zu testen.
+Für alle neuen Profile gelten die folgenden Spezifikationen:
+› Alle neuen Profile arbeiten nun mit zwölf Monaten (Saisons). Die bisherigen Profile arbeite-
+  ten lediglich mit drei Saisons.
+› Alle neuen Profile arbeiten mit drei Typtagen: Werktage (WT), Samstage (SA) sowie Sonn-
+  und Feiertage (FT).
+› Es gilt der bundeslandspezifische Feiertagskalender nach Definition des BDEW.
+› Alle Profile sind auf 1 Mio. kWh Jahresverbrauchsmenge normiert.
+
+
+2      Informationen zu den neuen Profilen

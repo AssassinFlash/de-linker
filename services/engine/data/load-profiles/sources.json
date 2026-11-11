@@ -1,0 +1,132 @@
+{
+ "schema": 1,
+ "note": "BDEW/VDEW Standardlastprofile Strom as published coefficient tables. Each edition is a separate file because the two editions differ in normalisation basis and in day-type/season granularity; their values must never be mixed. CoeffTable is the only reader; nothing here is recomputed or smoothed.",
+ "editions": {
+  "1999": {
+   "file": "coefficients-1999-vdew.json",
+   "bytes": 89157,
+   "sha256": "e0e106cadf486dc87107901565025e9605f101f8e70f1f10cf891009034f53ea",
+   "publisher": "VDEW (Verband der Elektrizitätswirtschaft e.V.), Frankfurt am Main, 1999",
+   "authors": "BTU Cottbus, Lehrstuhl Energiewirtschaft (Meier, Fünfgeld, Adam, Schieferdecker)",
+   "series": "Materialien M-32/99",
+   "primary_document": {
+    "url": "https://www.bdew.de/media/documents/1999_Repraesentative-VDEW-Lastprofile.pdf",
+    "bytes": 3021528,
+    "sha256": "b8392ad71eb5efbfc74e243abc92a4caebc0ffbe50d54d1abf256c7385d06ae9"
+   },
+   "coefficient_workbook": {
+    "container_url": "https://www.bdew.de/media/documents/Profile.zip",
+    "container_bytes": 913965,
+    "container_sha256": "8889fcd419d567861ac1a5b9e07960ae8e98215137fca09acf5c57a467d2fa91",
+    "member": "Repräsentative Profile VDEW.xls",
+    "member_bytes": 162816,
+    "member_sha256": "5bdcfd169c298f04cf538178e97e171376b26ed07c444b5c2068c7a52a27299d"
+   },
+   "normalisation_kwh_per_year": 1000,
+   "table_unit": "W",
+   "value_semantics": "quarter_hour_average_power",
+   "seasons": ["Winter", "Sommer", "Übergangszeit"],
+   "daytypes": ["Werktag", "Samstag", "Sonntag"],
+   "season_rule": {
+    "text": "Winter 01.11.-20.03.; Sommer 15.05.-14.09.; Übergang 21.03.-14.05. und 15.09.-31.10.",
+    "source": "primary_document pp. 12 (§ seasons), verbatim in EVIDENCE.md §4"
+   },
+   "daytype_rule": {
+    "text": "All public holidays of the supply area carry the Sunday profile; 24.12. and 31.12. carry the Saturday profile unless they fall on a Sunday.",
+    "source": "primary_document, verbatim in EVIDENCE.md §4"
+   },
+   "profiles": {
+    "H0": "Haushalt",
+    "G0": "Gewerbe allgemein",
+    "G1": "Gewerbe werktags 8-18",
+    "G2": "Gewerbe mit starkem bis überwiegendem Verbrauch in den Abendstunden",
+    "G3": "Gewerbe durchlaufend",
+    "G4": "Laden/Friseur",
+    "G5": "Bäckerei mit Backstube",
+    "G6": "Wochenbetrieb"
+   },
+   "dynamisation": {
+    "applies_to": ["H0"],
+    "polynomial": "-3.92e-10*t^4 + 3.2e-7*t^3 - 7.02e-5*t^2 + 2.1e-3*t + 1.24",
+    "t_definition": "day number in the calendar year, 1 = 1 January, 365 (366 in leap years) = 31 December",
+    "checkpoints": {
+     "F(202)": 0.7847,
+     "F(365)": 1.2572,
+     "F(366)": 1.2597
+    },
+    "sources": [
+     "2025-03-17_AWH_Aktualisierte_SLP_Strom_2025.xlsx sheet Dynamisierung (embedded image), same coefficients",
+     "20000131_Anwendung-repraesentativen_Lastprofile-Step-by-step.pdf p. 19, verbatim formula in EVIDENCE.md §5"
+    ]
+   },
+   "applies_to_engine_year_range": "any Gregorian year; the rule is date-based, not year-specific"
+  },
+  "2025": {
+   "file": "coefficients-2025-bdew.json",
+   "bytes": 241778,
+   "sha256": "b448dddd8209394ada5ba7cc20fb49ae9d8862885fbd393594570ba2ae1b9a8b",
+   "publisher": "BDEW Bundesverband der Energie- und Wasserwirtschaft e.V., Berlin",
+   "authors": "BTU EVU Beratung GmbH, commissioned by BDEW",
+   "primary_document": {
+    "url": "https://www.bdew.de/media/documents/2025-03-17_AWH_Aktualisierte_SLP_Strom_2025_Ver%C3%B6ffentlichung.pdf",
+    "bytes": 208380,
+    "sha256": "724d72f2c3f98e11538b78417eecb08cbfbc3de07c3abf5ed034777d6beecf37"
+   },
+   "coefficient_workbook": {
+    "url": "https://www.bdew.de/media/documents/Kopie_von_Repr%C3%A4sentative_Profile_BDEW_H25_G25_L25_P25_S25_Ver%C3%B6ffentlichung.xlsx",
+    "bytes": 482258,
+    "sha256": "1803d4c612693563a784eb61001e7c58ffd6bd18a6bca3780f774f3c3459b845"
+   },
+   "normalisation_kwh_per_year": 1000000,
+   "table_unit": "kWh",
+   "value_semantics": "quarter_hour_energy",
+   "seasons": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+   "daytypes": ["WT", "SA", "FT"],
+   "daytype_rule": {
+    "text": "Working days (WT), Saturdays (SA), Sundays and public holidays (FT); the state-specific public holiday calendar per BDEW definition applies.",
+    "source": "primary_document §1 'Grundlegende Informationen', verbatim in EVIDENCE.md §3"
+   },
+   "profiles": {
+    "H25": "Haushalt, top-down from 62 distribution-system operators 2018/2019; inherent moderate prosumer influence; dynamisation required",
+    "G25": "Gewerbe allgemein, from about 2,000 iMSys series 2022/2023 of ten DSOs; single profile for all commercial customers; dynamisation NOT applicable",
+    "L25": "Landwirtschaftsbetriebe, derived from the old L0; single profile; dynamisation NOT applicable",
+    "P25": "Kombinationsprofil PV (net household import with PV), 400 iMSys series 2022/2023; dynamisation required",
+    "S25": "Kombinationsprofil PV + Speicher (net household import with PV and battery), 200 iMSys series 2022/2023; dynamisation required"
+   },
+   "dynamisation": {
+    "applies_to": ["H25", "P25", "S25"],
+    "not_applicable_to": ["G25", "L25"],
+    "quote": "Bei Ausrollen der Profile ist die Dynamisierungsfunktion anzuwenden!",
+    "source": "coefficient_workbook, sheet header rows of H25/G25/L25/P25/S25"
+   },
+   "applies_to_engine_year_range": "any Gregorian year; month-based, so no leap-day special case"
+  }
+ },
+ "holidays": {
+  "nationwide_count": 9,
+  "nationwide": [
+   "Neujahr (01-01)",
+   "Karfreitag (Easter Sunday - 2 d)",
+   "Ostermontag (Easter Sunday + 1 d)",
+   "Christi Himmelfahrt (Easter Sunday + 39 d)",
+   "Pfingstmontag (Easter Sunday + 50 d)",
+   "1. Mai",
+   "Tag der Deutschen Einheit (10-03)",
+   "erster Weihnachtstag (12-25)",
+   "zweiter Weihnachtstag (12-26)"
+  ],
+  "legal_basis": "Sonn- und Feiertagsgesetze der Länder, as summarised by the BMI: https://www.bmi.bund.de/DE/themen/verfassung/staatliche-symbole/nationale-feiertage/nationale-feiertage-node.html",
+  "bmi_verbatim": "Durch die Sonn- und Feiertagsgesetze der Länder sind jedoch neun Feiertage bundeseinheitlich gesetzlich geschützt.",
+  "state_holidays": "not shipped: BDEW defines the calendar per Bundesland, and this repository holds no first-hand Land holiday statutes. Callers supply extra dates explicitly; the engine applies exactly the nine nationwide holidays plus whatever the caller declares."
+ },
+ "usage_boundaries": [
+  "A standard load profile is a synthetic shape for metering and balancing, not a measurement of the customer's site. It must not be presented as measured consumption.",
+  "The 1999 and 2025 editions are not interchangeable: different normalisation basis (1,000 kWh/a vs 1 Mio kWh/a), different season granularity (3 vs 12) and different day types.",
+  "P25 and S25 publish net household import with PV (and battery) self-consumption already netted out; BDEW requires that self-consumption to be settled separately on the supplier side. They belong to the net_import boundary, never to gross_load.",
+  "Undynamised, P25 and S25 integrate to 94.9% and 88.7% of the published basis; dynamised they return to about 99.9%. Both readings are measured and recorded, so neither is mistaken for a scaling defect.",
+  "The 2025 profiles were calibrated on 2018-2023 data and BDEW states their balancing quality will decline as PV build-out continues (primary document §2.4).",
+  "Only the nine nationwide holidays are applied. BDEW defines the calendar per Bundesland and this repository holds no first-hand Land holiday statute, so a caller that knows its Bundesland passes the extra dates explicitly.",
+  "Every annual integral this module produces is reported back to the caller, never silently renormalised."
+ ],
+ "fetched": "2026-11-11, from bdew.de over HTTPS; searches routed through Apify (apify/google-search-scraper). No coefficient was transcribed by hand."
+}
