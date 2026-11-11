@@ -151,13 +151,18 @@ def test_installer_refuses_a_label_that_owns_the_retained_definition(
     # Bootstrap succeeds, yet the label keeps the retained .previous file
     # loaded; the edited plist would never be consulted.
     state = {"loaded": False}
+    calls: list[list[str]] = []
 
     def launchctl(
         arguments: list[str], **_kwargs: Any
     ) -> subprocess.CompletedProcess[str]:
+        calls.append(arguments)
         if arguments[1] == "bootstrap":
             assert retained.exists()
             state["loaded"] = True
+            return subprocess.CompletedProcess(arguments, 0, "", "")
+        if arguments[1] == "bootout":
+            state["loaded"] = False
             return subprocess.CompletedProcess(arguments, 0, "", "")
         if not state["loaded"]:
             return subprocess.CompletedProcess(
@@ -173,9 +178,13 @@ def test_installer_refuses_a_label_that_owns_the_retained_definition(
     )
     with pytest.raises(RuntimeError, match="owns_a_different_definition"):
         installer.install_definition(content)
-    # The failed install restores the inspectable original rather than leaving
-    # the new definition on disk for a later bootstrap to pick up.
+    # The failed install restores the original on disk for inspection but never
+    # reloads it. This installer exists because that definition is wrong, and on
+    # this host the wrong one was a release path that exits 78 on every wakeup;
+    # reloading it would re-arm the failure the install was repairing.
     assert target.read_bytes() == prior
+    assert [call[1] for call in calls].count("bootstrap") == 1
+    assert calls[-1][1] == "print"
 
 
 def test_installer_confirms_the_written_definition_is_loaded(

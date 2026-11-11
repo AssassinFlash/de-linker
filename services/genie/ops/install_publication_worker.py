@@ -23,6 +23,15 @@ from urllib.request import getproxies
 LABEL = "com.linker.knowledge-publication"
 
 
+def missing_definition(result: subprocess.CompletedProcess[str]) -> bool:
+    # Actual launchctl print on this Mac returns 113 with this exact diagnostic
+    # for an absent label. Other nonzero responses do not establish absence.
+    return (
+        result.returncode == 113
+        and f'Could not find service "{LABEL}"' in result.stderr
+    )
+
+
 def stable_interpreter(python: Path) -> Path:
     """Reject an interpreter that a release rotation can delete under the plist.
 
@@ -193,23 +202,22 @@ def install_definition(content: bytes) -> None:
             stderr=subprocess.DEVNULL,
             timeout=15,
         )
+        # Restore the disk definition for inspection but never bootstrap it. This
+        # installer replaces a definition precisely because it is wrong, and the
+        # prior one on this host was a release path that exits 78 on every wakeup;
+        # reloading it here would re-arm the failure the install was repairing.
         if prior is None:
             target.unlink(missing_ok=True)
         else:
             target.write_bytes(prior)
-            try:
-                subprocess.run(
-                    ["launchctl", "bootstrap", domain, str(target)],
-                    check=True,
-                    timeout=15,
-                )
-            except BaseException as cleanup_error:
-                # Never silently replace an unconfirmed definition with a lost one.
-                error.add_note(
-                    "prior schedule restore unconfirmed: "
-                    + type(cleanup_error).__name__
-                )
-                raise error from cleanup_error
+        observed = subprocess.run(
+            ["launchctl", "print", domain + "/" + LABEL],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        if not missing_definition(observed):
+            error.add_note("schedule unload unconfirmed; no definition is loaded")
         raise
 
 
