@@ -2,10 +2,11 @@
  *
  * The precedent is the map/workbench dossier: keep the original's hash and
  * pixel size, let the customer pick two points and declare their real length
- * (m_per_pixel = L / d_pixel), declare the drawing type and the pixel-Y
- * relation to the engineering axes, and verify the scale with a second,
+ * (m_per_pixel = L / d_pixel), declare the drawing type and where the page's
+ * down direction points on site, and verify the scale with a second,
  * independent span. A single uniform scale cannot rectify a perspective
- * photograph or a non-uniform scaling, so such a source stays reference-only.
+ * photograph or a non-uniform scaling, so such a source stays reference-only
+ * and may not create engineering geometry.
  * Pixel positions, zoom or camera scale never own an engineering length.
  */
 import type { Source, Vec2 } from "./geometry.ts";

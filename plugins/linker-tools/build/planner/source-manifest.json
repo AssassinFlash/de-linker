@@ -266,7 +266,7 @@
     "src/domain/geometrySelection.ts": "82e230d7eaa64d45a3d03d73c5159568a2704b9009383c301815a1e3ac0fcf7e",
     "src/domain/gridConnection.ts": "8d2551e86db4002a61b2b3935ceca4748e94815c0dbcffe1124f4782297427a8",
     "src/domain/history.ts": "9efecbf6b98fb9d23756de544fcf70a168c0adbb1fd7945bd808d5e3ccde8325",
-    "src/domain/imageCalibration.ts": "6fcd646843326106918cbf4b4577462a71974e9bf3f1f173be5b297d6065ece9",
+    "src/domain/imageCalibration.ts": "5bf6adb8661ad121d91ffec9b9df37902f942cd4844fed3c9ca5a58ae27d3452",
     "src/domain/installation.ts": "6832369b01dc735e22bacf27780b160f23fdaf5ca909e4b882c3bed226acdd37",
     "src/domain/installationConductorComparison.ts": "b15387e9e012b95121a91e924b67dffedec34ccd99b1939831db0bc99b85c28e",
     "src/domain/installationElectrical.ts": "620e8a34c50ad5ed6b27e4d25e673796ecdf0f75237b5451616bfd8c0e1b14fe",
