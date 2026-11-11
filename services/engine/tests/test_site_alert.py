@@ -9,6 +9,7 @@ same rule the digest's health block follows.
 
 from __future__ import annotations
 
+import base64
 import datetime as dt
 import importlib.util
 import json
@@ -491,7 +492,11 @@ def test_delivery_never_prints_the_credential(
 
     assert captured.out == ""
     assert captured.err == ""
-    for marker in ("AUTH", "ZkFrzS1wYXNzd29yZA==", "fake-password"):
+    # The password and its base64 form (what AUTH actually carries) must both
+    # be absent. Built here rather than written out, so no scanner has to treat
+    # a test literal as a credential.
+    encoded = base64.b64encode(b"fake-password").decode()
+    for marker in ("AUTH", encoded, "fake-password"):
         assert marker not in captured.out + captured.err
 
 
