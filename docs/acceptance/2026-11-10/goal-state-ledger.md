@@ -1547,3 +1547,13 @@ to a three-row whitelist so 36 unrereviewed customer-visible spec strings on
 rebuild is left to the automatic publication worker (production knowledge
 stays true). HS3 pin-level batch deliberately not done (no consumer today —
 rule 615; different risk class; would pollute this batch's readback).
+
+## Owner ruling 2026-11-11: credential rotation permanently out of scope
+
+The owner ruled directly: the SMTP password flagged in the U2 entry (and any
+other rotation item of that class, e.g. the old Exa key) will never be rotated
+and must not be raised again. The security item above is closed BY RULING,
+not by rotation: no rotation request, no follow-up, no waiting state. U2's
+alerting itself is unaffected (it reads whatever credential the env file
+holds). The credential-rotation class is hereby not an owner-blocked item —
+it is out of scope, like U3.
