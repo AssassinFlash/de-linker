@@ -1842,3 +1842,19 @@ planner-maintenance's first unattended window, 2026-11-12 02:00-03:00 UTC.
 Resources: all worktrees and temp files reclaimed through the day (only the
 main tree remains), disk 1.2 TiB free, no stray processes; production VPS
 healthy with the alert timer heartbeating.
+
+## DSO evidence line: measured, zero real usage, dormant by evidence (2026-11-12 night)
+
+Before dispatching any DSO-evidence work, the main line measured the actual
+production usage that would prioritise it (the same method that chose AT and
+SE): every JSON blob in the production CAS was scanned — 5,549 blobs across
+all shards, 38 input-shaped, 178 revisions. NON-NULL DSO DECLARATIONS: ZERO.
+No customer has ever filled the DSO field on the grid-connection form (the
+country inputs are likewise empty — the rule form shipped days ago and the
+account base has not used it yet). With no evidence-backed target there is
+nothing to build DSO packages FOR today: the national-level packages cover
+everything customers actually use. Disposition: the DSO surface stays
+dormant, to be revisited on the first real declaration (the field's first
+non-null value is the trigger; the daily digest or a later probe can surface
+it). This closes the last open research surface with a measurement, not a
+guess — consistent with the goal's no-owner-waiting and evidence-first rules.
