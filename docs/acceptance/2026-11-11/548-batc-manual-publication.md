@@ -10,9 +10,9 @@
 | --- | --- | --- |
 | 1 | 手册托管与版本 | **已存在**：附件 8508，review 与生产 uploads 同字节（5,440,295 B，sha256 `c29cbf25…7fcb7`），与官方直链一致 |
 | 2 | 产品关联 | 生产 1954/1955 均已关联；**review 快照缺 1955 那一条**，本批补齐并对齐生产 |
-| 3 | 定量规格行 | 33 → **34** 项（新增 `certification`），澳规限定改为可见 `qualifier`，见 §3 |
+| 3 | 定量规格行 | 33 → **34** 项（新增 `certification`），澳规限定改为 `qualifier`；**这些行当前不进 PDP 表格**，见 §3.2 |
 | 4 | 澳规脚注口径 | 额定电流/功率带 EN/DE `qualifier`；最大值行不带限定，两者分列不混称 |
-| 5 | 消费者读回 | 生产 manifest / engineering-feed / 产品页链接 / 文件 200 全部读回，见 §5 |
+| 5 | 消费者读回 | 生产 manifest / engineering-feed / 产品页**文档链接** / 文件 200 全部读回；规格行本身不在 PDP，见 §3.2、§5 |
 | 6 | HS3 针脚批 | **未做**，判断依据见 §6 |
 
 ## 1. 原件身份（复核，非转述）
@@ -105,6 +105,24 @@ IEC62040/N140/EU 2023/1542/UN38.3
 原先这两行的限定只写在 `note` 字段里，而 `note` 不被任何渲染路径读取——等于限定对客户不存在。
 本批改为 `qualifier`，并扩展 `Materials::spec_text()`：原来只对 `temp` 一个 key 拼 qualifier，
 现在按显式白名单 `QUALIFIED_ROWS`（`temp` + 本批三行）生效。
+
+### 3.2 这些行目前到不到客户眼前（必须点明）
+
+registry 的 `specifications` 只经 `Materials::specs()` 输出，而 `specs()` 的两个消费者都只要 4 行：
+
+- `Materials::key_stats($product, 4)`（PDP 关键数据面板）与 `Materials::card_facts($product, 4)`（目录卡）。
+- 电池类 key 顺序是 `usable_kwh, nom_voltage, chemistry, charge_a, discharge_a, ip, weight`，
+  因此实际显示的是**前四项**。
+
+产品页「Technical data」那一大张表读的是 `ProductView::spec_groups()`，即 `linker_specs` 或
+legacy ACF 的 `spec_groups`（1954 实测：2 组共 12 行），**不读 registry**。实测生产 EN 页面
+（`/product/goodwe-gw112-6-bat-ac-g10/`）正文里没有 "Rated charge discharge"、
+也没有 "Certification" 字符串。
+
+结论，如实记录：本批的 `certification` 与两条额定值**当前不在客户可见的产品页上**。
+它们的价值是数据正确（带页码）、限定不再是死数据、以及 PDP 表将来改读 registry 时口径已经就位。
+若要让客户现在就看见，需要改的是 PDP 那张 legacy 表（`_tv_legacy_acf_json.spec_groups`），
+属于客户可见正文改动，需另按文案评审执行——本批不做，登记为剩余项。
 
 **为什么是白名单而不是全 key。** registry 里共 38 行带 `qualifier`、覆盖 16 个 key。若改成"任意 key
 都拼"，会同时改动**另外 24 个产品、36 行**的客户可见规格文案（最长 +228 字符），这些限定从未按
