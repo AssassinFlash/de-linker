@@ -189,6 +189,7 @@ phpstan (level 8)           No errors
 commerce-terms              hits=28 baselined=28 findings=0 → clean
 german-copy / i18n-coverage  clean（gap=0）
 internal-home-urls          clean
+CI（PR #1117, run 42994546884）  completed success：15 success + 5 skipped + 0 失败
 ```
 
 ## 8. 资源
