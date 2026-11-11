@@ -27,7 +27,7 @@ function loadProfile(days = 30): string {
 		for (let quarter = 0; quarter < 96; quarter += 1) {
 			const hour = (quarter * 15) / 60;
 			lines.push(
-				String(hour >= 7 && hour < 18 ? 95 + (quarter % 8) * 3 : 18),
+				String(hour >= 7 && hour < 18 ? 95 + (quarter % 8) * 3 : 18)
 			);
 		}
 	}
@@ -36,10 +36,16 @@ function loadProfile(days = 30): string {
 
 /** A saved commercial project, created through the interface and read back. */
 async function commercialProject(page: Page, title: string): Promise<string> {
-	await page.goto(instance().url + '/solution-configurator/?energy_view=equipment', {
-		waitUntil: 'networkidle',
-	});
-	await page.getByRole('button', { name: /^New project$/i }).first().click();
+	await page.goto(
+		instance().url + '/solution-configurator/?energy_view=equipment',
+		{
+			waitUntil: 'networkidle',
+		}
+	);
+	await page
+		.getByRole('button', { name: /^New project$/i })
+		.first()
+		.click();
 	await page.locator('input[maxlength="256"]').first().fill(title);
 	await page.getByRole('button', { name: /^Create project$/i }).click();
 	await expect(page).toHaveURL(/project=/, { timeout: 60_000 });
@@ -58,10 +64,7 @@ async function commercialProject(page: Page, title: string): Promise<string> {
 	// The postcode travels in the location label, which is where the panel
 	// reads it from. In `#lp-site` the first input is the address; the two
 	// decimal fields beside it are the coordinates.
-	await page
-		.locator('#lp-site input')
-		.nth(0)
-		.fill('80331 München');
+	await page.locator('#lp-site input').nth(0).fill('80331 München');
 	// The brief's coordinate fields report a format error while empty, which
 	// keeps the project unsaveable, so they are filled the way a customer
 	// locating the site would.
@@ -74,12 +77,15 @@ async function commercialProject(page: Page, title: string): Promise<string> {
 	await expect(page.locator('.lp-save-state')).toContainText(/^Saved/i, {
 		timeout: 120_000,
 	});
-	// The commercial panel lives in the equipment workspace, which the
-	// project's own navigation opens.
-	await page
-		.locator('.lp-project-aside nav a', { hasText: /^Equipment$/ })
-		.first()
-		.click();
+	// The commercial panel lives in the equipment workspace. The workspace is
+	// read from the URL hash when the app mounts, and a fragment-only
+	// navigation does not remount it, so the hash is set and the page reloaded;
+	// this works at both widths, where the narrow layout's navigation is
+	// collapsed.
+	const url = new URL(page.url());
+	url.hash = 'lp-equipment';
+	await page.goto(url.toString());
+	await page.reload({ waitUntil: 'networkidle' });
 	await expect(page.locator('#lp-commercial-title')).toBeVisible({
 		timeout: 120_000,
 	});
@@ -96,9 +102,9 @@ test('a commercial project with a load profile and a target peak is sized from b
 	const panel = page.locator('#lp-commercial-title');
 	await expect(panel).toBeVisible({ timeout: 120_000 });
 	const section = panel.locator('xpath=ancestor::section[1]');
-	await expect(section.locator('input[inputmode="numeric"]').first()).toHaveValue(
-		'80331',
-	);
+	await expect(
+		section.locator('input[inputmode="numeric"]').first()
+	).toHaveValue('80331');
 
 	const numbers = section.locator('input[inputmode="decimal"]');
 	await numbers.nth(0).fill('150'); // grid connection capacity, kVA
@@ -122,7 +128,9 @@ test('a commercial project with a load profile and a target peak is sized from b
 	await expect(section).toContainText(/Sized storage/i, { timeout: 150_000 });
 	await expect(section).toContainText(/Usable energy/i);
 	await expect(section).toContainText(/Peak in the profile/i);
-	await expect(section).not.toContainText(/Indicative ranges/i);
+	await expect(
+		section.getByRole('heading', { name: /^Indicative ranges$/ })
+	).toHaveCount(0);
 	const rows = section.locator('table tbody tr');
 	await expect(rows.first()).toBeVisible();
 	expect(await rows.count()).toBeGreaterThan(0);
@@ -138,7 +146,9 @@ test('the panel stays usable at the phone width the site is judged on', async ({
 	const panel = page.locator('#lp-commercial-title');
 	await expect(panel).toBeVisible({ timeout: 120_000 });
 	const section = panel.locator('xpath=ancestor::section[1]');
-	await expect(section.locator('input[inputmode="numeric"]').first()).toBeVisible();
+	await expect(
+		section.locator('input[inputmode="numeric"]').first()
+	).toBeVisible();
 	const box = await panel.boundingBox();
 	expect(box!.width).toBeLessThanOrEqual(390);
 

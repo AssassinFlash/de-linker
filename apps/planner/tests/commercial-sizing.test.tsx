@@ -343,3 +343,104 @@ test("a sized answer without the engine's systems fields is not presented as a d
 		0,
 	);
 });
+
+test("the panel sends nothing until the inputs the engine requires are there", async () => {
+	const body = setupDom();
+	globalThis.indexedDB = new IDBFactory();
+	let requests = 0;
+	const client = new PlannerClient({
+		baseUrl: "https://fixture.invalid/wp-json/linker/v1/planner",
+		nonceUrl:
+			"https://fixture.invalid/wp-admin/admin-ajax.php?action=rest-nonce",
+		origin: "https://fixture.invalid",
+		fetch: async (input) => {
+			const url = String(input instanceof URL ? input.href : input);
+			if (url.includes("action=rest-nonce"))
+				return new Response("abcdefghij", { status: 200 });
+			if (url.endsWith("/bootstrap"))
+				return new Response(JSON.stringify(session), {
+					status: 200,
+					headers: { "Content-Type": "application/json" },
+				});
+			requests += 1;
+			return new Response(JSON.stringify(sized), {
+				status: 200,
+				headers: { "Content-Type": "application/json" },
+			});
+		},
+	});
+	await client.bootstrap();
+	// A brief with no postcode and no annual figure: the engine cannot size
+	// anything from it, so the panel must say what is missing instead of
+	// sending a request that a client-side check would turn into a generic
+	// failure (measured on the review stack before this guard existed).
+	const bare = beginDraft({
+		id: projectId,
+		title: "Commercial sizing",
+		revision: 1,
+		updated_at: "2026-11-11T00:00:00Z",
+		inputs: { brief: { ...emptyBrief(), project_use: "commercial" } },
+	});
+	const root = await mount(
+		body.element,
+		<CommercialSizing
+			draft={bare}
+			client={client}
+			session={session}
+			locale="en-US"
+			active
+			disabled={false}
+			onError={() => {}}
+		/>,
+	);
+	try {
+		const element = body.element;
+		const submit = element.querySelector('button[type="submit"]');
+		assert.ok(submit, "the panel offers its calculate action");
+		assert.equal(submit!.disabled, true, "an incomplete request is not sent");
+		const status = Array.from(element.querySelectorAll('[role="status"]'))
+			.map((node) => node.textContent ?? "")
+			.join(" ");
+		assert.match(status, /Still needed/);
+		assert.match(status, /postcode/);
+		assert.match(status, /annual consumption/);
+
+		// A profile alone is not enough either: the target peak is what turns
+		// an indicative cap list into a sized system.
+		const numbers = Array.from(
+			element.querySelectorAll('input[inputmode="decimal"]'),
+		);
+		await enter(numbers[0], "150"); // grid capacity
+		await enter(numbers[1], "380000"); // annual consumption
+		await enter(element.querySelector('input[inputmode="numeric"]'), "80331");
+		const picker = element.querySelector('input[type="file"]');
+		Object.defineProperty(picker!, "files", {
+			value: [file(profile())],
+			configurable: true,
+		});
+		await act(async () => {
+			picker!.dispatchEvent(new Event("change", { bubbles: true }));
+		});
+		await until(() => element.textContent?.includes("intervals read"));
+		const statuses = Array.from(
+			element.querySelectorAll('[role="status"]'),
+		).map((node) => node.textContent ?? "");
+		assert.ok(
+			statuses.some((text) => /target peak/.test(text)),
+			"the missing target peak is named: " + JSON.stringify(statuses),
+		);
+		assert.equal(
+			element.querySelector('button[type="submit"]')!.disabled,
+			true,
+			"a profile without the target peak is not a sizing request",
+		);
+		assert.equal(
+			requests,
+			0,
+			"nothing was sent before the inputs were complete",
+		);
+	} finally {
+		await act(async () => root.unmount());
+		await body.dispose({ unmount: async () => {} });
+	}
+});
