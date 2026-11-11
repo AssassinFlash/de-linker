@@ -46,7 +46,7 @@ geometry.sources[].calibration = {            # 可选；缺失＝未记录，�
   image: { media_type, pixel_width, pixel_height }
   control_points: { first: [x,y], second: [x,y] }        # 图像像素
   known_length_m, m_per_pixel
-  rotation_deg                                            # 图像右缘 → 屋面 U 方向
+  downslope_bearing_deg                                   # 图面"向下"方向的项目罗盘方位
   check: { points, declared_length_m, residual_ratio, status } | null
   check_tolerance_ratio                                   # 用户声明，不是测绘规则
   applied_pitch_deg                                       # 仅水平总平有；记录一次余弦换算
@@ -84,6 +84,15 @@ geometry.sources[].calibration = {            # 可选；缺失＝未记录，�
 2. **390 宽度点击偏移**：绝对坐标 `page.mouse.click` 在窄屏与德语长文案下落到别处，标记不登记。改为 Playwright 元素相对 `click({position})` + `scrollIntoViewIfNeeded`，letterbox 换算保留。
 
 两处都不是产品代码的回归；它们是「实走才暴露」的布局与本地化耦合。第二个在修之前，德语 1440 也会失败（`Prüfstrecke (0 von 2)`），说明它不是窄屏特例。
+
+## 独立复查发现并已修复的两个集成缺陷（第二轮）
+
+e2e 与 DOM 测试只断言「记录被写入」，看不出下面两点；独立对照 `548-design-geometry.md` 的坐标系后修正：
+
+1. **屋面坐标系反了**：第一版让 V 轴随坡度上升，而本项目每个屋面（`roofPlane` 的注释与 `548-design-geometry.md`）都是 **V 向下坡**、上法线水平分量＝下坡方位。结果标定出的屋面与实测屋面坐标系不一致。改为：图上「向下」方向就是下坡方向，用户声明的是 **downslope_bearing_deg**（项目罗盘方位），图右＝横坡；标定屋面直接走既有 `roofPlane` 构造，不自造第二套角度。水平总平只把沿坡分量按 pitch 除一次余弦，**横坡长度不缩放**（总平图上它就是真长）。
+2. **标定屋面无法用普通屋面表单编辑**：`RoofForm.measuredAngles` 只认 `user_measurement` 且 `reference_sha256 === null` 的来源，凭标定创建的 `user_drawing` 屋面打不开角度、轮廓与洞口编辑。改为同时接受带 `calibration` 的 `user_drawing` 来源；平屋面（V 恰为水平）保持既有行为。
+
+两处都有回归覆盖：`a horizontal plan never scales the cross-slope length`、`the declared bearing places the drawing, and the face keeps its frame`、`a calibrated face is a frame the ordinary roof form can edit`，以及既有 `correcting a measured roof pitch keeps its array, holes and source`（平屋面路径）。修后 e2e 四组合再次 4/4 通过。
 
 ## 权限与文案
 
