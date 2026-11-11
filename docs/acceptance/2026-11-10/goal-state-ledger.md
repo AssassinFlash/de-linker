@@ -1801,4 +1801,3 @@ as a literal until `943942558` made the test build it at runtime. The
 allowlist entry is bound to that one assertion shape and a live-shaped key in
 the same shape still fails the scan; the workflow now also prints rule, file,
 line and commit on failure instead of a bare count.
-
