@@ -563,7 +563,10 @@ test("the geometric PV workspace uses all retained intervals, adopts frozen AC e
 	await until(
 		() => !button("Calculate saved PV reference with roof shading").disabled,
 	);
-	assert.match(document.body.textContent, /service checks the saved roof/);
+	assert.match(
+		document.body.textContent,
+		/The service prices the rays your saved roof actually declares/,
+	);
 	assert.match(
 		document.body.textContent,
 		/Conditions for larger-roof calculations/,
@@ -588,7 +591,7 @@ test("the geometric PV workspace uses all retained intervals, adopts frozen AC e
 	assert.match(document.body.textContent, /Larger pitched-roof calculations/);
 	assert.match(
 		document.body.textContent,
-		/One four-corner roof plane up to 60°/,
+		/The service prices the rays your saved roof actually declares/,
 	);
 	await act(async () =>
 		setRuntime({

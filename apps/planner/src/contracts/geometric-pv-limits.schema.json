@@ -7,19 +7,31 @@
     }
   },
   "additionalProperties": false,
-  "description": "Deployment work budgets, not accuracy claims or manufacturer limits.",
+  "description": "Deployment work budgets, not accuracy claims or manufacturer limits.\n\nThe ceilings keep an operator setting inside the measured host envelope;\nthey are not defaults and they do not describe a physical tolerance.",
   "properties": {
     "max_module_steps": {
-      "$ref": "#/$defs/PositiveInteger"
+      "exclusiveMinimum": 0,
+      "maximum": 841000,
+      "title": "Max Module Steps",
+      "type": "integer"
     },
     "max_samples": {
-      "$ref": "#/$defs/PositiveInteger"
+      "exclusiveMinimum": 0,
+      "maximum": 4300000,
+      "title": "Max Samples",
+      "type": "integer"
     },
     "max_ray_face_checks": {
-      "$ref": "#/$defs/PositiveInteger"
+      "exclusiveMinimum": 0,
+      "maximum": 20000000,
+      "title": "Max Ray Face Checks",
+      "type": "integer"
     },
     "max_bounds_checks": {
-      "$ref": "#/$defs/PositiveInteger"
+      "exclusiveMinimum": 0,
+      "maximum": 100000000,
+      "title": "Max Bounds Checks",
+      "type": "integer"
     },
     "index_leaf_size": {
       "$ref": "#/$defs/PositiveInteger"

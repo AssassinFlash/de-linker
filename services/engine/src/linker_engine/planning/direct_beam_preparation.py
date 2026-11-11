@@ -21,7 +21,7 @@ from .direct_beam_inputs import (
     DirectBeamSampling,
     FrozenWeatherSelection,
 )
-from .direct_beam_visibility import VisibilityBudget, visibility_row
+from .direct_beam_visibility import VisibilityBudget, bounds_allowance, visibility_row
 from .errors import InvalidInput
 from .geometry import read_geometry, sin_cos_degrees
 from .product_sources import ProductSources
@@ -100,7 +100,9 @@ def prepare_direct_beam(
     position = sun(
         selected
     )  # Existing pinned SPA uses irradiance_at_utc, not interval labels.
-    budget = VisibilityBudget(limits)
+    budget = VisibilityBudget(
+        limits, bounds_allowance(limits, samples, len(scene.opaque))
+    )
     rows: list[Json] = []
     for ordinal, (index, point) in enumerate(
         zip(selection.row_indices, selected.points, strict=True)

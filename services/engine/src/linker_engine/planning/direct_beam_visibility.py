@@ -32,12 +32,50 @@ class VisibilityLimits(Protocol):
     def max_bounds_checks(self) -> int: ...
 
 
+# One BVH query can reach every declared opaque object at most once through the
+# pruned tree, so a scene-bound allowance of one check per declared object per
+# sample (plus a constant for the tree nodes above the leaves) covers the ray
+# work this sampler can spend. Measured worst case is well below that: at most
+# 0.31 checks per declared object per sample (60 modules, six walls) and 0.26 at
+# the largest roof measured (96 modules, twelve walls) over the complete
+# retained year
+# (docs/acceptance/2026-11-11/direct-beam-production-admission.md).
+BOUNDS_CHECKS_PER_DECLARED_OBJECT = 1
+BOUNDS_CHECKS_UNCONDITIONAL = 8
+
+
+def bounds_allowance(
+    limits: VisibilityLimits, sample_upper_bound: int, declared_objects: int
+) -> int:
+    """Scene-bound BVH allowance, capped by the operator's absolute ceiling.
+
+    A flat ceiling priced a scene without occluders: the same sample count costs
+    one to two orders of magnitude more bounds checks once extrusions sit between
+    the receivers and the sun, so a legal large roof was refused rather than
+    slowed. Pricing the declared scene instead keeps that work inside its own
+    envelope while the configured limit still bounds any single task.
+    """
+    structural = sample_upper_bound * (declared_objects + BOUNDS_CHECKS_UNCONDITIONAL)
+    return min(limits.max_bounds_checks, structural)
+
+
 @dataclass
 class VisibilityBudget:
     limits: VisibilityLimits
+    # Absent means "use the configured ceiling directly", the behaviour of a
+    # caller that has not built a scene yet.
+    bounds_limit: int | None = None
     samples: int = 0
     ray_face_checks: int = 0
     bounds_checks: int = 0
+
+    @property
+    def max_bounds_checks(self) -> int:
+        return (
+            self.limits.max_bounds_checks
+            if self.bounds_limit is None
+            else self.bounds_limit
+        )
 
     def sample(self) -> None:
         if self.samples >= self.limits.max_samples:
@@ -56,7 +94,7 @@ class VisibilityBudget:
         self.ray_face_checks += 1
 
     def bounds(self) -> None:
-        if self.bounds_checks >= self.limits.max_bounds_checks:
+        if self.bounds_checks >= self.max_bounds_checks:
             raise InvalidInput("direct-beam bounds resource budget exhausted")
         self.bounds_checks += 1
 
@@ -208,8 +246,16 @@ def geometric_visibility(
     limits: DirectBeamLimits,
 ) -> Object:
     """One declared sun direction; useful independently of any weather/model call."""
-    budget = VisibilityBudget(limits)
     index = DirectBeamIndex.from_scene(scene, leaf_size=limits.index_leaf_size)
+    budget = VisibilityBudget(
+        limits,
+        bounds_allowance(
+            limits,
+            (sampling.coarse_cells_per_edge**2 + sampling.fine_cells_per_edge**2)
+            * len(scene.receivers),
+            len(scene.opaque),
+        ),
+    )
     result = visibility_row(scene, direction, sampling, budget, index=index)
     return {
         **result,

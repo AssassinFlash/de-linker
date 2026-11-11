@@ -77,7 +77,8 @@ from .test_pvgis_tmy import capture, interpretation, raw
 from .test_pvgis_tmy import request as weather_request
 
 
-def test_clear_flat_roof_admission_rejects_outside_measured_scope() -> None:
+def test_work_envelope_prices_the_declared_scene_not_its_roof_shape() -> None:
+    """Multi-array and occluded roofs are the customer case, not an exception."""
     from copy import deepcopy
 
     from linker_engine.planning.errors import GeometricPvExpandedScopeRequired
@@ -102,37 +103,46 @@ def test_clear_flat_roof_admission_rejects_outside_measured_scope() -> None:
     par["converters"][0]["input_assumption"] = (
         "one_string_per_tracker_independent_mpp_sum"
     )
-    request = GeometricPvInputs.read(
-        {
-            "schema_version": 1,
-            "model": MODEL_V3,
-            "weather_asset_id": "a" * 32,
-            "sampling": {"coarse_cells_per_edge": 1, "fine_cells_per_edge": 2},
-            "diffuse_policy": POLICY_V2,
-            "thermal_policy": "sapm_from_module_mean_poa_v1",
-            "electrical_policy": ELECTRICAL_V3,
-            "parameters": par,
-        }
-    )
-    module_ids: list[Json] = [
-        pose.id for pose in panel_poses(read_geometry(geo)) if pose.included
-    ]
-    wiring: Object = {
-        "schema_version": 1,
-        "inverter_product_id": 1961,
-        "minimum_ambient_c": None,
-        "temperature_source": None,
-        "strings": [
+
+    def request_for(converters: int = 1) -> GeometricPvInputs:
+        return GeometricPvInputs.read(
             {
-                "id": f"s{i + 1}",
-                "mppt": i + 1,
-                "input": 1,
-                "module_ids": module_ids[i * 16 : (i + 1) * 16],
+                "schema_version": 1,
+                "model": MODEL_V3,
+                "weather_asset_id": "a" * 32,
+                "sampling": {"coarse_cells_per_edge": 1, "fine_cells_per_edge": 2},
+                "diffuse_policy": POLICY_V2,
+                "thermal_policy": "sapm_from_module_mean_poa_v1",
+                "electrical_policy": ELECTRICAL_V3,
+                "parameters": {**par, "converters": par["converters"] * converters},
             }
-            for i in range(6)
-        ],
-    }
-    inputs: dict[str, Any] = {"geometry": geo, "pv_string_plan": wiring}
+        )
+
+    def wiring_for(candidate: dict[str, Any]) -> Object:
+        geometry_value = candidate.get("geometry", candidate)
+        module_ids: list[Json] = [
+            pose.id
+            for pose in panel_poses(read_geometry(geometry_value))
+            if pose.included
+        ]
+        return {
+            "schema_version": 1,
+            "inverter_product_id": 1961,
+            "minimum_ambient_c": None,
+            "temperature_source": None,
+            "strings": [
+                {
+                    "id": f"s{index // 16 + 1}",
+                    "mppt": index // 16 + 1,
+                    "input": 1,
+                    "module_ids": module_ids[index : index + 16],
+                }
+                for index in range(0, len(module_ids), 16)
+            ],
+        }
+
+    request = request_for()
+    inputs: dict[str, Any] = {"geometry": geo, "pv_string_plan": wiring_for(geo)}
     ordinary = GeometricPvLimits(
         max_module_steps=220000,
         max_samples=2000000,
@@ -148,23 +158,36 @@ def test_clear_flat_roof_admission_rejects_outside_measured_scope() -> None:
         max_weather_rows=8760,
     )
     weather = parse()
+    # 96 modules over a complete year is 840,960 steps: above the ordinary
+    # envelope, inside the isolated one.
     assert (
         admitted_limits(inputs, weather, request, ordinary, expanded).max_module_steps
         == 841000
     )
-    mutations = []
-    for field, value in (("mount_tilt_deg", 10), ("columns", 13), ("row_gap_m", 0.1)):
-        changed = deepcopy(inputs)
-        changed["geometry"]["arrays"][0][field] = value
-        mutations.append(changed)
-    changed = deepcopy(inputs)
-    changed["equipment_plant"] = {"schema_version": 1}
-    mutations.append(changed)
-    changed = deepcopy(inputs)
-    changed["pv_string_plan"]["strings"][0]["module_ids"] = [f"p{i}" for i in range(17)]
-    mutations.append(changed)
-    changed = deepcopy(inputs)
-    changed["geometry"]["obstacles"] = [
+    # The measured customer shapes. Each was refused while a roof had to be a
+    # single clear array; none of them costs more than the declared work.
+    customer_shapes: list[dict[str, Any]] = []
+    across_arrays = deepcopy(inputs)
+    across_arrays["geometry"]["arrays"] = [
+        {
+            **geo["arrays"][0],
+            "id": "west",
+            "origin_uv": [1, 1],
+            "rows": 4,
+            "columns": 12,
+        },
+        {
+            **geo["arrays"][0],
+            "id": "east",
+            "origin_uv": [16, 1],
+            "rows": 4,
+            "columns": 12,
+        },
+    ]
+    across_arrays["pv_string_plan"] = wiring_for(across_arrays)
+    customer_shapes.append(across_arrays)
+    occluded = deepcopy(inputs)
+    occluded["geometry"]["obstacles"] = [
         {
             "id": "parapet",
             "name": "Parapet",
@@ -175,20 +198,79 @@ def test_clear_flat_roof_admission_rejects_outside_measured_scope() -> None:
             "height_m": 4,
         }
     ]
-    mutations.append(changed)
-    changed = deepcopy(inputs)
-    changed["geometry"]["roofs"][0]["holes_uv"] = [[[1, 1], [2, 1], [2, 2], [1, 2]]]
-    mutations.append(changed)
-    for changed in mutations:
+    customer_shapes.append(occluded)
+    keepout = deepcopy(inputs)
+    keepout["geometry"]["keepouts"] = [
+        {
+            "id": "skylight",
+            "name": "Skylight",
+            "source_id": "survey",
+            "roof_id": "roof",
+            "footprint_uv": [[6, 6], [7, 6], [7, 7], [6, 7]],
+            "reason": "Roof opening kept module-free",
+        }
+    ]
+    customer_shapes.append(keepout)
+    tight_gap = deepcopy(inputs)
+    tight_gap["geometry"]["arrays"][0]["row_gap_m"] = 0.1
+    customer_shapes.append(tight_gap)
+    for shape in customer_shapes:
+        assert (
+            admitted_limits(
+                shape, weather, request, ordinary, expanded
+            ).max_module_steps
+            == 841000
+        ), shape["geometry"]["arrays"]
+    # The series scenario keeps its own contract: one inverter, one string per
+    # tracker, at most sixteen modules per string.
+    plant = deepcopy(inputs)
+    plant["equipment_plant"] = {"schema_version": 1}
+    rejections = [(plant, request)]
+    long_string = deepcopy(inputs)
+    long_string["pv_string_plan"]["strings"] = [
+        {
+            "id": "s1",
+            "mppt": 1,
+            "input": 1,
+            "module_ids": [
+                pose.id for pose in panel_poses(read_geometry(geo)) if pose.included
+            ][:17],
+        }
+    ]
+    rejections.append((long_string, request))
+    many_arrays = deepcopy(inputs)
+    many_arrays["geometry"]["arrays"] = [
+        {
+            **geo["arrays"][0],
+            "id": f"a{index}",
+            "origin_uv": [1 + index * 5, 1],
+            "rows": 8,
+            "columns": 12,
+        }
+        for index in range(2)
+    ]
+    many_arrays["pv_string_plan"] = wiring_for(many_arrays)
+    rejections.append((many_arrays, request))
+    for shape, candidate in rejections:
         with pytest.raises(GeometricPvExpandedScopeRequired):
-            admitted_limits(changed, weather, request, ordinary, expanded)
-    ordinary_wide = ordinary.model_copy(
-        update={"max_module_steps": 841000, "max_samples": 4300000}
-    )
+            admitted_limits(shape, weather, candidate, ordinary, expanded)
+    # The ordinary envelope still answers whenever the saved work fits it.
+    small = deepcopy(inputs)
+    small["geometry"]["arrays"][0].update(rows=1, columns=6)
+    small["pv_string_plan"] = wiring_for(small)
     assert (
-        admitted_limits(mutations[0], weather, request, ordinary_wide, expanded)
-        == ordinary_wide
+        admitted_limits(
+            small,
+            weather,
+            request,
+            ordinary.model_copy(
+                update={"max_module_steps": 60000, "max_samples": 3000000}
+            ),
+            expanded,
+        ).max_module_steps
+        == 60000
     )
+    # Module planes, not roof count, decide which class samples them.
     pitched = deepcopy(inputs)
     pitched["geometry"]["roofs"][0]["v_axis_enu"] = [
         0,
@@ -201,26 +283,31 @@ def test_clear_flat_roof_admission_rejects_outside_measured_scope() -> None:
         ).max_module_steps
         == 841000
     )
-    rejected = []
-    changed = deepcopy(pitched)
-    changed["geometry"]["roofs"][0]["v_axis_enu"] = [
+    # A tilted mounting frame on a flat roof is a pitched-class surface, so the
+    # flat envelope does not price it and the pitched envelope does.
+    raised = deepcopy(inputs)
+    raised["geometry"]["arrays"][0]["mount_tilt_deg"] = 10
+    with pytest.raises(GeometricPvExpandedScopeRequired):
+        admitted_limits(raised, weather, request, ordinary, expanded)
+    assert (
+        admitted_limits(
+            raised, weather, request, ordinary, expanded, pitched=True
+        ).max_module_steps
+        == 841000
+    )
+    for changed in (deepcopy(inputs), deepcopy(occluded)):
+        with pytest.raises(GeometricPvExpandedScopeRequired):
+            admitted_limits(changed, weather, request, ordinary, expanded, pitched=True)
+    near_vertical = deepcopy(pitched)
+    near_vertical["geometry"]["roofs"][0]["v_axis_enu"] = [
         0,
         math.cos(math.radians(70)),
         math.sin(math.radians(70)),
     ]
-    rejected.append(changed)
-    changed = deepcopy(pitched)
-    changed["geometry"]["arrays"][0]["mount_tilt_deg"] = 10
-    rejected.append(changed)
-    changed = deepcopy(pitched)
-    changed["geometry"]["obstacles"] = mutations[5]["geometry"]["obstacles"]
-    rejected.append(changed)
-    changed = deepcopy(pitched)
-    changed["geometry"]["roofs"][0]["holes_uv"] = [[[1, 1], [2, 1], [2, 2], [1, 2]]]
-    rejected.append(changed)
-    for changed in rejected:
-        with pytest.raises(GeometricPvExpandedScopeRequired):
-            admitted_limits(changed, weather, request, ordinary, expanded, pitched=True)
+    with pytest.raises(GeometricPvExpandedScopeRequired):
+        admitted_limits(
+            near_vertical, weather, request, ordinary, expanded, pitched=True
+        )
 
 
 def test_owned_complete_weather_to_profile_two_hour_energy_report_and_frozen_read(

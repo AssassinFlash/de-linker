@@ -20,7 +20,7 @@ import pvlib
 from .canonical import Json, Object, decode_object, digest, encode
 from .direct_beam_geometry import build_scene
 from .direct_beam_index import DirectBeamIndex, PlaneClearance
-from .direct_beam_visibility import VisibilityBudget, visibility_row
+from .direct_beam_visibility import VisibilityBudget, bounds_allowance, visibility_row
 from .errors import InvalidInput, NumericalFailure, VersionUnavailable
 from .geometric_pv_diffuse import diffuse_sample_upper_bound, module_diffuse_visibility
 from .geometric_pv_inputs import (
@@ -126,7 +126,12 @@ def generate_geometric_pv(
         )
     if upper_samples > limits.max_samples:
         raise InvalidInput("geometric PV requested sampling exceeds work policy")
-    budget = VisibilityBudget(limits.visibility_ray_limits())
+    budget = VisibilityBudget(
+        limits.visibility_ray_limits(),
+        bounds_allowance(
+            limits.visibility_ray_limits(), upper_samples, len(scene.opaque)
+        ),
+    )
     index = DirectBeamIndex.from_scene(scene, leaf_size=limits.index_leaf_size)
     solar = sun(weather)
     checkpoint()

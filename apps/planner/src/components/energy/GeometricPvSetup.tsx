@@ -521,19 +521,13 @@ export function GeometricPvSetup({
 							</p>
 							<p>
 								{__(
-									"One four-corner roof plane up to 60°, without holes, obstacles or keep-out areas and no more than 40 m along either roof axis. One array parallel to the roof, with up to 8 rows and 12 columns and one module specification.",
+									"The service prices the rays your saved roof actually declares, so several roof planes, arrays, obstacle volumes and keep-out areas are all calculated. It runs this size isolated from the ordinary queue and checks the saved roof, wiring and weather before starting.",
 									"linker-tools",
 								)}
 							</p>
 							<p>
 								{__(
-									"Select Series string reference. The service checks the saved roof, module layout, wiring and weather before creating a larger calculation.",
-									"linker-tools",
-								)}
-							</p>
-							<p>
-								{__(
-									"Modules up to 1.134 m wide, 1.762 m long and 0.03 m thick; row gaps of at least 0.4 m, column gaps of at least 0.2 m and clearance below the modules of at least 0.1 m. One system and conversion path, with no more than 16 modules per string. Weather intervals must be contiguous and hourly, with 1 × 1 and 2 × 2 midpoint sampling grids.",
+									"Every module plane must face upward. Select Series string reference for the string-level scenario: one inverter, one string per tracker, at most 16 modules per string, and contiguous hourly weather intervals.",
 									"linker-tools",
 								)}
 							</p>
@@ -556,7 +550,7 @@ export function GeometricPvSetup({
 							</p>
 							<p>
 								{__(
-									"Select Series string reference. The service checks the saved roof, module layout, wiring and weather before creating a larger calculation.",
+									"The service prices the rays your saved roof actually declares, so several roof planes, arrays, obstacle volumes and keep-out areas are all calculated. It runs this size isolated from the ordinary queue and checks the saved roof, wiring and weather before starting.",
 									"linker-tools",
 								)}
 							</p>
@@ -569,13 +563,7 @@ export function GeometricPvSetup({
 								</summary>
 								<p>
 									{__(
-										"One horizontal, four-corner roof without holes, obstacles or keep-out areas, up to 40 m along each roof axis. One level array with up to 8 rows and 12 columns, using one module specification.",
-										"linker-tools",
-									)}
-								</p>
-								<p>
-									{__(
-										"Modules up to 1.134 m wide, 1.762 m long and 0.03 m thick; row gaps of at least 0.4 m, column gaps of at least 0.2 m and clearance below the modules of at least 0.1 m. One system and conversion path, with no more than 16 modules per string. Weather intervals must be contiguous and hourly, with 1 × 1 and 2 × 2 midpoint sampling grids.",
+										"Every module plane must be horizontal. Select Series string reference for the string-level scenario: one inverter, one string per tracker, at most 16 modules per string, and contiguous hourly weather intervals.",
 										"linker-tools",
 									)}
 								</p>
