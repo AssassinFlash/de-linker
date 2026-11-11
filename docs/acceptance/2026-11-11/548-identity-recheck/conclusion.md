@@ -60,11 +60,17 @@ e2e 断言写成 `/^Saved · revision \d+$/`（德语 `/^Gespeichert · Version 
 - 无横向溢出；身份块有实际布局盒；
 - 同行读取 `.lp-save-state`，确认框的是已保存修订而非未保存草稿。
 
-实跑：`4 passed (12.8s)`，`tsc --noEmit` 与 `prettier --check` 均通过。
+实跑：`4 passed (13.1s)`（末次，格式与类型检查后复跑；前次 `4 passed (12.8s)`），
+`tsc --noEmit` 与 `prettier --check` 均通过。
+
+采集时确认的一处既有机制（非回归）：站点字段编辑**不自动保存**，`.lp-save-state`
+停在 `Unsaved changes` / `Ungespeicherte Änderungen`，必须点 `Save project` /
+`Projekt speichern` 才写入修订。这也是 revision 经由显式保存而非编辑次数递增的原因。
 
 `native/` 下 5 组 PNG/JSON 对（元素级 CSS 尺寸截图 + 同帧 DOM 读回），
 `native-matrix.json` 按 10-22 基线的字段结构索引；`capture.mjs` 是生成脚本，
-依赖从 `tests/e2e` 解析，不需要二次安装。
+依赖从 `tests/e2e` 解析，不需要二次安装。截图前后 `scroll` 一致
+（`captureBeyondViewport: false`，与基线同法）。
 
 ## 边界
 
