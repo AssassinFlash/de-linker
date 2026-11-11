@@ -15,8 +15,17 @@ msgstr ""
 msgid "Daily digest"
 msgstr "每日业务简报"
 
+msgid "Sent to the internal notification address, with blind copies, every morning at 9:00 (Berlin time)."
+msgstr "每天上午 9:00（柏林时间）发送至内部通知地址，并附密送。"
+
 msgid "Daily digest, {date}"
 msgstr "【Linker 业务简报】{date}{summary}"
+
+msgid "%d 条待跟进"
+msgstr "%d 条待跟进"
+
+msgid "%d 个待审客户"
+msgstr "%d 个待审客户"
 
 msgid "Accounts waiting for approval"
 msgstr "待审核客户账号"
@@ -36,8 +45,8 @@ msgstr "查看客户资料"
 msgid "Registered on %s"
 msgstr "注册于 %s"
 
-msgid "Inquiries waiting for a Proforma invoice"
-msgstr "待开形式发票（PI）的询盘"
+msgid "Inquiries waiting for your follow-up"
+msgstr "待跟进的询盘"
 
 msgid "No inquiry is waiting for more than 24 hours."
 msgstr "暂无等待超过 24 小时的询盘。"
@@ -51,14 +60,14 @@ msgstr "接收于 %1$s %2$s（%3$s）"
 msgid "Open the inquiry"
 msgstr "查看询盘"
 
-msgid "Proforma invoices without a reply"
-msgstr "已发 PI 超 3 天未回复"
+msgid "Quotations in preparation for more than 3 days"
+msgstr "报价单已开具超 3 天未闭环"
 
-msgid "No Proforma invoice has waited more than 3 days for a reply."
-msgstr "暂无已发 PI 超过 3 天未收到客户回复。"
+msgid "No Quotation has waited more than 3 days for a reply."
+msgstr "暂无报价单超过 3 天未收到回复。"
 
-msgid "Proforma invoice %1$s issued on %2$s at %3$s (%4$s)"
-msgstr "形式发票 %1$s 开具于 %2$s %3$s（%4$s）"
+msgid "Quotation %1$s issued on %2$s at %3$s (%4$s)"
+msgstr "报价单 %1$s 开具于 %2$s %3$s（%4$s）"
 
 msgid "Emails that could not be delivered"
 msgstr "邮件发送失败记录"
