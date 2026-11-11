@@ -1,0 +1,13 @@
+# Every five minutes: fast enough that an outage surfaces in the log within
+# one window, cheap enough (a single GET) to run forever on the engine host.
+[Unit]
+Description=Probe de-linker.com every five minutes
+
+[Timer]
+OnBootSec=2m
+OnUnitInactiveSec=5m
+Persistent=true
+Unit=linker-site-probe.service
+
+[Install]
+WantedBy=timers.target
