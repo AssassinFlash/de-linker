@@ -85,16 +85,22 @@ final class DigestEmail extends TeamEmail {
 			}
 			if ( $block instanceof InquiriesAwaitingReply ) {
 				/* translators: %d: number of inquiries waiting for the team's follow-up. */
-				$parts[] = sprintf( __( '%d 条待跟进', 'linker-commerce' ), $count );
+				$parts[] = sprintf( _n( '%d inquiry awaiting follow-up', '%d inquiries awaiting follow-up', $count, 'linker-commerce' ), $count );
 			} elseif ( $block instanceof PendingApprovals ) {
 				$pending = $block->pending_count();
 				if ( $pending > 0 ) {
 					/* translators: %d: number of customer accounts waiting for approval. */
-					$parts[] = sprintf( __( '%d 个待审客户', 'linker-commerce' ), $pending );
+					$parts[] = sprintf( _n( '%d account awaiting approval', '%d accounts awaiting approval', $pending, 'linker-commerce' ), $pending );
 				}
 			}
 		}
-		return array() === $parts ? '' : '：' . implode( ' · ', $parts );
+		return array() === $parts
+			? ''
+			: sprintf(
+				/* translators: %s: the day's counts, separated by a middle dot. */
+				__( ': %s', 'linker-commerce' ),
+				implode( ' · ', $parts )
+			);
 	}
 
 	/**

@@ -127,7 +127,7 @@ final class OperationsHealth implements Block {
 		} elseif ( $queue['overdue'] > self::OVERDUE_ALLOWED ) {
 			$entries[] = array(
 				/* translators: %d: pending actions past their slot by more than a day. */
-				'label'     => sprintf( __( '%d queued delivery action(s) are more than a day overdue.', 'linker-commerce' ), $queue['overdue'] ),
+				'label'     => sprintf( _n( '%d queued delivery action is more than a day overdue.', '%d queued delivery actions are more than a day overdue.', $queue['overdue'], 'linker-commerce' ), $queue['overdue'] ),
 				'url'       => '',
 				'link_text' => '',
 				'detail'    => sprintf(

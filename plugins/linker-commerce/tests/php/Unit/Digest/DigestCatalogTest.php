@@ -32,9 +32,17 @@ use Linker\Commerce\Tests\TestCase;
 final class DigestCatalogTest extends TestCase {
 
 	/**
-	 * The catalog WordPress loads for the team's language.
+	 * The catalogs that must answer for every digest string: the team's
+	 * language, and German, which carries the same digest for staff who read
+	 * the German interface. `i18n-coverage` checks only de_DE_formal and only
+	 * entries already present in the .po, so a block absent from the German
+	 * catalog stayed invisible until the next POT regeneration would have
+	 * shipped English alert lines.
 	 */
-	private const CATALOG = 'languages/linker-commerce-zh_CN.mo';
+	private const CATALOGS = array(
+		'zh_CN'        => 'languages/linker-commerce-zh_CN.mo',
+		'de_DE_formal' => 'languages/linker-commerce-de_DE_formal.mo',
+	);
 
 	/**
 	 * Files that contribute a string to the digest email, relative to the
@@ -51,10 +59,10 @@ final class DigestCatalogTest extends TestCase {
 	);
 
 	/**
-	 * Every msgid the digest's sources pass through __() or _n() resolves.
+	 * Every msgid the digest's sources pass through __() or _n() resolves in
+	 * each catalog the digest can be sent in.
 	 */
-	public function test_every_digest_string_resolves_in_the_team_language(): void {
-		$catalog = $this->catalog( $this->plugin_dir() . '/' . self::CATALOG );
+	public function test_every_digest_string_resolves_in_every_digest_language(): void {
 		$sources = $this->digest_sources( $this->plugin_dir() );
 
 		$this->assertNotSame( array(), $sources, 'The digest sources yielded no translatable strings; the extractor is broken.' );
@@ -64,35 +72,43 @@ final class DigestCatalogTest extends TestCase {
 			$this->assertArrayHasKey( $title, $sources, 'The extractor no longer reads the block that prints: ' . $title );
 		}
 
-		$untranslated = array();
-		foreach ( $sources as $msgid => $where ) {
-			$translation = $catalog[ $msgid ] ?? '';
-			if ( '' === trim( $translation ) ) {
-				$untranslated[] = $msgid . '  (' . $where . ')';
+		foreach ( self::CATALOGS as $language => $relative ) {
+			$catalog      = $this->catalog( $this->plugin_dir() . '/' . $relative );
+			$untranslated = array();
+			foreach ( $sources as $msgid => $where ) {
+				$translation = $catalog[ $msgid ] ?? '';
+				if ( '' === trim( $translation ) ) {
+					$untranslated[] = $msgid . '  (' . $where . ')';
+				}
 			}
-		}
 
-		$this->assertSame(
-			array(),
-			$untranslated,
-			'The digest is sent in Chinese (linker_commerce_team_locale = zh_CN); these strings would arrive in English. Translate them and recompile ' . self::CATALOG . ':'
-			. "\n  " . implode( "\n  ", $untranslated )
-		);
+			$this->assertSame(
+				array(),
+				$untranslated,
+				'The digest is sent in the team language (linker_commerce_team_locale = zh_CN) and in German for staff who read German; these ' . $language . ' strings would arrive in English. Translate them and recompile ' . $relative . ':'
+				. "\n  " . implode( "\n  ", $untranslated )
+			);
+		}
 	}
 
 	/**
-	 * The catalog is the compiled one WordPress loads, and it already answers
-	 * for the blocks that shipped before this test existed: a stale or
-	 * half-written .mo fails here rather than passing the check above with an
-	 * empty catalog.
+	 * Both compiled catalogs answer for the blocks that shipped before this
+	 * test existed: a stale or half-written .mo fails here rather than passing
+	 * the check above with an empty catalog, and each catalog is checked in its
+	 * own language so a copy-pasted block cannot satisfy both.
 	 */
-	public function test_the_catalog_is_the_compiled_one_the_digest_reads(): void {
-		$catalog = $this->catalog( $this->plugin_dir() . '/' . self::CATALOG );
+	public function test_the_catalogs_are_the_compiled_ones_the_digest_reads(): void {
+		$zh = $this->catalog( $this->plugin_dir() . '/' . self::CATALOGS['zh_CN'] );
+		$this->assertSame( '每日业务简报', $zh['Daily digest'] ?? '' );
+		$this->assertSame( '运行健康', $zh['Operations health'] ?? '' );
+		$this->assertSame( '待跟进的询盘', $zh['Inquiries waiting for your follow-up'] ?? '' );
+		$this->assertSame( '暂无报价单超过 3 天未收到回复。', $zh['No Quotation has waited more than 3 days for a reply.'] ?? '' );
 
-		$this->assertSame( '每日业务简报', $catalog['Daily digest'] ?? '' );
-		$this->assertSame( '运行健康', $catalog['Operations health'] ?? '' );
-		$this->assertSame( '待跟进的询盘', $catalog['Inquiries waiting for your follow-up'] ?? '' );
-		$this->assertSame( '暂无报价单超过 3 天未收到回复。', $catalog['No Quotation has waited more than 3 days for a reply.'] ?? '' );
+		$de = $this->catalog( $this->plugin_dir() . '/' . self::CATALOGS['de_DE_formal'] );
+		$this->assertSame( 'Tagesübersicht', $de['Daily digest'] ?? '' );
+		$this->assertSame( 'Betriebsstatus', $de['Operations health'] ?? '' );
+		$this->assertSame( 'Anfragen warten auf Ihre Bearbeitung', $de['Inquiries waiting for your follow-up'] ?? '' );
+		$this->assertSame( 'Kein Angebot wartet seit mehr als 3 Tagen auf eine Antwort.', $de['No Quotation has waited more than 3 days for a reply.'] ?? '' );
 	}
 
 	/**

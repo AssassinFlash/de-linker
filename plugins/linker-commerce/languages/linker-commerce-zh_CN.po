@@ -24,6 +24,17 @@ msgstr "【Linker 业务简报】{date}{summary}"
 msgid "%d 条待跟进"
 msgstr "%d 条待跟进"
 
+msgid "%d inquiry awaiting follow-up"
+msgid_plural "%d inquiries awaiting follow-up"
+msgstr[0] "%d 条待跟进"
+
+msgid "%d account awaiting approval"
+msgid_plural "%d accounts awaiting approval"
+msgstr[0] "%d 个待审客户"
+
+msgid ": %s"
+msgstr "：%s"
+
 msgid "%d 个待审客户"
 msgstr "%d 个待审客户"
 
@@ -143,8 +154,9 @@ msgstr "运行健康"
 msgid "The delivery queue could not be read."
 msgstr "暂时无法读取投递队列。"
 
-msgid "%d queued delivery action(s) are more than a day overdue."
-msgstr "%d 条排队中的投递任务已逾期超过一天。"
+msgid "%d queued delivery action is more than a day overdue."
+msgid_plural "%d queued delivery actions are more than a day overdue."
+msgstr[0] "%d 条排队中的投递任务已逾期超过一天。"
 
 msgid "Queue: %1$s pending in total. The latest action was due %2$s. Retries end after 24 hours, so an action this late is stuck rather than retrying."
 msgstr "队列：共 %1$s 条待执行，最晚一条本应在 %2$s 前执行。重试最多覆盖 24 小时，晚到这种程度已不是重试，而是卡住。"
