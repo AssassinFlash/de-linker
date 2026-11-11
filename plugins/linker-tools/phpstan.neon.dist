@@ -15,6 +15,8 @@ parameters:
 		- ../linker-commerce/includes/Protection
 		- ../linker-commerce/includes/Products
 		- ../linker-commerce/includes/Account
+		# The report reader re-resolves the Commerce-frozen inquiry context it serves.
+		- ../linker-commerce/includes/Planning
 		# Native conversation-mail fixture reads real queued messages and sending state.
 		- ../linker-commerce/includes/Mail
 		- ../linker-commerce/includes/Inquiry/Assessment
