@@ -784,3 +784,47 @@ and the cause recurs on any fresh pull+repair instance — the durable fix
 (a linker-local startup ACK or a publication ack-engineering subcommand)
 needs a semantic ruling on whether a local engine's loaded state may grant
 local WP readiness, plus tests.
+
+## F-line closed: the commercial inputs reach the engine (PR #1095)
+
+The recorded break was "the deployed planner UI never sends `target_peak_kw` or
+`load_profile_csv`". The cause was wider than a missing parameter: `apps/planner/src`
+had no commercial sizing request at all — zero occurrences of
+`target_peak_kw`, `load_profile_csv`, `design/commercial` or `grid_connection_kva`.
+`runs/equipment-search` is a different engine contract (it reads
+`equipment_requirements` and computes no load profile), and the commercial form
+that did send both inputs lived in the retired configurator whose route now
+answers 410. The planner's existing interval-data import feeds `runs/energy`.
+
+Engine contract re-measured on review 8890 before the change: profile + 70 kW
+target → `sized` (49.4 kW / 443.2 kWh, GW125 ×2); profile alone → `indicative`
+with cap options; no profile → `indicative` with `load: null`.
+
+Closed by PR #1095: `Planner\CommercialDesign` forwards an allowlisted engine
+commercial input to `/design/commercial` (before the admission journal, which
+has no receipt for the legacy route), the engine's English profile diagnosis is
+mapped to `profile_too_short` / `profile_negative` so customer copy stays in the
+catalogues, and the planner gains `domain/commercial.ts` (engine-identical CSV
+reading plus the one-week minimum, negative values and explicit-offset +
+15-minute-step DST checks) and a commercial-only sizing panel.
+
+e2e on the review stack: 2 passed, both widths, real engine — `Sized storage`,
+46 kW / 421.8 kWh, `GW80K-ET-G10` + `GW112.6-BAT-AC-G10`. The run also caught a
+defect of its own: the action stayed enabled with a required input empty, so the
+click produced a generic failure; the panel now names the missing inputs and
+sends nothing until they are there.
+
+Two items from the same F-line walk, answered rather than left open:
+- **rest-nonce 400 is core WordPress**, not a defect of ours: core registers no
+  `wp_ajax_nopriv_rest_nonce`, so a logged-out visitor gets `400` with body `0`
+  (`wp_die('0')`). `PlannerClient.refreshNonce` already treats exactly that as
+  "no nonce" and continues as a guest. No change warranted.
+- **CSV import rejects ambiguous local times across DST** — that is the intended
+  contract; the commercial panel now states it in the customer's words and
+  refuses a naive timestamped file locally instead of returning a bare 422.
+
+Adjacent defect found and **not** fixed here (pre-existing, outside this
+change's surface): the project brief's Latitude/Longitude fields report a
+format error while empty, which keeps "Save project" disabled and shows "Input
+needs attention" the first time an address is typed. It is reachable on any
+project, not only commercial ones.
