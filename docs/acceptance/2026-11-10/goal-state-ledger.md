@@ -1036,3 +1036,20 @@ the search), and test_stack's /health assertion was over-specific.
 Remaining gap, recorded: no stable e2e reproduces full-page navigation
 mid-run (page teardown destroys the JS context; component tests and the
 reverse contrast cover the fix).
+
+## identify 403 ruled correct-by-design (PR #1104 merged, U line)
+
+The worker credential's identify scope admits exactly the leased batch
+(JSON texts array) — T-line's probe carried the wrong shape and landed on
+the scope refusal; the anonymous exact-label oracle ({models}/{text}) is
+deliberately outside worker scope, and widening it would hand a worker
+secret the oracle's authority. Production read-only probes pinned all
+eight semantic combinations (worker batch → 409 stale_job = auth passed;
+worker empty/models/text → 403; anonymous texts → 401; anonymous
+models/text → 200). The genuine defect was documentation: neither contract
+doc mentioned the leased identify batch, which is exactly why a competent
+reader concluded it was forbidden. PR #1104 documents the batch, the
+oracle and the 401/403/409/400 semantics, corrects the T-line report's
+wrong unresolved item, and pins the probe shape in the existing shape
+provider (proven discriminating by predicate mutation). No production
+change needed.
