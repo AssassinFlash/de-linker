@@ -23,6 +23,23 @@ route's native capability and payload validation:
 
 - `POST /linker/v1/publication/jobs/claim`
 - `POST /linker/v1/publication/jobs/ack`
+- `POST /linker/v1/publication/identify` with a JSON body whose `texts` is an
+  array and which carries neither `text` nor `models` — the knowledge compiler's
+  leased batch only.
+
+The single-window `identify` shapes (`{models: […]}` and `{text: …}`) are the
+public exact-label oracle: an unauthenticated runtime read, deliberately outside
+this credential's scope. `texts` mixed with `text`/`models`, a query-string
+`texts`, a null `texts` and an empty body are all refused as well, so the
+credential can never spend its dispatch on the public oracle.
+
+A shape refusal and a capability refusal share WordPress's generic
+`rest_forbidden` 403; they are not the same diagnosis. `401` means no native
+identity reached the route, `403` with a purpose credential means the request
+shape is outside this scope (or the credential's user lacks
+`manage_woocommerce`), and `409`/`400` mean the route answered on the business
+layer, which proves authentication and capability both passed. Read the status
+before treating a `403` as a credential defect.
 
 Every other route or method is refused, including source/manifest reads,
 user/settings access, inventory/media reads, batch, embeds, method overrides and
@@ -58,7 +75,10 @@ MU remain in place.
    print the password in a report, process argument, repository or issue.
 3. Put the new native username/password into the private worker environment as
    `LINKER_PUBLICATION_USER` and `LINKER_PUBLICATION_PASSWORD`. Both workers use
-   it only for the two jobs POSTs. Keep inventory's original read-only REST
+   it for the two jobs POSTs, and Genie's knowledge compiler additionally for the
+   leased `identify` batch. Genie attaches it to that batch only: its unleased
+   `identify` reads stay anonymous, because they use the public oracle. Keep
+   inventory's original read-only REST
    credential unchanged. Genie consumes `job.manifest`; protected publication
    PDFs use their current anonymous GET contract. The private REST JSON still
    supplies the authoritative site-origin comparison.
