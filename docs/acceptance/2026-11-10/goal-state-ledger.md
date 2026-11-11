@@ -1053,3 +1053,22 @@ oracle and the 401/403/409/400 semantics, corrects the T-line report's
 wrong unresolved item, and pins the probe shape in the existing shape
 provider (proven discriminating by predicate mutation). No production
 change needed.
+
+## Batch close: planner fixes deployed to production (deploy 04:49 UTC)
+
+Final deploy of the day ships #1099 (coordinate decimal-mark), #1102
+(quick-path PDF + navigation ownership) and #1104 (docs+test) to
+production. Readback: EN/DE pages 200, the planner vite manifest points at
+the fixed build (planner-core-BaCygMK5, deployed 04:35), the core asset
+serves 200 at 1.4 MB, deploy-prev retained one set per procedure. The R
+line's review e2e (PDF bytes asserted against the real engine) plus this
+bundle-identity readback close the consumer loop for the PDF fix; a fresh
+full production browser re-walk is recorded as available for the next
+batch rather than re-paid this one (identical bundle verified on review
+end-to-end hours earlier).
+
+Day summary: 25 PRs merged (#1080–#1104), 5 production deploys, the host
+outage survived and post-mortemed, engineering and knowledge consumers
+both production-ready end-to-end, the commercial chain shipped and
+verified on production, and every discovered defect fixed or ruled
+by-design with evidence.
