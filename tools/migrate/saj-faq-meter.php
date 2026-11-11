@@ -222,12 +222,12 @@
 				throw new RuntimeException( 'Cannot start the guarded transaction.' );
 			}
 			$started = true;
-			$query   = $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE ID IN (%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d) ORDER BY ID FOR UPDATE", ...$ids ); // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Fourteen fixed IDs are unpacked.
+			$query   = $wpdb->prepare( 'SELECT ID FROM %i WHERE ID IN (%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d) ORDER BY ID FOR UPDATE', $wpdb->posts, ...$ids ); // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Fourteen fixed IDs are unpacked.
 			$locked  = $wpdb->get_col( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared above.
 			if ( array_map( 'intval', $locked ) !== $ids ) {
 				throw new RuntimeException( 'An audited product no longer exists.' );
 			}
-			$query = $wpdb->prepare( "SELECT meta_id FROM {$wpdb->postmeta} WHERE post_id IN (%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d) ORDER BY meta_id FOR UPDATE", ...$ids ); // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Fourteen fixed IDs are unpacked.
+			$query = $wpdb->prepare( 'SELECT meta_id FROM %i WHERE post_id IN (%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d) ORDER BY meta_id FOR UPDATE', $wpdb->postmeta, ...$ids ); // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Fourteen fixed IDs are unpacked.
 			$wpdb->get_col( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared above.
 			if ( '' !== $wpdb->last_error ) {
 				throw new RuntimeException( 'Could not lock product metadata.' );
