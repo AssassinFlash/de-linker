@@ -78,12 +78,25 @@ def fetch_feed(url: str) -> bytes:
             },
         )
         try:
-            with urllib.request.urlopen(request, timeout=FEED_FETCH_TIMEOUT_S) as response:
+            with urllib.request.urlopen(
+                request, timeout=FEED_FETCH_TIMEOUT_S
+            ) as response:
                 return bytes(response.read())
+        except urllib.error.HTTPError as error:
+            # An HTTP error answer carries an open response of its own; close
+            # it or its socket survives to GC and surfaces as an
+            # unraisable-exception flake in whatever test runs next
+            # (reproduced 2026-11-11: test_sync_feed -> test_version).
+            with contextlib.suppress(Exception):
+                error.close()
+            last_error = error
+            log(f"feed fetch failed ({type(error).__name__}: {error}); retrying")
         except (urllib.error.URLError, OSError, TimeoutError) as error:
             last_error = error
             log(f"feed fetch failed ({type(error).__name__}: {error}); retrying")
-    raise RuntimeError(f"feed fetch failed after {FEED_FETCH_ATTEMPTS} attempts") from last_error
+    raise RuntimeError(
+        f"feed fetch failed after {FEED_FETCH_ATTEMPTS} attempts"
+    ) from last_error
 
 
 def restart_engine() -> subprocess.CompletedProcess[str]:
