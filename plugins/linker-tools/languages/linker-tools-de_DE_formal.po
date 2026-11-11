@@ -14562,8 +14562,8 @@ msgid "Yes, an existing module"
 msgstr "Ja, ein bestehendes Modul"
 
 #: build/planner/assets/planner.js:1
-msgid "Article 4(1)(a) of Regulation (EU) 2016/631 names type C and type D only. For other types the cited article gives no reading."
-msgstr "Artikel 4 Absatz 1 Buchstabe a der Verordnung (EU) 2016/631 nennt nur Typ C und Typ D. Für andere Typen ergibt die zitierte Bestimmung keine Aussage."
+msgid "Article 4(1)(a) of Regulation (EU) 2016/631 covers type C and type D only. For other types the cited provision gives no reading."
+msgstr "Artikel 4 Absatz 1 Buchstabe a der Verordnung (EU) 2016/631 gilt nur für Typ C und Typ D. Für andere Typen ergibt die zitierte Bestimmung keine Aussage."
 
 #: build/planner/assets/planner.js:1
 msgid "RfG module type under the Swedish thresholds"
@@ -14618,7 +14618,7 @@ msgid "A modified type C or type D module: notify the system operator in advance
 msgstr "Geändertes Modul des Typs C oder D: vorherige Mitteilung an den Netzbetreiber; die Behörde entscheidet über die Anpassung des Netzanschlussvertrags"
 
 #: build/planner/assets/planner.js:1
-msgid "Article 4(1)(a) names type C and type D only; for this type the cited article gives no reading and other rules stay open"
+msgid "Article 4(1)(a) names type C and type D only; for this type the cited provision gives no reading and other rules stay open"
 msgstr "Artikel 4 Absatz 1 Buchstabe a nennt nur Typ C und Typ D; für diesen Typ ergibt die zitierte Bestimmung keine Aussage, weitere Regeln bleiben offen"
 
 #: build/planner/assets/planner.js:1

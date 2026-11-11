@@ -467,7 +467,7 @@ export function CountryRuleForm({
 									</select>
 									<small>
 										{__(
-											"Article 4(1)(a) of Regulation (EU) 2016/631 names type C and type D only. For other types the cited article gives no reading.",
+											"Article 4(1)(a) of Regulation (EU) 2016/631 covers type C and type D only. For other types the cited provision gives no reading.",
 											"linker-tools",
 										)}
 									</small>

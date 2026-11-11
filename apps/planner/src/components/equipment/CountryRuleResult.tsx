@@ -203,7 +203,7 @@ export function CountryRuleResult({
 			"linker-tools",
 		),
 		modification_outside_4_1_a_other_rules_open: __(
-			"Article 4(1)(a) names type C and type D only; for this type the cited article gives no reading and other rules stay open",
+			"Article 4(1)(a) names type C and type D only; for this type the cited provision gives no reading and other rules stay open",
 			"linker-tools",
 		),
 		not_applicable_type_a: __(
