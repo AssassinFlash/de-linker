@@ -128,3 +128,100 @@ msgstr "已保存、待人工复核的询盘：%1$d。\n最早一条询盘保存
 
 msgid "Saved inquiries awaiting staff review: %d."
 msgstr "已保存、待人工复核的询盘：%d。"
+msgid "Operations health"
+msgstr "运行健康"
+
+msgid "The delivery queue could not be read."
+msgstr "暂时无法读取投递队列。"
+
+msgid "%d queued delivery action(s) are more than a day overdue."
+msgstr "%d 条排队中的投递任务已逾期超过一天。"
+
+msgid "Queue: %1$s pending in total. The latest action was due %2$s. Retries end after 24 hours, so an action this late is stuck rather than retrying."
+msgstr "队列：共 %1$s 条待执行，最晚一条本应在 %2$s 前执行。重试最多覆盖 24 小时，晚到这种程度已不是重试，而是卡住。"
+
+msgid "The mail budget could not be read."
+msgstr "暂时无法读取邮件额度。"
+
+msgid "The pending-review queue could not be read."
+msgstr "暂时无法读取待复核队列。"
+
+msgid "The unhandled inquiry envelope could not be read."
+msgstr "暂时无法读取未处理询盘的上限占用。"
+
+msgid "%1$d unhandled inquiries are near the site envelope of %2$d."
+msgstr "未处理询盘 %1$d 条，已接近站点上限 %2$d 条。"
+
+msgid "Occupied logical data: %1$s of %2$s. At the envelope the site refuses a genuine new submission."
+msgstr "已占用逻辑数据 %1$s，上限 %2$s。达到上限时站点会拒绝真实客户的新提交。"
+
+msgid "%1$d inquiries are quarantined against a review lane of %2$d."
+msgstr "隔离中的询盘 %1$d 条，复核车道容量 %2$d 条。"
+
+msgid "A full lane refuses a genuine new submission. #568 measured 102 unhandled when the 2026-10-22 wave was live; dispose the backlog or confirm the wave is expected before the lane fills."
+msgstr "车道占满后站点会拒绝真实客户的新提交。2026-10-22 攻击波期间实测未处理峰值为 102 条；请在车道占满前处置积压，或确认这波流量符合预期。"
+
+msgid "The publication manifest could not be read."
+msgstr "暂时无法读取发布清单。"
+
+msgid "Engineering feed prepared %1$d of %2$d products."
+msgstr "工程数据源已就绪 %1$d / %2$d 个产品。"
+
+msgid "The planner builds from this feed. An all-zero reading was the 2026-11-11 signature after a pull changed every product revision; run the publication repair and confirm the dry run reports no backlog."
+msgstr "方案配置器依据这份数据源生成方案。2026-11-11 出现全零读数，成因是拉取后产品修订号全部失配；请执行发布修复，并确认试运行报告的积压为零。"
+
+msgid "queue unreadable"
+msgstr "队列无法读取"
+
+msgid "queue %1$s (%2$s)"
+msgstr "队列 %1$s（%2$s）"
+
+msgid "nothing late"
+msgstr "无逾期"
+
+msgid "mail unreadable"
+msgstr "邮件额度无法读取"
+
+msgid "mail %1$d/%2$d PHP, %3$d/%4$d SMTP"
+msgstr "邮件 %1$d/%2$d PHP，%3$d/%4$d SMTP"
+
+msgid "intake unreadable"
+msgstr "询盘占用无法读取"
+
+msgid "intake %1$d/%2$d unhandled, %3$d quarantined"
+msgstr "询盘 %1$d/%2$d 未处理，%3$d 条隔离"
+
+msgid "publication unreadable"
+msgstr "发布状态无法读取"
+
+msgid "publication %1$d/%2$d engineering, %3$d knowledge"
+msgstr "发布 %1$d/%2$d 工程就绪，%3$d 知识就绪"
+
+msgid "All within bounds — %s."
+msgstr "各项均在上限内——%s。"
+
+msgid "PHP mail()"
+msgstr "PHP mail()"
+
+msgid "SMTP"
+msgstr "SMTP"
+
+msgid "%1$s has used %2$d of %3$d daily attempts."
+msgstr "%1$s 本日已用 %2$d / %3$d 次。"
+
+msgid "Ordinary mail stops at %1$d; the last %2$d attempts are held for password resets, approvals and staff alerts. Customer acknowledgements wait for the rolling window to move on."
+msgstr "普通邮件在 %1$d 次后停止，最后 %2$d 次留给密码重置、账号审批与员工告警。客户回执需等滚动窗口前移后才能发出。"
+
+msgid "This is not a zero reading: the measurement itself failed, so nothing about this dimension is known today."
+msgstr "这不是零读数：测量本身失败，因此今天对该维度一无所知。"
+
+msgid "at least %d"
+msgstr "至少 %d"
+
+msgid "%d hour late"
+msgid_plural "%d hours late"
+msgstr[0] "晚 %d 小时"
+
+msgid "%d day late"
+msgid_plural "%d days late"
+msgstr[0] "晚 %d 天"
