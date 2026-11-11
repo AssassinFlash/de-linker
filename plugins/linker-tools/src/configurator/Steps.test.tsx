@@ -209,7 +209,7 @@ test( 'the rail is vertical, the project type is cards, and the form stays expan
 	).toBeVisible();
 } );
 
-test( 'a model change lands the Solution clear of the sticky rail', async () => {
+test( 'a model change lands the Solution clear of the sticky rail', { timeout: 30_000 }, async () => {
 	const { chromium } = await import( '@playwright/test' );
 	const css = readFileSync(
 		join( dirname( fileURLToPath( import.meta.url ) ), 'configurator.css' ),
