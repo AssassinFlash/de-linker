@@ -92,7 +92,9 @@ e2e 与 DOM 测试只断言「记录被写入」，看不出下面两点；独�
 1. **屋面坐标系反了**：第一版让 V 轴随坡度上升，而本项目每个屋面（`roofPlane` 的注释与 `548-design-geometry.md`）都是 **V 向下坡**、上法线水平分量＝下坡方位。结果标定出的屋面与实测屋面坐标系不一致。改为：图上「向下」方向就是下坡方向，用户声明的是 **downslope_bearing_deg**（项目罗盘方位），图右＝横坡；标定屋面直接走既有 `roofPlane` 构造，不自造第二套角度。水平总平只把沿坡分量按 pitch 除一次余弦，**横坡长度不缩放**（总平图上它就是真长）。
 2. **标定屋面无法用普通屋面表单编辑**：`RoofForm.measuredAngles` 只认 `user_measurement` 且 `reference_sha256 === null` 的来源，凭标定创建的 `user_drawing` 屋面打不开角度、轮廓与洞口编辑。改为同时接受带 `calibration` 的 `user_drawing` 来源；平屋面（V 恰为水平）保持既有行为。
 
-两处都有回归覆盖：`a horizontal plan never scales the cross-slope length`、`the declared bearing places the drawing, and the face keeps its frame`、`a calibrated face is a frame the ordinary roof form can edit`，以及既有 `correcting a measured roof pitch keeps its array, holes and source`（平屋面路径）。修后 e2e 四组合再次 4/4 通过。
+3. **参考态仍能生成工程几何**：第一版允许透视照片或第二校核失败的图纸描出屋面并写入设计，等于用单一比例量了一座无法矫正的屋面。现在 `measurement_status !== "usable_uniform_scale"` 时拒绝生成几何，并给出两条恢复路径（换成可量视图，或把图纸并与已实测屋面并存）。DOM 测试改为断言拒绝（`a perspective photo never becomes engineering geometry`）。
+
+三处都有回归覆盖：`a horizontal plan never scales the cross-slope length`、`the declared bearing places the drawing, and the face keeps its frame`、`a calibrated face is a frame the ordinary roof form can edit`，以及既有 `correcting a measured roof pitch keeps its array, holes and source`（平屋面路径）。修后 e2e 四组合再次 4/4 通过。
 
 ## 权限与文案
 
