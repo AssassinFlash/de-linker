@@ -2162,3 +2162,30 @@ download-center crawl covered 9 of 11 listing pages — the remaining pages
 contain only older regional datasheets/certificates of the same family,
 whose manuals (checked in three official copies) share identical
 work-mode text. No files were added to the hosted library.
+
+## Production deploy + paired planner release; a live defect caught and fixed (2026-11-12)
+
+`just cutover deploy` shipped the three plugins at `a9fbd7bc9` (DB snapshot
+streamed locally, atomic swap, rollback set retained; all page probes, legal
+script escapes and the consent chain green). The deploy then exposed a real
+production defect the review instance could not show: **the VPS planner
+service was still the Nov-6 release** — its pydantic contract list lacked
+`geometry_image_calibration_v1`, so the site's new planner build got 422 on
+`projects/create` and no new project could be created on live. The same
+archaeology showed the A-line verifier fix had never actually been deployed
+("fixed then re-run green" was luck: rev21's window passed under the OLD
+tolerance code; the `arithmetic_allowance` field name predates the fix), so
+its production-run evidence stands but its "fix verified on production"
+claim did not. Repair: staged a reviewed source archive from `a9fbd7bc9`
+(`planner_source.py`), built the release venv on the VPS, named the release
+by its RuntimeSnapshot sha256 (`3beaaf99…`), copied the retained runtime/
+worker policies, ran `planner_release.py prepare` (14 contracts incl.
+`geometry_image_calibration_v1`) and `activate` (queue drained by the
+retained executor, HTTP+worker switched atomically, identity read back;
+`09f80a35…` retained as rollback). End-to-end on live, both languages:
+project creation works again (guest project saved, revision 1), the roof
+step shows "Calibrate a roof image / Dachbild kalibrieren" with its copy,
+the three-step calibration workspace renders with the reference-only
+statement and the stays-in-your-browser file notice, and the test project
+was deleted after the check. BAT-C product pages re-verified byte-equal on
+data content before and after the deploy.
