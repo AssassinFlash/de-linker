@@ -85,9 +85,13 @@ current record without sending or writing state). `install.sh backup` before
 apply streams the managed paths to the operator machine; `rollback` stops the
 timer and restores that archive.
 
-The first run after install sends one heartbeat. That is deliberate: it proves
-the channel works before anyone depends on it, and a plan that only spoke
-during outages could never tell anyone it had stopped working.
+The first run after install sends one message and it is not silent: either the
+daily heartbeat (the record is healthy) or a "stopped reporting" alert (the
+probe has never written here). The heartbeat is deliberate — it proves the
+channel works before anyone depends on it, and a notifier that only spoke during
+outages could never tell anyone it had stopped working. The silence alert is
+equally deliberate: an empty record means nothing is watching, which on a fresh
+host is true until the probe's first cycle lands.
 
 ## Verify
 

@@ -322,7 +322,7 @@ def recovered_message(
 
 
 def silent_message(
-    last: Reading | None, now: dt.datetime, log_path: Path
+    last: Reading | None, now: dt.datetime, log_path: Path, since: str
 ) -> tuple[str, str]:
     if last is None:
         detail = "The probe record holds no readable line at all."
@@ -330,6 +330,14 @@ def silent_message(
     else:
         detail = f"The last reading is {iso(last.when)} ({last.code})."
         age = duration((now - last.when).total_seconds())
+    # A monitor that dies while the site is already down must not erase when
+    # that outage started: this timestamp is the only record of it left.
+    known = (
+        f"\nThe site was already failing before the silence began; the first "
+        f"failure seen was {since}.\n"
+        if since
+        else ""
+    )
     return (
         "[de-linker] Site probe stopped reporting",
         "The site monitor has stopped writing, so nothing is watching the "
@@ -338,7 +346,8 @@ def silent_message(
         f"Age of that reading: {age}\n"
         f"Silence threshold: {duration(SILENCE_AFTER_S)} "
         f"({FAILURES_BEFORE_ALERT + 1} cycles at the measured 5-minute cadence).\n"
-        f"Record: {log_path}\n\n"
+        f"Record: {log_path}\n"
+        f"{known}\n"
         "This is the failure mode that hid the 2026-11-11 outage: a probe that "
         "dies looks exactly like a quiet healthy log. Check on the engine "
         "host: systemctl status linker-site-probe.timer, "
@@ -348,12 +357,21 @@ def silent_message(
     )
 
 
-def resumed_message(readings: Sequence[Reading], now: dt.datetime) -> tuple[str, str]:
+def resumed_message(
+    readings: Sequence[Reading], now: dt.datetime, since: str
+) -> tuple[str, str]:
+    last_failure = (
+        f"\nThe silence interrupted an outage that started at {since}; whether "
+        f"the site recovered during the silence is unknown.\n"
+        if since
+        else ""
+    )
     return (
         "[de-linker] Site probe reporting again",
         "The probe record is current, so the website is being watched again. "
         "An outage during the silence may have gone unreported.\n\n"
-        f"Latest reading: {iso(readings[-1].when)} (code {readings[-1].code})\n\n"
+        f"Latest reading: {iso(readings[-1].when)} (code {readings[-1].code})\n"
+        f"{last_failure}\n"
         "Recent readings:\n"
         f"{witness(readings)}\n"
         f"{trailer(now)}",
@@ -417,16 +435,20 @@ def advance(
             state.since = iso(first)
             events.append(("down", subject, body))
         elif observed == "silent":
-            subject, body = silent_message(last, now, log_path)
-            state.since = iso(now)
+            # `since` carries a running outage across the silence; when the
+            # monitor dies on a healthy site it starts now.
+            carried = state.since if previous == "down" else ""
+            subject, body = silent_message(last, now, log_path, carried)
+            state.since = carried or iso(now)
             state.failures = trailing
             events.append(("probe_silent", subject, body))
         elif observed == "ok":
+            carried = state.since if previous == "silent" else ""
             if previous == "down":
                 subject, body = recovered_message(state, readings, now)
                 events.append(("recovered", subject, body))
             elif previous == "silent":
-                subject, body = resumed_message(readings, now)
+                subject, body = resumed_message(readings, now, carried)
                 events.append(("probe_resumed", subject, body))
             state.since = iso(last.when if last else now)
             state.failures = 0

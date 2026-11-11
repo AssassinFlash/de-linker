@@ -493,3 +493,34 @@ def test_delivery_never_prints_the_credential(
     assert captured.err == ""
     for marker in ("AUTH", "ZkFrzS1wYXNzd29yZA==", "fake-password"):
         assert marker not in captured.out + captured.err
+
+
+def test_silence_during_an_outage_keeps_the_outage_start(
+    alert: ModuleType, tmp_path: Path
+) -> None:
+    """A monitor that dies while the site is down must not erase when the
+    outage began — and the resume must say the missing window is unknown."""
+    run_alert(alert, tmp_path, record(["200", "000", "000", "000"]))
+    assert state_of(tmp_path)["state"] == "down"
+    started = state_of(tmp_path)["since"]
+
+    # Then the probe stops writing; the last line is now older than the bound.
+    stale_end = NOW - dt.timedelta(seconds=alert.SILENCE_AFTER_S + CYCLE)
+    _, silent, _ = run_alert(
+        alert,
+        tmp_path,
+        record(["200", "000", "000", "000"], end=stale_end),
+        now=NOW,
+    )
+    assert len(silent.sent) == 1
+    assert "stopped reporting" in silent.sent[0][0]
+    assert started in silent.sent[0][1]
+    assert state_of(tmp_path)["since"] == started
+
+    fresh = NOW + dt.timedelta(seconds=CYCLE)
+    _, resumed, _ = run_alert(
+        alert, tmp_path, record(["200", "200"], end=fresh), now=fresh
+    )
+    assert len(resumed.sent) == 1
+    assert "reporting again" in resumed.sent[0][0]
+    assert started in resumed.sent[0][1]
