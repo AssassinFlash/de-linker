@@ -31,6 +31,17 @@ final class Materials {
 	private static ?array $registry = null;
 
 	/**
+	 * Spec keys whose maintained condition prints beside the value.
+	 *
+	 * `temp` is the long-standing row. The others are the GoodWe BAT-C user
+	 * manual's own conditional figures (Australia-only rated charge/discharge,
+	 * note 2, pdf p. 83) and its partial certification list (note 5). Leaving
+	 * them out prints an unconditional rating; widening the list changes
+	 * customer-visible rows on other products and needs its own review.
+	 */
+	private const QUALIFIED_ROWS = array( 'temp', 'rated_charge_discharge_current_a', 'rated_charge_discharge_power_kw', 'certification' );
+
+	/**
 	 * The compatibility contract, decoded once per request.
 	 *
 	 * @var array<string, mixed>|null
@@ -494,7 +505,13 @@ final class Materials {
 		if ( '' !== $note ) {
 			$value .= ' (' . $note . ')';
 		}
-		if ( 'temp' === $key && \is_array( $fact['qualifier'] ?? null ) ) {
+		// A maintained condition belongs beside the value it limits. The set is
+		// explicit because every key with a qualifier would otherwise change a
+		// customer-visible row at once: 36 rows across 24 other products carry
+		// conditions that were never reviewed for the page. `temp` keeps its
+		// long-standing behaviour; the BAT-C rows are the manual's own
+		// Australia-only rating (note 2) and its partial certification list.
+		if ( \in_array( $key, self::QUALIFIED_ROWS, true ) && \is_array( $fact['qualifier'] ?? null ) ) {
 			$qualifier = \trim( (string) ( $fact['qualifier'][ $de ? 'de' : 'en' ] ?? '' ) );
 			if ( '' !== $qualifier ) {
 				$value .= ' (' . $qualifier . ')';
