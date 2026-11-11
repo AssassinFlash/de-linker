@@ -59,9 +59,12 @@ the state changes, never while it persists:
 
 A failed delivery stays in the state file's `pending` list and is retried on the
 next cycle; the flip is not re-detected, so a retry cannot duplicate an alert.
-An unusable configuration holds the message the same way and exits non-zero, so
-the journal shows it. Every run prints its decision, which is what
-`journalctl -u linker-site-alert.service` reads.
+That list keeps the newest eight messages only: a site that flaps faster than the
+mail channel recovers would otherwise grow the file without bound, and the
+current state supersedes anything older. An unusable configuration holds the
+message the same way and exits non-zero, so the journal shows it. Every run
+prints its decision, which is what `journalctl -u linker-site-alert.service`
+reads.
 
 ## Install
 
