@@ -115,6 +115,14 @@ UV_PROJECT_ENVIRONMENT=$PWD/venv uv sync --frozen --no-dev --group index \
 
 `UV_PROJECT_ENVIRONMENT` is required: without it `uv sync --project` places the
 environment inside the release directory, where the next rotation deletes it.
+`--no-install-project` leaves no editable install, so name the package explicitly
+or every scheduled run fails its first import:
+
+```
+printf '%s\n' "$PWD/source/src" \
+  > "$PWD/venv/lib/python3.12/site-packages/linker_genie.pth"
+```
+
 Keep the whole source tree, including `index/` and `eval/`; both participate in
 `recipe_revision()`, so a partial copy silently changes the recipe identity the
 worker must acknowledge. The `index` group is not optional — preparation imports
