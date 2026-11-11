@@ -494,7 +494,11 @@ final class Materials {
 		if ( '' !== $note ) {
 			$value .= ' (' . $note . ')';
 		}
-		if ( 'temp' === $key && \is_array( $fact['qualifier'] ?? null ) ) {
+		// A maintained condition belongs beside the value it limits, not to one
+		// vocabulary key: the BAT-C manual's rated charge/discharge figures are
+		// Australia-only and its certification list is explicitly partial, so a
+		// qualifier dropped from this row would print an unconditional rating.
+		if ( \is_array( $fact['qualifier'] ?? null ) ) {
 			$qualifier = \trim( (string) ( $fact['qualifier'][ $de ? 'de' : 'en' ] ?? '' ) );
 			if ( '' !== $qualifier ) {
 				$value .= ' (' . $qualifier . ')';
