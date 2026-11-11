@@ -1015,3 +1015,24 @@ HS2 series powers grounded on the SAJ datasheet page 2. Old index
 generations retained per KEEP=3. Open item recorded: POST
 /publication/identify returns 403 for worker credentials that pass
 jobs/claim auth — an independent auth defect, dispatched separately.
+
+## Commercial quick-path PDF and navigation deadlock fixed (PR #1102 merged, R line)
+
+Both F-walk defects fixed at truer roots than first inferred: the 422 was
+not a missing energy run — the quick panel writes the chosen combination as
+the project's equipment_candidate, and the same request also sent the
+equipment run id, a second source the report layer rightly rejects
+("equipment differs from the adopted project candidate"); QuickStart now
+sends only the candidate and reports the real reason on failure. Verified
+by a real-engine test asserting %PDF- output plus the double-source still
+refused, a review-instance e2e (passing), and a reverse check that
+reproduces the 422 on the old code. The navigation deadlock: unmount
+cleanup aborted the only reply path that could confirm and clear the
+journal entry, stranding the intent forever; ownership now stays with the
+journal/engine receipt, planner 316 pass, auto-resubmission deliberately
+NOT implemented (it would break three security tests). Bonus real fixes:
+tools/local never enabled equipment_search (every local instance 503ed
+the search), and test_stack's /health assertion was over-specific.
+Remaining gap, recorded: no stable e2e reproduces full-page navigation
+mid-run (page teardown destroys the JS context; component tests and the
+reverse contrast cover the fix).
