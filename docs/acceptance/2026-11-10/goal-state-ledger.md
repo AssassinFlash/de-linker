@@ -683,3 +683,20 @@ against the review instance. Also recorded from the same walk: first-load
 "Opening your workspace…" can take long enough to look stuck;
 rest-nonce 400 needs a look; CSV import rejects ambiguous local times
 across the DST boundary (documented contract, agent hit it with a naive CSV).
+
+## Outage timeline (2026-11-11, for the post-mortem)
+
+- ~00:35–00:45 UTC: host load 49→69 (15-min avg 68.87 observed by F-line);
+  MySQL disappears (3306 closed, /tmp/mysql.sock dangling).
+- 00:36: my deploy #2 probes still passed 200 (DB alive at deploy time) —
+  deploy not the trigger; spike begins right after.
+- 00:44: VPS feed-sync fails (jobs claim timeouts) — first automated signal.
+- 00:49: another session's db-watch loop found (broken sleep, rapid-fire
+  wp probes); killed, replaced with a correct 30 s watcher.
+- 00:50–01:00+: DB still down; site globally unreachable; Hostinger status
+  page silent → host-specific infra failure; recovery needs provider action.
+- Blast radius: WP site + all WP-dependent chains (inquiry, genie WP side);
+  VPS engine/planner/genie services unaffected, serving from loaded state.
+- Detection gap exposed (U2 evidence): the 15-min feed-sync timer was the
+  first automated detector; nothing pushes an alert. Prioritize U2 with
+  this incident as the threshold evidence.
