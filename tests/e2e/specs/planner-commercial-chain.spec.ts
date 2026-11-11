@@ -63,14 +63,10 @@ async function commercialProject(page: Page, title: string): Promise<string> {
 	if (await annual.count()) await annual.first().fill('380000');
 	// The postcode travels in the location label, which is where the panel
 	// reads it from. In `#lp-site` the first input is the address; the two
-	// decimal fields beside it are the coordinates.
+	// decimal fields beside it are the coordinates. Empty coordinates are a
+	// declared "not provided" basis, so they stay empty here: the project is
+	// saveable with an address alone.
 	await page.locator('#lp-site input').nth(0).fill('80331 München');
-	// The brief's coordinate fields report a format error while empty, which
-	// keeps the project unsaveable, so they are filled the way a customer
-	// locating the site would.
-	const coordinates = page.locator('#lp-site input[inputmode="decimal"]');
-	await coordinates.nth(0).fill('48.14');
-	await coordinates.nth(1).fill('11.58');
 	// The brief edits stay in the open draft until the project is saved, and
 	// the commercial panel's gate reads the saved brief.
 	await page.getByRole('button', { name: /^Save project$/i }).click();
