@@ -1962,13 +1962,16 @@ now has an executability verdict instead of a run count. Full record:
   `user_explicit_scenario_not_equipment_release` provenance — enough for
   `single_ac` (the 10 runs #1107 found), not enough for either joint kernel,
   which require the server-derived `dc_prepared_parameters` binding.
-- **The gate is equipment facts, not code.** `prepare_dc_parameters()` must pass
-  `battery_voltage` (full containment against a column-keyed
-  `system_operating_voltage_range_v`) and then `usable_energy`. Exhausting
-  42 inverters x 26 batteries x every legal module count x every declared port
-  against the 86 engineering-ready products gives **1745 attempts, 0 passes**
-  (1739 stop at `usable_energy_and_complete_voltage_window`, 6 at
-  `woo_dc_condition:max_charge_current_a`).
+- **The gate is equipment facts, not code, and it is three gates in series.**
+  `prepare_dc_parameters()` must clear `usable_energy_and_complete_voltage_window`,
+  then `battery_port_count` (only 4107 declares battery ports at all), then the
+  charge-current condition. On the 86-product engineering-ready pool, pinned by
+  a SHA-256 of that id set taken before and after the sweep (identical,
+  `drifted: False`), exhausting 42 inverters x 26 batteries x every legal module
+  count x every declared port gives **1763 attempts, 0 passes**. A wider
+  port-fallback sweep (3444 attempts) splits the failures as 2708 voltage-window
+  / 712 port-count / 6 condition; its 18 "passes" could not be reproduced and are
+  discarded, because that sweep recorded no pool signature.
 - **A viable chain existed during this session and was withdrawn by readiness.**
   `4107 + 1954 @ modules_per_stack=6, BAT1, pv_dc_kw=0` derived cleanly
   (`usable_window_kwh = 60.0`, with the bilingual usable-energy condition
