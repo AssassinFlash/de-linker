@@ -150,10 +150,16 @@ legacy ACF 的 `spec_groups`（1954 实测：2 组共 12 行），**不读 regis
 | 产品页（DE） | `GET /de/produkt/goodwe-gw112-6-bat-ac-g10/` | 同上 |
 | 原文件下载 | `GET /wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_User-Manual-EN_V1.0.pdf` | 200，5,440,295 B |
 
-review 实例同类读回：manifest 显示 `pids [1954,1955]`；写入后 `ready` 由 `{true,true}` 变
-`{false,false}`（source_revision 变了、旧准备代次失效，这是 609 的预期行为）。执行
-`just serve review` 后引擎重拉 feed，`/resource/version?ready=1` 读回 `source_revision=6327de50…`、
-`prepared_products=88`（含 1954 `0ad49f21…`、1955 `4f3919a0…`），manifest 恢复 `engineering:true`。
+review 实例同类读回（与生产区分开写）：manifest 显示 `pids [1954,1955]`。写入后 `ready` 由
+`{knowledge:true, engineering:true}` 变 `{knowledge:false, engineering:false}`——source_revision
+变了、旧准备代次失效，这是 609 的预期行为，不是故障。执行 `just serve review` 后引擎重拉 feed，
+`/resource/version?ready=1` 读回 `source_revision=6327de50…`、`prepared_products=88`
+（含 1954 `0ad49f21…`、1955 `4f3919a0…`），review 的 `engineering` 随后恢复 `true`；
+`knowledge` 仍为 `false`（见下）。
+
+**生产与 review 的 ready 不同，不要混读**：生产 1954/1955 都是
+`{knowledge:true, engineering:true}`（Genie 索引本来就与生产源同代）；review 是
+`{knowledge:false, engineering:true}`。
 
 **knowledge 侧未追平**：Genie 仍加载索引 `4a3abcd6…`，服务端按规则拒绝确认
 （`genie_source_mismatch`）。重建是一次 143 文档 / 19,193 段的 Docling 全库编译（上代实测
