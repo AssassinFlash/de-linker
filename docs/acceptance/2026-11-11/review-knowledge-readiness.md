@@ -171,15 +171,20 @@ done: ok=true
 
 ## 资源报告
 
-- 新增构建：`~/de-linker-data/index/builds/20261111T032628Z-899307000/`（616 MB，
+- 新增构建：`~/de-linker-data/index/builds/20261111T032628Z-899307000/`（674 MB，
   index.sqlite 296 MB + corpus 392 MB）。这是 review 实例当前服务的索引，**保留**。
-- 上一版构建仍在（`20261108T…` 662 MB、`20261108T183602Z` 662 MB），本票未删；
-  它们不再被任何实例引用，可回收。
-- worktree：`/tmp/t-knowledge`（3.0 GB，PR 提交已完成；保留待合并）。
+- 另两份构建都**不回收**，已核实原因：`20261108T205220Z-672808000` 仍被三个实例
+  在服务（c222:8927、c332:9189、rfix:8896 的 `GENIE_INDEX` 都指向它）；
+  `20261108T183602Z-365393000` 与它一起登记在
+  `~/de-linker-data/index/publication-worker-releases.json` 里，是发布 worker 的
+  回滚保留版本。两者都不是无主副本。
+- worktree：`/tmp/t-knowledge`（3.5 GB）——PR #1101 尚未合并，按"未合并代码继续保留"
+  留下；合并后即可回收。
 - 临时文件：`/tmp/jobs-rollback-t-knowledge.json`（回滚副本，保留到下一次
   `pull load` 覆盖实例为止）、`/tmp/turn.sse`、`/tmp/pr-body.md`、
-  `/tmp/commit-msg.txt`、`/tmp/review-manifest.json`、`/tmp/jobs.json`。
-  含凭据的 `/tmp/review-rest.json` 已随 Application Password 撤销一并删除。
+  `/tmp/commit-msg.txt`、`/tmp/review-manifest.json`、`/tmp/jobs.json`、
+  `/tmp/t-knowledge-ci*.log`。含凭据的 `/tmp/review-rest.json` 已随 Application
+  Password 撤销一并删除。
 - 未新增实例；只重启了 review 的 genie 一个服务（WP 与 engine 未重启）；
   浏览器标签已关闭；未留下运行中的后台进程。
-- 磁盘：`/System/Volumes/Data` 3.6 TiB，可用 1.2 TiB。
+- 磁盘：`/System/Volumes/Data` 3.6 TiB，可用 1.2 TiB（新增约 674 MB）。
