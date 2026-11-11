@@ -1410,3 +1410,29 @@ so /planning/runs/equipment-search 503'd and the commercial quickstart spec
 was red on that instance. Applied the sanctioned operator path (add the
 section + just serve review); /planning/version now reports equipment_search
 over an authenticated probe; consumer spec rerun recorded separately.
+
+## Digest i18n debt line: premise refuted, real defects found and fixed (PR #1114, merged f47d9c297)
+
+The recorded "56 untranslated zh_CN digest entries" was already stale — #1100
+cleared the Chinese side; the 56 belonged to the German catalog, all inside
+the exempt list. The agent verified instead of trusting the task sheet, then
+ran the same extractor on both languages and found the live defects in the
+same class: the German digest had NO OperationsHealth entries at all (33
+missing msgids — the block #1098 added never reached de_DE_formal), two
+Chinese strings were passed as English sources to __() (any non-Chinese
+locale printed Chinese), and one English plural hack. Fixed all: 35 German
+entries (5 plural pairs, terminology following the existing catalog;
+commerce-terms caught a real storefront-vocabulary violation in the first
+draft), English _n() plural pairs in DigestEmail, translatable ': %s' prefix.
+Read back from the compiled .mo (not .po): 70/70 both languages; real-WP
+gettext readback in three locales for the converted pairs; zh_CN output
+verbatim unchanged. Regression made real: DigestCatalogTest now asserts each
+language with its own language; swapping the old .mo back fails both tests.
+Integration suite (#1098's deferred boundary) run on a disposable instance
+before AND after the source change: 86/86 green both times; a fake-green
+assertion in DigestAccuracyTest (Chinese subject vs en_US fixture) corrected.
+Spec 74's adversarial copy review for the German digest lines recorded at
+docs/acceptance/2026-11-11/74/copy-review-de.md. Honest boundary: the
+Chinese-as-source audit covered digest's six files only, not a full plugin
+sweep. Resources: instance retired with four-way readback, worktree
+reclaimed (3.7 GB), no review-instance contact.
