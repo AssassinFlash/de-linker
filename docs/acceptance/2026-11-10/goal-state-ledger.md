@@ -1604,3 +1604,15 @@ index of the same aligned document set, with citations pointing at production
 URLs — the standing behavior, now stated accurately. No mechanism change; a
 review-source index would be a manual full rebuild for no acceptance need
 currently outstanding.
+
+## Owner ruling 2026-11-11 (evening): no owner-input waiting states, ever
+
+The owner rejected the very idea of "waiting for owner decisions/data": if
+something is researchable it must be researched and executed by the line
+("这种就要你去搜啊"), and the owner will not be supplying anything. Every
+item previously tagged owner-side is hereby converted to a self-executed
+line: real customer load data (source public/official load-profile datasets),
+direct-beam quota (decide by measured evidence, implement), GW92.1 listing
+(decide by manufacturer-catalog evidence), U4 edge rate-limit (decide by the
+first principle: never block real humans; VPS-side options only if evidence
+demands). Waiting-on-owner is a forbidden state in this goal.
