@@ -1241,7 +1241,16 @@ def github_advanced_base(parent, base):
 
 
 def planner_build_flag(commit, *, source=None, base=None):
-    """Reconstruct a CI merge's flag only from available native Git evidence."""
+    """Reconstruct a CI merge's flag only from available native Git evidence.
+
+    `plan` publishes this flag from `change_flags(diff(BASE_SHA, HEAD_SHA))`:
+    everything the tested merge carries that the recorded base does not, which
+    includes whatever main landed on `apps/planner` after the event was
+    published. Verification recomputes that same diff when a base is supplied,
+    so the flag the recipe acts on and the flag this proves are one quantity.
+    Comparing instead the merge's own contribution (first parent to merge)
+    contradicts `plan` on an innocent PR whenever main advanced in between.
+    """
     try:
         try:
             git("cat-file", "-e", commit + "^{commit}")
@@ -1265,7 +1274,10 @@ def planner_build_flag(commit, *, source=None, base=None):
         # rev-list can silently present that same merge as a root commit.
         for parent in parents:
             git("cat-file", "-e", parent + "^{commit}")
-        return change_flags(diff_changes(parents[0], commit))["planner_build_changed"]
+        # A supplied base is already present: github_advanced_base() either
+        # matched it exactly or fetched it to prove the ancestry above.
+        tested = parents[0] if base is None else base
+        return change_flags(diff_changes(tested, commit))["planner_build_changed"]
     except (OSError, subprocess.SubprocessError, UnicodeError, ValueError):
         return None
 

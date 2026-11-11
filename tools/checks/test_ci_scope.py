@@ -2040,6 +2040,111 @@ class ModuleReuseTest(unittest.TestCase):
                     with self.assertRaises(SystemExit):
                         ci_scope.verify_planner_invocation()
 
+    def test_planner_flag_agrees_with_the_scope_plan_across_main_drift(self):
+        """`plan` and `verify-planner` must publish/prove one identical flag.
+
+        `plan` reads the whole recorded-base-to-head diff, so it also sees what
+        main landed after the event was published. Verification used to read
+        only the merge's own contribution, which turned every PR red as soon as
+        main rebuilt the Planner bundle in between: the declared flag said
+        `true`, the reconstructed one said `false`, and `verify-planner` exited
+        before a single recipe ran.
+        """
+        with TemporaryDirectory() as folder:
+            previous = Path.cwd()
+            os.chdir(folder)
+            self.addCleanup(os.chdir, previous)
+
+            def run(*args):
+                return subprocess.check_output(args, text=True).strip()
+
+            def commit(message):
+                run("git", "add", ".")
+                run("git", "commit", "-qm", message)
+                return run("git", "rev-parse", "HEAD")
+
+            def merge(base, source):
+                run("git", "checkout", "-qB", "merge", base)
+                run("git", "merge", "--no-ff", "-qm", "CI merge", source)
+                return run("git", "rev-parse", "HEAD")
+
+            run("git", "init", "-q")
+            run("git", "config", "user.email", "ci@example.invalid")
+            run("git", "config", "user.name", "CI fixture")
+            build = Path("plugins/linker-tools/build/planner/app.js")
+            build.parent.mkdir(parents=True)
+            build.write_text("old build")
+            app = Path("apps/planner/src/app.ts")
+            app.parent.mkdir(parents=True)
+            app.write_text("old source")
+            service = Path("services/genie/app.py")
+            service.parent.mkdir(parents=True)
+            service.write_text("old service")
+            commit("shared root")
+            build.write_text("base build")
+            base = commit("push-time base recorded in the event payload")
+
+            # main lands its own Planner build; the event still records `base`.
+            run("git", "checkout", "-qB", "main", base)
+            build.write_text("main rebuilt bundle")
+            main_tip = commit("main rebuilt the planner bundle after the push")
+
+            def scenario(name, main, planner_source, planner_build, expected):
+                run("git", "checkout", "-qB", "source", base)
+                if planner_source:
+                    Path("apps/planner/src/pr.ts").write_text("pr planner source")
+                if planner_build:
+                    Path("plugins/linker-tools/build/planner/pr.js").write_text(
+                        "pr rebuilt bundle"
+                    )
+                service.write_text("pr service change")
+                source = commit("pull request change")
+                head = merge(main, source)
+                planned = ci_scope.change_flags(ci_scope.diff_changes(base, head))[
+                    "planner_build_changed"
+                ]
+                proven = ci_scope.planner_build_flag(head, base=base)
+                with self.subTest(scenario=name):
+                    self.assertEqual(planned, expected)
+                    self.assertEqual(proven, planned)
+                    with patch.dict(
+                        os.environ,
+                        {
+                            "EVENT_NAME": "pull_request",
+                            "BASE_SHA": base,
+                            "HEAD_SHA": head,
+                            "PLANNER_BUILD_CHANGED": str(planned).lower(),
+                        },
+                    ):
+                        ci_scope.verify_planner_invocation()
+                        # The proof still rejects a flag the diff contradicts.
+                        with patch.dict(
+                            os.environ,
+                            {"PLANNER_BUILD_CHANGED": str(not planned).lower()},
+                        ):
+                            with self.assertRaises(SystemExit):
+                                ci_scope.verify_planner_invocation()
+                return head
+
+            # PR changes Planner source, main quiet on the build.
+            scenario("planner source only", base, True, False, False)
+            # The defect: main rebuilt the bundle, this PR never touched Planner.
+            scenario("main rebuilt, PR untouched", main_tip, False, False, True)
+            # Both sides rebuilt, and PR rebuilt alone.
+            scenario("both rebuilt", main_tip, True, True, True)
+            scenario("PR rebuilt alone", base, False, True, True)
+
+            # Neither side touches Planner: no flag, and nothing to prove.
+            run("git", "checkout", "-qB", "source", base)
+            service.write_text("pr service change")
+            quiet = merge(base, commit("pull request change"))
+            self.assertFalse(
+                ci_scope.change_flags(ci_scope.diff_changes(base, quiet))[
+                    "planner_build_changed"
+                ]
+            )
+            self.assertFalse(ci_scope.planner_build_flag(quiet, base=base))
+
     def test_gate_rejects_forged_attempt_input_job_and_module_proofs(self):
         proof = {
             "engine": {
