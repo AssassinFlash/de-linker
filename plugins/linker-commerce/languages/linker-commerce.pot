@@ -3823,6 +3823,10 @@ msgstr ""
 msgid "Certification"
 msgstr ""
 
+#: includes/Products/Materials.php:889
+msgid "EMC"
+msgstr ""
+
 #: includes/Products/Materials.php:872
 msgid "Cable length"
 msgstr ""

@@ -106,7 +106,13 @@ IEC62040/N140/EU 2023/1542/UN38.3
 本批改为 `qualifier`，并扩展 `Materials::spec_text()`：原来只对 `temp` 一个 key 拼 qualifier，
 现在按显式白名单 `QUALIFIED_ROWS`（`temp` + 本批三行）生效。
 
-### 3.2 这些行目前到不到客户眼前（必须点明）
+### 3.2 这些行到不到客户眼前（#1117 时的状态；边界已于 2026-11-11 解除）
+
+> **2026-11-11 更新：本节的边界已解除。** 三行（认证 + 两条额定值）已写入 1954/1955 的 legacy 表
+> （`_tv_legacy_acf_json` 与 `_linker_de_acf_json`），生产 EN/DE 四页均已渲染，值与本 registry 逐字一致。
+> 执行记录、文案评审与回滚方法：`docs/acceptance/2026-11-11/548-batc-pdp-spec-rows/`。
+> 本批同时补齐了 registry 缺的 `emc` 事实（手册 p82 的认证块本来就印两行）。以下为 #1117 当时的
+> 原样记录，保留作证据。
 
 registry 的 `specifications` 只经 `Materials::specs()` 输出，而 `specs()` 的两个消费者都只要 4 行：
 
