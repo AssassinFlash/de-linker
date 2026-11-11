@@ -1,6 +1,6 @@
 # BAT-C 用户手册上架与定量规格行（609 流程）
 
-日期：2026-11-11。分支 `batc-publication`（worktree `/tmp/batc-publication`，自 `origin/main` `c05ff12bf`）。
+日期：2026-11-11。分支 `batc-publication`（worktree `/tmp/batc-publication`，自 `origin/main` `c05ff12bf`，交付前 rebase 到 `0a0065f5a`）。
 依据：`docs/specs/609-product-publication.md`、`docs/research/2026-11-04-vendor-originals.md` §2/§5.1。
 未改引擎、模板、WindPress；未新增产品、未改营销正文。
 
@@ -176,7 +176,7 @@ parse 合计 3,594 s），且本机有自动 worker（`com.linker.knowledge-publ
 ## 7. 门禁
 
 ```
-phpunit（worktree，全量）    2315 tests, 8919 assertions, 543 skipped → OK
+phpunit（worktree，全量）    2315 tests, 8934 assertions, 543 skipped → OK
 phpunit（新测试）            MaterialsQualifierTest 4 tests / 29 assertions → OK
 phpcs                       clean（0 error 0 warning）
 phpstan (level 8)           No errors
