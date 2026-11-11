@@ -1,0 +1,14 @@
+# Every five minutes, right after the probe's own cycle. The notifier only
+# sends on a state flip, so a healthy site costs this unit nothing but one
+# file read and one SMTP-less run.
+[Unit]
+Description=Push the site probe's verdict to the team
+
+[Timer]
+OnBootSec=3m
+OnUnitInactiveSec=5m
+Persistent=true
+Unit=linker-site-alert.service
+
+[Install]
+WantedBy=timers.target

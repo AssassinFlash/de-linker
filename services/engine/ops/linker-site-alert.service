@@ -1,0 +1,22 @@
+# Push the site probe's verdict to the team. The probe records; this unit is
+# the part that speaks. 2026-11-11: ~90 minutes of global downtime produced
+# only a log line, because nothing pushed it anywhere.
+# The notifier reads state/site-probe.log and sends over authenticated SMTP
+# from this host, so the alert path does not touch the shared host it watches.
+[Unit]
+Description=Alert the team when the site probe reports an outage
+After=network-online.target linker-site-probe.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/linker-engine/ops/site-alert.py
+StandardOutput=journal
+StandardError=journal
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+# state/site-probe.log is read; state/site-alert.json holds the last verdict
+# and any alert whose delivery failed, so a failed send is retried, not lost.
+ReadWritePaths=/opt/linker-engine/state

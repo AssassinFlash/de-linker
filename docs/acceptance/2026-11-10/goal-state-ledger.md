@@ -1462,3 +1462,39 @@ Matrix row 8 keeps "需补验（扩国已进 AT）": SE is the next candidate by
 account data; DSO-level evidence remains open for all four countries.
 Resources: worktree reclaimed after merge; Apify 10 datasets + 8 KV stores
 deleted (204) by the agent; no review-instance contact.
+
+## U2 landed: the probe now pushes its own verdict (PR #1116)
+
+The detection gap recorded above ("nothing pushes an alert") is closed on the
+engine host. `ops/site-alert.py` reads `state/site-probe.log` and mails on a
+state flip only — one `SITE DOWN`, one `Site recovered` — and it does so over
+authenticated SMTP from the VPS, so the path never touches the shared host it
+watches (no MTA at all on that host, measured; `smtp.hostinger.com:465` answers).
+Recipient is `sales@sunriverinverter.com` per the 2026-10-17 ruling.
+
+Thresholds are taken from this incident, not chosen by taste: 3 consecutive
+failures (the outage ran ~9 five-minute cycles; the surviving record holds 2
+because the probe was installed at 01:09 UTC near its end, and the 89 cycles
+between 01:10 and 08:37 UTC have a gap median 310 s / max 340 s, so 3 failures
+always span ≥10 minutes); 20 minutes of silence (3.5× the worst measured gap —
+a dead probe writes nothing and looks exactly like a healthy quiet log, which is
+the shape that hid this outage); and one daily heartbeat while healthy, which is
+the only watcher this monitor can have, since no second vantage exists and the
+WP digest dies with the site.
+
+Production readback the same hour (test-mail discipline, tester address, real
+probe record untouched): down alert `250 … ids=a96c3a59ddae11f1a705bc241132d3d4`
+at 09:02:47Z, recovery `250 … ids=aae04f0bddae11f186f8bc2411b4e0d6` at
+09:02:48Z. Timer active, verdict `ok`, 92 readings.
+
+Two findings from the work itself. First, the channel proof was taken with
+smtplib's debug log on, and the AUTH argument is the password in base64 — **that
+put the mailbox's SMTP password into the transcript**, so
+`sales@sunriverinverter.com`'s password needs rotating in hPanel (owner action;
+the shipped path now forces `set_debuglevel(0)` and a test asserts delivery
+writes nothing to either stream). Second, the first implementation's tail read
+seeked to EOF when the file was under the cap, which read an empty list — the
+same "quiet log" illusion the alerting exists to break; fixed and covered.
+
+Still unwatched by design: the VPS itself. If this host dies, no alert is
+possible from here; the daily heartbeat is what makes that state visible.
