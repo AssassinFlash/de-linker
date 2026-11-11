@@ -13,7 +13,7 @@
 | ③ 报价准备超时 | 单号列表（编号、公司、最近变更时间、后台链接） | 记录最后变更时刻早于 发送时刻 − 259200 秒（3 天 = 72 小时，固定时长，非自然日），且状态仍为 `wc-quotation-in-progress`（2026-11-08 业主裁定：报价线下出具，站点以记录最后变更时刻为最近信号） |
 | ④ 邮件队列失败 | 封数 + 每封的收件人（Outbox 重试耗尽的消息） | 无时间窗：当前所有 `linker_mail_job` 草稿（`JobStore::FAILED_STATUS`）都算，直到有人处理 | 最近一次重试耗尽的时刻（消息保持草稿状态即视为未解决） |
 
-待审账号的主题摘要、区块标题和正文数字统一读取 `PendingApprovals::pending_count()`；空提示和受限账号汇总仍显示，但不计入待审数。待开 PI 的处置排除必须通过现有原生读取器验证员工权限、私有订单审计、HMAC、订单归属和原始正文；标记存在本身、模型分类、未知或损坏证据均不足以排除，读取失败继续显示。原询盘状态、正文、审计、队列和容量不因摘要读取而改变。
+待审账号的主题摘要、区块标题和正文数字统一读取 `PendingApprovals::pending_count()`；空提示和受限账号汇总仍显示，但不计入待审数。待跟进询盘的处置排除必须通过现有原生读取器验证员工权限、私有订单审计、HMAC、订单归属和原始正文；标记存在本身、模型分类、未知或损坏证据均不足以排除，读取失败继续显示。原询盘状态、正文、审计、队列和容量不因摘要读取而改变。
 
 发送时刻 = 本次 cron 触发的时刻。同一条数据在边界附近的两封摘要之间移动是预期行为。
 
@@ -36,7 +36,7 @@
 `Linker\Commerce\Digest\Block` 接口（`id()/title()/entries()/empty_text()`，entry = `label + url + link_text + detail`），`Digest/Blocks` 按固定顺序装配内置的 ②③④与内部认证健康块，并应用过滤器 `linker_commerce_digest_blocks`（传 `list<Block>`，返回 `list<Block>`，非 Block 元素被剔除）。`Registration\Module` 将 `PendingApprovals` 放在最前；每条 entry 的 `url` 由 `Registration\AccountsAdmin::url( $user_id )` 生成，直达 `admin.php?page=linker-accounts&focus=<用户ID>` 审核卡片，`link_text` 沿用 Open the customer / Kunden öffnen。身份及状态口径由现有 `Registration\Approval` 负责；本块不另写审批状态机。已处理账户不计入待审；限制账户另列一行数量与后台独立区域链接，拒绝账户只在历史中保留。旧邮件里的深链仍可查看当前决定。
 
 ## 邮件
-- WC_Email 子类（`Digest/DigestEmail`，继承团队通知基类），注册进 `woocommerce_email_classes`（后台 WooCommerce → Settings → Emails 可见可关）。语言 = 站点默认语言（团队邮件规则），HTML 单格式，正文模板 `templates/emails/linker-digest.php`。有条目的块各成一张卡片，条数在标题左边，打开链接用原文、不用按钮。没有条目的块收在最后一张安静的卡片里。样式类写在 `DigestEmail::presentation_css()`，经 `woocommerce_email_styles` 在发送时内联，模板本身不加 style 属性。外层仍沿用 WooCommerce 邮件头尾，只改这一封的底色和字号。已审过的标题、空态句和条目句子不改。邮件内的时间显示一律 Europe/Berlin；日期格式随邮件语言取（EN "October 11, 2026" / DE "11. Oktober 2026"），不取站点的 date_format 选项（快照站点该选项是中文格式，与邮件语言无关）。
+- WC_Email 子类（`Digest/DigestEmail`，继承团队通知基类），注册进 `woocommerce_email_classes`（后台 WooCommerce → Settings → Emails 可见可关）。语言 = `LocaleSwitch::team_default()`：选项 `linker_commerce_team_locale` 有值就用它，否则回落到站点默认语言（生产该选项读回 `zh_CN`、站点语言 `en_US`，所以摘要实际以中文发出）。HTML 单格式，正文模板 `templates/emails/linker-digest.php`。有条目的块各成一张卡片，条数在标题左边，打开链接用原文、不用按钮。没有条目的块收在最后一张安静的卡片里。样式类写在 `DigestEmail::presentation_css()`，经 `woocommerce_email_styles` 在发送时内联，模板本身不加 style 属性。外层仍沿用 WooCommerce 邮件头尾，只改这一封的底色和字号。已审过的标题、空态句和条目句子不改。邮件内的时间显示一律 Europe/Berlin；日期格式随邮件语言取（EN "October 11, 2026" / DE "11. Oktober 2026"），不取站点的 date_format 选项（快照站点该选项是中文格式，与邮件语言无关）。摘要全部块文案必须在团队语言目录里有译文，由 `tests/php/Unit/Digest/DigestCatalogTest.php` 从源码抽取 msgid、对编译产物 `.mo` 校验：`i18n-coverage` 门只读 de_DE_formal 的目录内容，覆盖不到这里，两轮曾因此把英文串发进中文摘要。
 - 主题/标题/各块标题与空态句是客户可见面之外的内部业务邮件文案，同样过文案对抗评审（记录 `docs/acceptance/<日期>/74/copy-review.md`）：EN 先行，DE 独立撰写非翻译，基准 = linker-copywriting Hard Stops（email subjects 属公开面）+ 既有 .po 术语（Anfrage / Angebot in Vorbereitung / Anfrage eingegangen）。
 
 ## 不做
