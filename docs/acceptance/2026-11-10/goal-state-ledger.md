@@ -995,3 +995,23 @@ Dispatched: production-source index rebuild → genie release → production
 ACK (T line resumed). Also recorded: the CI verify-planner scope
 misjudgment T hit during rebase is an unfixed CI defect awaiting any PR
 that lands after main touches apps/planner.
+
+## Production knowledge readiness closed end-to-end (PR #1103 merged, T line resumed)
+
+ready.knowledge on production: 0/88 → 85/85 (the 85 denominator is correct:
+reference PV module and cables are not knowledge products), engineering
+stays 88/88, source_revision unchanged. Two production root causes both
+fixed: (1) the served index was built from the stale 094db8ad generation —
+rebuilt from the production runtime's own source tree (serving_revision
+must match the running process identity; HEAD would have failed every
+retrieval) and published through the managed worker pipeline (native lease,
+owner token, atomic switch, incremental upload 1.5 MB of 280 MB matched);
+(2) the local launchd worker definition pointed at two deleted release
+dirs — exit 78 EX_CONFIG on every 900 s trigger since 11-08, which is why
+nothing ever re-ACKed; the definition now points at the matching release
+and completed a run with exit 0. Real production retrieval verified through
+the VPS loopback with Genie's own service token (Turnstile not bypassed):
+HS2 series powers grounded on the SAJ datasheet page 2. Old index
+generations retained per KEEP=3. Open item recorded: POST
+/publication/identify returns 403 for worker credentials that pass
+jobs/claim auth — an independent auth defect, dispatched separately.
