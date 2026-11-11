@@ -748,3 +748,24 @@ load re-climbed to 42 within 7 minutes of the reboot before subsiding —
 the provider reboot treated the symptom; root cause is host-side and
 escalated to the owner with ticket-ready evidence (account processes idle
 throughout). Second-outage watcher armed.
+
+## Country-rules e2e and roof-import recheck landed (PRs #1094, #1093 merged)
+
+- Country rules (L line): first e2e coverage — EN/DE UI chains (basis options
+  verbatim, country-mismatch role=status, EEG fields, invalid-date alert,
+  project reopen rebuild) plus the engine's named-rejection contract (422s
+  with field paths; out-of-window dates are rule outcomes, not errors).
+  Findings for follow-up: the frontend hardcodes CHECKED_SOURCE_DATES
+  (authoritative value lives in country_rules.py — no API exposes the window);
+  and this review instance's equipment runs 409 product_evidence_changed
+  because the manifest's ready.engineering is all false (instance state, not
+  code — production engine prepared 88).
+- Roof import (M line): the D-line audit's three reasons were re-verified and
+  two were wrong (citygml/LoD2 never specced for this chain — the only
+  declared format is geojson_wgs84_horizontal_v1; direct-beam has a real
+  customer entry, version-gated). The real gap — native import acceptance —
+  is now covered by a 4-case e2e (EN/DE × 1440/390, real upload → wizard →
+  persist → reload read-back), with the 187.67 m² area independently
+  recomputed. Still open (recorded): native failure-state captures, exit
+  guards; runs/weather|direct-beam|geometric-pv are version_unavailable on
+  this instance (deployment boundary, needs a configured instance).
