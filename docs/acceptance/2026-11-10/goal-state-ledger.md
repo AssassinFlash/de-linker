@@ -2018,3 +2018,55 @@ two prior-record corrections (ET cert page holds 40 entries, not 8; the
 curve-family contents stay un-derived; no engineering release from these
 materials. Remaining paths (institutional ZEREZ account, vendor provision)
 recorded as fact, not as a solicitation suggestion.
+
+## shared_dc gets production evidence; a cross-kernel tolerance defect fixed (2026-11-12)
+
+The energy follow-up #1107 asked for is now half answered, with the other half
+quantified instead of guessed. Full record:
+`docs/acceptance/2026-11-11/548-energy-two-kernels/retry-2026-11-12.md`.
+
+- **The 11-11 readiness verdict was right.** After the C line's BAT-C PDP write,
+  1954 and 1955 read `{knowledge: true, engineering: true}` again (pool 88,
+  signature `71699e7c`), and 1954's product revision moved
+  `eb0d5610… -> 1d49ad02…` (model `GW61.4-BAT-AC-G10`). The `false` we saw was
+  an in-flight state, not a product decision.
+- **`shared_dc_energy_replay_v1` ran twice in production, both succeeded**
+  (winter `a5c5c0f7`, summer `17df9164`; 2 976 fifteen-minute intervals each,
+  `attempt=1`, worker `production-linker-planner`,
+  `models.replay = shared_dc_energy_replay_v1`). Energy closure 1.73e-14 and
+  −3.77e-13 kWh; verification 51/52 and 52/52; autarky 0.3406 in January vs
+  0.9950 in July, with export 0 vs 909.7 kWh — the seasonality is physical, not
+  a tautology.
+- **The load input is now an industry standard, not our own fixture.** BDEW/VDEW
+  H25 (2025 edition) expanded to 2023 at 6 000 kWh/a: 35 040 intervals,
+  5 994.737 kWh, `normalisation_gap` 0.005995 reported rather than rescaled.
+  PV stayed the retained pvlib model output. This is stronger than #1107's own
+  synthetic fixtures but still **not** customer metering data — the boundary
+  stays recorded.
+- **A real cross-kernel defect surfaced and is fixed.** `inventory_charge_power`
+  and `inventory_discharge_power` passed a hard ULP allowance that *replaced*
+  the configured tolerance in `shared_dc_checks.py` and `plant_energy_checks.py`,
+  while the equivalent single_ac check (`reference_charge_delivery` /
+  `reference_discharge_delivery`) adds to it. The same physical identity
+  therefore passed at 3.37e-13 in single_ac (#1107) and failed at 2.83e-15 in
+  shared_dc — nine orders of magnitude from a hard-coded ULP, not from physics.
+  Both now add their extra ledger arithmetic to `absolute + relative*|scale|`;
+  the forged-ledger tests that must still fail do fail, and 124 kernel tests
+  pass. single_ac's own narrow `inventory_boundary` checks are a different
+  question (inventory containment, not terminal-power identity) and were left
+  alone.
+- **`plant_ac_energy_replay_v1` is still at zero runs, now for a precise reason.**
+  All 42 inverters in the pool declare **no** reverse/AC-charge capability fact,
+  so `plant_ac_parameters.storage_unit()` raises
+  `EvidenceMissing: plant_ac_reverse_capability:a`. That is a correct refusal:
+  defaulting an unknown charging path to absent would silently change physics.
+  Unblocking needs `battery_grid_charging_supported` plus
+  `max_battery_charge_ac_power_kw` on some inverter — Woo equipment data, C line.
+- **Cost.** CAS 495 564 061 -> 513 526 080 bytes (+17.1 MiB) for 7 new assets
+  and 3 traces; no annual trace was written because both windows are single
+  months. Rows: runs 143->147, revisions 178->183, assets 138->145. One failed
+  run is recorded honestly (`a4c3efe2…`, `invalid_input`) — its cause was my
+  driver starting the window one hour before the PV product's coverage begins,
+  fixed by aligning to `2023-01-01T00:00Z`.
+- **Rating:** matrix row 3 moves to `可发布（能力层，两内核有生产证据）`.
+  Not "three kernels": plant_ac has no production run and the row says so.

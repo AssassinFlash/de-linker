@@ -75,17 +75,24 @@ def verify(
         *,
         bound: bool = False,
         energy: bool = False,
-        hard_allowance: float | None = None,
+        exact: bool = False,
+        arithmetic_allowance: float = 0.0,
         task: bool = False,
     ) -> None:
         if task:
             task_codes.add(code)
         violation = max(residual, 0.0) if bound else abs(residual)
         absolute = tolerance.absolute_kwh if energy else tolerance.absolute_kw
+        # An exact check carries an identity: any difference is a violation, so
+        # it keeps a zero allowance. An arithmetic allowance states extra
+        # ledger rounding for one equation and adds to the configured numerical
+        # tolerance rather than replacing it — replacing it once made the same
+        # physical identity pass or fail by nine orders of magnitude between the
+        # single-AC and joint kernels.
         allowance = (
-            hard_allowance
-            if hard_allowance is not None
-            else absolute + tolerance.relative * abs(scale)
+            0.0
+            if exact
+            else absolute + tolerance.relative * abs(scale) + arithmetic_allowance
         )
         if not all(math.isfinite(v) for v in (violation, scale, allowance)):
             raise NumericalFailure("joint replay has nonfinite verification arithmetic")
@@ -382,7 +389,7 @@ def verify(
                 index,
                 power_scale,
                 bound=True,
-                hard_allowance=math.fsum(
+                arithmetic_allowance=math.fsum(
                     math.ulp(v) if v else 0.0 for v in (c, boundary.charge_kw)
                 ),
             )
@@ -392,7 +399,7 @@ def verify(
                 index,
                 power_scale,
                 bound=True,
-                hard_allowance=math.fsum(
+                arithmetic_allowance=math.fsum(
                     math.ulp(v) if v else 0.0 for v in (d, boundary.discharge_kw)
                 ),
             )
@@ -403,7 +410,7 @@ def verify(
                 state_scale,
                 bound=True,
                 energy=True,
-                hard_allowance=math.ulp(model.usable_window_kwh)
+                arithmetic_allowance=math.ulp(model.usable_window_kwh)
                 if model.usable_window_kwh
                 else 0.0,
             )
@@ -414,7 +421,9 @@ def verify(
                 state_scale,
                 bound=True,
                 energy=True,
-                hard_allowance=math.ulp(unit.reserve_kwh) if unit.reserve_kwh else 0.0,
+                arithmetic_allowance=math.ulp(unit.reserve_kwh)
+                if unit.reserve_kwh
+                else 0.0,
                 task=True,
             )
             record(
@@ -540,7 +549,7 @@ def verify(
                     energy=True,
                     # Replay carries the exact preceding origin object;
                     # continuity is identity, not a fresh arithmetic result.
-                    hard_allowance=0.0,
+                    exact=True,
                 )
                 expected = (
                     before
@@ -580,7 +589,7 @@ def verify(
                 max(minimum, models[uid].model.usable_window_kwh),
                 bound=True,
                 energy=True,
-                hard_allowance=math.ulp(minimum) if minimum else 0.0,
+                arithmetic_allowance=math.ulp(minimum) if minimum else 0.0,
                 task=True,
             )
     return PlantVerification(tuple(checks.values()), tolerance, frozenset(task_codes))
