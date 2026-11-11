@@ -137,6 +137,47 @@ final class MaterialsQualifierTest extends TestCase {
 	}
 
 	/**
+	 * The EMC row the manual prints beside the safety list reaches a customer
+	 * under its own vocabulary label, unqualified: the standards the manual
+	 * prints for it carry no condition of their own.
+	 */
+	public function test_the_emc_row_is_its_own_labelled_row(): void {
+		WP_Mock::userFunction(
+			'wc_get_product',
+			array(
+				'return' => fn ( int $id ) => $this->product( $id ),
+			)
+		);
+		$this->seed_registry(
+			array(
+				'mat_test_bat_emc' => array(
+					'bindings'    => array( 'woo_product_ids' => array( 9104 ) ),
+					'identity'    => array(
+						'kind'         => 'battery_system',
+						'manufacturer' => 'GoodWe',
+						'model'        => 'GW-TEST-EMC',
+					),
+					'material_id' => 'mat_test_bat_emc',
+					'technical'   => array(
+						'specifications' => array(
+							'emc' => array(
+								'value'    => 'IEC/EN 61000-6-1/2/3/4',
+								'value_de' => 'IEC/EN 61000-6-1/2/3/4',
+								'unit'     => null,
+							),
+						),
+					),
+				),
+			),
+		);
+
+		$row = Materials::specs( $this->product( 9104 ) )['emc'];
+
+		$this->assertSame( 'EMC', $row['label'] );
+		$this->assertSame( 'IEC/EN 61000-6-1/2/3/4', $row['value'] );
+	}
+
+	/**
 	 * A key outside the reviewed set keeps its row exactly as before, so the
 	 * condition cannot silently reshape other products' visible specs.
 	 */
@@ -192,6 +233,11 @@ final class MaterialsQualifierTest extends TestCase {
 			$this->assertStringContainsString( 'VDE2510', $specs['certification']['value'] );
 			$this->assertStringContainsString( 'N140', $specs['certification']['value'] );
 			$this->assertStringNotContainsString( 'N143', $specs['certification']['value'] );
+			// The manual prints the certification block as two rows; the page
+			// shows both, so the EMC row is the same fact at the same page.
+			$this->assertSame( 82, $specs['emc']['citation']['page'] );
+			$this->assertSame( 'IEC/EN 61000-6-1/2/3/4', $specs['emc']['value'] );
+			$this->assertSame( $specs['emc']['value'], $specs['emc']['value_de'] );
 		}
 	}
 

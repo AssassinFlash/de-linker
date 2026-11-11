@@ -4106,6 +4106,10 @@ msgstr "Anwendbare Normen"
 msgid "Certification"
 msgstr "Zertifizierung"
 
+#: includes/Products/Materials.php:889
+msgid "EMC"
+msgstr "EMV"
+
 #: includes/Products/Materials.php:872
 msgid "Cable length"
 msgstr "Kabellänge"

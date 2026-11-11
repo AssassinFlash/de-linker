@@ -886,6 +886,7 @@ final class Materials {
 			'ambient_humidity'                => __( 'Ambient humidity', 'linker-commerce' ),
 			'applicable_standard'             => __( 'Applicable standards', 'linker-commerce' ),
 			'certification'                   => __( 'Certification', 'linker-commerce' ),
+			'emc'                             => __( 'EMC', 'linker-commerce' ),
 			'cable'                           => __( 'Cable length', 'linker-commerce' ),
 			'accessory_option'                => __( 'Accessory option', 'linker-commerce' ),
 			'ac_surge_protection'             => __( 'AC surge protection', 'linker-commerce' ),
