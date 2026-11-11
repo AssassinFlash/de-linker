@@ -1524,3 +1524,26 @@ update one line in /etc/linker-site-alert.env and the local
 sunriver-smtp.env. Until rotated, treat that password as exposed-on-host.
 Known boundary (recorded, by design): no second vantage watches the VPS
 itself; the heartbeat makes its death visible.
+
+## BAT-C manual publication line closed (PR #1117, merged f38a5d04e)
+
+Premise verified before work: the manual was already hosted and linked in
+production since 11-04 (attachment 8508, byte-identical to the official
+download, both BAT-C products); the real gaps were the review snapshot (1955
+missing the link — snapshot drift, aligned to production with a before/after
+image for rollback) and the registry spec rows. Delivered: 33→34 spec rows
+with physical-page citations, the Australia footnote carried as bilingual
+qualifiers on the rated-current/power rows only (max rows unlimited, kept
+apart per the original's Note 2), and one factual correction to the research
+report — the certification reads IEC62040/N140 (verified by rendering the
+physical page), not N143/N1438, with a test asserting the old value stays out.
+Production untouched this batch (post_modified unchanged); five-layer consumer
+readback green on both EN and DE. Honest boundaries recorded: the new registry
+rows are NOT on the product page today (PDP reads the legacy spec_groups
+table, not the registry) — making them visible is a copy-reviewed change on
+the legacy table, logged as a residual item; the qualifier scope was narrowed
+to a three-row whitelist so 36 unrereviewed customer-visible spec strings on
+24 other products could not silently change; review-side Genie knowledge
+rebuild is left to the automatic publication worker (production knowledge
+stays true). HS3 pin-level batch deliberately not done (no consumer today —
+rule 615; different risk class; would pollute this batch's readback).
