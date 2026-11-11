@@ -353,3 +353,51 @@ def test_fetch_retries_a_transient_failure_and_completes(tmp_path: Path) -> None
     assert code == 0, logs
     assert hits["count"] == 3
     assert json.loads(feed.read_text())["products"] == document["products"]
+
+
+def test_jobs_transport_stall_retries_and_completes(
+    tmp_path: Path, feed_url: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    document = feed_document()
+    (tmp_path / "feed.json").write_text(json.dumps(document))
+    monkeypatch.setenv("LINKER_PUBLICATION_USER", "worker")
+    monkeypatch.setenv("LINKER_PUBLICATION_PASSWORD", "secret")
+    hits = {"count": 0}
+
+    class StallOnce(QuietHandler):
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            super().__init__(*args, directory=str(tmp_path), **kwargs)
+
+        def do_POST(self) -> None:  # noqa: N802 - the stdlib spelling
+            hits["count"] += 1
+            if hits["count"] == 1:
+                # A read stall: take the body, then answer nothing at all.
+                self.rfile.read(int(self.headers.get("Content-Length", 0)))
+                self.close_connection = True
+                return
+            body = json.dumps({"job": None}).encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+    server = HTTPServer(("127.0.0.1", 0), StallOnce)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        address = server.server_address
+        monkeypatch.setenv(
+            "LINKER_PUBLICATION_JOBS_URL",
+            f"http://{str(address[0])}:{int(address[1])}/jobs",
+        )
+        sync = load_sync()
+        code, restart, logs, feed, contract = run(
+            sync, tmp_path, feed_url, jobs=sync.job_request
+        )
+    finally:
+        server.shutdown()
+        thread.join()
+        server.server_close()
+    assert hits["count"] >= 2, logs
+    assert code == 0, logs
