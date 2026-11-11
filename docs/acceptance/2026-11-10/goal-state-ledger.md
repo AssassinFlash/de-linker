@@ -974,3 +974,24 @@ follows materialization_complete, and preparation_complete=false records the
 honest gap. Verified end to end on the shared instance: a real Genie turn
 answered the HS2-8K AC power from a datasheet page with grounded=true. Note:
 production still reads knowledge 0/88 for the same reason.
+
+## Knowledge readiness path shipped (PR #1101 merged, T line)
+
+`publication ack-knowledge --genie=<url>` closes the second consumer the same
+way ack-engineering closed the first: reads Genie's authenticated
+/knowledge/loaded state (the recipe-aware receipt the production worker also
+uses), refuses on source/identity/serving mismatches, then claim→acknowledge
+with every existing check untouched; serve wires it after genie readiness.
+On review: 0/85 → 85/85 (85 is the true denominator — reference modules and
+cables are not knowledge products), idempotent, and a real Genie retrieval
+returned 8000 W grounded on the SAJ datasheet page 2. Two root causes were
+both real: the local index was built from a different source generation
+(matched 0 of 88), and no local process ever ACKed knowledge. The 112
+table_without_scope diagnostics are honest per-table coverage reports that
+do NOT block readiness — recorded as correct behavior, not fixed.
+Production has the identical gap (Genie serves the 094db8ad generation
+while the site publishes 6f07a2c7); the command honestly refused there.
+Dispatched: production-source index rebuild → genie release → production
+ACK (T line resumed). Also recorded: the CI verify-planner scope
+misjudgment T hit during rebase is an unfixed CI defect awaiting any PR
+that lands after main touches apps/planner.
