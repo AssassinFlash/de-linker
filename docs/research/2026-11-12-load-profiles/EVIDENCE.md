@@ -170,3 +170,28 @@ Bundesministerium des Innern（BMI）官方页 `https://www.bmi.bund.de/DE/theme
 - 没有部署、没有合并、没有写生产；没有触碰 `country_rules.py`、`grid_connection*.py`、`report_copy.py`（SE 线）。
 - 没有把任何画像当作「客户实测用电」；`basis` 字段写的是 `published_load_profile`，`origin` 写的是 `modelled`（引擎的四个 Origin 之一），与 #1107 合成夹具的 `synthetic` 明确区分。
 - 没有为任何产品、项目或客户生成结论。
+
+## 13. 引擎实跑记录（可复现）
+
+命令（worktree 内，`services/engine`）：
+
+```
+uv run --locked pytest tests/planning/test_load_profile.py -q
+uv run --locked python ../../tools/checks/ci_engine_tests.py
+```
+
+`test_official_bdew_profiles_run_through_the_real_energy_kernel` 的实际读数：
+
+| 量 | 值 |
+| --- | --- |
+| 画像 | BDEW G25（2025 edition 系数，展开到 2020 闰年） |
+| 申报年用电 | 400,000 kWh |
+| 时间轴 | 35,132 个刻钟（= 与 PVGIS 轴的交集） |
+| 引擎 `gross_load_kwh` | **403,556.6944** |
+| 独立展开器同年全量 | 403,579.8680 |
+| 差额 | 23.17 kWh = 被裁掉的边界小时 |
+| 运行状态 | `succeeded` |
+
+引擎与展开器是两条独立代码路径（前者走 `ProfileImport` → `FrozenProfile` → `regrid` → `scenario_frames` → `replay`，后者直接读系数表），两者对同一份数据的年积分一致，属于互证而非重复断言。
+
+`ci_engine_tests.py` 结果：`1421 passed, 2 deselected in 274.09s`，exit 0（`ci_expensive` 组在其后单独跑）。本条记录的 2 个 deselected 是 `ci_expensive` 标记的几何 PV 用例，与本改动无关。
