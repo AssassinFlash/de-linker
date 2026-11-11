@@ -1630,3 +1630,27 @@ add an external account dependency for a risk already covered. U4 is closed
 as rejected-by-first-principle. With this, no item in the goal waits on owner
 input; everything is executed in-line (load profiles, direct-beam quota and
 the GW92.1 decision dispatched today; SE in flight).
+
+## GW92.1 listing closed by manufacturer-catalog evidence (2026-11-12)
+
+Executed per the ruling above. Decision: **do not list
+GW92.1-BAT-AC-G10**. Its only official coverage is the Australian market —
+AU datasheet `GoodWe-Single page-20260917-AU-V2.1`
+(`en.goodwe.com/Api/downloadFile?id=3631`, sha256 `1184a6b6…`) and the AU
+product page `en.goodwe.com/au/bat-60-112-series`, plus an AU retailer.
+The EMEA side lists only 61.4 and 112.6 in every one of: the EMEA datasheet
+V1.1 (all 12 language files of the download centre's Datasheet tab, all dated
+2026-01-21, all titled `61.4-112.6kWh`), the DE datasheet
+(`id=3306`, sha256 `2a76fb08…`), the EMEA and DE compatibility overviews, and
+the EMEA product page `emea.goodwe.com/bat112-series`. The EMEA certificate
+tab even carries `GW_BAT-C 102.4-112.6kWh_Certificate-IEC62477` and no 92.1
+entry, i.e. the mid capacity EMEA recognises is 102.4, not 92.1.
+
+Trap recorded: the Global datasheet contains the string `92.1` exactly once —
+as the GW102.4 column's max charge/discharge power (`92.1 / 112.6 kW`), not as
+a model. Model coverage must be read from the header row only.
+
+Product portfolio therefore already matches the EMEA catalogue one-to-one
+(1954 = 61.4, 1955 = 112.6). Record and re-open triggers:
+`docs/research/2026-11-12-gw92-decision/README.md`. No code, Woo, registry or
+production change.
