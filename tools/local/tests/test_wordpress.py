@@ -146,9 +146,7 @@ def test_a_snapshot_with_a_database_warns_that_it_is_not_installed(
     write(snapshot_dir / "db.sql.gz", "dump")
     said: list[str] = []
 
-    wordpress.install_snapshot(
-        instance, cast(WpCli, None), snapshot_dir, said.append
-    )
+    wordpress.install_snapshot(instance, cast(WpCli, None), snapshot_dir, said.append)
 
     assert any("NOT installed" in line for line in said)
 
@@ -160,8 +158,6 @@ def test_a_snapshot_without_a_database_stays_quiet(
     write(snapshot_dir / "uploads" / "2026" / "11" / "cover.png", "png")
     said: list[str] = []
 
-    wordpress.install_snapshot(
-        instance, cast(WpCli, None), snapshot_dir, said.append
-    )
+    wordpress.install_snapshot(instance, cast(WpCli, None), snapshot_dir, said.append)
 
     assert not any("NOT installed" in line for line in said)
