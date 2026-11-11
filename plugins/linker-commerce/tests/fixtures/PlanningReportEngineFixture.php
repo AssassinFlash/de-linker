@@ -102,7 +102,7 @@ final class PlanningReportEngineFixture {
 	 */
 	public static function remove(): void {
 		$state = get_option( self::OPTION );
-		if ( is_array( $state ) && array_key_exists( 'previous_planner_url', $state ) && $state['previous_planner_url'] !== ( $state['planner'] ?? null ) ) {
+		if ( is_array( $state ) && array_key_exists( 'previous_planner_url', $state ) && ( $state['planner'] ?? null ) !== $state['previous_planner_url'] ) {
 			$previous = (string) $state['previous_planner_url'];
 			if ( '' === $previous ) {
 				delete_option( 'linker_planner_url' );
