@@ -39,10 +39,29 @@ export function formatComputedDecimal(
 				maximumSignificantDigits: 6,
 			}).format(value);
 }
-export function parseDecimal(text: string, locale: string): number | null {
+/**
+ * Which decimal mark an input accepts. `locale` is the declared convention of
+ * the interface; `point-or-comma` is for values whose notation belongs to the
+ * datum rather than to the reader, such as geographic coordinates, which every
+ * map, receiver and datasheet writes with a point.
+ */
+export type DecimalNotation = "locale" | "point-or-comma";
+
+export function parseDecimal(
+	text: string,
+	locale: string,
+	notation: DecimalNotation = "locale",
+): number | null {
 	const raw = text.trim();
 	if (!raw) return null;
-	const separator = decimalSeparator(locale);
+	let separator = decimalSeparator(locale);
+	if (notation === "point-or-comma") {
+		const marks = [raw.includes("."), raw.includes(",")].filter(Boolean).length;
+		// Two separators are either grouping or two decimal marks in one value;
+		// neither has a reading this input may guess at.
+		if (marks > 1) throw new Error("invalid_decimal");
+		separator = raw.includes(".") ? "." : raw.includes(",") ? "," : separator;
+	}
 	if (separator !== "." && raw.includes("."))
 		throw new Error("invalid_decimal");
 	if (separator !== "," && raw.includes(","))

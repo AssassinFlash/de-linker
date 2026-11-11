@@ -5,6 +5,7 @@ import {
 	formatDecimal,
 	parseDecimal,
 } from "../domain/decimal.ts";
+import type { DecimalNotation } from "../domain/decimal.ts";
 
 function invalidNumberText(
 	integer: boolean,
@@ -43,6 +44,7 @@ export function NumberField({
 	min,
 	max,
 	integer = false,
+	notation = "locale",
 	onChange,
 	onValidity,
 }: {
@@ -53,6 +55,7 @@ export function NumberField({
 	min?: number;
 	max?: number;
 	integer?: boolean;
+	notation?: DecimalNotation;
 	onChange: (value: number | null) => void;
 	onValidity: (valid: boolean) => void;
 }) {
@@ -80,7 +83,7 @@ export function NumberField({
 		let number: number | null = null;
 		let allowed = true;
 		try {
-			number = parseDecimal(raw, locale);
+			number = parseDecimal(raw, locale, notation);
 			allowed =
 				number === null ||
 				((!integer || Number.isSafeInteger(number)) &&
@@ -121,9 +124,14 @@ export function NumberField({
 			<small id={id + "-format"}>
 				{integer
 					? __("Whole numbers; no thousands separators.", "linker-tools")
-					: decimalSeparator(locale) === ","
-						? __("Decimal comma; no thousands separators.", "linker-tools")
-						: __("Decimal point; no thousands separators.", "linker-tools")}
+					: notation === "point-or-comma"
+						? __(
+								"Decimal point or comma; no thousands separators.",
+								"linker-tools",
+							)
+						: decimalSeparator(locale) === ","
+							? __("Decimal comma; no thousands separators.", "linker-tools")
+							: __("Decimal point; no thousands separators.", "linker-tools")}
 			</small>
 			{!valid && (
 				<small className="lp-field-error" id={id + "-error"}>

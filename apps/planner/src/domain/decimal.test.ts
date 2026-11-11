@@ -21,6 +21,28 @@ test("EN/DE numeric input rejects grouping instead of silently changing magnitud
 	assert.equal(formatDecimal(1234.5, "en-GB"), "1234.5");
 });
 
+test("a datum's own notation reads either mark, because a coordinate does not change with the reader", () => {
+	// Every map, receiver and datasheet writes coordinates with a point; a
+	// German interface must not refuse a value its own sources publish.
+	for (const locale of ["en-GB", "de-DE"]) {
+		assert.equal(parseDecimal("48.1689", locale, "point-or-comma"), 48.1689);
+		assert.equal(parseDecimal("48,1689", locale, "point-or-comma"), 48.1689);
+		assert.equal(parseDecimal("-11.5844", locale, "point-or-comma"), -11.5844);
+		assert.equal(parseDecimal("11,5844", locale, "point-or-comma"), 11.5844);
+		assert.equal(parseDecimal("", locale, "point-or-comma"), null);
+		assert.equal(parseDecimal(" 48 ", locale, "point-or-comma"), 48);
+	}
+	// Two marks are grouping or two decimal marks in one value; neither has a
+	// reading this input may guess at.
+	assert.throws(() => parseDecimal("1.234,5", "de-DE", "point-or-comma"));
+	assert.throws(() => parseDecimal("1,234.5", "en-GB", "point-or-comma"));
+	assert.throws(() => parseDecimal("48.16.89", "de-DE", "point-or-comma"));
+	// The locale reading is unchanged, so every other numeric field keeps its
+	// own declared convention.
+	assert.throws(() => parseDecimal("48.1689", "de-DE"));
+	assert.throws(() => parseDecimal("48,1689", "en-GB"));
+});
+
 test("computed measurements use the electrical report display precision", () => {
 	assert.equal(formatComputedDecimal(12.36931687685298, "en-GB"), "12.3693");
 	assert.equal(formatComputedDecimal(12.36931687685298, "de-DE"), "12,3693");
