@@ -589,3 +589,36 @@ line before merge; one line overturned the main line's own local diagnosis.
   processes; the temporary attachment-list dump and /tmp registry JSONs
   deleted. Production keeps one deploy-prev set per procedure. Disk 1.3 Ti
   free.
+
+## Batch 2026-11-11 (late) — addendum: CI flake root-caused and fixed; batch close
+
+- **Engine CI flake root cause found and fixed** (PR #1084, merged): the 404
+  path of `urlopen` raises `HTTPError` carrying an open response; nothing
+  closed it, so its socket survived to GC and surfaced as an
+  unraisable-exception failure in whatever test ran next (reproduced
+  deterministically on main: two sync tests + test_version). `fetch_feed` now
+  closes the error response before retrying; tests patch the backoff to zero
+  (four attempts kept, suite 65 s → 15 s) and a flaky-then-good server case
+  proves the retry completes on the third hit. Engine job then passed clean
+  (8 m 02 s). The same window also produced the SIGTERM-test flake on #1080
+  (timing-sensitive worker test; passed on rerun, unrelated change).
+- Process note recorded: #1083 was merged once with red CI (formatter);
+  main stayed red until #1084 landed — merge gate re-verified from #1084 on.
+- **Snapshot trap closed** (PR #1085): `--snapshot` installs files only, but
+  snapshot dirs carry `db.sql.gz`; `install_snapshot` now warns and points at
+  `just pull load`. Two tests; justfile comment updated.
+- PR #1079 (reclaim citations verified one by one, 233-file delta explained)
+  reviewed and merged — docs-only, all checks green.
+- **VPS final state**: `/opt/linker-engine/ops/sync-feed.py` now carries the
+  retry + leak-fix version from main; a sync run completed `success` on it.
+  Engine compatibility `932e2ff6…` verified loaded; production design
+  endpoints served a real `solution` this batch.
+- Batch tally: PRs #1080, #1081, #1082, #1083, #1084, #1079 merged (+ #1085
+  pending its rerun at writing); two production deploys (both with WindPress
+  gate handled and previous code retained); one production binding repair;
+  one VPS ops install; state matrix holds zero pending rows.
+- Resources: worktrees — only the main tree remains; review/c222/c332
+  healthy; disk 1.3 Ti free; ~/de-linker-data 39 GB is dominated by retained
+  October evidence/model/weekly-backup dirs with recorded retention reasons
+  (no pressure, nothing deleted blindly); today's deploy snapshots live under
+  snapshots/db-*.gz (small, per procedure).
