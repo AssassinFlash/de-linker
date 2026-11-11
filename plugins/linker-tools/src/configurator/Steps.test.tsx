@@ -209,11 +209,8 @@ test( 'the rail is vertical, the project type is cards, and the form stays expan
 	).toBeVisible();
 } );
 
-test(
-	'a model change lands the Solution clear of the sticky rail',
-	{ timeout: 30_000 },
-	async () => {
-		const { chromium } = await import( '@playwright/test' );
+test( 'a model change lands the Solution clear of the sticky rail', async () => {
+	const { chromium } = await import( '@playwright/test' );
 	const css = readFileSync(
 		join( dirname( fileURLToPath( import.meta.url ) ), 'configurator.css' ),
 		'utf8'
@@ -314,7 +311,7 @@ test(
 	} finally {
 		await browser.close();
 	}
-} );
+}, 30_000 );
 
 test( 'the step rail follows the inputs, the solution and the report', async () => {
 	const tops: Record< string, number > = {
