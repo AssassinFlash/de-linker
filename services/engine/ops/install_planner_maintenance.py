@@ -83,11 +83,61 @@ def undo_bootstrap(domain: str, arguments: list[str]) -> None:
             time.sleep(0.1)
 
 
+def stable_interpreter(python: Path) -> Path:
+    """Reject an interpreter that a release rotation can delete under the plist.
+
+    Each service prunes its own ``releases/`` to a bounded number of versions
+    (``ops/release.sh`` keeps the live one, its rollback target and one spare).
+    An interpreter there satisfies the renderer while that release is current and
+    then disappears, leaving launchd exiting 78 (EX_CONFIG) before the runner
+    starts. The scheduler therefore needs an environment outside every release
+    root, which no rotation reaps.
+    """
+    resolved = python.resolve()
+    # Inspect both the given and the resolved path: a symlink can lead into a
+    # release root, and a release root can hold a symlink out of it.
+    if "releases" in python.parts or "releases" in resolved.parts:
+        raise ValueError("interpreter must outlive release rotation")
+    # Keep the given path. Resolving a virtual environment's bin/python symlink
+    # selects the base interpreter, which cannot see that environment's
+    # site-packages: the runner then fails on its first third-party import.
+    return python
+
+
+def verify_interpreter(python: Path, runner: Path) -> None:
+    """Prove the exact deployed source imports before a scheduler owns it.
+
+    A readable file is not a working interpreter for this runner: the archive
+    verifier needs Pydantic and the sampling modules need the locked scientific
+    set. Checking the real import here turns a silent post-install exit 78 into
+    an installation error.
+    """
+    modules = "linker_engine.planning.archive, linker_engine.planning.retention, linker_engine.planning.workspace"
+    completed = subprocess.run(
+        [str(python), "-B", "-c", f"import {modules}"],
+        cwd=str(runner.parent),
+        env={
+            "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "PYTHONPATH": str(runner.parent.parent / "src"),
+        },
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    if completed.returncode:
+        detail = completed.stderr.strip().splitlines()[-1:] or ["unknown failure"]
+        raise RuntimeError(
+            "interpreter cannot import the maintenance source: " + detail[0]
+        )
+
+
 def rendered(policy: Policy, python: Path, runner: Path) -> bytes:
     policy.validate()
     Archives(policy)  # Existing source/owner binding; rendering changes no data.
     if not python.is_absolute() or not python.is_file() or not runner.is_file():
         raise ValueError("existing absolute interpreter and runner required")
+    python = stable_interpreter(python)
     arguments = [
         str(python),
         "-B",
@@ -140,24 +190,53 @@ def _main() -> int:
     parser.add_argument("--hour-utc", type=int, default=2)
     parser.add_argument("--window-minutes", type=int, default=60)
     parser.add_argument("--budget-seconds", type=int, default=600)
+    parser.add_argument(
+        "--python",
+        type=Path,
+        help="stable interpreter for the scheduled runner (default: this one)",
+    )
     parser.add_argument("--install", action="store_true")
     args = vars(parser.parse_args())
     install = args.pop("install")
+    python = args.pop("python") or Path(sys.executable)
     policy = Policy(**args)
-    content = rendered(
-        policy, Path(sys.executable), Path(__file__).with_name("planner_maintenance.py")
-    )
+    runner = Path(__file__).with_name("planner_maintenance.py")
+    content = rendered(policy, python, runner)
     if not install:
         sys.stdout.buffer.write(content)
         return 0
     if sys.platform != "darwin":
         parser.error("launchd maintenance installation requires the Mac build host")
+    verify_interpreter(stable_interpreter(python), runner.resolve())
     # A RunAtLoad child must not begin remote maintenance before the installer
     # has committed its definition. Reuse the runner's singleton inode.
     with (policy.archives / "maintenance.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         install_definition(content)
     return 0
+
+
+def confirm_installed(domain: str, target: Path, arguments: list[str]) -> None:
+    """Read back the definition the scheduler actually owns.
+
+    A label can hold a different *file* than the one on disk: bootstrapping the
+    retained ``.previous.plist`` leaves that path loaded while the current plist
+    is never consulted, so an edited plist silently changes nothing. Comparing
+    the loaded path and argument list makes the installed file the one that runs.
+    """
+    observed = subprocess.run(
+        ["launchctl", "print", domain + "/" + LABEL],
+        capture_output=True,
+        text=True,
+        timeout=10,
+    )
+    if observed.returncode:
+        raise RuntimeError("installed_schedule_readback_failed")
+    loaded_path = re.search(r"^\s*path = (.+)$", observed.stdout, re.M)
+    if loaded_path is None or Path(loaded_path.group(1).strip()) != target:
+        raise RuntimeError("installed_schedule_owns_a_different_definition")
+    if loaded_arguments(observed.stdout) != arguments:
+        raise RuntimeError("installed_schedule_arguments_not_loaded")
 
 
 def install_definition(content: bytes) -> None:
@@ -175,6 +254,7 @@ def install_definition(content: bytes) -> None:
         raise RuntimeError("existing maintenance schedule must be retired first")
     if not missing_definition(current):
         raise RuntimeError("scheduler_lookup_unconfirmed")
+    arguments = plistlib.loads(content)["ProgramArguments"]
     prior = target.read_bytes() if target.exists() else None
     if prior is not None:
         _write(target.with_suffix(".previous.plist"), prior)
@@ -183,9 +263,10 @@ def install_definition(content: bytes) -> None:
         subprocess.run(
             ["launchctl", "bootstrap", domain, str(target)], check=True, timeout=15
         )
+        confirm_installed(domain, target, arguments)
     except BaseException as error:
         try:
-            undo_bootstrap(domain, plistlib.loads(content)["ProgramArguments"])
+            undo_bootstrap(domain, arguments)
         except BaseException as cleanup_error:
             # The disk definition stays inspectable until native ownership and
             # exit are confirmed; never silently replace a loaded foreign job.

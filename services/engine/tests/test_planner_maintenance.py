@@ -303,6 +303,53 @@ def test_schedule_has_no_retry_daemon_and_keeps_utc_window_args(
     }
 
 
+def test_scheduled_interpreter_must_outlive_release_rotation(
+    workspace: Workspace, tmp_path: Path
+) -> None:
+    policy, _ = setup_store(tmp_path, workspace)
+    runner = OPS / "planner_maintenance.py"
+    reaped = tmp_path / "knowledge-worker/releases/1418dc26e14c/.venv/bin/python"
+    reaped.parent.mkdir(parents=True)
+    reaped.write_bytes(b"#!/bin/sh\n")
+    with pytest.raises(ValueError, match="interpreter must outlive release rotation"):
+        installer.rendered(policy, reaped, runner)
+    stable = tmp_path / "planner-maintenance/venv/bin/python"
+    assert installer.stable_interpreter(stable) == stable
+
+
+def test_interpreter_symlink_is_kept_so_the_environment_keeps_its_packages(
+    tmp_path: Path,
+) -> None:
+    # A virtual environment's bin/python is a symlink to the base interpreter.
+    # Resolving it selects that base interpreter, which cannot import the
+    # environment's own dependencies.
+    base = tmp_path / "base/bin/python3.12"
+    base.parent.mkdir(parents=True)
+    base.write_bytes(b"")
+    environment = tmp_path / "planner-maintenance/venv/bin/python"
+    environment.parent.mkdir(parents=True)
+    environment.symlink_to(base)
+    assert installer.stable_interpreter(environment) == environment
+    escape = tmp_path / "linked/venv/bin/python"
+    escape.parent.mkdir(parents=True)
+    escape.symlink_to(
+        tmp_path / "knowledge-worker/releases/1418dc26e14c/.venv/bin/python"
+    )
+    with pytest.raises(ValueError, match="interpreter must outlive release rotation"):
+        installer.stable_interpreter(escape)
+
+
+def test_installer_refuses_an_interpreter_that_cannot_import_the_runner(
+    tmp_path: Path,
+) -> None:
+    broken = tmp_path / "broken-python"
+    broken.write_text("#!/bin/sh\necho 'No module named pydantic' >&2\nexit 1\n")
+    broken.chmod(0o755)
+    with pytest.raises(RuntimeError, match="cannot import the maintenance source"):
+        installer.verify_interpreter(broken, OPS / "planner_maintenance.py")
+    installer.verify_interpreter(Path(sys.executable), OPS / "planner_maintenance.py")
+
+
 @pytest.mark.parametrize(
     ("message", "reason"),
     [
@@ -732,6 +779,7 @@ def test_installer_resolves_bootstrap_timeout_before_restoring_disk_definition(
         return subprocess.CompletedProcess(arguments, 0, text, "")
 
     monkeypatch.setattr(installer.subprocess, "run", launchctl)
+    monkeypatch.setattr(installer, "verify_interpreter", lambda *_: None)
     with pytest.raises(subprocess.TimeoutExpired) as caught:
         installer.main()
     if owned:
@@ -739,3 +787,59 @@ def test_installer_resolves_bootstrap_timeout_before_restoring_disk_definition(
     else:
         assert loaded and "bootout" not in calls and target.read_bytes() != prior
         assert "cleanup unconfirmed" in caught.value.__notes__[0]
+
+
+def test_installer_refuses_a_label_that_owns_the_retained_definition(
+    workspace: Workspace, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    policy, _ = setup_store(tmp_path, workspace)
+    home = tmp_path / "home"
+    target = home / "Library/LaunchAgents" / (installer.LABEL + ".plist")
+    target.parent.mkdir(parents=True)
+    prior = plistlib.dumps({"ProgramArguments": ["previous"]})
+    target.write_bytes(prior)
+    retained = target.with_suffix(".previous.plist")
+    monkeypatch.setattr(installer.Path, "home", lambda: home)
+    monkeypatch.setattr(installer.sys, "platform", "darwin")
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "install_planner_maintenance",
+            "--host",
+            policy.host,
+            "--archives",
+            str(policy.archives),
+            "--owner",
+            policy.owner,
+            "--install",
+        ],
+    )
+    # Bootstrap succeeds, yet the label keeps the retained .previous file
+    # loaded; the edited plist would never be consulted.
+    state = {"loaded": False}
+
+    def launchctl(
+        arguments: list[str], **_kwargs: Any
+    ) -> subprocess.CompletedProcess[str]:
+        action = arguments[1]
+        if action == "bootstrap":
+            assert retained.exists()
+            state["loaded"] = True
+            return subprocess.CompletedProcess(arguments, 0, "", "")
+        if not state["loaded"]:
+            return subprocess.CompletedProcess(
+                arguments, 113, "", f'Could not find service "{installer.LABEL}"'
+            )
+        text = f"path = {retained}\narguments = {{\nprevious\n}}\n"
+        return subprocess.CompletedProcess(arguments, 0, text, "")
+
+    monkeypatch.setattr(installer.subprocess, "run", launchctl)
+    monkeypatch.setattr(installer, "verify_interpreter", lambda *_: None)
+    with pytest.raises(RuntimeError, match="different_definition") as caught:
+        installer.main()
+    # The retained copy is the rollback artifact; the label itself is foreign
+    # (it owns a different file), so it is neither booted out nor overwritten.
+    assert retained.read_bytes() == prior
+    assert target.read_bytes() != prior
+    assert "scheduler cleanup unconfirmed" in caught.value.__notes__[0]
