@@ -12,6 +12,7 @@ lp-canvas-caption
 lp-canvas-tools
 lp-check
 lp-checkbox
+lp-commercial-outcome
 lp-comparison
 lp-comparison-variants
 lp-data-table
