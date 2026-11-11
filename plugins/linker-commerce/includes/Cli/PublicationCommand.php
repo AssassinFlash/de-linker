@@ -293,6 +293,7 @@ final class PublicationCommand {
 			// the live lease; neither is this invocation's to change.
 			$state                  = get_option( PreparationJobs::OPTION, array() );
 			$current                = is_array( $state ) ? ( $state['engineering'] ?? array() ) : array();
+			$report['claim']        = 'not_claimed';
 			$report['acknowledged'] = $this->acknowledged( $manifest );
 			\WP_CLI::log( (string) wp_json_encode( $report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 			if ( 'ready' === ( $current['status'] ?? '' ) ) {
