@@ -163,7 +163,9 @@ final class CommercialDesign {
 		}
 		$profile = $command['load_profile_csv'] ?? null;
 		if ( null !== $profile ) {
-			if ( ! is_string( $profile ) || strlen( $profile ) > self::MAX_PROFILE_CHARS ) {
+			// The engine's own bound is a character count; a byte count would
+			// refuse a file it accepts once a header carries a non-ASCII letter.
+			if ( ! is_string( $profile ) || mb_strlen( $profile, 'UTF-8' ) > self::MAX_PROFILE_CHARS ) {
 				return Failure::make( 'input', 422 );
 			}
 			$body['load_profile_csv'] = $profile;
