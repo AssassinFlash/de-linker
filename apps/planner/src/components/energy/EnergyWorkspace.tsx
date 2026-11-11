@@ -1520,6 +1520,7 @@ export function EnergyWorkspace({
 					draft={draft}
 					edit={edit}
 					client={client}
+					session={session}
 					scope={session.query_scope}
 					standalone={equipmentFocus}
 					active={active && view === "equipment"}

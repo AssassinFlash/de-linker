@@ -22,7 +22,7 @@ final class Gateway {
 	public const MAX_BODY_BYTES = 16 * 1024 * 1024;
 	public const MAX_JSON_DEPTH = 32;
 	/** The account-claim and identity-status commands are deliberately private. */
-	private const PATHS = 'projects/(?:create|delete|list|read|revise|runs)|runs/(?:read|compare|cancel|energy|report|pv|direct-beam|geometric-pv|pvgis-reference|equipment(?:-search)?|weather(?:/status)?|trace)|assets/(?:read|content)|profiles/(?:csv|inspect|preview)|weather/(?:assets|preview)|geometry/(?:review|import)|installation/review|battery/scenario|products/current|equipment/(?:candidates|certificates)/read|recovery/scopes|sources/(?:saved-solution|project-brief(?:/stage)?)|draft/(?:apply|preview|read)';
+	private const PATHS = 'projects/(?:create|delete|list|read|revise|runs)|runs/(?:read|compare|cancel|energy|report|pv|direct-beam|geometric-pv|pvgis-reference|equipment(?:-search)?|weather(?:/status)?|trace)|assets/(?:read|content)|profiles/(?:csv|inspect|preview)|weather/(?:assets|preview)|geometry/(?:review|import)|installation/review|battery/scenario|products/current|equipment/(?:candidates|certificates)/read|recovery/scopes|sources/(?:saved-solution|project-brief(?:/stage)?)|draft/(?:apply|preview|read)|design/commercial';
 	/**
 	 * A rejected request stays rejected if an installed integration returns null.
 	 *
@@ -396,6 +396,20 @@ final class Gateway {
 		}
 		if ( 'equipment/certificates/read' === $path ) {
 			return ( new CertificateEvidence() )->read( $principal, $command, $this->transport );
+		}
+		// Commercial sizing is the engine's own legacy design route, not a
+		// planner operation: it has no engine-side command receipt, so it must
+		// not enter the planner admission journal.
+		if ( 'design/commercial' === $path ) {
+			$sized = ( new CommercialDesign() )->forward( $principal, $command );
+			if ( is_wp_error( $sized ) ) {
+				return $sized;
+			}
+			$value = json_decode( $sized['body'], false, 64 );
+			if ( ! $value instanceof \stdClass || ! JsonNumbers::supported( $value ) ) {
+				return Failure::make( 'invalid_reply', 502 );
+			}
+			return new WP_REST_Response( $value, $sized['status'] );
 		}
 		if ( str_starts_with( $path, 'draft/' ) ) {
 			return ( new DraftTransfer() )->apply( $principal, $command, $this->admission, $this->transport, substr( $path, 6 ) );

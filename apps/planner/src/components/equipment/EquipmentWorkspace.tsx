@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import type { ComponentProps } from "react";
 import { ApiError } from "../../data/protocol.ts";
+import type { Session } from "../../data/protocol.ts";
 import { sameJson } from "../../domain/draft.ts";
 import { EquipmentSetup } from "./EquipmentSetup.tsx";
 import { PlantSetup } from "./PlantSetup.tsx";
 import { DeviceConditionInputs } from "./DeviceConditionInputs.tsx";
+import { CommercialSizing } from "../commercial/CommercialSizing.tsx";
+import { readBrief } from "../../domain/brief.ts";
 import {
 	beginPlant,
 	hasPlant,
@@ -15,10 +18,13 @@ import {
 	applyEquipmentContext,
 } from "../../domain/equipmentPlant.ts";
 import { __, sprintf } from "../../i18n.ts";
-type Props = ComponentProps<typeof EquipmentSetup>;
+type Props = ComponentProps<typeof EquipmentSetup> & {
+	/** The verified session carries the wire limits the design command uses. */
+	readonly session: Session;
+};
 
 export function EquipmentWorkspace(props: Props) {
-	const { draft, disabled, client, scope, edit, onError } = props;
+	const { draft, disabled, client, scope, edit, onError, session } = props;
 	const [equipmentValid, reportValidity] = useState(true);
 	const [conditionValid, reportConditionValidity] = useState(true);
 	const valid = equipmentValid && conditionValid;
@@ -27,6 +33,15 @@ export function EquipmentWorkspace(props: Props) {
 		return () => props.onValidity(true);
 	}, [valid, props.onValidity]);
 	const multi = hasPlant(draft.history.current);
+	// Commercial projects size from their own load profile; residential ones
+	// never see this panel.
+	let commercial = false;
+	try {
+		commercial =
+			readBrief(draft.history.current.brief).project_use === "commercial";
+	} catch {
+		commercial = false;
+	}
 	let canReturn = false;
 	try {
 		const setup = readPlantDraft(draft.history.current);
@@ -102,6 +117,17 @@ export function EquipmentWorkspace(props: Props) {
 					{__("Multiple systems", "linker-tools")}
 				</button>
 			</div>
+			{commercial ? (
+				<CommercialSizing
+					draft={draft}
+					client={client}
+					session={session}
+					locale={props.locale}
+					active={props.active}
+					disabled={props.disabled}
+					onError={onError}
+				/>
+			) : null}
 			{multi ? (
 				<PlantSetup {...props} onValidity={reportValidity} />
 			) : (

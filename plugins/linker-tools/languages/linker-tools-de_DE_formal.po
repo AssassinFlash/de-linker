@@ -26,6 +26,166 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: hand-written, reviewed\n"
 
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "the site postcode"
+msgstr "die Postleitzahl des Standorts"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "the grid connection capacity"
+msgstr "die Netzanschlussleistung"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "the annual consumption"
+msgstr "den Jahresverbrauch"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "at least one goal"
+msgstr "mindestens ein Ziel"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "the target peak"
+msgstr "die Ziel-Lastspitze"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "Still needed: %s."
+msgstr "Noch erforderlich: %s."
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "The product data is being updated right now. Your entries are still here; please try again in a moment."
+msgstr "Die Produktdaten werden gerade aktualisiert. Ihre Eingaben bleiben erhalten; bitte versuchen Sie es gleich noch einmal."
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "The file has no values. Put one 15-minute value on each line."
+msgstr "Die Datei enthält keine Werte. Tragen Sie je Zeile einen 15-Minuten-Wert ein."
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "The file is shorter than one week. A load profile needs at least %s 15-minute values."
+msgstr "Die Datei ist kürzer als eine Woche. Ein Lastprofil braucht mindestens %s 15-Minuten-Werte."
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "The file contains negative values. A load profile holds consumption only."
+msgstr "Die Datei enthält negative Werte. Ein Lastprofil enthält nur Verbrauch."
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "The file's timestamps do not say which time zone they are in. Export them with a UTC offset such as 2026-01-15T00:15:00+01:00; a local time repeats or is skipped at a daylight-saving change."
+msgstr "Die Zeitstempel der Datei nennen keine Zeitzone. Exportieren Sie sie mit UTC-Abweichung, etwa 2026-01-15T00:15:00+01:00; eine Ortszeit wiederholt sich bei der Zeitumstellung oder fehlt."
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "The file's timestamps are not evenly spaced 15-minute intervals. Check the export: a daylight-saving change must keep explicit offsets so every step stays one interval."
+msgstr "Die Zeitstempel der Datei liegen nicht in gleichmäßigen 15-Minuten-Schritten. Prüfen Sie den Export: Bei der Zeitumstellung müssen ausdrückliche Abweichungen erhalten bleiben, damit jeder Schritt ein Intervall bleibt."
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "The storage calculation could not be completed. Your entries are still here; please try again."
+msgstr "Die Speicherberechnung konnte nicht abgeschlossen werden. Ihre Eingaben bleiben erhalten; bitte versuchen Sie es erneut."
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "Commercial storage sizing"
+msgstr "Gewerblicher Speicher auslegen"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "Sized from your own 15-minute load profile and the peak you want to hold. Without both, the calculation can only give indicative ranges."
+msgstr "Ausgelegt aus Ihrem eigenen 15-Minuten-Lastprofil und der gewünschten Lastspitze. Ohne beides nennt die Berechnung nur Richtwerte."
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "Site and demand"
+msgstr "Standort und Bedarf"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "Peak"
+msgstr "Lastspitze"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "Peak from the bill"
+msgstr "Lastspitze laut Rechnung"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "The target is the highest demand you want to keep importing. The storage covers everything above it."
+msgstr "Der Zielwert ist der höchste Bedarf, den Sie weiterhin beziehen möchten. Den Anteil darüber übernimmt der Speicher."
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "PV"
+msgstr "PV"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "Backup"
+msgstr "Notstrom"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "Load profile"
+msgstr "Lastprofil"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "15-minute load profile (CSV)"
+msgstr "15-Minuten-Lastprofil (CSV)"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "The file could not be read. Choose it again or export a fresh copy."
+msgstr "Die Datei konnte nicht gelesen werden. Wählen Sie sie erneut oder exportieren Sie eine frische Kopie."
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "Timestamps must carry a UTC offset, so the series stays unambiguous when the clocks change."
+msgstr "Zeitstempel müssen eine UTC-Abweichung tragen, damit die Reihe bei der Zeitumstellung eindeutig bleibt."
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "%s intervals read from the file."
+msgstr "%s Intervalle aus der Datei gelesen."
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "Size the storage"
+msgstr "Speicher auslegen"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "%s kW"
+msgstr "%s kW"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "%s kWh"
+msgstr "%s kWh"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "Sized storage"
+msgstr "Ausgelegter Speicher"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "Indicative ranges"
+msgstr "Richtwerte"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "Peak in the profile"
+msgstr "Spitzenlast im Lastprofil"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "Annual consumption in the profile"
+msgstr "Jahresverbrauch im Lastprofil"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "Intervals read"
+msgstr "Gelesene Intervalle"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "Days covered"
+msgstr "Abgedeckte Tage"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "Battery power:"
+msgstr "Batterieleistung:"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "Usable energy:"
+msgstr "Nutzbare Energie:"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "Systems from the current range that reach this power and energy"
+msgstr "Systeme aus dem aktuellen Sortiment, die diese Leistung und Energie erreichen"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "Units"
+msgstr "Einheiten"
+
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
+msgid "Add the load profile and the target peak to turn this into a sized system."
+msgstr "Ergänzen Sie Lastprofil und Lastspitze, damit daraus ein ausgelegtes System wird."
+
 #: ../../apps/planner/src/components/energy/EnergyError.tsx build/planner/assets/planner.js:1
 msgid "The project is not ready to calculate yet. Check the highlighted fields in the steps of this project, then try again."
 msgstr "Das Projekt ist noch nicht bereit für die Berechnung. Prüfen Sie die markierten Felder in den Schritten dieses Projekts und versuchen Sie es erneut."
@@ -284,7 +444,7 @@ msgstr "Zusammenfassung des Gesprächs anhängen"
 msgid "Attached: %s"
 msgstr "Anhang: %s"
 
-#: src/configurator/commercial/CommercialPanel.tsx:439 build/configurator.js
+#: src/configurator/commercial/CommercialPanel.tsx:439 build/configurator.js ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "Average power in kW"
 msgstr "Mittlere Leistung in kW"
 
@@ -334,6 +494,7 @@ msgstr "Ertrag, Speicher und freigegebenes System werden berechnet …"
 
 #: src/configurator/commercial/CommercialPanel.tsx:501
 #: src/configurator/residential/ResidentialForm.tsx:401 build/configurator.js
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "Calculating…"
 msgstr "Wird berechnet …"
 
@@ -693,7 +854,7 @@ msgstr "E-Mail-Adresse bestätigt. Das Gespräch ist unterwegs."
 msgid "Email me this conversation"
 msgstr "Gespräch per E-Mail erhalten"
 
-#: src/configurator/commercial/CommercialPanel.tsx:445 build/configurator.js
+#: src/configurator/commercial/CommercialPanel.tsx:445 build/configurator.js ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "Energy per 15 minutes in kWh"
 msgstr "Energie je 15 Minuten in kWh"
 
@@ -762,7 +923,7 @@ msgstr "In Ordnung"
 msgid "Flagged"
 msgstr "Markiert"
 
-#: src/configurator/commercial/CommercialPanel.tsx:385
+#: src/configurator/commercial/CommercialPanel.tsx:385 ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 #: src/configurator/residential/ResidentialForm.tsx:334 build/configurator.js
 msgid "For how long"
 msgstr "Dauer"
@@ -914,6 +1075,7 @@ msgid "Get help with your solar project"
 msgstr "Hilfe bei Ihrem Solarprojekt"
 
 #: src/configurator/commercial/CommercialPanel.tsx:273 build/configurator.js
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "Goals"
 msgstr "Ziele"
 
@@ -930,7 +1092,7 @@ msgstr "Geht über den Aufgabenbereich von Genie hinaus."
 msgid "Grid connection"
 msgstr "Netzanschluss"
 
-#: src/configurator/commercial/CommercialPanel.tsx:243 build/configurator.js
+#: src/configurator/commercial/CommercialPanel.tsx:243 build/configurator.js ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "Grid connection capacity"
 msgstr "Netzanschlussleistung"
 
@@ -1097,7 +1259,7 @@ msgstr ""
 msgid "Load duration curve: the year sorted from highest to lowest load"
 msgstr "Jahresdauerlinie: das Jahr nach Last absteigend sortiert"
 
-#: src/configurator/commercial/CommercialPanel.tsx:370
+#: src/configurator/commercial/CommercialPanel.tsx:370 ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 #: src/configurator/residential/ResidentialForm.tsx:316 build/configurator.js
 msgid "Load to keep running"
 msgstr "Zu versorgende Last"
@@ -1195,7 +1357,7 @@ msgstr "Kein früheres Gespräch."
 msgid "No exact match. Is it one of these?"
 msgstr "Kein genauer Treffer. Ist es eines dieser Modelle?"
 
-#: src/configurator/commercial/CommercialPanel.tsx:409 build/configurator.js
+#: src/configurator/commercial/CommercialPanel.tsx:409 build/configurator.js ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "No file chosen"
 msgstr "Keine Datei ausgewählt"
 
@@ -1230,7 +1392,7 @@ msgstr "Noch keine Bewertungen."
 msgid "No, type the model"
 msgstr "Nein, Modell eingeben"
 
-#: src/configurator/solution/Solution.tsx:208 build/configurator.js
+#: src/configurator/solution/Solution.tsx:208 build/configurator.js ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "None"
 msgstr "Keiner"
 
@@ -1298,6 +1460,7 @@ msgid "On request"
 msgstr "Auf Anfrage"
 
 #: src/configurator/commercial/CommercialPanel.tsx:412 build/configurator.js
+#: ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid ""
 "One value per line, optionally after a timestamp; the last number of each "
 "line counts."
@@ -1374,7 +1537,7 @@ msgstr "PNG oder JPEG, höchstens 500 kB."
 msgid "PV array"
 msgstr "PV-Leistung"
 
-#: src/configurator/commercial/CommercialPanel.tsx:352 build/configurator.js
+#: src/configurator/commercial/CommercialPanel.tsx:352 build/configurator.js ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "PV array, existing or planned"
 msgstr "PV-Anlage, bestehend oder geplant"
 
@@ -1382,7 +1545,7 @@ msgstr "PV-Anlage, bestehend oder geplant"
 msgid "PV yield per year"
 msgstr "PV-Ertrag pro Jahr"
 
-#: src/configurator/commercial/CommercialPanel.tsx:283 build/configurator.js
+#: src/configurator/commercial/CommercialPanel.tsx:283 build/configurator.js ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "Peak shaving"
 msgstr "Spitzenlastkappung"
 
@@ -1424,12 +1587,12 @@ msgstr "Bitte geben Sie eine gültige E-Mail-Adresse ein."
 msgid "Please fill in this field."
 msgstr "Bitte füllen Sie dieses Feld aus."
 
-#: src/configurator/commercial/CommercialPanel.tsx:228
+#: src/configurator/commercial/CommercialPanel.tsx:228 ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 #: src/configurator/residential/ResidentialForm.tsx:168 build/configurator.js
 msgid "Postcode of the site"
 msgstr "Postleitzahl des Standorts"
 
-#: src/configurator/commercial/CommercialResult.tsx:233 build/configurator.js
+#: src/configurator/commercial/CommercialResult.tsx:233 build/configurator.js ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "Power"
 msgstr "Leistung"
 
@@ -1641,7 +1804,7 @@ msgstr "Ausgewählt: %1$s Module, %2$s kWp"
 msgid "Self-consumption"
 msgstr "Eigenverbrauchsanteil"
 
-#: src/configurator/commercial/CommercialPanel.tsx:293 build/configurator.js
+#: src/configurator/commercial/CommercialPanel.tsx:293 build/configurator.js ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "Self-consumption of PV"
 msgstr "Eigenverbrauch von PV-Strom"
 
@@ -1864,7 +2027,7 @@ msgstr "System"
 msgid "Systems from our range"
 msgstr "Systeme aus unserem Sortiment"
 
-#: src/configurator/commercial/CommercialPanel.tsx:334 build/configurator.js
+#: src/configurator/commercial/CommercialPanel.tsx:334 build/configurator.js ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "Target peak"
 msgstr "Zielhöchstlast"
 
@@ -2135,7 +2298,7 @@ msgstr "Anfrage Großanlage"
 msgid "Utility-scale storage inquiry"
 msgstr "Anfrage Großspeicher"
 
-#: src/configurator/commercial/CommercialPanel.tsx:429 build/configurator.js
+#: src/configurator/commercial/CommercialPanel.tsx:429 build/configurator.js ../../apps/planner/src/components/commercial/CommercialSizing.tsx build/planner/assets/planner.js:1
 msgid "Values in the file"
 msgstr "Werte in der Datei"
 
