@@ -1,0 +1,25 @@
+# Probe the customer-facing site from the engine VPS, the one vantage that
+# stays up when the shared host's database dies (2026-11-11: ~90 minutes of
+# global downtime detected only by a human reading feed-sync journal lines).
+# The probe answers one question: can a customer reach a database-backed page
+# right now? Its log is the record; nothing here sends alerts (that is the
+# digest block, specced separately).
+[Unit]
+Description=Probe de-linker.com from the engine host
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+# 15s covers the site's normal cold page; a longer stall is an outage signal,
+# not a slow page. /wp-json/ is database-backed: it fails when MySQL fails,
+# unlike static assets or the VPS's own engine endpoints.
+ExecStart=/opt/linker-engine/ops/site-probe.sh
+StandardOutput=journal
+StandardError=journal
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+# state/site-probe.log and state/site-probe.last are written by the script.
+ReadWritePaths=/opt/linker-engine/state
