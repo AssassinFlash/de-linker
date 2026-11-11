@@ -898,3 +898,29 @@ cover this risk; it reads directories, not sources). 1603 tests OK, CI 18
 jobs green. Not covered (boundaries): the integration suite was not run
 (needs a fresh local instance; pure-read block covered by production
 reads), and 56 pre-existing untranslated digest entries remain.
+
+### The brief's coordinate defect, read back on the real instance (P line)
+
+The dispatched symptom was "Latitude/Longitude report a format error while
+empty". Driven on the review stack (WP 8889) before changing anything, the
+empty case does not reproduce: with only an address typed, both fields read
+`aria-invalid="false"`, carry no `.lp-field-error`, `.lp-save-state` says
+"Unsaved changes" and "Save project" is enabled — in Chromium at 1440 and 390,
+in WebKit, and in both languages. `NumberField` already treats `""` as
+`parseDecimal` → `null` → valid, and `BriefForm` stores it as the declared
+`coordinate_basis: "not_provided"`.
+
+What does reproduce is the field's **notation**: `parseDecimal` demanded the
+interface language's own decimal mark, so a German reader pasting the
+`48.1689` their map gives them got `invalid_decimal` → "Erforderlich ist eine
+Zahl zwischen -90 und 90." → "Eingabe prüfen" → save disabled; an English
+reader pasting `48,1689` hit the mirror image. That is the blocked first save
+after an address was typed. It stayed hidden because the K-line commercial
+e2e drives the English page, where the point is the accepted mark.
+
+Fixed by giving the value's own notation precedence where the value belongs to
+a datum rather than to the reader: `parseDecimal(text, locale, "point-or-comma")`
+accepts either mark, refuses two in one value (grouping has no reading to
+guess at), and `NumberField` exposes it as an opt-in `notation` prop used only
+by the brief's Latitude and Longitude. Every other numeric field keeps its
+locale's own convention, asserted by a test.

@@ -3891,6 +3891,12 @@ msgstr "Dezimalkomma; keine Tausendertrennzeichen."
 msgid "Decimal point; no thousands separators."
 msgstr "Dezimalpunkt; keine Tausendertrennzeichen."
 
+#: ../../apps/planner/src/components/NumberField.tsx
+#: build/planner/assets/planner.js:1
+msgid "Decimal point or comma; no thousands separators."
+msgstr ""
+"Dezimalpunkt oder Dezimalkomma; keine Tausendertrennzeichen."
+
 #: ../../apps/planner/src/components/ProfileMapping.tsx:207
 #: build/planner/assets/planner.js
 msgid "Decimal separator in the file"

@@ -206,6 +206,7 @@ export function BriefForm({
 					</label>
 					<NumberField
 						locale={config.locale}
+						notation="point-or-comma"
 						label={__("Latitude", "linker-tools")}
 						unit="°"
 						value={brief.site.latitude}
@@ -228,6 +229,7 @@ export function BriefForm({
 					/>
 					<NumberField
 						locale={config.locale}
+						notation="point-or-comma"
 						label={__("Longitude", "linker-tools")}
 						unit="°"
 						value={brief.site.longitude}
