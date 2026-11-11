@@ -1,0 +1,77 @@
+# Secret scanning: gitleaks v8.30.1, run by the `secrets` job in check.yml and
+# available locally as `gitleaks dir .` (working tree) or
+# `gitleaks git --log-opts=--all .` (full history).
+#
+# `useDefault` keeps every built-in rule; the allowlist below is applied on top
+# of them. Every entry is bound to the label that makes the value a non-secret
+# (`regexTarget = "match"`: the regex must match the finding itself, never the
+# whole line), which is narrower than a path exemption. A real credential added
+# to any of these files still fails the scan, because the surrounding label is
+# not enough to satisfy an allowlist entry whose value does not fit it. The
+# reverse test in the PR description is the guard: a live-shaped Stripe key and
+# a GitHub PAT planted inside these very shapes are still reported.
+#
+# Note that this file only extends coverage; it does not make gitleaks complete.
+# An AWS key pair or an `sk-ant-` key did not match any default rule before the
+# allowlist existed either, so "no leaks found" means "no rule matched", not
+# "this repository cannot hold a secret".
+#
+# All of these were reviewed against the source, not just the scanner's shape
+# heuristic. The 2026-11-11 baseline scan of 2,575 commits found no credential.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Non-secret identifiers, capture hashes and synthetic fixtures documented in the PR that introduced this file"
+
+regexTarget = "match"
+
+regexes = [
+  # Apify run / dataset / actor / build / key-value-store ids. These name a run
+  # on someone else's account; access still needs APIFY_TOKEN, which is read
+  # from the environment and never written to the repository.
+  '''(?i)apify[_-]?(run|dataset|actor|build|key[_-]?value[_-]?store)[a-z_]*["']?\s*[:=]\s*["']?[A-Za-z0-9]{17}["']?''',
+  # Same class, under Apify's own key name.
+  '''(?i)defaultKeyValueStoreId["']?\s*[:=]\s*["']?[A-Za-z0-9]{17}["']?''',
+  # The research capture script names its token variables and their run ids
+  # side by side: ("name", "APIFY_TOKEN_PREV", "<run id>"). The value is the
+  # run id; the token is only ever referenced by variable name.
+  '''APIFY_TOKEN_[A-Z]+["']\s*,\s*["'][A-Za-z0-9]{17}["']''',
+  # sha256 content hashes recorded as repository-path -> digest manifest
+  # entries. The left side is a source path in this repository, so it reads as
+  # a key name; the digest is a content hash, not a credential.
+  '''[A-Za-z0-9_./\-]+\.(py|ts|tsx|mjs|js|php|json|css|md)["']\s*:\s*["'][0-9a-f]{64}["']''',
+  # Worker execution identity. services/engine/src/linker_engine/planning/
+  # execution_identity.py derives it as a digest over the request and manifest,
+  # so it is a deterministic idempotency key, not a bearer credential.
+  '''(?i)execution_key["']?\s*[:=]\s*["'][0-9a-f]{64}["']''',
+  # WooCommerce order keys of disposable local and acceptance installs. They
+  # gate the guest order-confirmation view on that install only; no live
+  # customer order is ever recorded in this repository (see the test-email
+  # discipline in AGENTS.md §5).
+  '''wc_order_[A-Za-z0-9]{10,17}''',
+  # Correlation ids and the Planner's adoption request key: random UUIDs used to
+  # follow one request through logs, not credentials.
+  '''(?i)(original_)?key["']?\s*[:=]\s*["'][0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}["']''',
+  # HTTP response header captured verbatim by the research crawler.
+  '''(?i)x-hubspot-correlation-id["']?\s*[:=]\s*["'][0-9a-f-]{36}["']''',
+  # Session cookies the crawler received from the sites it visited - the target
+  # site's own token, expired since 2026-10-17, and never ours to revoke.
+  '''[ns]?session-token=[A-Za-z0-9+/=]{100,}''',
+  # The parser's own parameter name, matched as if it were a key/value pair.
+  '''max_body_bytes=(limit|limits\.max_body_bytes)''',
+  # A media-type string.
+  '''marketing/body''',
+  # Public HuggingFace tokenizer revision of BAAI/bge-m3.
+  '''CHUNK_TOKENIZER_REVISION\s*=\s*["'][0-9a-f]{40}["']''',
+
+  # --- Synthetic values used by tests and fixtures ---------------------------
+  # A repeating placeholder, and test files that say so in the identifier
+  # (SYNTHETIC) or in a comment ("a stand-in, not the owner's key").
+  '''0123456789abcdef0123456789abcdef''',
+  '''12abcdefSYNTHETIC''',
+  '''sk_live_0123456789abcdefghijklmnop''',
+  '''sk_test_0123456789abcdef''',
+  '''lc-0123456789abcdef0123456789''',
+]
