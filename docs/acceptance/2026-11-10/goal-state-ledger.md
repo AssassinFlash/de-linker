@@ -1111,3 +1111,16 @@ recorded: the Mac planner-maintenance launchd points at .previous.plist
 decision), and the 2026-11-04 planner_maintenance budget bug is already
 fixed upstream (stale record). Two-namespace deploy and frozen-runtime
 hash pitfalls documented for the next operator.
+
+## U3 (customer-side appeal tool) ruled out of scope (owner, 2026-11-11)
+
+The E-line survey listed U3 from map #533's not-yet-specified fog; it was
+never dispatched and no code exists. Owner ruling: this is an inquiry
+site — everything after the inquiry is handled offline. A customer-facing
+appeal/status system contradicts the first principle (as simple as
+possible, never block a real human). The false-positive recovery path
+stays exactly as it is and as verified: staff-side single-record release
+(IntakeRelease / NotificationHold, production-read-back in the security
+dual proof) and the customer-facing answer "write to sales@" — which is
+the offline follow-up model, not a defect. U3 is closed permanently; the
+throttled-inquiry copy pointing to the team inbox is correct by design.
