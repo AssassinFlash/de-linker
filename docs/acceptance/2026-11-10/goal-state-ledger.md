@@ -1967,7 +1967,7 @@ now has an executability verdict instead of a run count. Full record:
   then `battery_port_count` (only 4107 declares battery ports at all), then the
   charge-current condition. On the 86-product engineering-ready pool, pinned by
   a SHA-256 of that id set taken before and after the sweep (identical,
-  `drifted: False`), exhausting 42 inverters x 26 batteries x every legal module
+  `drifted: False`), exhausting all 42 inverters x every storage product x every legal module
   count x every declared port gives **1763 attempts, 0 passes**. A wider
   port-fallback sweep (3444 attempts) splits the failures as 2708 voltage-window
   / 712 port-count / 6 condition; its 18 "passes" could not be reproduced and are
