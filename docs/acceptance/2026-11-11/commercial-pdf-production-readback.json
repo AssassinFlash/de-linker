@@ -1,0 +1,263 @@
+{
+  "recorded_at": "2026-11-11T07:02Z",
+  "environment": "production",
+  "site": "https://de-linker.com",
+  "browser": "Google Chrome 157.0.8103.39, headed, CDP 127.0.0.1:9223, isolated profile",
+  "deployed_bundle": {
+    "entry": "assets/planner.js",
+    "planner_core": "assets/planner-core-BaCygMK5.js",
+    "planner_core_bytes": 1406738,
+    "planner_core_http": 200,
+    "manifest": "https://de-linker.com/wp-content/plugins/linker-tools/build/planner/vite-manifest.json",
+    "note": "Same hash as the repository build after PR #1102 merged; the shipped bundle carries the fixed report call."
+  },
+  "walk": {
+    "entry": "https://de-linker.com/solution-configurator/ (de: /de/loesungskonfigurator/)",
+    "path": "Start a solution -> Commercial / 100 kWp / 250,000 kWh / three-phase / peak shaving / 80331 -> Generate solution -> report step -> Download PDF",
+    "probe_marker": "E2E-PDF-PROBE (carried in the project location; the quick start has no title field)"
+  },
+  "combinations": {
+    "en:1440": {
+      "url": "https://de-linker.com/solution-configurator/",
+      "report_step": "done",
+      "report_ms": 51036,
+      "report_request": {
+        "expected_revision": 2,
+        "options": {
+          "locale": "en",
+          "energy_run_id": null,
+          "pv_run_id": null,
+          "equipment_run_id": null,
+          "logo": null
+        }
+      },
+      "rpc_tail": [
+        {
+          "path": "runs/read",
+          "status": 200
+        },
+        {
+          "path": "runs/read",
+          "status": 200
+        },
+        {
+          "path": "assets/content",
+          "status": 200
+        }
+      ],
+      "pdf": {
+        "http": 200,
+        "content_type": "application/octet-stream",
+        "bytes": 62372,
+        "magic": "%PDF-",
+        "pages": 5,
+        "title": "Project planning report",
+        "sha256": "c2a225b85bf0e7003054c932fa4ba01009862522a2b006230e029aafde35d3c6",
+        "filename": "linker-planning-c5fac5b61d2f499cb60f8550a42c1a6f-r2-en.pdf",
+        "pdf_version": "1.4",
+        "page_size": "A4 595.276 x 841.89 pts"
+      },
+      "console_errors": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 400 ()"
+        }
+      ],
+      "page_errors": [],
+      "request_failures": [],
+      "http_errors": [
+        {
+          "status": 400,
+          "url": "/wp-admin/admin-ajax.php?action=rest-nonce",
+          "method": "GET"
+        }
+      ],
+      "screenshot": "/tmp/aa-pdf-shots/en-1440-02-report.png"
+    },
+    "de:1440": {
+      "url": "https://de-linker.com/de/loesungskonfigurator/",
+      "report_step": "done",
+      "report_ms": 43063,
+      "report_request": {
+        "expected_revision": 2,
+        "options": {
+          "locale": "de",
+          "energy_run_id": null,
+          "pv_run_id": null,
+          "equipment_run_id": null,
+          "logo": null
+        }
+      },
+      "rpc_tail": [
+        {
+          "path": "runs/read",
+          "status": 200
+        },
+        {
+          "path": "runs/read",
+          "status": 200
+        },
+        {
+          "path": "assets/content",
+          "status": 200
+        }
+      ],
+      "pdf": {
+        "http": 200,
+        "content_type": "application/octet-stream",
+        "bytes": 63490,
+        "magic": "%PDF-",
+        "pages": 5,
+        "title": "Projektplanungsbericht",
+        "sha256": "d6ce2b0a75b6d098d6716c44ce0f0e5ff45be5bb618f2526f2653a623353f172",
+        "filename": "linker-planning-734b5234b1544d63853035ac328ccc75-r2-de.pdf",
+        "pdf_version": "1.4",
+        "page_size": "A4 595.276 x 841.89 pts"
+      },
+      "console_errors": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 400 ()"
+        }
+      ],
+      "page_errors": [],
+      "request_failures": [],
+      "http_errors": [
+        {
+          "status": 400,
+          "url": "/wp-admin/admin-ajax.php?action=rest-nonce",
+          "method": "GET"
+        }
+      ],
+      "screenshot": "/tmp/aa-pdf-shots/de-1440-02-report.png"
+    },
+    "en:390": {
+      "url": "https://de-linker.com/solution-configurator/",
+      "report_step": "done",
+      "report_ms": 42891,
+      "report_request": {
+        "expected_revision": 2,
+        "options": {
+          "locale": "en",
+          "energy_run_id": null,
+          "pv_run_id": null,
+          "equipment_run_id": null,
+          "logo": null
+        }
+      },
+      "rpc_tail": [
+        {
+          "path": "runs/read",
+          "status": 200
+        },
+        {
+          "path": "runs/read",
+          "status": 200
+        },
+        {
+          "path": "assets/content",
+          "status": 200
+        }
+      ],
+      "pdf": {
+        "http": 200,
+        "content_type": "application/octet-stream",
+        "bytes": 62368,
+        "magic": "%PDF-",
+        "pages": 5,
+        "title": "Project planning report",
+        "sha256": "5e845184c2090f10d63c9fca2b8f006cd6f78e096b9f9bc3eece1ab3e576d293",
+        "filename": "linker-planning-0e1001eae83f4b20bc1db809d9854e6b-r2-en.pdf",
+        "pdf_version": "1.4",
+        "page_size": "A4 595.276 x 841.89 pts"
+      },
+      "console_errors": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 400 ()"
+        }
+      ],
+      "page_errors": [],
+      "request_failures": [],
+      "http_errors": [
+        {
+          "status": 400,
+          "url": "/wp-admin/admin-ajax.php?action=rest-nonce",
+          "method": "GET"
+        }
+      ],
+      "screenshot": "/tmp/aa-pdf-shots/en-390-02-report.png"
+    },
+    "de:390": {
+      "url": "https://de-linker.com/de/loesungskonfigurator/",
+      "report_step": "done",
+      "report_ms": 45498,
+      "report_request": {
+        "expected_revision": 2,
+        "options": {
+          "locale": "de",
+          "energy_run_id": null,
+          "pv_run_id": null,
+          "equipment_run_id": null,
+          "logo": null
+        }
+      },
+      "rpc_tail": [
+        {
+          "path": "runs/read",
+          "status": 200
+        },
+        {
+          "path": "runs/read",
+          "status": 200
+        },
+        {
+          "path": "assets/content",
+          "status": 200
+        }
+      ],
+      "pdf": {
+        "http": 200,
+        "content_type": "application/octet-stream",
+        "bytes": 63490,
+        "magic": "%PDF-",
+        "pages": 5,
+        "title": "Projektplanungsbericht",
+        "sha256": "c3bb3e7c337e4f3e2ef93e457605b0cd7d1f941521f6ae1d1a67c5afb291b703",
+        "filename": "linker-planning-89c850e540c449dda90b21dea5beda69-r2-de.pdf",
+        "pdf_version": "1.4",
+        "page_size": "A4 595.276 x 841.89 pts"
+      },
+      "console_errors": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 400 ()"
+        }
+      ],
+      "page_errors": [],
+      "request_failures": [],
+      "http_errors": [
+        {
+          "status": 400,
+          "url": "/wp-admin/admin-ajax.php?action=rest-nonce",
+          "method": "GET"
+        }
+      ],
+      "screenshot": "/tmp/aa-pdf-shots/de-390-02-report.png"
+    }
+  },
+  "cleanup": {
+    "probe_projects": [
+      "c5fac5b61d2f499cb60f8550a42c1a6f",
+      "734b5234b1544d63853035ac328ccc75",
+      "0e1001eae83f4b20bc1db809d9854e6b",
+      "89c850e540c449dda90b21dea5beda69"
+    ],
+    "projects_list_after": {
+      "status": 200,
+      "items": []
+    },
+    "projects_read_after": "every id answers 404 not_found in the live guest scope 390cdaa7…c533",
+    "mail": "no inquiry submitted, no mail-triggering action taken"
+  }
+}

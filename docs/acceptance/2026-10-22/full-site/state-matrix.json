@@ -26750,12 +26750,13 @@
     "state": "report",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
+    "status": "verified-production-20261111",
     "environment": "production",
     "url": null,
     "evidence": [
       "docs/acceptance/2026-10-31/548/INDEX.md",
-      "docs/acceptance/2026-11-03/548/INDEX.md"
+      "docs/acceptance/2026-11-03/548/INDEX.md",
+      "docs/acceptance/2026-11-11/commercial-pdf-production-readback.md"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -26775,6 +26776,15 @@
         ],
         "evidence": "docs/acceptance/2026-11-03/548/INDEX.md#L68-L191",
         "scope": "Production Planner verified for products/current prepared=true (PR #868, release 08256b93), saved Equipment form hydration and search completion without stale spinner (PR #871), ETR 6508–6511 conductor comparison UI, and pitched-roof report PDF/CSV downloads (2026-11-02)."
+      },
+      "commercial_pdf_fix_20261111": {
+        "status": "pass-production",
+        "result": "report step done; PDF HTTP 200, %PDF-1.4, 5 A4 pages, 62-63 KB",
+        "evidence": "docs/acceptance/2026-11-11/commercial-pdf-production-readback.md",
+        "prs": [
+          "https://github.com/AssassinFlash/de-linker/pull/1102"
+        ],
+        "scope": "Commercial quick path on production (EN and DE, 1440 and 390): Start a solution through the quick form, Generate solution, the report step, then Download PDF. Asserts HTTP 200, %PDF- header, byte count, page count and the report text in the delivered file. This is defect B of the 2026-11-11 production walk, fixed by #1102 and read back from the shipped planner bundle."
       }
     }
   },
@@ -26784,12 +26794,13 @@
     "state": "report",
     "lang": "en",
     "width": 390,
-    "status": "partially-verified",
+    "status": "verified-production-20261111",
     "environment": "production",
     "url": null,
     "evidence": [
       "docs/acceptance/2026-10-31/548/INDEX.md",
-      "docs/acceptance/2026-11-03/548/INDEX.md"
+      "docs/acceptance/2026-11-03/548/INDEX.md",
+      "docs/acceptance/2026-11-11/commercial-pdf-production-readback.md"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -26809,6 +26820,15 @@
         ],
         "evidence": "docs/acceptance/2026-11-03/548/INDEX.md#L68-L191",
         "scope": "Production Planner verified for products/current prepared=true (PR #868, release 08256b93), saved Equipment form hydration and search completion without stale spinner (PR #871), ETR 6508–6511 conductor comparison UI, and pitched-roof report PDF/CSV downloads (2026-11-02)."
+      },
+      "commercial_pdf_fix_20261111": {
+        "status": "pass-production",
+        "result": "report step done; PDF HTTP 200, %PDF-1.4, 5 A4 pages, 62-63 KB",
+        "evidence": "docs/acceptance/2026-11-11/commercial-pdf-production-readback.md",
+        "prs": [
+          "https://github.com/AssassinFlash/de-linker/pull/1102"
+        ],
+        "scope": "Commercial quick path on production (EN and DE, 1440 and 390): Start a solution through the quick form, Generate solution, the report step, then Download PDF. Asserts HTTP 200, %PDF- header, byte count, page count and the report text in the delivered file. This is defect B of the 2026-11-11 production walk, fixed by #1102 and read back from the shipped planner bundle."
       }
     }
   },
@@ -26818,12 +26838,13 @@
     "state": "report",
     "lang": "de",
     "width": 1440,
-    "status": "partially-verified",
+    "status": "verified-production-20261111",
     "environment": "production",
     "url": null,
     "evidence": [
       "docs/acceptance/2026-10-31/548/INDEX.md",
-      "docs/acceptance/2026-11-03/548/INDEX.md"
+      "docs/acceptance/2026-11-03/548/INDEX.md",
+      "docs/acceptance/2026-11-11/commercial-pdf-production-readback.md"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -26843,6 +26864,15 @@
         ],
         "evidence": "docs/acceptance/2026-11-03/548/INDEX.md#L68-L191",
         "scope": "Production Planner verified for products/current prepared=true (PR #868, release 08256b93), saved Equipment form hydration and search completion without stale spinner (PR #871), ETR 6508–6511 conductor comparison UI, and pitched-roof report PDF/CSV downloads (2026-11-02)."
+      },
+      "commercial_pdf_fix_20261111": {
+        "status": "pass-production",
+        "result": "report step done; PDF HTTP 200, %PDF-1.4, 5 A4 pages, 62-63 KB",
+        "evidence": "docs/acceptance/2026-11-11/commercial-pdf-production-readback.md",
+        "prs": [
+          "https://github.com/AssassinFlash/de-linker/pull/1102"
+        ],
+        "scope": "Commercial quick path on production (EN and DE, 1440 and 390): Start a solution through the quick form, Generate solution, the report step, then Download PDF. Asserts HTTP 200, %PDF- header, byte count, page count and the report text in the delivered file. This is defect B of the 2026-11-11 production walk, fixed by #1102 and read back from the shipped planner bundle."
       }
     }
   },
@@ -26852,12 +26882,13 @@
     "state": "report",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
+    "status": "verified-production-20261111",
     "environment": "production",
     "url": null,
     "evidence": [
       "docs/acceptance/2026-10-31/548/INDEX.md",
-      "docs/acceptance/2026-11-03/548/INDEX.md"
+      "docs/acceptance/2026-11-03/548/INDEX.md",
+      "docs/acceptance/2026-11-11/commercial-pdf-production-readback.md"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -26877,6 +26908,15 @@
         ],
         "evidence": "docs/acceptance/2026-11-03/548/INDEX.md#L68-L191",
         "scope": "Production Planner verified for products/current prepared=true (PR #868, release 08256b93), saved Equipment form hydration and search completion without stale spinner (PR #871), ETR 6508–6511 conductor comparison UI, and pitched-roof report PDF/CSV downloads (2026-11-02)."
+      },
+      "commercial_pdf_fix_20261111": {
+        "status": "pass-production",
+        "result": "report step done; PDF HTTP 200, %PDF-1.4, 5 A4 pages, 62-63 KB",
+        "evidence": "docs/acceptance/2026-11-11/commercial-pdf-production-readback.md",
+        "prs": [
+          "https://github.com/AssassinFlash/de-linker/pull/1102"
+        ],
+        "scope": "Commercial quick path on production (EN and DE, 1440 and 390): Start a solution through the quick form, Generate solution, the report step, then Download PDF. Asserts HTTP 200, %PDF- header, byte count, page count and the report text in the delivered file. This is defect B of the 2026-11-11 production walk, fixed by #1102 and read back from the shipped planner bundle."
       }
     }
   },
@@ -26886,12 +26926,13 @@
     "state": "download-pdf",
     "lang": "en",
     "width": 1440,
-    "status": "partially-verified",
+    "status": "verified-production-20261111",
     "environment": "production",
     "url": null,
     "evidence": [
       "docs/acceptance/2026-10-31/548/INDEX.md",
-      "docs/acceptance/2026-11-03/548/INDEX.md"
+      "docs/acceptance/2026-11-03/548/INDEX.md",
+      "docs/acceptance/2026-11-11/commercial-pdf-production-readback.md"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -26911,6 +26952,15 @@
         ],
         "evidence": "docs/acceptance/2026-11-03/548/INDEX.md#L68-L191",
         "scope": "Production Planner verified for products/current prepared=true (PR #868, release 08256b93), saved Equipment form hydration and search completion without stale spinner (PR #871), ETR 6508–6511 conductor comparison UI, and pitched-roof report PDF/CSV downloads (2026-11-02)."
+      },
+      "commercial_pdf_fix_20261111": {
+        "status": "pass-production",
+        "result": "report step done; PDF HTTP 200, %PDF-1.4, 5 A4 pages, 62-63 KB",
+        "evidence": "docs/acceptance/2026-11-11/commercial-pdf-production-readback.md",
+        "prs": [
+          "https://github.com/AssassinFlash/de-linker/pull/1102"
+        ],
+        "scope": "Commercial quick path on production (EN and DE, 1440 and 390): Start a solution through the quick form, Generate solution, the report step, then Download PDF. Asserts HTTP 200, %PDF- header, byte count, page count and the report text in the delivered file. This is defect B of the 2026-11-11 production walk, fixed by #1102 and read back from the shipped planner bundle."
       }
     }
   },
@@ -26920,12 +26970,13 @@
     "state": "download-pdf",
     "lang": "en",
     "width": 390,
-    "status": "partially-verified",
+    "status": "verified-production-20261111",
     "environment": "production",
     "url": null,
     "evidence": [
       "docs/acceptance/2026-10-31/548/INDEX.md",
-      "docs/acceptance/2026-11-03/548/INDEX.md"
+      "docs/acceptance/2026-11-03/548/INDEX.md",
+      "docs/acceptance/2026-11-11/commercial-pdf-production-readback.md"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -26945,6 +26996,15 @@
         ],
         "evidence": "docs/acceptance/2026-11-03/548/INDEX.md#L68-L191",
         "scope": "Production Planner verified for products/current prepared=true (PR #868, release 08256b93), saved Equipment form hydration and search completion without stale spinner (PR #871), ETR 6508–6511 conductor comparison UI, and pitched-roof report PDF/CSV downloads (2026-11-02)."
+      },
+      "commercial_pdf_fix_20261111": {
+        "status": "pass-production",
+        "result": "report step done; PDF HTTP 200, %PDF-1.4, 5 A4 pages, 62-63 KB",
+        "evidence": "docs/acceptance/2026-11-11/commercial-pdf-production-readback.md",
+        "prs": [
+          "https://github.com/AssassinFlash/de-linker/pull/1102"
+        ],
+        "scope": "Commercial quick path on production (EN and DE, 1440 and 390): Start a solution through the quick form, Generate solution, the report step, then Download PDF. Asserts HTTP 200, %PDF- header, byte count, page count and the report text in the delivered file. This is defect B of the 2026-11-11 production walk, fixed by #1102 and read back from the shipped planner bundle."
       }
     }
   },
@@ -26954,12 +27014,13 @@
     "state": "download-pdf",
     "lang": "de",
     "width": 1440,
-    "status": "partially-verified",
+    "status": "verified-production-20261111",
     "environment": "production",
     "url": null,
     "evidence": [
       "docs/acceptance/2026-10-31/548/INDEX.md",
-      "docs/acceptance/2026-11-03/548/INDEX.md"
+      "docs/acceptance/2026-11-03/548/INDEX.md",
+      "docs/acceptance/2026-11-11/commercial-pdf-production-readback.md"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -26979,6 +27040,15 @@
         ],
         "evidence": "docs/acceptance/2026-11-03/548/INDEX.md#L68-L191",
         "scope": "Production Planner verified for products/current prepared=true (PR #868, release 08256b93), saved Equipment form hydration and search completion without stale spinner (PR #871), ETR 6508–6511 conductor comparison UI, and pitched-roof report PDF/CSV downloads (2026-11-02)."
+      },
+      "commercial_pdf_fix_20261111": {
+        "status": "pass-production",
+        "result": "report step done; PDF HTTP 200, %PDF-1.4, 5 A4 pages, 62-63 KB",
+        "evidence": "docs/acceptance/2026-11-11/commercial-pdf-production-readback.md",
+        "prs": [
+          "https://github.com/AssassinFlash/de-linker/pull/1102"
+        ],
+        "scope": "Commercial quick path on production (EN and DE, 1440 and 390): Start a solution through the quick form, Generate solution, the report step, then Download PDF. Asserts HTTP 200, %PDF- header, byte count, page count and the report text in the delivered file. This is defect B of the 2026-11-11 production walk, fixed by #1102 and read back from the shipped planner bundle."
       }
     }
   },
@@ -26988,12 +27058,13 @@
     "state": "download-pdf",
     "lang": "de",
     "width": 390,
-    "status": "partially-verified",
+    "status": "verified-production-20261111",
     "environment": "production",
     "url": null,
     "evidence": [
       "docs/acceptance/2026-10-31/548/INDEX.md",
-      "docs/acceptance/2026-11-03/548/INDEX.md"
+      "docs/acceptance/2026-11-03/548/INDEX.md",
+      "docs/acceptance/2026-11-11/commercial-pdf-production-readback.md"
     ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
@@ -27013,6 +27084,15 @@
         ],
         "evidence": "docs/acceptance/2026-11-03/548/INDEX.md#L68-L191",
         "scope": "Production Planner verified for products/current prepared=true (PR #868, release 08256b93), saved Equipment form hydration and search completion without stale spinner (PR #871), ETR 6508–6511 conductor comparison UI, and pitched-roof report PDF/CSV downloads (2026-11-02)."
+      },
+      "commercial_pdf_fix_20261111": {
+        "status": "pass-production",
+        "result": "report step done; PDF HTTP 200, %PDF-1.4, 5 A4 pages, 62-63 KB",
+        "evidence": "docs/acceptance/2026-11-11/commercial-pdf-production-readback.md",
+        "prs": [
+          "https://github.com/AssassinFlash/de-linker/pull/1102"
+        ],
+        "scope": "Commercial quick path on production (EN and DE, 1440 and 390): Start a solution through the quick form, Generate solution, the report step, then Download PDF. Asserts HTTP 200, %PDF- header, byte count, page count and the report text in the delivered file. This is defect B of the 2026-11-11 production walk, fixed by #1102 and read back from the shipped planner bundle."
       }
     }
   },
