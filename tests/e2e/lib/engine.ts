@@ -79,6 +79,47 @@ export function enginePost<T>(path: string, body: unknown): Promise<T> {
 	});
 }
 
+/**
+ * The private planner boundary's own envelope (http_app `/planning`): the
+ * gateway sets the token and a verified native principal before proxying, and
+ * the engine answers `verified_principal_required` for anything else.
+ */
+export interface PlannerPrincipal {
+	kind: 'guest' | 'user' | 'team';
+	subject: string;
+}
+
+export interface PlannerReply<T> {
+	status: number;
+	body: T;
+}
+
+/**
+ * One JSON-RPC call on the planner route, with its status kept: the write
+ * contract is partly negative (`invalid_input`, `project_input_contract_required`)
+ * and a thrown error would lose which refusal it was.
+ */
+export async function plannerPost<T>(
+	path: string,
+	body: unknown,
+	principal: PlannerPrincipal
+): Promise<PlannerReply<T>> {
+	const response = await fetch(`${instance().engineUrl}/planning/${path}`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'x-linker-service-token': token(),
+			'x-linker-planner-principal-kind': principal.kind,
+			'x-linker-planner-principal-subject': principal.subject,
+		},
+		body: JSON.stringify(body),
+	});
+	return {
+		status: response.status,
+		body: (await response.json()) as T,
+	};
+}
+
 export interface Range {
 	low: number;
 	high: number;
