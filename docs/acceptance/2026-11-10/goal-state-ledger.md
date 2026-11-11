@@ -622,3 +622,19 @@ line before merge; one line overturned the main line's own local diagnosis.
   October evidence/model/weekly-backup dirs with recorded retention reasons
   (no pressure, nothing deleted blindly); today's deploy snapshots live under
   snapshots/db-*.gz (small, per procedure).
+
+## US-series draft ruling (2026-11-11, batch close)
+
+The US2000C/US3000C/US5000 products stay draft, deliberately. Evidence: the
+published catalog is curated — SAJ 34 + GoodWe 49 + Pylontech L260-OMNI 1
+(C&I) + Chint 1 — with home storage carried by the GoodWe Lynx/BAT-D line;
+all three US products were bulk-set draft on 2026-10-06 (same second,
+pre-rebuild era) and identical in production and review; published products
+carry no prices either, so completeness is not the differentiator. No record
+of intent to publish the US series exists; republishing would change the
+customer catalog, selection candidates and Genie's answers — an owner-level
+catalog decision, not a defect fix. The "3 broken 410 links" are therefore
+closed as correct rule-609 behavior for draft products' documents.
+Follow-ups that remain open regardless (modelled only if the series ever
+publishes): V1.3 peak-current semantics, US5000-B breaker section, US3000C
+current-field wording, and the "80 A recommended" copy line.
