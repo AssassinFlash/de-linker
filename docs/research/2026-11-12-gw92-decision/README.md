@@ -239,8 +239,9 @@ for u in emea.goodwe.com/bat112-series en.goodwe.com/bat-60-112-series en.goodwe
 
 ## 9. 资源
 
-- 新建：worktree `/tmp/gw92-decision`（本 PR 交付后回收）；取证目录 `/tmp/gw92-evi`（原件与中间文本，核对完成后删除）。
+- 新建：worktree `/tmp/gw92-decision`（本 PR 交付后回收）；取证目录 `/tmp/gw92-evi`（原件与中间文本，已删除）。
 - 未新建本地实例、未新建浏览器窗口、未接触生产、未发邮件、未改 Woo/registry/代码。
-- Apify：3 个 `apify/google-search-scraper` run（dataset `m4IwmFCF4JicsupCW`、`3SDbzCfQKhylTXdKw`、
-  第 3 个站点搜索 run 的 dataset），远端 dataset 已 DELETE；另有 1 次因账号内存上限被拒、未启动的请求
-  （这是本账号其他并行任务的运行占用所致，非本任务泄漏）。无截图、无持续进程。
+- Apify：**2 个成功 run**（`apify/google-search-scraper`，run `aEabzptmTovNKD0MR` / `pA3aBnG3NX608J26N`，
+  dataset `m4IwmFCF4JicsupCW` / `3SDbzCfQKhylTXdKw`），两个 dataset 均已 `DELETE` 返回 **204**；
+  另有 2 次请求因账号内存上限（16 GB，被本账号其他并行任务占满）在启动前被拒，未产生结果。
+  无截图、无持续进程、无遗留远端存储。
