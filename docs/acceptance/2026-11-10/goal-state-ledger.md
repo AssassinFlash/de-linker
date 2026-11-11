@@ -1944,3 +1944,53 @@ Annex hunt dispatched as a fourth parallel line alongside energy kernels,
 image calibration, and BAT-C PDP rows (the goal-complete state stands as a
 checkpoint, not a stop; the owner is directing the recorded-boundary items
 into execution).
+
+## Energy two-kernel production evidence: blocked at the equipment fact gate (2026-11-11)
+
+The follow-up #1107 recorded ("run plant_ac or shared_dc once in production")
+now has an executability verdict instead of a run count. Full record:
+`docs/acceptance/2026-11-11/548-energy-two-kernels/conclusion.md`.
+
+- **Both kernels are registered and reachable in production.** `/planning/version`
+  (team read-only) returns all four energy replay kinds including
+  `plant_ac_energy_replay_v1` and `shared_dc_energy_replay_v1`, so the gap was
+  never a missing executor.
+- **Neither ever had a runnable scenario in the store.** All 178 revisions
+  decoded: zero with `energy_plant.coupling`, zero with
+  `energy_replay.coupling == "shared_dc"`. The five existing
+  `battery_parameters_v1` assets all carry no `dependencies` and
+  `user_explicit_scenario_not_equipment_release` provenance — enough for
+  `single_ac` (the 10 runs #1107 found), not enough for either joint kernel,
+  which require the server-derived `dc_prepared_parameters` binding.
+- **The gate is equipment facts, not code.** `prepare_dc_parameters()` must pass
+  `battery_voltage` (full containment against a column-keyed
+  `system_operating_voltage_range_v`) and then `usable_energy`. Exhausting
+  42 inverters x 26 batteries x every legal module count x every declared port
+  against the 86 engineering-ready products gives **1745 attempts, 0 passes**
+  (1739 stop at `usable_energy_and_complete_voltage_window`, 6 at
+  `woo_dc_condition:max_charge_current_a`).
+- **A viable chain existed during this session and was withdrawn by readiness.**
+  `4107 + 1954 @ modules_per_stack=6, BAT1, pv_dc_kw=0` derived cleanly
+  (`usable_window_kwh = 60.0`, with the bilingual usable-energy condition
+  retained in `source_facts`). Later in the same session 1954 read back
+  `ready.engineering = false`; `prepared_view()` drops it, so the chain is gone.
+  Of the remaining ready batteries, 2092 satisfies the voltage column only at
+  module counts 3-5 and has no system usable energy; 2093 fails the sales-unit
+  and qualifier interpretation checks.
+- **Official load profiles are ready and need no adapter.** `load_profile.expand`
+  plus `to_csv` produce exactly the engine's `csv_profile_v1`; H25 at 60 MWh/a
+  and G25 at 1.2 MWh/a each expand to 35 040 intervals (59 952.142 and
+  1 203.510 kWh, `normalisation_gap` 0.059952 / 0.001204 reported rather than
+  rescaled) and re-read through `CsvMapping` + `profiles.read_profile` tile the
+  year with `native_max_interval_seconds = 900` and
+  `reconstructed_means = False`.
+- **No production write was made, deliberately.** Every path would have failed
+  at `context()` after publishing a permanent CSV/trace blob (10.5 MB per annual
+  trace, `retention: permanent`). CAS measured 495 564 061 bytes before and
+  after — **0 byte delta**; rows unchanged at 143 runs / 178 revisions /
+  138 assets / 70 projects.
+- **Rating impact:** matrix row 3 moves from "可发布（能力层）" to
+  "需补验（单内核可发布，两内核生产不可执行）"; `single_ac`'s capability rating
+  is untouched. Unblocking is either restoring 1954's engineering readiness or
+  adding the two facts to a ready battery — both are Woo equipment data (C line),
+  outside this line's write boundary.
