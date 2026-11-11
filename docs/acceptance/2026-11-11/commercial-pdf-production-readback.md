@@ -108,9 +108,9 @@ DE@1440 与 DE@390 字节数相同但 sha256 不同（生成时间戳不同）�
 ## 证据文件
 
 - 机器可读逐组合证据：`docs/acceptance/2026-11-11/commercial-pdf-production-readback.json`
-- 四份 PDF、逐组合截图（`*-01-inputs` / `*-02-report` / `*-03-after`）与原始 JSON 记录：
-  保留在 `/tmp/aa-walk` 与 `/tmp/aa-pdf-shots`，作为本次验收唯一原件至批次收尾；
-  回收后本条以 JSON 里的字节数、页数、sha256 为准。
+- 交付在仓库内的原件：`docs/acceptance/2026-11-11/commercial-pdf-readback-files/`
+  ——4 份 PDF、12 张截图（`*-01-inputs` / `*-02-report` / `*-03-after`）与 4 份原始 JSON 记录（共约 1.4 MB）。
+  PDF 与 sha256、字节数、页数一并保留，可直接复核本文件的每个数字，不依赖 `/tmp`。
 
 ## 资源回收
 
@@ -118,6 +118,7 @@ DE@1440 与 DE@390 字节数相同但 sha256 不同（生成时间戳不同）�
 |---|---|
 | 自己启动的 Chrome（CDP 9223） | 已终止；端口无监听 |
 | 独立 profile `/tmp/aa-chrome-profile` | 已删除 |
-| 保留的唯一证据 | 4 份 PDF（约 246 KB）、12 张截图（约 1.1 MB）、4 份原始 JSON |
+| 保留的唯一证据 | 已随 PR 交付进仓库：`docs/acceptance/2026-11-11/commercial-pdf-readback-files/`（4 份 PDF 约 246 KB、12 张截图约 1.1 MB、4 份原始 JSON，共约 1.4 MB） |
 | 已删除的失效产物 | 两次被取代的失败截图（首版脚本的 `ENOENT`、EN@390 的瞬时连接中断）——两次都已重跑成功，不构成产品证据 |
+| 临时副本 | `/tmp/aa-walk`、`/tmp/aa-pdf-shots` 已在仓库内留存后删除 |
 | worktree `/tmp/aa-pdf` | 提交后用 `git worktree remove` 回收 |

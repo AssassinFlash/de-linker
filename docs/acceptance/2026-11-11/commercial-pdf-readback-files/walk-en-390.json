@@ -1,0 +1,185 @@
+{
+  "startedAt": "2026-11-11T06:53:53.636Z",
+  "lang": "en",
+  "width": 390,
+  "url": "https://de-linker.com/solution-configurator/",
+  "marker": "E2E-PDF-PROBE",
+  "console": [
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 400 ()"
+    }
+  ],
+  "pageErrors": [],
+  "requestFailures": [],
+  "httpErrors": [
+    {
+      "status": 400,
+      "url": "/wp-admin/admin-ajax.php?action=rest-nonce",
+      "method": "GET"
+    }
+  ],
+  "rpc": [
+    {
+      "path": "projects/list",
+      "status": 200
+    },
+    {
+      "path": "projects/create",
+      "status": 200
+    },
+    {
+      "path": "projects/list",
+      "status": 200
+    },
+    {
+      "path": "runs/equipment-search",
+      "status": 200
+    },
+    {
+      "path": "runs/read",
+      "status": 200
+    },
+    {
+      "path": "runs/read",
+      "status": 200
+    },
+    {
+      "path": "runs/read",
+      "status": 200
+    },
+    {
+      "path": "runs/read",
+      "status": 200
+    },
+    {
+      "path": "runs/read",
+      "status": 200
+    },
+    {
+      "path": "equipment/candidates/read",
+      "status": 200
+    },
+    {
+      "path": "products/current",
+      "status": 200
+    },
+    {
+      "path": "projects/revise",
+      "status": 200
+    },
+    {
+      "path": "projects/list",
+      "status": 200
+    },
+    {
+      "path": "runs/equipment",
+      "status": 200
+    },
+    {
+      "path": "runs/read",
+      "status": 200
+    },
+    {
+      "path": "runs/read",
+      "status": 200
+    },
+    {
+      "path": "runs/read",
+      "status": 200
+    },
+    {
+      "path": "runs/report",
+      "status": 200,
+      "reportRequest": {
+        "expected_revision": 2,
+        "options": {
+          "locale": "en",
+          "energy_run_id": null,
+          "pv_run_id": null,
+          "equipment_run_id": null,
+          "logo": null
+        }
+      }
+    },
+    {
+      "path": "runs/read",
+      "status": 200
+    },
+    {
+      "path": "runs/read",
+      "status": 200
+    },
+    {
+      "path": "assets/content",
+      "status": 200
+    }
+  ],
+  "steps": [
+    {
+      "at": "2026-11-11T06:54:01.558Z",
+      "step": "landed",
+      "detail": "https://de-linker.com/solution-configurator/"
+    },
+    {
+      "at": "2026-11-11T06:54:01.631Z",
+      "step": "clicked-start",
+      "detail": "Start a solution"
+    },
+    {
+      "at": "2026-11-11T06:54:01.788Z",
+      "step": "form-filled",
+      "detail": "{\"Project typeResidentialCommercial\":\"commercial\",\"PV array size5 kWp8 kWp10 kWp12 kWp15 kWp20 kWp30 kWp50 kWp80 kWp100 kWp\":\"100\",\"Roof orientation and tiltSouth-facing, 30°South-facing, 15°East–west, 10°Flat roof, 0°\":\"south_30\",\"Module power class400 Wp450 Wp500 Wp550 Wp600 Wp\":\"tier_450\",\"Annual electricity use30,000 kWh per year50,000 kWh per year100,000 kWh per year250,000 kWh per year500,000 kWh per year\":\"250000\",\"Grid connectionThree-phaseSingle-phase\":\"3\",\"System goalUse as much of my own solar as possibleKeep the lights on when the grid failsCut commercial peak demand\":\"peak_shaving\",\"Postcode or town\":\"E2E-PDF-PROBE 80331\"}"
+    },
+    {
+      "at": "2026-11-11T06:54:02.658Z",
+      "step": "generate-clicked",
+      "detail": ""
+    },
+    {
+      "at": "2026-11-11T06:54:44.726Z",
+      "step": "report-step",
+      "detail": "done in 43s"
+    },
+    {
+      "at": "2026-11-11T06:54:48.251Z",
+      "step": "pdf",
+      "detail": "{\"httpStatus\":200,\"contentType\":\"application/octet-stream\",\"contentDisposition\":\"attachment; filename=\\\"project-asset.bin\\\"\",\"nonce\":null,\"networkBytes\":62368,\"magic\":\"%PDF-\",\"pages\":5,\"producer\":\"ReportLab PDF Library - \\\\(opensource\\\\\",\"creator\":\"\\\\(unspecified\\\\\",\"creationDate\":\"D:20000101000000+00'00'\",\"title\":\"Project planning report\",\"trailer\":true,\"savedTo\":\"/tmp/aa-walk/en-390-report.pdf\",\"suggestedFilename\":\"linker-planning-0e1001eae83f4b20bc1db809d9854e6b-r2-en.pdf\",\"downloadFailure\":{},\"browserSavedBytes\":62368,\"browserSavedPath\":\"/tmp/aa-walk/en-390-report-browser.pdf\"}"
+    }
+  ],
+  "report": {
+    "state": "done",
+    "text": "Build the report Done",
+    "elapsedMs": 42891
+  },
+  "pdf": {
+    "httpStatus": 200,
+    "contentType": "application/octet-stream",
+    "contentDisposition": "attachment; filename=\"project-asset.bin\"",
+    "nonce": null,
+    "networkBytes": 62368,
+    "magic": "%PDF-",
+    "pages": 5,
+    "producer": "ReportLab PDF Library - \\(opensource\\",
+    "creator": "\\(unspecified\\",
+    "creationDate": "D:20000101000000+00'00'",
+    "title": "Project planning report",
+    "trailer": true,
+    "savedTo": "/tmp/aa-walk/en-390-report.pdf",
+    "suggestedFilename": "linker-planning-0e1001eae83f4b20bc1db809d9854e6b-r2-en.pdf",
+    "downloadFailure": {},
+    "browserSavedBytes": 62368,
+    "browserSavedPath": "/tmp/aa-walk/en-390-report-browser.pdf"
+  },
+  "stepsFinal": {
+    "save": "done",
+    "weather": "blocked",
+    "pv": "blocked",
+    "scenario": "blocked",
+    "energy": "blocked",
+    "search": "done",
+    "qualify": "done",
+    "report": "done"
+  },
+  "finishedAt": "2026-11-11T06:54:48.318Z"
+}
