@@ -275,11 +275,6 @@
     "msgid": "This saved solution belongs to another account.",
     "reason": "WP_Error message returned as the ability REST error to the Genie service. Never rendered on a page.",
     "evidence": "plugins/linker-commerce/includes/Abilities/ReadSolution.php:214"
-   },
-   {
-    "msgid": "%d 个待审客户",
-    "reason": "The team daily digest is rendered in Chinese (#495); this string is the digest subject/count line, not German customer copy.",
-    "evidence": "plugins/linker-commerce/includes/Digest/DigestEmail.php:92"
    }
   ]
  }

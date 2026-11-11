@@ -117,7 +117,7 @@ final class OperationsHealthTest extends TestCase {
 
 		$rows = $block->entries();
 		$this->assertCount( 1, $rows );
-		$this->assertSame( '1 queued delivery action(s) are more than a day overdue.', $rows[0]['label'] );
+		$this->assertSame( '1 queued delivery action is more than a day overdue.', $rows[0]['label'] );
 		$this->assertStringContainsString( 'Queue: 1 pending in total', $rows[0]['detail'] );
 		$this->assertStringContainsString( 'The latest action was due 24 hours ago.', $rows[0]['detail'] );
 	}
@@ -140,7 +140,7 @@ final class OperationsHealthTest extends TestCase {
 
 		$rows = $block->entries();
 		$this->assertCount( 1, $rows );
-		$this->assertSame( '4 queued delivery action(s) are more than a day overdue.', $rows[0]['label'] );
+		$this->assertSame( '4 queued delivery actions are more than a day overdue.', $rows[0]['label'] );
 		$this->assertStringContainsString( 'Queue: at least 500 pending in total', $rows[0]['detail'] );
 	}
 

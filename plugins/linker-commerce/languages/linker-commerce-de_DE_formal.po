@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-11-08T04:02:28+00:00\n"
+"POT-Creation-Date: 2026-11-11T08:52:35+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -487,27 +487,27 @@ msgstr ""
 msgid "Solution Configurator URL with the fields as query arguments."
 msgstr ""
 
-#: includes/Account/AdminAccessNotice.php:113
+#: includes/Account/AdminAccessNotice.php:131
 msgid "Linker staff only"
 msgstr "Bereich für Linker-Mitarbeitende"
 
 #. translators: %s: email of the signed-in customer.
-#: includes/Account/AdminAccessNotice.php:116
+#: includes/Account/AdminAccessNotice.php:134
 #, php-format
 msgid "You are signed in as %s (customer account)."
 msgstr "Sie sind mit Ihrem Kundenkonto %s angemeldet."
 
-#: includes/Account/AdminAccessNotice.php:118
+#: includes/Account/AdminAccessNotice.php:136
 msgid "The admin area is for Linker staff only."
 msgstr ""
 "Der Verwaltungsbereich ist ausschließlich für Linker-Mitarbeitende "
 "vorgesehen."
 
-#: includes/Account/AdminAccessNotice.php:120
+#: includes/Account/AdminAccessNotice.php:138
 msgid "Sign out and sign in as staff"
 msgstr "Abmelden und mit einem Mitarbeiterkonto anmelden"
 
-#: includes/Account/AdminAccessNotice.php:122
+#: includes/Account/AdminAccessNotice.php:140
 msgid "Go to my account"
 msgstr "Zu meinem Konto"
 
@@ -1228,7 +1228,7 @@ msgstr "Bitte schreiben Sie Ihre Nachricht."
 msgid "Please agree to the use of your details for the reply."
 msgstr "Bitte stimmen Sie der Verwendung Ihrer Angaben für die Antwort zu."
 
-#: includes/Digest/DigestEmail.php:47 includes/Digest/DigestEmail.php:120
+#: includes/Digest/DigestEmail.php:47 includes/Digest/DigestEmail.php:126
 msgid "Daily digest"
 msgstr "Tagesübersicht"
 
@@ -1243,16 +1243,26 @@ msgstr ""
 #. translators: %d: number of inquiries waiting for the team's follow-up.
 #: includes/Digest/DigestEmail.php:88
 #, php-format
-msgid "%d 条待跟进"
-msgstr "%d 条待跟进"
+msgid "%d inquiry awaiting follow-up"
+msgid_plural "%d inquiries awaiting follow-up"
+msgstr[0] "%d Anfrage wartet auf Bearbeitung"
+msgstr[1] "%d Anfragen warten auf Bearbeitung"
 
 #. translators: %d: number of customer accounts waiting for approval.
 #: includes/Digest/DigestEmail.php:93
 #, php-format
-msgid "%d 个待审客户"
-msgstr ""
+msgid "%d account awaiting approval"
+msgid_plural "%d accounts awaiting approval"
+msgstr[0] "%d Konto wartet auf Freigabe"
+msgstr[1] "%d Konten warten auf Freigabe"
 
-#: includes/Digest/DigestEmail.php:113
+#. translators: %s: the day's counts, separated by a middle dot.
+#: includes/Digest/DigestEmail.php:101
+#, php-format
+msgid ": %s"
+msgstr ": %s"
+
+#: includes/Digest/DigestEmail.php:119
 msgid "Daily digest, {date}"
 msgstr "Tagesübersicht, {date}"
 
@@ -1513,6 +1523,194 @@ msgstr ""
 "\n"
 "%5$s nutzt diesen Dienst. Die Prüfung läuft einmal am Tag und wiederholt "
 "diese Nachricht bei jedem Fehlschlag."
+
+#: includes/Health/OperationsHealth.php:112
+msgid "Operations health"
+msgstr "Betriebsstatus"
+
+#: includes/Health/OperationsHealth.php:126
+msgid "The delivery queue could not be read."
+msgstr "Die Zustellwarteschlange konnte nicht gelesen werden."
+
+#. translators: %d: pending actions past their slot by more than a day.
+#: includes/Health/OperationsHealth.php:130
+#, php-format
+msgid "%d queued delivery action is more than a day overdue."
+msgid_plural "%d queued delivery actions are more than a day overdue."
+msgstr[0] "%d Zustellauftrag ist mehr als einen Tag überfällig."
+msgstr[1] "%d Zustellaufträge sind mehr als einen Tag überfällig."
+
+#. translators: 1: pending action count, 2: how long ago the latest action was due.
+#: includes/Health/OperationsHealth.php:135
+#, php-format
+msgid ""
+"Queue: %1$s pending in total. The latest action was due %2$s. Retries end "
+"after 24 hours, so an action this late is stuck rather than retrying."
+msgstr "Warteschlange: insgesamt %1$s ausstehend. Der jüngste Auftrag war %2$s fällig. Wiederholungen enden nach 24 Stunden; ein so spät fälliger Auftrag hängt fest, statt erneut versucht zu werden."
+
+#: includes/Health/OperationsHealth.php:144
+msgid "The mail budget could not be read."
+msgstr "Das E-Mail-Kontingent konnte nicht gelesen werden."
+
+#: includes/Health/OperationsHealth.php:155
+msgid "The pending-review queue could not be read."
+msgstr "Die Prüfwarteschlange konnte nicht gelesen werden."
+
+#: includes/Health/OperationsHealth.php:156
+msgid "The unhandled inquiry envelope could not be read."
+msgstr "Die Obergrenze für unerledigte Anfragen konnte nicht gelesen werden."
+
+#. translators: 1: unhandled inquiries, 2: the site envelope.
+#: includes/Health/OperationsHealth.php:163
+#, php-format
+msgid "%1$d unhandled inquiries are near the site envelope of %2$d."
+msgstr "%1$d unerledigte Anfragen erreichen fast die Obergrenze der Website von %2$d."
+
+#. translators: 1: logical megabytes, 2: the byte envelope.
+#: includes/Health/OperationsHealth.php:168
+#, php-format
+msgid ""
+"Occupied logical data: %1$s of %2$s. At the envelope the site refuses a "
+"genuine new submission."
+msgstr "Belegte logische Datenmenge: %1$s von %2$s. Bei Erreichen der Obergrenze lehnt die Website eine echte neue Einsendung ab."
+
+#. translators: 1: quarantined inquiries, 2: verification lane capacity.
+#: includes/Health/OperationsHealth.php:178
+#, php-format
+msgid "%1$d inquiries are quarantined against a review lane of %2$d."
+msgstr "%1$d Anfragen in Quarantäne; die Prüfspur fasst %2$d."
+
+#: includes/Health/OperationsHealth.php:181
+msgid ""
+"A full lane refuses a genuine new submission. #568 measured 102 unhandled "
+"when the 2026-10-22 wave was live; dispose the backlog or confirm the wave "
+"is expected before the lane fills."
+msgstr "Eine volle Prüfspur lehnt echte neue Einsendungen ab. #568 hat 102 unerledigte Anfragen gemessen, als die Welle vom 22.10.2026 lief; arbeiten Sie den Rückstand ab oder bestätigen Sie, dass die Welle erwartet wird, bevor die Spur voll ist."
+
+#: includes/Health/OperationsHealth.php:188
+msgid "The publication manifest could not be read."
+msgstr "Das Veröffentlichungsmanifest konnte nicht gelesen werden."
+
+#. translators: 1: prepared products, 2: published products.
+#: includes/Health/OperationsHealth.php:192
+#, php-format
+msgid "Engineering feed prepared %1$d of %2$d products."
+msgstr "Der technische Datenbestand hat %1$d von %2$d Produkten vorbereitet."
+
+#: includes/Health/OperationsHealth.php:195
+msgid ""
+"The planner builds from this feed. An all-zero reading was the 2026-11-11 "
+"signature after a pull changed every product revision; run the publication "
+"repair and confirm the dry run reports no backlog."
+msgstr ""
+"Der Lösungskonfigurator baut auf diesem Datenbestand auf. Eine "
+"Nullmessung war am 11.11.2026 das Kennzeichen, nachdem ein Abgleich jede "
+"Produktrevision geändert hatte; führen Sie die Veröffentlichungsreparatur "
+"aus und bestätigen Sie, dass der Probelauf keinen Rückstand meldet."
+
+#: includes/Health/OperationsHealth.php:211
+msgid "queue unreadable"
+msgstr "Warteschlange nicht lesbar"
+
+#. translators: 1: pending actions, 2: nothing late, or how late the latest action is.
+#: includes/Health/OperationsHealth.php:214
+#, php-format
+msgid "queue %1$s (%2$s)"
+msgstr "Warteschlange %1$s (%2$s)"
+
+#: includes/Health/OperationsHealth.php:217
+msgid "nothing late"
+msgstr "nichts überfällig"
+
+#: includes/Health/OperationsHealth.php:223
+msgid "mail unreadable"
+msgstr "E-Mail-Kontingent nicht lesbar"
+
+#. translators: 1: PHP attempts used, 2: PHP day allocation, 3: SMTP attempts used, 4: SMTP day allocation.
+#: includes/Health/OperationsHealth.php:226
+#, php-format
+msgid "mail %1$d/%2$d PHP, %3$d/%4$d SMTP"
+msgstr "E-Mail %1$d/%2$d PHP, %3$d/%4$d SMTP"
+
+#: includes/Health/OperationsHealth.php:235
+msgid "intake unreadable"
+msgstr "Eingang nicht lesbar"
+
+#. translators: 1: unhandled inquiries, 2: the site envelope, 3: quarantined inquiries.
+#: includes/Health/OperationsHealth.php:238
+#, php-format
+msgid "intake %1$d/%2$d unhandled, %3$d quarantined"
+msgstr "Eingang %1$d/%2$d unerledigt, %3$d in Quarantäne"
+
+#: includes/Health/OperationsHealth.php:246
+msgid "publication unreadable"
+msgstr "Veröffentlichung nicht lesbar"
+
+#. translators: 1: prepared engineering products, 2: published products, 3: prepared knowledge products.
+#: includes/Health/OperationsHealth.php:249
+#, php-format
+msgid "publication %1$d/%2$d engineering, %3$d knowledge"
+msgstr "Veröffentlichung %1$d/%2$d technisch, %3$d Wissen"
+
+#. translators: %s: the four measured dimensions, comma separated.
+#: includes/Health/OperationsHealth.php:257
+#, php-format
+msgid "All within bounds — %s."
+msgstr "Alles im Rahmen — %s."
+
+#: includes/Health/OperationsHealth.php:295
+msgid "PHP mail()"
+msgstr "PHP mail()"
+
+#: includes/Health/OperationsHealth.php:296
+msgid "SMTP"
+msgstr "SMTP"
+
+#. translators: 1: mail channel, 2: attempts charged, 3: the day allocation.
+#: includes/Health/OperationsHealth.php:306
+#, php-format
+msgid "%1$s has used %2$d of %3$d daily attempts."
+msgstr "%1$s hat %2$d von %3$d Tagesversuchen verbraucht."
+
+#. translators: 1: the ordinary share, 2: the attempts still reserved for critical mail.
+#: includes/Health/OperationsHealth.php:311
+#, php-format
+msgid ""
+"Ordinary mail stops at %1$d; the last %2$d attempts are held for password "
+"resets, approvals and staff alerts. Customer acknowledgements wait for the "
+"rolling window to move on."
+msgstr ""
+"Die normale Zustellung endet bei %1$d; die letzten %2$d Versuche bleiben "
+"für Passwort-Zurücksetzungen, Freigaben und Team-Warnungen reserviert. "
+"Kundenbestätigungen warten, bis das rollierende Fenster weiterläuft."
+
+#: includes/Health/OperationsHealth.php:331
+msgid ""
+"This is not a zero reading: the measurement itself failed, so nothing about "
+"this dimension is known today."
+msgstr "Das ist keine Nullmessung: Die Messung selbst ist fehlgeschlagen, daher ist zu dieser Dimension heute nichts bekannt."
+
+#. translators: %d: actions read in one page.
+#: includes/Health/OperationsHealth.php:344
+#, php-format
+msgid "at least %d"
+msgstr "mindestens %d"
+
+#. translators: %d: number of hours.
+#: includes/Health/OperationsHealth.php:361
+#, php-format
+msgid "%d hour late"
+msgid_plural "%d hours late"
+msgstr[0] "%d Stunde überfällig"
+msgstr[1] "%d Stunden überfällig"
+
+#. translators: %d: number of days.
+#: includes/Health/OperationsHealth.php:365
+#, php-format
+msgid "%d day late"
+msgid_plural "%d days late"
+msgstr[0] "%d Tag überfällig"
+msgstr[1] "%d Tage überfällig"
 
 #: includes/Health/PendingReviews.php:25
 msgid "Inquiries awaiting staff review"
@@ -2123,23 +2321,23 @@ msgstr ""
 msgid "Staff review recorded."
 msgstr "Interne Prüfung gespeichert."
 
-#: includes/Inquiry/Assessment/SendAuthorization.php:770
+#: includes/Inquiry/Assessment/SendAuthorization.php:804
 #: includes/Mail/NotificationHold.php:94
 msgid "You cannot release this notification."
 msgstr "Sie haben keine Berechtigung, diese Benachrichtigung freizugeben."
 
-#: includes/Inquiry/Assessment/SendAuthorization.php:773
+#: includes/Inquiry/Assessment/SendAuthorization.php:807
 #: includes/Mail/NotificationHold.php:121
 msgid "This notification has changed. Reload the inquiry before trying again."
 msgstr ""
 "Diese Benachrichtigung hat sich geändert. Laden Sie die Anfrage neu, bevor "
 "Sie es erneut versuchen."
 
-#: includes/Inquiry/Assessment/SendAuthorization.php:797
+#: includes/Inquiry/Assessment/SendAuthorization.php:831
 msgid "Notification released for delivery."
 msgstr "Benachrichtigung zur Zustellung freigegeben."
 
-#: includes/Inquiry/Assessment/SendAuthorization.php:838
+#: includes/Inquiry/Assessment/SendAuthorization.php:872
 #: includes/Mail/NotificationHold.php:96
 msgid ""
 "This notification is being processed. Reload the inquiry before trying again."
@@ -2784,13 +2982,13 @@ msgid "Compare"
 msgstr "Vergleichen"
 
 #: includes/Presentation/ComparePage.php:467
-#: includes/Storefront/ProductFilters.php:631
+#: includes/Storefront/ProductFilters.php:754
 #: includes/Storefront/ProductView.php:305
 msgid "Home"
 msgstr "Privat"
 
 #: includes/Presentation/ComparePage.php:468
-#: includes/Storefront/ProductFilters.php:632
+#: includes/Storefront/ProductFilters.php:755
 #: includes/Storefront/ProductView.php:305
 msgid "Commercial"
 msgstr "Gewerbe"
@@ -4524,7 +4722,7 @@ msgstr ""
 "keine Anfrage gesendet. Ihre Angaben bleiben erhalten. Bitte versuchen Sie "
 "es erneut."
 
-#: includes/Protection/BusinessCapacity.php:451
+#: includes/Protection/BusinessCapacity.php:491
 msgid ""
 "Your request has not been saved. We cannot accept new requests on this "
 "website right now. Your entries and solution draft are still here. Please "
@@ -5664,27 +5862,27 @@ msgid "The product's stock status after the push."
 msgstr ""
 
 #. translators: %d: number of grid phases.
-#: includes/Storefront/ProductFilters.php:392
-#: includes/Storefront/ProductFilters.php:627
+#: includes/Storefront/ProductFilters.php:515
+#: includes/Storefront/ProductFilters.php:750
 #, php-format
 msgid "%d-phase"
 msgid_plural "%d-phase"
 msgstr[0] "%d-phasig"
 msgstr[1] "%d-phasig"
 
-#: includes/Storefront/ProductFilters.php:607
+#: includes/Storefront/ProductFilters.php:730
 msgid "Up to 6 kW"
 msgstr "Bis 6 kW"
 
-#: includes/Storefront/ProductFilters.php:608
+#: includes/Storefront/ProductFilters.php:731
 msgid "6 to 15 kW"
 msgstr "6 bis 15 kW"
 
-#: includes/Storefront/ProductFilters.php:609
+#: includes/Storefront/ProductFilters.php:732
 msgid "15 to 30 kW"
 msgstr "15 bis 30 kW"
 
-#: includes/Storefront/ProductFilters.php:610
+#: includes/Storefront/ProductFilters.php:733
 msgid "Over 30 kW"
 msgstr "Über 30 kW"
 

@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-08T04:02:28+00:00\n"
+"POT-Creation-Date: 2026-11-11T08:52:35+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
@@ -450,25 +450,25 @@ msgstr ""
 msgid "Solution Configurator URL with the fields as query arguments."
 msgstr ""
 
-#: includes/Account/AdminAccessNotice.php:113
+#: includes/Account/AdminAccessNotice.php:131
 msgid "Linker staff only"
 msgstr ""
 
 #. translators: %s: email of the signed-in customer.
-#: includes/Account/AdminAccessNotice.php:116
+#: includes/Account/AdminAccessNotice.php:134
 #, php-format
 msgid "You are signed in as %s (customer account)."
 msgstr ""
 
-#: includes/Account/AdminAccessNotice.php:118
+#: includes/Account/AdminAccessNotice.php:136
 msgid "The admin area is for Linker staff only."
 msgstr ""
 
-#: includes/Account/AdminAccessNotice.php:120
+#: includes/Account/AdminAccessNotice.php:138
 msgid "Sign out and sign in as staff"
 msgstr ""
 
-#: includes/Account/AdminAccessNotice.php:122
+#: includes/Account/AdminAccessNotice.php:140
 msgid "Go to my account"
 msgstr ""
 
@@ -1131,7 +1131,7 @@ msgstr ""
 msgid "Please agree to the use of your details for the reply."
 msgstr ""
 
-#: includes/Digest/DigestEmail.php:47 includes/Digest/DigestEmail.php:120
+#: includes/Digest/DigestEmail.php:47 includes/Digest/DigestEmail.php:126
 msgid "Daily digest"
 msgstr ""
 
@@ -1144,16 +1144,26 @@ msgstr ""
 #. translators: %d: number of inquiries waiting for the team's follow-up.
 #: includes/Digest/DigestEmail.php:88
 #, php-format
-msgid "%d 条待跟进"
-msgstr ""
+msgid "%d inquiry awaiting follow-up"
+msgid_plural "%d inquiries awaiting follow-up"
+msgstr[0] ""
+msgstr[1] ""
 
 #. translators: %d: number of customer accounts waiting for approval.
 #: includes/Digest/DigestEmail.php:93
 #, php-format
-msgid "%d 个待审客户"
+msgid "%d account awaiting approval"
+msgid_plural "%d accounts awaiting approval"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: the day's counts, separated by a middle dot.
+#: includes/Digest/DigestEmail.php:101
+#, php-format
+msgid ": %s"
 msgstr ""
 
-#: includes/Digest/DigestEmail.php:113
+#: includes/Digest/DigestEmail.php:119
 msgid "Daily digest, {date}"
 msgstr ""
 
@@ -1393,6 +1403,187 @@ msgid ""
 "%5$s uses this service. The check runs once a day and repeats this message "
 "on every failure."
 msgstr ""
+
+#: includes/Health/OperationsHealth.php:112
+msgid "Operations health"
+msgstr ""
+
+#: includes/Health/OperationsHealth.php:126
+msgid "The delivery queue could not be read."
+msgstr ""
+
+#. translators: %d: pending actions past their slot by more than a day.
+#: includes/Health/OperationsHealth.php:130
+#, php-format
+msgid "%d queued delivery action is more than a day overdue."
+msgid_plural "%d queued delivery actions are more than a day overdue."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: 1: pending action count, 2: how long ago the latest action was due.
+#: includes/Health/OperationsHealth.php:135
+#, php-format
+msgid ""
+"Queue: %1$s pending in total. The latest action was due %2$s. Retries end "
+"after 24 hours, so an action this late is stuck rather than retrying."
+msgstr ""
+
+#: includes/Health/OperationsHealth.php:144
+msgid "The mail budget could not be read."
+msgstr ""
+
+#: includes/Health/OperationsHealth.php:155
+msgid "The pending-review queue could not be read."
+msgstr ""
+
+#: includes/Health/OperationsHealth.php:156
+msgid "The unhandled inquiry envelope could not be read."
+msgstr ""
+
+#. translators: 1: unhandled inquiries, 2: the site envelope.
+#: includes/Health/OperationsHealth.php:163
+#, php-format
+msgid "%1$d unhandled inquiries are near the site envelope of %2$d."
+msgstr ""
+
+#. translators: 1: logical megabytes, 2: the byte envelope.
+#: includes/Health/OperationsHealth.php:168
+#, php-format
+msgid ""
+"Occupied logical data: %1$s of %2$s. At the envelope the site refuses a "
+"genuine new submission."
+msgstr ""
+
+#. translators: 1: quarantined inquiries, 2: verification lane capacity.
+#: includes/Health/OperationsHealth.php:178
+#, php-format
+msgid "%1$d inquiries are quarantined against a review lane of %2$d."
+msgstr ""
+
+#: includes/Health/OperationsHealth.php:181
+msgid ""
+"A full lane refuses a genuine new submission. #568 measured 102 unhandled "
+"when the 2026-10-22 wave was live; dispose the backlog or confirm the wave "
+"is expected before the lane fills."
+msgstr ""
+
+#: includes/Health/OperationsHealth.php:188
+msgid "The publication manifest could not be read."
+msgstr ""
+
+#. translators: 1: prepared products, 2: published products.
+#: includes/Health/OperationsHealth.php:192
+#, php-format
+msgid "Engineering feed prepared %1$d of %2$d products."
+msgstr ""
+
+#: includes/Health/OperationsHealth.php:195
+msgid ""
+"The planner builds from this feed. An all-zero reading was the 2026-11-11 "
+"signature after a pull changed every product revision; run the publication "
+"repair and confirm the dry run reports no backlog."
+msgstr ""
+
+#: includes/Health/OperationsHealth.php:211
+msgid "queue unreadable"
+msgstr ""
+
+#. translators: 1: pending actions, 2: nothing late, or how late the latest action is.
+#: includes/Health/OperationsHealth.php:214
+#, php-format
+msgid "queue %1$s (%2$s)"
+msgstr ""
+
+#: includes/Health/OperationsHealth.php:217
+msgid "nothing late"
+msgstr ""
+
+#: includes/Health/OperationsHealth.php:223
+msgid "mail unreadable"
+msgstr ""
+
+#. translators: 1: PHP attempts used, 2: PHP day allocation, 3: SMTP attempts used, 4: SMTP day allocation.
+#: includes/Health/OperationsHealth.php:226
+#, php-format
+msgid "mail %1$d/%2$d PHP, %3$d/%4$d SMTP"
+msgstr ""
+
+#: includes/Health/OperationsHealth.php:235
+msgid "intake unreadable"
+msgstr ""
+
+#. translators: 1: unhandled inquiries, 2: the site envelope, 3: quarantined inquiries.
+#: includes/Health/OperationsHealth.php:238
+#, php-format
+msgid "intake %1$d/%2$d unhandled, %3$d quarantined"
+msgstr ""
+
+#: includes/Health/OperationsHealth.php:246
+msgid "publication unreadable"
+msgstr ""
+
+#. translators: 1: prepared engineering products, 2: published products, 3: prepared knowledge products.
+#: includes/Health/OperationsHealth.php:249
+#, php-format
+msgid "publication %1$d/%2$d engineering, %3$d knowledge"
+msgstr ""
+
+#. translators: %s: the four measured dimensions, comma separated.
+#: includes/Health/OperationsHealth.php:257
+#, php-format
+msgid "All within bounds — %s."
+msgstr ""
+
+#: includes/Health/OperationsHealth.php:295
+msgid "PHP mail()"
+msgstr ""
+
+#: includes/Health/OperationsHealth.php:296
+msgid "SMTP"
+msgstr ""
+
+#. translators: 1: mail channel, 2: attempts charged, 3: the day allocation.
+#: includes/Health/OperationsHealth.php:306
+#, php-format
+msgid "%1$s has used %2$d of %3$d daily attempts."
+msgstr ""
+
+#. translators: 1: the ordinary share, 2: the attempts still reserved for critical mail.
+#: includes/Health/OperationsHealth.php:311
+#, php-format
+msgid ""
+"Ordinary mail stops at %1$d; the last %2$d attempts are held for password "
+"resets, approvals and staff alerts. Customer acknowledgements wait for the "
+"rolling window to move on."
+msgstr ""
+
+#: includes/Health/OperationsHealth.php:331
+msgid ""
+"This is not a zero reading: the measurement itself failed, so nothing about "
+"this dimension is known today."
+msgstr ""
+
+#. translators: %d: actions read in one page.
+#: includes/Health/OperationsHealth.php:344
+#, php-format
+msgid "at least %d"
+msgstr ""
+
+#. translators: %d: number of hours.
+#: includes/Health/OperationsHealth.php:361
+#, php-format
+msgid "%d hour late"
+msgid_plural "%d hours late"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of days.
+#: includes/Health/OperationsHealth.php:365
+#, php-format
+msgid "%d day late"
+msgid_plural "%d days late"
+msgstr[0] ""
+msgstr[1] ""
 
 #: includes/Health/PendingReviews.php:25
 msgid "Inquiries awaiting staff review"
@@ -1950,21 +2141,21 @@ msgstr ""
 msgid "Staff review recorded."
 msgstr ""
 
-#: includes/Inquiry/Assessment/SendAuthorization.php:770
+#: includes/Inquiry/Assessment/SendAuthorization.php:804
 #: includes/Mail/NotificationHold.php:94
 msgid "You cannot release this notification."
 msgstr ""
 
-#: includes/Inquiry/Assessment/SendAuthorization.php:773
+#: includes/Inquiry/Assessment/SendAuthorization.php:807
 #: includes/Mail/NotificationHold.php:121
 msgid "This notification has changed. Reload the inquiry before trying again."
 msgstr ""
 
-#: includes/Inquiry/Assessment/SendAuthorization.php:797
+#: includes/Inquiry/Assessment/SendAuthorization.php:831
 msgid "Notification released for delivery."
 msgstr ""
 
-#: includes/Inquiry/Assessment/SendAuthorization.php:838
+#: includes/Inquiry/Assessment/SendAuthorization.php:872
 #: includes/Mail/NotificationHold.php:96
 msgid ""
 "This notification is being processed. Reload the inquiry before trying again."
@@ -2577,13 +2768,13 @@ msgid "Compare"
 msgstr ""
 
 #: includes/Presentation/ComparePage.php:467
-#: includes/Storefront/ProductFilters.php:631
+#: includes/Storefront/ProductFilters.php:754
 #: includes/Storefront/ProductView.php:305
 msgid "Home"
 msgstr ""
 
 #: includes/Presentation/ComparePage.php:468
-#: includes/Storefront/ProductFilters.php:632
+#: includes/Storefront/ProductFilters.php:755
 #: includes/Storefront/ProductView.php:305
 msgid "Commercial"
 msgstr ""
@@ -4182,7 +4373,7 @@ msgid ""
 "attempt. Your entries are still here. Please try again."
 msgstr ""
 
-#: includes/Protection/BusinessCapacity.php:451
+#: includes/Protection/BusinessCapacity.php:491
 msgid ""
 "Your request has not been saved. We cannot accept new requests on this "
 "website right now. Your entries and solution draft are still here. Please "
@@ -5211,27 +5402,27 @@ msgid "The product's stock status after the push."
 msgstr ""
 
 #. translators: %d: number of grid phases.
-#: includes/Storefront/ProductFilters.php:392
-#: includes/Storefront/ProductFilters.php:627
+#: includes/Storefront/ProductFilters.php:515
+#: includes/Storefront/ProductFilters.php:750
 #, php-format
 msgid "%d-phase"
 msgid_plural "%d-phase"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Storefront/ProductFilters.php:607
+#: includes/Storefront/ProductFilters.php:730
 msgid "Up to 6 kW"
 msgstr ""
 
-#: includes/Storefront/ProductFilters.php:608
+#: includes/Storefront/ProductFilters.php:731
 msgid "6 to 15 kW"
 msgstr ""
 
-#: includes/Storefront/ProductFilters.php:609
+#: includes/Storefront/ProductFilters.php:732
 msgid "15 to 30 kW"
 msgstr ""
 
-#: includes/Storefront/ProductFilters.php:610
+#: includes/Storefront/ProductFilters.php:733
 msgid "Over 30 kW"
 msgstr ""
 

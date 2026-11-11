@@ -146,7 +146,7 @@ final class DigestAccuracyTest extends TestCase {
 		};
 		$message         = Capture::run( $email, static fn () => $email->send_report( array( $block ) ) );
 		self::assertNotNull( $message );
-		self::assertSame( 0 === $pending ? '' : '：' . $pending . ' 个待审客户', $email->placeholders['{summary}'] );
+		self::assertSame( 0 === $pending ? '' : ': ' . $pending . ' account' . ( 1 === $pending ? '' : 's' ) . ' awaiting approval', $email->placeholders['{summary}'] );
 		self::assertSame( 'Daily digest, ' . $email->placeholders['{date}'] . $email->placeholders['{summary}'], $message->subject );
 		self::assertStringContainsString( 'Accounts waiting for approval (' . $pending . ')', $message->body );
 		self::assertMatchesRegularExpression( '/class="linker-digest-num"[^>]*>\s*' . $pending . '<\/td>/', $message->body );

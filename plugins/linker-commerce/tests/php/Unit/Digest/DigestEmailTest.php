@@ -113,6 +113,7 @@ final class DigestEmailTest extends TestCase {
 	public function test_summary_placeholder_builds_counts( array $states, int $pending ): void {
 		$this->plain_text();
 		$this->reload_plugin_textdomain();
+		WP_Mock::userFunction( '_n', array( 'return' => static fn ( string $single, string $plural, int $count ): string => 1 === $count ? $single : $plural ) );
 		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => '/plugin/' ) );
 		WP_Mock::userFunction( 'sanitize_email', array( 'return' => static fn ( string $email ): string => $email ) );
 		WP_Mock::userFunction( 'is_email', array( 'return' => static fn ( string $email ): bool => false !== filter_var( $email, FILTER_VALIDATE_EMAIL ) ) );
@@ -155,7 +156,7 @@ final class DigestEmailTest extends TestCase {
 		$email = new DigestEmail( '/plugin/linker-commerce.php', new Options() );
 		$email->send_report( array( $accounts ) );
 
-		$this->assertSame( 0 === $pending ? '' : '：' . $pending . ' 个待审客户', $email->placeholders['{summary}'] );
+		$this->assertSame( 0 === $pending ? '' : ': ' . $pending . ' account' . ( 1 === $pending ? '' : 's' ) . ' awaiting approval', $email->placeholders['{summary}'] );
 		$this->assertSame( 'Accounts waiting for approval (' . $pending . ')', $accounts->title() );
 		$this->assertConditionsMet();
 	}
