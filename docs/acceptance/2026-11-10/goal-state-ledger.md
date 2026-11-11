@@ -1631,6 +1631,53 @@ as rejected-by-first-principle. With this, no item in the goal waits on owner
 input; everything is executed in-line (load profiles, direct-beam quota and
 the GW92.1 decision dispatched today; SE in flight).
 
+## Energy-domain load profiles: published BDEW/VDEW data replaces the self-made input (PR #1119)
+
+The boundary debt #1107 recorded honestly — "every input is our own synthetic
+fixture; cannot be self-fabricated" — is closed with published data rather than
+a request for owner input, exactly as the U4 ruling requires. Two BDEW/VDEW
+editions are now hashed inputs under `services/engine/data/load-profiles/`,
+with six `bdew.de` originals identified by size and SHA-256 in
+`docs/research/2026-11-12-load-profiles/EVIDENCE.md`.
+
+The two editions are separate files on purpose: 1999 VDEW is three seasons by
+three day types of quarter-hour average *power* normalised to 1,000 kWh/a, while
+2025 BDEW is twelve months by WT/SA/FT of quarter-hour *energy* normalised to
+1 Mio kWh/a. Mixing them would be a silent factor-of-1000 error, so the loader
+refuses a cross-edition profile by name.
+
+Three findings changed the implementation and are worth the ledger:
+
+- **P25/S25 are net import, not gross load.** BDEW states the PV/battery
+  self-consumption must be settled separately on the supplier side. Feeding
+  those profiles into a gross-load role would count that self-consumption
+  twice, so `role()` assigns them to `net_import` and nothing else.
+- **Dynamisation is decided per profile by the publisher's own sheet header**,
+  not by us: required for H25/P25/S25, explicitly not applicable to G25/L25.
+  The polynomial appears both as an embedded image in the xlsx and as body text
+  in the 2000 method report; the two agree digit for digit, and the three
+  published checkpoints (F202=0.7847, F365=1.2572, F366=1.2597) are asserted.
+- **Only the nine nationwide holidays are applied.** The BMI confirms the
+  Länder statutes protect exactly nine nationwide while BDEW's own calendar is
+  per Bundesland, and this repository holds no first-hand Land statute. State
+  holidays are an explicit caller input; nothing is guessed.
+
+Verification is measured, not asserted. Expanding a nominal year lands on each
+edition's own published basis (H0 998.8 of 1,000; G25 1,002,925 and P25 999,703
+of 1,000,000), and the official `Haushalt-Lastprofil.xls` static year agrees
+with this calendar implementation on 361 of 365 days — the four exceptions being
+three regional holidays the official sheet itself keeps as Werktag plus one
+isolated Saturday mislabelled in that sheet. The end-to-end run puts 35,132 real
+quarter-hours of the published G25 shape (400 MWh/a, leap year 2020) against the
+retained real PVGIS year through the ordinary CSV intake and the ordinary energy
+kernel at the production `max_intervals` of 100,000: 403,556.69 kWh from the
+engine against 403,579.87 from an independent expansion, the 23.17 kWh
+difference being exactly the boundary hour outside the overlap of the two axes.
+
+Not obtained, and recorded as such: the Land holiday statutes, the xlsx
+dynamisation formula as text (taken from the 2000 report instead), and any
+official holiday-resolved annual series (BDEW publishes coefficients, not
+finished years). No third-party republished coefficient table was used.
 ## GW92.1 listing closed by manufacturer-catalog evidence (2026-11-12)
 
 Executed per the ruling above. Decision: **do not list
