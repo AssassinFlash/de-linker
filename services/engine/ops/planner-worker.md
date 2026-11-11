@@ -186,16 +186,37 @@ current and previous utility sources. It needs engine `src/`, `schemas/`,
 engine `RuntimeSnapshot` does not include these operator files, so this ops-only
 change does not require relabelling numerical preparation fixtures.
 
-Reuse the already retained shared interpreter
-`~/de-linker-ops/knowledge-worker/releases/1418dc26e14c/.venv/bin/python`
-only for dependencies. Its current Pydantic 2.14.0, jsonschema 4.26.0 and Pillow
-12.3.0 successfully import this archive/verifier with an explicit engine `src`
-path; no environment was created for that check. Deployment must repeat the
-actual import from the newly prepared stable utility source before rendering or
-installing its plist. The renderer accepts explicit interpreter/runner paths and
-sets `PYTHONPATH` to the stable utility `src`, so a shared editable package cannot
-select a development checkout. Retain this shared interpreter while either
-deployed consumer depends on it; it is not a third utility-source release.
+The scheduler's interpreter must be a **dedicated environment outside every
+`releases/` root**, created from this source's lock:
+
+```
+cd ~/de-linker-ops/planner-maintenance
+UV_PROJECT_ENVIRONMENT=$PWD/venv uv sync --frozen --no-dev \
+  --no-install-project --project releases/<merged-commit>
+# -> ~/de-linker-ops/planner-maintenance/venv/bin/python
+```
+
+`UV_PROJECT_ENVIRONMENT` is required: without it `uv sync --project` places the
+environment inside the release directory, where the next rotation deletes it.
+
+Pass it as `--python .../planner-maintenance/venv/bin/python`. Do not borrow a
+knowledge-worker release interpreter: each service prunes its own `releases/`
+directory (keeping the live version, its rollback target and one spare), so a
+borrowed interpreter satisfies rendering while that release is current and is
+then deleted. The scheduler keeps a plist pointing at the now-absent file, never
+starts the runner, and reports exit 78 (EX_CONFIG) once per wakeup. That is the
+failure the 2026-11-11 instance repair found: the definition still named
+`knowledge-worker/releases/1418dc26e14c/.venv/bin/python` months after that
+release was reaped, and no maintenance round had run since. An interpreter
+under a release root is refused outright; the shared environment is 243 MB and
+costs nothing to rebuild from `uv.lock`.
+
+Installation now verifies the deployed source before the scheduler owns it: the
+runner's real `import linker_engine.planning.{archive,retention,workspace}` must
+succeed with that release's `src`, which turns a silent post-install exit 78 into
+an installation error. It also reads back the loaded definition and requires the
+`launchctl print` path to be the installed plist, so a label still holding the
+retained `.previous.plist` fails instead of leaving the edited definition unused.
 
 Rendering the plist changes no scheduler. Inspect the exact source, interpreter,
 owner, archive root and UTC options before explicit installation. A failed or
