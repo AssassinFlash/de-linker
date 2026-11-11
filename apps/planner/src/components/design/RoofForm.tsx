@@ -28,17 +28,23 @@ export interface GeometryFormProps {
 	onValidity: (valid: boolean) => void;
 }
 
-/** Recover the two angles only for the measured frame authored by this form. */
+/** Recover the two angles only for a frame this form's own constructor makes:
+ * a measured rectangle, or a two-point calibrated drawing. */
 function measuredAngles(
 	document: GeometryDocument,
 	roof: RoofFace | null,
 	imported: boolean,
 ) {
+	// V extends down-slope, so a face this constructor makes never points up;
+	// a flat roof's V is exactly horizontal.
 	if (!roof || imported || roof.u_axis_enu[2] !== 0 || roof.v_axis_enu[2] > 0)
 		return null;
 	const source = document.sources.find((item) => item.id === roof.source_id);
-	if (source?.kind !== "user_measurement" || source.reference_sha256 !== null)
-		return null;
+	const measured =
+		source?.kind === "user_measurement" && source.reference_sha256 === null;
+	const calibrated =
+		source?.kind === "user_drawing" && source.calibration != null;
+	if (!measured && !calibrated) return null;
 	const [ux, uy] = roof.u_axis_enu;
 	const [vx, vy, vz] = roof.v_axis_enu;
 	const pitch = (Math.atan2(Math.abs(vz), Math.hypot(vx, vy)) * 180) / Math.PI;

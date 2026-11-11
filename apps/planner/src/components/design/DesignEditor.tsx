@@ -23,6 +23,7 @@ import { LayoutRulesForm } from "./LayoutRulesForm.tsx";
 import { LayoutReviewPanel } from "./LayoutReviewPanel.tsx";
 import { PlanViewport } from "./PlanViewport.tsx";
 import { GeometryIntake } from "./GeometryIntake.tsx";
+import { ImageCalibrationWorkspace } from "./ImageCalibrationWorkspace.tsx";
 import { CoordinatesForm } from "./CoordinatesForm.tsx";
 import { LazySceneViewport } from "./LazySceneViewport.tsx";
 import { MapDrawingWorkspace } from "./MapDrawingWorkspace.tsx";
@@ -97,6 +98,7 @@ export function DesignEditor({
 	const sceneCamera = useRef<SceneViewState | null>(null);
 	const [importOpen, setImportOpen] = useState(false);
 	const [drawingOpen, setDrawingOpen] = useState(false);
+	const [calibrationOpen, setCalibrationOpen] = useState(false);
 	const [form, setForm] = useState<FormState | null>(null),
 		[error, setError] = useState(false),
 		[page, setPage] = useState(0);
@@ -123,9 +125,11 @@ export function DesignEditor({
 		setError(false);
 	}, []);
 	useEffect(() => {
-		onValidity(form === null && !importOpen && !drawingOpen);
+		onValidity(
+			form === null && !importOpen && !drawingOpen && !calibrationOpen,
+		);
 		return () => onValidity(true);
-	}, [form, importOpen, drawingOpen, onValidity]);
+	}, [form, importOpen, drawingOpen, calibrationOpen, onValidity]);
 	const edit = useCallback(
 		(command: GeometryCommand) => {
 			const accepted = commit(command);
@@ -289,6 +293,14 @@ export function DesignEditor({
 				confirmedAssetIds={confirmedAssetIds}
 				recoveryScopes={recoveryScopes}
 				recoveryChecking={recoveryChecking}
+			/>
+			<ImageCalibrationWorkspace
+				geometry={geometry}
+				roofId={roof?.id ?? null}
+				locale={locale}
+				disabled={!!form || drawingOpen || importOpen}
+				onActivity={setCalibrationOpen}
+				commit={edit}
 			/>
 			<div className="lp-design-workspace">
 				<div className="lp-design-canvas">

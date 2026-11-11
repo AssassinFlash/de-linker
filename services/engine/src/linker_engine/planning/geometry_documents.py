@@ -9,9 +9,12 @@ from urllib.parse import urlsplit
 from pydantic import Field, field_validator, model_validator
 
 from .energy_inputs import Document, SchemaVersion
+from .image_calibration import ImageCalibration
 from .product_binding import WooReference
 
 # Wire string/integer limits, not engineering dimensions (548-design-geometry).
+# They stay in this module: the generated $defs names encode it, and moving them
+# would rewrite every other browser contract's references.
 type Identifier = Annotated[str, Field(pattern=r"^[A-Za-z][A-Za-z0-9_-]{0,63}$")]
 type Text = Annotated[str, Field(min_length=1, max_length=4096)]
 type Number = Annotated[float, Field(allow_inf_nan=False)]
@@ -72,6 +75,9 @@ class GeometrySource(Document):
     )
     spatial_precision_m: Nonnegative | None
     calibration_note: Text
+    # Optional so every saved revision without a calibrated drawing stays
+    # valid verbatim; absence means no recorded calibration, not zero error.
+    calibration: ImageCalibration | None = None
     rights_basis: Literal["user_attestation", "referenced_licence", "synthetic"]
     permissions: SourcePermissions
 

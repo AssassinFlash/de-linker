@@ -545,7 +545,7 @@ msgstr "Die Überprüfung läuft …"
 msgid "Choose a PNG or JPEG file."
 msgstr "Wählen Sie eine PNG- oder JPEG-Datei."
 
-#: src/genie/components/MissingFiles.tsx src/hero/Hero.tsx build/genie.js build/hero.js
+#: src/genie/components/MissingFiles.tsx src/hero/Hero.tsx ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/genie.js build/hero.js build/planner/assets/planner.js:1
 msgid "Choose a file"
 msgstr "Datei auswählen"
 
@@ -14644,3 +14644,220 @@ msgstr "mögliche Einspeiseleistung"
 #: build/planner/assets/planner.js:1
 msgid "existing module being changed"
 msgstr "Änderung eines bestehenden Moduls"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "%1$d × %2$d pixels"
+msgstr "%1$d × %2$d Pixel"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "%s %%"
+msgstr "%s %%"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "%s m per pixel"
+msgstr "%s m je Pixel"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "0 or greater. An empty field means unknown. This is a source claim, separate from the scale arithmetic."
+msgstr "0 oder größer. Ein leeres Feld bedeutet unbekannt. Das ist eine Angabe zur Quelle, getrennt von der Rechnung des Maßstabs."
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "A horizontal plan is converted into slope lengths once through this pitch. A slope drawing states them already."
+msgstr "Ein horizontaler Grundriss wird über diese Neigung einmalig in Schräglängen umgerechnet. Eine Schrägansicht gibt sie bereits an."
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Adding the drawing records its calibration with this roof face and replaces the outline with the marks above. Openings remain editable in roof properties."
+msgstr "Beim Hinzufügen wird die Kalibrierung der Zeichnung mit dieser Dachfläche gespeichert und der Umriss durch die markierten Punkte ersetzt. Aussparungen bleiben in den Dacheigenschaften bearbeitbar."
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Calibrate a roof image"
+msgstr "Dachbild kalibrieren"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Calibration entry"
+msgstr "Eingabe der Kalibrierung"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Check span (%d of 2)"
+msgstr "Prüfstrecke (%d von 2)"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Check span difference"
+msgstr "Abweichung der Prüfstrecke"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Check the scale with a second, independent span"
+msgstr "Maßstab mit einer zweiten, unabhängigen Strecke prüfen"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Choose the drawing or photo first."
+msgstr "Wählen Sie zuerst die Zeichnung oder das Foto."
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Clear all marks"
+msgstr "Alle Markierungen entfernen"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Clear these marks"
+msgstr "Diese Markierungen entfernen"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Clockwise from the image's right edge to the roof face's U direction."
+msgstr "Im Uhrzeigersinn vom rechten Bildrand zur U-Richtung der Dachfläche."
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Drawing or photo"
+msgstr "Zeichnung oder Foto"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Drawing type"
+msgstr "Art der Zeichnung"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Horizontal plan or site plan"
+msgstr "Horizontaler Grundriss oder Lageplan"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "I have permission to use this drawing, derive the roof outline from it and keep the calibration with the project."
+msgstr "Ich habe die Berechtigung, diese Zeichnung zu verwenden, daraus den Dachumriss abzuleiten und die Kalibrierung mit dem Projekt aufzubewahren."
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Image and roof"
+msgstr "Bild und Dach"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Mark at least three points along the roof outline."
+msgstr "Markieren Sie mindestens drei Punkte entlang des Dachumrisses."
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Mark both ends of the independent second span, or turn the check off."
+msgstr "Markieren Sie beide Enden der unabhängigen zweiten Strecke oder schalten Sie die Prüfung aus."
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Mark both ends of the span whose real length you know."
+msgstr "Markieren Sie beide Enden der Strecke, deren tatsächliche Länge Sie kennen."
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Measurement status"
+msgstr "Status der Messung"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Name the roof face this drawing shows."
+msgstr "Benennen Sie die Dachfläche, die diese Zeichnung zeigt."
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "New roof face"
+msgstr "Neue Dachfläche"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Outline"
+msgstr "Umriss"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Outline points"
+msgstr "Umrisspunkte"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "PNG, JPEG or WebP, up to 8 MB. The image stays in this browser; the project records its calibration."
+msgstr "PNG, JPEG oder WebP bis 8 MB. Das Bild bleibt in diesem Browser; das Projekt speichert seine Kalibrierung."
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Permitted difference"
+msgstr "Zulässige Abweichung"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Perspective photo"
+msgstr "Perspektivisches Foto"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Place the calibration marks on the image"
+msgstr "Kalibriermarken im Bild setzen"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Real length of the check span"
+msgstr "Tatsächliche Länge der Prüfstrecke"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Real length of the scale span"
+msgstr "Tatsächliche Länge der Maßstabstrecke"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Recorded scale"
+msgstr "Gespeicherter Maßstab"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Reference only"
+msgstr "Nur als Referenz"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Relative difference between the two spans that still counts as agreement, for example 0.01 for one percent. It is your declared limit, not a surveying rule."
+msgstr "Relative Abweichung zwischen beiden Strecken, die noch als Übereinstimmung gilt, zum Beispiel 0,01 für ein Prozent. Das ist Ihre erklärte Grenze, keine Regel der Vermessung."
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Remove the last point"
+msgstr "Letzten Punkt entfernen"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Replace the outline of %s"
+msgstr "Umriss von %s ersetzen"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Roof from drawing"
+msgstr "Dach aus Zeichnung"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Roof outline (%d points)"
+msgstr "Dachumriss (%d Punkte)"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Roof slope elevation"
+msgstr "Schrägansicht der Dachfläche"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Down-slope bearing as drawn"
+msgstr "Gefällerichtung laut Zeichnung"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Clockwise from project north to the direction drawn down the page: 0 north, 90 east, 180 south, 270 west. The page's right edge is then cross-slope."
+msgstr "Im Uhrzeigersinn von der Projekt-Nordrichtung zur Richtung, die auf der Seite nach unten zeigt: 0 Nord, 90 Ost, 180 Süd, 270 West. Der rechte Seitenrand verläuft dann quer zum Gefälle."
+
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Scale"
+msgstr "Maßstab"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Scale a drawing or photo with two points and trace the roof outline on it."
+msgstr "Zeichnung oder Foto mit zwei Punkten skalieren und den Dachumriss darauf nachzeichnen."
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Scale span (%d of 2)"
+msgstr "Maßstabstrecke (%d von 2)"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "The scale could not be recorded from these entries."
+msgstr "Aus diesen Eingaben konnte der Maßstab nicht erfasst werden."
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "The second span differs by %s %%. The drawing stays a reference and cannot measure the roof until the points or the length are corrected."
+msgstr "Die zweite Strecke weicht um %s %% ab. Die Zeichnung bleibt eine Referenz und kann das Dach nicht vermessen, bis die Punkte oder die Länge korrigiert sind."
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "These settings could not be applied. The current design is unchanged and your marks remain."
+msgstr "Diese Einstellungen konnten nicht übernommen werden. Der aktuelle Entwurf bleibt unverändert, Ihre Markierungen bleiben erhalten."
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "This image could not be used. Choose a PNG, JPEG or WebP file up to 8 MB."
+msgstr "Dieses Bild konnte nicht verwendet werden. Wählen Sie eine Datei im Format PNG, JPEG oder WebP bis 8 MB."
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "This drawing is a reference only, so it cannot measure the roof. Mark a measurable plan or slope view whose second span agrees, or keep the drawing beside an already measured roof face."
+msgstr "Diese Zeichnung ist nur eine Referenz und kann das Dach daher nicht vermessen. Markieren Sie einen messbaren Grundriss oder eine Schrägansicht, deren zweite Strecke übereinstimmt, oder bewahren Sie die Zeichnung neben einer bereits aufgemessenen Dachfläche auf."
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Two points and one real length give a single scale. A second independent span checks it; a perspective photo stays a reference and cannot measure the roof."
+msgstr "Zwei Punkte und eine tatsächliche Länge ergeben einen einheitlichen Maßstab. Eine zweite unabhängige Strecke prüft ihn; ein perspektivisches Foto bleibt eine Referenz und kann das Dach nicht vermessen."
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Usable uniform scale"
+msgstr "Nutzbarer einheitlicher Maßstab"
