@@ -1858,3 +1858,35 @@ dormant, to be revisited on the first real declaration (the field's first
 non-null value is the trigger; the daily digest or a later probe can surface
 it). This closes the last open research surface with a measurement, not a
 guess — consistent with the goal's no-owner-waiting and evidence-first rules.
+
+## Pre-final audit: consolidated evidence pointers (2026-11-12 night)
+
+Completion-criterion items and where their evidence lives, consolidated for
+the final audit after the 02:00-03:00 UTC window check:
+1. Real-human unobstructed inquiries in production: U1 entry — two genuine
+   guest inquiries read back end-to-end from the 23:36 UTC snapshot incl.
+   mail.log witnesses; attack and human flows separately proven (185
+   isolated vs 6 real).
+2. Security bidirectional: U1 (humans pass) + #1090 (attacks isolated) +
+   U2 live alerting (down/recovery pair actually delivered; main line read
+   the timer/state/heartbeat on the VPS) + U5 gitleaks with planted-key
+   reverse test. Rotation class + U3 + U4 ruled out by owner rulings /
+   first principle (entries above).
+3. Resource mechanisms with before/after data: launchd root cause
+   (#1108/#1109 — recycled-venv exec failure → stable interpreter, last
+   exit 78 → 0, real maintenance round deleting 705 items / 7.77 MB
+   matching the pre-fix read-only plan exactly); quotas measured per mode
+   (#1106: normal 95.6% / expanded 28% / direct-beam 0.03% RSS 48 MB);
+   geometric admission re-priced from a measured scene matrix with
+   before/after on six roof shapes (#1120); mail-job lifecycle 21.43 h →
+   0 s; alerting latency measured against the real outage timeline (#1116).
+4. Per-batch resource reports: every batch-close entry from 11-10 onward
+   carries its start/reclaim list and disk figure; day-close entries
+   (evening + twelve-PR) aggregate them.
+5. Externally-pending, honestly recorded: SGS Annex (never solicitable per
+   owner ruling; certified-envelope-only content, boundary in the AT/ET
+   evidence docs); DSO surface dormant by measured zero usage; German
+   legacy spec table (registry rows ready, PDP switch is a copy-reviewed
+   change when demanded).
+6. The one open check: planner-maintenance's first unattended in-window
+   run, 2026-11-12 02:00-03:00 UTC (timer firing already proven hourly).
