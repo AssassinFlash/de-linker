@@ -566,7 +566,10 @@ def test_serve_starts_the_services_and_down_stops_everything(stack: Stack) -> No
         (a.genie_port, "linker_genie_url"),
     ):
         health = request(port, "/health")
-        assert (health.status, json.loads(health.body)) == (200, {"status": "ok"})
+        body = json.loads(health.body)
+        # Each service also reports the immutable release it actually loaded
+        # (Genie: serving_revision), which liveness alone never proves.
+        assert (health.status, body.get("status")) == (200, "ok")
         assert stack.wp(a.name, "option", "get", option) == f"http://127.0.0.1:{port}"
     assert re.search(
         rf"^{A}\s.*\srunning\s+planner-worker, engine, genie\s",
