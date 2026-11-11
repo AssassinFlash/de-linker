@@ -436,13 +436,51 @@ def selected_modules(changes, base="", head=""):
     return [module for module in MODULE_COMMANDS if module in selected]
 
 
+def selection(changes, base="", head=""):
+    """One classification of one change list, as (lanes, modules).
+
+    The lane list and the module list are two views of the same set, so they
+    are derived here together and never recomputed from a different input.
+    """
+    modules = selected_modules(changes, base, head)
+    if modules is None:
+        return list(FULL_LANES), list(FULL_MODULES)
+    modules = [module for module in MODULE_COMMANDS if module in set(modules)]
+    lanes = [lane for lane in LANES if lane in {module_lane(m) for m in modules}]
+    if modules and not lanes:
+        raise ValueError("a module selection produced no lane")
+    return lanes, modules
+
+
 def modules_for_lanes(lanes, changes, base="", head=""):
     if not lanes:
         return []
-    if lanes == list(FULL_LANES):
+    if list(lanes) == list(FULL_LANES):
         return list(FULL_MODULES)
-    modules = selected_modules(changes, base, head)
-    return list(FULL_MODULES) if modules is None else modules
+    expected, modules = selection(changes, base, head)
+    if list(lanes) != expected:
+        raise ValueError("lane selection and module selection disagree")
+    return modules
+
+
+def execution_plan(required, reused):
+    """Split required modules into executed and proven, keeping every lane real.
+
+    A reuse proof says one module's declared inputs are byte-identical to a
+    green job's, so accepting all of them would report a changed tree as
+    verified while no job ran. Every required lane therefore keeps at least one
+    executing module: a lane whose whole set was reused runs that set again.
+    """
+    kept = dict(reused)
+    for lane in LANES:
+        modules = [module for module in required if module_lane(module) == lane]
+        if modules and all(module in kept for module in modules):
+            for module in modules:
+                kept.pop(module, None)
+    executed = [module for module in required if module not in kept]
+    if required and not executed:
+        raise ValueError("no module would execute on a changed tree")
+    return executed, kept
 
 
 def module_project(module):
@@ -912,11 +950,7 @@ def tools_manifest_matches_changes(changes, base, head):
 
 
 def classify(changes, base="", head=""):
-    modules = selected_modules(changes, base, head)
-    if modules is None:
-        return list(FULL_LANES)
-    lanes = {module_lane(module) for module in modules}
-    return [lane for lane in LANES if lane in lanes]
+    return selection(changes, base, head)[0]
 
 
 def diff_changes(base, head):
@@ -1524,7 +1558,11 @@ def plan():
         except (OSError, subprocess.SubprocessError, KeyError, ValueError):
             # No proof means execute, never silently skip the affected module.
             reused = {}
-    executed_modules = [module for module in required_modules if module not in reused]
+    try:
+        executed_modules, reused = execution_plan(required_modules, reused)
+    except ValueError as exception:
+        error = error or f"{type(exception).__name__}: {exception}"
+        executed_modules, reused = list(required_modules), {}
     selected = [
         lane
         for lane in LANES
@@ -1618,9 +1656,13 @@ def audit_gate(ledger, results, changes):
     required_lanes = (
         candidate if mode == "scoped" else list(FULL_LANES) if mode == "full" else []
     )
-    required = modules_for_lanes(
-        required_lanes, changes, ledger.get("base", ""), ledger.get("head", "")
-    )
+    try:
+        required = modules_for_lanes(
+            required_lanes, changes, ledger.get("base", ""), ledger.get("head", "")
+        )
+    except ValueError as exception:
+        errors.append(f"the lane and module selections disagree: {exception}")
+        required = []
     if ledger.get("modules") != required:
         errors.append("the independently recomputed module selection differs")
     reused = ledger.get("reused", {})
@@ -1631,15 +1673,20 @@ def audit_gate(ledger, results, changes):
     ):
         errors.append("invalid module reuse ledger")
         reused = {}
+    try:
+        executed, _kept = execution_plan(required, reused)
+    except ValueError as exception:
+        errors.append(f"module execution floor: {exception}")
+        executed = list(required)
     expected_lanes = [
         lane
         for lane in LANES
-        if any(
-            module_lane(module) == lane for module in required if module not in reused
-        )
+        if any(module_lane(module) == lane for module in executed)
     ]
     if selected != expected_lanes:
         errors.append("executed lanes differ from required modules and explicit reuse")
+    if mode in {"scoped", "full"} and required and not executed:
+        errors.append("a changed tree cannot report success with no executing module")
     if mode == "scoped" and (
         not candidate or candidate == list(FULL_LANES) or event != "pull_request"
     ):
