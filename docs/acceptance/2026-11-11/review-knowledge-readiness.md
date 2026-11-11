@@ -120,6 +120,7 @@ ack                      {"accepted":true,"complete":true}
 | Genie `POST /knowledge/loaded` | 旧索引 `20261108T205220Z-672808000`，源 `094db8ad…` | 新索引 `20261111T032628Z-899307000`，源 `4a3abcd6…` |
 | `publication reconcile` 之后 | — | 85/85 不变 |
 | 再跑一次 `ack-knowledge` | — | `knowledge is already acknowledged for this generation: 85 of 85`（幂等） |
+| `just serve review --service genie`（用 PR #1101 的代码） | — | `review: knowledge readiness: acknowledged`，索引行指向新构建 |
 
 **88 个商品里 knowledge 只到 85**：另 3 个是 `reference_pv_module`（8349）与
 `reference_cable`（8467、8468）。`acknowledge()` 的分母按
@@ -156,10 +157,11 @@ done: ok=true
 - 实例的 `linker_publication_jobs` 回滚副本：`/tmp/jobs-rollback-t-knowledge.json`
   （修复前原文，33 094 字节）；还原用
   `wp option update linker_publication_jobs '<json>' --format=json`。
-- 本次用 `wp user application-password create 1 t-knowledge-index` 建了一个
-  Application Password，凭据在 `/tmp/review-rest.json`（600）。它是实例侧的一次性
-  凭据，任务结束应删除（`wp user application-password delete 1 --name=t-knowledge-index`）
-  并删除该文件。**本文件未删除，留给后续重建索引时复用**——如需撤销按上面命令执行。
+- 本次用 `wp user application-password create 1 t-knowledge-index` 建过一个
+  Application Password 供重建索引用，**已撤销**（
+  `WP_Application_Passwords::delete_application_password()` 返回 `true`，
+  `application-password list` 现为空），`/tmp/review-rest.json` 已删除。
+  重建时按上面第 1 步重新生成即可。
 - 生产同样停在 0/88（`https://de-linker.com` 实测 `knowledge` 0 / 88，
   `linker_publication_jobs` knowledge `pending`、`loaded 85`、`index_version
   20261108T205220Z-672808000`、`unprepared 113`）。这不在本票范围（本票只修 review
@@ -173,9 +175,10 @@ done: ok=true
 - 上一版构建仍在（`20261108T…` 662 MB、`20261108T183602Z` 662 MB），本票未删；
   它们不再被任何实例引用，可回收。
 - worktree：`/tmp/t-knowledge`（3.0 GB，PR 提交已完成；保留待合并）。
-- 临时文件：`/tmp/jobs-rollback-t-knowledge.json`、`/tmp/review-rest.json`、
-  `/tmp/turn.sse`、`/tmp/pr-body.md`、`/tmp/commit-msg.txt`、`/tmp/review-manifest.json`、
-  `/tmp/jobs.json`。
+- 临时文件：`/tmp/jobs-rollback-t-knowledge.json`（回滚副本，保留到下一次
+  `pull load` 覆盖实例为止）、`/tmp/turn.sse`、`/tmp/pr-body.md`、
+  `/tmp/commit-msg.txt`、`/tmp/review-manifest.json`、`/tmp/jobs.json`。
+  含凭据的 `/tmp/review-rest.json` 已随 Application Password 撤销一并删除。
 - 未新增实例；只重启了 review 的 genie 一个服务（WP 与 engine 未重启）；
   浏览器标签已关闭；未留下运行中的后台进程。
 - 磁盘：`/System/Volumes/Data` 3.6 TiB，可用 1.2 TiB。
