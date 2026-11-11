@@ -20,13 +20,14 @@ import json
 import os
 import re
 import shutil
+import sqlite3
 import subprocess
 import urllib.error
 import urllib.parse
 import urllib.request
 import uuid
 from collections.abc import Callable, Iterator
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from dataclasses import dataclass, field
 from http.cookiejar import Cookie, CookieJar
 from pathlib import Path
@@ -2243,3 +2244,193 @@ def test_series_csv_download_uses_frontend_wordpress_file_api(
                     '{throw new Exception("fixture guest cleanup failed");}',
                     env={"LINKER_PLANNER_FIXTURE_GUEST": guest},
                 )
+
+
+OUTBOX_HOOK = "linker_tools_planner_claim"
+OUTBOX_GROUP = "linker-planner"
+OUTBOX_TYPE = "linker_planner_claim"
+# ClaimOutbox::queue(): 1, 2, 4, 8 then 15 minutes, capped at 15.
+BACKOFF_CAP_SECONDS = 15 * 60
+
+
+def outbox_state(wp: WpCli, user: int) -> dict[str, Any]:
+    """Every stored event for one account with its scheduled deliveries."""
+    value: object = json.loads(
+        wp.run(
+            "eval",
+            '$posts=get_posts(array("post_type"=>"linker_planner_claim",'
+            '"post_status"=>"private","author"=>(int)getenv("U"),"numberposts"=>-1));'
+            "$out=array();foreach($posts as $post){$actions=array();"
+            'foreach(as_get_scheduled_actions(array("hook"=>"linker_tools_planner_claim",'
+            '"group"=>"linker-planner","search"=>"[".$post->ID.",","per_page"=>-1),"ids") as $id){'
+            "$action=ActionScheduler::store()->fetch_action($id);$actions[]=array("
+            '"id"=>(int)$id,"args"=>$action->get_args(),'
+            '"due"=>$action->get_schedule()->get_date()->getTimestamp(),'
+            '"status"=>ActionScheduler::store()->get_status($id));}'
+            '$out[]=array("id"=>(int)$post->ID,"status"=>$post->post_status,'
+            '"type"=>$post->post_type,"author"=>(int)$post->post_author,'
+            '"content"=>$post->post_content,"actions"=>$actions);}'
+            'echo wp_json_encode(array("now"=>time(),"events"=>$out));',
+            env={"U": str(user)},
+        )
+    )
+    assert isinstance(value, dict)
+    return value
+
+
+def force_due(wp: WpCli, action: int) -> None:
+    """Make one scheduled delivery due now, keeping its recorded arguments."""
+    wp.run(
+        "eval",
+        '$id=(int)getenv("A");$action=ActionScheduler::store()->fetch_action($id);'
+        "$args=$action->get_args();ActionScheduler::store()->cancel_action($id);"
+        'as_schedule_single_action(time()-1,"linker_tools_planner_claim",'
+        '$args,"linker-planner",true);',
+        env={"A": str(action)},
+    )
+
+
+def run_planner_queue(wp: WpCli) -> None:
+    """The native background runner, restricted to the outbox group."""
+    wp.run(
+        "action-scheduler",
+        "run",
+        "--hooks=" + OUTBOX_HOOK,
+        "--group=" + OUTBOX_GROUP,
+        "--batch-size=25",
+        "--force",
+    )
+
+
+def only_pending(state: dict[str, Any]) -> dict[str, Any]:
+    events = state["events"]
+    assert len(events) == 1, events
+    pending = [
+        action for action in events[0]["actions"] if action["status"] == "pending"
+    ]
+    assert len(pending) == 1, events[0]["actions"]
+    value: object = pending[0]
+    assert isinstance(value, dict)
+    return value
+
+
+def engine_receipts(workspace: Path) -> dict[str, list[str]]:
+    """The engine's own receipt tables, read without a write handle."""
+    database = (workspace / "workspace.sqlite").resolve()
+    with closing(
+        sqlite3.connect(database.as_uri() + "?mode=ro", uri=True)
+    ) as connection:
+        return {
+            "closures": [
+                f"{guest}|{owner}"
+                for guest, owner in connection.execute(
+                    "SELECT guest, new_owner FROM principal_closures ORDER BY rowid"
+                )
+            ],
+            "transfers": [
+                f"{project}|{previous}|{owner}"
+                for project, previous, owner in connection.execute(
+                    "SELECT project_id, previous_owner, new_owner "
+                    "FROM ownership_transfers ORDER BY rowid"
+                )
+            ],
+            "owners": [
+                f"{project}|{owner}"
+                for project, owner in connection.execute(
+                    "SELECT id, owner FROM projects ORDER BY rowid"
+                )
+            ],
+        }
+
+
+def test_native_claim_outbox_persists_replays_and_only_a_receipt_removes_it(
+    local: tuple[Instance, WpCli], claim_runtime: None, account: Account
+) -> None:
+    """Real WordPress, real Action Scheduler and the real engine, one event.
+
+    The unit suite replaces the transport and the scheduler; the existing
+    native claim test asserts only that a retry was scheduled. This records the
+    stored event, the real backoff series, the engine receipt and the deletion.
+    """
+    instance, wp = local
+    user, login, password = account.user, account.login, account.password
+    workspace = Path(os.environ["LINKER_NATIVE_CLAIM_TRACE"]).parent
+    owner = f"user:wp:1:user:{user}"
+    browser = Browser(instance.url)
+    browser.bootstrap()
+    account.guest_sessions.add(
+        urllib.parse.unquote(str(browser.native_cookie().value)).split("|")[0]
+    )
+    project = browser.create("Outbox replay evidence")
+    url = wp.run("option", "get", "linker_planner_url")
+    try:
+        # A real engine outage: the private route answers nothing.
+        wp.run("option", "update", "linker_planner_url", "http://127.0.0.1:1/planning")
+        browser.login(login, password)
+        state = outbox_state(wp, user)
+        assert len(state["events"]) == 1, state
+        event = state["events"][0]
+        account.claim_events.add(event["id"])
+        # One private post carries the whole immutable native event.
+        assert (event["type"], event["status"], event["author"]) == (
+            OUTBOX_TYPE,
+            "private",
+            user,
+        )
+        payload = json.loads(event["content"])
+        assert sorted(payload) == [
+            "guest",
+            "key",
+            "recovery_scope",
+            "schema_version",
+            "user",
+        ]
+        assert payload["schema_version"] == 2
+        assert payload["user"] == user
+        assert re.fullmatch(r"wp:1:guest:[a-f0-9]{64}", payload["guest"])
+        assert re.fullmatch(r"[a-f0-9]{64}", payload["key"])
+        assert re.fullmatch(r"[a-f0-9]{64}", payload["recovery_scope"])
+        # Refused delivery keeps the event and advances the real backoff series.
+        observed: list[tuple[int, int]] = []
+        while len(observed) < 6:
+            pending = only_pending(outbox_state(wp, user))
+            assert pending["args"][0] == event["id"]
+            if pending["due"] > state["now"]:
+                force_due(wp, pending["id"])
+            run_planner_queue(wp)
+            state = outbox_state(wp, user)
+            retry = only_pending(state)
+            attempt = retry["args"][1]
+            assert attempt == pending["args"][1] + 1, (pending, retry)
+            observed.append((attempt, retry["due"] - state["now"]))
+        # ClaimOutbox::queue(): min(15 min, 1 min x 2^(attempt-1)) per refused
+        # delivery; the measured offset is the whole second below the instant.
+        for attempt, measured in observed:
+            expected = min(BACKOFF_CAP_SECONDS, 60 * 2 ** (attempt - 1))
+            assert expected - 2 <= measured <= expected, (observed, attempt, expected)
+        assert observed[-1][0] >= 5 and observed[-1][1] > 14 * 60, observed
+        print("claim_outbox_backoff", json.dumps(observed))
+        # No receipt, no deletion: the guest still owns its project and the
+        # engine has recorded no closure or transfer for this transition.
+        assert engine_receipts(workspace) == {
+            "closures": [],
+            "transfers": [],
+            "owners": [f"{project['id']}|guest:{payload['guest']}"],
+        }
+    finally:
+        wp.run("option", "update", "linker_planner_url", url)
+    # The real engine answers now; the retained event is delivered and removed.
+    pending = only_pending(outbox_state(wp, user))
+    force_due(wp, pending["id"])
+    run_planner_queue(wp)
+    assert outbox_state(wp, user)["events"] == []
+    receipts = engine_receipts(workspace)
+    assert receipts == {
+        "closures": [f"guest:{payload['guest']}|{owner}"],
+        "transfers": [f"{project['id']}|guest:{payload['guest']}|{owner}"],
+        "owners": [f"{project['id']}|{owner}"],
+    }
+    print("claim_outbox_receipt", json.dumps(receipts))
+    # The account reads what the guest created, and nothing is left pending.
+    assert browser.read(project).object() == project
+    assert browser.bootstrap()["claim_pending"] is False
