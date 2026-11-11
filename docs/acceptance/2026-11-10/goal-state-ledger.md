@@ -938,3 +938,19 @@ by the two coordinate fields only (either mark, both present → rejected,
 never a group-guess); all other numeric fields keep the locale convention,
 locked by tests. Red→green proof, planner 314 pass, CI green on the merged
 head including a byte-reproducible Linux build.
+
+## Digest zh_CN translations corrected with a real regression gate (PR #1100 merged, S line)
+
+The "56 untranslated digest entries" premise was a misread (56 is the German
+i18n-exempt count). Authoritative extraction found only 7 missing — and 4
+stale Proforma translations occupying the needed msgid slots since the
+2026-11-08 Quotation rewording, so the block looked translated while nothing
+could hit. All 7 added/replaced; read-back via WordPress's own MO parser
+7/7 and full-domain 69/69 (the system gettext would have silently fallen
+back — first run was a 0/14 false negative). Core deliverable: DigestCatalog
+Test extracts every msgid from the six block sources and asserts against
+the .mo (not the .po — a stale .mo was exactly this incident's shape),
+mutation-proven by swapping the old .mo back in. Structural causes recorded
+for decision: zh_CN is not in the i18n build chain at all (hand-maintained,
+no obsolete marking), and the German digest has the same class of issue
+(one identity-mapped Chinese string, one missing German entry).
