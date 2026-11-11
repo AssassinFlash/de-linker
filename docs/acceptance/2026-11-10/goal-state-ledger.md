@@ -880,3 +880,21 @@ pre-existing PHPStan errors in tools/migrate (wpdb %i placeholders) that
 main's local result-cache had been masking — proven pre-existing by
 reverting the PR and re-running. Knowledge consumer deliberately not covered
 (needs a local recipe-aware index generation; recorded).
+
+## Digest operations-health block shipped (PR #1098 merged, Q line)
+
+The internal daily digest gains an OperationsHealth block — queue lateness,
+mail capacity (PHP 64/80, SMTP 360/400 per #535/#545), unprocessed +
+quarantined inquiry occupancy (96/128, 115/128 per #568's real baseline),
+and publication readiness (any unprepared product = the 0/88 outage
+signature) — alert lines only when a threshold is crossed, one compact line
+otherwise; every threshold carries its ticket/incident source in comments.
+Two assumptions were overturned by production reads and fixed: pending
+queue entries are scheduled in the future by design (lateness = max(0,
+now−slot), pinned by test), and the quarantine baseline is 90, not 15.
+Production team language is zh_CN — 26 strings + 2 plurals translated and
+compiled, read back from the .mo 10/10 (the i18n-coverage gate does not
+cover this risk; it reads directories, not sources). 1603 tests OK, CI 18
+jobs green. Not covered (boundaries): the integration suite was not run
+(needs a fresh local instance; pure-read block covered by production
+reads), and 56 pre-existing untranslated digest entries remain.
