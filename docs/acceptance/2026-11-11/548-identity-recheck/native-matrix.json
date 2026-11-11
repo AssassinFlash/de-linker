@@ -1,0 +1,185 @@
+{
+ "accepted": [
+  {
+   "name": "en-desktop-system-about-framed",
+   "size": [
+    1440,
+    1000
+   ],
+   "revision": "Saved · revision 3",
+   "links": 10,
+   "identity_fully_framed": true,
+   "link_labels": [
+    "React",
+    "TanStack Query",
+    "Ajv",
+    "Three.js",
+    "React Three Fiber",
+    "MapLibre GL JS",
+    "OpenFreeMap",
+    "© OpenMapTiles",
+    "© OpenStreetMap contributors",
+    "OpenFreeMap privacy policy"
+   ],
+   "overflow": 0
+  },
+  {
+   "name": "en-phone-system-about-framed",
+   "size": [
+    390,
+    844
+   ],
+   "revision": "Saved · revision 3",
+   "links": 10,
+   "identity_fully_framed": true,
+   "link_labels": [
+    "React",
+    "TanStack Query",
+    "Ajv",
+    "Three.js",
+    "React Three Fiber",
+    "MapLibre GL JS",
+    "OpenFreeMap",
+    "© OpenMapTiles",
+    "© OpenStreetMap contributors",
+    "OpenFreeMap privacy policy"
+   ],
+   "overflow": 0
+  },
+  {
+   "name": "de-desktop-system-about-framed",
+   "size": [
+    1440,
+    1000
+   ],
+   "revision": "Gespeichert · Version 3",
+   "links": 10,
+   "identity_fully_framed": true,
+   "link_labels": [
+    "React",
+    "TanStack Query",
+    "Ajv",
+    "Three.js",
+    "React Three Fiber",
+    "MapLibre GL JS",
+    "OpenFreeMap",
+    "© OpenMapTiles",
+    "© OpenStreetMap-Mitwirkende",
+    "Datenschutzhinweise von OpenFreeMap"
+   ],
+   "overflow": 0
+  },
+  {
+   "name": "de-phone-system-about-framed",
+   "size": [
+    390,
+    844
+   ],
+   "revision": "Gespeichert · Version 3",
+   "links": 10,
+   "identity_fully_framed": true,
+   "link_labels": [
+    "React",
+    "TanStack Query",
+    "Ajv",
+    "Three.js",
+    "React Three Fiber",
+    "MapLibre GL JS",
+    "OpenFreeMap",
+    "© OpenMapTiles",
+    "© OpenStreetMap-Mitwirkende",
+    "Datenschutzhinweise von OpenFreeMap"
+   ],
+   "overflow": 0
+  },
+  {
+   "name": "en-desktop-list-system-about-framed",
+   "size": [
+    1440,
+    1000
+   ],
+   "revision": null,
+   "links": 10,
+   "identity_fully_framed": true,
+   "link_labels": [
+    "React",
+    "TanStack Query",
+    "Ajv",
+    "Three.js",
+    "React Three Fiber",
+    "MapLibre GL JS",
+    "OpenFreeMap",
+    "© OpenMapTiles",
+    "© OpenStreetMap contributors",
+    "OpenFreeMap privacy policy"
+   ],
+   "overflow": 0
+  }
+ ],
+ "frames": [
+  {
+   "name": "en-desktop-system-about-framed",
+   "size": [
+    1440,
+    1000
+   ],
+   "png": [
+    1440,
+    365,
+    50868
+   ]
+  },
+  {
+   "name": "en-phone-system-about-framed",
+   "size": [
+    390,
+    844
+   ],
+   "png": [
+    390,
+    511,
+    46676
+   ]
+  },
+  {
+   "name": "de-desktop-system-about-framed",
+   "size": [
+    1440,
+    1000
+   ],
+   "png": [
+    1440,
+    365,
+    56827
+   ]
+  },
+  {
+   "name": "de-phone-system-about-framed",
+   "size": [
+    390,
+    844
+   ],
+   "png": [
+    390,
+    571,
+    53791
+   ]
+  },
+  {
+   "name": "en-desktop-list-system-about-framed",
+   "size": [
+    1440,
+    1000
+   ],
+   "png": [
+    1440,
+    365,
+    51221
+   ]
+  }
+ ],
+ "new_instances_created": 0,
+ "new_projects_created": 2,
+ "production_changed": false,
+ "png_dimensions": "PNG IHDR read with node:fs; no image dependency installed"
+}
