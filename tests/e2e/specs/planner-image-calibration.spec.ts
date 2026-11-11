@@ -48,6 +48,7 @@ const WORDS = {
 		checkSpan: 'Check span (0 of 2)',
 		outline: 'Roof outline (0 points)',
 		scaleLength: 'Real length of the scale span',
+		bearing: 'Down-slope bearing as drawn',
 		checkLength: 'Real length of the check span',
 		recordedScale: 'Recorded scale',
 		status: 'Measurement status',
@@ -84,6 +85,7 @@ const WORDS = {
 		checkSpan: 'Prüfstrecke (0 von 2)',
 		outline: 'Dachumriss (0 Punkte)',
 		scaleLength: 'Tatsächliche Länge der Maßstabstrecke',
+		bearing: 'Gefällerichtung laut Zeichnung',
 		checkLength: 'Tatsächliche Länge der Prüfstrecke',
 		recordedScale: 'Gespeicherter Maßstab',
 		status: 'Status der Messung',
@@ -293,6 +295,11 @@ test.describe('native image calibration', () => {
 					'Synthetic calibration fixture; not a survey',
 					{ timeout: 15_000 }
 				);
+				// The calibrated face is editable through the ordinary roof form:
+				// its plane is recovered, not left as an opaque frame.
+				await expect(
+					properties.getByRole('spinbutton').or(properties.locator('[name="pitch"]'))
+				).toHaveCount(1);
 				await expect(
 					properties.locator('[name="precision"]')
 				).toHaveValue(num(lang, '0.05'));

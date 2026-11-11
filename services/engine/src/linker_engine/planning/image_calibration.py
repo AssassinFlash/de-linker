@@ -92,7 +92,10 @@ class ImageCalibration(Document):
     control_points: CalibrationPoints
     known_length_m: Positive
     m_per_pixel: Positive
-    rotation_deg: Annotated[float, Field(ge=0, lt=360, allow_inf_nan=False)]
+    # The roof's down-slope bearing as drawn down the page; the face frame's U
+    # is cross-slope and V is down-slope, so one declared angle places the
+    # drawing and no second orientation is invented.
+    downslope_bearing_deg: Annotated[float, Field(ge=0, lt=360, allow_inf_nan=False)]
     check: CalibrationCheck | None
     check_tolerance_ratio: Positive
     # Declared pitch whose one cosine converted a horizontal plan into slope

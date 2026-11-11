@@ -28,6 +28,7 @@ import {
 } from "../../domain/imageCalibration.ts";
 import type { ImageCalibration } from "../../domain/imageCalibration.ts";
 import { GeometryValues } from "./GeometryForm.tsx";
+import { roofPlane } from "../../domain/geometryEditing.ts";
 import { formatDecimal } from "../../domain/decimal.ts";
 import { Notice } from "../Notice.tsx";
 import { revealActionResult } from "../revealActionResult.ts";
@@ -251,7 +252,6 @@ export function ImageCalibrationWorkspace({
 			},
 			controlPoints,
 			knownLength: scaleFromField(values),
-			rotationDeg: values.metric("rotation", { min: 0, maxExclusive: 360 }),
 			checkPoints: check,
 			checkLength: check
 				? values.metric("check_length", { positive: true })
@@ -264,6 +264,10 @@ export function ImageCalibrationWorkspace({
 					positive: true,
 					optional: true,
 				}) ?? 0.01,
+			downslopeBearingDeg: values.metric("bearing", {
+				min: 0,
+				maxExclusive: 360,
+			}),
 			pitchDeg: values.metric("pitch", { min: 0, maxExclusive: 90 }),
 			note,
 		});
@@ -389,7 +393,7 @@ export function ImageCalibrationWorkspace({
 				return false;
 			}
 			values.metric("length", { positive: true });
-			values.metric("rotation", { min: 0, maxExclusive: 360 });
+			values.metric("bearing", { min: 0, maxExclusive: 360 });
 			values.metric("pitch", { min: 0, maxExclusive: 90 });
 			if (withCheck) {
 				values.metric("check_length", { positive: true });
@@ -480,20 +484,22 @@ export function ImageCalibrationWorkspace({
 						"permitted" | "unknown" | "prohibited",
 				},
 			};
-			const rotation = (calibration.rotation_deg * Math.PI) / 180,
-				pitch = (calibration.applied_pitch_deg ?? 0) * (Math.PI / 180),
-				sin = Math.sin(rotation),
-				cos = Math.cos(rotation),
-				sinPitch = Math.sin(pitch),
-				cosPitch = Math.cos(pitch);
+			// The one authoritative face constructor: U is cross-slope, V runs
+			// down-slope and the upward normal's horizontal direction is the
+			// declared bearing. The drawing's page-down is that same down-slope
+			// direction, so the traced ring enters the frame unchanged.
+			const plane = roofPlane(
+				calibration.applied_pitch_deg ?? 0,
+				calibration.downslope_bearing_deg,
+				targetRoof?.origin_enu ?? [0, 0, 0],
+			);
 			const roof: RoofFace = {
 				id: targetRoof?.id ?? "roof_" + crypto.randomUUID().replaceAll("-", ""),
 				name,
 				source_id: source.id,
-				origin_enu: targetRoof?.origin_enu ?? [0, 0, 0],
-				// Image right is U; the drawing's up direction rises with the pitch.
-				u_axis_enu: [cos, -sin, 0],
-				v_axis_enu: [sin * cosPitch, cos * cosPitch, sinPitch],
+				origin_enu: plane.origin_enu,
+				u_axis_enu: plane.u_axis_enu,
+				v_axis_enu: plane.v_axis_enu,
 				boundary_uv: boundary,
 				holes_uv: targetRoof?.holes_uv ?? [],
 			};
@@ -833,11 +839,11 @@ export function ImageCalibrationWorkspace({
 								</label>
 								<label className="lp-field">
 									<span>
-										{__("Rotation of the roof U direction", "linker-tools")}
+										{__("Down-slope bearing as drawn", "linker-tools")}
 										<small>°</small>
 									</span>
 									<input
-										name="rotation"
+										name="bearing"
 										inputMode="decimal"
 										autoComplete="off"
 										defaultValue="0"
@@ -845,7 +851,7 @@ export function ImageCalibrationWorkspace({
 									/>
 									<small>
 										{__(
-											"Clockwise from the image's right edge to the roof face's U direction.",
+											"Clockwise from project north to the direction drawn down the page: 0 north, 90 east, 180 south, 270 west. The page's right edge is then cross-slope.",
 											"linker-tools",
 										)}
 									</small>

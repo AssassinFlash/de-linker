@@ -13,6 +13,8 @@ import {
 	type ImageCalibration,
 } from "./imageCalibration.ts";
 import { emptyGeometry } from "./geometryCommands.ts";
+import { roofPlane } from "./geometryEditing.ts";
+import { sinCosDegrees } from "./coordinates.ts";
 import { applyGeometryCommand } from "./geometryCommands.ts";
 import geometryPolicy from "../contracts/geometry-policy.json" with { type: "json" };
 import { readGeometry } from "./validateGeometry.ts";
@@ -32,7 +34,7 @@ function plan(overrides: Partial<Parameters<typeof buildCalibration>[0]> = {}) {
 		image: IMAGE,
 		controlPoints: CONTROL,
 		knownLength: 6,
-		rotationDeg: 0,
+		downslopeBearingDeg: 0,
 		checkPoints: CHECK,
 		checkLength: 12,
 		checkToleranceRatio: 0.01,
@@ -110,40 +112,50 @@ test("a missing independent span keeps the source reference only", () => {
 	);
 });
 
-test("pixel y is down and a plan converts its horizontal run to slope once", () => {
-	// The image's top-left pixel is UV (0, 0); V points up the drawing.
+test("the page's right edge is cross-slope and page-down is down-slope", () => {
+	// The face frame is the measured roof's own: V runs down-slope, so a point
+	// further down the page has a larger V. 300 px at 0.02 m/px is 6 m.
 	const flat = plan({ pitchDeg: 0 });
 	const [u, v] = pixelToUv([400, 400], flat);
 	assert.ok(Math.abs(u - 8) < 1e-9, String(u));
-	assert.ok(Math.abs(v + 8) < 1e-9, String(v));
+	assert.ok(Math.abs(v - 8) < 1e-9, String(v));
 
-	// A 60 degree roof: the same 300 px (6 m) horizontal run is 12 m of slope.
+	// A 60 degree plan: 6 m of horizontal run (300 px) is 12 m of slope length.
 	const steep = plan({ pitchDeg: 60 });
-	const steepBase = pixelToUv([100, 700], steep)[1];
-	const [, steepTop] = pixelToUv([100, 400], steep);
-	assert.ok(
-		Math.abs(steepTop - steepBase - 12) < 1e-9,
-		String(steepTop - steepBase),
-	);
+	const [, slope] = pixelToUv([100, 300], steep);
+	assert.ok(Math.abs(slope - 12) < 1e-9, String(slope));
 
 	// A slope elevation drawing states slope lengths already: no second cosine.
 	const elevation = plan({ view: "roof_slope_elevation" });
 	assert.equal(elevation.applied_pitch_deg, null);
-	// Pixel V of a slope drawing: 300 px above the baseline is 6 m of slope.
-	const baseline = pixelToUv([100, 700], elevation)[1];
-	const [, drawn] = pixelToUv([100, 400], elevation);
-	assert.ok(Math.abs(drawn - baseline - 6) < 1e-9, String(drawn - baseline));
+	const [, drawn] = pixelToUv([100, 300], elevation);
+	assert.ok(Math.abs(drawn - 6) < 1e-9, String(drawn));
 });
 
-test("rotation turns image right into the roof face U direction", () => {
-	const turned = plan({ rotationDeg: 90 });
-	// 300 px right of the origin becomes 6 m along -V after a quarter turn.
-	const [u, v] = pixelToUv([300, 0], turned);
-	assert.ok(Math.abs(u) < 1e-9, String(u));
-	assert.ok(Math.abs(v + 6) < 1e-9, String(v));
-	const [across, along] = pixelToUv([600, 400], turned);
-	assert.ok(Math.abs(across + 8) < 1e-9, String(across));
-	assert.ok(Math.abs(along + 12) < 1e-9, String(along));
+test("a horizontal plan never scales the cross-slope length", () => {
+	// The pitch lengthens only the run up the slope; the same drawing's width
+	// stays true length, which is what a plan actually shows.
+	const steep = plan({ pitchDeg: 60 });
+	const [u, v] = pixelToUv([300, 600], steep);
+	assert.ok(Math.abs(u - 6) < 1e-9, String(u));
+	assert.ok(Math.abs(v - 24) < 1e-9, String(v));
+});
+
+test("the declared bearing places the drawing, and the face keeps its frame", () => {
+	// A drawing whose page-down faces south: the face's down-slope direction is
+	// south, so its V axis points at -N with the pitch's cosine.
+	const south = plan({ downslopeBearingDeg: 180 });
+	const plane = roofPlane(
+		south.applied_pitch_deg ?? 0,
+		south.downslope_bearing_deg,
+		[0, 0, 0],
+	);
+	assert.ok(Math.abs(plane.u_axis_enu[0] + 1) < 1e-9);
+	assert.ok(Math.abs(plane.v_axis_enu[1] + 1) < 1e-9);
+	// The mapping itself carries no second rotation: page-down is the slope run.
+	const [u, v] = pixelToUv([300, 300], south);
+	assert.ok(Math.abs(u - 6) < 1e-9, String(u));
+	assert.ok(Math.abs(v - 6) < 1e-9, String(v));
 });
 
 test("the recorded arithmetic is refused when it contradicts its evidence", () => {
@@ -198,7 +210,7 @@ test("a horizontal plan requires its conversion pitch", () => {
 		image: IMAGE,
 		controlPoints: CONTROL,
 		knownLength: 6,
-		rotationDeg: 0,
+		downslopeBearingDeg: 0,
 		checkPoints: null,
 		checkLength: null,
 		checkToleranceRatio: 0.01,
@@ -249,4 +261,19 @@ test("calibration is optional source precision inside the design document", () =
 		readGeometry(without, geometryPolicy).sources[0]?.calibration,
 		undefined,
 	);
+});
+
+test("a calibrated face is a frame the ordinary roof form can edit", () => {
+	// The face uses the documented constructor, so pitch and bearing are
+	// recoverable and the customer can still edit boundary, openings and
+	// clearances after calibrating a drawing.
+	const plane = roofPlane(37, 205, [3, 4, 5]);
+	assert.equal(plane.u_axis_enu[2], 0);
+	assert.ok(plane.v_axis_enu[2] < 0);
+	const [su, cu] = sinCosDegrees(205),
+		[sv, cv] = sinCosDegrees(37);
+	assert.ok(Math.abs(plane.u_axis_enu[0] - cu) < 1e-12);
+	assert.ok(Math.abs(plane.u_axis_enu[1] + su) < 1e-12);
+	assert.ok(Math.abs(plane.v_axis_enu[2] + sv) < 1e-12);
+	assert.ok(Math.abs(plane.v_axis_enu[1] - cu * cv) < 1e-12);
 });

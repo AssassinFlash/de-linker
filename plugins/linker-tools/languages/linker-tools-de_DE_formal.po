@@ -14814,8 +14814,13 @@ msgid "Roof slope elevation"
 msgstr "Schrägansicht der Dachfläche"
 
 #: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
-msgid "Rotation of the roof U direction"
-msgstr "Drehung der U-Richtung des Dachs"
+msgid "Down-slope bearing as drawn"
+msgstr "Gefällerichtung laut Zeichnung"
+
+#: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
+msgid "Clockwise from project north to the direction drawn down the page: 0 north, 90 east, 180 south, 270 west. The page's right edge is then cross-slope."
+msgstr "Im Uhrzeigersinn von der Projekt-Nordrichtung zur Richtung, die auf der Seite nach unten zeigt: 0 Nord, 90 Ost, 180 Süd, 270 West. Der rechte Seitenrand verläuft dann quer zum Gefälle."
+
 
 #: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
 msgid "Scale"

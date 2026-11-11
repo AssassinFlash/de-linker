@@ -184,7 +184,11 @@ test("a two-point scale and a traced outline become one calibrated roof", async 
 	await typeInto("check_length", "12");
 	await submit();
 	// Step 3 - the roof outline on the same image, then the source declaration.
-	assert.equal(document.querySelector("h3").textContent, "Outline");
+	assert.equal(
+		document.querySelector("h3").textContent,
+		"Outline",
+		document.querySelector(".lp-notice")?.textContent ?? "",
+	);
 	await clickText("Roof outline (0 points)");
 	await mark(100, 100);
 	await mark(700, 100);
@@ -225,10 +229,10 @@ test("a two-point scale and a traced outline become one calibrated roof", async 
 	const roof = geometry.roofs[0];
 	assert.equal(roof.source_id, source.id);
 	assert.equal(roof.name, "Calibrated roof");
-	// The drawing datum puts the outline's own lower-left corner at UV (0, 0);
-	// the first traced point is its upper-left corner, 12 m up-slope.
-	assert.deepEqual(roof.boundary_uv[0], [0, 12]);
-	assert.deepEqual(roof.boundary_uv[2], [12, 0]);
+	// The drawing datum puts the outline's own lower-left corner at UV (0, 0).
+	// V runs down-slope, so the traced bottom-left corner is 12 m further down.
+	assert.deepEqual(roof.boundary_uv[0], [0, 0]);
+	assert.deepEqual(roof.boundary_uv[2], [12, 12]);
 	assert.equal(roof.boundary_uv.length, 4);
 	assert.equal(harness.activity(), false);
 });
@@ -261,7 +265,11 @@ test("a perspective photo is refused as an engineering measurement", async (t) =
 		document.querySelector('[name="withCheck"]').click();
 	});
 	await submit();
-	assert.equal(document.querySelector("h3").textContent, "Outline");
+	assert.equal(
+		document.querySelector("h3").textContent,
+		"Outline",
+		document.querySelector(".lp-notice")?.textContent ?? "",
+	);
 	await clickText("Roof outline (0 points)");
 	await mark(100, 100);
 	await mark(700, 100);

@@ -35,7 +35,7 @@ def calibration(**overrides: Any) -> dict[str, Any]:
         "control_points": CONTROL,
         "known_length_m": 6,
         "m_per_pixel": 0.02,
-        "rotation_deg": 0,
+        "downslope_bearing_deg": 180,
         "check": {
             "points": CHECK,
             "declared_length_m": 12,

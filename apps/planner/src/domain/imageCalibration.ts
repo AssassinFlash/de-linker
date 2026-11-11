@@ -40,8 +40,11 @@ export interface ImageCalibration {
 	control_points: CalibrationPoints;
 	known_length_m: number;
 	m_per_pixel: number;
-	/** Clockwise from the image's right edge to the roof face's U direction. */
-	rotation_deg: number;
+	/** Compass bearing, clockwise from project north, of the direction drawn
+	 * down the page. It is the roof's down-slope bearing, so the face keeps the
+	 * documented frame (U cross-slope, V down-slope) and no second angle is
+	 * invented. Declaring 0 means the drawing's page-down faces project north. */
+	downslope_bearing_deg: number;
 	check: CalibrationCheck | null;
 	check_tolerance_ratio: number;
 	/** The pitch whose one cosine turned a horizontal plan into slope lengths. */
@@ -140,7 +143,7 @@ export function buildCalibration({
 	image,
 	controlPoints,
 	knownLength,
-	rotationDeg,
+	downslopeBearingDeg,
 	checkPoints,
 	checkLength,
 	checkToleranceRatio,
@@ -151,7 +154,7 @@ export function buildCalibration({
 	image: CalibrationImage;
 	controlPoints: CalibrationPoints;
 	knownLength: number;
-	rotationDeg: number;
+	downslopeBearingDeg: number;
 	checkPoints: CalibrationPoints | null;
 	checkLength: number | null;
 	checkToleranceRatio: number;
@@ -181,7 +184,7 @@ export function buildCalibration({
 		control_points: controlPoints,
 		known_length_m: knownLength,
 		m_per_pixel: mPerPixel,
-		rotation_deg: rotationDeg,
+		downslope_bearing_deg: downslopeBearingDeg,
 		check,
 		check_tolerance_ratio: checkToleranceRatio,
 		applied_pitch_deg: appliedPitch,
@@ -192,23 +195,23 @@ export function buildCalibration({
 	return value;
 }
 
-/** Image pixels are y-down; engineering V is up-slope from the image's bottom
- * edge. A horizontal plan's horizontal run becomes slope length once, through
- * the declared pitch, so a slope drawing is never converted twice. */
+/**
+ * A drawing states the roof's own two directions: the page's right edge is
+ * cross-slope (U) and the page's down direction is down-slope (V), because the
+ * declared bearing already places the page on site. A horizontal plan's
+ * horizontal run becomes slope length once, through the declared pitch, so a
+ * slope drawing is never converted twice. Cross-slope length is true length in
+ * a plan and is not scaled by the pitch.
+ */
 export function pixelToUv([x, y]: Vec2, calibration: ImageCalibration): Vec2 {
 	const scale = calibration.m_per_pixel,
-		radians = (calibration.rotation_deg * Math.PI) / 180,
-		sin = Math.sin(radians),
-		cos = Math.cos(radians),
-		right = x * scale,
-		up = -y * scale,
-		u = right * cos + up * sin,
-		v = -right * sin + up * cos;
-	if (calibration.view !== "horizontal_plan") return [u, v];
+		u = x * scale,
+		down = y * scale;
+	if (calibration.view !== "horizontal_plan") return [u, down];
 	const pitch = calibration.applied_pitch_deg ?? 0,
 		[, horizontal] = sinCosDegrees(pitch);
 	if (!(horizontal > 0)) throw new Error("calibration_pitch_unsupported");
-	return [u, v / horizontal];
+	return [u, down / horizontal];
 }
 
 export function pixelRingToUv(

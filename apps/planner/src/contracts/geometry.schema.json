@@ -313,10 +313,10 @@
         "m_per_pixel": {
           "$ref": "#/$defs/Positive"
         },
-        "rotation_deg": {
+        "downslope_bearing_deg": {
           "exclusiveMaximum": 360,
           "minimum": 0,
-          "title": "Rotation Deg",
+          "title": "Downslope Bearing Deg",
           "type": "number"
         },
         "check": {
@@ -365,7 +365,7 @@
         "control_points",
         "known_length_m",
         "m_per_pixel",
-        "rotation_deg",
+        "downslope_bearing_deg",
         "check",
         "check_tolerance_ratio",
         "applied_pitch_deg",
