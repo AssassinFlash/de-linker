@@ -2189,3 +2189,36 @@ the three-step calibration workspace renders with the reference-only
 statement and the stays-in-your-browser file notice, and the test project
 was deleted after the check. BAT-C product pages re-verified byte-equal on
 data content before and after the deploy.
+
+## Service-pairing sweep after the deploy: engine released, Genie candidate staged; production visuals archived (2026-11-12)
+
+A parallel audit of every VPS service against main (`ae16c471`) found two
+more stale runtimes beyond the planner already fixed:
+
+- **Legacy engine (8901)** was the Nov-5 release, missing a week of planning
+  changes (BDEW load-profile data, geometric-PV, country rules). Released
+  via `legacy_release.py prepare/activate` to `20261111T183021155751Z-
+  ae16c471` (340 files, new feed/compatibility hashes, feed-sync triggered,
+  `worker_verified: true`, PID/cwd read back, previous release retained).
+- **Genie (8902)** is the Nov-8 release, missing three ops-only commits
+  (installer robustness fixes + one doc line; zero `src/` changes, so no
+  knowledge-index rebuild is required). A surgical candidate was staged per
+  the 2026-11-09 runbook: clone of `20261108T204817031587Z` + overlay of
+  `ops/install_publication_worker.py` at `20261111T183458206023Z`
+  (md5-verified against commit 95c5ad66c). The paired publish (lease/ACK
+  with the Mac knowledge worker, launchctl pause/resume) is deliberately
+  scheduled for the next work window: Genie serves healthy, the delta is
+  installer-only, and rushing the lease flow at night risks exactly the
+  interrupted-install state those fixes guard. Not a parked defect — a
+  prepared, verified release awaiting its runbook window.
+- **Production visuals for the calibration workspace** archived in this
+  session's media: EN desktop (entry + open three-step panel), EN 390
+  mobile (responsive layout structurally verified: nav/sections/buttons
+  positioned, save state visible), DE desktop (roof step + open panel
+  "Bild und Dach"). Build manifest on live is byte-identical to main's
+  committed build; the workspace reuses existing lp-* classes only, so no
+  WindPress rebuild was required (cache predating the deploy is harmless —
+  verified only pre-existing classes are involved).
+- Test projects created during acceptance ("Calibration deploy check",
+  "Visual acceptance") were deleted on live after each check; browser
+  tabs closed.
