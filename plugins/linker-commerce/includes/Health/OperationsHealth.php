@@ -192,7 +192,7 @@ final class OperationsHealth implements Block {
 				'label'     => sprintf( __( 'Engineering feed prepared %1$d of %2$d products.', 'linker-commerce' ), $publication['engineering'], $publication['total'] ),
 				'url'       => '',
 				'link_text' => '',
-				'detail'    => __( 'The planner builds from this feed. 0 of 88 was the 2026-11-11 signature after a pull changed every product revision; run the publication repair and confirm the dry run reports no backlog.', 'linker-commerce' ),
+				'detail'    => __( 'The planner builds from this feed. An all-zero reading was the 2026-11-11 signature after a pull changed every product revision; run the publication repair and confirm the dry run reports no backlog.', 'linker-commerce' ),
 			);
 		}
 
