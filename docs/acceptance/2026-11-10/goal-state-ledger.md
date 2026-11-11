@@ -1616,3 +1616,17 @@ direct-beam quota (decide by measured evidence, implement), GW92.1 listing
 (decide by manufacturer-catalog evidence), U4 edge rate-limit (decide by the
 first principle: never block real humans; VPS-side options only if evidence
 demands). Waiting-on-owner is a forbidden state in this goal.
+
+## U4 closed by first principle: no edge rate-limiter (2026-11-11, main-line decision)
+
+The last "owner-blocked" item (edge rate-limiting via the never-existing
+aliyun account) is decided by evidence and the owner's 2026-11-04 first
+principle, not by waiting: the app-level protection already proved both
+directions (185 attack submissions isolated with zero protection records
+mixed, real external inquiries passed end-to-end, #1090), an edge WAF is
+precisely the class of component that blocks real humans behind shared
+NAT/corporate proxies — the thing the first principle forbids — and it would
+add an external account dependency for a risk already covered. U4 is closed
+as rejected-by-first-principle. With this, no item in the goal waits on owner
+input; everything is executed in-line (load profiles, direct-beam quota and
+the GW92.1 decision dispatched today; SE in flight).
