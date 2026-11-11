@@ -53,8 +53,12 @@ def calibration(**overrides: Any) -> dict[str, Any]:
 
 def test_browser_contract_carries_the_optional_calibration() -> None:
     contracts = ROOT / "apps/planner/src/contracts/geometry.schema.json"
-    assert json.loads(contracts.read_text()) == geometry_schema()
-    source = geometry_schema()["$defs"]["GeometrySource"]
+    schema = geometry_schema()
+    assert json.loads(contracts.read_text()) == schema
+    definitions = schema["$defs"]
+    assert isinstance(definitions, dict)
+    source = definitions["GeometrySource"]
+    assert isinstance(source, dict)
     # Optional: a revision saved before this field stays valid verbatim.
     assert "calibration" in source["properties"]
     assert "calibration" not in source["required"]
