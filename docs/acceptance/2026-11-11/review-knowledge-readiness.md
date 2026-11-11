@@ -119,6 +119,7 @@ ack                      {"accepted":true,"complete":true}
 | `preparation_complete` | false（112 条 `table_without_scope`） | false（同样 112 条，如实保留） |
 | Genie `POST /knowledge/loaded` | 旧索引 `20261108T205220Z-672808000`，源 `094db8ad…` | 新索引 `20261111T032628Z-899307000`，源 `4a3abcd6…` |
 | `publication reconcile` 之后 | — | 85/85 不变 |
+| `wp cache flush` 之后 | — | 85/85 不变（就绪存在 option 里，不是缓存假象） |
 | 再跑一次 `ack-knowledge` | — | `knowledge is already acknowledged for this generation: 85 of 85`（幂等） |
 | `just serve review --service genie`（用 PR #1101 的代码） | — | `review: knowledge readiness: acknowledged`，索引行指向新构建 |
 
