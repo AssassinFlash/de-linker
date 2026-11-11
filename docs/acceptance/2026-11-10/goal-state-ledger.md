@@ -1801,3 +1801,26 @@ as a literal until `943942558` made the test build it at runtime. The
 allowlist entry is bound to that one assertion shape and a live-shaped key in
 the same shape still fails the scan; the workflow now also prints rule, file,
 line and commit on failure instead of a bare count.
+
+## CI scoped-mode defect fixed at the real root (PR #1122, merged 64c1033d1)
+
+The SE line's exposure of the "green but unverified" plan run is now fixed
+one layer deeper than first suspected: not a classifier disagreement but
+plan()'s reuse logic — a module covered by a reuse proof was REMOVED from
+executed_modules, and when every module of a lane was reused the lane's
+condition went false, skipping the whole lane; audit_gate only verified that
+claimed skips really skipped, never that the changed tree executed. The fix
+makes selection() the single source deriving lanes+modules together
+(classify() a thin shell, empty mapping raises), execution_plan() guarantees
+every lane keeps at least one executing module and zero-execution errors,
+plan() converts stale ledgers into explicit full execution, and audit_gate
+independently recomputes the invariant. Regression tests replay the actual
+#1121 diff shape (renames both merged and split) asserting identical
+verdicts with planner+engine present. The agent's own PR served as the first
+consumer: its CI ran real lanes where the old code would have skipped.
+Also corrected on the record: the secrets-history hit was NOT a dangling
+commit — reachable on main, a placeholder-password base64 sentinel in
+test_site_alert.py; handled by a narrow allowlist with a same-shape real-key
+reverse test, and the workflow now reports rule/file/line/commit instead of
+dropping a redacted report. Residual from the line: the Steps.test.tsx
+chromium-in-vitest default-timeout flake, fixed as PR #1123.
