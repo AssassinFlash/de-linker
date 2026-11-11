@@ -1,0 +1,28 @@
+2.4 Neues Kombinationsprofil PV (P25)
+Das Kombinationsprofil P25 dient der Abbildung des PV-Einflusses auf Haushaltslieferstellen.
+Dabei liegen Messdaten aus den Jahren 2023 und 2022 zu Grunde. Hierfür lagen 400 iMSys-
+Zeitreihen vor. Das Profil ist entdynamisiert, so dass eine Anwendung der Dynamisierungs-
+funktion (siehe 2.1) nötig ist, um den typischen Jahresverlauf zu erhalten. Wenn bekannt ist,
+dass an der Lieferstelle eine PV-Anlage vorliegt, wird der entsprechenden Marktlokation
+(MaLo) anstelle des Profils H25 das Profil P25 zugeordnet.
+
+
+
+
+www.bdew.de                                                                      Seite 4 von 6
+Hinweise zu den aktualisierten Standardlastprofilen Strom
+
+
+
+
+Bei Anwendung des Profils P25 muss auf der SOT-Seite, d.h. bei der bilanziellen Abbildung
+der Netzeinspeisung von EEG-Strom durch die Summe der erzeugenden Marktlokationen so-
+larer Strahlungsenergie – erfasst durch tagesparameterabhängige Einspeiseprofile – die Ei-
+genversorgung der entsprechenden Haushalte geeignet berücksichtigt werden.
+Zusätzlich besteht das Risiko der Wetterabhängigkeit: Das Profil P25 bildet lediglich eine
+durchschnittliche solare Strahlung ab. Ein heller Tag in einem Monat kann jedoch eine fünf-
+fach höhere Globalstrahlung aufweisen als ein dunkler Tag im gleichen Monat. Die Bilanzie-
+rungsqualität des Profils P25 wird aufgrund des anhaltenden PV-Zubaus im Zeitverlauf voraus-
+sichtlich abnehmen.
+
+2.5 Neues Kombinationsprofil PV-Speicher (S25)

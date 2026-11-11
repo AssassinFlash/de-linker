@@ -1,0 +1,28 @@
+8.3 Normierung der Jahreslastverläufe                                                                                                    32
+
+8.4 Praktisches Beispiel                                                                                                                 33
+8.3 Normierung der Jahreslastverläufe
+
+Nach Festlegung der Profile aus den Rohdaten wurden im nächsten Schritt die
+Lastprofile auf einen spezifischen Jahresverbrauch von 1.000 kWh/Jahr normiert, um in
+der künftigen Anwendung anhand des (Vor-)Jahresverbrauchs die kundenindividuellen
+Fahrpläne/Lastprofile einfach quantifizieren zu können.
+
+Hierzu wurden die im Jahresverlauf entsprechend der jeweiligen Leistungsinanspruch-
+nahme der Rohdaten skalierten Lastprofile von Gewerbe und Landwirtschaft sowie die
+Dynamischen Lastprofile der Gruppe Haushalt jeweils in eine 365 x 96 - Matrix einge-
+tragen und die Einzelwerte so mit einem über das Jahr konstanten Faktor durchmulti-
+pliziert, daß sich in Summe 1.000.000 Einheiten ergaben. Damit stellen die Werte der
+Matrix einen Viertelstunden-Verbrauch in Wh (Wattstunden; =1/1000 kWh) dar.
+Diese Werte liegen den Darstellungen in diesem Bericht zugrunde.
+
+
+© VDEW Frankfurt (Main) 1999
+Beim dynamischen Haushaltsprofil ergeben sich bei gegebenem Jahresverbrauch die
+Viertelstundenleistungen des Tagesprofils (in W) aus der Multiplikation der Tabellen-
+werte des statischen Haushaltsprofils mit dem Jahresverbrauch (in MWh) und dem ta-
+gesvariablen Funktionswert der Regressionskurve.
+
+
+
+8.4 Praktisches Beispiel

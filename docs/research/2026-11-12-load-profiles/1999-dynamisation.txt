@@ -1,0 +1,23 @@
+→   Durchführung der Dynamisierung                Die Dynamisierung läuft in zwei Schritten ab.
+                                                          - 19 -
+
+
+1. Ermittlung der Dynamisierungsfaktoren Ft für jeden Tag t der Periode
+
+                             Ft = -3,92*10-10 * t4 + 3,2*10-7 * t3– 7,02*10-5* t2 + 2,1*10-3* t + 1,24
+
+                               mit t = Tagesnummer des jeweiligen Tages der gewählten Periode
+                               (orientiert am Jahreskalender; 1≡ 1.Jan, 365(366) ≡ 31.Dez.)
+
+2.       Ermittlung der dynamisierten Werte                   Durch Multiplikation des Hilfswertes PHhh:mm mit
+         aus der Hilfsmatrix                                  den Dynamisierungsfaktor Ft des entsprechenden
+                                                              Tages ist der mittlere ¼-Stunden-Leistungswert
+                                                              Phh:mm, t zu berechnen.
+                                                                   Phh:mm, t = PHhh:mm * Ft
+                                                                   Phh:mm, t    resultierender (dynamisierter)
+                                                                                Viertelstundenwert
+                                                                   PHhh:mm      Viertelstundenwert des Profils der
+                                                                                Hilfsmatrix [1, Tabellen-Anhang]
+                                                                   Ft           Dynamisierungsfaktor
+
+→        Ergebnis der Dynamisierung                           Die ¼-Stundenwerte in Abb.6 sind das Ergebnis
