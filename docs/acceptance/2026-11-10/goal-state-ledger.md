@@ -1730,3 +1730,37 @@ owner-side were dispatched as evidence-driven lines; all three landed:
   release (runtime values are release-generated) — recorded; 96 modules is
   the memory-bounded hard cap (87-91% of the 1.2 GiB cgroup); direct-beam's
   own quota unchanged and orders of magnitude clear.
+
+## Sweden in the package — account-backed expansion complete (PR #1121, merged 2bfd86839)
+
+SE added as the fifth country basis; with it, every country having a real
+production account is now covered (DE/NL/FR/AT/SE). The agent timed out at
+its 2h cap during a final CI wait; main line took over, verified, and merged.
+Evidence quality: three primary originals hash-locked (EIFS 2018:2, RfG
+2016/631 Art. 5.2 Table 1, ellagen 4 kap. via Lag 2022:596) with two
+industry-misreadings corrected on the record — Sweden's national instrument
+is Ei's EIFS 2018:2 (not SvKFS), and ellagen 4 kap. 2 §'s 43,5 kW clause
+constrains the DSO's deviation procedure (notice within one month), it is
+NOT an installer exemption. Implementation: RfG Nordic thresholds via EIFS
+§17's adoption, Decimal boundaries, the 43.5kW check kept on its own source
+window (agent caught and fixed its own window misattribution in review).
+Full-mode CI forced via workflow_dispatch after the scoped run skipped every
+lane (see next entry); engine/planner/check/secrets(PR-scope) all success;
+e2e 3/3 on final main after paired restart; local 1431 engine tests. The
+secrets-history failure is a pre-existing dangling-commit legacy outside any
+remote branch — PR-scope secrets green proves this branch's commits clean;
+recorded as an open hygiene item on history, not on this change.
+
+## REAL CI DEFECT exposed: scoped mode skipped all lanes on a changed tree
+
+While closing SE, the agent found that the plan job chose "scoped" mode and
+skipped EVERY lane (PR showed a green checks table) although the diff touched
+engine and planner sources; a forced full run then actually verified them.
+Root cause analysis so far: classify() and selected_modules() disagree on the
+same input — when selected_modules() returns a sparse list that maps to no
+lanes, the run validates nothing while reporting success. Local reproduction
+with the same diff shape returns FULL_LANES, so the CI environment's input
+diff (rename detection splitting 4 renames into D+A, 35 vs 31 lines) diverges
+from local. This is an F-domain defect: a green gate that verifies nothing is
+worse than a red one. Fix dispatched immediately; until it lands, any
+all-skipped green on a non-docs diff must be treated as unverified.
