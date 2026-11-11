@@ -202,6 +202,12 @@ def country_assessment(inputs: Object) -> Object:
                     "nl_storage_lfsm",
                     "de_eeg_control",
                     "de_eeg_export",
+                    "at_tor_scope",
+                    "at_kleinsterzeugungsanlage",
+                    "at_network_disconnection_protection",
+                    "at_substantial_change",
+                    "at_connection_route",
+                    "at_conformity_evidence",
                 }
                 for check in cast(list[Json], review["checks"])
             ):

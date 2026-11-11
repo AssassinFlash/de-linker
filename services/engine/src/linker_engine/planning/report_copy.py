@@ -1163,6 +1163,10 @@ TEXT = {
         "Installed solar power under EEG § 9",
         "Installierte PV-Leistung nach EEG § 9",
     ),
+    "country_rule_at_tor_typ_a_max_capacity": (
+        "Austrian maximum capacity Pmax under TOR Erzeuger Typ A",
+        "Maximalkapazität Pmax nach TOR Erzeuger Typ A (Österreich)",
+    ),
     "country_rule_power": ("Declared power", "Angegebene Leistung"),
     "country_rule_voltage": (
         "Connection-point voltage",
@@ -1223,6 +1227,86 @@ TEXT = {
     "country_rule_fr_enedis_certification": (
         "Enedis supporting documentation",
         "Enedis-Unterlagen",
+    ),
+    "country_rule_at_tor_scope": (
+        "Scope of TOR Erzeuger Typ A",
+        "Anwendungsbereich der TOR Erzeuger Typ A",
+    ),
+    "country_rule_at_kleinsterzeugungsanlage": (
+        "Kleinsterzeugungsanlage status",
+        "Einstufung als Kleinsterzeugungsanlage",
+    ),
+    "country_rule_at_network_disconnection_protection": (
+        "Network disconnection protection",
+        "Netzentkupplungsschutz",
+    ),
+    "country_rule_at_substantial_change": (
+        "Substantial change of an existing installation",
+        "Wesentliche Änderung einer bestehenden Anlage",
+    ),
+    "country_rule_in_scope_below_250_kw_and_110_kv": (
+        "Inside this TOR part: maximum capacity below 250 kW and connection voltage below 110 kV",
+        "Im Anwendungsbereich dieses TOR-Teils: Maximalkapazität unter 250 kW und Anschlussspannung unter 110 kV",
+    ),
+    "country_rule_outside_scope": (
+        "Outside the scope of this TOR part; the cited provisions give no reading for this project",
+        "Außerhalb des Anwendungsbereichs dieses TOR-Teils; die zitierten Bestimmungen ergeben für dieses Projekt keine Aussage",
+    ),
+    "country_rule_kleinsterzeugungsanlage_two_weeks_notice": (
+        "Kleinsterzeugungsanlage at up to 0.8 kW maximum capacity: written notice to the network operator at least two weeks before commissioning, and the residual requirements listed in § 2.1",
+        "Kleinsterzeugungsanlage bis 0,8 kW Maximalkapazität: schriftliche Verständigung des Netzbetreibers spätestens zwei Wochen vor Inbetriebnahme und die in § 2.1 genannten Restanforderungen",
+    ),
+    "country_rule_not_kleinsterzeugungsanlage": (
+        "Not a Kleinsterzeugungsanlage: the exemption of § 2.1 does not apply",
+        "Keine Kleinsterzeugungsanlage: die Ausnahme nach § 2.1 gilt nicht",
+    ),
+    "country_rule_external_network_disconnection_protection": (
+        "External network disconnection protection required above 30 kVA",
+        "Externer Netzentkupplungsschutz über 30 kVA erforderlich",
+    ),
+    "country_rule_automatic_disconnection_device_r25": (
+        "Automatic disconnection device under OVE-Richtlinie R 25 permitted up to 30 kVA",
+        "Selbsttätig wirkende Freischaltstelle nach OVE-Richtlinie R 25 bis 30 kVA zulässig",
+    ),
+    "country_rule_new_installation": (
+        "New installation; the substantial-change provisions do not apply",
+        "Neuanlage; die Bestimmungen zur wesentlichen Änderung greifen nicht",
+    ),
+    "country_rule_substantial_change_power_increase_above_15_percent": (
+        "Maximum capacity increases by more than 15%: the cited example of a substantial change is met",
+        "Die Maximalkapazität steigt um mehr als 15 %: das zitierte Beispiel einer wesentlichen Änderung ist erfüllt",
+    ),
+    "country_rule_power_criterion_not_exceeded_other_criteria_open": (
+        "The 15% example is not met; other substantial-change criteria stay open",
+        "Das 15-%-Beispiel ist nicht erfüllt; weitere Kriterien einer wesentlichen Änderung bleiben offen",
+    ),
+    "country_rule_at_connection_route": (
+        "Connection route",
+        "Anschlussweg",
+    ),
+    "country_rule_at_conformity_evidence": (
+        "Conformity evidence path",
+        "Weg des Konformitätsnachweises",
+    ),
+    "country_rule_notification_route_up_to_20_kw_net_active_power": (
+        "Up to 20 kW net active power: notification to the distribution system operator, connection on confirmation or after four weeks without a decision",
+        "Bis 20 kW netzwirksame Leistung: Anzeige an den Verteilernetzbetreiber, Anschluss mit Bestätigung oder nach vier Wochen ohne Entscheidung",
+    ),
+    "country_rule_network_access_contract_required_above_20_kw": (
+        "Above 20 kW net active power: a network access contract with the operator is required",
+        "Über 20 kW netzwirksame Leistung: ein Netzzugangsvertrag mit dem Netzbetreiber ist erforderlich",
+    ),
+    "country_rule_declared_austrian_inverter_list": (
+        "Declared: entry in the Austrian inverter list. The listing, device and software version still need verification.",
+        "Angegeben: Eintrag in der österreichischen Wechselrichterliste. Listeneintrag, Gerät und Softwarestand sind noch zu prüfen.",
+    ),
+    "country_rule_declared_accredited_r25_report": (
+        "Declared: accredited test report under OVE-Richtlinie R 25 including the Austrian settings. The report scope and device version still need verification.",
+        "Angegeben: Prüfbericht einer akkreditierten Stelle nach OVE-Richtlinie R 25 einschließlich der österreichischen Einstellungen. Prüfumfang und Gerätestand sind noch zu prüfen.",
+    ),
+    "country_rule_declared_vde_4105_with_r25_properties": (
+        "Declared: VDE-AR-N 4105 report with the additional R 25 properties and Austrian parameters. The report scope and device version still need verification.",
+        "Angegeben: Prüfbericht nach VDE-AR-N 4105 mit den zusätzlichen R-25-Eigenschaften und österreichischen Parametern. Prüfumfang und Gerätestand sind noch zu prüfen.",
     ),
     "country_rule_type_a": ("Type A", "Typ A"),
     "country_rule_type_b": ("Type B", "Typ B"),
@@ -1303,6 +1387,26 @@ TEXT = {
     "country_rule_input_de_plug_in_exception": (
         "complete plug-in solar exception",
         "vollständige Steckersolar-Ausnahme",
+    ),
+    "country_rule_input_apparent_power_kva": (
+        "apparent power at the connection point",
+        "Scheinleistung am Netzanschlusspunkt",
+    ),
+    "country_rule_input_at_existing_installation_change": (
+        "existing installation being changed",
+        "Änderung einer bestehenden Anlage",
+    ),
+    "country_rule_input_at_change_previous_power_kw": (
+        "maximum capacity before the change",
+        "Maximalkapazität vor der Änderung",
+    ),
+    "country_rule_input_net_active_power_kw": (
+        "agreed net active power",
+        "vereinbarte netzwirksame Leistung",
+    ),
+    "country_rule_input_at_conformity_basis": (
+        "declared conformity path",
+        "angegebener Konformitätsnachweis",
     ),
     "country_open": (
         "Country requirements are not assessed by the selected calculations.",

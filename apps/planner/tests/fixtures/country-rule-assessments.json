@@ -594,5 +594,215 @@
 				]
 			}
 		}
+	},
+	"at": {
+		"inputs": {
+			"brief": {
+				"site": {
+					"country_code": "AT"
+				}
+			},
+			"grid_connection": {
+				"schema_version": 1,
+				"dso_name": "PRIVATE OPERATOR AT",
+				"dso_source_url": "https://example.org/PRIVATE-OPERATOR-AT",
+				"voltage_level": "low",
+				"tab": {
+					"title": "PRIVATE TAB AT",
+					"source_url": "https://example.org/PRIVATE-TAB-AT.pdf",
+					"edition": "2026",
+					"date": null
+				}
+			},
+			"country_rule_inputs": {
+				"schema_version": 1,
+				"basis": "at_tor_typ_a_max_capacity",
+				"rule_date": "2026-11-11",
+				"power_kw": 120,
+				"connection_voltage_kv": 0.4,
+				"de_before_control_test": null,
+				"de_remuneration": null,
+				"de_plug_in_exception": null,
+				"fr_enedis_full_self_consumption": null,
+				"apparent_power_kva": 125,
+				"net_active_power_kw": 120,
+				"at_existing_installation_change": true,
+				"at_change_previous_power_kw": 100,
+				"at_conformity_basis": "accredited_r25_report"
+			}
+		},
+		"assessment": {
+			"status": "unresolved",
+			"country_code": "AT",
+			"reason": "country_rules_require_project_verification",
+			"model": "declared_grid_connection_evidence_v1",
+			"project_facts": {
+				"schema_version": 1,
+				"dso_name": "PRIVATE OPERATOR AT",
+				"dso_source_url": "https://example.org/PRIVATE-OPERATOR-AT",
+				"voltage_level": "low",
+				"tab": {
+					"title": "PRIVATE TAB AT",
+					"source_url": "https://example.org/PRIVATE-TAB-AT.pdf",
+					"edition": "2026",
+					"date": null
+				}
+			},
+			"declaration_status": "project_provided_not_independently_verified",
+			"checks": [
+				{
+					"id": "responsible_dso",
+					"status": "provided",
+					"reason": "project_declaration_requires_operator_territory_verification"
+				},
+				{
+					"id": "connection_voltage",
+					"status": "provided",
+					"reason": "voltage_is_at_the_grid_connection_point_not_device_terminals"
+				},
+				{
+					"id": "applicable_tab",
+					"status": "provided",
+					"reason": "project_source_and_edition_or_date_are_not_verified_applicability"
+				},
+				{
+					"id": "independent_dso_tab_verification",
+					"status": "unresolved",
+					"reason": "dso_territory_voltage_edition_and_project_applicability_not_verified"
+				},
+				{
+					"id": "connection_permission",
+					"status": "unresolved",
+					"reason": "project_grid_assessment_and_operator_permission_require_separate_evidence"
+				}
+			],
+			"missing_inputs": [],
+			"rule_sources": [],
+			"independent_verification": "not_assessed",
+			"connection_permission": "not_established",
+			"numeric_rules": "partially_assessed",
+			"standard_transition": "not_assessed",
+			"rule_review": {
+				"schema_version": 1,
+				"country_code": "AT",
+				"rule_date": "2026-11-11",
+				"inputs": {
+					"schema_version": 1,
+					"basis": "at_tor_typ_a_max_capacity",
+					"rule_date": "2026-11-11",
+					"power_kw": 120.0,
+					"connection_voltage_kv": 0.4,
+					"de_before_control_test": null,
+					"de_remuneration": null,
+					"de_plug_in_exception": null,
+					"fr_enedis_full_self_consumption": null,
+					"apparent_power_kva": 125.0,
+					"net_active_power_kw": 120.0,
+					"at_existing_installation_change": true,
+					"at_change_previous_power_kw": 100.0,
+					"at_conformity_basis": "accredited_r25_report"
+				},
+				"sources": [
+					{
+						"id": "at_tor_erzeuger_typ_a_1_4",
+						"title": "TOR Stromerzeugungsanlagen Typ A, Version 1.4",
+						"source_url": "https://ogd.ris.bka.gv.at/Dokumente/BgblAuth/BGBLA_2026_II_301/Anlagen_0001_1C9138FC_241E_4C87_9C70_B47AC7600383.pdf",
+						"edition": "Version 1.4, BGBl. II Nr. 301/2026",
+						"effective_from": "2026-06-01",
+						"evidence_snapshot_date": "2026-11-11",
+						"text_sha256": "5be42c6431cfbe670c70e3fb64827c7f97a72cab1b8a6741e9a3955432399820",
+						"clause": "Kapitel 2.1, 2.2, 4.1, 6.1.2, 6.3.1"
+					},
+					{
+						"id": "at_elwg_2025",
+						"title": "Elektrizitätswirtschaftsgesetz (ElWG)",
+						"source_url": "https://www.e-netze.at/downloads-data/pdf.aspx?pdf=ElWG_Fassung%20vom%2007012026.pdf",
+						"edition": "RIS consolidated version dated 2026-01-07",
+						"clause": "§ 6 Abs. 1 Z 78, § 77, § 96(1), (2)",
+						"effective_from": "2026-01-07",
+						"evidence_snapshot_date": "2026-11-11",
+						"text_sha256": "c933a15dc7c3802fda69e2d04ab144d1a5143a056c7bfad0318ddfc5555ac641"
+					},
+					{
+						"id": "at_tor_erzeuger_typ_a_1_4_conformity",
+						"title": "TOR Stromerzeugungsanlagen Typ A, Version 1.4, Kapitel 8.1",
+						"source_url": "https://ogd.ris.bka.gv.at/Dokumente/BgblAuth/BGBLA_2026_II_301/Anlagen_0001_1C9138FC_241E_4C87_9C70_B47AC7600383.pdf",
+						"edition": "Version 1.4, BGBl. II Nr. 301/2026",
+						"clause": "Kapitel 8.1 samt Fußnoten 37 und 38",
+						"effective_from": "2026-06-01",
+						"evidence_snapshot_date": "2026-11-11",
+						"text_sha256": "5be42c6431cfbe670c70e3fb64827c7f97a72cab1b8a6741e9a3955432399820"
+					}
+				],
+				"checks": [
+					{
+						"id": "at_tor_scope",
+						"status": "conditional",
+						"outcome": "in_scope_below_250_kw_and_110_kv",
+						"source_id": "at_tor_erzeuger_typ_a_1_4",
+						"actual": {
+							"power_kw": 120.0,
+							"connection_voltage_kv": 0.4
+						},
+						"missing_inputs": []
+					},
+					{
+						"id": "at_kleinsterzeugungsanlage",
+						"status": "conditional",
+						"outcome": "not_kleinsterzeugungsanlage",
+						"source_id": "at_tor_erzeuger_typ_a_1_4",
+						"actual": {
+							"power_kw": 120.0,
+							"connection_voltage_kv": 0.4
+						},
+						"missing_inputs": []
+					},
+					{
+						"id": "at_network_disconnection_protection",
+						"status": "conditional",
+						"outcome": "external_network_disconnection_protection",
+						"source_id": "at_tor_erzeuger_typ_a_1_4",
+						"actual": {
+							"power_kw": 120.0,
+							"connection_voltage_kv": 0.4
+						},
+						"missing_inputs": []
+					},
+					{
+						"id": "at_substantial_change",
+						"status": "conditional",
+						"outcome": "substantial_change_power_increase_above_15_percent",
+						"source_id": "at_tor_erzeuger_typ_a_1_4",
+						"actual": {
+							"power_kw": 120.0,
+							"connection_voltage_kv": 0.4
+						},
+						"missing_inputs": []
+					},
+					{
+						"id": "at_connection_route",
+						"status": "conditional",
+						"outcome": "network_access_contract_required_above_20_kw",
+						"source_id": "at_elwg_2025",
+						"actual": {
+							"power_kw": 120.0,
+							"connection_voltage_kv": 0.4
+						},
+						"missing_inputs": []
+					},
+					{
+						"id": "at_conformity_evidence",
+						"status": "conditional",
+						"outcome": "declared_accredited_r25_report",
+						"source_id": "at_tor_erzeuger_typ_a_1_4_conformity",
+						"actual": {
+							"power_kw": 120.0,
+							"connection_voltage_kv": 0.4
+						},
+						"missing_inputs": []
+					}
+				]
+			}
+		}
 	}
 }

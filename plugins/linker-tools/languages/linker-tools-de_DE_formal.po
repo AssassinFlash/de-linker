@@ -13419,6 +13419,166 @@ msgid "Germany: EEG solar installed power"
 msgstr "Deutschland: installierte PV-Leistung nach EEG"
 
 #: build/planner/assets/planner.js:1
+msgid "Austria: TOR Erzeuger Typ A maximum capacity"
+msgstr "Österreich: Maximalkapazität nach TOR Erzeuger Typ A"
+
+#: build/planner/assets/planner.js:1
+msgid "Scope of TOR Erzeuger Typ A"
+msgstr "Anwendungsbereich der TOR Erzeuger Typ A"
+
+#: build/planner/assets/planner.js:1
+msgid "Kleinsterzeugungsanlage status"
+msgstr "Einstufung als Kleinsterzeugungsanlage"
+
+#: build/planner/assets/planner.js:1
+msgid "Network disconnection protection"
+msgstr "Netzentkupplungsschutz"
+
+#: build/planner/assets/planner.js:1
+msgid "Substantial change of an existing installation"
+msgstr "Wesentliche Änderung einer bestehenden Anlage"
+
+#: build/planner/assets/planner.js:1
+msgid "Connection route"
+msgstr "Anschlussweg"
+
+#: build/planner/assets/planner.js:1
+msgid "Conformity evidence path"
+msgstr "Weg des Konformitätsnachweises"
+
+#: build/planner/assets/planner.js:1
+msgid "Inside this TOR part: maximum capacity below 250 kW and connection voltage below 110 kV"
+msgstr "Im Anwendungsbereich dieses TOR-Teils: Maximalkapazität unter 250 kW und Anschlussspannung unter 110 kV"
+
+#: build/planner/assets/planner.js:1
+msgid "Outside the scope of this TOR part; the cited provisions give no reading for this project"
+msgstr "Außerhalb des Anwendungsbereichs dieses TOR-Teils; die zitierten Bestimmungen ergeben für dieses Projekt keine Aussage"
+
+#: build/planner/assets/planner.js:1
+msgid "Kleinsterzeugungsanlage at up to 0.8 kW maximum capacity: written notice to the network operator at least two weeks before commissioning, and the residual requirements listed in § 2.1"
+msgstr "Kleinsterzeugungsanlage bis 0,8 kW Maximalkapazität: schriftliche Verständigung des Netzbetreibers spätestens zwei Wochen vor Inbetriebnahme und die in § 2.1 genannten Restanforderungen"
+
+#: build/planner/assets/planner.js:1
+msgid "Not a Kleinsterzeugungsanlage: the exemption of § 2.1 does not apply"
+msgstr "Keine Kleinsterzeugungsanlage: die Ausnahme nach § 2.1 gilt nicht"
+
+#: build/planner/assets/planner.js:1
+msgid "External network disconnection protection required above 30 kVA"
+msgstr "Externer Netzentkupplungsschutz über 30 kVA erforderlich"
+
+#: build/planner/assets/planner.js:1
+msgid "Automatic disconnection device under OVE-Richtlinie R 25 permitted up to 30 kVA"
+msgstr "Selbsttätig wirkende Freischaltstelle nach OVE-Richtlinie R 25 bis 30 kVA zulässig"
+
+#: build/planner/assets/planner.js:1
+msgid "New installation; the substantial-change provisions do not apply"
+msgstr "Neuanlage; die Bestimmungen zur wesentlichen Änderung greifen nicht"
+
+#: build/planner/assets/planner.js:1
+msgid "Maximum capacity increases by more than 15%: the cited example of a substantial change is met"
+msgstr "Die Maximalkapazität steigt um mehr als 15 %: das zitierte Beispiel einer wesentlichen Änderung ist erfüllt"
+
+#: build/planner/assets/planner.js:1
+msgid "The 15% example is not met; other substantial-change criteria stay open"
+msgstr "Das 15-%-Beispiel ist nicht erfüllt; weitere Kriterien einer wesentlichen Änderung bleiben offen"
+
+#: build/planner/assets/planner.js:1
+msgid "Up to 20 kW net active power: notification to the distribution system operator, connection on confirmation or after four weeks without a decision"
+msgstr "Bis 20 kW netzwirksame Leistung: Anzeige an den Verteilernetzbetreiber, Anschluss mit Bestätigung oder nach vier Wochen ohne Entscheidung"
+
+#: build/planner/assets/planner.js:1
+msgid "Above 20 kW net active power: a network access contract with the operator is required"
+msgstr "Über 20 kW netzwirksame Leistung: ein Netzzugangsvertrag mit dem Netzbetreiber ist erforderlich"
+
+#: build/planner/assets/planner.js:1
+msgid "Declared: entry in the Austrian inverter list. The listing, device and software version still need verification."
+msgstr "Angegeben: Eintrag in der österreichischen Wechselrichterliste. Listeneintrag, Gerät und Softwarestand sind noch zu prüfen."
+
+#: build/planner/assets/planner.js:1
+msgid "Declared: accredited test report under OVE-Richtlinie R 25 including the Austrian settings. The report scope and device version still need verification."
+msgstr "Angegeben: Prüfbericht einer akkreditierten Stelle nach OVE-Richtlinie R 25 einschließlich der österreichischen Einstellungen. Prüfumfang und Gerätestand sind noch zu prüfen."
+
+#: build/planner/assets/planner.js:1
+msgid "Declared: VDE-AR-N 4105 report with the additional R 25 properties and Austrian parameters. The report scope and device version still need verification."
+msgstr "Angegeben: Prüfbericht nach VDE-AR-N 4105 mit den zusätzlichen R-25-Eigenschaften und österreichischen Parametern. Prüfumfang und Gerätestand sind noch zu prüfen."
+
+#: build/planner/assets/planner.js:1
+msgid "apparent power at the connection point"
+msgstr "Scheinleistung am Netzanschlusspunkt"
+
+#: build/planner/assets/planner.js:1
+msgid "agreed net active power"
+msgstr "vereinbarte netzwirksame Leistung"
+
+#: build/planner/assets/planner.js:1
+msgid "existing installation being changed"
+msgstr "Änderung einer bestehenden Anlage"
+
+#: build/planner/assets/planner.js:1
+msgid "maximum capacity before the change"
+msgstr "Maximalkapazität vor der Änderung"
+
+#: build/planner/assets/planner.js:1
+msgid "declared conformity path"
+msgstr "angegebener Konformitätsnachweis"
+
+#: build/planner/assets/planner.js:1
+msgid "Agreed net active power at the connection point"
+msgstr "Vereinbarte netzwirksame Leistung am Netzanschlusspunkt"
+
+#: build/planner/assets/planner.js:1
+msgid "Which conformity evidence is available?"
+msgstr "Welcher Konformitätsnachweis liegt vor?"
+
+#: build/planner/assets/planner.js:1
+msgid "Entry in the Austrian inverter list"
+msgstr "Eintrag in der österreichischen Wechselrichterliste"
+
+#: build/planner/assets/planner.js:1
+msgid "Accredited test report under OVE-Richtlinie R 25 with Austrian settings"
+msgstr "Prüfbericht einer akkreditierten Stelle nach OVE-Richtlinie R 25 mit österreichischen Einstellungen"
+
+#: build/planner/assets/planner.js:1
+msgid "VDE-AR-N 4105 report with the additional R 25 properties and Austrian parameters"
+msgstr "Prüfbericht nach VDE-AR-N 4105 mit den zusätzlichen R-25-Eigenschaften und österreichischen Parametern"
+
+#: build/planner/assets/planner.js:1
+msgid "The declared path is a project declaration. Whether a specific device and software version is covered still needs the registry and document read-back."
+msgstr "Der angegebene Weg ist eine Projektangabe. Ob ein bestimmtes Gerät und ein bestimmter Softwarestand erfasst sind, ist weiterhin über Register und Unterlagen zu prüfen."
+
+#: build/planner/assets/planner.js:1
+msgid "Enter the maximum capacity Pmax of the whole installation at one connection point, as TOR Erzeuger Typ A section 4.1 defines it. Several generating units at one connection point count as one installation."
+msgstr "Geben Sie die Maximalkapazität Pmax der gesamten Anlage an einem Netzanschlusspunkt ein, wie sie Abschnitt 4.1 der TOR Erzeuger Typ A bestimmt. Mehrere Erzeugungseinheiten an einem Netzanschlusspunkt gelten als eine Anlage."
+
+#: build/planner/assets/planner.js:1
+msgid "TOR Erzeuger Typ A, version 1.4 in force from 1 June 2026, checked %s."
+msgstr "TOR Erzeuger Typ A, Fassung 1.4 gültig ab 1. Juni 2026, geprüft am %s."
+
+#: build/planner/assets/planner.js:1
+msgid "Nominal voltage at the network connection point"
+msgstr "Nennspannung am Netzanschlusspunkt"
+
+#: build/planner/assets/planner.js:1
+msgid "Apparent power at the connection point"
+msgstr "Scheinleistung am Netzanschlusspunkt"
+
+#: build/planner/assets/planner.js:1
+msgid "Is this a change to an existing installation?"
+msgstr "Handelt es sich um eine Änderung einer bestehenden Anlage?"
+
+#: build/planner/assets/planner.js:1
+msgid "No, a new installation"
+msgstr "Nein, eine Neuanlage"
+
+#: build/planner/assets/planner.js:1
+msgid "Yes, an existing installation"
+msgstr "Ja, eine bestehende Anlage"
+
+#: build/planner/assets/planner.js:1
+msgid "Maximum capacity before the change"
+msgstr "Maximalkapazität vor der Änderung"
+
+#: build/planner/assets/planner.js:1
 msgid "Is the smart meter or control equipment not yet installed, or is the first successful operator control test still pending?"
 msgstr "Fehlt noch das intelligente Messsystem oder die Steuerungseinrichtung, oder steht die erste erfolgreiche Ansteuerungsprüfung durch den Netzbetreiber noch aus?"
 

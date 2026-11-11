@@ -4,7 +4,10 @@ import { ApiError, type JsonObject } from "../data/protocol.ts";
 import { calendarDate } from "./gridConnection.ts";
 
 export type RuleBasis =
-	"fr_generation_pmax" | "nl_storage_max_active" | "de_pv_installed";
+	| "fr_generation_pmax"
+	| "nl_storage_max_active"
+	| "de_pv_installed"
+	| "at_tor_typ_a_max_capacity";
 
 export interface CountryRuleInputs extends JsonObject {
 	schema_version: 1;
@@ -16,6 +19,15 @@ export interface CountryRuleInputs extends JsonObject {
 	de_remuneration: "feed_in_or_tenant" | "other" | null;
 	de_plug_in_exception: boolean | null;
 	fr_enedis_full_self_consumption: boolean | null;
+	apparent_power_kva?: number | null;
+	net_active_power_kw?: number | null;
+	at_existing_installation_change?: boolean | null;
+	at_change_previous_power_kw?: number | null;
+	at_conformity_basis?:
+		| "austrian_inverter_list"
+		| "accredited_r25_report"
+		| "vde_4105_with_r25_properties"
+		| null;
 }
 
 const validate = new Ajv2020({
@@ -46,6 +58,11 @@ export function emptyCountryRuleInputs(basis: RuleBasis): CountryRuleInputs {
 		de_remuneration: null,
 		de_plug_in_exception: null,
 		fr_enedis_full_self_consumption: null,
+		apparent_power_kva: null,
+		net_active_power_kw: null,
+		at_existing_installation_change: null,
+		at_change_previous_power_kw: null,
+		at_conformity_basis: null,
 	};
 }
 

@@ -258,4 +258,33 @@ for (const de of [false, true]) {
 			),
 		);
 	});
+	test(`${de ? "DE" : "EN"}: the Austrian reading shows its six checks and three sources`, async (t) => {
+		await mount(
+			t,
+			React.createElement(GridConnectionResult, {
+				assessment: native.at.assessment,
+				locale: de ? "de-DE" : "en-GB",
+			}),
+			de,
+		);
+		const shown = document.body.textContent;
+		// Every cited provision reaches the surface: the TOR part, the ElWG and
+		// the same TOR part's conformity chapter are three separate sources.
+		assert.ok(
+			[...document.querySelectorAll("a")].some((link) =>
+				link.href.includes("BGBLA_2026_II_301"),
+			),
+		);
+		assert.match(shown, de ? /250 kW/ : /250 kW/);
+		assert.match(shown, de ? /30 kVA/ : /30 kVA/);
+		assert.match(shown, de ? /15 %/ : /15%/);
+		assert.match(
+			shown,
+			de ? /Netzentkupplungsschutz/ : /disconnection protection/i,
+		);
+		assert.doesNotMatch(
+			shown,
+			de ? /Anschluss ist genehmigt/ : /connection is approved/,
+		);
+	});
 }

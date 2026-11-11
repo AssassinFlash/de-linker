@@ -27,6 +27,21 @@ export function CountryRuleResult({
 			"Enedis supporting documentation",
 			"linker-tools",
 		),
+		at_tor_scope: __("Scope of TOR Erzeuger Typ A", "linker-tools"),
+		at_kleinsterzeugungsanlage: __(
+			"Kleinsterzeugungsanlage status",
+			"linker-tools",
+		),
+		at_network_disconnection_protection: __(
+			"Network disconnection protection",
+			"linker-tools",
+		),
+		at_substantial_change: __(
+			"Substantial change of an existing installation",
+			"linker-tools",
+		),
+		at_connection_route: __("Connection route", "linker-tools"),
+		at_conformity_evidence: __("Conformity evidence path", "linker-tools"),
 	};
 	const outcomes: Record<string, string> = {
 		type_a: __("Type A", "linker-tools"),
@@ -85,6 +100,62 @@ export function CountryRuleResult({
 			"Provide a Consuel certificate or declaration on honour. The source requires Consuel when modifying existing electrical circuits or adding a battery, with a possible plug-and-play exception subject to its stated conditions.",
 			"linker-tools",
 		),
+		in_scope_below_250_kw_and_110_kv: __(
+			"Inside this TOR part: maximum capacity below 250 kW and connection voltage below 110 kV",
+			"linker-tools",
+		),
+		outside_scope: __(
+			"Outside the scope of this TOR part; the cited provisions give no reading for this project",
+			"linker-tools",
+		),
+		kleinsterzeugungsanlage_two_weeks_notice: __(
+			"Kleinsterzeugungsanlage at up to 0.8 kW maximum capacity: written notice to the network operator at least two weeks before commissioning, and the residual requirements listed in § 2.1",
+			"linker-tools",
+		),
+		not_kleinsterzeugungsanlage: __(
+			"Not a Kleinsterzeugungsanlage: the exemption of § 2.1 does not apply",
+			"linker-tools",
+		),
+		external_network_disconnection_protection: __(
+			"External network disconnection protection required above 30 kVA",
+			"linker-tools",
+		),
+		automatic_disconnection_device_r25: __(
+			"Automatic disconnection device under OVE-Richtlinie R 25 permitted up to 30 kVA",
+			"linker-tools",
+		),
+		new_installation: __(
+			"New installation; the substantial-change provisions do not apply",
+			"linker-tools",
+		),
+		substantial_change_power_increase_above_15_percent: __(
+			"Maximum capacity increases by more than 15%: the cited example of a substantial change is met",
+			"linker-tools",
+		),
+		power_criterion_not_exceeded_other_criteria_open: __(
+			"The 15% example is not met; other substantial-change criteria stay open",
+			"linker-tools",
+		),
+		notification_route_up_to_20_kw_net_active_power: __(
+			"Up to 20 kW net active power: notification to the distribution system operator, connection on confirmation or after four weeks without a decision",
+			"linker-tools",
+		),
+		network_access_contract_required_above_20_kw: __(
+			"Above 20 kW net active power: a network access contract with the operator is required",
+			"linker-tools",
+		),
+		declared_austrian_inverter_list: __(
+			"Declared: entry in the Austrian inverter list. The listing, device and software version still need verification.",
+			"linker-tools",
+		),
+		declared_accredited_r25_report: __(
+			"Declared: accredited test report under OVE-Richtlinie R 25 including the Austrian settings. The report scope and device version still need verification.",
+			"linker-tools",
+		),
+		declared_vde_4105_with_r25_properties: __(
+			"Declared: VDE-AR-N 4105 report with the additional R 25 properties and Austrian parameters. The report scope and device version still need verification.",
+			"linker-tools",
+		),
 	};
 	const missing: Record<string, string> = {
 		rule_date: __("rule date", "linker-tools"),
@@ -96,6 +167,20 @@ export function CountryRuleResult({
 			"complete plug-in solar exception",
 			"linker-tools",
 		),
+		apparent_power_kva: __(
+			"apparent power at the connection point",
+			"linker-tools",
+		),
+		net_active_power_kw: __("agreed net active power", "linker-tools"),
+		at_existing_installation_change: __(
+			"existing installation being changed",
+			"linker-tools",
+		),
+		at_change_previous_power_kw: __(
+			"maximum capacity before the change",
+			"linker-tools",
+		),
+		at_conformity_basis: __("declared conformity path", "linker-tools"),
 	};
 	return (
 		<section>

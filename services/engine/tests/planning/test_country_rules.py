@@ -42,6 +42,9 @@ def rule_input(basis: str, **changes: Any) -> Object:
         "de_remuneration": None,
         "de_plug_in_exception": None,
         "fr_enedis_full_self_consumption": None,
+        "apparent_power_kva": None,
+        "at_existing_installation_change": None,
+        "at_change_previous_power_kw": None,
     }
     value.update(changes)
     return value
@@ -291,6 +294,265 @@ def test_dates_from_effective_from_are_inside_the_fr_version(rule_date: str) -> 
             ),
         )
     ) == {"fr_generation_type": "type_a"}
+
+
+def test_at_tor_scope_and_kleinsterzeugung_follow_the_cited_limits() -> None:
+    """TOR Erzeuger Typ A v1.4 § 2.1: below 250 kW and below 110 kV, 0.8 kW total."""
+    for power, voltage, scope, klein in (
+        (
+            0.79,
+            0.4,
+            "in_scope_below_250_kw_and_110_kv",
+            "kleinsterzeugungsanlage_two_weeks_notice",
+        ),
+        (
+            0.8,
+            0.4,
+            "in_scope_below_250_kw_and_110_kv",
+            "kleinsterzeugungsanlage_two_weeks_notice",
+        ),
+        (0.81, 0.4, "in_scope_below_250_kw_and_110_kv", "not_kleinsterzeugungsanlage"),
+        (249.9, 0.4, "in_scope_below_250_kw_and_110_kv", "not_kleinsterzeugungsanlage"),
+        (250.0, 0.4, "outside_scope", "outside_scope"),
+        (30.0, 110.0, "outside_scope", "outside_scope"),
+    ):
+        result = outcomes(
+            review_country_rules(
+                "AT",
+                rule_input(
+                    "at_tor_typ_a_max_capacity",
+                    power_kw=power,
+                    connection_voltage_kv=voltage,
+                    apparent_power_kva=10,
+                    at_existing_installation_change=False,
+                ),
+            )
+        )
+        assert result["at_tor_scope"] == scope
+        assert result["at_kleinsterzeugungsanlage"] == klein
+
+
+def test_at_disconnection_protection_uses_apparent_power_at_30_kva() -> None:
+    """TOR § 6.3.1 states the threshold in kVA and is met at exactly 30 kVA."""
+    for kva, expected in (
+        (30.0, "automatic_disconnection_device_r25"),
+        (30.1, "external_network_disconnection_protection"),
+        (125.0, "external_network_disconnection_protection"),
+    ):
+        review = review_country_rules(
+            "AT",
+            rule_input(
+                "at_tor_typ_a_max_capacity",
+                power_kw=120,
+                connection_voltage_kv=0.4,
+                apparent_power_kva=kva,
+                at_existing_installation_change=False,
+            ),
+        )
+        assert outcomes(review)["at_network_disconnection_protection"] == expected
+    missing = outcomes(
+        review_country_rules(
+            "AT",
+            rule_input(
+                "at_tor_typ_a_max_capacity",
+                power_kw=120,
+                connection_voltage_kv=0.4,
+                at_existing_installation_change=False,
+            ),
+        )
+    )
+    assert missing["at_network_disconnection_protection"] == "missing_inputs"
+    review = review_country_rules(
+        "AT",
+        rule_input(
+            "at_tor_typ_a_max_capacity", power_kw=120, connection_voltage_kv=0.4
+        ),
+    )
+    assert review is not None
+    unresolved = {
+        str(check["id"]): cast(list[str], check["missing_inputs"])
+        for check in cast(list[Object], review["checks"])
+    }
+    assert "apparent_power_kva" in unresolved["at_network_disconnection_protection"]
+
+
+def test_at_substantial_change_needs_the_previous_capacity_and_stays_open() -> None:
+    """TOR § 2.2 names >15 % as one example, so the negative case stays open."""
+
+    def review(**changes: Any) -> dict[str, str]:
+        return outcomes(
+            review_country_rules(
+                "AT",
+                rule_input(
+                    "at_tor_typ_a_max_capacity",
+                    power_kw=20,
+                    connection_voltage_kv=0.4,
+                    apparent_power_kva=25,
+                    **changes,
+                ),
+            )
+        )
+
+    assert review(at_existing_installation_change=False)["at_substantial_change"] == (
+        "new_installation"
+    )
+    assert review()["at_substantial_change"] == "missing_inputs"
+    assert review(at_existing_installation_change=True)["at_substantial_change"] == (
+        "missing_inputs"
+    )
+    assert (
+        review(at_existing_installation_change=True, at_change_previous_power_kw=20)[
+            "at_substantial_change"
+        ]
+        == "power_criterion_not_exceeded_other_criteria_open"
+    )
+    assert review(
+        at_existing_installation_change=True, at_change_previous_power_kw=17.39
+    )["at_substantial_change"] == ("substantial_change_power_increase_above_15_percent")
+    assert (
+        review(at_existing_installation_change=True, at_change_previous_power_kw=17.4)[
+            "at_substantial_change"
+        ]
+        == "power_criterion_not_exceeded_other_criteria_open"
+    )
+
+
+def test_at_conditional_checks_mark_numeric_rules_as_partially_assessed() -> None:
+    """Every conditional AT reading must reach the grid assessment's status."""
+    values = declared(country="AT", complete=True)
+    values["country_rule_inputs"] = rule_input(
+        "at_tor_typ_a_max_capacity",
+        rule_date="2026-11-11",
+        power_kw=120,
+        connection_voltage_kv=0.4,
+        apparent_power_kva=125,
+        net_active_power_kw=120,
+        at_existing_installation_change=False,
+        at_conformity_basis="accredited_r25_report",
+    )
+    assessment = country_assessment(values)
+    assert assessment["numeric_rules"] == "partially_assessed"
+    assert assessment["reason"] == "country_rules_require_project_verification"
+    # The permission status itself stays open: a conditional rule reading is
+    # not an operator approval.
+    assert assessment["connection_permission"] == "not_established"
+
+
+def test_at_connection_route_uses_net_active_power_not_maximum_capacity() -> None:
+    """ElWG § 96(1): the 20 kW route is keyed on net active power (Anzeige)."""
+
+    def route(power: float, net: float | None) -> dict[str, str]:
+        return outcomes(
+            review_country_rules(
+                "AT",
+                rule_input(
+                    "at_tor_typ_a_max_capacity",
+                    power_kw=power,
+                    connection_voltage_kv=0.4,
+                    apparent_power_kva=25,
+                    net_active_power_kw=net,
+                    at_existing_installation_change=False,
+                    at_conformity_basis="accredited_r25_report",
+                ),
+            )
+        )
+
+    assert route(20, 20)["at_connection_route"] == (
+        "notification_route_up_to_20_kw_net_active_power"
+    )
+    assert route(20, 20.1)["at_connection_route"] == (
+        "network_access_contract_required_above_20_kw"
+    )
+    # The two quantities move independently: a small Pmax with a large agreed
+    # net active power leaves the notification route, and vice versa.
+    assert route(200, 200)["at_connection_route"] == (
+        "network_access_contract_required_above_20_kw"
+    )
+    assert route(200, 19)["at_connection_route"] == (
+        "notification_route_up_to_20_kw_net_active_power"
+    )
+    assert route(20, None)["at_connection_route"] == "missing_inputs"
+
+
+def test_at_conformity_evidence_stays_conditional_on_the_declared_path() -> None:
+    """TOR § 8.1: three cited paths; the actual device match needs read-back."""
+    for basis in (
+        "austrian_inverter_list",
+        "accredited_r25_report",
+        "vde_4105_with_r25_properties",
+    ):
+        review = review_country_rules(
+            "AT",
+            rule_input(
+                "at_tor_typ_a_max_capacity",
+                power_kw=120,
+                connection_voltage_kv=0.4,
+                apparent_power_kva=125,
+                net_active_power_kw=120,
+                at_existing_installation_change=False,
+                at_conformity_basis=basis,
+            ),
+        )
+        checks = outcomes(review)
+        assert checks["at_conformity_evidence"] == f"declared_{basis}"
+        assert review is not None
+        conformity = next(
+            check
+            for check in cast(list[Object], review["checks"])
+            if check["id"] == "at_conformity_evidence"
+        )
+        assert conformity["status"] == "conditional"
+    missing = outcomes(
+        review_country_rules(
+            "AT",
+            rule_input(
+                "at_tor_typ_a_max_capacity",
+                power_kw=120,
+                connection_voltage_kv=0.4,
+                apparent_power_kva=125,
+                net_active_power_kw=120,
+                at_existing_installation_change=False,
+            ),
+        )
+    )
+    assert missing["at_conformity_evidence"] == "missing_inputs"
+
+
+def test_at_readings_are_bound_to_the_tor_version_dates() -> None:
+    changes: Object = {
+        "power_kw": 120,
+        "connection_voltage_kv": 0.4,
+        "apparent_power_kva": 125,
+        "net_active_power_kw": 120,
+        "at_existing_installation_change": False,
+        "at_conformity_basis": "accredited_r25_report",
+    }
+    for rule_date in ("2026-05-31", "2026-11-12"):
+        result = outcomes(
+            review_country_rules(
+                "AT",
+                rule_input("at_tor_typ_a_max_capacity", rule_date=rule_date, **changes),
+            )
+        )
+        assert set(result.values()) == {"outside_version"}
+    inside = outcomes(
+        review_country_rules(
+            "AT",
+            rule_input("at_tor_typ_a_max_capacity", rule_date="2026-06-01", **changes),
+        )
+    )
+    assert inside["at_tor_scope"] == "in_scope_below_250_kw_and_110_kv"
+    assert inside["at_network_disconnection_protection"] == (
+        "external_network_disconnection_protection"
+    )
+    review = review_country_rules(
+        "AT",
+        rule_input("at_tor_typ_a_max_capacity", rule_date="2026-06-01", **changes),
+    )
+    assert review is not None
+    source = cast(list[Object], review["sources"])[0]
+    assert source["id"] == "at_tor_erzeuger_typ_a_1_4"
+    assert source["effective_from"] == "2026-06-01"
 
 
 def test_enedis_scope_requires_explicit_operator_and_complete_self_use() -> None:

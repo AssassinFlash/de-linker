@@ -4,7 +4,8 @@
       "enum": [
         "fr_generation_pmax",
         "nl_storage_max_active",
-        "de_pv_installed"
+        "de_pv_installed",
+        "at_tor_typ_a_max_capacity"
       ],
       "type": "string"
     },
@@ -105,6 +106,68 @@
         }
       ],
       "title": "Fr Enedis Full Self Consumption"
+    },
+    "apparent_power_kva": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Positive"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "net_active_power_kw": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Positive"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "at_existing_installation_change": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "At Existing Installation Change"
+    },
+    "at_change_previous_power_kw": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Positive"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "at_conformity_basis": {
+      "anyOf": [
+        {
+          "enum": [
+            "austrian_inverter_list",
+            "accredited_r25_report",
+            "vde_4105_with_r25_properties"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "At Conformity Basis"
     }
   },
   "required": [

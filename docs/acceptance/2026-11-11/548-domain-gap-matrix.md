@@ -12,7 +12,7 @@
 | 5 | 商务链贯穿 | 可发布 | G 线三层测试落地（#1089，变异证明）；商用 PDF 修复生产四组合验证+8 行翻绿（#1102/#1110）；BOM 表渲染已在 #1110 的 PDF 正文核对中覆盖 |
 | 6 | 产品身份与兼容 | 可发布（身份）／需补验（兼容） | 身份半已关闭（#1111：git 零改动+四组合逐字一致+更严回归 spec）；兼容合同运行时证据=生产 377 对 pairs（#1081 修复后）；工程覆盖层 1 条 Trina 规则在 feed 内；11-05 后的兼容合同原生验收仍缺 |
 | 7 | 服务托管 | 可发布 | 配额已按工作量实测（#1106：normal geometric 95.6% 用量、expanded 28%、direct-beam 0.03% RSS 48MB）；调度单元 launchd 双修防轮转（#1108/#1109）；knowledge/engineering 双消费者生产就绪（#1101/#1103） |
-| 8 | 国家/DSO 规则 | 需补验 | L 线 e2e 已补 EN+DE UI 链+engine 拒绝合同（#1094，N 线解除 readiness 后规则结果页可达）；扩国与 DSO 放行仍按 #562 方法论逐国补证据 |
+| 8 | 国家/DSO 规则 | 需补验（扩国已进 AT） | L 线 e2e 已补 EN+DE UI 链+engine 拒绝合同（#1094，N 线解除 readiness 后规则结果页可达）；**AT 已入包**（TOR Typ A v1.4 + ElWG，6 条判定，证据 `docs/research/2026-11-11-at-country-rules/EVIDENCE.md`，见 `COUNTRY-EVIDENCE.md` §13）；**SE 仍为下一候选**；DSO 级放行证据对四国均未取得 |
 
 实跑只读测试合计：engine 468 passed、planner 509 passed，零失败。
 

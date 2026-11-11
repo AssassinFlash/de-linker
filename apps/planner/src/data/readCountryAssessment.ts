@@ -67,27 +67,93 @@ const ruleOutcomes: Record<string, readonly string[]> = {
 		"missing_inputs",
 		"outside_version",
 	],
+	at_tor_scope: [
+		"in_scope_below_250_kw_and_110_kv",
+		"outside_scope",
+		"missing_inputs",
+		"outside_version",
+	],
+	at_kleinsterzeugungsanlage: [
+		"kleinsterzeugungsanlage_two_weeks_notice",
+		"not_kleinsterzeugungsanlage",
+		"outside_scope",
+		"missing_inputs",
+		"outside_version",
+	],
+	at_network_disconnection_protection: [
+		"external_network_disconnection_protection",
+		"automatic_disconnection_device_r25",
+		"outside_scope",
+		"missing_inputs",
+		"outside_version",
+	],
+	at_substantial_change: [
+		"new_installation",
+		"substantial_change_power_increase_above_15_percent",
+		"power_criterion_not_exceeded_other_criteria_open",
+		"outside_scope",
+		"missing_inputs",
+		"outside_version",
+	],
+	at_connection_route: [
+		"notification_route_up_to_20_kw_net_active_power",
+		"network_access_contract_required_above_20_kw",
+		"missing_inputs",
+		"outside_version",
+	],
+	at_conformity_evidence: [
+		"declared_austrian_inverter_list",
+		"declared_accredited_r25_report",
+		"declared_vde_4105_with_r25_properties",
+		"missing_inputs",
+		"outside_version",
+	],
 };
 const ruleIds: Record<string, readonly string[]> = {
 	FR: ["fr_generation_type"],
 	NL: ["nl_storage_type", "nl_storage_lfsm"],
 	DE: ["de_eeg_control", "de_eeg_export"],
+	AT: [
+		"at_tor_scope",
+		"at_kleinsterzeugungsanlage",
+		"at_network_disconnection_protection",
+		"at_substantial_change",
+		"at_connection_route",
+		"at_conformity_evidence",
+	],
 };
 const ruleBasis: Record<string, string> = {
 	FR: "fr_generation_pmax",
 	NL: "nl_storage_max_active",
 	DE: "de_pv_installed",
+	AT: "at_tor_typ_a_max_capacity",
 };
 const ruleSource: Record<string, string> = {
 	FR: "fr_arrete_article_35",
 	NL: "nl_systeemcode_article_2_9",
 	DE: "de_eeg_section_9",
+	AT: "at_tor_erzeuger_typ_a_1_4",
+};
+/**
+ * Sources an AT reading cites after the TOR part itself: the ElWG for the
+ * connection route and the same TOR part for the conformity evidence. They are
+ * fixed per country, so a review cannot smuggle in a different citation.
+ */
+const ruleExtraSources: Record<string, readonly string[]> = {
+	AT: ["at_elwg_2025", "at_tor_erzeuger_typ_a_1_4_conformity"],
+};
+/** Which of the review's sources one AT check belongs to. */
+const atCheckSource: Record<string, number> = {
+	at_connection_route: 1,
+	at_conformity_evidence: 2,
 };
 const unresolvedOutcomes = [
 	"missing_inputs",
 	"outside_version",
 	"below_range",
 	"boundary_not_established",
+	"outside_scope",
+	"power_criterion_not_exceeded_other_criteria_open",
 ];
 
 function readRuleReview(value: unknown, country: string): JsonObject {
@@ -97,30 +163,32 @@ function readRuleReview(value: unknown, country: string): JsonObject {
 	};
 	const inputs = readCountryRuleInputs(review.inputs);
 	if (!inputs) return fail();
+	const enedisRoute =
+		country === "FR" && inputs.fr_enedis_full_self_consumption === true;
+	const expectedSources =
+		1 + (ruleExtraSources[country]?.length ?? 0) + (enedisRoute ? 1 : 0);
 	if (
 		review.schema_version !== 1 ||
 		review.country_code !== country ||
 		inputs.basis !== ruleBasis[country] ||
 		review.rule_date !== inputs.rule_date ||
 		!Array.isArray(review.sources) ||
-		!(
-			review.sources.length === 1 ||
-			(country === "FR" &&
-				inputs.fr_enedis_full_self_consumption === true &&
-				review.sources.length === 2)
-		) ||
+		review.sources.length !== expectedSources ||
 		!Array.isArray(review.checks) ||
 		review.checks.length !==
-			(ruleIds[country]?.length ?? 0) + (review.sources.length === 2 ? 2 : 0)
+			(ruleIds[country]?.length ?? 0) + (enedisRoute ? 2 : 0)
 	)
 		fail();
 	const sources = (review.sources as JsonObject[]).map((source) =>
 		readObject(source),
 	);
 	const ids = sources.map((source) => String(source.id));
+	const extra = ruleExtraSources[country] ?? [];
 	if (
 		ids[0] !== ruleSource[country] ||
-		(ids.length === 2 && ids[1] !== "fr_enedis_total_self_consumption")
+		(enedisRoute &&
+			ids[extra.length + 1] !== "fr_enedis_total_self_consumption") ||
+		extra.some((id, index) => ids[index + 1] !== id)
 	)
 		fail();
 	for (const source of sources)
@@ -142,7 +210,7 @@ function readRuleReview(value: unknown, country: string): JsonObject {
 			fail();
 	const expectedChecks = [
 		...(ruleIds[country] ?? []),
-		...(ids.length === 2
+		...(enedisRoute
 			? ["fr_enedis_declaration", "fr_enedis_certification"]
 			: []),
 	];
@@ -157,7 +225,10 @@ function readRuleReview(value: unknown, country: string): JsonObject {
 			!expectedChecks.includes(id) ||
 			seen.has(id) ||
 			!ruleOutcomes[id]?.includes(outcome) ||
-			check.source_id !== (id.startsWith("fr_enedis_") ? ids[1] : ids[0]) ||
+			check.source_id !==
+				(id.startsWith("fr_enedis_")
+					? ids[ids.length - 1]
+					: ids[atCheckSource[id] ?? 0]) ||
 			check.status !==
 				(unresolvedOutcomes.includes(outcome) ? "unresolved" : "conditional")
 		)
@@ -175,6 +246,11 @@ function readRuleReview(value: unknown, country: string): JsonObject {
 						"de_before_control_test",
 						"de_remuneration",
 						"de_plug_in_exception",
+						"apparent_power_kva",
+						"net_active_power_kw",
+						"at_existing_installation_change",
+						"at_change_previous_power_kw",
+						"at_conformity_basis",
 					].includes(String(key)),
 			)
 		)
