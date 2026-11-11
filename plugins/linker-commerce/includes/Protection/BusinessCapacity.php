@@ -257,7 +257,13 @@ final class BusinessCapacity {
 	/**
 	 * Current business occupancy for the operations digest: unhandled inquiries
 	 * and their logical bytes, from the same locked registry the admission bound
-	 * checks. Read-only: an unreadable registry is an error, never zero.
+	 * checks.
+	 *
+	 * Read-only on an initialised registry, which production has been since
+	 * 2026-10-22 (both keys are present). The very first call on a site without
+	 * the registry runs the same native history read and disposition
+	 * reconciliation as admission itself, and that one call persists the
+	 * initialised state; it never deletes, charges or releases anything.
 	 *
 	 * @return array{unhandled: int, bytes: int}|WP_Error
 	 */
