@@ -1307,3 +1307,51 @@ rotation-proof; 8 upgraded from needs-implementation to needs-reverification
 (e2e coverage landed; country expansion remains evidence-gated per the
 established methodology). The matrix is the at-a-glance companion to this
 ledger's per-line records.
+
+## Ops line: launchd window semantics resolved; first unattended window is tomorrow (2026-11-11)
+
+The T023000Z archive mystery is closed by agent-151's own handover (recorded
+in the previous session): after fixing the recycled-venv root cause (PR #1108)
+it ran one real maintenance round through the runner's `run()` with a
+synthetic in-window timestamp, bypassing `_main()`'s status branch — hence
+attempt_day=2026-11-11 but last_attempt_at frozen at 11-07. That manual round
+consumed today's attempt slot, so planner-maintenance's first genuinely
+unattended in-window run is 2026-11-12 02:00–03:00 UTC (timer firing itself is
+proven: hourly ticks run end-to-end, exit 0, status JSON checked_at updates).
+knowledge-publication needs no wait: it ticks every 15 min and has run exit 0
+unattended since the fix. Local-network note: this Mac's VPN proxy (DNS →
+198.18.0.0/15) intermittently breaks TLS to de-linker.com; production itself
+stayed healthy (VPS probe 200 throughout) — do not diagnose site outages from
+this machine's curl alone.
+
+## Ops line: playbook inquiry pull 400 — root cause fixed at both ends (2026-11-11)
+
+Daily gsc-pull unit exited 1: GSC read timeout (VPN path) plus inquiry pull
+HTTP 400. The 400 body named the real cause: production's order-status enum
+says `quotation-issued` while the ops playbook still requested
+`proforma-issued` — a missed consumer of the 2026-11-08 proforma→quotation
+rename. Verified in production (HPOS: inquiry-received=204, quotation-issued=1,
+cancelled=53, on-hold=5, checkout-draft=2; no legacy rows; meta is
+`_linker_quotation_issued`). Fixed in de-linker-playbook 0a30edb: statuses,
+meta key, Chinese label (报价单已出), issued-time column renamed to
+报价单签发时刻 across pull/schema/dashboard py+html/docs; Google Sheet 询盘
+tab header+dropdown migrated via the repo's own request builder (positional
+reads made it zero-risk; the column was historically all-empty); structure
+check OK; end-to-end re-pull green (258 rows, 5 added, 1 updated, no errors).
+Also corrected the slug fork in the main repo (4715d3ad6): specs said
+`wc-quotation-in-progress` but the implemented slug is `quotation-issued`
+because the former is 23 chars, over wp_posts.post_status varchar(20), and
+WordPress silently dropped the status write (acceptance evidence
+2026-11-08/1003). Digest code uses the Statuses::QUOTATION constant and was
+never affected. Lesson recorded: rename batches must grep external repos and
+ops tooling for old slugs, not only the site tree.
+
+## Incident: main-tree probe file deleted then restored then removed (no harm)
+
+I deleted an untracked probe spec (zz-domain6-probe.spec.ts) as "leftover
+garbage" while the AC subagent was mid-flight; it turned out to be that
+agent's earlier artifact (it had since moved to /tmp/ac-compat, its own
+worktree, where the live copy lives — recovered full content from the agent's
+wire.jsonl Write record to confirm, then removed the stale main-tree copy
+again). No work lost. Standing rule for me: before deleting any untracked
+file, grep the active subagents' wire.jsonl for its path.
