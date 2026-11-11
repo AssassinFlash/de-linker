@@ -11,11 +11,11 @@
 ## 结论
 
 **通过，无缺陷。** 合同、条件和文档引用在原生界面里逐字成立；工程覆盖层（Trina
-参考组件）在它真正生效的两层上都可验证。共 10 条用例（EN/DE × 5 类），全绿。
+参考组件）在它真正生效的两层上都可验证。共 10 条用例（EN/DE × 4 种合同状态，加 2 条覆盖层断言），全绿。
 
 | 断言线 | 观察到的真实结果 |
 | --- | --- |
-| discharged 配对（released） | `Manufacturer pairing · Checked requirements met`，2 条条件逐字渲染，5 个 `Source document` 链接 |
+| released 配对（GoodWe 80K + 61.4 BAT） | `Manufacturer pairing · Checked requirements met`，2 条条件逐字渲染，5 个 `Source document` 链接 |
 | 文档集不含该配对（not_released） | `Manufacturer pairing · Further checks required`，**不**出现 met 措辞 |
 | released 且合同给页码 | `Source document · Page 12`、`Source document · Page 2` 真实渲染 |
 | released 但配置违反条件 | 仍为 `Requirements not met`，不冒充通过 |
