@@ -123,7 +123,32 @@ jobs:
           echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
           "$RUNNER_TEMP/gitleaks" version
       - name: Scan every commit
-        run: gitleaks git --config=.gitleaks.toml --redact --no-banner --log-opts=--all .
+        # --redact keeps the value out of the log; the report keeps the finding
+        # findable, so a failure names the rule, file, line and commit instead
+        # of only "leaks found: 1". The report is deleted before the job ends so
+        # a redacted finding does not outlive the run as an artifact.
+        run: |
+          set +e
+          gitleaks git --config=.gitleaks.toml --redact --no-banner \
+            --report-format=json --report-path="$RUNNER_TEMP/gitleaks.json" \
+            --log-opts=--all .
+          status=$?
+          if [ -s "$RUNNER_TEMP/gitleaks.json" ]; then
+            python3 - "$RUNNER_TEMP/gitleaks.json" <<'PY'
+          import json, sys
+          for finding in json.load(open(sys.argv[1])):
+              print(
+                  "::error title=gitleaks {rule}::commit {commit} {file}:{line}".format(
+                      rule=finding["RuleID"],
+                      commit=finding["Commit"],
+                      file=finding["File"],
+                      line=finding["StartLine"],
+                  )
+              )
+          PY
+          fi
+          rm -f "$RUNNER_TEMP/gitleaks.json"
+          exit $status
 
   php:
     name: "php-lane (${{ matrix.project }})"

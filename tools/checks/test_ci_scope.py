@@ -841,7 +841,7 @@ class ScopeTest(unittest.TestCase):
         self,
     ):
         proof = {
-            "engine": {
+            "python:pull": {
                 "run": 10,
                 "attempt": 1,
                 "job": 20,
@@ -862,8 +862,79 @@ class ScopeTest(unittest.TestCase):
         self.assertEqual(ledger["mode"], "full")
         self.assertEqual(ledger["modules"], list(ci_scope.FULL_MODULES))
         self.assertEqual(ledger["reused"], proof)
-        self.assertNotIn("engine", ledger["lanes"])
+        matrix = json.loads(
+            next(
+                line.removeprefix("python_matrix=")
+                for line in output.splitlines()
+                if line.startswith("python_matrix=")
+            )
+        )
+        # The proven package is skipped; its lane still executes the rest.
+        self.assertNotIn("tools/pull", matrix)
+        self.assertIn("tools/local", matrix)
+        self.assertIn("python", ledger["lanes"])
         self.assertEqual(self.audit(ledger, self.results(ledger["lanes"])), [])
+
+    def test_a_lane_whose_every_module_was_reused_still_executes_one(self):
+        # The 2026-11-11 PR #1121 shape: a second run of an identical tree found
+        # a green proof for every required module and executed none, so every
+        # lane was skipped while the gate passed. A reuse proof may drop a
+        # module from its lane, never the lane itself.
+        proof = {
+            module: {
+                "run": 10,
+                "attempt": 1,
+                "job": 20,
+                "commit": "c" * 40,
+                "inputs": "f" * 64,
+            }
+            for module in ci_scope.FULL_MODULES
+        }
+        output, _ = self.run_plan(
+            "pull_request", list(ci_scope.FULL_LANES), reused=proof
+        )
+        ledger = json.loads(
+            next(
+                line.removeprefix("ledger=")
+                for line in output.splitlines()
+                if line.startswith("ledger=")
+            )
+        )
+        self.assertEqual(ledger["mode"], "full")
+        self.assertEqual(ledger["reused"], {})
+        self.assertEqual(ledger["lanes"], list(ci_scope.FULL_LANES))
+        self.assertEqual(self.audit(ledger, self.results(ledger["lanes"])), [])
+
+    def test_a_changed_tree_cannot_pass_with_every_lane_skipped(self):
+        # The exact PR #1121 result: every required module carried a reuse
+        # proof, no lane executed, and the gate reported success. Replaying that
+        # ledger must now fail, whichever check names the reason.
+        ledger = {
+            "base": "a" * 40,
+            "head": "b" * 40,
+            "mode": "scoped",
+            "candidate": ["engine"],
+            "lanes": [],
+            "modules": ["engine"],
+            "reused": {
+                "engine": {
+                    "run": 10,
+                    "attempt": 1,
+                    "job": 20,
+                    "commit": "c" * 40,
+                    "inputs": "f" * 64,
+                }
+            },
+            "changes": [{"status": "M", "path": "services/genie/app.py"}],
+        }
+        errors = self.audit(ledger, self.results([]))
+        self.assertTrue(errors)
+        self.assertIn(
+            "executed lanes differ from required modules and explicit reuse", errors
+        )
+        self.assertEqual(
+            ci_scope.execution_plan(["engine"], {"engine": {"run": 10}})[0], ["engine"]
+        )
 
     def test_document_push_keeps_its_non_runtime_scope(self):
         output, checked = self.run_plan("push", [], proven=False)
@@ -899,6 +970,7 @@ class ScopeTest(unittest.TestCase):
 
     def audit(self, ledger, results, recomputed=None):
         candidate = ledger["candidate"] if recomputed is None else recomputed
+        modules = ledger["modules"]
         event = "push" if ledger["mode"] == "reuse" else "pull_request"
         with (
             patch.dict(
@@ -909,7 +981,7 @@ class ScopeTest(unittest.TestCase):
                     "EVENT_NAME": event,
                 },
             ),
-            patch.object(ci_scope, "classify", return_value=candidate),
+            patch.object(ci_scope, "selection", return_value=(candidate, modules)),
         ):
             return ci_scope.audit_gate(
                 ledger, results, [("M", "services/genie/app.py")]
@@ -1866,9 +1938,7 @@ class ModuleReuseTest(unittest.TestCase):
                             # Gate reads native merge/run evidence again, not a
                             # supplied flag; only the recorded base or its
                             # descendant verifies, never a divergent tip.
-                            with patch.dict(
-                                os.environ, {"BASE_SHA": divergent_base}
-                            ):
+                            with patch.dict(os.environ, {"BASE_SHA": divergent_base}):
                                 self.assertFalse(
                                     ci_scope.validate_module_reuse(
                                         proof, ["planner"], head
@@ -2650,6 +2720,159 @@ class ModuleReuseTest(unittest.TestCase):
                             module in changed,
                         )
                 run("git", "reset", "--hard", base)
+
+
+class Pr1121ShapeTest(unittest.TestCase):
+    """The 2026-11-11 tree that went green with every lane skipped.
+
+    A PR touching planner sources, its committed bundles, engine planning
+    modules and an e2e spec, where Git split four bundle renames into D+A. The
+    selection must stay a real lane set, and a second run of the identical tree
+    must still execute at least one module per lane instead of reusing all of it.
+    """
+
+    PLANNER_SOURCES = (
+        "apps/planner/src/components/CountryRuleForm.tsx",
+        "apps/planner/src/components/equipment/CountryRuleResult.tsx",
+        "apps/planner/src/contracts/country-rules.schema.json",
+        "apps/planner/src/data/readCountryAssessment.ts",
+        "apps/planner/src/domain/countryRules.ts",
+        "apps/planner/tests/country-rules-ui.test.mjs",
+        "apps/planner/tests/fixtures/country-rule-assessments.json",
+    )
+    ENGINE_SOURCES = (
+        "services/engine/src/linker_engine/planning/country_rules.py",
+        "services/engine/src/linker_engine/planning/grid_connection.py",
+        "services/engine/src/linker_engine/planning/grid_connection_report.py",
+        "services/engine/src/linker_engine/planning/report_copy.py",
+        "services/engine/tests/planning/test_country_rules.py",
+        "services/engine/tests/planning/test_country_rules_report.py",
+    )
+    BUNDLES = (
+        "EnergyFlowChart-BOvEcxUQ.js",
+        "MapViewport-DTlC1rwp.js",
+        "SceneViewport-CLeILIfn.js",
+        "planner-core-lEt1Ixkw.js",
+    )
+    E2E = "tests/e2e/specs/planner-country-rules.spec.ts"
+
+    def build(self, folder):
+        previous = Path.cwd()
+        self.addCleanup(os.chdir, previous)
+        os.chdir(folder)
+
+        def run(*args):
+            return subprocess.check_output(args, text=True).strip()
+
+        run("git", "init", "-q")
+        run("git", "config", "user.email", "ci@example.invalid")
+        run("git", "config", "user.name", "CI fixture")
+        for name in (*self.PLANNER_SOURCES, *self.ENGINE_SOURCES, self.E2E):
+            path = Path(name)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("export const value = 1;\n")
+        assets = Path("plugins/linker-tools/build/planner/assets")
+        assets.mkdir(parents=True)
+        for name in self.BUNDLES:
+            (assets / name.replace("-lEt1Ixkw", "-B6desNpF")).write_text("bundle\n")
+        (assets / "planner.js").write_text("entry\n")
+        manifest = Path("plugins/linker-tools/build/manifest.json")
+        manifest.parent.mkdir(parents=True, exist_ok=True)
+        manifest.write_text(json.dumps({"sources": {}, "build": {}}))
+        run("git", "add", ".")
+        run("git", "commit", "-qm", "base")
+        base = run("git", "rev-parse", "HEAD")
+        for name in (*self.PLANNER_SOURCES, *self.ENGINE_SOURCES, self.E2E):
+            Path(name).write_text("export const value = 2;\n")
+        for name in self.BUNDLES:
+            Path("plugins/linker-tools/build/planner/assets", name).write_text(
+                "bundle 2\n"
+            )
+        run("git", "add", ".")
+        run("git", "commit", "-qm", "change")
+        head = run("git", "rev-parse", "HEAD")
+        return base, head
+
+    def test_the_changed_tree_keeps_planner_and_engine(self):
+        with TemporaryDirectory() as folder:
+            base, head = self.build(folder)
+            changes = ci_scope.diff_changes(base, head)
+            lanes = ci_scope.classify(changes, base, head)
+            self.assertIn("planner", lanes)
+            self.assertIn("engine", lanes)
+            modules = ci_scope.modules_for_lanes(lanes, changes, base, head)
+            self.assertIn("planner", modules)
+            self.assertIn("engine", modules)
+            self.assertEqual(ci_scope.selection(changes, base, head), (lanes, modules))
+
+    def test_split_renames_classify_like_the_merged_form(self):
+        with TemporaryDirectory() as folder:
+            base, head = self.build(folder)
+            merged = ci_scope.diff_changes(base, head)
+            split = [
+                ("D", path)
+                if any(
+                    path.endswith(name.replace("-lEt1Ixkw", "-B6desNpF"))
+                    for name in self.BUNDLES
+                )
+                else ("A", path)
+                if any(path.endswith(name) for name in self.BUNDLES)
+                else (status, path)
+                for status, path in merged
+            ]
+            self.assertIn("planner", ci_scope.classify(split, base, head))
+            self.assertIn("engine", ci_scope.classify(split, base, head))
+
+    def test_an_identical_second_tree_executes_a_module_per_lane(self):
+        with TemporaryDirectory() as folder:
+            base, head = self.build(folder)
+            changes = ci_scope.diff_changes(base, head)
+            lanes = ci_scope.classify(changes, base, head)
+            required = ci_scope.modules_for_lanes(lanes, changes, base, head)
+            proof = {
+                module: {
+                    "run": 43011340838,
+                    "attempt": 1,
+                    "job": 1,
+                    "commit": head,
+                    "inputs": "f" * 64,
+                }
+                for module in required
+            }
+            executed, kept = ci_scope.execution_plan(required, proof)
+            self.assertEqual(kept, {})
+            self.assertEqual(executed, required)
+            executed_lanes = {ci_scope.module_lane(module) for module in executed}
+            self.assertTrue(set(lanes) <= executed_lanes)
+            self.assertTrue(executed_lanes)
+
+    def test_docs_only_change_stays_scoped_to_nothing(self):
+        with TemporaryDirectory() as folder:
+            previous = Path.cwd()
+            self.addCleanup(os.chdir, previous)
+            os.chdir(folder)
+
+            def run(*args):
+                return subprocess.check_output(args, text=True).strip()
+
+            run("git", "init", "-q")
+            run("git", "config", "user.email", "ci@example.invalid")
+            run("git", "config", "user.name", "CI fixture")
+            for name in ("AGENTS.md", "docs/acceptance/2026-11-11/report.md"):
+                path = Path(name)
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("text\n")
+            run("git", "add", ".")
+            run("git", "commit", "-qm", "base")
+            base = run("git", "rev-parse", "HEAD")
+            Path("AGENTS.md").write_text("text 2\n")
+            Path("docs/acceptance/2026-11-11/report.md").write_text("text 2\n")
+            run("git", "add", ".")
+            run("git", "commit", "-qm", "docs")
+            head = run("git", "rev-parse", "HEAD")
+            changes = ci_scope.diff_changes(base, head)
+            self.assertEqual(ci_scope.selection(changes, base, head), ([], []))
+            self.assertEqual(ci_scope.modules_for_lanes([], changes, base, head), [])
 
 
 if __name__ == "__main__":

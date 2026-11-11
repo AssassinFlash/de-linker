@@ -2,6 +2,19 @@
 # available locally as `gitleaks dir .` (working tree) or
 # `gitleaks git --log-opts=--all .` (full history).
 #
+# What `--all` covers, measured rather than assumed: the history job checks out
+# with `fetch-depth: 0`, so its clone holds every commit reachable from every
+# branch and tag the checkout fetched. `--log-opts=--all` scans exactly that
+# set. A commit that no ref reaches (a rewritten branch's orphan, a dropped
+# stash) is not in the clone and therefore not scanned, and neither is a value
+# that only ever existed on a local disk. That is the intended scope: a
+# credential only leaks once it reaches the remote on a ref someone can fetch,
+# and scanning unreachable objects would report what nobody can retrieve.
+#
+# The scope is therefore not the reason a run fails. When the job does fail,
+# the step after the scan names rule, file, line and commit with the value
+# still redacted; read those and rotate.
+#
 # `useDefault` keeps every built-in rule; the allowlist below is applied on top
 # of them. Every entry is bound to the label that makes the value a non-secret
 # (`regexTarget = "match"`: the regex must match the finding itself, never the
@@ -18,6 +31,10 @@
 #
 # All of these were reviewed against the source, not just the scanner's shape
 # heuristic. The 2026-11-11 baseline scan of 2,575 commits found no credential.
+# A later full scan found one: a placeholder password's base64 in the engine
+# alert suite, on a commit that is still reachable from main. The test builds
+# that encoding at runtime now; the entry at the end of the allowlist covers the
+# commit that wrote it out, and nothing else.
 
 [extend]
 useDefault = true
@@ -74,4 +91,12 @@ regexes = [
   '''sk_live_0123456789abcdefghijklmnop''',
   '''sk_test_0123456789abcdef''',
   '''lc-0123456789abcdef0123456789''',
+  # The engine alert suite's stream-silence assertion once named the AUTH marker
+  # and this mailbox's *placeholder* password's base64 side by side. The test
+  # now builds that encoding with base64.b64encode(); the literal survives only
+  # in the commit that wrote it out. The entry binds to the assertion's shape —
+  # the AUTH marker immediately before that one placeholder — so a credential in
+  # any other shape, including the same tuple with a different value, is still
+  # reported.
+  '''AUTH", "ZkFrzS1wYXNzd29yZA=="''',
 ]

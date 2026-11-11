@@ -1764,3 +1764,41 @@ diff (rename detection splitting 4 renames into D+A, 35 vs 31 lines) diverges
 from local. This is an F-domain defect: a green gate that verifies nothing is
 worse than a red one. Fix dispatched immediately; until it lands, any
 all-skipped green on a non-docs diff must be treated as unverified.
+
+### Root cause, corrected after replaying both runs
+
+The "classify() and selected_modules() disagree" hypothesis was wrong, and so
+was the rename-splitting one. Replaying the two plan logs shows the first run
+(`43011340838`, merge tree `00b46cb…`) selected `scoped` correctly, executed
+engine, planner, js:e2e, php:tools, content and the native set, and passed.
+The second run (`43013889058`, merge tree `01e468a…`) produced the **same
+tree** — the branch was rebased onto an unchanged base, so only the source
+commit changed — and every required module found a green proof from the first
+run. `reusable_modules()` returned a full set, `executed_modules` became
+empty, `lanes` became empty, and the gate passed because it only asked "did
+every lane I claimed to skip actually skip?".
+
+The defect was therefore in the reuse path, not in change classification: a
+proof may retire a *module* from execution, never the last module of a *lane*.
+`classify()` and `selected_modules()` were consistent all along; both runs'
+per-path tables list planner and engine.
+
+Fixed in `tools/checks/ci_scope.py`: `selection()` derives lanes and modules
+from one call so they cannot disagree; `execution_plan()` keeps at least one
+executing module per required lane and raises when a changed tree would run
+nothing; `plan()` turns that into a ledger error plus full execution, and
+`audit_gate()` re-derives the same split independently, so a replayed
+all-skipped ledger fails. Regression tests replay the real diff shape
+(including the D+A rename form) and the docs-only case.
+
+### secrets-history
+
+The full-history job failed on one finding: `generic-api-key` at
+`services/engine/tests/test_site_alert.py:494`, commit `275ae0fa7`. That commit
+is **reachable from main**, not a dangling object, so the scan scope was
+correct; the value is the base64 of the suite's placeholder password, written
+as a literal until `943942558` made the test build it at runtime. The
+allowlist entry is bound to that one assertion shape and a live-shaped key in
+the same shape still fails the scan; the workflow now also prints rule, file,
+line and commit on failure instead of a bare count.
+
