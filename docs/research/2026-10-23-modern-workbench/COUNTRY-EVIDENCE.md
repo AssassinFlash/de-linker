@@ -389,3 +389,25 @@ Apify 检索记录 GimfClfA2AJhH0U9J、2aOchEnlB1M465Jpf、dDUwRF2Cm5Xka3166；�
 规则评价恢复以 `effective_from` 和 `evidence_snapshot_date` 为两侧边界；2026-11-04 之后的日期保持 `outside_version`，不能继承此次读取。Enedis 页面没有自己的生效日期声明，只评价实际核查日，不借用另一份法规的生效日。此次更新不证明任何项目或设备的适用性、过渡条件或 DSO 许可，未改变既有未证事项。
 
 同一批复核 EnWG §19 与 VDE FNN 中压适用范围：Apify run `WahJWHCMNdyvH66IH`（dataset `z1SaTt3LSJS8rrGIl`）于 2026-11-04 16:56 UTC 取得两个官方页面 HTTP 200。采集器 `text` 的 SHA-256 分别为 `7dbf22b9f82a3bf380d25975e4d9fe9c68fa37c9feb4ee7972e3272f91f0b208` 与 `4aea379ed9f11476d915b5f9baacad618b39209df9acd02c78c612418fe528c6`。这只更新来源身份和读取记录，不把项目声明转为 DSO 许可。
+
+## 13. 奥地利：TOR Erzeuger Typ A v1.4 与 ElWG（2026-11-11）
+
+2026-11-11，#548 域 8 扩国第一国。选用 AT 的理由是生产账号国家分布中存在真实 AT 账号（23 个账号中 DE=11、US=3、SE=1、**AT=1**、NL=1），且德语区与 DE 相邻。完整证据（含逐字摘录文件）在 [docs/research/2026-11-11-at-country-rules/EVIDENCE.md](/docs/research/2026-11-11-at-country-rules/EVIDENCE.md)，本节只记结论与边界。
+
+**先纠正一条会写错的法源：**奥地利电力法已由 **ElWG**（Elektrizitätswirtschaftsgesetz，BGBl. I Nr. 91/2025）取代 **ElWOG 2010** 的主体地位。E-Control 的微型发电页面引用的是 `§ 6 Abs. 1 Z 78 ElWG`、`§ 77 ElWG`、`§ 96 ElWG`，不是 ElWOG 条号。新 TOR 自身也同时列 ElWG 与 ElWOG 2010 为应遵守法规，不能据此认为旧法条仍决定分档。
+
+| 轴 | 原文 | 实际值 |
+| --- | --- | --- |
+| 适用范围 | TOR Typ A v1.4 § 2.1 | `Pmax < 250 kW` 且接网电压 `< 110 kV`（两者皆排他边界） |
+| 微型装置 | TOR § 2.1 + ElWG § 6 Abs. 1 Z 78 | 合计 `Pmax ≤ 0,8 kW`；豁除其余条款但保留 § 5.1.3 LFSM-O、OVE EN 61000-3-2 / -3-3+A1+A2、`cos φ = 1`，并须**提前两周**书面通知运营商 |
+| 功率语义 | TOR § 4.1 | `Pmax` = 净 Engpassleistung / Bemessungsleistung；同一接网点的多台机组算**一个** Anlage；`netzwirksame Leistung` 与其无关（脚注 8） |
+| 外部解列保护 | TOR § 6.3.1 + 脚注 30 | `> 30 kVA` 须外部 Netzentkupplungsschutz；`≤ 30 kVA` 可用 OVE R 25 自动 Freischaltstelle；不回馈电网的 AC 侧储能不计入该评估 |
+| 实质变更 | TOR § 2.2 | 定义 + 举例（`>15%` 增幅、换更高特性逆变器、新增机组、变更电压等级）；原文用「können z.B. sein」，因此**未超 15% 不能反证** |
+| 连接途径 | ElWG § 96 Abs. 1、2 | 可再生能源 `netzwirksame Leistung ≤ 20 kW` → 仅需 Anzeige；4 周未答复视为应接入 |
+| 合格证明 | TOR § 8.1 + 脚注 37、38 | 三条路径：奥地利逆变器清单 / 认可实验室 R 25 报告（含奥地利参数）/ VDE-AR-N 4105 报告**外加** R 25 的 Q(U)、P(U) 测试与奥地利参数文档 |
+
+**原文身份：**TOR Typ A v1.4 = BGBl. II Nr. 301/2026，`gültig ab 01.06.2026`，63 页；PDF SHA-256 `3bfa1a11…`，提取文本 SHA-256 `5be42c64…`。ElWG = RIS 合并版 `Fassung vom 07.01.2026`，115 页；PDF SHA-256 `a5b29688…`，提取文本 SHA-256 `c933a15d…`。与 §12 的约定一致：代码里的 `text_sha256` 指提取文本。
+
+**仍未取得（因此未实现）：**任何具体 DSO 的 Allgemeine Bedingungen / TAB 正文；Anhang A3「Ländereinstellungen Österreich」的逐项整定值（§ 6.3.3 明确由运营商在合同中确定，做成常量会与原文冲突）；TOR Verteilernetzanschluss 对储能的专项条款；TOR Typ B/C/D 的门槛原文（第三方流传的 250 kW / 35 MW / 50 MW **未核，不采用**）；新老项目的过渡适用性（需要合同日期与运营商受理记录）。
+
+**边界不变：**本轮未据此给任何型号或项目并网资格结论，`connection_permission` 仍为 `not_established`，生产环境中的 AT 账号不因此获得任何自动放行。

@@ -12,12 +12,14 @@ const countries: Record<RuleBasis, string> = {
 	fr_generation_pmax: "FR",
 	nl_storage_max_active: "NL",
 	de_pv_installed: "DE",
+	at_tor_typ_a_max_capacity: "AT",
 };
 // Source-reading dates: docs/research/2026-10-23-modern-workbench/COUNTRY-EVIDENCE.md.
 const CHECKED_SOURCE_DATES: Record<RuleBasis, string> = {
 	fr_generation_pmax: "2026-11-04",
 	nl_storage_max_active: "2026-11-04",
 	de_pv_installed: "2026-11-04",
+	at_tor_typ_a_max_capacity: "2026-11-11",
 };
 function checkedSourceDate(basis: RuleBasis, locale: string): string {
 	return new Intl.DateTimeFormat(locale, {
@@ -69,7 +71,12 @@ export function CountryRuleForm({
 		if (valid && value) onChange({ ...value, rule_date: date });
 	}
 	function number(
-		field: "power_kw" | "connection_voltage_kv",
+		field:
+			| "power_kw"
+			| "connection_voltage_kv"
+			| "apparent_power_kva"
+			| "net_active_power_kw"
+			| "at_change_previous_power_kw",
 		next: number | null,
 	) {
 		if (!value) return;
@@ -109,6 +116,9 @@ export function CountryRuleForm({
 					<option value="de_pv_installed">
 						{__("Germany: EEG solar installed power", "linker-tools")}
 					</option>
+					<option value="at_tor_typ_a_max_capacity">
+						{__("Austria: TOR Erzeuger Typ A maximum capacity", "linker-tools")}
+					</option>
 				</select>
 			</label>
 			{value && (
@@ -132,10 +142,15 @@ export function CountryRuleForm({
 										"Enter the storage unit's maximum deliverable active power. Confirm the unit boundary separately; do not automatically add units.",
 										"linker-tools",
 									)
-								: __(
-										"Enter installed solar power calculated for EEG section 9, including its aggregation conditions. A single inverter rating is not that calculation.",
-										"linker-tools",
-									)}
+								: value.basis === "de_pv_installed"
+									? __(
+											"Enter installed solar power calculated for EEG section 9, including its aggregation conditions. A single inverter rating is not that calculation.",
+											"linker-tools",
+										)
+									: __(
+											"Enter the maximum capacity Pmax of the whole installation at one connection point, as TOR Erzeuger Typ A section 4.1 defines it. Several generating units at one connection point count as one installation.",
+											"linker-tools",
+										)}
 					</p>
 					<p>
 						{value.basis === "fr_generation_pmax"
@@ -154,13 +169,21 @@ export function CountryRuleForm({
 										),
 										checkedSourceDate(value.basis, locale),
 									)
-								: sprintf(
-										__(
-											"German source text checked %s; earlier transition rules are not established here.",
-											"linker-tools",
-										),
-										checkedSourceDate(value.basis, locale),
-									)}
+								: value.basis === "de_pv_installed"
+									? sprintf(
+											__(
+												"German source text checked %s; earlier transition rules are not established here.",
+												"linker-tools",
+											),
+											checkedSourceDate(value.basis, locale),
+										)
+									: sprintf(
+											__(
+												"TOR Erzeuger Typ A, version 1.4 in force from 1 June 2026, checked %s.",
+												"linker-tools",
+											),
+											checkedSourceDate(value.basis, locale),
+										)}
 					</p>
 					<p>
 						{__(
@@ -215,6 +238,150 @@ export function CountryRuleForm({
 								report={report}
 								onChange={(next) => number("connection_voltage_kv", next)}
 							/>
+						)}
+						{value.basis === "at_tor_typ_a_max_capacity" && (
+							<>
+								<ScenarioNumber
+									field="connection_voltage_kv"
+									label={__(
+										"Nominal voltage at the network connection point",
+										"linker-tools",
+									)}
+									value={value.connection_voltage_kv}
+									unit="kV"
+									locale={locale}
+									min={0}
+									report={report}
+									onChange={(next) => number("connection_voltage_kv", next)}
+								/>
+								<ScenarioNumber
+									field="apparent_power_kva"
+									label={__(
+										"Apparent power at the connection point",
+										"linker-tools",
+									)}
+									value={value.apparent_power_kva ?? null}
+									unit="kVA"
+									locale={locale}
+									min={0}
+									report={report}
+									onChange={(next) => number("apparent_power_kva", next)}
+								/>
+								<ScenarioNumber
+									field="net_active_power_kw"
+									label={__(
+										"Agreed net active power at the connection point",
+										"linker-tools",
+									)}
+									value={value.net_active_power_kw ?? null}
+									unit="kW"
+									locale={locale}
+									min={0}
+									report={report}
+									onChange={(next) => number("net_active_power_kw", next)}
+								/>
+								<label className="lp-field">
+									<span>
+										{__(
+											"Is this a change to an existing installation?",
+											"linker-tools",
+										)}
+									</span>
+									<select
+										value={
+											value.at_existing_installation_change === null ||
+											value.at_existing_installation_change === undefined
+												? ""
+												: String(value.at_existing_installation_change)
+										}
+										onChange={(event) =>
+											onChange({
+												...value,
+												at_existing_installation_change:
+													event.currentTarget.value === ""
+														? null
+														: event.currentTarget.value === "true",
+											})
+										}
+									>
+										<option value="">
+											{__("Not specified", "linker-tools")}
+										</option>
+										<option value="false">
+											{__("No, a new installation", "linker-tools")}
+										</option>
+										<option value="true">
+											{__("Yes, an existing installation", "linker-tools")}
+										</option>
+									</select>
+								</label>
+								{value.at_existing_installation_change === true && (
+									<ScenarioNumber
+										field="at_change_previous_power_kw"
+										label={__(
+											"Maximum capacity before the change",
+											"linker-tools",
+										)}
+										value={value.at_change_previous_power_kw ?? null}
+										unit="kW"
+										locale={locale}
+										min={0}
+										report={report}
+										onChange={(next) =>
+											number("at_change_previous_power_kw", next)
+										}
+									/>
+								)}
+								<label className="lp-field">
+									<span>
+										{__(
+											"Which conformity evidence is available?",
+											"linker-tools",
+										)}
+									</span>
+									<select
+										value={value.at_conformity_basis ?? ""}
+										onChange={(event) =>
+											onChange({
+												...value,
+												at_conformity_basis: (event.currentTarget.value ||
+													null) as Exclude<
+													CountryRuleInputs["at_conformity_basis"],
+													undefined
+												>,
+											})
+										}
+									>
+										<option value="">
+											{__("Not specified", "linker-tools")}
+										</option>
+										<option value="austrian_inverter_list">
+											{__(
+												"Entry in the Austrian inverter list",
+												"linker-tools",
+											)}
+										</option>
+										<option value="accredited_r25_report">
+											{__(
+												"Accredited test report under OVE-Richtlinie R 25 with Austrian settings",
+												"linker-tools",
+											)}
+										</option>
+										<option value="vde_4105_with_r25_properties">
+											{__(
+												"VDE-AR-N 4105 report with the additional R 25 properties and Austrian parameters",
+												"linker-tools",
+											)}
+										</option>
+									</select>
+									<small>
+										{__(
+											"The declared path is a project declaration. Whether a specific device and software version is covered still needs the registry and document read-back.",
+											"linker-tools",
+										)}
+									</small>
+								</label>
+							</>
 						)}
 						{value.basis === "fr_generation_pmax" && (
 							<label className="lp-field">
