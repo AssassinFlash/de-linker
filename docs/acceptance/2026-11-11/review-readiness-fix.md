@@ -198,8 +198,9 @@ country_assessment.rule_review =
 - **`ready.knowledge` 仍为 0/88**（本票收口时的状态，已由后续工作解决）。
   knowledge 需要 recipe-aware 的索引代（`recipe_revision` +
   `expected_serving_revision` + `index_version`），本地没有构建该索引的 worker，
-  且既有回执里 112 条 `table_without_scope` 诊断会把 `preparation_complete` 报成
-  false。它不阻塞 Equipment（`prepared_view` 只看 `ready.engineering`），但 Genie
+  且既有回执里的 `table_without_scope` 诊断会把 `preparation_complete` 报成
+  false（本票收口时读到 116 条；重建索引后为 112 条）。它不阻塞 Equipment
+  （`prepared_view` 只看 `ready.engineering`），但 Genie
   的知识检索在本实例上不是 ready 状态。修复它需要构建本机索引代。
   后续结果见 `docs/acceptance/2026-11-11/review-knowledge-readiness.md`：索引已按本
   实例 manifest 重建，`publication ack-knowledge --genie=<url>` 把它 ACK 成
