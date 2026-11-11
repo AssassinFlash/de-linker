@@ -1261,3 +1261,19 @@ transient ConnectError to the site (surrounding fires exit 0, hand replay
 exit 0, production knowledge stayed 85/85) — recorded so the next operator
 doesn't misread it. Both Mac scheduler units are now rotation-proof; the
 systemic installer-level fix pattern exists for any future unit.
+
+## Commercial PDF fix verified on production, 8 rows flipped (PR #1110 merged, AA line)
+
+Real-browser production walk, all FOUR combinations independently driven
+(EN/DE × 1440/390, headed Chrome + CDP): report step 200, PDF HTTP 200 in
+every cell, 5-page A4 PDFs confirmed by file AND pdfinfo, request bodies
+showing the post-#1102 shape (equipment_run_id: null), and the deployed
+bundle verified to be the fix build before walking. Matrix: configurator
+report/download-pdf × en/de × 1440/390 → verified-production-20261111
+(partially-verified 122→114, verified-20261111 10→18); old evidence
+appended, never replaced. 20 evidence artifacts (4 PDFs, 12 screenshots,
+4 raw JSONs) committed to the repo, not left in /tmp. Probe projects
+verified deleted by per-ID 404 readback (empty list alone was not taken
+as proof). The rest-nonce 400 console noise remains by prior ruling
+(core-WP, inert); quick-panel's weather/pv/scenario/energy steps blocked
+for missing roof inputs is design behavior and out of this flip.
