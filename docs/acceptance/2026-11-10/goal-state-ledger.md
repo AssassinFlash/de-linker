@@ -828,3 +828,22 @@ change's surface): the project brief's Latitude/Longitude fields report a
 format error while empty, which keeps "Save project" disabled and shows "Input
 needs attention" the first time an address is typed. It is reachable on any
 project, not only commercial ones.
+
+## Commercial sizing input chain shipped (PR #1095 merged, K line)
+
+The recorded symptom understated the break: apps/planner had **no commercial
+sizing request at all** — the only code that ever sent target_peak_kw and
+load_profile_csv was the retired configurator (route now 410). Shipped the
+full chain: allowlisted CommercialDesign forwarder to /design/commercial,
+engine-identical CSV validation (15-min steps, DST offsets required, one-week
+minimum), the CommercialSizing panel gated on its required inputs, EN server
+text never shown to customers (3 profile diagnoses mapped), 34 formal-Sie
+German strings. Proof: e2e on review against the real engine produced a
+sized result (GW80K-ET + GW112.6-BAT-AC) with the engine's real VDE
+warnings; planner suite 312 pass; CI green on the merged head.
+Also settled: rest-nonce 400 is core WordPress (no nopriv handler; the
+planner already handles it); DST rejection is the intended contract, now
+stated in customer language. Defect discovered and dispatched for fix
+(P line): brief Latitude/Longitude fields report a format error while
+empty, blocking the first save after typing an address — pre-existing,
+all project types.
