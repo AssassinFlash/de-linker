@@ -529,3 +529,30 @@ def test_silence_during_an_outage_keeps_the_outage_start(
     assert len(resumed.sent) == 1
     assert "reporting again" in resumed.sent[0][0]
     assert started in resumed.sent[0][1]
+
+
+def test_undelivered_alerts_stay_bounded(alert: ModuleType, tmp_path: Path) -> None:
+    """A channel that never recovers must not grow the state file forever;
+    the newest verdicts are the ones that still describe reality."""
+    recorder = Recorder(failures=1000)
+    log_path = tmp_path / "site-probe.log"
+    state_path = tmp_path / "site-alert.json"
+    moment = NOW
+    # Alternate a failing tail and a healthy one, so every run is a real flip.
+    for round_number in range(12):
+        tail = ["000", "000", "000"] if round_number % 2 == 0 else ["200", "200", "200"]
+        log_path.write_text(record(["200"] + tail, end=moment), encoding="utf-8")
+        alert.run(
+            log_path=log_path,
+            state_path=state_path,
+            config_path=config_file(tmp_path),
+            now=moment,
+            deliver=recorder,
+            emit=lambda _message: None,
+        )
+        moment += dt.timedelta(seconds=CYCLE * 4)
+
+    pending = state_of(tmp_path)["pending"]
+    assert recorder.sent == []
+    # Every round flipped; the cap keeps only the newest verdicts.
+    assert len(pending) == alert.PENDING_MAX

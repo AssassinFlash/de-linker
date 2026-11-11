@@ -71,6 +71,14 @@ HEARTBEAT_S = 24 * 60 * 60
 TAIL_LINES = 2016
 TAIL_BYTES = 256 * 1024
 
+# An undeliverable alert is retried, and a site that flaps faster than SMTP
+# recovers would otherwise grow the state file without bound — the same
+# accumulation the probe's own log cap exists to prevent. Only the newest
+# verdicts matter once a channel is back: the state machine's current state
+# supersedes the older messages, so a cap keeps the reminder honest rather
+# than losing the outage itself.
+PENDING_MAX = 8
+
 SMTP_TIMEOUT_S = 20
 
 # 2026-10-17 owner ruling: internal notifications go to this address only.
@@ -531,6 +539,13 @@ def run(
     )
     for kind, subject, _ in events:
         emit(f"site-alert: queued {kind}: {subject}")
+    if len(state.pending) > PENDING_MAX:
+        dropped = len(state.pending) - PENDING_MAX
+        del state.pending[:dropped]
+        emit(
+            f"site-alert: dropped {dropped} older undelivered alert(s); "
+            f"the newest {PENDING_MAX} stay queued"
+        )
     if dry_run:
         emit(
             f"site-alert: dry run; state {state.state}, "
