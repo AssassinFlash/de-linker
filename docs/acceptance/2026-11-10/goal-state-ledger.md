@@ -1701,3 +1701,32 @@ Product portfolio therefore already matches the EMEA catalogue one-to-one
 (1954 = 61.4, 1955 = 112.6). Record and re-open triggers:
 `docs/research/2026-11-12-gw92-decision/README.md`. No code, Woo, registry or
 production change.
+
+## Self-executed decisions batch: three owner-waiting items closed by evidence (2026-11-11 night)
+
+Per the owner's no-owner-waiting ruling, the three items previously tagged
+owner-side were dispatched as evidence-driven lines; all three landed:
+
+- GW92.1 NOT listed (PR #1118, merged ec5a62ffe). Four decision rules recorded;
+  decisive evidence: 92.1 exists only in the AU datasheet (hash-locked), EMEA
+  lists 61.4/112.6 (its recognised middle capacity is 102.4, not 92.1), zero
+  European competitors list 92.1, and the Global sheet's lone "92.1" string is
+  a GW102.4 power figure, not a model. Trigger conditions for revisiting are
+  written in the record; current Woo portfolio maps 1:1 to the EMEA catalogue.
+- Official load profiles replace synthetic fixtures (PR #1119, merged
+  b6d89ab75 after a main-line conflict fix — three lines appended to the
+  ledger tail the same evening). Six BDEW/VDEW originals hash-locked,
+  coefficients parsed (zero hand transcription) into
+  services/engine/data/load-profiles; full-year engine run 403,556.69 kWh vs
+  an independent expansion check at 0.006% delta; 361/365 days agree with the
+  official household year. P25/S25 map to net_import per the source's own
+  settlement rule; state holidays are explicit, never guessed.
+- Geometric PV admission re-priced from declared scenes (PR #1120, merged
+  a60940217). The deeper root cause: the old limits rejected 5 of 6 real
+  customer roof shapes outright (not a margin problem — no path existed).
+  New limits carry measured justification (841k/4.3M/100M with throughput and
+  RSS data); bounds now price by declared scene; all six shapes pass bounded
+  after, before/after recorded. Production activation requires one prepared
+  release (runtime values are release-generated) — recorded; 96 modules is
+  the memory-bounded hard cap (87-91% of the 1.2 GiB cgroup); direct-beam's
+  own quota unchanged and orders of magnitude clear.
