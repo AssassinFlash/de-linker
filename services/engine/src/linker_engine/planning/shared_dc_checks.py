@@ -35,10 +35,11 @@ def verify(
         scale: float,
         *,
         bound: bool = False,
-        hard_allowance: float | None = None,
+        exact: bool = False,
+        arithmetic_allowance: float = 0.0,
         arithmetic: float = 0.0,
     ) -> None:
-        if unit == "kWh" and hard_allowance is None:
+        if unit == "kWh" and not exact and arithmetic_allowance == 0.0:
             # A small energy discrepancy over a short interval can represent
             # substantial power. Soft transfer checks retain that meaning;
             # their scale must never be the whole inventory divided by dt.
@@ -59,15 +60,19 @@ def verify(
         if not math.isfinite(residual) or not math.isfinite(scale):
             raise NumericalFailure("nonfinite shared DC ledger arithmetic")
         violation = max(residual, 0.0) if bound else abs(residual)
-        # A hard allowance states extra ledger arithmetic for one equation; it
-        # adds to the configured numerical tolerance rather than replacing it.
-        # Replacing it made the same physical identity pass or fail by nine
-        # orders of magnitude between kernels.
+        # An exact check carries an identity: any difference is a violation, so
+        # it keeps a zero allowance. An arithmetic allowance states extra ledger
+        # rounding for one equation and adds to the configured numerical
+        # tolerance rather than replacing it — replacing it once made the same
+        # physical identity pass or fail by nine orders of magnitude between the
+        # single-AC and joint kernels.
         allowance = (
-            (tolerance.absolute_kwh if unit == "kWh" else tolerance.absolute_kw)
+            0.0
+            if exact
+            else (tolerance.absolute_kwh if unit == "kWh" else tolerance.absolute_kw)
             + tolerance.relative * abs(scale)
             + arithmetic
-            + (hard_allowance if hard_allowance is not None else 0.0)
+            + arithmetic_allowance
         )
         if (
             not math.isfinite(allowance)
@@ -83,7 +88,7 @@ def verify(
             unit,
             index,
             allowance,
-            hard_allowance if hard_allowance is not None else arithmetic,
+            arithmetic if arithmetic_allowance == 0.0 else arithmetic_allowance,
         )
         previous = checks.get(code)
         if (
@@ -134,7 +139,7 @@ def verify(
             "kW",
             index,
             0.0,
-            hard_allowance=0.0,
+            exact=True,
         )
         pv = (
             (
@@ -508,7 +513,7 @@ def verify(
             index,
             energy_scale,
             bound=True,
-            hard_allowance=math.ulp(model.usable_window_kwh)
+            arithmetic_allowance=math.ulp(model.usable_window_kwh)
             if model.usable_window_kwh
             else 0.0,
         )
@@ -519,7 +524,7 @@ def verify(
             index,
             energy_scale,
             bound=True,
-            hard_allowance=math.ulp(frame.limits.reserve_kwh)
+            arithmetic_allowance=math.ulp(frame.limits.reserve_kwh)
             if frame.limits.reserve_kwh
             else 0.0,
         )
@@ -530,7 +535,7 @@ def verify(
             index,
             power_scale,
             bound=True,
-            hard_allowance=math.fsum(
+            arithmetic_allowance=math.fsum(
                 math.ulp(value) if value else 0.0
                 for value in (flow.charge_terminal_dc_kw, boundary.charge_kw)
             ),
@@ -542,7 +547,7 @@ def verify(
             index,
             power_scale,
             bound=True,
-            hard_allowance=math.fsum(
+            arithmetic_allowance=math.fsum(
                 math.ulp(value) if value else 0.0
                 for value in (flow.discharge_terminal_dc_kw, boundary.discharge_kw)
             ),
@@ -555,7 +560,7 @@ def verify(
                 "kWh",
                 index,
                 energy_scale,
-                hard_allowance=0.0,
+                exact=True,
             )
             record(
                 "standing_loss_sources",
@@ -667,6 +672,8 @@ def verify(
             len(flows) - 1,
             model.usable_window_kwh,
             bound=True,
-            hard_allowance=math.ulp(terminal_min_kwh) if terminal_min_kwh else 0.0,
+            arithmetic_allowance=math.ulp(terminal_min_kwh)
+            if terminal_min_kwh
+            else 0.0,
         )
     return Verification(tuple(checks.values()), tolerance)
