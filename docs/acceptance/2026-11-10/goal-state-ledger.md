@@ -847,3 +847,22 @@ stated in customer language. Defect discovered and dispatched for fix
 (P line): brief Latitude/Longitude fields report a format error while
 empty, blocking the first save after typing an address — pre-existing,
 all project types.
+
+## Production commercial walk: PASS on all three questions (F line)
+
+Real-browser walk on de-linker.com, EN/DE × 1440/390, fresh post-outage:
+form → generate → 30 s chain → **690 system combinations + Stückliste**, no
+console errors, no failed requests, Turnstile never challenged. EN and DE
+identical (same 690, German number formats); 390 fully usable (no horizontal
+scroll). Matrix: configurator compatible-result ×4 → verified-production-
+20261111 (report & download-pdf rows deliberately NOT flipped — defect B
+blocks PDF). Two real defects dispatched to the R line: B — the commercial
+quick path sends energy_run_id null so the report endpoint 422s ("select at
+least one completed analysis"); ruled a defect, customers with a full sized
+result must get a PDF. A — navigating away mid-run orphans the in-flight
+equipment-search request and deadlocks the Equipment page until a manual
+Discard; the auto-flow is bound to the component lifetime. Also re-confirmed
+on production: rest-nonce 400 is inert core-WP noise. Evidence:
+docs/acceptance/2026-11-11/commercial-production-walk.md (+ 46 MB of
+screenshots under /tmp until batch close). F's probe projects deleted
+in-site; Chrome CDP cleaned; no mail touched.
