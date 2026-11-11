@@ -172,10 +172,31 @@ def loaded_arguments(text: str) -> list[str] | None:
     ]
 
 
+def refuse_running_job(domain: str) -> None:
+    """Refuse to boot out a worker that is mid-run.
+
+    A build holds a two-hour lease and its own cache work; killing it discards
+    that progress and leaves the recovery journal for the next invocation. Wait
+    for the idle gap between scheduled runs instead.
+    """
+    observed = subprocess.run(
+        ["launchctl", "print", domain + "/" + LABEL],
+        capture_output=True,
+        text=True,
+        timeout=10,
+    )
+    if missing_definition(observed):
+        return
+    running = re.search(r"^\s*pid = ([0-9]+)$", observed.stdout, re.M)
+    if running or re.search(r"^\s*state = running$", observed.stdout, re.M):
+        raise RuntimeError("scheduled worker is running; replace it while idle")
+
+
 def install_definition(content: bytes) -> None:
     target = Path.home() / "Library" / "LaunchAgents" / f"{LABEL}.plist"
     domain = f"gui/{os.getuid()}"
     arguments = plistlib.loads(content)["ProgramArguments"]
+    refuse_running_job(domain)
     prior = target.read_bytes() if target.exists() else None
     if prior is not None:
         target.with_suffix(".previous.plist").write_bytes(prior)

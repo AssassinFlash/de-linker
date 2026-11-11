@@ -1188,14 +1188,20 @@ knowledge-worker `current` symlink still points at `d95372a1323b`, which no
 longer exists.
 
 Fixed in `ops/install_publication_worker.py` with #1108's guards plus the
-extra one this service needs: `stable_interpreter()` and `stable_source()`
+extra ones this service needs: `stable_interpreter()` and `stable_source()`
 refuse any path under a `releases/` root, `verify_interpreter()` runs the real
 `ops/publication_worker.py --help` with the target interpreter and source
 before a scheduler owns it, `confirm_installed()` reads back the loaded
 `launchctl print` path and argument list, and `--python`/`--source` make both
-explicit. The plist now carries `PYTHONPATH=<source>/src`: a release relied on
-its editable `.pth`, which named a pruned directory, and the dedicated
-environment has no such install.
+explicit. Two cleanup paths are deliberately narrower than the original: a
+failed install restores the prior definition **on disk only** and never
+bootstraps it again (the prior definition here is the broken one, so reloading
+it would re-arm the failure being repaired), and installing refuses while the
+label reports a running worker, because a bootout would kill an in-flight build
+holding a two-hour lease and hours of parse and embedding cache work. The plist
+now carries `PYTHONPATH=<source>/src`: a release relied on its editable `.pth`,
+which named a pruned directory, and the dedicated environment has no such
+install — the worker exits 1 without it and 0 with it.
 
 Instance repair used a dedicated environment outside every release root:
 `~/de-linker-ops/knowledge-publication/{,source/}` — a 14 MB source copy plus
