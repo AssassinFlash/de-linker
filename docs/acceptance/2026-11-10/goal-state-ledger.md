@@ -1931,3 +1931,16 @@ All completion-criterion items verified against their evidence pointers
 Day totals: PRs #1112-#1123 (twelve), plus the playbook repo fix, three
 owner rulings executed (rotation out, no-owner-waiting, fixed-values-not-
 facts), two standing research surfaces closed by measurement. Goal complete.
+
+## Owner ruling 2026-11-11 (late): "unobtainable" requires exhausted channels
+
+The earlier framing "SGS Annex physically unobtainable" is overruled: a blocked
+interactive query or one failed search is not a finding. Acquisition must
+exhaust every channel (IECEE CB database, SGS portals, GoodWe regional
+certification pages, cert-number web sweeps, Wayback, CEC listings, caches,
+verification bypasses, and whatever new channels surface) before any
+"not found" is claimable — and requesting by email remains forbidden. SGS
+Annex hunt dispatched as a fourth parallel line alongside energy kernels,
+image calibration, and BAT-C PDP rows (the goal-complete state stands as a
+checkpoint, not a stop; the owner is directing the recorded-boundary items
+into execution).
