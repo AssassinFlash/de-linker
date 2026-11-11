@@ -90,8 +90,44 @@ Historical active document links require a stored `document_id` and the same cur
 
 Use a stable checked-out source path with the locked Genie index dependencies installed. Do not install a launchd job pointing at a temporary review worktree. Keep one configured worker for this site. Heavy Docling/OCR/embedding preparation stays on the Mac; the worker refuses to run elsewhere.
 
+The schedule must outlive release rotation. Any service that keeps a `releases/`
+directory prunes it to a bounded set, so an interpreter **or** a worker source
+under one satisfies the renderer today and disappears later; launchd then reports
+exit 78 (EX_CONFIG) on every wakeup before the worker starts. The 2026-11-11
+instance repair met exactly that: the definition named
+`knowledge-worker/releases/db0fddffa-main/.venv/bin/python` and a runner inside
+the same directory. That repair had itself re-run this installer from inside the
+release, which writes `sys.executable`, so the path was baked straight back in —
+the unit read back exit 0 only because the release still existed. Keep a small
+immutable source outside every `releases/` root and a dedicated environment
+created from its lock:
+
+```
+rsync -a --exclude '.venv' --exclude '__pycache__' --exclude '.mypy_cache' \
+  --exclude '.ruff_cache' --exclude '.pytest_cache' \
+  ~/de-linker-ops/knowledge-worker/releases/<release>/ \
+  ~/de-linker-ops/knowledge-publication/source/
+cd ~/de-linker-ops/knowledge-publication
+UV_PROJECT_ENVIRONMENT=$PWD/venv uv sync --frozen --no-dev --group index \
+  --no-install-project --project "$PWD/source"
+# -> ~/de-linker-ops/knowledge-publication/venv/bin/python
+```
+
+`UV_PROJECT_ENVIRONMENT` is required: without it `uv sync --project` places the
+environment inside the release directory, where the next rotation deletes it.
+Keep the whole source tree, including `index/` and `eval/`; both participate in
+`recipe_revision()`, so a partial copy silently changes the recipe identity the
+worker must acknowledge. The `index` group is not optional — preparation imports
+Docling, ONNX Runtime and sentence-transformers. Pass the paths explicitly:
+`--python ~/de-linker-ops/knowledge-publication/venv/bin/python --source
+~/de-linker-ops/knowledge-publication/source`. Installation refuses either path
+when it sits under a `releases/` root, runs the real `ops/publication_worker.py
+--help` with that interpreter and source before the scheduler owns it, and reads
+back the loaded `launchctl print` path so a label still holding the retained
+`.previous.plist` fails instead of leaving the edited definition unused.
+
 1. Provision a mode-0600 environment file outside the repository with `LINKER_PUBLICATION_JOBS_URL` (ending `/wp-json/linker/v1/publication/jobs`), `LINKER_PUBLICATION_USER`, `LINKER_PUBLICATION_PASSWORD` (existing WP Application Password user with `manage_woocommerce`), and `GENIE_SERVICE_TOKEN`. Keep existing embedding credentials and model routing. `--rest-config` uses the existing private REST JSON; its site origin must equal the queue origin. No credential goes in a plist or issue.
-2. Choose the polling interval for the build machine's availability and a lease longer than its measured complete-build budget. Render the plist first with `python ops/install_publication_worker.py --env-file <private-path> --interval-seconds <interval> --lease-seconds <measured-budget> --worker-id <stable-id> --loaded-url <service-loopback>/knowledge/loaded --host <configured-ssh-alias>`. Add `--install` only in the deployment session, then read back `launchctl print` and the actual process/path. Replacing an existing worker requires reading its active definition first; this implementation session does not install it.
+2. Choose the polling interval for the build machine's availability and a lease longer than its measured complete-build budget. Render the plist first with `python ops/install_publication_worker.py --env-file <private-path> --interval-seconds <interval> --lease-seconds <measured-budget> --worker-id <stable-id> --loaded-url <service-loopback>/knowledge/loaded --host <configured-ssh-alias> [--python <stable-interpreter> --source <stable-source>]`. Add `--install` only in the deployment session, then read back `launchctl print` and the actual process/path. Replacing an existing worker requires reading its active definition first; this implementation session does not install it.
 3. With `--host`, the worker uses the same SSH alias for a single remote loopback request to `/knowledge/loaded`; it owns no persistent tunnel and needs no manually maintained forward. The service token is supplied on SSH stdin and is absent from process arguments, scripts on disk and logs. Without `--host`, a local rehearsal calls the local loopback directly. The request keeps the existing service gate; no port is exposed or authentication disabled. The existing publish CLI uploads and atomically switches the index; the worker then reads the **serving process** and acknowledges only matching loaded source/index versions and prepared product revisions.
 4. Rehearse offline, build failure, expired leases, edit-during-build, partial readiness, old loaded process and restart. Woo retains pending work; `claim` automatically reconciles current source. Old jobs cannot authorize later states. A materialized generation preserves semantic warnings and the actual proven subset without rebuilding identical inputs forever. Failed parsing remains pending and is genuinely retried; the polling interval bounds retry frequency. Runtime withdrawal does not wait for this schedule.
 5. After actual loaded verification and accepted Woo acknowledgement, the worker prunes only its ledger-owned local successful build directories to current and previous; existing evaluation/bake-off evidence is preserved, while the established host release tool retains its bounded current/rollback set. The build reports its just-created directory before writing index data. An explicit pending journal and directory ownership marker identify that one generation; failures normally remove that pending generation, and the next locked invocation recovers an interrupted worker. A verified pre-activation review refusal is the bounded exception described below. Untracked shared builds are never inferred from timestamps or deleted. It reuses content-addressed PDF, parse and embedding caches. Do not make a fresh full site copy for each job. At acceptance/merge remove this task's rebuildable dependencies and retire its managed worktree following `docs/agents/local-storage.md`.

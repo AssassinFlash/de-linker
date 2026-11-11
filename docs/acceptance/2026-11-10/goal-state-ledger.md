@@ -1170,3 +1170,54 @@ rotated N=3, CAS 499→490 MB, both planner services healthy. Follow-ups
 recorded: knowledge-publication unit carries the same defect (separate
 line), and the next natural 02:00–03:00 UTC timer window is the first
 unattended verification.
+
+## Mac knowledge-publication launchd: same EX_CONFIG, deeper pin (Z line)
+
+The follow-up #1108 recorded is real. `com.linker.knowledge-publication`
+named `knowledge-worker/releases/db0fddffa-main/.venv/bin/python` **and** a
+launcher inside the same directory, with `WorkingDirectory` there too. The
+release still existed, so the unit read back exit 0 at the time — the T-line
+repair of 2026-11-11 re-ran the installer *from inside that release*, and the
+installer writes `sys.executable`, which re-baked the release path. Nothing
+was broken at that instant; the defect was simply re-armed. It is the same
+failure #1108 fixed for planner-maintenance, with one extra surface: the
+runner script and the working directory are pinned into the release as well,
+so stabilising only the interpreter would have moved the exit-78 deadline to
+the next prune rather than removing it. Rotation is real on this host — the
+knowledge-worker `current` symlink still points at `d95372a1323b`, which no
+longer exists.
+
+Fixed in `ops/install_publication_worker.py` with #1108's guards plus the
+extra one this service needs: `stable_interpreter()` and `stable_source()`
+refuse any path under a `releases/` root, `verify_interpreter()` runs the real
+`ops/publication_worker.py --help` with the target interpreter and source
+before a scheduler owns it, `confirm_installed()` reads back the loaded
+`launchctl print` path and argument list, and `--python`/`--source` make both
+explicit. The plist now carries `PYTHONPATH=<source>/src`: a release relied on
+its editable `.pth`, which named a pruned directory, and the dedicated
+environment has no such install.
+
+Instance repair used a dedicated environment outside every release root:
+`~/de-linker-ops/knowledge-publication/{,source/}` — a 14 MB source copy plus
+`UV_PROJECT_ENVIRONMENT=$PWD/venv uv sync --frozen --no-dev --group index
+--no-install-project`. The release's own installer was copied unchanged into
+that source: `ops/*.py` participates in `recipe_revision()`, so editing it
+there would have changed the recipe identity and forced an unrequested
+production index rebuild. Readback after install: `state = running`,
+`runs = 1`, `last exit code = (never exited)`, then a settled `state = not
+running`, `runs = 1`, `last exit code = 0` — the same shape as the planner
+repair. The run was a real claim-and-no-op, not a lock-busy instant: the
+child worker lived about a minute with a live SSH connection and the manual
+replay of the identical command line exits 0 in 8.8 s with no output, while
+lock-busy returns before the child starts. Production is 88/88 ready (85
+knowledge + 3 engineering references), so there is nothing left to
+acknowledge and no generation to rebuild; identity is preserved —
+`recipe_revision` `67a500b5…` and `serving_revision` `a4bde371…`, both equal
+to the production runtime's.
+
+Two traps worth keeping: `index/` **and** `eval/` both enter
+`recipe_revision()`, so an rsync that excludes `eval` silently changes the
+recipe identity (the first copy did exactly that: `bf9693f8…` instead of
+`67a500b5…`); and `uv sync --project` without `UV_PROJECT_ENVIRONMENT` puts
+the environment back inside the release directory. The pre-fix definition is
+retained as `com.linker.knowledge-publication.previous.plist`.
