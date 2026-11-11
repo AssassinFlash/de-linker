@@ -245,7 +245,7 @@ final class PublicationCommandAckTest extends TestCase {
 
 		$this->assertInstanceOf( ExitException::class, $failure );
 		$this->assertStringContainsString( 'unsupported_consumer', $failure->getMessage() );
-		$this->assertStringContainsString( 'recipe-aware', $failure->getMessage() );
+		$this->assertStringContainsString( 'ack-knowledge', $failure->getMessage() );
 		$this->assertSame( array(), $this->requests );
 		$this->assertSame( array(), $this->state );
 	}

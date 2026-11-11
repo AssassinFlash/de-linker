@@ -11,6 +11,7 @@ namespace Linker\Commerce\Cli;
 
 use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Products\Publication\EngineLoadedState;
+use Linker\Commerce\Products\Publication\GenieLoadedState;
 use Linker\Commerce\Products\Publication\PreparationJobs;
 
 /** No original file is deleted; the emergency withdrawal block remains intact. */
@@ -246,7 +247,7 @@ final class PublicationCommand {
 		if ( 'engineering' !== $consumer ) {
 			\WP_CLI::error(
 				sprintf(
-					'unsupported_consumer: %s readiness needs a recipe-aware index generation (recipe_revision, index_version, model identity) that an engine readback cannot supply; only engineering is acknowledged.',
+					'unsupported_consumer: an engine readback can only acknowledge engineering; %s readiness is acknowledged from the index Genie itself opened, with `publication ack-knowledge --genie=<url>`.',
 					$consumer
 				)
 			);
@@ -359,6 +360,272 @@ final class PublicationCommand {
 	 */
 	private function loaded_products_difference( array $manifest, array $loaded ): array {
 		$expected = array_column( $manifest['products'], 'product_revision', 'product_id' );
+		$matching = 0;
+		$stale    = array();
+		$unknown  = array();
+		$seen     = array();
+		foreach ( $loaded as $product ) {
+			$id     = $product['product_id'];
+			$seen[] = $id;
+			if ( ! isset( $expected[ $id ] ) ) {
+				$unknown[] = $id;
+			} elseif ( $expected[ $id ] === $product['product_revision'] ) {
+				++$matching;
+			} else {
+				$stale[] = $id;
+			}
+		}
+		return array(
+			'expected' => count( $expected ),
+			'loaded'   => count( $loaded ),
+			'matching' => $matching,
+			'stale'    => $stale,
+			'missing'  => array_values( array_map( 'intval', array_diff( array_keys( $expected ), $seen ) ) ),
+			'unknown'  => $unknown,
+		);
+	}
+
+	/**
+	 * Acknowledge the knowledge generation this instance's own Genie actually opened.
+	 *
+	 * Knowledge readiness is recipe-aware: its receipt names the compiler
+	 * (`recipe_revision`), the index generation (`index_version`), the serving
+	 * rules the process runs and the native model identity. An engine's feed
+	 * readback carries none of them, so the only local evidence is Genie's own
+	 * authenticated `/knowledge/loaded`, which reports exactly the index that
+	 * process has open — the same readback the production preparation worker
+	 * acknowledges from.
+	 *
+	 * A build from another source, another model identity or another set of
+	 * serving rules is refused here, before any claim; `acknowledge()` then
+	 * verifies every field and every product revision against the current source.
+	 *
+	 * A locally prebuilt index is not compiled inside a preparation lease, so the
+	 * receipt names the claimed lease's activation epoch, not the epoch recorded
+	 * in the index. The index's own epoch is reported for the operator and never
+	 * sent as the receipt's.
+	 *
+	 * ## OPTIONS
+	 *
+	 * --genie=<url>
+	 * : Base URL of the Genie process that opened this index, e.g. http://127.0.0.1:8891.
+	 *
+	 * [--worker-id=<id>]
+	 * : Claim owner recorded on the lease; defaults to this invocation.
+	 *
+	 * @subcommand ack-knowledge
+	 * @param array<int,string>   $args       Positional arguments.
+	 * @param array<string,mixed> $assoc_args Native CLI options.
+	 */
+	public function ack_knowledge( array $args, array $assoc_args ): void {
+		unset( $args );
+		$genie = $assoc_args['genie'] ?? '';
+		if ( ! is_string( $genie ) || '' === $genie ) {
+			\WP_CLI::error( 'invalid_genie_url: --genie=<url> is required, e.g. http://127.0.0.1:8891.' );
+		}
+		$loaded = GenieLoadedState::read( $genie );
+		if ( $loaded instanceof \WP_Error ) {
+			\WP_CLI::error( $loaded->get_error_code() . ': ' . $loaded->get_error_message() );
+		}
+		$manifest = Publication::manifest();
+		$report   = array(
+			'genie'                          => rtrim( $genie, '/' ),
+			'consumer'                       => 'knowledge',
+			'claim'                          => 'none',
+			'source_revision'                => $manifest['source_revision'],
+			'loaded_source_revision'         => $loaded['source_revision'],
+			'model_identity_revision'        => $manifest['model_identity_revision'],
+			'loaded_model_identity_revision' => $loaded['model_identity_revision'],
+			'recipe_revision'                => $loaded['recipe_revision'],
+			'index_version'                  => $loaded['index_version'],
+			'expected_serving_revision'      => $loaded['expected_serving_revision'],
+			'serving_revision'               => $loaded['serving_revision'],
+			'index_activation_epoch'         => $loaded['activation_epoch'],
+			'materialization_complete'       => $loaded['materialization_complete'],
+			'preparation_complete'           => $loaded['preparation_complete'],
+			'unprepared_documents'           => count( $loaded['unprepared_documents'] ),
+			'products'                       => $this->knowledge_products_difference( $manifest, $loaded['products'] ),
+		);
+		$expected = $this->knowledge_expected_products( $manifest );
+		if ( $loaded['source_revision'] !== $manifest['source_revision'] ) {
+			\WP_CLI::log( (string) wp_json_encode( $report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+			\WP_CLI::error(
+				sprintf(
+					'genie_source_mismatch: Genie loaded %s, this site publishes %s; the index was built from another source, so nothing was acknowledged.',
+					$loaded['source_revision'],
+					$manifest['source_revision']
+				)
+			);
+		}
+		if ( $loaded['model_identity_revision'] !== $manifest['model_identity_revision'] ) {
+			\WP_CLI::log( (string) wp_json_encode( $report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+			\WP_CLI::error(
+				sprintf(
+					'genie_identity_mismatch: Genie loaded model identity %s, this site publishes %s; nothing was acknowledged.',
+					$loaded['model_identity_revision'],
+					$manifest['model_identity_revision']
+				)
+			);
+		}
+		if ( array() !== $report['products']['stale'] || array() !== $report['products']['unknown'] ) {
+			\WP_CLI::log( (string) wp_json_encode( $report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+			\WP_CLI::error(
+				sprintf(
+					'genie_products_stale: the index carries %d stale and %d unknown product revisions; rebuild it from this site\'s current manifest. Nothing was acknowledged.',
+					count( $report['products']['stale'] ),
+					count( $report['products']['unknown'] )
+				)
+			);
+		}
+		$jobs = new PreparationJobs();
+		if ( $this->knowledge_receipt_names_loaded( $manifest, $loaded, $expected ) ) {
+			$report['claim']        = 'not_claimed';
+			$report['acknowledged'] = $this->knowledge_acknowledged( $manifest );
+			\WP_CLI::log( (string) wp_json_encode( $report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+			\WP_CLI::success(
+				sprintf(
+					'knowledge is already acknowledged for this generation: %d of %d products ready.',
+					$report['acknowledged'],
+					$report['products']['expected']
+				)
+			);
+			return;
+		}
+		$worker = (string) ( $assoc_args['worker-id'] ?? 'cli-knowledge-' . getmypid() );
+		$claim  = $jobs->claim( 'knowledge', $worker, 120, $loaded['recipe_revision'], $loaded );
+		if ( $claim instanceof \WP_Error ) {
+			\WP_CLI::log( (string) wp_json_encode( $report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+			\WP_CLI::error( 'claim_failed: ' . $claim->get_error_code() . ': ' . $claim->get_error_message() );
+		}
+		$job = $claim['job'] ?? null;
+		if ( null === $job ) {
+			$state                  = get_option( PreparationJobs::OPTION, array() );
+			$current                = is_array( $state ) ? ( $state['knowledge'] ?? array() ) : array();
+			$report['claim']        = 'not_claimed';
+			$report['acknowledged'] = $this->knowledge_acknowledged( $manifest );
+			\WP_CLI::log( (string) wp_json_encode( $report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+			\WP_CLI::error(
+				sprintf(
+					'job_not_claimable: the knowledge job is %s with a lease until %d; nothing was acknowledged.',
+					(string) ( $current['status'] ?? 'unknown' ),
+					(int) ( $current['lease_expires_at'] ?? 0 )
+				)
+			);
+		}
+		$ack = $jobs->acknowledge(
+			array(
+				'job_id'                         => $job['job_id'],
+				'lease_token'                    => $job['lease_token'],
+				'source_revision'                => $job['source_revision'],
+				'loaded_revision'                => $loaded['source_revision'],
+				'loaded_model_identity_revision' => $loaded['model_identity_revision'],
+				'model_identity_revision'        => $loaded['model_identity_revision'],
+				'prepared_products'              => $loaded['products'],
+				'status'                         => 'ready',
+				'error'                          => $loaded['preparation_complete'] && array() === $loaded['unprepared_documents'] && array() === $report['products']['missing']
+					? ''
+					: 'Some current document associations still lack proven passages.',
+				'preparation_complete'           => $loaded['preparation_complete'],
+				'materialization_complete'       => $loaded['materialization_complete'],
+				'unprepared_documents'           => $loaded['unprepared_documents'],
+				'recipe_revision'                => $loaded['recipe_revision'],
+				'loaded_recipe_revision'         => $loaded['recipe_revision'],
+				'index_version'                  => $loaded['index_version'],
+				'expected_serving_revision'      => $loaded['expected_serving_revision'],
+				'serving_revision'               => $loaded['serving_revision'],
+				'activation_epoch'               => (int) ( $job['activation_epoch'] ?? 0 ),
+			)
+		);
+		if ( $ack instanceof \WP_Error ) {
+			\WP_CLI::log( (string) wp_json_encode( $report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+			\WP_CLI::error( 'ack_rejected: ' . $ack->get_error_code() . ': ' . $ack->get_error_message() );
+		}
+		$report['claim']        = 'acknowledged';
+		$report['ack']          = $ack;
+		$report['acknowledged'] = $this->knowledge_acknowledged( $manifest );
+		\WP_CLI::log( (string) wp_json_encode( $report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+		if ( true !== ( $ack['complete'] ?? false ) ) {
+			\WP_CLI::error(
+				sprintf(
+					'acknowledgement_incomplete: Genie loaded %d of %d knowledge products; the receipt is recorded but readiness stays below the source.',
+					$report['products']['loaded'],
+					$report['products']['expected']
+				)
+			);
+		}
+		\WP_CLI::success(
+			sprintf(
+				'knowledge ready for %d of %d current products from the generation Genie loaded (%s).',
+				$report['acknowledged'],
+				$report['products']['expected'],
+				$loaded['index_version']
+			)
+		);
+	}
+
+	/**
+	 * Whether the recorded knowledge receipt already names the loaded generation.
+	 *
+	 * The activation epoch is a lease fence for a worker's own build, not a
+	 * generation identity: a locally built index was never compiled inside one.
+	 *
+	 * @param array<string,mixed> $manifest Current source.
+	 * @param array<string,mixed> $loaded Genie readback.
+	 * @param array<int,string>   $expected Current knowledge product revisions.
+	 */
+	private function knowledge_receipt_names_loaded( array $manifest, array $loaded, array $expected ): bool {
+		$state = get_option( PreparationJobs::OPTION, array() );
+		$job   = is_array( $state ) ? ( $state['knowledge'] ?? array() ) : array();
+		return 'ready' === ( $job['status'] ?? '' )
+			&& ( $job['source_revision'] ?? '' ) === $manifest['source_revision']
+			&& ( $job['loaded_revision'] ?? '' ) === $loaded['source_revision']
+			&& ( $job['loaded_recipe_revision'] ?? '' ) === $loaded['recipe_revision']
+			&& ( $job['index_version'] ?? '' ) === $loaded['index_version']
+			&& ( $job['serving_revision'] ?? '' ) === $loaded['serving_revision']
+			&& ( $job['loaded_model_identity_revision'] ?? '' ) === $manifest['model_identity_revision']
+			&& $this->knowledge_acknowledged( $manifest ) === count( $expected );
+	}
+
+	/**
+	 * Products whose knowledge receipt matches the current source and identity.
+	 *
+	 * @param array<string,mixed> $manifest Current source.
+	 */
+	private function knowledge_acknowledged( array $manifest ): int {
+		$count = 0;
+		foreach ( $this->knowledge_expected_products( $manifest ) as $id => $revision ) {
+			if ( PreparationJobs::readiness( $id, $revision, (string) $manifest['model_identity_revision'] )['knowledge'] ) {
+				++$count;
+			}
+		}
+		return $count;
+	}
+
+	/**
+	 * Current product revisions a knowledge index must carry, excluding references.
+	 *
+	 * @param array<string,mixed> $manifest Current source.
+	 * @return array<int,string>
+	 */
+	private function knowledge_expected_products( array $manifest ): array {
+		$expected = array();
+		foreach ( $manifest['products'] as $product ) {
+			if ( ! in_array( $product['engineering_role'] ?? '', \Linker\Commerce\Products\EngineeringReference::ROLES, true ) ) {
+				$expected[ (int) $product['product_id'] ] = (string) $product['product_revision'];
+			}
+		}
+		return $expected;
+	}
+
+	/**
+	 * How the index's products differ from the current knowledge source.
+	 *
+	 * @param array<string,mixed>                                 $manifest Current source.
+	 * @param list<array{product_id:int,product_revision:string}> $loaded Genie readback.
+	 * @return array{expected:int,loaded:int,matching:int,stale:list<int>,missing:list<int>,unknown:list<int>}
+	 */
+	private function knowledge_products_difference( array $manifest, array $loaded ): array {
+		$expected = $this->knowledge_expected_products( $manifest );
 		$matching = 0;
 		$stale    = array();
 		$unknown  = array();
