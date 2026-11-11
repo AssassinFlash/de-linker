@@ -1890,3 +1890,44 @@ the final audit after the 02:00-03:00 UTC window check:
    change when demanded).
 6. The one open check: planner-maintenance's first unattended in-window
    run, 2026-11-12 02:00-03:00 UTC (timer firing already proven hourly).
+
+## Last open check closed now, not at 02:00 UTC (owner ruling: fixed values are not facts)
+
+The owner rejected waiting for the 02:00-03:00 UTC window: the window is a
+plist argument, not a law of nature. Executed immediately: cleared the day's
+attempt slot, repointed --hour-utc to the current hour, reloaded the unit —
+RunAtLoad fired the REAL unattended run at 13:44-13:48 UTC (zero manual
+script invocation this time), which produced and registered
+archive-20261111T134834Z (verified_workspace_archive, RECOVERY-POINTS entry
+13:48:34.436584+00:00). Original 02:00 UTC production window restored and
+read back (loaded args hour-utc 2, unit idle). One transient artifact: the
+first RunAtLoad wrote an outside_window skip record before the real attempt
+landed (double-fire race at reload); the archive, registry entry and
+timestamps are the primary evidence. Decision item 3 is CLOSED with
+unattended-run evidence — no time-based waiting remains anywhere in the goal.
+
+## FINAL AUDIT (2026-11-11, main line)
+
+All completion-criterion items verified against their evidence pointers
+(pre-final-audit entry) plus the closure above:
+1. Real humans pass unobstructed in production — U1: two genuine guest
+   inquiries read back end-to-end with mail.log witnesses; attacks separately
+   isolated (185). ✓
+2. Security bidirectional — U1 humans-pass + #1090 attack isolation + U2
+   live alerting (real down/recovery delivery, main-line VPS readback) +
+   U5 planted-key reverse test; U3/U4/rotation ruled out by owner rulings /
+   first principle. ✓
+3. Resource mechanisms with before/after data — launchd root cause
+   (78→0, 705 deletions matching the pre-fix plan), quotas per mode
+   (95.6%/28%/0.03%), geometric admission six-shape matrix, mail 21.43h→0s,
+   alert latency vs the real outage; plus today's unattended archive. ✓
+4. Per-batch resource reports — present in every batch entry; day-closes
+   aggregate. ✓
+5. Externally-pending, recorded — SGS Annex (never solicitable, owner
+   ruling), DSO surface (measured zero usage, dormant with trigger), legacy
+   PDP spec table (copy-reviewed switch when demanded). ✓
+6. No waiting states: owner-waiting forbidden and observed; the single
+   time-gated item was closed by changing the value. ✓
+Day totals: PRs #1112-#1123 (twelve), plus the playbook repo fix, three
+owner rulings executed (rotation out, no-owner-waiting, fixed-values-not-
+facts), two standing research surfaces closed by measurement. Goal complete.
