@@ -13,10 +13,11 @@ use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Health\InternalMail;
 
 /**
- * Assembles Digest's three business blocks and Health\InternalMail, in the order of
- * docs/specs/74-daily-digest.md, then whatever other tickets registered — the
- * approval ticket puts the pending accounts first, so the owner's daily
- * approvals lead the email.
+ * Assembles the digest's business blocks — pending inquiries, open quotations,
+ * failed emails — and the health blocks — internal mail authentication, pending
+ * reviews and operations health — in the order of docs/specs/74-daily-digest.md,
+ * then whatever other tickets registered: the approval ticket puts the pending
+ * accounts first, so the owner's daily approvals lead the email.
  */
 final class Blocks {
 
@@ -39,6 +40,7 @@ final class Blocks {
 			new FailedEmails( $this->jobs ),
 			new InternalMail(),
 			new \Linker\Commerce\Health\PendingReviews(),
+			new \Linker\Commerce\Health\OperationsHealth(),
 		);
 		/**
 		 * The approval ticket adds the pending-accounts block here, unshifted

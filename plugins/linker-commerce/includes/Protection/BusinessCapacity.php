@@ -255,6 +255,40 @@ final class BusinessCapacity {
 	}
 
 	/**
+	 * Current business occupancy for the operations digest: unhandled inquiries
+	 * and their logical bytes, from the same locked registry the admission bound
+	 * checks. Read-only: an unreadable registry is an error, never zero.
+	 *
+	 * @return array{unhandled: int, bytes: int}|WP_Error
+	 */
+	public static function occupancy(): array|WP_Error {
+		$result = IntakeStore::edit(
+			static function ( array &$state ): array {
+				self::initialize( $state );
+				$entries = is_array( $state['business'] ?? null ) ? $state['business'] : array();
+				$bytes   = 0;
+				foreach ( $entries as $entry ) {
+					if ( is_array( $entry ) && is_int( $entry['bytes'] ?? null ) ) {
+						$bytes += $entry['bytes'];
+					}
+				}
+				return array(
+					'unhandled' => count( $entries ),
+					'bytes'     => $bytes,
+				);
+			},
+			0
+		);
+		if ( ! is_array( $result ) || ! is_int( $result['unhandled'] ?? null ) || ! is_int( $result['bytes'] ?? null ) ) {
+			return new WP_Error( 'business_occupancy_unreadable', 'The unhandled inquiry envelope could not be read.' );
+		}
+		return array(
+			'unhandled' => $result['unhandled'],
+			'bytes'     => $result['bytes'],
+		);
+	}
+
+	/**
 	 * Frozen business logical data, not a claim about InnoDB physical allocation.
 	 *
 	 * @param WC_Order $order Current native data.
