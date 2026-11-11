@@ -1,0 +1,75 @@
+EIFS 2018:2 — Energimarknadsinspektionens föreskrifter om fastställande av
+generellt tillämpliga krav för nätanslutning av generatorer
+Beslutade den 8 november 2018. Trycktes den 5 december 2018. ISSN 2000-592X.
+
+Källa (PDF): https://ei.se/download/18.5b0e2a2a176843ef8f5b74/1608639227153/EIFS-2018-2-om-fastst%C3%A4llande-av-generellt-till%C3%A4mpliga-krav-f%C3%B6r-n%C3%A4tanslutning-av-generatorer.pdf
+PDF: 180 749 byte, 11 sidor, SHA-256 89a1011a371f0f9ee8951f476e51621f07119869628afd6eb611082ff25b8eec
+Extraherad text (fullText från automation-lab/pdf-text-extractor): SHA-256 d87936b2aa55393ea10945560ce244e624adc0e9e2ae2b7940b2a9175f009780
+Nedan följer ordagrann text ur den extraherade texten. Sidnumren är PDF-sidor.
+Blanksteg och radbrytningar följer extraktionen, inte originalets sättning.
+
+--- PDF sida 1 ---
+
+3 kap. Allmänna krav för kraftproduktionsmoduler
+
+Allmänna krav för kraftproduktionsmodul av typ A, B, C och D
+
+1§  Den kortaste tidsperiod som en kraf tproduktionsmodul av typ A, B, C
+och D ska kunna fungera inom frekvens er som avviker från nominellt värde
+utan att kopplas bort från nätet är:
+ 30 minuter inom frek vensområde 47,5–48,5 Hz
+ 30 minuter inom frek vensområde 48,5–49,0 Hz
+ obegränsad inom frekvensområde 49,0–51,0 Hz
+ 30 minuter inom frek vensområde 51,0–51,5 Hz
+
+--- PDF sida 2 ---
+
+3§  Kraftproduktionsmodul av typ A, B, C och D ska tillhandahålla reduk-
+tion av aktiv effekt som frekvenssvar vid begränsat frekvenskänslighetsläge
+– överfrekvens (LFSM-O), vid en frek venströskel på 50,5 Hz. Automatisk
+bortkoppling av kraftprodu ktionsmodulen får inte användas som alternativ
+till en reduktion av aktiv effekt vid överfrekvens.
+
+4§  Statikfaktorn för kraftproduktionsmoduler av typ A, B, C och D ska ha
+det primära inställningsvärdet 8 procent.
+
+8§  Kraftproduktionsmodul er av typ A, B och C får anslutas automatiskt
+till nätet när nätfrekvensen i anslutningspunkten är inom intervallet 47,5–
+50,1 Hz. Nätfrekvensen i anslutningspunkten ska ha befunnit sig inom detta
+frekvensintervall under minst tre samm anhängande minuter innan anslutning
+får ske.
+
+9§  Vid automatisk anslutning till nä tet av kraftproduktionsmodul av typ
+A, B och C gäller följande krav för ökningen av aktiv uteffekt beroende på
+nätfrekvensen i anslutningspunkten.
+< 49,9 Hz  Ingen begränsning vad gäller ökningstakt av aktiv uteffekt
+49,9–50,1 Hz  Ökning med maximalt 10 procent av nominell aktiv uteffekt per minut
+> 50,1 Hz  Ökning av uteffekten ej tillåten
+
+--- PDF sida 3 ---
+
+Allmänna krav för kraftproduktionsmodul av typ B, C och D
+
+17 §  De maximala tröskelvärdena för kraftproduktionsmodul av typ B, C
+och D som anges i artikel 5.2 tabell 1 för synkronområde Norden i kommis-
+sionens förordning (EU) nr 2016/631 ska gälla för Sverige.
+
+--- PDF sida 4 ---
+
+18 §  Kraftproduktionsmodul av typ B, C och D ska kunna upprätthålla ut-
+matning av aktiv effekt inom spänningsintervallet 90–105 procent spänning i
+anslutningspunkten.
+
+Allmänna krav för kraftproduktionsmodul av typ C och D
+
+20 §  Kraftproduktionsmodul av typ C och D ska tillhandahålla ökning av
+aktiv effekt som frekvenssvar vid begränsat frekvenskänslighetsläge –
+underfrekvens (LFSM-U), vid en frekvenströskel på 49,5 Hz.
+
+21 §  Kraftproduktionsmodul av typ C och D ska tillhandahålla ökning av
+aktiv effekt som frekvenssvar vid begränsat frekvenskänslighetsläge –
+underfrekvens (LFSM-U), med en statikfaktor av 8 procent.
+
+--- PDF sida 10/11 (slutbestämmelse) ---
+
+Dessa föreskrifter träder i kraft den 27 april 2019.

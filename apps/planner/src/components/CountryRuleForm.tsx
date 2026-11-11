@@ -13,13 +13,16 @@ const countries: Record<RuleBasis, string> = {
 	nl_storage_max_active: "NL",
 	de_pv_installed: "DE",
 	at_tor_typ_a_max_capacity: "AT",
+	se_rfg_maximum_capacity: "SE",
 };
-// Source-reading dates: docs/research/2026-10-23-modern-workbench/COUNTRY-EVIDENCE.md.
+// Source-reading dates: docs/research/2026-10-23-modern-workbench/COUNTRY-EVIDENCE.md
+// and docs/research/2026-11-12-se-country-rules/EVIDENCE.md.
 const CHECKED_SOURCE_DATES: Record<RuleBasis, string> = {
 	fr_generation_pmax: "2026-11-04",
 	nl_storage_max_active: "2026-11-04",
 	de_pv_installed: "2026-11-04",
 	at_tor_typ_a_max_capacity: "2026-11-11",
+	se_rfg_maximum_capacity: "2026-11-11",
 };
 function checkedSourceDate(basis: RuleBasis, locale: string): string {
 	return new Intl.DateTimeFormat(locale, {
@@ -76,7 +79,8 @@ export function CountryRuleForm({
 			| "connection_voltage_kv"
 			| "apparent_power_kva"
 			| "net_active_power_kw"
-			| "at_change_previous_power_kw",
+			| "at_change_previous_power_kw"
+			| "se_export_power_kw",
 		next: number | null,
 	) {
 		if (!value) return;
@@ -119,6 +123,9 @@ export function CountryRuleForm({
 					<option value="at_tor_typ_a_max_capacity">
 						{__("Austria: TOR Erzeuger Typ A maximum capacity", "linker-tools")}
 					</option>
+					<option value="se_rfg_maximum_capacity">
+						{__("Sweden: maximum capacity under RfG Article 5", "linker-tools")}
+					</option>
 				</select>
 			</label>
 			{value && (
@@ -147,10 +154,15 @@ export function CountryRuleForm({
 											"Enter installed solar power calculated for EEG section 9, including its aggregation conditions. A single inverter rating is not that calculation.",
 											"linker-tools",
 										)
-									: __(
-											"Enter the maximum capacity Pmax of the whole installation at one connection point, as TOR Erzeuger Typ A section 4.1 defines it. Several generating units at one connection point count as one installation.",
-											"linker-tools",
-										)}
+									: value.basis === "se_rfg_maximum_capacity"
+										? __(
+												"Enter the maximum capacity and the connection-point voltage. Article 5(2) of Regulation (EU) 2016/631 uses both, and EIFS 2018:2 section 17 makes the Nordic threshold values the Swedish ones.",
+												"linker-tools",
+											)
+										: __(
+												"Enter the maximum capacity Pmax of the whole installation at one connection point, as TOR Erzeuger Typ A section 4.1 defines it. Several generating units at one connection point count as one installation.",
+												"linker-tools",
+											)}
 					</p>
 					<p>
 						{value.basis === "fr_generation_pmax"
@@ -177,13 +189,21 @@ export function CountryRuleForm({
 											),
 											checkedSourceDate(value.basis, locale),
 										)
-									: sprintf(
-											__(
-												"TOR Erzeuger Typ A, version 1.4 in force from 1 June 2026, checked %s.",
-												"linker-tools",
-											),
-											checkedSourceDate(value.basis, locale),
-										)}
+									: value.basis === "se_rfg_maximum_capacity"
+										? sprintf(
+												__(
+													"EIFS 2018:2 in force from 27 April 2019; section 17 adopts the RfG Article 5(2) table for the Nordic area. Checked %s.",
+													"linker-tools",
+												),
+												checkedSourceDate(value.basis, locale),
+											)
+										: sprintf(
+												__(
+													"TOR Erzeuger Typ A, version 1.4 in force from 1 June 2026, checked %s.",
+													"linker-tools",
+												),
+												checkedSourceDate(value.basis, locale),
+											)}
 					</p>
 					<p>
 						{__(
@@ -377,6 +397,77 @@ export function CountryRuleForm({
 									<small>
 										{__(
 											"The declared path is a project declaration. Whether a specific device and software version is covered still needs the registry and document read-back.",
+											"linker-tools",
+										)}
+									</small>
+								</label>
+							</>
+						)}
+						{value.basis === "se_rfg_maximum_capacity" && (
+							<>
+								<ScenarioNumber
+									field="connection_voltage_kv"
+									label={__(
+										"Voltage at the grid connection point",
+										"linker-tools",
+									)}
+									value={value.connection_voltage_kv}
+									unit="kV"
+									locale={locale}
+									min={0}
+									report={report}
+									onChange={(next) => number("connection_voltage_kv", next)}
+								/>
+								<ScenarioNumber
+									field="se_export_power_kw"
+									label={__(
+										"Possible feed-in power at the connection point",
+										"linker-tools",
+									)}
+									value={value.se_export_power_kw ?? null}
+									unit="kW"
+									locale={locale}
+									min={0}
+									report={report}
+									onChange={(next) => number("se_export_power_kw", next)}
+								/>
+								<label className="lp-field">
+									<span>
+										{__(
+											"Is this a change to an existing module?",
+											"linker-tools",
+										)}
+									</span>
+									<select
+										value={
+											value.se_existing_installation_change === null ||
+											value.se_existing_installation_change === undefined
+												? ""
+												: String(value.se_existing_installation_change)
+										}
+										onChange={(event) =>
+											onChange({
+												...value,
+												se_existing_installation_change:
+													event.currentTarget.value === ""
+														? null
+														: event.currentTarget.value === "true",
+											})
+										}
+									>
+										<option value="">
+											{__("Not specified", "linker-tools")}
+										</option>
+										<option value="false">
+											{__("No, a new installation", "linker-tools")}
+										</option>
+										<option value="true">
+											{__("Yes, an existing module", "linker-tools")}
+										</option>
+									</select>
+									<small>
+										{__(
+											"Article 4(1)(a) of Regulation (EU) 2016/631 names type C and type D only. For other types the cited article gives no reading.",
 											"linker-tools",
 										)}
 									</small>

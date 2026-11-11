@@ -411,3 +411,33 @@ Apify 检索记录 GimfClfA2AJhH0U9J、2aOchEnlB1M465Jpf、dDUwRF2Cm5Xka3166；�
 **仍未取得（因此未实现）：**任何具体 DSO 的 Allgemeine Bedingungen / TAB 正文；Anhang A3「Ländereinstellungen Österreich」的逐项整定值（§ 6.3.3 明确由运营商在合同中确定，做成常量会与原文冲突）；TOR Verteilernetzanschluss 对储能的专项条款；TOR Typ B/C/D 的门槛原文（第三方流传的 250 kW / 35 MW / 50 MW **未核，不采用**）；新老项目的过渡适用性（需要合同日期与运营商受理记录）。
 
 **边界不变：**本轮未据此给任何型号或项目并网资格结论，`connection_permission` 仍为 `not_established`，生产环境中的 AT 账号不因此获得任何自动放行。
+
+## 14. 瑞典：EIFS 2018:2 与 RfG 北欧门槛（2026-11-11）
+
+2026-11-11，#548 域 8 扩国第二国，也是最后一个有真实账号背书的扩国目标（生产 23 个账号中 DE=11、US=3、**SE=1**、AT=1、NL=1）。完整证据（含逐字摘录文件与双哈希）在 [docs/research/2026-11-12-se-country-rules/EVIDENCE.md](/docs/research/2026-11-12-se-country-rules/EVIDENCE.md)，本节只记结论与边界。
+
+**先纠正两条会写错的前提。**
+
+1. **瑞典的国家技术规则是 EIFS 2018:2，不是 SvKFS。** RfG 第 7.1 / 5.3 条要求成员国就「一般适用要求」与「Type B/C/D 门槛」作国家规定；瑞典指定给 **Energimarknadsinspektionen（Ei）**。Svenska kraftnät 自己的 RfG 页写明「I Sverige har Energimarknadsinspektionen tagit fram föreskriften EIFS 2018:2, vilket innebär att den tekniska kravbilden finns på plats」，而其 SvKFS 列表页只列 4 份文件、覆盖系统安全与计量，不含发电机并网的类型门槛。
+2. **「43,5 kW 以下免接入义务」是误读。** ellagen 4 kap. 2 § 实际是**约束电网公司**的：≤43,5 kW 的可再生能源装置，运营商偏离接入义务时**必须**通知申请人且须在一个月内发出。主规则仍是 4 kap. 1 § 的接入义务（「ska … ansluta」）。本包按原文表达，不写成「无需接入」。
+
+| 轴 | 原文 | 实际值 |
+| --- | --- | --- |
+| 类型门槛 | EIFS 2018:2 3 kap. **17 §** + RfG Art. 5.2 Table 1（Nordic 行） | § 17 直接让 RfG 表 1 北欧值「适用于瑞典」：Type B `≥1,5 MW`、C `≥10 MW`、D `≥30 MW`；Type A 下界 `≥0,8 kW`（RfG Art. 5.2(a)）；接网点 `≥110 kV` 直接 Type D |
+| 功率语义 | RfG Art. 5.1 | Type 由**接网点电压**与**最大容量**共同决定；聚合须按项目口径先行完成，本包只接收已聚合值 |
+| 频率范围 | EIFS **3 kap. 1 §** | `47,5–48,5 Hz` 30 min · `48,5–49,0 Hz` 30 min · `49,0–51,0 Hz` 无限 · `51,0–51,5 Hz` 30 min（A–D 全部） |
+| 过频响应 | EIFS **3 kap. 3、4 §** | LFSM-O 阈值 **50,5 Hz**，statik **8 %**；**不允许**用跳闸代替降功率（A–D） |
+| 电压区间 | EIFS **3 kap. 18 §** | `90–105 %` 维持有功输出；**仅 B/C/D**，Type A 无对应条文 |
+| 自动并网 | EIFS **3 kap. 8、9 §** | 频率须先在 `47,5–50,1 Hz` 连续 3 分钟；`<49,9 Hz` 不限升功率速率，`49,9–50,1 Hz` ≤10 %/min，`>50,1 Hz` 禁止升功率；**仅 A/B/C**，Type D 无对应条文 |
+| 既有改造 | RfG **Art. 4.1(a)** | 仅 **Type C/D** 触发「事前通知运营商 + 监管机构决定是否改约」程序；A/B 不在此条覆盖范围 |
+| 接入义务 | ellagen **4 kap. 1、2 §** | 1 § 为无条件接入义务；2 § 为偏离条件，含 ≤43,5 kW 的一个月通知规则（可馈入功率，不是 Pmax，也不是视在功率） |
+
+**原文身份：**EIFS 2018:2（Ei 官方 PDF，11 页，`180 749 B`）PDF SHA-256 `89a1011a…`，提取文本 SHA-256 `d87936b2…`，决定 2018-11-08、公布 2018-12-05、**生效 2019-04-27**。RfG（EUR-Lex HTML，OJ L 112, 27.4.2016, pp. 1–68）提取文本 SHA-256 `e88982d1…`。Ellagen 官方合并本（`rkrattsbaser.gov.se`，页头「Ändring införd: t.o.m. SFS 2026:1298」）提取文本 SHA-256 `e06739af…`；4 kap. 1–2 与 5 § 现行文字出自 **Lag (2022:596)**，其过渡条款为「träder i kraft den 1 juli 2022」。与 §12、§13 的约定一致：代码里的 `text_sha256` 指提取文本。
+
+**一处流传数字的纠正：**网上与部分安装商指南把瑞典 Type C 门槛写作 `5 MW`。RfG Table 1 北欧行的原文是 `1,5 MW / 10 MW / 30 MW`，`5 MW` 属于 Ireland and Northern Ireland 行。本包按原文取 `10 MW`。
+
+**仍未取得（因此未实现）：**任何具体 DSO（Vattenfall Eldistribution、Ellevio、E.ON 等）的 anslutningsvillkor / teknisk anvisning 正文；Elsäkerhetsverket ELSÄK-FS 的逐条安装要求与整定值（只核到该机构「Installera solceller – vad gäller?」页的作业性质说明）；EIFS 3 kap. 10–16 / 19–32 与 4–6 kap. 的设备型式试验级条款；`Pmax` 的项目级聚合计算；新老项目的过渡适用性（需要合同日期与运营商受理记录）。
+
+**版本风险已记录：**Ei 于 2026-02-23 发布 remiss，原文写明「Ei föreslår att nu gällande föreskrifter EIFS 2018:2 **upphävs och ersätts** av nya föreskrifter」。截至本次读取，Ei 的「Föreskrifter - el」列表仍以 EIFS 2018:2 为现行版本。本包的六条网络码检查评价窗口为 `[2019-04-27, 2026-11-11]`，`se_connection_duty` 用自己的 `[2022-07-01, 2026-11-11]`（43,5 kW 通知规则随 Lag (2022:596) 进入 4 kap. 2 §，不能提前适用）；新规生效后门槛与整定值须整体重读。
+
+**边界不变：**本轮未据此给任何型号或项目并网资格结论，`connection_permission` 仍为 `not_established`，生产环境中的 SE 账号不因此获得任何自动放行。

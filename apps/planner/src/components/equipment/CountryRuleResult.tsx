@@ -42,6 +42,28 @@ export function CountryRuleResult({
 		),
 		at_connection_route: __("Connection route", "linker-tools"),
 		at_conformity_evidence: __("Conformity evidence path", "linker-tools"),
+		se_module_type: __(
+			"RfG module type under the Swedish thresholds",
+			"linker-tools",
+		),
+		se_frequency_range: __(
+			"Frequency range and operating times",
+			"linker-tools",
+		),
+		se_lfsm_o: __("Overfrequency active-power response", "linker-tools"),
+		se_voltage_range: __(
+			"Active-power output over the voltage range",
+			"linker-tools",
+		),
+		se_automatic_reconnection: __(
+			"Conditions for automatic connection",
+			"linker-tools",
+		),
+		se_existing_change: __("Change to an existing module", "linker-tools"),
+		se_connection_duty: __(
+			"Connection duty and the 43.5 kW notice rule",
+			"linker-tools",
+		),
 	};
 	const outcomes: Record<string, string> = {
 		type_a: __("Type A", "linker-tools"),
@@ -156,6 +178,50 @@ export function CountryRuleResult({
 			"Declared: VDE-AR-N 4105 report with the additional R 25 properties and Austrian parameters. The report scope and device version still need verification.",
 			"linker-tools",
 		),
+		significant_under_article_5_2: __(
+			"The declared capacity and voltage put the module in one of the RfG Article 5(2) categories",
+			"linker-tools",
+		),
+		four_band_range_47_5_to_51_5_hz: __(
+			"Four bands: 47.5–48.5 Hz for 30 minutes, 48.5–49.0 Hz for 30 minutes, 49.0–51.0 Hz unlimited, 51.0–51.5 Hz for 30 minutes",
+			"linker-tools",
+		),
+		lfsm_o_50_5_hz_droop_8_percent: __(
+			"Reduce active power from a threshold of 50.5 Hz with a primary droop setting of 8%. Disconnection is not an alternative to that reduction.",
+			"linker-tools",
+		),
+		voltage_range_90_to_105_percent: __(
+			"Maintain active-power output between 90% and 105% of the connection-point voltage",
+			"linker-tools",
+		),
+		automatic_reconnection_47_5_to_50_1_hz_after_3_minutes: __(
+			"Automatic connection is permitted only after the frequency stayed within 47.5–50.1 Hz for three consecutive minutes; the power increase stays unconstrained below 49.9 Hz, at most 10% of nominal active power per minute between 49.9 and 50.1 Hz, and is not permitted above 50.1 Hz",
+			"linker-tools",
+		),
+		modification_notification_type_c_or_d: __(
+			"A modified type C or type D module: notify the system operator in advance, and the authority decides whether the connection agreement is revised",
+			"linker-tools",
+		),
+		modification_outside_4_1_a_other_rules_open: __(
+			"Article 4(1)(a) names type C and type D only; for this type the cited article gives no reading and other rules stay open",
+			"linker-tools",
+		),
+		not_applicable_type_a: __(
+			"The cited clause names types B, C and D only, so it states nothing for type A",
+			"linker-tools",
+		),
+		not_applicable_type_d: __(
+			"The cited clause names types A, B and C only, so it states nothing for type D",
+			"linker-tools",
+		),
+		deviation_notice_within_one_month_up_to_43_5_kw: __(
+			"Up to 43.5 kW of possible feed-in power: a distribution system operator may deviate from the connection duty only after notifying the applicant, and that notice must arrive within one month of the request. The connection duty itself continues to apply.",
+			"linker-tools",
+		),
+		deviation_on_general_grounds_above_43_5_kw: __(
+			"Above 43.5 kW of possible feed-in power: the one-month notice rule does not apply, while the general grounds for a deviation and the connection duty itself are unchanged",
+			"linker-tools",
+		),
 	};
 	const missing: Record<string, string> = {
 		rule_date: __("rule date", "linker-tools"),
@@ -181,6 +247,11 @@ export function CountryRuleResult({
 			"linker-tools",
 		),
 		at_conformity_basis: __("declared conformity path", "linker-tools"),
+		se_export_power_kw: __("possible feed-in power", "linker-tools"),
+		se_existing_installation_change: __(
+			"existing module being changed",
+			"linker-tools",
+		),
 	};
 	return (
 		<section>
@@ -206,6 +277,18 @@ export function CountryRuleResult({
 							: `${formatDecimal(inputs.power_kw, locale)} kW`}
 					</dd>
 				</div>
+				{review.country_code === "SE" && (
+					<div>
+						<dt>
+							{__("Voltage at the grid connection point", "linker-tools")}
+						</dt>
+						<dd>
+							{typeof inputs.connection_voltage_kv !== "number"
+								? "—"
+								: `${formatDecimal(inputs.connection_voltage_kv, locale)} kV`}
+						</dd>
+					</div>
+				)}
 				{review.country_code === "FR" && (
 					<div>
 						<dt>

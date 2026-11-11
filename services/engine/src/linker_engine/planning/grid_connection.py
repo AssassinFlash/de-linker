@@ -208,6 +208,13 @@ def country_assessment(inputs: Object) -> Object:
                     "at_substantial_change",
                     "at_connection_route",
                     "at_conformity_evidence",
+                    "se_module_type",
+                    "se_frequency_range",
+                    "se_lfsm_o",
+                    "se_voltage_range",
+                    "se_automatic_reconnection",
+                    "se_existing_change",
+                    "se_connection_duty",
                 }
                 for check in cast(list[Json], review["checks"])
             ):

@@ -22,6 +22,7 @@ type Basis = Literal[
     "nl_storage_max_active",
     "de_pv_installed",
     "at_tor_typ_a_max_capacity",
+    "se_rfg_maximum_capacity",
 ]
 
 
@@ -53,6 +54,14 @@ class CountryRuleInputs(Document):
         ]
         | None
     ) = None
+    # Swedish law keeps the connection duty (ellagen 4 kap. 1 §) apart from the
+    # power quantity in its deviation rule 4 kap. 2 §: "inmatning kan ske med en
+    # effekt om högst 43,5 kilowatt" is the feed-in power, not the RfG maximum
+    # capacity and not an apparent power. These declarations are additive, so a
+    # revision saved before them stays readable and a SE reading reports them as
+    # missing instead of deriving one from the other.
+    se_export_power_kw: Positive | None = None
+    se_existing_installation_change: bool | None = None
 
     @field_validator("rule_date")
     @classmethod
@@ -111,6 +120,51 @@ _SOURCES: dict[str, Object] = {
         "text_sha256": "5be42c6431cfbe670c70e3fb64827c7f97a72cab1b8a6741e9a3955432399820",
         "clause": "Kapitel 2.1, 2.2, 4.1, 6.1.2, 6.3.1",
     },
+    "SE": {
+        "id": "se_eifs_2018_2",
+        "title": "EIFS 2018:2",
+        "source_url": "https://ei.se/download/18.5b0e2a2a176843ef8f5b74/1608639227153/EIFS-2018-2-om-fastst%C3%A4llande-av-generellt-till%C3%A4mpliga-krav-f%C3%B6r-n%C3%A4tanslutning-av-generatorer.pdf",
+        "edition": "EIFS 2018:2",
+        "clause": "3 kap. 1, 3, 4, 8, 9, 17, 18 §§",
+        # The closing provision of the PDF reads "Dessa föreskrifter träder i
+        # kraft den 27 april 2019."; the decision is dated 2018-11-08 and the
+        # print date is 2018-12-05.
+        "effective_from": "2019-04-27",
+        "evidence_snapshot_date": "2026-11-11",
+        "text_sha256": "d87936b2aa55393ea10945560ce244e624adc0e9e2ae2b7940b2a9175f009780",
+    },
+}
+
+# EIFS 2018:2 § 17 does not restate the type thresholds: it makes the maximum
+# threshold values of Article 5.2 Table 1 for the Nordic synchronous area apply
+# in Sweden. The numbers therefore live in the EU regulation and carry their own
+# source identity and dated reading instead of inheriting the EIFS one.
+_SE_RFG_SOURCE: Object = {
+    "id": "se_rfg_2016_631",
+    "title": "Commission Regulation (EU) 2016/631 (RfG)",
+    "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32016R0631&from=EN",
+    "edition": "OJ L 112, 27.4.2016, pp. 1-68",
+    "clause": "Article 4.1(a), 5.2, Table 1 (Nordic), 13.1, 13.2, 13.7, 14.1, 15.1",
+    # The regulation entered into force on 2016-05-17 and applies from
+    # 2019-04-27; the type thresholds it sets are the ones EIFS § 17 adopts.
+    "effective_from": "2019-04-27",
+    "evidence_snapshot_date": "2026-11-11",
+    "text_sha256": "e88982d1cf6d0d4ef8870a88cff02b5bf3387b5a23196121543d156ec374f572",
+}
+# The connection duty is statutory and predates the network code, so it keeps
+# its own instrument, effective date and dated reading.
+_SE_ELLAGEN_SOURCE: Object = {
+    "id": "se_ellagen_1997_857",
+    "title": "Ellagen (1997:857)",
+    "source_url": "https://rkrattsbaser.gov.se/sfst?bet=1997:857",
+    "edition": None,
+    "clause": "4 kap. 1, 2 §§",
+    # The wording of 4 kap. 1 and 2 §§ in force comes from Lag (2022:596),
+    # whose transition provision reads "Denna lag träder i kraft den 1 juli
+    # 2022."; 4 kap. 9 § was added by Lag (2025:1330) and is not used here.
+    "effective_from": "2022-07-01",
+    "evidence_snapshot_date": "2026-11-11",
+    "text_sha256": "e06739af5c38995d827d263f77fd17e963f6cf8a49f15f409445ef14dbaa6150",
 }
 
 # The connection route and the conformity evidence of an Austrian installation
@@ -145,6 +199,7 @@ _BASIS_COUNTRY: dict[str, str] = {
     "nl_storage_max_active": "NL",
     "de_pv_installed": "DE",
     "at_tor_typ_a_max_capacity": "AT",
+    "se_rfg_maximum_capacity": "SE",
 }
 
 _ENEDIS_SOURCE: Object = {
@@ -212,6 +267,12 @@ def review_country_rules(
                     # AT § 2.2 lists example criteria ("können z.B. sein"), so
                     # an unchanged power does not settle the question.
                     "power_criterion_not_exceeded_other_criteria_open",
+                    # SE: the clause names only some RfG types, or the cited
+                    # article does not reach this case at all, so no conditional
+                    # reading follows for the declared project.
+                    "not_applicable_type_a",
+                    "not_applicable_type_d",
+                    "modification_outside_4_1_a_other_rules_open",
                 }
                 else "conditional",
                 "outcome": outcome,
@@ -353,8 +414,7 @@ def review_country_rules(
                     export = "sixty_percent_conditionally"
         add("de_eeg_control", control, control_missing)
         add("de_eeg_export", export, export_missing)
-    else:
-        assert country == "AT"
+    elif country == "AT":
         scope_missing = [
             key
             for key, absent in (
@@ -499,6 +559,146 @@ def review_country_rules(
             conformity,
             conformity_missing,
             origin=cast(str, _AT_CONFORMITY_SOURCE["id"]),
+        )
+    else:
+        assert country == "SE"
+        # EIFS 2018:2 § 17 adopts the Article 5.2 Table 1 threshold values for
+        # the Nordic synchronous area, and the categories themselves come from
+        # Article 5.2. The reading needs the two quantities that article uses:
+        # the maximum capacity and the connection-point voltage.
+        scope_missing = [
+            key
+            for key, absent in (
+                ("rule_date", missing_date),
+                ("power_kw", p is None),
+                ("connection_voltage_kv", facts.connection_voltage_kv is None),
+            )
+            if absent
+        ]
+        kind = frequency = lfsm = (
+            "missing_inputs" if scope_missing else "outside_version"
+        )
+        voltage = reconnection = change = kind
+        duty_missing: list[str] = []
+        if not scope_missing:
+            assert p is not None and facts.connection_voltage_kv is not None
+            if in_version:
+                # Article 5.2 orders its categories: (d) type D covers a
+                # connection point at 110 kV or above regardless of capacity,
+                # and a lower connection point at or above the type D
+                # threshold. Table 1 (Nordic) then gives 1,5 MW / 10 MW /
+                # 30 MW as the upper limits of the type B / C / D thresholds,
+                # and EIFS § 17 makes those limits the Swedish thresholds. The
+                # 0,8 kW type A floor is Article 5.2(a), "0,8 kW or more".
+                # Every boundary is inclusive in the cited text ("at or
+                # above", "0,8 kW or more"), and the decimal values are
+                # compared exactly instead of through binary floating point.
+                kva = Decimal(str(facts.connection_voltage_kv))
+                kw = Decimal(str(p))
+                kind = (
+                    "type_d"
+                    if kva >= Decimal(110)
+                    else "type_d"
+                    if kw >= Decimal(30000)
+                    else "type_c"
+                    if kw >= Decimal(10000)
+                    else "type_b"
+                    if kw >= Decimal(1500)
+                    else "type_a"
+                    if kw >= Decimal("0.8")
+                    else "below_range"
+                )
+                in_types = kind in {"type_a", "type_b", "type_c", "type_d"}
+                # § 1: types A to D must stay connected over four bands.
+                if kind == "below_range":
+                    frequency = lfsm = "below_range"
+                else:
+                    frequency = "four_band_range_47_5_to_51_5_hz"
+                    # § 3 and § 4: LFSM-O at 50,5 Hz with a primary droop
+                    # setting of 8 percent, for types A to D.
+                    lfsm = "lfsm_o_50_5_hz_droop_8_percent"
+                # § 18 covers types B, C and D only; Article 13 carries no
+                # corresponding voltage-range duty for type A, so the reading
+                # stays unresolved instead of extending the clause.
+                voltage = (
+                    "voltage_range_90_to_105_percent"
+                    if kind in {"type_b", "type_c", "type_d"}
+                    else "not_applicable_type_a"
+                    if kind == "type_a"
+                    else "below_range"
+                )
+                # § 8 and § 9 cover types A, B and C only; nothing in the cited
+                # text gives type D an automatic-reconnection condition.
+                reconnection = (
+                    "automatic_reconnection_47_5_to_50_1_hz_after_3_minutes"
+                    if kind in {"type_a", "type_b", "type_c"}
+                    else "not_applicable_type_d"
+                    if kind == "type_d"
+                    else "below_range"
+                )
+                # Article 4.1(a) applies its notification procedure to a type C
+                # or type D module only. For type A and B the article gives no
+                # reading, so the outcome stays unresolved rather than negative.
+                if facts.se_existing_installation_change is None:
+                    change = "missing_inputs"
+                elif not in_types:
+                    change = "below_range"
+                elif not facts.se_existing_installation_change:
+                    change = "new_installation"
+                elif kind in {"type_c", "type_d"}:
+                    change = "modification_notification_type_c_or_d"
+                else:
+                    change = "modification_outside_4_1_a_other_rules_open"
+        # ellagen 4 kap. 1 § states the connection duty; 4 kap. 2 § allows a
+        # distribution system operator to deviate from it, and second paragraph
+        # narrows that option for a renewable installation whose feed-in can
+        # occur at no more than 43,5 kW: the operator must then notify the
+        # applicant, within one month of receiving the request. The quantity is
+        # the feed-in power, not the RfG maximum capacity, so it is a separate
+        # declaration and the reading never calls either case "no connection
+        # needed".
+        # The 43,5 kW notice rule entered the act with Lag (2022:596), so this
+        # one check keeps its own lower bound instead of inheriting the EIFS
+        # window: a date between 2019-04-27 and 2022-06-30 has the network code
+        # but not yet this wording of 4 kap. 2 §.
+        duty_floor = cast(str, _SE_ELLAGEN_SOURCE["effective_from"])
+        duty_through = cast(str, _SE_ELLAGEN_SOURCE["evidence_snapshot_date"])
+        duty_in_version = (
+            facts.rule_date is not None
+            and duty_floor <= facts.rule_date <= duty_through
+        )
+        if facts.se_export_power_kw is None:
+            export = "missing_inputs"
+            duty_missing = ["se_export_power_kw"]
+        elif not duty_in_version:
+            export = "outside_version"
+        elif Decimal(str(facts.se_export_power_kw)) <= Decimal("43.5"):
+            export = "deviation_notice_within_one_month_up_to_43_5_kw"
+        else:
+            export = "deviation_on_general_grounds_above_43_5_kw"
+        add("se_module_type", kind, scope_missing)
+        add("se_frequency_range", frequency, scope_missing)
+        add("se_lfsm_o", lfsm, scope_missing)
+        add("se_voltage_range", voltage, scope_missing)
+        add("se_automatic_reconnection", reconnection, scope_missing)
+        sources.append(dict(_SE_RFG_SOURCE))
+        add(
+            "se_existing_change",
+            change,
+            scope_missing
+            or (
+                ["se_existing_installation_change"]
+                if change == "missing_inputs"
+                else []
+            ),
+            origin=cast(str, _SE_RFG_SOURCE["id"]),
+        )
+        sources.append(dict(_SE_ELLAGEN_SOURCE))
+        add(
+            "se_connection_duty",
+            export,
+            duty_missing,
+            origin=cast(str, _SE_ELLAGEN_SOURCE["id"]),
         )
     return {
         "schema_version": 1,

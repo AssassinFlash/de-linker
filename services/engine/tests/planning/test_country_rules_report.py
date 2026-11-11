@@ -35,7 +35,7 @@ from .test_grid_connection import declared
 
 
 @pytest.mark.parametrize("locale", ["en", "de"])
-@pytest.mark.parametrize("country", ["FR", "NL", "DE"])
+@pytest.mark.parametrize("country", ["FR", "NL", "DE", "SE"])
 def test_saved_rules_reach_all_consumers_and_remain_frozen(
     workspace: Workspace,
     owner: Actor,
@@ -58,6 +58,13 @@ def test_saved_rules_reach_all_consumers_and_remain_frozen(
             power_kw=2,
             de_before_control_test=True,
             de_remuneration="feed_in_or_tenant",
+        ),
+        "SE": rule_input(
+            "se_rfg_maximum_capacity",
+            power_kw=120,
+            connection_voltage_kv=0.4,
+            se_export_power_kw=40,
+            se_existing_installation_change=True,
         ),
     }[country]
     values = cast(
@@ -132,13 +139,12 @@ def test_saved_rules_reach_all_consumers_and_remain_frozen(
     review = json_object(json_object(assessment["country_assessment"])["rule_review"])
     checks = review["checks"]
     source_sha = result["pinned_assets"]["report.source"]
-    expected = (
-        "country_rule_fr_generation_type"
-        if country == "FR"
-        else "country_rule_nl_storage_lfsm"
-        if country == "NL"
-        else "country_rule_de_eeg_export"
-    )
+    expected = {
+        "FR": "country_rule_fr_generation_type",
+        "NL": "country_rule_nl_storage_lfsm",
+        "DE": "country_rule_de_eeg_export",
+        "SE": "country_rule_se_module_type",
+    }[country]
     assert text(expected, locale) in report_text
     assert all(
         text(f"country_rule_{check['outcome']}", locale) in report_text
@@ -240,6 +246,15 @@ def test_saved_rules_reach_all_consumers_and_remain_frozen(
         )
     else:
         assert any(row["status"] == "unresolved" for row in rows)
+    if country == "SE":
+        # The three SE sources are separate instruments: the national code, the
+        # EU regulation whose table it adopts, and the electricity act that
+        # carries the connection duty.
+        assert {row["source_id"] for row in rows} == {
+            "se_eifs_2018_2",
+            "se_rfg_2016_631",
+            "se_ellagen_1997_857",
+        }
 
     for selected in (equipment_run.id, completed.id):
         for language in ("en", "de"):

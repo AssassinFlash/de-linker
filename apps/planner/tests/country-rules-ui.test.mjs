@@ -287,4 +287,47 @@ for (const de of [false, true]) {
 			de ? /Anschluss ist genehmigt/ : /connection is approved/,
 		);
 	});
+	test(`${de ? "DE" : "EN"}: the Swedish reading shows its seven checks and three sources`, async (t) => {
+		await mount(
+			t,
+			React.createElement(GridConnectionResult, {
+				assessment: native.se.assessment,
+				locale: de ? "de-DE" : "en-GB",
+			}),
+			de,
+		);
+		const shown = document.body.textContent;
+		// RfG Article 5 gives the thresholds, EIFS section 17 adopts them and
+		// ellagen carries the connection duty: three separate sources.
+		assert.ok(
+			[...document.querySelectorAll("a")].some((link) =>
+				link.href.includes("CELEX:32016R0631"),
+			),
+		);
+		assert.ok(
+			[...document.querySelectorAll("a")].some((link) =>
+				link.href.includes("ei.se"),
+			),
+		);
+		assert.ok(
+			[...document.querySelectorAll("a")].some((link) =>
+				link.href.includes("rkrattsbaser.gov.se"),
+			),
+		);
+		assert.match(shown, /50[,.]5 Hz/);
+		assert.match(shown, /8 ?%/);
+		assert.match(shown, /43[,.]5 kW/);
+		assert.match(shown, /90/);
+		assert.match(shown, /105/);
+		// The connection duty survives the 43.5 kW notice rule: the wording must
+		// not read as "no connection needed" in either language.
+		assert.doesNotMatch(
+			shown,
+			de ? /keine Anschlusspflicht/ : /no connection (is )?(needed|required)/i,
+		);
+		assert.doesNotMatch(
+			shown,
+			de ? /Anschluss ist genehmigt/ : /connection is approved/,
+		);
+	});
 }

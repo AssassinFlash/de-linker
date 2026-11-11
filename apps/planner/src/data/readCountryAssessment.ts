@@ -108,6 +108,55 @@ const ruleOutcomes: Record<string, readonly string[]> = {
 		"missing_inputs",
 		"outside_version",
 	],
+	se_module_type: [
+		"type_a",
+		"type_b",
+		"type_c",
+		"type_d",
+		"below_range",
+		"missing_inputs",
+		"outside_version",
+	],
+	se_frequency_range: [
+		"four_band_range_47_5_to_51_5_hz",
+		"below_range",
+		"missing_inputs",
+		"outside_version",
+	],
+	se_lfsm_o: [
+		"lfsm_o_50_5_hz_droop_8_percent",
+		"below_range",
+		"missing_inputs",
+		"outside_version",
+	],
+	se_voltage_range: [
+		"voltage_range_90_to_105_percent",
+		"not_applicable_type_a",
+		"below_range",
+		"missing_inputs",
+		"outside_version",
+	],
+	se_automatic_reconnection: [
+		"automatic_reconnection_47_5_to_50_1_hz_after_3_minutes",
+		"not_applicable_type_d",
+		"below_range",
+		"missing_inputs",
+		"outside_version",
+	],
+	se_existing_change: [
+		"new_installation",
+		"modification_notification_type_c_or_d",
+		"modification_outside_4_1_a_other_rules_open",
+		"below_range",
+		"missing_inputs",
+		"outside_version",
+	],
+	se_connection_duty: [
+		"deviation_notice_within_one_month_up_to_43_5_kw",
+		"deviation_on_general_grounds_above_43_5_kw",
+		"missing_inputs",
+		"outside_version",
+	],
 };
 const ruleIds: Record<string, readonly string[]> = {
 	FR: ["fr_generation_type"],
@@ -121,18 +170,29 @@ const ruleIds: Record<string, readonly string[]> = {
 		"at_connection_route",
 		"at_conformity_evidence",
 	],
+	SE: [
+		"se_module_type",
+		"se_frequency_range",
+		"se_lfsm_o",
+		"se_voltage_range",
+		"se_automatic_reconnection",
+		"se_existing_change",
+		"se_connection_duty",
+	],
 };
 const ruleBasis: Record<string, string> = {
 	FR: "fr_generation_pmax",
 	NL: "nl_storage_max_active",
 	DE: "de_pv_installed",
 	AT: "at_tor_typ_a_max_capacity",
+	SE: "se_rfg_maximum_capacity",
 };
 const ruleSource: Record<string, string> = {
 	FR: "fr_arrete_article_35",
 	NL: "nl_systeemcode_article_2_9",
 	DE: "de_eeg_section_9",
 	AT: "at_tor_erzeuger_typ_a_1_4",
+	SE: "se_eifs_2018_2",
 };
 /**
  * Sources an AT reading cites after the TOR part itself: the ElWG for the
@@ -141,11 +201,17 @@ const ruleSource: Record<string, string> = {
  */
 const ruleExtraSources: Record<string, readonly string[]> = {
 	AT: ["at_elwg_2025", "at_tor_erzeuger_typ_a_1_4_conformity"],
+	SE: ["se_rfg_2016_631", "se_ellagen_1997_857"],
 };
 /** Which of the review's sources one AT check belongs to. */
 const atCheckSource: Record<string, number> = {
 	at_connection_route: 1,
 	at_conformity_evidence: 2,
+};
+/** Which of the review's sources one SE check belongs to. */
+const seCheckSource: Record<string, number> = {
+	se_existing_change: 1,
+	se_connection_duty: 2,
 };
 const unresolvedOutcomes = [
 	"missing_inputs",
@@ -154,6 +220,9 @@ const unresolvedOutcomes = [
 	"boundary_not_established",
 	"outside_scope",
 	"power_criterion_not_exceeded_other_criteria_open",
+	"not_applicable_type_a",
+	"not_applicable_type_d",
+	"modification_outside_4_1_a_other_rules_open",
 ];
 
 function readRuleReview(value: unknown, country: string): JsonObject {
@@ -228,7 +297,7 @@ function readRuleReview(value: unknown, country: string): JsonObject {
 			check.source_id !==
 				(id.startsWith("fr_enedis_")
 					? ids[ids.length - 1]
-					: ids[atCheckSource[id] ?? 0]) ||
+					: ids[atCheckSource[id] ?? seCheckSource[id] ?? 0]) ||
 			check.status !==
 				(unresolvedOutcomes.includes(outcome) ? "unresolved" : "conditional")
 		)
@@ -251,6 +320,8 @@ function readRuleReview(value: unknown, country: string): JsonObject {
 						"at_existing_installation_change",
 						"at_change_previous_power_kw",
 						"at_conformity_basis",
+						"se_export_power_kw",
+						"se_existing_installation_change",
 					].includes(String(key)),
 			)
 		)

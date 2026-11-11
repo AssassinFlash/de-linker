@@ -7,7 +7,8 @@ export type RuleBasis =
 	| "fr_generation_pmax"
 	| "nl_storage_max_active"
 	| "de_pv_installed"
-	| "at_tor_typ_a_max_capacity";
+	| "at_tor_typ_a_max_capacity"
+	| "se_rfg_maximum_capacity";
 
 export interface CountryRuleInputs extends JsonObject {
 	schema_version: 1;
@@ -28,6 +29,8 @@ export interface CountryRuleInputs extends JsonObject {
 		| "accredited_r25_report"
 		| "vde_4105_with_r25_properties"
 		| null;
+	se_export_power_kw?: number | null;
+	se_existing_installation_change?: boolean | null;
 }
 
 const validate = new Ajv2020({
@@ -63,6 +66,8 @@ export function emptyCountryRuleInputs(basis: RuleBasis): CountryRuleInputs {
 		at_existing_installation_change: null,
 		at_change_previous_power_kw: null,
 		at_conformity_basis: null,
+		se_export_power_kw: null,
+		se_existing_installation_change: null,
 	};
 }
 
