@@ -50,7 +50,7 @@ Actor 统一为 `apify/website-content-crawler`（浏览器渲染 Firefox、`max
 4. 检索（`"250008RECO14"`、`site:sgs.com`、`Einheitenzertifikat annex GoodWe ET` 等多组查询）无任何索引到的 164 页 Annex 或含 Annex 的合并件。
 5. GoodWe `/Ftp/` 猜名探测（`…-Annex.pdf` 三个变体）全部 302（不存在）。
 
-判定：**公开副本未取得，但不能据此断言 Annex 不存在**。SGS 目录的实际交互搜索触发人机验证；公开详情接口对证书号及已核实的直接 sourceSystem 尝试只返回占位符。不得外推 Annex 内容，也不得把索取当作本代理可执行的路径。
+判定（**第一轮结论，已被 2026-11-11 第四轮取代，见本节开头更新块**）：公开副本未取得，但不能据此断言 Annex 不存在。SGS 目录的实际交互搜索触发人机验证；公开详情接口对证书号及已核实的直接 sourceSystem 尝试只返回占位符。不得外推 Annex 内容，也不得把索取当作本代理可执行的路径。
 
 对产品事实的影响：现 registry/知识库对 ET 75–100 的引用只要只引 1 页封面所述范围（型号、软件 010101、VDE-AR-N 4110/4120、无 test terminal 需另加连接端子板），即无需改动；不得外推 Annex 内容。
 
