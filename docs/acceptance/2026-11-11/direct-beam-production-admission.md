@@ -35,9 +35,21 @@ requests:
 traced. The sampling upper bound the budget prices is 4,214,016 for the
 96-module year (2,107,008 at 48 modules); 51.1 % of that bound is traced in every
 scene above, because night and back-facing rows consume no ray. The
-`bounds checks` column is what actually grows with occlusion: per traced ray it
-is 0.05-0.08 on a clear roof, 2.0-2.3 with three or four walls, 15-20 with six
-and 24.3-28.4 with eight to twelve.
+`bounds checks` column is what actually grows with occlusion. Per traced ray the
+table above costs 0.05-0.08 clear, 2.0 at 96 modules with four walls, 12.9-15.2
+at 48-60 modules with three walls and 20.6-28.4 at sixty modules with six or 96
+with eight to twelve.
+
+That is deliberately not a "more walls costs more" rule: four walls on the
+96-module roof cost 2.0 per ray while three walls on the smaller 48-module roof
+cost 12.9, because what matters is how many samples a wall actually shadows, not
+how many walls exist. Only the declared scene can price that, which is why the
+allowance is computed from the scene rather than from a constant per obstacle.
+
+`peak RSS` is the process maximum and includes the whole fixture year held in
+memory; the narrow scenes show the interpreter floor as much as the calculation.
+The two 96-module rows at 1,066-1,118 MB are the meaningful readings against
+the isolated 1.2 GiB cgroup.
 
 ## What was wrong
 
