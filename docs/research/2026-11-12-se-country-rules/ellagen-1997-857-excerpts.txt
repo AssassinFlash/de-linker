@@ -1,0 +1,80 @@
+Ellagen (1997:857), 4 kap. Anslutning till elnätet och överföring av el
+Officiell konsoliderad text hos Regeringskansliet.
+
+Källa: https://rkrattsbaser.gov.se/sfst?bet=1997:857
+Sidan anger: "Ändring införd: t.o.m. SFS 2026:1298", "Övrigt: Rättelseblad
+2011:712 har iakttagits.", "Ikraft: 1998-01-01 överg.best.",
+"/Upphör att gälla U:2027-01-01 genom Lag (2026:1282)./"
+Extraherad text: 162 121 tecken,
+SHA-256 e06739af5c38995d827d263f77fd17e963f6cf8a49f15f409445ef14dbaa6150
+
+Lag (2022:596) om ändring i ellagen: SFS 2022:596, utfärdad 25 maj 2022,
+publicerad 31 maj 2022, "1. Denna lag träder i kraft den 1 juli 2022."
+PDF: 1 282 110 byte, 20 sidor,
+SHA-256 e827148e2748f5d75bd0f426fc92776418dfbdbaa1e3ece7ab4d2c295de6cdca
+Extraherad text (pdftotext -layout, egen extraktion): SHA-256
+09861a39d4eea681621d961cbe0d1cf11fa0f00ee7c40848e3f6bbee6a384e3e
+
+--- 4 kap. 1 § — anslutningsskyldigheten ---
+
+1 § Den som har en nätkoncession ska på objektiva, icke-diskriminerande och i
+övrigt skäliga villkor ansluta en elektrisk anläggning till ledningen eller
+ledningsnätet, om innehavaren av den elektriska anläggningen begär att den ska
+anslutas. I fråga om lokalnät gäller anslutningsskyldigheten endast anläggningar
+inom koncessionsområdet. Lag (2022:596).
+
+--- 4 kap. 2 § — undantag, inklusive 43,5 kW-regeln ---
+
+2 § Avsteg från skyldigheten enligt 1 § får göras, om det
+
+1. saknas ledig kapacitet och inte finns förutsättningar att åtgärda
+kapacitetsbristen på ett sätt som är samhällsekonomiskt motiverat utan att
+förstärka ledningen eller ledningsnätet, eller
+
+2. finns andra särskilda skäl.
+
+Trots första stycket får ett distributionsnätsföretag, i fråga om en anläggning
+för produktion av förnybar el vars inmatning kan ske med en effekt om högst
+43,5 kilowatt, göra avsteg från anslutningsskyldigheten endast om
+
+1. företaget underrättar den som begär anslutning om detta, och
+
+2. underrättelsen lämnas inom en månad från det att företaget har tagit emot
+begäran. Lag (2022:596).
+
+NOTERAT: 43,5 kW är alltså inte en gräns under vilken anslutningsskyldigheten
+upphör. Det är det tak under vilket ett distributionsnätsföretag som vill göra
+avsteg måste underrätta sökanden inom en månad. Över 43,5 kW gäller första
+stycket utan denna underrättelseskyldighet. Båda fallen är undantag från
+huvudregeln i 1 §, inte en rättighet att neka.
+
+--- 4 kap. 5 § — anslutning inom skälig tid ---
+
+5 § Ett nätföretag som ska ansluta en anläggning enligt 1 § ska genomföra
+anslutningen inom skälig tid från det att företaget har tagit emot en begäran om
+anslutning. Tiden får vara längre än två år endast om det är nödvändigt med
+hänsyn till anslutningens omfattning och tekniska utformning eller det finns
+andra särskilda skäl. Lag (2022:596).
+
+--- 4 kap. 6 § — standardiserade rutiner, inklusive energilagring ---
+
+6 § Ett nätföretag ska ha standardiserade rutiner för anslutning av elektriska
+anläggningar och energilagringsanläggningar. Sådana rutiner ska, så långt det
+är möjligt och ändamålsenligt, säkerställa en snabb och enkel anslutning.
+
+Ett nätföretag ska offentliggöra sina rutiner. Lag (2025:1330).
+
+--- 4 kap. 8 a § — information under handläggningen ---
+
+8 a § Ett distributionsnätsföretag ska ge den som har begärt anslutning av en
+anläggning tydlig och transparent information om hur begäran behandlas och hur
+handläggningen går. Informationen ska lämnas inom tre månader från det att
+begäran har tagits emot och därefter minst en gång i kvartalet fram till dess
+att företaget slutligt tar ställning till begäran. Lag (2025:1330).
+
+--- 4 kap. 9 § — information när anslutning vägras på kapacitetsgrund ---
+
+9 § Ett nätföretag som har vägrat ansluta en anläggning till en ledning eller
+ett ledningsnät med hänvisning till att ledningen eller nätet saknar kapacitet,
+ska mot skälig ersättning ge den som begär det information om vilka åtgärder som
+krävs för att anslutningen ska kunna genomföras.

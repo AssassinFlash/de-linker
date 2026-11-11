@@ -5,7 +5,8 @@
         "fr_generation_pmax",
         "nl_storage_max_active",
         "de_pv_installed",
-        "at_tor_typ_a_max_capacity"
+        "at_tor_typ_a_max_capacity",
+        "se_rfg_maximum_capacity"
       ],
       "type": "string"
     },
@@ -168,6 +169,29 @@
       ],
       "default": null,
       "title": "At Conformity Basis"
+    },
+    "se_export_power_kw": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Positive"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "se_existing_installation_change": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Se Existing Installation Change"
     }
   },
   "required": [

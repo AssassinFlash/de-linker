@@ -652,6 +652,8 @@ def test_ui_checked_dates_match_the_current_engine_sources() -> None:
         "de_pv_installed": "DE",
         "fr_generation_pmax": "FR",
         "nl_storage_max_active": "NL",
+        "at_tor_typ_a_max_capacity": "AT",
+        "se_rfg_maximum_capacity": "SE",
     }.items():
         review = review_country_rules(country, rule_input(basis))
         assert review is not None
@@ -765,3 +767,208 @@ def test_plant_reuses_electrical_cache_but_not_previous_rule_review(
     assert result["country_assessment"] == expected
     for row in cast(list[Object], result["systems"]):
         assert json_object(row["assessment"])["country_assessment"] == expected
+
+
+def test_se_module_type_uses_the_adopted_nordic_thresholds() -> None:
+    """EIFS 2018:2 § 17 adopts RfG Article 5.2 Table 1 Nordic values in Sweden."""
+    for power, voltage, expected in (
+        (0.79, 0.4, "below_range"),
+        (0.8, 0.4, "type_a"),
+        (1499.9, 0.4, "type_a"),
+        (1500.0, 0.4, "type_b"),
+        (9999.9, 0.4, "type_b"),
+        (10000.0, 0.4, "type_c"),
+        (29999.9, 0.4, "type_c"),
+        (30000.0, 0.4, "type_d"),
+        (0.9, 110.0, "type_d"),
+        (0.9, 109.9, "type_a"),
+    ):
+        result = outcomes(
+            review_country_rules(
+                "SE",
+                rule_input(
+                    "se_rfg_maximum_capacity",
+                    power_kw=power,
+                    connection_voltage_kv=voltage,
+                    se_export_power_kw=10,
+                    se_existing_installation_change=False,
+                ),
+            )
+        )
+        assert result["se_module_type"] == expected, (power, voltage)
+
+
+def test_se_checks_stay_inside_the_type_their_clause_names() -> None:
+    """§ 18 names B/C/D and § 8 names A/B/C; neither reaches the missing type."""
+    type_a = outcomes(
+        review_country_rules(
+            "SE",
+            rule_input(
+                "se_rfg_maximum_capacity",
+                power_kw=120,
+                connection_voltage_kv=0.4,
+                se_export_power_kw=40,
+                se_existing_installation_change=False,
+            ),
+        )
+    )
+    assert type_a["se_voltage_range"] == "not_applicable_type_a"
+    assert type_a["se_automatic_reconnection"] == (
+        "automatic_reconnection_47_5_to_50_1_hz_after_3_minutes"
+    )
+    assert type_a["se_frequency_range"] == "four_band_range_47_5_to_51_5_hz"
+    assert type_a["se_lfsm_o"] == "lfsm_o_50_5_hz_droop_8_percent"
+    type_d = outcomes(
+        review_country_rules(
+            "SE",
+            rule_input(
+                "se_rfg_maximum_capacity",
+                power_kw=40000,
+                connection_voltage_kv=0.4,
+                se_export_power_kw=5000,
+                se_existing_installation_change=False,
+            ),
+        )
+    )
+    assert type_d["se_voltage_range"] == "voltage_range_90_to_105_percent"
+    assert type_d["se_automatic_reconnection"] == "not_applicable_type_d"
+    below = outcomes(
+        review_country_rules(
+            "SE",
+            rule_input(
+                "se_rfg_maximum_capacity",
+                power_kw=0.5,
+                connection_voltage_kv=0.4,
+                se_export_power_kw=0.5,
+                se_existing_installation_change=False,
+            ),
+        )
+    )
+    assert {
+        below["se_frequency_range"],
+        below["se_lfsm_o"],
+        below["se_voltage_range"],
+        below["se_automatic_reconnection"],
+    } == {"below_range"}
+
+
+def test_se_substantial_change_procedure_names_type_c_and_d_only() -> None:
+    """RfG Article 4(1)(a) reaches a modified type C or D module, nothing else."""
+    for power, changing, expected in (
+        (120, False, "new_installation"),
+        (120, True, "modification_outside_4_1_a_other_rules_open"),
+        (5000, True, "modification_outside_4_1_a_other_rules_open"),
+        (12000, True, "modification_notification_type_c_or_d"),
+        (40000, True, "modification_notification_type_c_or_d"),
+    ):
+        result = outcomes(
+            review_country_rules(
+                "SE",
+                rule_input(
+                    "se_rfg_maximum_capacity",
+                    power_kw=power,
+                    connection_voltage_kv=0.4,
+                    se_export_power_kw=40,
+                    se_existing_installation_change=changing,
+                ),
+            )
+        )
+        assert result["se_existing_change"] == expected, (power, changing)
+
+
+def test_se_connection_duty_keeps_the_43_5_kw_notice_rule_separate() -> None:
+    """ellagen 4 kap. 2 § narrows a deviation; it never creates an exemption."""
+    for export, expected in (
+        (43.5, "deviation_notice_within_one_month_up_to_43_5_kw"),
+        (0.8, "deviation_notice_within_one_month_up_to_43_5_kw"),
+        (43.6, "deviation_on_general_grounds_above_43_5_kw"),
+        (5000.0, "deviation_on_general_grounds_above_43_5_kw"),
+    ):
+        result = outcomes(
+            review_country_rules(
+                "SE",
+                rule_input(
+                    "se_rfg_maximum_capacity",
+                    power_kw=120,
+                    connection_voltage_kv=0.4,
+                    se_export_power_kw=export,
+                    se_existing_installation_change=False,
+                ),
+            )
+        )
+        assert result["se_connection_duty"] == expected, export
+    # The feed-in power is a separate declaration: the maximum capacity alone
+    # cannot stand in for it, and the missing field is named.
+    review = review_country_rules(
+        "SE",
+        rule_input(
+            "se_rfg_maximum_capacity",
+            power_kw=120,
+            connection_voltage_kv=0.4,
+            se_existing_installation_change=False,
+        ),
+    )
+    assert review is not None
+    duty = [
+        check
+        for check in cast(list[Object], review["checks"])
+        if check["id"] == "se_connection_duty"
+    ]
+    assert len(duty) == 1
+    assert duty[0]["outcome"] == "missing_inputs"
+    assert duty[0]["missing_inputs"] == ["se_export_power_kw"]
+    assert duty[0]["source_id"] == "se_ellagen_1997_857"
+
+
+def test_se_reading_is_bounded_by_the_eifs_version_dates() -> None:
+    """EIFS 2018:2 in force from 2019-04-27; the reading ends at the check date."""
+    for rule_date in ("2019-04-27", "2020-01-01", "2026-11-11"):
+        review = review_country_rules(
+            "SE",
+            rule_input(
+                "se_rfg_maximum_capacity",
+                rule_date=rule_date,
+                power_kw=120,
+                connection_voltage_kv=0.4,
+                se_export_power_kw=40,
+                se_existing_installation_change=False,
+            ),
+        )
+        assert review is not None
+        assert {
+            str(check["outcome"]) for check in cast(list[Object], review["checks"])
+        } != {"outside_version"}
+        assert outcomes(review)["se_module_type"] == "type_a"
+    # The 43,5 kW notice rule came with Lag (2022:596), so the connection-duty
+    # check keeps its own lower bound while the network-code checks stay open.
+    straddling = review_country_rules(
+        "SE",
+        rule_input(
+            "se_rfg_maximum_capacity",
+            rule_date="2020-06-01",
+            power_kw=120,
+            connection_voltage_kv=0.4,
+            se_export_power_kw=40,
+            se_existing_installation_change=False,
+        ),
+    )
+    assert straddling is not None
+    straddling_outcomes = outcomes(straddling)
+    assert straddling_outcomes["se_module_type"] == "type_a"
+    assert straddling_outcomes["se_connection_duty"] == "outside_version"
+    for rule_date in ("2019-04-26", "2026-11-12", "2030-01-01"):
+        review = review_country_rules(
+            "SE",
+            rule_input(
+                "se_rfg_maximum_capacity",
+                rule_date=rule_date,
+                power_kw=120,
+                connection_voltage_kv=0.4,
+                se_export_power_kw=40,
+                se_existing_installation_change=False,
+            ),
+        )
+        assert review is not None
+        assert {
+            str(check["outcome"]) for check in cast(list[Object], review["checks"])
+        } == {"outside_version"}

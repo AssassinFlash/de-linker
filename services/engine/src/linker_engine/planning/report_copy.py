@@ -1408,6 +1408,102 @@ TEXT = {
         "declared conformity path",
         "angegebener Konformitätsnachweis",
     ),
+    "country_rule_se_rfg_maximum_capacity": (
+        "Swedish maximum capacity under RfG Article 5",
+        "Schwedische Maximalkapazität nach RfG Artikel 5",
+    ),
+    "country_rule_se_eifs_2018_2": (
+        "EIFS 2018:2",
+        "EIFS 2018:2",
+    ),
+    "country_rule_se_rfg_2016_631": (
+        "Commission Regulation (EU) 2016/631 (RfG)",
+        "Verordnung (EU) 2016/631 (RfG)",
+    ),
+    "country_rule_se_ellagen_1997_857": (
+        "Ellagen (1997:857)",
+        "Ellagen (1997:857)",
+    ),
+    "country_rule_se_module_type": (
+        "RfG module type under the Swedish thresholds",
+        "RfG-Modultyp nach den schwedischen Schwellenwerten",
+    ),
+    "country_rule_se_frequency_range": (
+        "Frequency range and operating times",
+        "Frequenzbereich und Betriebszeiten",
+    ),
+    "country_rule_se_lfsm_o": (
+        "Overfrequency active-power response",
+        "Wirkleistungsreaktion bei Überfrequenz",
+    ),
+    "country_rule_se_voltage_range": (
+        "Active-power output over the voltage range",
+        "Wirkleistungsabgabe im Spannungsbereich",
+    ),
+    "country_rule_se_automatic_reconnection": (
+        "Conditions for automatic connection",
+        "Bedingungen für die automatische Zuschaltung",
+    ),
+    "country_rule_se_existing_change": (
+        "Change to an existing module",
+        "Änderung eines bestehenden Moduls",
+    ),
+    "country_rule_se_connection_duty": (
+        "Connection duty and the 43.5 kW notice rule",
+        "Anschlusspflicht und die 43,5-kW-Mitteilungsregel",
+    ),
+    "country_rule_significant_under_article_5_2": (
+        "The declared capacity and voltage put the module in one of the RfG Article 5(2) categories",
+        "Leistung und Spannung ordnen das Modul einer Kategorie nach RfG Artikel 5 Absatz 2 zu",
+    ),
+    "country_rule_four_band_range_47_5_to_51_5_hz": (
+        "Four bands: 47.5–48.5 Hz for 30 minutes, 48.5–49.0 Hz for 30 minutes, 49.0–51.0 Hz unlimited, 51.0–51.5 Hz for 30 minutes",
+        "Vier Bänder: 47,5–48,5 Hz für 30 Minuten, 48,5–49,0 Hz für 30 Minuten, 49,0–51,0 Hz unbegrenzt, 51,0–51,5 Hz für 30 Minuten",
+    ),
+    "country_rule_lfsm_o_50_5_hz_droop_8_percent": (
+        "Reduce active power from a threshold of 50.5 Hz with a primary droop setting of 8%. Disconnection is not an alternative to that reduction.",
+        "Reduzierung der Wirkleistung ab einer Schwelle von 50,5 Hz mit einer primären Statik von 8 %. Die Abschaltung ist keine Alternative zu dieser Reduzierung.",
+    ),
+    "country_rule_voltage_range_90_to_105_percent": (
+        "Maintain active-power output between 90% and 105% of the connection-point voltage",
+        "Wirkleistungsabgabe zwischen 90 % und 105 % der Spannung am Netzanschlusspunkt beibehalten",
+    ),
+    "country_rule_automatic_reconnection_47_5_to_50_1_hz_after_3_minutes": (
+        "Automatic connection is permitted only after the frequency stayed within 47.5–50.1 Hz for three consecutive minutes; the power increase stays unconstrained below 49.9 Hz, at most 10% of nominal active power per minute between 49.9 and 50.1 Hz, and is not permitted above 50.1 Hz",
+        "Eine automatische Zuschaltung ist erst zulässig, nachdem die Frequenz drei zusammenhängende Minuten innerhalb von 47,5–50,1 Hz lag; unterhalb von 49,9 Hz ist der Leistungsanstieg unbegrenzt, zwischen 49,9 und 50,1 Hz höchstens 10 % der Nennwirkleistung je Minute und oberhalb von 50,1 Hz nicht zulässig",
+    ),
+    "country_rule_modification_notification_type_c_or_d": (
+        "A modified type C or type D module: notify the system operator in advance, and the authority decides whether the connection agreement is revised",
+        "Geändertes Modul des Typs C oder D: vorherige Mitteilung an den Netzbetreiber; die Behörde entscheidet über die Anpassung des Netzanschlussvertrags",
+    ),
+    "country_rule_modification_outside_4_1_a_other_rules_open": (
+        "Article 4(1)(a) names type C and type D only; for this type the cited article gives no reading and other rules stay open",
+        "Artikel 4 Absatz 1 Buchstabe a nennt nur Typ C und Typ D; für diesen Typ ergibt die zitierte Bestimmung keine Aussage, weitere Regeln bleiben offen",
+    ),
+    "country_rule_not_applicable_type_a": (
+        "The cited clause names types B, C and D only, so it states nothing for type A",
+        "Die zitierte Vorschrift nennt nur Typ B, C und D und sagt daher nichts über Typ A aus",
+    ),
+    "country_rule_not_applicable_type_d": (
+        "The cited clause names types A, B and C only, so it states nothing for type D",
+        "Die zitierte Vorschrift nennt nur Typ A, B und C und sagt daher nichts über Typ D aus",
+    ),
+    "country_rule_deviation_notice_within_one_month_up_to_43_5_kw": (
+        "Up to 43.5 kW of possible feed-in power: a distribution system operator may deviate from the connection duty only after notifying the applicant, and that notice must arrive within one month of the request. The connection duty itself continues to apply.",
+        "Bis 43,5 kW möglicher Einspeiseleistung: Ein Verteilnetzbetreiber darf von der Anschlusspflicht nur nach Mitteilung an den Antragsteller abweichen, und diese Mitteilung muss innerhalb eines Monats nach dem Antrag erfolgen. Die Anschlusspflicht selbst bleibt bestehen.",
+    ),
+    "country_rule_deviation_on_general_grounds_above_43_5_kw": (
+        "Above 43.5 kW of possible feed-in power: the one-month notice rule does not apply, while the general grounds for a deviation and the connection duty itself are unchanged",
+        "Über 43,5 kW möglicher Einspeiseleistung: Die Mitteilungsfrist von einem Monat gilt nicht; die allgemeinen Gründe für eine Abweichung und die Anschlusspflicht selbst bleiben unverändert",
+    ),
+    "country_rule_input_se_export_power_kw": (
+        "possible feed-in power",
+        "mögliche Einspeiseleistung",
+    ),
+    "country_rule_input_se_existing_installation_change": (
+        "existing module being changed",
+        "Änderung eines bestehenden Moduls",
+    ),
     "country_open": (
         "Country requirements are not assessed by the selected calculations.",
         "Landesspezifische Anforderungen werden in den ausgewählten Berechnungen nicht bewertet.",

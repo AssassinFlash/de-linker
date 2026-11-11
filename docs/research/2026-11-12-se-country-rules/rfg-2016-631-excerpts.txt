@@ -1,0 +1,138 @@
+Commission Regulation (EU) 2016/631 of 14 April 2016 establishing a network
+code on requirements for grid connection of generators (RfG)
+OJ L 112, 27.4.2016, pp. 1–68. Status on EUR-Lex: In force.
+ELI: http://data.europa.eu/eli/reg/2016/631/oj
+
+Källa (HTML): https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32016R0631&from=EN
+Extraherad text (crawler "text"): 210 737 tecken,
+SHA-256 e88982d1cf6d0d4ef8870a88cff02b5bf3387b5a23196121543d156ec374f572
+Nedan följer ordagrann text ur den extraherade texten (endast kursiv/blanksteg
+normaliserade). Verifierat mot källtexten 2026-11-11.
+
+--- Artikel 5.1–5.2 (a)–(d) ---
+
+Article 5
+
+Determination of significance
+
+1.   The power-generating modules shall comply with the requirements on the
+basis of the voltage level of their connection point and their maximum
+capacity according to the categories set out in paragraph 2.
+
+2.   Power-generating modules within the following categories shall be
+considered as significant:
+
+(a)
+connection point below 110 kV and maximum capacity of 0,8 kW or more (type A);
+
+(b)
+connection point below 110 kV and maximum capacity at or above a threshold
+proposed by each relevant TSO in accordance with the procedure laid out in
+paragraph 3 (type B). This threshold shall not be above the limits for type B
+power-generating modules contained in Table 1;
+
+(c)
+connection point below 110 kV and maximum capacity at or above a threshold
+specified by each relevant TSO in accordance with paragraph 3 (type C). This
+threshold shall not be above the limits for type C power-generating modules
+contained in Table 1; or
+
+(d)
+connection point at 110 kV or above (type D). A power-generating module is
+also of type D if its connection point is below 110 kV and its maximum
+capacity is at or above a threshold specified in accordance with paragraph 3.
+This threshold shall not be above the limit for type D power-generating
+modules contained in Table 1.
+
+--- Tabell 1: Limits for thresholds for type B, C and D power-generating modules ---
+
+Synchronous areas | type B threshold limit | type C threshold limit |
+type D threshold limit
+
+Continental Europe            1 MW    50 MW   75 MW
+Great Britain                 1 MW    50 MW   75 MW
+Nordic                        1,5 MW  10 MW   30 MW
+Ireland and Northern Ireland  0,1 MW   5 MW   10 MW
+Baltic                        0,5 MW  10 MW   15 MW
+
+--- Artikel 13.1 (a)(i) + tabell 2, Nordic rad ---
+
+Article 13
+
+General requirements for type A power-generating modules
+
+1.   Type A power-generating modules shall fulfil the following requirements
+relating to frequency stability:
+
+(a)
+With regard to frequency ranges:
+
+(i)
+a power-generating module shall be capable of remaining connected to the
+network and operate within the frequency ranges and time periods specified in
+Table 2;
+
+Tabell 2, Nordic rad:
+47,5 Hz-48,5 Hz  30 minutes
+48,5 Hz-49,0 Hz  To be specified by each TSO, but not less than 30 minutes
+49,0 Hz-51,0 Hz  Unlimited
+51,0 Hz-51,5 Hz  30 minutes
+
+--- Artikel 13.2 (c), (d), (e) — typ A LFSM-O ---
+
+2.   With regard to the limited frequency sensitive mode — overfrequency
+(LFSM-O), the following shall apply, as determined by the relevant TSO for its
+control area in coordination with the TSOs of the same synchronous area to
+ensure minimal impacts on neighbouring areas:
+
+(c)
+the frequency threshold shall be between 50,2 Hz and 50,5 Hz inclusive;
+
+(d)
+the droop settings shall be between 2 % and 12 %;
+
+(e)
+the power-generating module shall be capable of activating a power frequency
+response with an initial delay that is as short as possible. If that delay is
+greater than two seconds, the power-generating facility owner shall justify
+the delay, providing technical evidence to the relevant TSO;
+
+--- Artikel 13.7 — typ A automatisk anslutning ---
+
+7.   The relevant TSO shall specify the conditions under which a
+power-generating module is capable of connecting automatically to the network.
+Those conditions shall include:
+
+(a)
+frequency ranges within which an automatic connection is admissible, and a
+corresponding delay time; and
+
+(b)
+maximum admissible gradient of increase in active power output.
+
+Automatic connection is allowed unless specified otherwise by the relevant
+system operator in coordination with the relevant TSO.
+
+--- Artikel 14 rubrik + 14.1 — typ B omfattar typ A ---
+
+Article 14
+
+General requirements for type B power-generating modules
+
+1.   Type B power-generating modules shall fulfil the requirements set out in
+Article 13, except for Article 13(2)(b).
+
+--- Artikel 15 rubrik + 15.1 — typ C omfattar typ A och B ---
+
+Article 15
+
+General requirements for type C power-generating modules
+
+1.   Type C power-generating modules shall fulfil the requirements laid down
+in Articles 13 and 14, except for Article 13(2)(b) and (6) and Article
+14(2).
+
+NOTERAT: artikel 13 innehåller ingen bestämmelse om felgenomgång
+(fault-ride-through) för typ A. Felgenomgångskrav införs först för typ B i
+artikel 14.3. Detta är skälet till att SE-paketet inte påstår någon
+FRT-egenskap för typ A.

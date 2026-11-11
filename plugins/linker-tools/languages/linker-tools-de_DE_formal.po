@@ -14536,3 +14536,111 @@ msgstr "z. B. 10115 Berlin"
 #: build/planner/assets/planner.js
 msgid "Entering a postcode or town is enough to start. Roof drawing, interval data and the exact site coordinates stay optional and can be added later."
 msgstr "Die Angabe einer Postleitzahl oder eines Ortes genügt für den Start. Dachzeichnung, Intervall-Daten und die genauen Standortkoordinaten bleiben optional und lassen sich später ergänzen."
+
+#: build/planner/assets/planner.js:1
+msgid "Sweden: maximum capacity under RfG Article 5"
+msgstr "Schweden: Maximalkapazität nach RfG Artikel 5"
+
+#: build/planner/assets/planner.js:1
+msgid "Enter the maximum capacity and the connection-point voltage. Article 5(2) of Regulation (EU) 2016/631 uses both, and EIFS 2018:2 section 17 makes the Nordic threshold values the Swedish ones."
+msgstr "Geben Sie die Maximalkapazität und die Spannung am Netzanschlusspunkt an. Artikel 5 Absatz 2 der Verordnung (EU) 2016/631 verwendet beide Werte, und Abschnitt 17 der EIFS 2018:2 setzt für Schweden die Schwellenwerte des Nordischen Synkronbereichs."
+
+#: build/planner/assets/planner.js:1
+msgid "EIFS 2018:2 in force from 27 April 2019; section 17 adopts the RfG Article 5(2) table for the Nordic area. Checked %s."
+msgstr "EIFS 2018:2 in Kraft seit 27. April 2019; Abschnitt 17 übernimmt die Tabelle nach RfG Artikel 5 Absatz 2 für den Nordischen Bereich. Geprüft am %s."
+
+#: build/planner/assets/planner.js:1
+msgid "Possible feed-in power at the connection point"
+msgstr "Mögliche Einspeiseleistung am Netzanschlusspunkt"
+
+#: build/planner/assets/planner.js:1
+msgid "Is this a change to an existing module?"
+msgstr "Handelt es sich um die Änderung eines bestehenden Moduls?"
+
+#: build/planner/assets/planner.js:1
+msgid "Yes, an existing module"
+msgstr "Ja, ein bestehendes Modul"
+
+#: build/planner/assets/planner.js:1
+msgid "Article 4(1)(a) of Regulation (EU) 2016/631 covers type C and type D only. For other types the cited provision gives no reading."
+msgstr "Artikel 4 Absatz 1 Buchstabe a der Verordnung (EU) 2016/631 gilt nur für Typ C und Typ D. Für andere Typen ergibt die zitierte Bestimmung keine Aussage."
+
+#: build/planner/assets/planner.js:1
+msgid "RfG module type under the Swedish thresholds"
+msgstr "RfG-Modultyp nach den schwedischen Schwellenwerten"
+
+#: build/planner/assets/planner.js:1
+msgid "Frequency range and operating times"
+msgstr "Frequenzbereich und Betriebszeiten"
+
+#: build/planner/assets/planner.js:1
+msgid "Overfrequency active-power response"
+msgstr "Wirkleistungsreaktion bei Überfrequenz"
+
+#: build/planner/assets/planner.js:1
+msgid "Active-power output over the voltage range"
+msgstr "Wirkleistungsabgabe im Spannungsbereich"
+
+#: build/planner/assets/planner.js:1
+msgid "Conditions for automatic connection"
+msgstr "Bedingungen für die automatische Zuschaltung"
+
+#: build/planner/assets/planner.js:1
+msgid "Change to an existing module"
+msgstr "Änderung eines bestehenden Moduls"
+
+#: build/planner/assets/planner.js:1
+msgid "Connection duty and the 43.5 kW notice rule"
+msgstr "Anschlusspflicht und die 43,5-kW-Mitteilungsregel"
+
+#: build/planner/assets/planner.js:1
+msgid "The declared capacity and voltage put the module in one of the RfG Article 5(2) categories"
+msgstr "Leistung und Spannung ordnen das Modul einer Kategorie nach RfG Artikel 5 Absatz 2 zu"
+
+#: build/planner/assets/planner.js:1
+msgid "Four bands: 47.5–48.5 Hz for 30 minutes, 48.5–49.0 Hz for 30 minutes, 49.0–51.0 Hz unlimited, 51.0–51.5 Hz for 30 minutes"
+msgstr "Vier Bänder: 47,5–48,5 Hz für 30 Minuten, 48,5–49,0 Hz für 30 Minuten, 49,0–51,0 Hz unbegrenzt, 51,0–51,5 Hz für 30 Minuten"
+
+#: build/planner/assets/planner.js:1
+msgid "Reduce active power from a threshold of 50.5 Hz with a primary droop setting of 8%. Disconnection is not an alternative to that reduction."
+msgstr "Reduzieren Sie die Wirkleistung ab einer Schwelle von 50,5 Hz mit einer primären Statik von 8 %. Die Abschaltung ist keine Alternative zu dieser Reduzierung."
+
+#: build/planner/assets/planner.js:1
+msgid "Maintain active-power output between 90% and 105% of the connection-point voltage"
+msgstr "Wirkleistungsabgabe zwischen 90 % und 105 % der Spannung am Netzanschlusspunkt beibehalten"
+
+#: build/planner/assets/planner.js:1
+msgid "Automatic connection is permitted only after the frequency stayed within 47.5–50.1 Hz for three consecutive minutes; the power increase stays unconstrained below 49.9 Hz, at most 10% of nominal active power per minute between 49.9 and 50.1 Hz, and is not permitted above 50.1 Hz"
+msgstr "Eine automatische Zuschaltung ist erst zulässig, nachdem die Frequenz drei zusammenhängende Minuten innerhalb von 47,5–50,1 Hz lag; unterhalb von 49,9 Hz ist der Leistungsanstieg unbegrenzt, zwischen 49,9 und 50,1 Hz höchstens 10 % der Nennwirkleistung je Minute und oberhalb von 50,1 Hz nicht zulässig"
+
+#: build/planner/assets/planner.js:1
+msgid "A modified type C or type D module: notify the system operator in advance, and the authority decides whether the connection agreement is revised"
+msgstr "Geändertes Modul des Typs C oder D: vorherige Mitteilung an den Netzbetreiber; die Behörde entscheidet über die Anpassung des Netzanschlussvertrags"
+
+#: build/planner/assets/planner.js:1
+msgid "Article 4(1)(a) names type C and type D only; for this type the cited provision gives no reading and other rules stay open"
+msgstr "Artikel 4 Absatz 1 Buchstabe a nennt nur Typ C und Typ D; für diesen Typ ergibt die zitierte Bestimmung keine Aussage, weitere Regeln bleiben offen"
+
+#: build/planner/assets/planner.js:1
+msgid "The cited clause names types B, C and D only, so it states nothing for type A"
+msgstr "Die zitierte Vorschrift nennt nur Typ B, C und D und sagt daher nichts über Typ A aus"
+
+#: build/planner/assets/planner.js:1
+msgid "The cited clause names types A, B and C only, so it states nothing for type D"
+msgstr "Die zitierte Vorschrift nennt nur Typ A, B und C und sagt daher nichts über Typ D aus"
+
+#: build/planner/assets/planner.js:1
+msgid "Up to 43.5 kW of possible feed-in power: a distribution system operator may deviate from the connection duty only after notifying the applicant, and that notice must arrive within one month of the request. The connection duty itself continues to apply."
+msgstr "Bis 43,5 kW möglicher Einspeiseleistung: Ein Verteilnetzbetreiber darf von der Anschlusspflicht nur nach Mitteilung an den Antragsteller abweichen, und diese Mitteilung muss innerhalb eines Monats nach dem Antrag erfolgen. Die Anschlusspflicht selbst bleibt bestehen."
+
+#: build/planner/assets/planner.js:1
+msgid "Above 43.5 kW of possible feed-in power: the one-month notice rule does not apply, while the general grounds for a deviation and the connection duty itself are unchanged"
+msgstr "Über 43,5 kW möglicher Einspeiseleistung: Die Mitteilungsfrist von einem Monat gilt nicht; die allgemeinen Gründe für eine Abweichung und die Anschlusspflicht selbst bleiben unverändert"
+
+#: build/planner/assets/planner.js:1
+msgid "possible feed-in power"
+msgstr "mögliche Einspeiseleistung"
+
+#: build/planner/assets/planner.js:1
+msgid "existing module being changed"
+msgstr "Änderung eines bestehenden Moduls"

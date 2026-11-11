@@ -127,6 +127,27 @@ def _rule_sections(review: Object, locale: str) -> list[ReportSection]:
                 ),
             ]
         )
+    if review["country_code"] == "SE":
+        rows.extend(
+            [
+                ReportRow(
+                    label=text("country_rule_voltage", locale),
+                    value=_rule_number(inputs["connection_voltage_kv"], locale, "kV"),
+                ),
+                ReportRow(
+                    label=text("country_rule_input_se_export_power_kw", locale),
+                    value=_rule_number(inputs["se_export_power_kw"], locale, "kW"),
+                ),
+                ReportRow(
+                    label=text(
+                        "country_rule_input_se_existing_installation_change", locale
+                    ),
+                    value=_declared_boolean(
+                        inputs["se_existing_installation_change"], locale
+                    ),
+                ),
+            ]
+        )
     sections = [
         ReportSection(
             id="country-rule-review",

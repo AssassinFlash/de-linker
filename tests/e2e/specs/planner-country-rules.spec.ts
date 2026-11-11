@@ -3,16 +3,17 @@
  * "Dated national and operator rule readings").
  *
  * The site workspace's rule form is the only write surface for
- * `country_rule_inputs`: it offers the three evidence-backed bases, keeps a
- * rule whose country is not the project's visible but without a result, and
+ * `country_rule_inputs`: it offers the evidence-backed bases, keeps a rule
+ * whose country is not the project's visible but without a result, and
  * refuses an impossible date instead of dropping the entry. The saved revision
  * reads back through the gateway and the engine unchanged.
  *
  * Asserted here:
  * - the form does not exist before declared grid evidence (a reading needs a
  *   declared connection to be about);
- * - the three bases, the country mismatch notice, the EEG § 9(2) declarations,
- *   the invalid-date alert and the offered verified source date;
+ * - every offered basis and its order, the country mismatch notice, the
+ *   EEG § 9(2) declarations, the invalid-date alert and the offered verified
+ *   source date;
  * - the write contract on the engine's own planner route: `input_contract`
  *   required for these inputs, positive declared power, a real calendar date,
  *   one reading per revision, and an outside-version date stored as entered
@@ -64,6 +65,10 @@ const WORDS = {
 		nl: 'Netherlands: grid-feeding storage unit',
 		de: 'Germany: EEG solar installed power',
 		at: 'Austria: TOR Erzeuger Typ A maximum capacity',
+		se: 'Sweden: maximum capacity under RfG Article 5',
+		seFeedIn: 'Possible feed-in power at the connection point',
+		seChange: 'Is this a change to an existing module?',
+		seSource: 'Use the source checked on November 11, 2026',
 		mismatch:
 			"The selected rule does not match this project's country. No rule result will be added until they match.",
 		frVoltage: 'Voltage at the grid connection point',
@@ -103,6 +108,10 @@ const WORDS = {
 		nl: 'Niederlande: netzeinspeisende Speichereinheit',
 		de: 'Deutschland: installierte PV-Leistung nach EEG',
 		at: 'Österreich: Maximalkapazität nach TOR Erzeuger Typ A',
+		se: 'Schweden: Maximalkapazität nach RfG Artikel 5',
+		seFeedIn: 'Mögliche Einspeiseleistung am Netzanschlusspunkt',
+		seChange: 'Handelt es sich um die Änderung eines bestehenden Moduls?',
+		seSource: 'Am 11. November 2026 geprüften Quellenstand verwenden',
 		mismatch:
 			'Die ausgewählte Regel passt nicht zum Land dieses Projekts. Ein Regelergebnis wird erst ergänzt, wenn beides übereinstimmt.',
 		frVoltage: 'Spannung am Netzanschlusspunkt',
@@ -204,6 +213,7 @@ for (const lang of ['en', 'de'] as const) {
 			words.nl,
 			words.de,
 			words.at,
+			words.se,
 		]);
 
 		// A French reading on a German project stays visible as a project
@@ -268,6 +278,23 @@ for (const lang of ['en', 'de'] as const) {
 			.selectOption('nl_storage_max_active');
 		await expect(reopened.getByRole('status')).toHaveText(words.mismatch);
 		await expect(reopened.getByLabel(words.dateLabel)).toHaveValue('');
+
+		// The Swedish reading asks for its own declarations and offers its own
+		// verified source date; on this German project it is again a mismatch
+		// that stays visible without adding a result.
+		await reopened
+			.locator('select')
+			.first()
+			.selectOption('se_rfg_maximum_capacity');
+		await expect(reopened.getByRole('status')).toHaveText(words.mismatch);
+		await expect(reopened.getByLabel(words.frVoltage)).toBeVisible();
+		await expect(reopened.getByLabel(words.seFeedIn)).toBeVisible();
+		await expect(reopened.getByLabel(words.seChange)).toBeVisible();
+		await expect(reopened.getByLabel(words.dateLabel)).toHaveValue('');
+		await reopened.getByRole('button', { name: words.seSource }).click();
+		await expect(reopened.getByLabel(words.dateLabel)).toHaveValue(
+			'2026-11-11'
+		);
 	});
 }
 
