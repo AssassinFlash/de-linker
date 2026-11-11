@@ -720,3 +720,18 @@ across the DST boundary (documented contract, agent hit it with a naive CSV).
 - Dangling evidence (U7): the four `2026-10-22/533/` links never existed in
   git; the recovery drill is downgraded from verified to unverified in the
   spec, with the other three links annotated.
+
+## Customer file access chain now tested (PR #1089, merged); site probe live
+
+- The inquiry→report download chain (the only path a customer gets their
+  file) gained three-layer coverage: route integration (in-process + real
+  HTTP), the server-only reader, and a browser e2e — 20 PHP tests + 2 e2e,
+  with mutation runs proving each layer's checks actually bite (deleting
+  owner/key/hash branches reddens the corresponding tests; only deleting both
+  hash layers at once reddens the e2e). The order key is bearer authorization
+  (receipt-email links need no login); guests without it get a uniform 404
+  that does not reveal whether the inquiry exists.
+- Site probe (PR #1091 merged, installed on the VPS): one database-backed GET
+  every 5 min into state/site-probe.log (one-week cap). First live reading
+  correctly recorded the outage; a doubled-code formatting bug was fixed
+  (#1092, pending CI at writing) and will be redeployed to the VPS on merge.
