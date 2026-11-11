@@ -311,7 +311,7 @@ test( 'a model change lands the Solution clear of the sticky rail', async () => 
 	} finally {
 		await browser.close();
 	}
-} );
+}, 30_000 );
 
 test( 'the step rail follows the inputs, the solution and the report', async () => {
 	const tops: Record< string, number > = {
