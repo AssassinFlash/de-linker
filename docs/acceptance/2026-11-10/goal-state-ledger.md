@@ -1436,3 +1436,29 @@ docs/acceptance/2026-11-11/74/copy-review-de.md. Honest boundary: the
 Chinese-as-source audit covered digest's six files only, not a full plugin
 sweep. Resources: instance retired with four-way readback, worktree
 reclaimed (3.7 GB), no review-instance contact.
+
+## Domain 8 first expansion country: Austria in the package (PR #1115, merged 9f089efc0)
+
+AT added as the fourth country basis (at_tor_typ_a_max_capacity) with six
+evidence-anchored checks (scope <250kW/<110kV exclusive, Kleinsterzeugungsanlage
+≤0.8kW with two-week notice, 30kVA disconnection-protection split, 15%
+substantial-change kept unresolved per the "können z.B. sein" wording, ElWG
+§96 20kW notification route, §8.1 three conditional conformity paths).
+Primary originals hash-locked (TOR Typ A v1.4 BGBl. II 301/2026 + ElWG
+consolidated 2026-01-07, PDF + extracted-text hashes) with verbatim excerpts
+committed; legal-source correction recorded (ElWG 2025, not ElWOG 2010
+numbering); the three power quantities (Pmax / kVA / netzwirksame Leistung)
+modelled independently per §4.1 footnote 8. Five real defects fixed en route
+(float boundary on 0.8kW → Decimal, extra="forbid" breaking every prior
+revision read, silent-blank UI table row, numeric_rules whitelist miss, missing
+German PO entries caught by i18n-coverage). Main line pre-verified the
+evidence-implementation alignment and excerpt authenticity, then the 3-line
+delta commit (e2e option assertion). Honest not-implemented list in
+EVIDENCE.md §5 (incl. refusing third-party Typ B/C/D thresholds).
+Deferred (only item): one live-instance walkthrough of the AT form
+(select→fill→save→reopen readback) — queued behind the BAT-C publication
+staging on the shared review instance to avoid data collisions.
+Matrix row 8 keeps "需补验（扩国已进 AT）": SE is the next candidate by real
+account data; DSO-level evidence remains open for all four countries.
+Resources: worktree reclaimed after merge; Apify 10 datasets + 8 KV stores
+deleted (204) by the agent; no review-instance contact.
