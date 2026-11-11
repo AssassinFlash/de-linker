@@ -57,6 +57,25 @@ final class ThrottleTest extends TestCase {
 		$this->assertSame( $before, $this->options );
 	}
 
+	/**
+	 * The digest's read of the charged attempts must be a pure read: it never
+	 * initializes, prunes or charges the ledger, so a diagnostic can never
+	 * consume a customer's slot.
+	 */
+	public function test_used_reports_without_touching_the_ledger(): void {
+		$t = new Throttle( new BudgetMemory( $this->options ) );
+		$t->reserve( self::NOW, Throttle::PHP );
+		$t->reserve( self::NOW, Throttle::SMTP );
+		$t->reserve( self::NOW - 2 * DAY_IN_SECONDS, Throttle::PHP );
+		$before = $this->options;
+
+		$this->assertSame( 1, $t->used( self::NOW, Throttle::PHP ) );
+		$this->assertSame( 1, $t->used( self::NOW, Throttle::SMTP ) );
+		$this->assertSame( 0, $t->used( self::NOW + DAY_IN_SECONDS + 1, Throttle::PHP ) );
+		$this->assertSame( $before, $this->options, 'Reading the usage never writes the ledger.' );
+		$this->assertNull( $t->used( self::NOW, 'carrier-pigeon' ) );
+	}
+
 	/** Definite failed transport releases its reservation so failed retries cannot saturate the minute or day windows. */
 	public function test_release_frees_failed_attempt_slot(): void {
 		$t = new Throttle( new BudgetMemory( $this->options ) );

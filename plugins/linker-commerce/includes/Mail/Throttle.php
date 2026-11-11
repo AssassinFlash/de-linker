@@ -92,6 +92,54 @@ final class Throttle {
 	}
 
 	/**
+	 * Attempts of one channel still inside the rolling day, for the digest.
+	 *
+	 * Read through the same non-writing ledger transaction as next_slot(), so
+	 * the digest sees the same charges the reservation checks use and never
+	 * initializes, prunes or re-charges the ledger.
+	 *
+	 * @param int    $now       Unix time.
+	 * @param string $transport SMTP or PHP.
+	 * @return int|null Null when the ledger cannot be locked or read; never a silent zero.
+	 */
+	public function used( int $now, string $transport = self::PHP ): ?int {
+		if ( ! in_array( $transport, array( self::PHP, self::SMTP ), true ) ) {
+			return null;
+		}
+		return $this->ledger->transact(
+			static function ( array $state ) use ( $now, $transport ): array {
+				$entries = is_array( $state['entries'] ?? null ) ? $state['entries'] : array();
+				if ( ! isset( $state['entries'] ) ) {
+					// The same first-run expansion as slot(): one legacy stamp charges both channels.
+					foreach ( is_array( $state['legacy'] ?? null ) ? $state['legacy'] : array() as $time ) {
+						if ( is_int( $time ) ) {
+							$entries[] = array(
+								'time'      => $time,
+								'transport' => self::PHP,
+							);
+							$entries[] = array(
+								'time'      => $time,
+								'transport' => self::SMTP,
+							);
+						}
+					}
+				}
+				$count = 0;
+				foreach ( $entries as $entry ) {
+					if ( is_array( $entry ) && ( $entry['transport'] ?? '' ) === $transport && is_int( $entry['time'] ?? null ) && $entry['time'] > $now - DAY_IN_SECONDS ) {
+						++$count;
+					}
+				}
+				return array(
+					'state' => $state,
+					'slot'  => $count,
+				);
+			},
+			false
+		);
+	}
+
+	/**
 	 * Release a reservation whose synchronous transport returned a definite failure.
 	 *
 	 * @param int    $now       Unix time of the reservation.
