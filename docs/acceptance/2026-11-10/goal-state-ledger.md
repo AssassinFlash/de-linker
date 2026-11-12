@@ -2222,3 +2222,34 @@ more stale runtimes beyond the planner already fixed:
 - Test projects created during acceptance ("Calibration deploy check",
   "Visual acceptance") were deleted on live after each check; browser
   tabs closed.
+
+## Genie paired release completed same-session (2026-11-12, supersedes the staged-candidate note)
+
+The Genie publish scheduled "for the next work window" was completed in this
+session instead. Full sequence per the PUBLICATION.md runbook:
+
+- Mac worker release staged from main (`releases/3496a1e95-main`, source
+  md5-identical to the repo; **first venv build lacked the `index` dependency
+  group** — parse died instantly with PackageNotFoundError; rebuilt with
+  `--group index`).
+- First VPS candidate failed preflight **silently**: the operator's remote
+  entrypoint swallows all errors (exit 1, no stderr). Reproduced the remote
+  call manually to find the cause — a `cp -a` clone's venv editable-install
+  still pointed at the OLD runtime's `src`, so the candidate imported old
+  code and failed the identity check. Rebuilt the candidate as a full-tree
+  rsync + fresh `uv sync` at `20261112T014557426148Z` (imports resolve inside
+  its own src). The broken clone candidate was deleted.
+- Publish attempt 1: parse-stage dependency failure (above). Attempt 2:
+  `loaded_observation` SSH timeout (transient; failed before claiming a job,
+  selector untouched). Attempt 3: **complete** — job claimed, index built
+  from existing parse/vector caches (rsync delta, 296 MB total at 1375×
+  speedup), runtime switched atomically, loaded readback validated, native
+  ready ACK accepted, journal removed per protocol.
+- Read back on live: selector → `20261112T014557426148Z`, `/health`
+  `status=ok` with serving_revision `e24270a4…` (exactly the preflight-measured
+  candidate identity), new index generation `20261112T020617Z-029004000`.
+- Mac knowledge worker (launchd `com.linker.knowledge-publication`) was
+  disabled for the window, re-enabled and verified after. Failed-attempt
+  journals and the guard wrapper were removed after recovery was verified.
+- All three VPS services now run main: planner `3beaaf99…`, engine
+  `20261111T183021155751Z-ae16c471`, genie `20261112T014557426148Z`.
