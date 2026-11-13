@@ -954,6 +954,97 @@ def test_a_grounding_miss_keeps_the_recommendation_sentence() -> None:
         assert cards and set(cards[0].product_ids) == set(_STOCK)
 
 
+def _released_pair() -> TurnFacts:
+    """One released pairing set, its condition and its document, as the tool returns them."""
+    facts = TurnFacts()
+    facts.qualified_ids = {3595, 1958}
+    facts.product_ids = {3595, 1958}
+    facts.tool_calls.append(
+        {
+            "name": "linker/search-products",
+            "result": {
+                "qualified": [
+                    {
+                        "product_id": 3595,
+                        "pairings": [
+                            {
+                                "product_id": 1958,
+                                "verdict": "released",
+                                "conditions": [
+                                    {
+                                        "en": "The GoodWe overview lists GW261.2-BAT-LCD-G10 for the ETR 80-125kW series.",
+                                        "de": "Die GoodWe-Uebersicht nennt GW261.2-BAT-LCD-G10 fuer die ETR-80-125kW-Serie.",
+                                    }
+                                ],
+                                "documents": [{"url": _PDF, "page": 6}],
+                            }
+                        ],
+                    }
+                ]
+            },
+        }
+    )
+    facts.add(
+        Fact(
+            id="compat.verdict.1958",
+            value="released",
+            source="search-products",
+        )
+    )
+    facts.add(
+        Fact(
+            id="compat.condition.1958.0",
+            value="The GoodWe overview lists GW261.2-BAT-LCD-G10 for the ETR 80-125kW series.",
+            source="search-products",
+        )
+    )
+    facts.documents["compat.document.1958.0"] = Document(
+        url=_PDF, title="GoodWe Battery Compatibility Overview", page=6
+    )
+    return facts
+
+
+def test_a_released_pair_keeps_its_own_conditions_in_the_fallback() -> None:
+    """The generic catalogue sentence drops evidence the turn already holds.
+
+    Production EN (2026-11-13) asked which cabinets pair with the GoodWe
+    GW125K-ETR; grounding refused the model's draft twice for an uncited
+    warranty figure, and the fallback then said "Here are matching products"
+    without the pairing condition it had. One released set is one answer.
+    """
+    facts = _released_pair()
+    output = fallback(facts, "en", _PRODUCTS)
+    text = _sentence(output)
+    # hydrate() fills the placeholder from the tool fact; the sentence is the
+    # source's own condition, not a phrase the service wrote.
+    assert "GW261.2-BAT-LCD-G10" in text
+    assert "matching products from our range" not in text
+    assert any(
+        isinstance(block, DocumentBlock) and block.ref == "compat.document.1958.0"
+        for block in output.blocks
+    )
+    cards = _cards(output)
+    assert cards and set(cards[0].product_ids) == {3595, 1958}
+
+
+def test_an_unreleased_pair_still_uses_the_check_conditions() -> None:
+    """A verdict outside the released set keeps the older not_released shape."""
+    facts = _released_pair()
+    facts.facts["compat.verdict.1958"] = Fact(
+        id="compat.verdict.1958", value="not_released", source="search-products"
+    )
+    output = fallback(facts, "en", _PRODUCTS)
+    assert "GW261.2-BAT-LCD-G10" not in _sentence(output)
+
+
+def test_a_pair_without_conditions_keeps_the_catalogue_sentence() -> None:
+    """No condition fact means no sentence is invented."""
+    facts = _released_pair()
+    del facts.facts["compat.condition.1958.0"]
+    output = fallback(facts, "en", _PRODUCTS)
+    assert _sentence(output) == _MATCHING["en"]
+
+
 def test_a_person_route_is_not_a_fallback_mailbox() -> None:
     """A request for a person is answered in app._answer, before this template."""
     facts = TurnFacts()

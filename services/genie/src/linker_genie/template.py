@@ -387,6 +387,48 @@ def _pair_condition_refs(facts: TurnFacts) -> list[str]:
     return [fact_id for _, fact_id in sorted(found)]
 
 
+def _released_pair_fallback(
+    facts: TurnFacts, language: Locale
+) -> TurnOutput | None:
+    """The released pair's own conditions, when the model phrased none.
+
+    One released set is one answer. Its conditions are contract facts
+    (`compat.condition.PARTNER.N`) the tool returned this turn, so the sentence
+    is the source's own text and the service adds nothing. Documents the same
+    pairing returned stay the next step, and the set's cards show the products
+    the conditions talk about. No condition fact means None: the older shapes
+    keep their behaviour.
+    """
+    sets = pairing_card_sets(facts)
+    if len(sets) != 1 or not sets[0]:
+        return None
+    partner_ids = [pid for pid in sets[0]]
+    conditions: list[str] = []
+    for partner_id in partner_ids:
+        for fact_id in sorted(
+            (fid for fid in facts.facts if fid.startswith(f"compat.condition.{partner_id}.")),
+            key=lambda fid: int(fid.rsplit(".", 1)[1]),
+        ):
+            fact = facts.facts[fact_id]
+            verdict = facts.facts.get(f"compat.verdict.{partner_id}")
+            if verdict is None or verdict.value not in RELEASED_VERDICTS:
+                continue
+            if fact.value:
+                conditions.append(f"{{fact:{fact_id}}}")
+    if not conditions:
+        return None
+    refs = [f"p{product_id}" for product_id in sets[0]]
+    blocks: list[Block] = [TextBlock(text=" ".join(conditions), refs=refs)]
+    for partner_id in partner_ids:
+        for fact_id in sorted(
+            (fid for fid in facts.documents if fid.startswith(f"compat.document.{partner_id}.")),
+            key=lambda fid: int(fid.rsplit(".", 1)[1]),
+        ):
+            blocks.append(DocumentBlock(ref=fact_id))
+    blocks.append(CardsBlock(product_ids=sets[0]))
+    return hydrate(TurnOutput(language=language, blocks=blocks), facts, language)
+
+
 def _not_released_fallback(facts: TurnFacts, language: Locale) -> TurnOutput | None:
     """The check's own conditions, when the pair is not released.
 
@@ -839,6 +881,14 @@ def fallback(
     refused = _not_released_fallback(facts, language)
     if refused is not None:
         return refused
+    # A released pair the model could not phrase still has its own evidence:
+    # the conditions search-products returned for that pairing. The generic
+    # catalogue sentence below names the products and drops every condition,
+    # which is the shape a customer reads as "no compatibility information"
+    # even though the turn holds it (production EN, 2026-11-13).
+    released = _released_pair_fallback(facts, language)
+    if released is not None:
+        return released
     # The model cited a document or chunk that this turn did not return.
     # Product ids the route already collected are not a match, and the
     # matching-products sentence would hide the failure.
