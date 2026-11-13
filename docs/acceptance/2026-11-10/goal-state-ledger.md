@@ -2279,3 +2279,20 @@ Three subagents were lost with their temp work; the main line absorbed each:
   lazy-loaded country tabs; chasing them exceeded the value of any single
   document, so the line closes here. gw-4809.pdf (2-page, 2026-11-10,
   image-only scan, no text layer) is retained for a future OCR pass.
+
+## BAT-C certificates + maintenance manual published to the products (2026-11-13)
+
+Continuing the originals harvest into a real deliverable, following the 609 flow
+and the 2026-11-11 publication precedent exactly: full backup
+(`cutover-20261113-0556`), six official originals imported as properly named
+attachments (8736-8741), `_linker_documents` rows appended idempotently through
+the same write entry the admin metabox uses (1954: 9→15, 1955: 11→17 —
+including a UN38.3 symmetry row 1954 was missing), LiteSpeed + object cache
+purged, and all four product pages (EN/DE × 61.4/112.6) read back with every
+new link present. One certificate was downloaded from live and sha256-verified
+byte-identical to the official original. The EU DoC was skipped (a newer
+27-page family DoC is already hosted), the official quick-install guide was
+skipped (our V1.7 carries a text layer, theirs is image-only), and the coastal
+statements were held back as cross-product documents. Receipt with full
+hashes and rollback:
+`docs/acceptance/2026-11-13/goodwe-originals/publication-receipt.json`.

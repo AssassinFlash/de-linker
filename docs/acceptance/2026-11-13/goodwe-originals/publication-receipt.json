@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "mode": "batc_certificates_v1",
+  "date": "2026-11-13",
+  "backup": "cutover-20261113-0556 (full, local)",
+  "write_entry": "update_post_meta(_linker_documents) via wp eval-file — same entry as DocumentsMetaBox::save()",
+  "attachments": {
+    "8736": "GW_BAT-C-60-112kWh_Maintenance-Manual-EN.pdf (sha256 70b360058411ccbae62cf388502331c1022a1f72304a10e795091b338caf8501)",
+    "8737": "GW_BAT-C_Certificate-IEC62619-IEC63056-EN62477.pdf (sha256 ebe5ddd559c2629f7ccfc0b7f90a63ea709c657be6453cf2bbe5020f08292fa2)",
+    "8738": "GW_BAT-C_Certificate-CE-LVD.pdf (sha256 060c100c25b6896a5dced8452bcf4d7260502df05144e4bccca2484627bccf64)",
+    "8739": "GW_BAT-C_Certificate-IEC62040.pdf (sha256 dd4e40ef588d6e59117d3b694f2bc5983b32258fa8a6d9ecb95ee1bf051173fb)",
+    "8740": "GW_BAT-C_Certificate-VDE2510-50.pdf (sha256 7a43b31b355a5e3264c80d47e99665f94751859ec97260040dce974da9087306)",
+    "8741": "GW_BAT-C_Certificate-IEC62477.pdf (sha256 0af4212d59c32cca3db4dd1697fe798d83484fa19e59fb04efa1df6e592c158c)"
+  },
+  "rows_written": {
+    "1954": "9 -> 15 (maintenance manual, IEC62619/63056/EN62477, CE LVD, IEC62040, VDE2510-50, UN38.3 symmetry row)",
+    "1955": "11 -> 17 (same five + IEC62477 for 102.4-112.6 models)"
+  },
+  "skipped": {
+    "3254 EU DoC": "already hosted (27-page family DoC covering the same models)",
+    "4663 QIG": "image-only; hosted V1.7 has a full text layer",
+    "4740/4809 coastal": "cross-product statements, not BAT-C product documents"
+  },
+  "readback": {
+    "pages": "EN/DE x 1954/1955 all show the new links (unique-URL verified)",
+    "files": "all six 200 via HEAD",
+    "bytes": "IEC62619 cert downloaded and sha256-verified byte-identical to the official original"
+  },
+  "cache": "litespeed-purge all + wp cache flush after write; first read showed stale page, post-purge readback passed",
+  "rollback": "restore _linker_documents from backup cutover-20261113-0556; delete attachments 8736-8741"
+}
