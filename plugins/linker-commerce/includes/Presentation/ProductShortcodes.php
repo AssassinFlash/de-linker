@@ -1603,6 +1603,19 @@ final class ProductShortcodes {
 			$cut    = \strspn( $shared ^ $constraint, "\0" );
 			$shared = \substr( $shared, 0, $cut );
 		}
+		if ( '' !== $shared && \str_ends_with( $shared, '.' ) ) {
+			$whole = true;
+			foreach ( $constraints as $constraint ) {
+				$next = $constraint[ \strlen( $shared ) ] ?? '';
+				if ( '' !== $next && ' ' !== $next ) {
+					$whole = false;
+					break;
+				}
+			}
+			if ( $whole ) {
+				return $shared;
+			}
+		}
 		// Version numbers and model names hold periods; share whole sentences only.
 		$boundary = \strrpos( $shared, '. ' );
 		return false === $boundary ? $shared : \substr( $shared, 0, $boundary + 1 );

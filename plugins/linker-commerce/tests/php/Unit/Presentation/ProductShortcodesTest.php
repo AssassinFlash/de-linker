@@ -2129,10 +2129,11 @@ final class ProductShortcodesTest extends TestCase {
 	 */
 	public function test_shared_constraint_prefix_shares_whole_sentences_only(): void {
 		$method = new \ReflectionMethod( ProductShortcodes::class, 'shared_constraint_prefix' );
-		$first  = "SAJ's Configuration Instructions V1.0 (Section 2) give the H2 series system as H2 + BC2 + BU2. The listing does not cover the one-module B2-5.0. SAJ's B2 datasheet gives 179.2 to 230.4 V for the two-module B2-10.0.";
-		$second = "SAJ's Configuration Instructions V1.0 (Section 2) give the H2 series system as H2 + BC2 + BU2. The listing does not cover the one-module B2-5.0. One BU2-5.0 module alone operates at 89.6 to 115.2 V.";
-		$shared = "SAJ's Configuration Instructions V1.0 (Section 2) give the H2 series system as H2 + BC2 + BU2. The listing does not cover the one-module B2-5.0.";
-		$this->assertSame( $shared, $method->invoke( null, array( $first, $second ) ) );
+		$base   = "SAJ's Configuration Instructions V1.0 (Section 2) give the H2 series system as H2 + BC2 + BU2. The listing does not cover the one-module B2-5.0.";
+		$first  = $base . " SAJ's B2 datasheet gives 179.2 to 230.4 V for the two-module B2-10.0.";
+		$second = $base . ' One BU2-5.0 module alone operates at 89.6 to 115.2 V.';
+		$this->assertSame( $base, $method->invoke( null, array( $first, $second ) ) );
+		$this->assertSame( $base, $method->invoke( null, array( $first, $base, $second ) ) );
 		$this->assertSame( $first, $method->invoke( null, array( $first ) ) );
 		$this->assertSame( '', $method->invoke( null, array() ) );
 	}
