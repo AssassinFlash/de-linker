@@ -95,6 +95,12 @@ final class Module {
 			? array( 'jquery', 'selectWoo', 'wc-country-select' )
 			: array();
 		wp_enqueue_script( 'linker-account-ui', $base . 'account-ui.js', $deps, (string) filemtime( dirname( __DIR__, 2 ) . '/assets/account-ui.js' ), true );
+		// The account chain's own sections (`#step-2`, `#reset-card`, the register
+		// pane) live in the fragment, which no request carries: the server's
+		// language links cannot include them, so the switch keeps the section
+		// the visitor is reading. Legal documents need the same rule and carry
+		// it in their own script.
+		wp_enqueue_script( 'linker-language-hash', $base . 'language-hash.js', array(), (string) filemtime( dirname( __DIR__, 2 ) . '/assets/language-hash.js' ), true );
 	}
 
 	/**

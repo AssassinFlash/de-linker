@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\E2E;
 
+use Linker\Commerce\Mail\OptionBudgetLedger;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Mail\TestMode;
 use Linker\Commerce\Mail\Throttle;
@@ -30,7 +31,7 @@ final class BrowserFixture {
 		if ( ! defined( 'LINKER_LOCAL_MAIL_DIR' ) || '127.0.0.1' !== wp_parse_url( home_url(), PHP_URL_HOST ) ) {
 			throw new RuntimeException( 'Local isolated WordPress required.' );
 		}
-		foreach ( array( $key, Throttle::OPTION, TestMode::OPTION ) as $option ) {
+		foreach ( array( $key, Throttle::OPTION, OptionBudgetLedger::OPTION, TestMode::OPTION ) as $option ) {
 			wp_cache_delete( $option, 'options' );
 		}
 	}
@@ -49,8 +50,9 @@ final class BrowserFixture {
 		$state = array(
 			'email'     => $email,
 			'options'   => array(
-				Throttle::OPTION => get_option( Throttle::OPTION ),
-				TestMode::OPTION => get_option( TestMode::OPTION ),
+				Throttle::OPTION           => get_option( Throttle::OPTION ),
+				OptionBudgetLedger::OPTION => get_option( OptionBudgetLedger::OPTION ),
+				TestMode::OPTION           => get_option( TestMode::OPTION ),
 			),
 			'marker'    => (int) $wpdb->get_var( "SELECT MAX(ID) FROM {$wpdb->posts} WHERE post_type='linker_mail_job'" ),
 			'limits'    => $wpdb->get_results( $wpdb->prepare( "SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( 'linker_commerce_limit_' ) . '%' ), ARRAY_A ),
@@ -63,6 +65,7 @@ final class BrowserFixture {
 		$this->clear_limits();
 		delete_transient( 'linker_contact_' . md5( '127.0.0.1' ) );
 		( new TestMode() )->enable( $this->tester );
+		delete_option( OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_DAY, time() ), false );
 	}
 

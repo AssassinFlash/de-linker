@@ -1,0 +1,480 @@
+{
+  "de_produkte_1440": {
+    "cardCount": 24,
+    "exactModelLabels": [
+      "Modell"
+    ],
+    "pickerHeadings": [],
+    "pickerSummaryLabels": [],
+    "allDotDecimalsInFacts": [],
+    "factsSample": [
+      {
+        "title": "GoodWe GW60K-STS-G10",
+        "facts": [
+          {
+            "dt": "Kommunikation",
+            "dd": "RS485"
+          },
+          {
+            "dt": "Schutzart",
+            "dd": "IP54"
+          },
+          {
+            "dt": "Gewicht",
+            "dd": "15 kg"
+          },
+          {
+            "dt": "Abmessungen",
+            "dd": "506 × 590 × 180 mm"
+          }
+        ]
+      },
+      {
+        "title": "GoodWe GW30K-STS-G10",
+        "facts": [
+          {
+            "dt": "Kommunikation",
+            "dd": "RS485"
+          },
+          {
+            "dt": "Schutzart",
+            "dd": "IP54"
+          },
+          {
+            "dt": "Gewicht",
+            "dd": "12,5 kg"
+          },
+          {
+            "dt": "Abmessungen",
+            "dd": "506 × 590 × 180 mm"
+          }
+        ]
+      },
+      {
+        "title": "GoodWe ESA GW10K-EHA-G20 (10 kW einphasiges Leistungsmodul)",
+        "facts": [
+          {
+            "dt": "AC-Nennleistung",
+            "dd": "10,0 kW"
+          },
+          {
+            "dt": "MPPT-Tracker",
+            "dd": "4"
+          },
+          {
+            "dt": "Max. Wirkungsgrad",
+            "dd": "97,5 %"
+          },
+          {
+            "dt": "AC-Nennspannung",
+            "dd": "L/N/PE 220/230/240 V"
+          }
+        ]
+      },
+      {
+        "title": "GoodWe ESA GW8K-EHA-G20 (8-kW-einphasiges Leistungsmodul)",
+        "facts": [
+          {
+            "dt": "AC-Nennleistung",
+            "dd": "8,0 kW"
+          },
+          {
+            "dt": "MPPT-Tracker",
+            "dd": "4"
+          },
+          {
+            "dt": "Max. Wirkungsgrad",
+            "dd": "97,5 %"
+          },
+          {
+            "dt": "AC-Nennspannung",
+            "dd": "L/N/PE 220/230/240 V"
+          }
+        ]
+      },
+      {
+        "title": "GoodWe ESA GW6K-EHA-G20 (6 kW einphasiges Leistungsmodul)",
+        "facts": [
+          {
+            "dt": "AC-Nennleistung",
+            "dd": "6,0 kW"
+          },
+          {
+            "dt": "MPPT-Tracker",
+            "dd": "2"
+          },
+          {
+            "dt": "Max. Wirkungsgrad",
+            "dd": "97,6 %"
+          },
+          {
+            "dt": "AC-Nennspannung",
+            "dd": "L/N/PE 220/230/240 V"
+          }
+        ]
+      }
+    ],
+    "sidebar": {
+      "position": "sticky",
+      "maxHeight": "772px",
+      "overflowY": "auto",
+      "clientHeight": 772,
+      "scrollHeight": 1615
+    },
+    "phaseItems": [
+      "3-phasig49",
+      "1-phasig7"
+    ],
+    "contactBoxText": "KONTAKT ZU LINKERNoch nicht sicher, welches Modell passt?Ihre Frage enthält den Bezug zu dieser Seite. Sie können ihn vor dem Senden entfernen.Hilfe bei der Auswahl?sales@de-linker.com",
+    "contactBtnHref": "https://de-linker.com/de/kontakt/?intent=product&linker_contact_selection=%7B%22source%22%3A%22https%3A%5C%2F%5C%2Fde-linker.com%5C%2Fde%5C%2Fprodukte%5C%2F%22%2C%22selection%22%3A%7B%22sort%22%3A%22recommended%22%7D%7D",
+    "hasProdukteigungTypo": false,
+    "hasWechslerrichterTypo": false,
+    "hasHeimspelerTypo": false,
+    "hasUeberunsTypo": false,
+    "matchingFooterTexts": [
+      "Heimspeicher",
+      "Großspeicher"
+    ],
+    "matchingHeaderTexts": [
+      "Über uns"
+    ]
+  },
+  "en_products_390": {
+    "titleCount": 24,
+    "clippedTitleCount": 0,
+    "sampleTitleStyles": [
+      {
+        "text": "GoodWe GW60K-STS-G10",
+        "w": 214,
+        "h": 45.875,
+        "overflow": "visible",
+        "lineClamp": "none",
+        "whiteSpace": "normal"
+      },
+      {
+        "text": "GoodWe GW30K-STS-G10",
+        "w": 214,
+        "h": 45.875,
+        "overflow": "visible",
+        "lineClamp": "none",
+        "whiteSpace": "normal"
+      },
+      {
+        "text": "GoodWe ESA GW10K-EHA-G20 (10 kW single-phase power module)",
+        "w": 214,
+        "h": 68.8125,
+        "overflow": "visible",
+        "lineClamp": "none",
+        "whiteSpace": "normal"
+      }
+    ],
+    "footerLangs": [
+      {
+        "text": "English",
+        "ariaCurrent": "true",
+        "className": "",
+        "bg": "rgba(255, 255, 255, 0.733)",
+        "color": "rgb(23, 59, 53)"
+      },
+      {
+        "text": "Deutsch",
+        "ariaCurrent": null,
+        "className": "",
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(23, 59, 53)"
+      }
+    ]
+  },
+  "en_configurator_390": [
+    {
+      "text": "New project",
+      "disabled": false,
+      "x": 20,
+      "y": 329.578125,
+      "pageY": 329.578125,
+      "w": 151.109375,
+      "h": 44,
+      "scrollH": 42,
+      "clientH": 42,
+      "padding": "10px 18px",
+      "overflow": "visible",
+      "bg": "rgb(12, 127, 115)",
+      "color": "rgb(243, 251, 250)",
+      "opacity": "1"
+    },
+    {
+      "text": "Start a solution",
+      "disabled": false,
+      "x": 144.09375,
+      "y": 414.578125,
+      "pageY": 414.578125,
+      "w": 165.90625,
+      "h": 59.78125,
+      "scrollH": 58,
+      "clientH": 58,
+      "padding": "10px 18px",
+      "overflow": "visible",
+      "bg": "rgb(12, 127, 115)",
+      "color": "rgb(243, 251, 250)",
+      "opacity": "1"
+    },
+    {
+      "text": "",
+      "disabled": false,
+      "x": 326,
+      "y": 422.46875,
+      "pageY": 422.46875,
+      "w": 44,
+      "h": 44,
+      "scrollH": 44,
+      "clientH": 44,
+      "padding": "8px",
+      "overflow": "visible",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(74, 81, 81)",
+      "opacity": "1"
+    },
+    {
+      "text": "Generate solution",
+      "disabled": true,
+      "x": 20,
+      "y": 1669.625,
+      "pageY": 1669.625,
+      "w": 158.734375,
+      "h": 44,
+      "scrollH": 42,
+      "clientH": 42,
+      "padding": "10px 18px",
+      "overflow": "visible",
+      "bg": "rgb(12, 127, 115)",
+      "color": "rgb(243, 251, 250)",
+      "opacity": "0.45"
+    }
+  ],
+  "de_configurator_1440": {
+    "docScrollWidth": 1440,
+    "docClientWidth": 1440,
+    "wsRect": {
+      "left": 0,
+      "right": 1440,
+      "width": 1440
+    },
+    "pageRect": {
+      "left": 205,
+      "right": 1440,
+      "width": 1235
+    },
+    "rightEdgeEls": [
+      {
+        "tag": "DIV",
+        "cls": "lp-page",
+        "text": "LösungskonfiguratorIhre ProjekteStandort",
+        "left": 205,
+        "right": 1440,
+        "w": 1235
+      }
+    ],
+    "qsTexts": [
+      "Standortdaten, Dachbelegung und Systemplanung gehören zum selben Projekt.",
+      "Ein Projekt kann mit den bereits verfügbaren Angaben beginnen. Eine Dachzeichnung ist optional.",
+      "Wählen Sie aus den Listen und drücken Sie „Lösung berechnen“. Der Arbeitsbereich speichert das Projekt, ruft die verfügbaren Daten ab und zeigt die passenden Geräte mit Stückliste.",
+      "Die Angabe einer Postleitzahl oder eines Ortes genügt für den Start. Dachzeichnung, Intervall-Daten und die genauen Standortkoordinaten bleiben optional und lassen sich später ergänzen.",
+      "Der vollständige Arbeitsbereich ergänzt Dachgeometrie, importierte Intervall-Daten und die detaillierten technischen Prüfungen. Beim Öffnen geht nichts von diesem Bildschirm verloren.",
+      "Gastprojekte sind mit dieser Browsersitzung verknüpft. Bei der Anmeldung werden sie Ihrem Konto zugeordnet."
+    ],
+    "quoteChars": [
+      {
+        "ch": "„",
+        "hex": "U+201E"
+      },
+      {
+        "ch": "“",
+        "hex": "U+201C"
+      }
+    ]
+  },
+  "de_mein_konto_1440": {
+    "logos": [
+      {
+        "tag": "IMG",
+        "src": "https://de-linker.com/wp-content/plugins/linker-commerce/assets/linker-logo-wordmark.webp",
+        "cls": "linker-auth-brand-logo",
+        "w": 124,
+        "h": 47,
+        "natW": 248
+      },
+      {
+        "tag": "svg",
+        "src": null,
+        "cls": null,
+        "w": 18,
+        "h": 18,
+        "natW": null
+      },
+      {
+        "tag": "svg",
+        "src": null,
+        "cls": null,
+        "w": 18,
+        "h": 18,
+        "natW": null
+      },
+      {
+        "tag": "svg",
+        "src": null,
+        "cls": null,
+        "w": 18,
+        "h": 18,
+        "natW": null
+      }
+    ],
+    "genieBtn": {
+      "w": 50,
+      "h": 50
+    },
+    "genieSvg": {
+      "w": 16,
+      "h": 16
+    },
+    "rememberLabelRect": {
+      "w": 494,
+      "h": 44
+    }
+  },
+  "de_mein_konto_390_footer": {
+    "tabList": {
+      "left": 32,
+      "right": 358,
+      "clientWidth": 326,
+      "scrollWidth": 326,
+      "overflowX": "visible"
+    },
+    "tabs": [
+      {
+        "text": "Lösungen",
+        "left": 32,
+        "right": 107.5,
+        "width": 75.5,
+        "height": 74.1875
+      },
+      {
+        "text": "Dienstleistungen",
+        "left": 115.5,
+        "right": 246.65625,
+        "width": 131.15625,
+        "height": 74.1875
+      },
+      {
+        "text": "Planen mit Linker",
+        "left": 254.65625,
+        "right": 358,
+        "width": 103.34375,
+        "height": 74.1875
+      },
+      {
+        "text": "Konto",
+        "left": 32,
+        "right": 191,
+        "width": 159,
+        "height": 70
+      },
+      {
+        "text": "Linker kontaktieren",
+        "left": 199,
+        "right": 358,
+        "width": 159,
+        "height": 70
+      }
+    ],
+    "solRows": [
+      {
+        "text": "Heimspeicher",
+        "color": "rgb(23, 59, 53)",
+        "titleColor": "rgb(20, 126, 118)",
+        "opacity": "1",
+        "bg": "rgba(255, 255, 255, 0.263)"
+      },
+      {
+        "text": "Gewerbespeicher",
+        "color": "rgb(23, 59, 53)",
+        "titleColor": "rgb(20, 126, 118)",
+        "opacity": "1",
+        "bg": "rgba(255, 255, 255, 0.263)"
+      },
+      {
+        "text": "Großspeicher",
+        "color": "rgb(23, 59, 53)",
+        "titleColor": "rgb(20, 126, 118)",
+        "opacity": "1",
+        "bg": "rgba(255, 255, 255, 0.263)"
+      }
+    ],
+    "quickCards": [
+      {
+        "text": "Konto erstellen",
+        "left": 0,
+        "right": 0,
+        "width": 0,
+        "parentDisplay": "flex",
+        "parentFlexWrap": "wrap",
+        "parentGridCols": "none"
+      },
+      {
+        "text": "Linker kontaktieren",
+        "left": 0,
+        "right": 0,
+        "width": 0,
+        "parentDisplay": "block",
+        "parentFlexWrap": "nowrap",
+        "parentGridCols": "none"
+      }
+    ]
+  },
+  "proforma_consent_label": {
+    "w": 596.390625,
+    "h": 20.390625
+  },
+  "supplement": {
+    "lpSupplement": {
+      "lpPadding": "57.6px",
+      "hdrRect": {
+        "left": 262.59375,
+        "right": 1382.40625,
+        "width": 1119.8125
+      }
+    },
+    "pillSupplement": {
+      "parentRect": {
+        "left": 32,
+        "right": 358,
+        "width": 326
+      },
+      "parentScrollWidth": 326,
+      "parentClientWidth": 326,
+      "parentOverflowX": "visible",
+      "pills": [
+        {
+          "text": "Produkte",
+          "left": 32,
+          "right": 133.390625,
+          "width": 101.390625,
+          "height": 44
+        },
+        {
+          "text": "Technologie",
+          "left": 141.390625,
+          "right": 257.125,
+          "width": 115.734375,
+          "height": 44
+        },
+        {
+          "text": "Service",
+          "left": 265.125,
+          "right": 358,
+          "width": 92.875,
+          "height": 44
+        }
+      ]
+    }
+  }
+}

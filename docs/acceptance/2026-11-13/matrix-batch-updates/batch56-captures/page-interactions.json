@@ -1,0 +1,990 @@
+{
+  "https://de-linker.com/products/@1440": {
+    "common": {
+      "docLang": "en-US",
+      "h1": "Products",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "altEn": "https://de-linker.com/products/",
+      "altDe": "https://de-linker.com/de/produkte/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "railFoldToggled": null,
+    "filterSectionToggled": true,
+    "archiveControls": {
+      "hasSortSelect": true,
+      "sortOptionsCount": 0,
+      "page2Href": "https://de-linker.com/products/?product-page=2",
+      "cardCount": 24
+    },
+    "page2Ok": true,
+    "twinMatches": true
+  },
+  "https://de-linker.com/de/produkte/@1440": {
+    "common": {
+      "docLang": "de-DE",
+      "h1": "Produkte",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "altEn": "https://de-linker.com/products/",
+      "altDe": "https://de-linker.com/de/produkte/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "railFoldToggled": null,
+    "filterSectionToggled": true,
+    "archiveControls": {
+      "hasSortSelect": true,
+      "sortOptionsCount": 0,
+      "page2Href": "https://de-linker.com/de/produkte/?product-page=2",
+      "cardCount": 24
+    },
+    "page2Ok": true,
+    "twinMatches": true
+  },
+  "https://de-linker.com/cart/@1440": {
+    "common": {
+      "docLang": "en-US",
+      "h1": "Your solution draft is empty.",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "altEn": "https://de-linker.com/cart/",
+      "altDe": "https://de-linker.com/de/loesungsentwurf/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "emptyState": {
+      "mainTextSnippet": "Your solution draft is empty.Browse products and add them to your solution draft. You can send an inquiry without an account.Browse productsSign inCreate account",
+      "ctaLinks": [
+        {
+          "text": "Browse products",
+          "href": "https://de-linker.com/products/"
+        },
+        {
+          "text": "Sign in",
+          "href": "https://de-linker.com/my-account/"
+        },
+        {
+          "text": "Create account",
+          "href": "https://de-linker.com/my-account/register/"
+        }
+      ]
+    },
+    "twinMatches": true
+  },
+  "https://de-linker.com/de/loesungsentwurf/@1440": {
+    "common": {
+      "docLang": "de-DE",
+      "h1": "Ihr Lösungsentwurf ist leer.",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "altEn": "https://de-linker.com/cart/",
+      "altDe": "https://de-linker.com/de/loesungsentwurf/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "emptyState": {
+      "mainTextSnippet": "Ihr Lösungsentwurf ist leer.Wählen Sie Produkte für Ihren Lösungsentwurf aus. Sie können Ihre Anfrage ohne Konto senden.Zu den ProduktenAnmeldenKonto erstellen",
+      "ctaLinks": [
+        {
+          "text": "Zu den Produkten",
+          "href": "https://de-linker.com/de/produkte/"
+        },
+        {
+          "text": "Anmelden",
+          "href": "https://de-linker.com/de/mein-konto/"
+        },
+        {
+          "text": "Konto erstellen",
+          "href": "https://de-linker.com/de/mein-konto/registrieren/"
+        }
+      ]
+    },
+    "twinMatches": true
+  },
+  "https://de-linker.com/proforma-request/@1440": {
+    "common": {
+      "docLang": "en-US",
+      "h1": "Send an inquiry",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "altEn": "https://de-linker.com/proforma-request/",
+      "altDe": "https://de-linker.com/de/proforma-anfrage/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "formState": {
+      "hasForm": true,
+      "inputs": [
+        {
+          "tag": "INPUT",
+          "type": "text",
+          "name": "website",
+          "required": false
+        },
+        {
+          "tag": "TEXTAREA",
+          "type": null,
+          "name": "message",
+          "required": false
+        },
+        {
+          "tag": "INPUT",
+          "type": null,
+          "name": "name",
+          "required": true
+        },
+        {
+          "tag": "INPUT",
+          "type": "email",
+          "name": "email",
+          "required": true
+        },
+        {
+          "tag": "INPUT",
+          "type": null,
+          "name": "company",
+          "required": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "checkbox",
+          "name": "consent",
+          "required": true
+        }
+      ],
+      "hasSubmitBtn": true,
+      "submitText": "Send inquiry ↗",
+      "guestLinks": [
+        {
+          "text": "Have an approved account? Log in for net prices and saved details.",
+          "href": "https://de-linker.com/my-account/"
+        },
+        {
+          "text": "Create account",
+          "href": "https://de-linker.com/my-account/register/"
+        }
+      ],
+      "hasDraftColumn": true
+    },
+    "localTypeNoSubmitOk": true,
+    "twinMatches": true
+  },
+  "https://de-linker.com/de/proforma-anfrage/@1440": {
+    "common": {
+      "docLang": "de-DE",
+      "h1": "Anfrage senden",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "altEn": "https://de-linker.com/proforma-request/",
+      "altDe": "https://de-linker.com/de/proforma-anfrage/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "formState": {
+      "hasForm": true,
+      "inputs": [
+        {
+          "tag": "INPUT",
+          "type": "text",
+          "name": "website",
+          "required": false
+        },
+        {
+          "tag": "TEXTAREA",
+          "type": null,
+          "name": "message",
+          "required": false
+        },
+        {
+          "tag": "INPUT",
+          "type": null,
+          "name": "name",
+          "required": true
+        },
+        {
+          "tag": "INPUT",
+          "type": "email",
+          "name": "email",
+          "required": true
+        },
+        {
+          "tag": "INPUT",
+          "type": null,
+          "name": "company",
+          "required": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "checkbox",
+          "name": "consent",
+          "required": true
+        }
+      ],
+      "hasSubmitBtn": true,
+      "submitText": "Anfrage senden ↗",
+      "guestLinks": [
+        {
+          "text": "Sie haben bereits ein freigegebenes Partnerkonto? Melden Sie sich an, um Nettopreise zu sehen und Ihre gespeicherten Angaben zu verwenden.",
+          "href": "https://de-linker.com/de/mein-konto/"
+        },
+        {
+          "text": "Konto erstellen",
+          "href": "https://de-linker.com/de/mein-konto/registrieren/"
+        }
+      ],
+      "hasDraftColumn": true
+    },
+    "localTypeNoSubmitOk": true,
+    "twinMatches": true
+  },
+  "https://de-linker.com/my-account/@1440": {
+    "common": {
+      "docLang": "en-US",
+      "h1": "Sign in",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "altEn": "https://de-linker.com/my-account/",
+      "altDe": "https://de-linker.com/de/mein-konto/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "loginCheck": {
+      "hasUsername": true,
+      "hasPassword": true,
+      "regHref": "https://de-linker.com/my-account/register/",
+      "lostHref": "https://de-linker.com/my-account/lost-password/"
+    },
+    "registerViewOk": true,
+    "lostPasswordViewOk": true,
+    "twinMatches": true
+  },
+  "https://de-linker.com/de/mein-konto/@1440": {
+    "common": {
+      "docLang": "de-DE",
+      "h1": "Anmelden",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "altEn": "https://de-linker.com/my-account/",
+      "altDe": "https://de-linker.com/de/mein-konto/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "loginCheck": {
+      "hasUsername": true,
+      "hasPassword": true,
+      "regHref": "https://de-linker.com/de/mein-konto/registrieren/",
+      "lostHref": "https://de-linker.com/de/mein-konto/passwort-zuruecksetzen/"
+    },
+    "registerViewOk": true,
+    "lostPasswordViewOk": true,
+    "twinMatches": true
+  },
+  "https://de-linker.com/compare-products/@1440": {
+    "common": {
+      "docLang": "en-US",
+      "h1": "Compare products",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "altEn": "https://de-linker.com/compare-products/",
+      "altDe": "https://de-linker.com/de/produkte-vergleichen/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "emptyCompare": {
+      "hasTable": false,
+      "catalogueLinks": [
+        "https://de-linker.com/",
+        "https://de-linker.com/products/"
+      ]
+    },
+    "filledCompare_1832_6530": {
+      "hasTable": true,
+      "colHeaders": [
+        "Products",
+        "SAJ B2-5.0-HV1Remove",
+        "GoodWe GW60K-STS-G10Remove"
+      ],
+      "rowCount": 43,
+      "scrollerClientWidth": 1126,
+      "scrollerScrollWidth": 1126,
+      "scrollablePx": 0,
+      "movedScrollLeft": 0,
+      "hintVisible": false,
+      "docScrollWidth": 1440,
+      "docClientWidth": 1440,
+      "removeLinks": [
+        "https://de-linker.com/compare-products/?ids=6530",
+        "https://de-linker.com/compare-products/?ids=1832"
+      ]
+    },
+    "twinMatches": true
+  },
+  "https://de-linker.com/de/produkte-vergleichen/@1440": {
+    "common": {
+      "docLang": "de-DE",
+      "h1": "Produkte vergleichen",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "altEn": "https://de-linker.com/compare-products/",
+      "altDe": "https://de-linker.com/de/produkte-vergleichen/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "emptyCompare": {
+      "hasTable": false,
+      "catalogueLinks": [
+        "https://de-linker.com/de/",
+        "https://de-linker.com/de/produkte/"
+      ]
+    },
+    "filledCompare_1832_6530": {
+      "hasTable": true,
+      "colHeaders": [
+        "Produkte",
+        "SAJ B2-5.0-HV1Entfernen",
+        "GoodWe GW60K-STS-G10Entfernen"
+      ],
+      "rowCount": 43,
+      "scrollerClientWidth": 1126,
+      "scrollerScrollWidth": 1126,
+      "scrollablePx": 0,
+      "movedScrollLeft": 0,
+      "hintVisible": false,
+      "docScrollWidth": 1440,
+      "docClientWidth": 1440,
+      "removeLinks": [
+        "https://de-linker.com/de/produkte-vergleichen/?ids=6530",
+        "https://de-linker.com/de/produkte-vergleichen/?ids=1832"
+      ]
+    },
+    "twinMatches": true
+  },
+  "https://de-linker.com/genie/@1440": {
+    "common": {
+      "docLang": "en-US",
+      "h1": "Genie – Linker’s AI assistant",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "altEn": "https://de-linker.com/genie/",
+      "altDe": "https://de-linker.com/de/genie/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "genieDom": {
+      "hasComposer": true,
+      "disclosure": "Hi, I'm Genie, Linker's AI assistant. You're chatting with an AI system.",
+      "welcome": null,
+      "openingPrompts": [
+        {
+          "text": "Which model fits my project?",
+          "disabled": false
+        },
+        {
+          "text": "Which batteries work with my inverter?",
+          "disabled": false
+        }
+      ]
+    },
+    "turnRequestsAttempted": 0,
+    "twinMatches": true,
+    "localComposerInputNoSendOk": true,
+    "openingPromptsReadyCount": 2
+  },
+  "https://de-linker.com/de/genie/@1440": {
+    "common": {
+      "docLang": "de-DE",
+      "h1": "Genie – der KI-Assistent von Linker",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "altEn": "https://de-linker.com/genie/",
+      "altDe": "https://de-linker.com/de/genie/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "genieDom": {
+      "hasComposer": true,
+      "disclosure": "Hallo, ich bin Genie, der KI-Assistent von Linker. Sie chatten mit einem KI-System.",
+      "welcome": null,
+      "openingPrompts": [
+        {
+          "text": "Welches Modell passt zu meinem Projekt?",
+          "disabled": false
+        },
+        {
+          "text": "Welche Batterien passen zu meinem Wechselrichter?",
+          "disabled": false
+        }
+      ]
+    },
+    "turnRequestsAttempted": 0,
+    "twinMatches": true,
+    "localComposerInputNoSendOk": true,
+    "openingPromptsReadyCount": 2
+  },
+  "https://de-linker.com/solution-configurator/@1440": {
+    "common": {
+      "docLang": "en-US",
+      "h1": "Your projects",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "altEn": "https://de-linker.com/solution-configurator/",
+      "altDe": "https://de-linker.com/de/loesungskonfigurator/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "configDom": {
+      "hasWorkspace": true,
+      "hasQuickstart": true,
+      "quickstartInputs": 8,
+      "hasAdvancedDetails": true
+    },
+    "advToggled": true,
+    "newProjModalOk": true,
+    "twinMatches": true
+  },
+  "https://de-linker.com/de/loesungskonfigurator/@1440": {
+    "common": {
+      "docLang": "de-DE",
+      "h1": "Ihre Projekte",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "altEn": "https://de-linker.com/solution-configurator/",
+      "altDe": "https://de-linker.com/de/loesungskonfigurator/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "configDom": {
+      "hasWorkspace": true,
+      "hasQuickstart": true,
+      "quickstartInputs": 8,
+      "hasAdvancedDetails": true
+    },
+    "advToggled": true,
+    "newProjModalOk": true,
+    "twinMatches": true
+  },
+  "https://de-linker.com/products/@390": {
+    "common": {
+      "docLang": "en-US",
+      "h1": "Products",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "altEn": "https://de-linker.com/products/",
+      "altDe": "https://de-linker.com/de/produkte/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "railFoldToggled": true,
+    "filterSectionToggled": true,
+    "archiveControls": {
+      "hasSortSelect": true,
+      "sortOptionsCount": 0,
+      "page2Href": "https://de-linker.com/products/?product-page=2",
+      "cardCount": 24
+    },
+    "page2Ok": true,
+    "twinMatches": true
+  },
+  "https://de-linker.com/de/produkte/@390": {
+    "common": {
+      "docLang": "de-DE",
+      "h1": "Produkte",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "altEn": "https://de-linker.com/products/",
+      "altDe": "https://de-linker.com/de/produkte/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "railFoldToggled": true,
+    "filterSectionToggled": true,
+    "archiveControls": {
+      "hasSortSelect": true,
+      "sortOptionsCount": 0,
+      "page2Href": "https://de-linker.com/de/produkte/?product-page=2",
+      "cardCount": 24
+    },
+    "page2Ok": true,
+    "twinMatches": true
+  },
+  "https://de-linker.com/cart/@390": {
+    "common": {
+      "docLang": "en-US",
+      "h1": "Your solution draft is empty.",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "altEn": "https://de-linker.com/cart/",
+      "altDe": "https://de-linker.com/de/loesungsentwurf/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "emptyState": {
+      "mainTextSnippet": "Your solution draft is empty.Browse products and add them to your solution draft. You can send an inquiry without an account.Browse productsSign inCreate account",
+      "ctaLinks": [
+        {
+          "text": "Browse products",
+          "href": "https://de-linker.com/products/"
+        },
+        {
+          "text": "Sign in",
+          "href": "https://de-linker.com/my-account/"
+        },
+        {
+          "text": "Create account",
+          "href": "https://de-linker.com/my-account/register/"
+        }
+      ]
+    },
+    "twinMatches": true
+  },
+  "https://de-linker.com/de/loesungsentwurf/@390": {
+    "common": {
+      "docLang": "de-DE",
+      "h1": "Ihr Lösungsentwurf ist leer.",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "altEn": "https://de-linker.com/cart/",
+      "altDe": "https://de-linker.com/de/loesungsentwurf/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "emptyState": {
+      "mainTextSnippet": "Ihr Lösungsentwurf ist leer.Wählen Sie Produkte für Ihren Lösungsentwurf aus. Sie können Ihre Anfrage ohne Konto senden.Zu den ProduktenAnmeldenKonto erstellen",
+      "ctaLinks": [
+        {
+          "text": "Zu den Produkten",
+          "href": "https://de-linker.com/de/produkte/"
+        },
+        {
+          "text": "Anmelden",
+          "href": "https://de-linker.com/de/mein-konto/"
+        },
+        {
+          "text": "Konto erstellen",
+          "href": "https://de-linker.com/de/mein-konto/registrieren/"
+        }
+      ]
+    },
+    "twinMatches": true
+  },
+  "https://de-linker.com/proforma-request/@390": {
+    "common": {
+      "docLang": "en-US",
+      "h1": "Send an inquiry",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "altEn": "https://de-linker.com/proforma-request/",
+      "altDe": "https://de-linker.com/de/proforma-anfrage/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "formState": {
+      "hasForm": true,
+      "inputs": [
+        {
+          "tag": "INPUT",
+          "type": "text",
+          "name": "website",
+          "required": false
+        },
+        {
+          "tag": "TEXTAREA",
+          "type": null,
+          "name": "message",
+          "required": false
+        },
+        {
+          "tag": "INPUT",
+          "type": null,
+          "name": "name",
+          "required": true
+        },
+        {
+          "tag": "INPUT",
+          "type": "email",
+          "name": "email",
+          "required": true
+        },
+        {
+          "tag": "INPUT",
+          "type": null,
+          "name": "company",
+          "required": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "checkbox",
+          "name": "consent",
+          "required": true
+        }
+      ],
+      "hasSubmitBtn": true,
+      "submitText": "Send inquiry ↗",
+      "guestLinks": [
+        {
+          "text": "Have an approved account? Log in for net prices and saved details.",
+          "href": "https://de-linker.com/my-account/"
+        },
+        {
+          "text": "Create account",
+          "href": "https://de-linker.com/my-account/register/"
+        }
+      ],
+      "hasDraftColumn": true
+    },
+    "localTypeNoSubmitOk": true,
+    "twinMatches": true
+  },
+  "https://de-linker.com/de/proforma-anfrage/@390": {
+    "common": {
+      "docLang": "de-DE",
+      "h1": "Anfrage senden",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "altEn": "https://de-linker.com/proforma-request/",
+      "altDe": "https://de-linker.com/de/proforma-anfrage/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "formState": {
+      "hasForm": true,
+      "inputs": [
+        {
+          "tag": "INPUT",
+          "type": "text",
+          "name": "website",
+          "required": false
+        },
+        {
+          "tag": "TEXTAREA",
+          "type": null,
+          "name": "message",
+          "required": false
+        },
+        {
+          "tag": "INPUT",
+          "type": null,
+          "name": "name",
+          "required": true
+        },
+        {
+          "tag": "INPUT",
+          "type": "email",
+          "name": "email",
+          "required": true
+        },
+        {
+          "tag": "INPUT",
+          "type": null,
+          "name": "company",
+          "required": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "checkbox",
+          "name": "consent",
+          "required": true
+        }
+      ],
+      "hasSubmitBtn": true,
+      "submitText": "Anfrage senden ↗",
+      "guestLinks": [
+        {
+          "text": "Sie haben bereits ein freigegebenes Partnerkonto? Melden Sie sich an, um Nettopreise zu sehen und Ihre gespeicherten Angaben zu verwenden.",
+          "href": "https://de-linker.com/de/mein-konto/"
+        },
+        {
+          "text": "Konto erstellen",
+          "href": "https://de-linker.com/de/mein-konto/registrieren/"
+        }
+      ],
+      "hasDraftColumn": true
+    },
+    "localTypeNoSubmitOk": true,
+    "twinMatches": true
+  },
+  "https://de-linker.com/my-account/@390": {
+    "common": {
+      "docLang": "en-US",
+      "h1": "Sign in",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "altEn": "https://de-linker.com/my-account/",
+      "altDe": "https://de-linker.com/de/mein-konto/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "loginCheck": {
+      "hasUsername": true,
+      "hasPassword": true,
+      "regHref": "https://de-linker.com/my-account/register/",
+      "lostHref": "https://de-linker.com/my-account/lost-password/"
+    },
+    "registerViewOk": true,
+    "lostPasswordViewOk": true,
+    "twinMatches": true
+  },
+  "https://de-linker.com/de/mein-konto/@390": {
+    "common": {
+      "docLang": "de-DE",
+      "h1": "Anmelden",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "altEn": "https://de-linker.com/my-account/",
+      "altDe": "https://de-linker.com/de/mein-konto/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "loginCheck": {
+      "hasUsername": true,
+      "hasPassword": true,
+      "regHref": "https://de-linker.com/de/mein-konto/registrieren/",
+      "lostHref": "https://de-linker.com/de/mein-konto/passwort-zuruecksetzen/"
+    },
+    "registerViewOk": true,
+    "lostPasswordViewOk": true,
+    "twinMatches": true
+  },
+  "https://de-linker.com/compare-products/@390": {
+    "common": {
+      "docLang": "en-US",
+      "h1": "Compare products",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "altEn": "https://de-linker.com/compare-products/",
+      "altDe": "https://de-linker.com/de/produkte-vergleichen/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "emptyCompare": {
+      "hasTable": false,
+      "catalogueLinks": [
+        "https://de-linker.com/",
+        "https://de-linker.com/products/"
+      ]
+    },
+    "filledCompare_1832_6530": {
+      "hasTable": true,
+      "colHeaders": [
+        "Products",
+        "SAJ B2-5.0-HV1Remove",
+        "GoodWe GW60K-STS-G10Remove"
+      ],
+      "rowCount": 43,
+      "scrollerClientWidth": 356,
+      "scrollerScrollWidth": 496,
+      "scrollablePx": 140,
+      "movedScrollLeft": 60,
+      "hintVisible": true,
+      "docScrollWidth": 390,
+      "docClientWidth": 390,
+      "removeLinks": [
+        "https://de-linker.com/compare-products/?ids=6530",
+        "https://de-linker.com/compare-products/?ids=1832"
+      ]
+    },
+    "twinMatches": true
+  },
+  "https://de-linker.com/de/produkte-vergleichen/@390": {
+    "common": {
+      "docLang": "de-DE",
+      "h1": "Produkte vergleichen",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "altEn": "https://de-linker.com/compare-products/",
+      "altDe": "https://de-linker.com/de/produkte-vergleichen/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "emptyCompare": {
+      "hasTable": false,
+      "catalogueLinks": [
+        "https://de-linker.com/de/",
+        "https://de-linker.com/de/produkte/"
+      ]
+    },
+    "filledCompare_1832_6530": {
+      "hasTable": true,
+      "colHeaders": [
+        "Produkte",
+        "SAJ B2-5.0-HV1Entfernen",
+        "GoodWe GW60K-STS-G10Entfernen"
+      ],
+      "rowCount": 43,
+      "scrollerClientWidth": 356,
+      "scrollerScrollWidth": 496,
+      "scrollablePx": 140,
+      "movedScrollLeft": 60,
+      "hintVisible": true,
+      "docScrollWidth": 390,
+      "docClientWidth": 390,
+      "removeLinks": [
+        "https://de-linker.com/de/produkte-vergleichen/?ids=6530",
+        "https://de-linker.com/de/produkte-vergleichen/?ids=1832"
+      ]
+    },
+    "twinMatches": true
+  },
+  "https://de-linker.com/genie/@390": {
+    "common": {
+      "docLang": "en-US",
+      "h1": "Genie – Linker’s AI assistant",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "altEn": "https://de-linker.com/genie/",
+      "altDe": "https://de-linker.com/de/genie/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "genieDom": {
+      "hasComposer": true,
+      "disclosure": "Hi, I'm Genie, Linker's AI assistant. You're chatting with an AI system.",
+      "welcome": null,
+      "openingPrompts": [
+        {
+          "text": "Which model fits my project?",
+          "disabled": false
+        },
+        {
+          "text": "Which batteries work with my inverter?",
+          "disabled": false
+        }
+      ]
+    },
+    "turnRequestsAttempted": 0,
+    "twinMatches": true,
+    "localComposerInputNoSendOk": true,
+    "openingPromptsReadyCount": 2
+  },
+  "https://de-linker.com/de/genie/@390": {
+    "common": {
+      "docLang": "de-DE",
+      "h1": "Genie – der KI-Assistent von Linker",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "altEn": "https://de-linker.com/genie/",
+      "altDe": "https://de-linker.com/de/genie/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "genieDom": {
+      "hasComposer": true,
+      "disclosure": "Hallo, ich bin Genie, der KI-Assistent von Linker. Sie chatten mit einem KI-System.",
+      "welcome": null,
+      "openingPrompts": [
+        {
+          "text": "Welches Modell passt zu meinem Projekt?",
+          "disabled": false
+        },
+        {
+          "text": "Welche Batterien passen zu meinem Wechselrichter?",
+          "disabled": false
+        }
+      ]
+    },
+    "turnRequestsAttempted": 0,
+    "twinMatches": true,
+    "localComposerInputNoSendOk": true,
+    "openingPromptsReadyCount": 2
+  },
+  "https://de-linker.com/solution-configurator/@390": {
+    "common": {
+      "docLang": "en-US",
+      "h1": "Your projects",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "altEn": "https://de-linker.com/solution-configurator/",
+      "altDe": "https://de-linker.com/de/loesungskonfigurator/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "configDom": {
+      "hasWorkspace": true,
+      "hasQuickstart": true,
+      "quickstartInputs": 8,
+      "hasAdvancedDetails": true
+    },
+    "advToggled": true,
+    "newProjModalOk": true,
+    "twinMatches": true
+  },
+  "https://de-linker.com/de/loesungskonfigurator/@390": {
+    "common": {
+      "docLang": "de-DE",
+      "h1": "Ihre Projekte",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "altEn": "https://de-linker.com/solution-configurator/",
+      "altDe": "https://de-linker.com/de/loesungskonfigurator/",
+      "headerSwitchCount": 6,
+      "langMatches": true,
+      "noHorizontalOverflow": true,
+      "navToggleOk": true
+    },
+    "configDom": {
+      "hasWorkspace": true,
+      "hasQuickstart": true,
+      "quickstartInputs": 8,
+      "hasAdvancedDetails": true
+    },
+    "advToggled": true,
+    "newProjModalOk": true,
+    "twinMatches": true
+  }
+}

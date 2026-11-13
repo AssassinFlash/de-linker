@@ -1,0 +1,1093 @@
+[
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/products/@1440",
+    "id": 1034,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "docs/acceptance/2026-11-03/customer-chain/README.md",
+        "docs/acceptance/2026-11-03/548/INDEX.md",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-1034-products-1440.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/produkte/@1440",
+    "id": 6853,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "docs/acceptance/2026-11-03/customer-chain/README.md",
+        "docs/acceptance/2026-11-03/548/INDEX.md",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6853-produkte-1440.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/cart/@1440",
+    "id": 1035,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-local-en1440.png",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-online-en1440.png",
+        "docs/acceptance/2026-11-03/customer-chain/README.md",
+        "docs/acceptance/2026-11-03/548/INDEX.md",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-1035-cart-1440.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/loesungsentwurf/@1440",
+    "id": 6855,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-local-de1440.png",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-online-de1440.png",
+        "docs/acceptance/2026-11-03/customer-chain/README.md",
+        "docs/acceptance/2026-11-03/548/INDEX.md",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6855-loesungsentwurf-1440.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/proforma-request/@1440",
+    "id": 1036,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/inquiry-message-context.json",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
+        "docs/acceptance/2026-11-03/customer-chain/README.md",
+        "docs/acceptance/2026-11-03/548/INDEX.md",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-1036-proforma-request-1440.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/proforma-anfrage/@1440",
+    "id": 6857,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/inquiry-message-context.json",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
+        "docs/acceptance/2026-11-03/customer-chain/README.md",
+        "docs/acceptance/2026-11-03/548/INDEX.md",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6857-proforma-anfrage-1440.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/my-account/@1440",
+    "id": 1037,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/auth-required-guidance.json",
+        "docs/acceptance/2026-11-03/customer-chain/README.md",
+        "docs/acceptance/2026-11-03/548/INDEX.md",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-1037-my-account-1440.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/mein-konto/@1440",
+    "id": 6859,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/auth-required-guidance.json",
+        "docs/acceptance/2026-11-03/customer-chain/README.md",
+        "docs/acceptance/2026-11-03/548/INDEX.md",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6859-mein-konto-1440.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/compare-products/@1440",
+    "id": 5385,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-5385-compare-products-1440.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/produkte-vergleichen/@1440",
+    "id": 6600,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6600-produkte-vergleichen-1440.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/genie/@1440",
+    "id": 4083,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-4083-genie-1440.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/genie/@1440",
+    "id": 6633,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6633-genie-1440.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/solution-configurator/@1440",
+    "id": 3302,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "docs/acceptance/2026-11-03/customer-chain/README.md",
+        "docs/acceptance/2026-11-03/548/INDEX.md",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-3302-solution-configurator-1440.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/loesungskonfigurator/@1440",
+    "id": 6693,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "docs/acceptance/2026-11-03/customer-chain/README.md",
+        "docs/acceptance/2026-11-03/548/INDEX.md",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6693-loesungskonfigurator-1440.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/products/@390",
+    "id": 1034,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "docs/acceptance/2026-11-03/customer-chain/README.md",
+        "docs/acceptance/2026-11-03/548/INDEX.md",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-1034-products-390.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/produkte/@390",
+    "id": 6853,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "docs/acceptance/2026-11-03/customer-chain/README.md",
+        "docs/acceptance/2026-11-03/548/INDEX.md",
+        "commit 096cc3bef (PR #664)",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-mobile-compare-header.json",
+        "2026-11-13 Playwright 390x844 https://de-linker.com/de/produkte/ (2 items selected -> chip fixed y=81..133, h=52, overlaps=false)",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6853-produkte-390.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": [],
+      "resolved_findings": {
+        "mobile-compare-chip-covers-account": {
+          "resolved_at_probe": "2026-11-13",
+          "verification": "PR #664 (096cc3bef) fixed mobile compare chip overlap; Batch 5/6 2026-11-13 live 390px DOM & screenshot audit confirmed zero overlap and clean header/account controls.",
+          "evidence": [
+            "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6853-produkte-390.png",
+            "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json"
+          ]
+        }
+      }
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/cart/@390",
+    "id": 1035,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-local-en390.png",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-online-en390.png",
+        "docs/acceptance/2026-11-03/customer-chain/README.md",
+        "docs/acceptance/2026-11-03/548/INDEX.md",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-1035-cart-390.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/loesungsentwurf/@390",
+    "id": 6855,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-local-de390.png",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-online-de390.png",
+        "docs/acceptance/2026-11-03/customer-chain/README.md",
+        "docs/acceptance/2026-11-03/548/INDEX.md",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6855-loesungsentwurf-390.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/proforma-request/@390",
+    "id": 1036,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/inquiry-message-context.json",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
+        "docs/acceptance/2026-11-03/customer-chain/README.md",
+        "docs/acceptance/2026-11-03/548/INDEX.md",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-1036-proforma-request-390.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/proforma-anfrage/@390",
+    "id": 6857,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/inquiry-message-context.json",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
+        "docs/acceptance/2026-11-03/customer-chain/README.md",
+        "docs/acceptance/2026-11-03/548/INDEX.md",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6857-proforma-anfrage-390.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/my-account/@390",
+    "id": 1037,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/auth-required-guidance.json",
+        "docs/acceptance/2026-11-03/customer-chain/README.md",
+        "docs/acceptance/2026-11-03/548/INDEX.md",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-1037-my-account-390.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/mein-konto/@390",
+    "id": 6859,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/auth-required-guidance.json",
+        "docs/acceptance/2026-11-03/customer-chain/README.md",
+        "docs/acceptance/2026-11-03/548/INDEX.md",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6859-mein-konto-390.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/compare-products/@390",
+    "id": 5385,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-5385-compare-products-390.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/produkte-vergleichen/@390",
+    "id": 6600,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6600-produkte-vergleichen-390.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/genie/@390",
+    "id": 4083,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-4083-genie-390.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/genie/@390",
+    "id": 6633,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "docs/acceptance/2026-10-22/full-site/page-visual-selfcheck-20261107.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6633-genie-390.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/solution-configurator/@390",
+    "id": 3302,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "docs/acceptance/2026-11-03/customer-chain/README.md",
+        "docs/acceptance/2026-11-03/548/INDEX.md",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-3302-solution-configurator-390.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/loesungskonfigurator/@390",
+    "id": 6693,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "findings_mode": "replace",
+    "updates": {
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "render-page-0-50-de-linker.com.json",
+        "docs/acceptance/2026-11-03/customer-chain/README.md",
+        "docs/acceptance/2026-11-03/548/INDEX.md",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6693-loesungskonfigurator-390.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/dom-vision-audit.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+      ],
+      "findings": []
+    },
+    "reason": "Batch 5/6 production read-only Playwright interaction + full-page 1440/390 screenshot + DOM geometry verification passed (langMatches=true, noHorizontalOverflow=true, navToggleOk=true, twinMatches=true)."
+  },
+  {
+    "matrix": "state",
+    "key": "global-navigation:mobile-menu-open:en:1440",
+    "updates": {
+      "applicability": {
+        "status": "not-applicable",
+        "predicate": "Mobile navigation control is visible at this width.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/state-applicability-probes.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+        ],
+        "note": "At 1440px desktop viewport, details.tv-mobile-navigation and #tv-mobile-toggle compute display:none (0x0 rect); desktop header navigation is rendered instead."
+      },
+      "status": "not-applicable-today"
+    },
+    "reason": "At 1440px desktop viewport, details.tv-mobile-navigation and #tv-mobile-toggle compute display:none (0x0 rect); desktop header navigation is rendered instead."
+  },
+  {
+    "matrix": "state",
+    "key": "global-navigation:mobile-menu-open:de:1440",
+    "updates": {
+      "applicability": {
+        "status": "not-applicable",
+        "predicate": "Mobile navigation control is visible at this width.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/state-applicability-probes.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+        ],
+        "note": "At 1440px desktop viewport, details.tv-mobile-navigation and #tv-mobile-toggle compute display:none (0x0 rect); desktop header navigation is rendered instead."
+      },
+      "status": "not-applicable-today"
+    },
+    "reason": "At 1440px desktop viewport, details.tv-mobile-navigation and #tv-mobile-toggle compute display:none (0x0 rect); desktop header navigation is rendered instead."
+  },
+  {
+    "matrix": "state",
+    "key": "comparison:phone-table-scroll:en:1440",
+    "updates": {
+      "applicability": {
+        "status": "not-applicable",
+        "predicate": "The actual comparison layout needs horizontal table scrolling at this width.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/state-applicability-probes.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+        ],
+        "note": "At 1440px desktop viewport, both 2-product and 3-product comparison tables fit within 1126px container (scrollWidth==clientWidth==1126, scrollablePx=0) and swipe hint computes display:none."
+      },
+      "status": "not-applicable-today"
+    },
+    "reason": "At 1440px desktop viewport, both 2-product and 3-product comparison tables fit within 1126px container (scrollWidth==clientWidth==1126, scrollablePx=0) and swipe hint computes display:none."
+  },
+  {
+    "matrix": "state",
+    "key": "comparison:phone-table-scroll:de:1440",
+    "updates": {
+      "applicability": {
+        "status": "not-applicable",
+        "predicate": "The actual comparison layout needs horizontal table scrolling at this width.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/state-applicability-probes.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+        ],
+        "note": "At 1440px desktop viewport, both 2-product and 3-product comparison tables fit within 1126px container (scrollWidth==clientWidth==1126, scrollablePx=0) and swipe hint computes display:none."
+      },
+      "status": "not-applicable-today"
+    },
+    "reason": "At 1440px desktop viewport, both 2-product and 3-product comparison tables fit within 1126px container (scrollWidth==clientWidth==1126, scrollablePx=0) and swipe hint computes display:none."
+  },
+  {
+    "matrix": "state",
+    "key": "comparison:phone-table-scroll:en:390",
+    "updates": {
+      "applicability": {
+        "status": "applicable",
+        "predicate": "The actual comparison layout needs horizontal table scrolling at this width.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/state-applicability-probes.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+        ],
+        "note": "At 390px phone viewport, comparison table requires horizontal scroll inside its container (clientWidth=356, scrollWidth=496 for 2 cols / 688 for 3 cols, docScrollWidth=390) and displays swipe hint."
+      }
+    },
+    "reason": "At 390px phone viewport, comparison table requires horizontal scroll inside its container (clientWidth=356, scrollWidth=496 for 2 cols / 688 for 3 cols, docScrollWidth=390) and displays swipe hint."
+  },
+  {
+    "matrix": "state",
+    "key": "comparison:phone-table-scroll:de:390",
+    "updates": {
+      "applicability": {
+        "status": "applicable",
+        "predicate": "The actual comparison layout needs horizontal table scrolling at this width.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/state-applicability-probes.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+        ],
+        "note": "At 390px phone viewport, comparison table requires horizontal scroll inside its container (clientWidth=356, scrollWidth=496 for 2 cols / 688 for 3 cols, docScrollWidth=390) and displays swipe hint."
+      }
+    },
+    "reason": "At 390px phone viewport, comparison table requires horizontal scroll inside its container (clientWidth=356, scrollWidth=496 for 2 cols / 688 for 3 cols, docScrollWidth=390) and displays swipe hint."
+  },
+  {
+    "matrix": "state",
+    "key": "roof:mobile-gestures:en:1440",
+    "updates": {
+      "applicability": {
+        "status": "applicable",
+        "predicate": "The tool exposes touch/gesture controls in the tested input mode.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/state-applicability-probes.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+        ],
+        "note": "Roof canvas exposes unified pointer/wheel/drag/pinch handlers across viewports, covered by PR #1052 planner-map-chain.spec.ts (all 8 EN/DE tests green)."
+      }
+    },
+    "reason": "Roof canvas exposes unified pointer/wheel/drag/pinch handlers across viewports, covered by PR #1052 planner-map-chain.spec.ts (all 8 EN/DE tests green)."
+  },
+  {
+    "matrix": "state",
+    "key": "roof:mobile-gestures:de:1440",
+    "updates": {
+      "applicability": {
+        "status": "applicable",
+        "predicate": "The tool exposes touch/gesture controls in the tested input mode.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/state-applicability-probes.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+        ],
+        "note": "Roof canvas exposes unified pointer/wheel/drag/pinch handlers across viewports, covered by PR #1052 planner-map-chain.spec.ts (all 8 EN/DE tests green)."
+      }
+    },
+    "reason": "Roof canvas exposes unified pointer/wheel/drag/pinch handlers across viewports, covered by PR #1052 planner-map-chain.spec.ts (all 8 EN/DE tests green)."
+  },
+  {
+    "matrix": "state",
+    "key": "roof:mobile-gestures:en:390",
+    "updates": {
+      "applicability": {
+        "status": "applicable",
+        "predicate": "The tool exposes touch/gesture controls in the tested input mode.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/state-applicability-probes.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+        ],
+        "note": "Roof canvas exposes touch/pointer gesture controls at 390px, covered by PR #1052 planner-map-chain.spec.ts (all 8 EN/DE tests green)."
+      }
+    },
+    "reason": "Roof canvas exposes touch/pointer gesture controls at 390px, covered by PR #1052 planner-map-chain.spec.ts (all 8 EN/DE tests green)."
+  },
+  {
+    "matrix": "state",
+    "key": "roof:mobile-gestures:de:390",
+    "updates": {
+      "applicability": {
+        "status": "applicable",
+        "predicate": "The tool exposes touch/gesture controls in the tested input mode.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/state-applicability-probes.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+        ],
+        "note": "Roof canvas exposes touch/pointer gesture controls at 390px, covered by PR #1052 planner-map-chain.spec.ts (all 8 EN/DE tests green)."
+      }
+    },
+    "reason": "Roof canvas exposes touch/pointer gesture controls at 390px, covered by PR #1052 planner-map-chain.spec.ts (all 8 EN/DE tests green)."
+  },
+  {
+    "matrix": "state",
+    "key": "document-library:rail-and-mobile-chips:en:1440",
+    "updates": {
+      "applicability": {
+        "status": "applicable",
+        "predicate": "Use the actual visible rail/chips branch at this width.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/state-applicability-probes.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+        ],
+        "note": "At 1440px, desktop category rail is visible (display:block, 232x428px, 13 links) while mobile chips strip is hidden (display:none)."
+      }
+    },
+    "reason": "At 1440px, desktop category rail is visible (display:block, 232x428px, 13 links) while mobile chips strip is hidden (display:none)."
+  },
+  {
+    "matrix": "state",
+    "key": "document-library:rail-and-mobile-chips:de:1440",
+    "updates": {
+      "applicability": {
+        "status": "applicable",
+        "predicate": "Use the actual visible rail/chips branch at this width.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/state-applicability-probes.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+        ],
+        "note": "At 1440px, desktop category rail is visible (display:block, 232x428px, 13 links) while mobile chips strip is hidden (display:none)."
+      }
+    },
+    "reason": "At 1440px, desktop category rail is visible (display:block, 232x428px, 13 links) while mobile chips strip is hidden (display:none)."
+  },
+  {
+    "matrix": "state",
+    "key": "document-library:rail-and-mobile-chips:en:390",
+    "updates": {
+      "applicability": {
+        "status": "applicable",
+        "predicate": "Use the actual visible rail/chips branch at this width.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/state-applicability-probes.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+        ],
+        "note": "At 390px, sticky mobile chips strip is visible (display:block, position:sticky, 390x65px, 15 chips) while desktop rail is hidden (display:none)."
+      }
+    },
+    "reason": "At 390px, sticky mobile chips strip is visible (display:block, position:sticky, 390x65px, 15 chips) while desktop rail is hidden (display:none)."
+  },
+  {
+    "matrix": "state",
+    "key": "document-library:rail-and-mobile-chips:de:390",
+    "updates": {
+      "applicability": {
+        "status": "applicable",
+        "predicate": "Use the actual visible rail/chips branch at this width.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/state-applicability-probes.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+        ],
+        "note": "At 390px, sticky mobile chips strip is visible (display:block, position:sticky, 390x65px, 15 chips) while desktop rail is hidden (display:none)."
+      }
+    },
+    "reason": "At 390px, sticky mobile chips strip is visible (display:block, position:sticky, 390x65px, 15 chips) while desktop rail is hidden (display:none)."
+  },
+  {
+    "matrix": "state",
+    "key": "global-navigation:mobile-input-visible-area:en:1440",
+    "updates": {
+      "applicability": {
+        "status": "not-applicable",
+        "predicate": "A mobile input or composer is present; inspect the reduced visible area and reachable actions.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/state-applicability-probes.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+        ],
+        "note": "1440px is desktop layout (mobileNavDisplay=none, no virtual mobile keyboard viewport reduction)."
+      },
+      "status": "not-applicable-today"
+    },
+    "reason": "1440px is desktop layout (mobileNavDisplay=none, no virtual mobile keyboard viewport reduction)."
+  },
+  {
+    "matrix": "state",
+    "key": "global-navigation:mobile-input-visible-area:de:1440",
+    "updates": {
+      "applicability": {
+        "status": "not-applicable",
+        "predicate": "A mobile input or composer is present; inspect the reduced visible area and reachable actions.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/state-applicability-probes.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+        ],
+        "note": "1440px is desktop layout (mobileNavDisplay=none, no virtual mobile keyboard reduction)."
+      },
+      "status": "not-applicable-today"
+    },
+    "reason": "1440px is desktop layout (mobileNavDisplay=none, no virtual mobile keyboard reduction)."
+  },
+  {
+    "matrix": "state",
+    "key": "global-navigation:mobile-input-visible-area:en:390",
+    "updates": {
+      "applicability": {
+        "status": "applicable",
+        "predicate": "A mobile input or composer is present; inspect the reduced visible area and reachable actions.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/state-applicability-probes.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+        ],
+        "note": "At 390px mobile viewport, hero/composer input (308x51px) has 0 fixed-widget intersections and reachable submit controls."
+      }
+    },
+    "reason": "At 390px mobile viewport, hero/composer input (308x51px) has 0 fixed-widget intersections and reachable submit controls."
+  },
+  {
+    "matrix": "state",
+    "key": "global-navigation:mobile-input-visible-area:de:390",
+    "updates": {
+      "applicability": {
+        "status": "applicable",
+        "predicate": "A mobile input or composer is present; inspect the reduced visible area and reachable actions.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/state-applicability-probes.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+        ],
+        "note": "At 390px mobile viewport, hero/composer input (308x51px) has 0 fixed-widget intersections and reachable submit controls."
+      }
+    },
+    "reason": "At 390px mobile viewport, hero/composer input (308x51px) has 0 fixed-widget intersections and reachable submit controls."
+  },
+  {
+    "matrix": "state",
+    "key": "genie:dock-keyboard-focus-escape-and-return:en:1440",
+    "updates": {
+      "applicability": {
+        "status": "applicable",
+        "predicate": "Genie helper can be opened at this width; phone modal and desktop nonmodal boundaries are validated separately.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/state-applicability-probes.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+        ],
+        "note": "Genie helper opens non-modally at 1440px (bodyOverflow=visible), closes cleanly on Escape without locking page scroll."
+      }
+    },
+    "reason": "Genie helper opens non-modally at 1440px (bodyOverflow=visible), closes cleanly on Escape without locking page scroll."
+  },
+  {
+    "matrix": "state",
+    "key": "genie:dock-keyboard-focus-escape-and-return:de:1440",
+    "updates": {
+      "applicability": {
+        "status": "applicable",
+        "predicate": "Genie helper can be opened at this width; phone modal and desktop nonmodal boundaries are validated separately.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/state-applicability-probes.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+        ],
+        "note": "Genie helper opens non-modally at 1440px (bodyOverflow=visible), closes cleanly on Escape without locking page scroll."
+      }
+    },
+    "reason": "Genie helper opens non-modally at 1440px (bodyOverflow=visible), closes cleanly on Escape without locking page scroll."
+  },
+  {
+    "matrix": "state",
+    "key": "genie:ordinary-draft-failure-owner-isolation:en:1440",
+    "updates": {
+      "applicability": {
+        "status": "applicable",
+        "predicate": "All surfaces accepting ordinary private text or files at this viewport.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/state-applicability-probes.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+        ],
+        "note": "All 3 Genie surfaces (home hero, /genie/ workspace, side dock) accept private text/files at 1440px and enforce DraftContext owner isolation."
+      }
+    },
+    "reason": "All 3 Genie surfaces (home hero, /genie/ workspace, side dock) accept private text/files at 1440px and enforce DraftContext owner isolation."
+  },
+  {
+    "matrix": "state",
+    "key": "genie:ordinary-draft-failure-owner-isolation:en:390",
+    "updates": {
+      "applicability": {
+        "status": "applicable",
+        "predicate": "All surfaces accepting ordinary private text or files at this viewport.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/state-applicability-probes.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+        ],
+        "note": "All 3 Genie surfaces (home hero, /genie/ workspace, side dock) accept private text/files at 390px and enforce DraftContext owner isolation."
+      }
+    },
+    "reason": "All 3 Genie surfaces (home hero, /genie/ workspace, side dock) accept private text/files at 390px and enforce DraftContext owner isolation."
+  },
+  {
+    "matrix": "state",
+    "key": "genie:ordinary-draft-failure-owner-isolation:de:1440",
+    "updates": {
+      "applicability": {
+        "status": "applicable",
+        "predicate": "All surfaces accepting ordinary private text or files at this viewport.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/state-applicability-probes.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+        ],
+        "note": "All 3 Genie surfaces (home hero, /de/genie/ workspace, side dock) accept private text/files at 1440px and enforce DraftContext owner isolation."
+      }
+    },
+    "reason": "All 3 Genie surfaces (home hero, /de/genie/ workspace, side dock) accept private text/files at 1440px and enforce DraftContext owner isolation."
+  },
+  {
+    "matrix": "state",
+    "key": "genie:ordinary-draft-failure-owner-isolation:de:390",
+    "updates": {
+      "applicability": {
+        "status": "applicable",
+        "predicate": "All surfaces accepting ordinary private text or files at this viewport.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/state-applicability-probes.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-report.md"
+        ],
+        "note": "All 3 Genie surfaces (home hero, /de/genie/ workspace, side dock) accept private text/files at 390px and enforce DraftContext owner isolation."
+      }
+    },
+    "reason": "All 3 Genie surfaces (home hero, /de/genie/ workspace, side dock) accept private text/files at 390px and enforce DraftContext owner isolation."
+  }
+]

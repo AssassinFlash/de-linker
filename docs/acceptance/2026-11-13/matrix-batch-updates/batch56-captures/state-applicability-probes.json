@@ -1,0 +1,388 @@
+{
+  "global-navigation:mobile-menu-open:de:1440": {
+    "mobileNavDisplay": "none",
+    "mobileToggleDisplay": "none",
+    "mobileToggleRect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "top": 0,
+      "right": 0,
+      "bottom": 0,
+      "left": 0
+    },
+    "desktopNavDisplay": "absent",
+    "desktopNavRect": null
+  },
+  "global-navigation:mobile-menu-open:en:1440": {
+    "mobileNavDisplay": "none",
+    "mobileToggleDisplay": "none",
+    "mobileToggleRect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "top": 0,
+      "right": 0,
+      "bottom": 0,
+      "left": 0
+    },
+    "desktopNavDisplay": "absent",
+    "desktopNavRect": null
+  },
+  "comparison:phone-table-scroll:en:1440": {
+    "twoCol_1832_6530": {
+      "clientWidth": 1126,
+      "scrollWidth": 1126,
+      "tableWidth": 1126,
+      "overflowX": "auto",
+      "scrollablePx": 0,
+      "scrollDelta": 0,
+      "hintDisplay": "none",
+      "docScrollWidth": 1440,
+      "docClientWidth": 1440
+    },
+    "threeCol_1832_6530_6519": {
+      "cols": 3,
+      "clientWidth": 1126,
+      "scrollWidth": 1126,
+      "scrollablePx": 0
+    }
+  },
+  "comparison:phone-table-scroll:de:1440": {
+    "twoCol_1832_6530": {
+      "clientWidth": 1126,
+      "scrollWidth": 1126,
+      "tableWidth": 1126,
+      "overflowX": "auto",
+      "scrollablePx": 0,
+      "scrollDelta": 0,
+      "hintDisplay": "none",
+      "docScrollWidth": 1440,
+      "docClientWidth": 1440
+    },
+    "threeCol_1832_6530_6519": {
+      "cols": 3,
+      "clientWidth": 1126,
+      "scrollWidth": 1126,
+      "scrollablePx": 0
+    }
+  },
+  "comparison:phone-table-scroll:en:390": {
+    "twoCol_1832_6530": {
+      "clientWidth": 356,
+      "scrollWidth": 496,
+      "tableWidth": 496,
+      "overflowX": "auto",
+      "scrollablePx": 140,
+      "scrollDelta": 80,
+      "hintDisplay": "block",
+      "docScrollWidth": 390,
+      "docClientWidth": 390
+    },
+    "threeCol_1832_6530_6519": {
+      "cols": 3,
+      "clientWidth": 356,
+      "scrollWidth": 688,
+      "scrollablePx": 332
+    }
+  },
+  "comparison:phone-table-scroll:de:390": {
+    "twoCol_1832_6530": {
+      "clientWidth": 356,
+      "scrollWidth": 496,
+      "tableWidth": 496,
+      "overflowX": "auto",
+      "scrollablePx": 140,
+      "scrollDelta": 80,
+      "hintDisplay": "block",
+      "docScrollWidth": 390,
+      "docClientWidth": 390
+    },
+    "threeCol_1832_6530_6519": {
+      "cols": 3,
+      "clientWidth": 356,
+      "scrollWidth": 688,
+      "scrollablePx": 332
+    }
+  },
+  "roof:mobile-gestures:de:1440": {
+    "error": "locator.click: Error: strict mode violation: locator('#lp-design').getByRole('button', { name: 'Dachfläche hinzufügen' }) resolved to 2 elements:\n    1) <button type=\"button\" class=\"lp-button\">…</button> aka getByRole('button', { name: 'Dachfläche hinzufügen', exact: true })\n    2) <button type=\"but"
+  },
+  "roof:mobile-gestures:en:1440": {
+    "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('#lp-design').locator('summary').filter({ hasText: 'Coordinate references' })\n"
+  },
+  "roof:mobile-gestures:de:390": {
+    "error": "locator.click: Error: strict mode violation: locator('#lp-design').getByRole('button', { name: 'Dachfläche hinzufügen' }) resolved to 2 elements:\n    1) <button type=\"button\" class=\"lp-button\">…</button> aka getByRole('button', { name: 'Dachfläche hinzufügen', exact: true })\n    2) <button type=\"but"
+  },
+  "roof:mobile-gestures:en:390": {
+    "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('#lp-design').locator('summary').filter({ hasText: 'Coordinate references' })\n"
+  },
+  "document-library:rail-and-mobile-chips:en:1440": {
+    "railDisplay": "block",
+    "railRect": {
+      "x": 80,
+      "y": 550.8125,
+      "width": 232,
+      "height": 428.15625,
+      "top": 550.8125,
+      "right": 312,
+      "bottom": 978.96875,
+      "left": 80
+    },
+    "railLinks": 13,
+    "chipsDisplay": "none",
+    "chipsPosition": "static",
+    "chipsRect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "top": 0,
+      "right": 0,
+      "bottom": 0,
+      "left": 0
+    },
+    "chipLinks": 15
+  },
+  "document-library:rail-and-mobile-chips:de:1440": {
+    "railDisplay": "block",
+    "railRect": {
+      "x": 80,
+      "y": 550.8125,
+      "width": 232,
+      "height": 428.15625,
+      "top": 550.8125,
+      "right": 312,
+      "bottom": 978.96875,
+      "left": 80
+    },
+    "railLinks": 13,
+    "chipsDisplay": "none",
+    "chipsPosition": "static",
+    "chipsRect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "top": 0,
+      "right": 0,
+      "bottom": 0,
+      "left": 0
+    },
+    "chipLinks": 15
+  },
+  "document-library:rail-and-mobile-chips:en:390": {
+    "railDisplay": "none",
+    "railRect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "top": 0,
+      "right": 0,
+      "bottom": 0,
+      "left": 0
+    },
+    "railLinks": 13,
+    "chipsDisplay": "block",
+    "chipsPosition": "sticky",
+    "chipsRect": {
+      "x": 0,
+      "y": 526.75,
+      "width": 390,
+      "height": 65,
+      "top": 526.75,
+      "right": 390,
+      "bottom": 591.75,
+      "left": 0
+    },
+    "chipLinks": 15
+  },
+  "document-library:rail-and-mobile-chips:de:390": {
+    "railDisplay": "none",
+    "railRect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "top": 0,
+      "right": 0,
+      "bottom": 0,
+      "left": 0
+    },
+    "railLinks": 13,
+    "chipsDisplay": "block",
+    "chipsPosition": "sticky",
+    "chipsRect": {
+      "x": 0,
+      "y": 526.75,
+      "width": 390,
+      "height": 65,
+      "top": 526.75,
+      "right": 390,
+      "bottom": 591.75,
+      "left": 0
+    },
+    "chipLinks": 15
+  },
+  "global-navigation:mobile-input-visible-area:de:1440": {
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "mobileNavDisplay": "none",
+    "headerHeight": 89,
+    "focusedInputRect": {
+      "top": 561.078125,
+      "bottom": 608.765625,
+      "width": 290.203125,
+      "height": 47.6875
+    },
+    "fixedWidgets": [
+      {
+        "id": "linker-genie",
+        "x": 1370,
+        "y": 830,
+        "w": 50,
+        "h": 50
+      }
+    ],
+    "fixedIntersectionsWithInput": 0
+  },
+  "global-navigation:mobile-input-visible-area:en:1440": {
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "mobileNavDisplay": "none",
+    "headerHeight": 89,
+    "focusedInputRect": {
+      "top": 537.28125,
+      "bottom": 584.96875,
+      "width": 290.203125,
+      "height": 47.6875
+    },
+    "fixedWidgets": [
+      {
+        "id": "linker-genie",
+        "x": 1370,
+        "y": 830,
+        "w": 50,
+        "h": 50
+      }
+    ],
+    "fixedIntersectionsWithInput": 0
+  },
+  "global-navigation:mobile-input-visible-area:en:390": {
+    "viewport": {
+      "w": 390,
+      "h": 844
+    },
+    "mobileNavDisplay": "block",
+    "headerHeight": 81,
+    "focusedInputRect": {
+      "top": 628.703125,
+      "bottom": 679.5,
+      "width": 308,
+      "height": 50.796875
+    },
+    "fixedWidgets": [],
+    "fixedIntersectionsWithInput": 0
+  },
+  "global-navigation:mobile-input-visible-area:de:390": {
+    "viewport": {
+      "w": 390,
+      "h": 844
+    },
+    "mobileNavDisplay": "block",
+    "headerHeight": 81,
+    "focusedInputRect": {
+      "top": 628.703125,
+      "bottom": 679.5,
+      "width": 308,
+      "height": 50.796875
+    },
+    "fixedWidgets": [],
+    "fixedIntersectionsWithInput": 0
+  },
+  "genie:dock-keyboard-focus-escape-and-return:de:1440": {
+    "dockOpen": true,
+    "activeTagOnOpen": "BUTTON",
+    "focusInsideMount": false,
+    "bodyOverflow": "visible",
+    "dockClosed": true,
+    "activeTagAfterEsc": "BUTTON",
+    "focusReturnedToMountButton": false
+  },
+  "genie:dock-keyboard-focus-escape-and-return:en:1440": {
+    "dockOpen": true,
+    "activeTagOnOpen": "BUTTON",
+    "focusInsideMount": false,
+    "bodyOverflow": "visible",
+    "dockClosed": true,
+    "activeTagAfterEsc": "BUTTON",
+    "focusReturnedToMountButton": false
+  },
+  "genie:ordinary-draft-failure-owner-isolation:en:1440": {
+    "homeSurface": {
+      "hasTextEntry": true,
+      "hasFileInput": false
+    },
+    "workspaceSurface": {
+      "hasTextEntry": true,
+      "hasFileInput": true
+    },
+    "dockSurface": {
+      "hasTextEntry": true,
+      "hasFileInput": true
+    },
+    "allThreeAcceptTextAndFiles": true
+  },
+  "genie:ordinary-draft-failure-owner-isolation:de:1440": {
+    "homeSurface": {
+      "hasTextEntry": true,
+      "hasFileInput": false
+    },
+    "workspaceSurface": {
+      "hasTextEntry": true,
+      "hasFileInput": true
+    },
+    "dockSurface": {
+      "hasTextEntry": true,
+      "hasFileInput": true
+    },
+    "allThreeAcceptTextAndFiles": true
+  },
+  "genie:ordinary-draft-failure-owner-isolation:en:390": {
+    "homeSurface": {
+      "hasTextEntry": true,
+      "hasFileInput": false
+    },
+    "workspaceSurface": {
+      "hasTextEntry": true,
+      "hasFileInput": true
+    },
+    "dockSurface": {
+      "hasTextEntry": true,
+      "hasFileInput": true
+    },
+    "allThreeAcceptTextAndFiles": true
+  },
+  "genie:ordinary-draft-failure-owner-isolation:de:390": {
+    "homeSurface": {
+      "hasTextEntry": true,
+      "hasFileInput": false
+    },
+    "workspaceSurface": {
+      "hasTextEntry": true,
+      "hasFileInput": true
+    },
+    "dockSurface": {
+      "hasTextEntry": true,
+      "hasFileInput": true
+    },
+    "allThreeAcceptTextAndFiles": true
+  }
+}

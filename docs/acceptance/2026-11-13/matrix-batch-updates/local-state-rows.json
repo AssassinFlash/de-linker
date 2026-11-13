@@ -1,0 +1,333 @@
+[
+  {
+    "matrix": "state",
+    "key": "authentication:pending-submit:de:1440",
+    "updates": {
+      "status": "pass",
+      "environment": "local instance c222 e2e (snapshot 2026-11-05 04:10 UTC, main checkout) 2026-11-13",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/c222-pending-account-report.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/c222-pending-account-de-1440.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e-report.md"
+      ],
+      "findings": [],
+      "resolved_findings": {
+        "pending-submit-de-1440-reverify": {
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/c222-pending-account-report.json",
+            "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/c222-pending-account-de-1440.json"
+          ],
+          "detail": "pending-account.spec.ts 'de 1440: register -> pending workspace and inquiry -> approve in the same session' passed in 34.0s (34020ms) on c222: two-step German registration submitted after PublicGuard 3.3s minimum fill time, redirected to /de/mein-konto/ with pending status and inquiry #8886 submitted in the same pending session."
+        }
+      }
+    },
+    "evidence": [
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/c222-pending-account-report.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/c222-pending-account-de-1440.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e-report.md"
+    ],
+    "reason": "2026-11-13 在本地 c222 实例实跑 tests/e2e/specs/pending-account.spec.ts，'de 1440: register → pending workspace and inquiry → approve in the same session' 完整通过（34.0s），落盘真实 Playwright JSON 报告与 de-1440 读回记录，满足 goal-state-ledger.md:154-159 独立重验要求，由 pending 升为 pass。"
+  },
+  {
+    "matrix": "state",
+    "key": "authentication:registration-success:de:1440",
+    "updates": {
+      "status": "pass",
+      "environment": "local instance c222 e2e (snapshot 2026-11-05 04:10 UTC, main checkout) 2026-11-13",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/c222-pending-account-report.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/c222-pending-account-de-1440.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e-report.md"
+      ],
+      "findings": [],
+      "resolved_findings": {
+        "registration-success-de-1440-reverify": {
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/c222-pending-account-report.json",
+            "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/c222-pending-account-de-1440.json"
+          ],
+          "detail": "pending-account.spec.ts 'de 1440: register -> pending workspace and inquiry -> approve in the same session' passed in 34.0s (34020ms) on c222: German two-step registration established wordpress_logged_in_ session cookie, landed on /de/mein-konto/ with .linker-account-status visible, and recorded local outbox mail 'Wir haben Ihre Partner-Registrierung erhalten'."
+        }
+      }
+    },
+    "evidence": [
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/c222-pending-account-report.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/c222-pending-account-de-1440.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e-report.md"
+    ],
+    "reason": "2026-11-13 在本地 c222 实例实跑 tests/e2e/specs/pending-account.spec.ts，de 1440 两步注册建立登录会话并验证德语注册确认邮件（'Wir haben Ihre Partner-Registrierung erhalten'）及同会话审批通过邮件（'Ihr Partner-Konto ist freigegeben'），落盘真实报告，由 pending 升为 pass。"
+  },
+  {
+    "matrix": "state",
+    "key": "authentication:password-email-confirmation:de:1440",
+    "updates": {
+      "status": "pass",
+      "environment": "local instance review e2e (snapshot 2026-11-05 04:10 UTC, main checkout) 2026-11-13",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-account-report.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e-report.md"
+      ],
+      "findings": [],
+      "resolved_findings": {
+        "password-email-confirmation-de-1440-reverify": {
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-account-report.json"
+          ],
+          "detail": "account.spec.ts 'de-1440: the lost-password request answers and its link opens the new-password card' passed in 8.3s (8324ms) on review: submitted /de/mein-konto/passwort-vergessen/, verified confirmation alert, extracted reset URL from local mail spool, set new password on new-password card, and signed in."
+        }
+      }
+    },
+    "evidence": [
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-account-report.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e-report.md"
+    ],
+    "reason": "2026-11-13 在本地 review 实例实跑 tests/e2e/specs/account.spec.ts，'de-1440: the lost-password request answers and its link opens the new-password card' 完整通过（8.3s），验证德语找回密码确认提示、本地邮件 spool 重置链接提取、新密码设置与重新登录全链路，由 pending 升为 pass。"
+  },
+  {
+    "matrix": "state",
+    "key": "account:overview-pending:de:1440",
+    "updates": {
+      "status": "pass",
+      "environment": "local instance c222 e2e (snapshot 2026-11-05 04:10 UTC, main checkout) 2026-11-13",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/c222-pending-account-report.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/c222-pending-account-de-1440.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e-report.md"
+      ],
+      "findings": []
+    },
+    "evidence": [
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/c222-pending-account-report.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/c222-pending-account-de-1440.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e-report.md"
+    ],
+    "reason": "为空证据 pass 行补齐真实本地 E2E 报告：c222 实跑 pending-account.spec.ts（de 1440，34.0s 通过），验证 /de/mein-konto/ 待审概览页显示 .linker-account-status h2、桌面导航 .linker-account-nav、隐藏货币金额，且全部 5 个德语子端点（anfragen/、dokumente/、gespeicherte-loesungen/、unternehmen/、kontodaten/）保持待审工作台登录态。"
+  },
+  {
+    "matrix": "state",
+    "key": "account:overview-approved:de:1440",
+    "updates": {
+      "status": "pass",
+      "environment": "local instance c222 e2e (snapshot 2026-11-05 04:10 UTC, main checkout) 2026-11-13",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/c222-pending-account-report.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/c222-pending-account-de-1440-readback.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e-report.md"
+      ],
+      "findings": []
+    },
+    "evidence": [
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/c222-pending-account-report.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/c222-pending-account-de-1440-readback.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e-report.md"
+    ],
+    "reason": "为空证据 pass 行补齐真实本地 E2E 报告：c222 实跑 pending-account.spec.ts（de 1440，34.0s 通过），同会话批准后读回 /de/mein-konto/（HTTP 200，Cache-Control: no-cache, must-revalidate, max-age=0, no-store, private，pendingNoticeCount=0），确认待审横幅消失、概览询盘行可点入查看 'Preis auf Anfrage' 且不暴露在线金额。"
+  },
+  {
+    "matrix": "state",
+    "key": "account:account-details:de:1440",
+    "updates": {
+      "status": "pass",
+      "environment": "local instance review e2e (snapshot 2026-11-05 04:10 UTC, main checkout) 2026-11-13",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-account-report.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e-report.md"
+      ],
+      "findings": []
+    },
+    "evidence": [
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-account-report.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e-report.md"
+    ],
+    "reason": "为空证据 pass 行补齐真实本地 E2E 报告：review 实跑 account.spec.ts 中 'de-1440: account details save names its error and keeps the typing'（5.1s 通过），验证德语已批准账户打开账户资料页、改邮箱缺当前密码时服务端显式报错并保留已输入姓名、补正后成功保存并显示确认提示。"
+  },
+  {
+    "matrix": "state",
+    "key": "genie:thinking:de:1440",
+    "updates": {
+      "status": "pass",
+      "environment": "local instance review e2e (snapshot 2026-11-05 04:10 UTC, main checkout) 2026-11-13",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-reply-report.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e-report.md"
+      ],
+      "findings": []
+    },
+    "evidence": [
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-reply-report.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e-report.md"
+    ],
+    "reason": "为空证据 pass 行补齐真实本地 E2E 报告：review 实跑 genie-reply-presentation.spec.ts（10/10 全绿，27.6s），其中 'de-1440-dock'（4.1s）与 'de-1440-workspace'（2.0s）均验证德语 1440px 下 Genie 等待/思考态展示、Markdown 结构化回答渲染及读者自主滚动控制。"
+  },
+  {
+    "matrix": "state",
+    "key": "genie:lazy-bundle-failure-retry-close-focus:en:1440",
+    "updates": {
+      "status": "pass",
+      "environment": "local instance review e2e (en 1440 helper + workspace) + production PR #717 CSS verification",
+      "evidence": [
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-genie-recovery.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-lazy-bundle-report.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-lazy-bundle-summary.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e-report.md"
+      ],
+      "findings": [],
+      "resolved_findings": {
+        "lazy-bundle-failure-retry-close-focus": {
+          "prs": [
+            717,
+            790
+          ],
+          "commits": [
+            "699e2a554",
+            "128511fca",
+            "eb097915d"
+          ],
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-genie-recovery.json",
+            "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-lazy-bundle-report.json",
+            "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-lazy-bundle-summary.json"
+          ],
+          "detail": "genie-marketing-entries.spec.ts passed 'recovery-en-1440' (4.0s) and 'bootstrap-en-1440' (3.7s) plus 'native-scope-en' (8.9s) on review: intercepts real genie.js before React mounts, verifies [data-linker-genie-load-error] with Retry focused and Close visible on helper (non-modal at 1440px), Escape closes helper and returns focus to original Send opener while preserving source question and firing 0 turns, late genie.js ready after dismissal does not reopen or send, plain reopen retains durable pending question without hidden turn, new question triggers explicit [data-genie-entry-review] choice, and standalone /genie/ workspace omits Close, ignores Escape, and recovers via Retry."
+        }
+      }
+    },
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-genie-recovery.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-lazy-bundle-report.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-lazy-bundle-summary.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e-report.md"
+    ],
+    "reason": "review 实例实跑 genie-marketing-entries.spec.ts 中 recovery-en-1440（4.0s）、bootstrap-en-1440（3.7s）及 native-scope-en（8.9s）全部通过，结合生产 PR #717（699e2a554）已验证的空根视口位移修复，完整闭合全部 6 项 required_contexts，由 partially-verified 升为 pass，历史说明移入 resolved_findings。"
+  },
+  {
+    "matrix": "state",
+    "key": "genie:lazy-bundle-failure-retry-close-focus:en:390",
+    "updates": {
+      "status": "pass",
+      "environment": "local instance review e2e (en 390 helper + workspace) + production PR #717 CSS verification",
+      "evidence": [
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-genie-recovery.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-lazy-bundle-report.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-lazy-bundle-summary.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e-report.md"
+      ],
+      "findings": [],
+      "resolved_findings": {
+        "lazy-bundle-failure-retry-close-focus": {
+          "prs": [
+            717,
+            790
+          ],
+          "commits": [
+            "699e2a554",
+            "128511fca",
+            "eb097915d"
+          ],
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-genie-recovery.json",
+            "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-lazy-bundle-report.json",
+            "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-lazy-bundle-summary.json"
+          ],
+          "detail": "genie-marketing-entries.spec.ts passed 'recovery-en-390' (3.7s) and 'bootstrap-en-390' (3.0s) plus 'native-scope-en' (8.9s) on review: intercepts real genie.js before React mounts, verifies 390px modal dialog (aria-modal=true) with 8 Tab presses trapped inside [data-linker-genie-mount] including guest account links, Retry focus, Close visibility (plus native Close click in production-genie-recovery.json), Escape return to original opener, source & durable pending entry preservation with 0 hidden turns, late genie.js ready suppression after dismissal, and standalone /genie/ workspace no-Close + Retry recovery."
+        }
+      }
+    },
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-genie-recovery.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-lazy-bundle-report.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-lazy-bundle-summary.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e-report.md"
+    ],
+    "reason": "review 实例实跑 genie-marketing-entries.spec.ts 中 recovery-en-390（3.7s）、bootstrap-en-390（3.0s，含 390px aria-modal=true 与 8 次 Tab 焦点围栏校验）及 native-scope-en（8.9s）全部通过，结合 production-genie-recovery.json 的原生 Close 点击与 PR #717 修复，完整闭合全部 6 项 required_contexts，由 partially-verified 升为 pass。"
+  },
+  {
+    "matrix": "state",
+    "key": "genie:lazy-bundle-failure-retry-close-focus:de:1440",
+    "updates": {
+      "status": "pass",
+      "environment": "local instance review e2e (de 1440 helper + workspace) + production PR #717 CSS verification",
+      "evidence": [
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-genie-recovery.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-lazy-bundle-report.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-lazy-bundle-summary.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e-report.md"
+      ],
+      "findings": [],
+      "resolved_findings": {
+        "lazy-bundle-failure-retry-close-focus": {
+          "prs": [
+            717,
+            790
+          ],
+          "commits": [
+            "699e2a554",
+            "128511fca",
+            "eb097915d"
+          ],
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-genie-recovery.json",
+            "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-lazy-bundle-report.json",
+            "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-lazy-bundle-summary.json"
+          ],
+          "detail": "genie-marketing-entries.spec.ts passed 'recovery-de-1440' (2.9s) and 'bootstrap-de-1440' (4.5s) plus 'native-scope-de' (7.0s) on review: intercepts real genie.js before React mounts on /de/loesung/heimspeicher/ and /de/genie/, verifies German [data-linker-genie-load-error] with 'Erneut versuchen' focused and 'Schließen' visible on helper (absent on /de/genie/ workspace), Escape dismissal & focus return to original opener, source & durable pending entry preservation with 0 hidden turns, real late genie.js ready suppression, 'Frage separat senden' new-intent guard, and workspace Retry recovery."
+        }
+      }
+    },
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-genie-recovery.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-lazy-bundle-report.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-lazy-bundle-summary.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e-report.md"
+    ],
+    "reason": "review 实例实跑 genie-marketing-entries.spec.ts 中 recovery-de-1440（2.9s）、bootstrap-de-1440（4.5s）及 native-scope-de（7.0s）全部通过，结合生产 PR #717（699e2a554）视口修复，完整闭合全部 6 项 required_contexts，由 partially-verified 升为 pass。"
+  },
+  {
+    "matrix": "state",
+    "key": "genie:lazy-bundle-failure-retry-close-focus:de:390",
+    "updates": {
+      "status": "pass",
+      "environment": "local instance review e2e (de 390 helper + workspace) + production PR #717 CSS verification",
+      "evidence": [
+        "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-genie-recovery.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-lazy-bundle-report.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-lazy-bundle-summary.json",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e-report.md"
+      ],
+      "findings": [],
+      "resolved_findings": {
+        "lazy-bundle-failure-retry-close-focus": {
+          "prs": [
+            717,
+            790
+          ],
+          "commits": [
+            "699e2a554",
+            "128511fca",
+            "eb097915d"
+          ],
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-genie-recovery.json",
+            "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-lazy-bundle-report.json",
+            "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-lazy-bundle-summary.json"
+          ],
+          "detail": "genie-marketing-entries.spec.ts passed 'recovery-de-390' (3.8s) and 'bootstrap-de-390' (3.1s) plus 'native-scope-de' (7.0s) on review: intercepts real genie.js before React mounts on /de/loesung/heimspeicher/ and /de/genie/, verifies 390px German modal dialog (aria-modal=true) with 8 Tab presses trapped inside [data-linker-genie-mount] including guest account links, 'Erneut versuchen' focus, 'Schließen' visibility, Escape return to original opener, source & durable pending entry preservation with 0 hidden turns, real late genie.js ready suppression after dismissal, and standalone /de/genie/ workspace no-Close + Retry recovery."
+        }
+      }
+    },
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-genie-recovery.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-lazy-bundle-report.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e/review-genie-lazy-bundle-summary.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e-report.md"
+    ],
+    "reason": "review 实例实跑 genie-marketing-entries.spec.ts 中 recovery-de-390（3.8s）、bootstrap-de-390（3.1s，含 390px aria-modal=true 与 8 次 Tab 焦点围栏校验）及 native-scope-de（7.0s）全部通过，结合生产 PR #717（699e2a554）视口修复，完整闭合全部 6 项 required_contexts，由 partially-verified 升为 pass。"
+  }
+]

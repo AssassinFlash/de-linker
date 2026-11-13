@@ -1,0 +1,583 @@
+[
+  {
+    "file": "en-1034-products-1440.png",
+    "key": "https://de-linker.com/products/@1440",
+    "path": "/products/",
+    "width": 1440,
+    "size": [
+      1440,
+      9883
+    ],
+    "tiles": 5,
+    "elapsed": 16.9,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-1034-products-390.png",
+    "key": "https://de-linker.com/products/@390",
+    "path": "/products/",
+    "width": 390,
+    "size": [
+      390,
+      13678
+    ],
+    "tiles": 7,
+    "elapsed": 3.5,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Product listing pagination / results count",
+          "description": "The page states '1–24 / 53 product families', but the listing appears to repeat many GoodWe product cards; more importantly, the last tile shows the footer and pagination fine—however, the product cards' titles such as 'GoodWe GW29.999K-ETA-G20 (29.999 kW three-phase power module)' and 'GW99.99K-ETR-G10 (99.99 kW three-phase hybrid inverter)' are truncated mid-word/title in card headings, e.g. 'GoodWe ESA GW29.999K-ETA-G20 (29.999 kW three-phase power module)' wraps awkwardly with the model split across lines, which is acceptable wrapping but the titles 'GoodWe ESA GW9.999K-ETA-G20 (9.999 kW three-phase power module)' and similar long names run to the card edge."
+        },
+        {
+          "area": "Footer language switcher",
+          "description": "The footer language switch shows 'English / Deutsch' as pill options, but the page is en-US and no variant is visually indicated as selected; not clearly a defect."
+        },
+        {
+          "area": "Product card model field",
+          "description": "The 'Model' row appears in a grey rounded box on every card and duplicates the model already present in the title and item number (e.g. GW20K-ETA-G20 shown in title, item no. DLK-GOODWE-GW20KETAG20, and Model box). Redundant but not a visual defect."
+        },
+        {
+          "area": "Header/environment",
+          "description": "No clipped or overlapping text, broken images, raw HTML or untranslated strings observed across the header, product grid, pagination, contact section, and footer."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-1035-cart-1440.png",
+    "key": "https://de-linker.com/cart/@1440",
+    "path": "/cart/",
+    "width": 1440,
+    "size": [
+      1440,
+      1300
+    ],
+    "tiles": 1,
+    "elapsed": 37.4,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-1035-cart-390.png",
+    "key": "https://de-linker.com/cart/@390",
+    "path": "/cart/",
+    "width": 390,
+    "size": [
+      390,
+      1594
+    ],
+    "tiles": 1,
+    "elapsed": 6.8,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-1036-proforma-request-1440.png",
+    "key": "https://de-linker.com/proforma-request/@1440",
+    "path": "/proforma-request/",
+    "width": 1440,
+    "size": [
+      1440,
+      1652
+    ],
+    "tiles": 1,
+    "elapsed": 7.8,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-1036-proforma-request-390.png",
+    "key": "https://de-linker.com/proforma-request/@390",
+    "path": "/proforma-request/",
+    "width": 390,
+    "size": [
+      390,
+      2244
+    ],
+    "tiles": 1,
+    "elapsed": 10.5,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-1037-my-account-1440.png",
+    "key": "https://de-linker.com/my-account/@1440",
+    "path": "/my-account/",
+    "width": 1440,
+    "size": [
+      1440,
+      1432
+    ],
+    "tiles": 1,
+    "elapsed": 5.7,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-1037-my-account-390.png",
+    "key": "https://de-linker.com/my-account/@390",
+    "path": "/my-account/",
+    "width": 390,
+    "size": [
+      390,
+      1562
+    ],
+    "tiles": 1,
+    "elapsed": 6.8,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-3302-solution-configurator-1440.png",
+    "key": "https://de-linker.com/solution-configurator/@1440",
+    "path": "/solution-configurator/",
+    "width": 1440,
+    "size": [
+      1440,
+      2529
+    ],
+    "tiles": 2,
+    "elapsed": 16.4,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-3302-solution-configurator-390.png",
+    "key": "https://de-linker.com/solution-configurator/@390",
+    "path": "/solution-configurator/",
+    "width": 390,
+    "size": [
+      390,
+      2972
+    ],
+    "tiles": 2,
+    "elapsed": 21.7,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Quick start form – \"Generate solution\" button (tile 1)",
+          "description": "The 'Generate solution' submit button is vertically clipped: its green fill is collapsed to a very short height and the label text is cut off at the bottom edge (lower half of the glyphs is sliced), so the label sits flush against the button's bottom border and nearly touches the helper paragraph ('Entering a postcode or town is enough to start…') below it. The button height/padding is inconsistent with the other buttons on the page (e.g. 'New project', 'Start a solution')."
+        },
+        {
+          "area": "Quick start form – \"Generate solution\" button contrast",
+          "description": "The button uses white text on a very light teal/desaturated green fill (disabled-style), giving roughly 2:1 contrast — the label is barely legible, especially combined with the clipping noted above."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-4083-genie-1440.png",
+    "key": "https://de-linker.com/genie/@1440",
+    "path": "/genie/",
+    "width": 1440,
+    "size": [
+      1440,
+      1496
+    ],
+    "tiles": 1,
+    "elapsed": 31,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-4083-genie-390.png",
+    "key": "https://de-linker.com/genie/@390",
+    "path": "/genie/",
+    "width": 390,
+    "size": [
+      390,
+      1692
+    ],
+    "tiles": 1,
+    "elapsed": 15.4,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Footer bottom tab bar (Solutions / Services / Plan with Linker / Account / Contact Linker)",
+          "description": "The card grid is misaligned: the first row's three tiles have visibly unequal widths (Solutions narrower than Services, Plan with Linker narrower still), and the second row's two tiles (Account, Contact Linker) are each much wider, so no column edges line up between rows. The tiles should share a consistent column grid."
+        },
+        {
+          "area": "Footer link list",
+          "description": "\"Refund & Returns\" wraps onto its own centered line between the 'Imprint / Privacy Policy / Cookie settings / Terms of Sale' row and the 'Product fit / Inverter compatibility / Project support' row, leaving an orphaned single link that breaks the link block's horizontal alignment."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-5385-compare-products-1440.png",
+    "key": "https://de-linker.com/compare-products/@1440",
+    "path": "/compare-products/",
+    "width": 1440,
+    "size": [
+      1440,
+      1076
+    ],
+    "tiles": 1,
+    "elapsed": 34.1,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-5385-compare-products-390.png",
+    "key": "https://de-linker.com/compare-products/@390",
+    "path": "/compare-products/",
+    "width": 390,
+    "size": [
+      390,
+      1373
+    ],
+    "tiles": 1,
+    "elapsed": 12.3,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "de-6600-produkte-vergleichen-1440.png",
+    "key": "https://de-linker.com/de/produkte-vergleichen/@1440",
+    "path": "/de/produkte-vergleichen/",
+    "width": 1440,
+    "size": [
+      1440,
+      1103
+    ],
+    "tiles": 1,
+    "elapsed": 8,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "de-6600-produkte-vergleichen-390.png",
+    "key": "https://de-linker.com/de/produkte-vergleichen/@390",
+    "path": "/de/produkte-vergleichen/",
+    "width": 390,
+    "size": [
+      390,
+      1470
+    ],
+    "tiles": 1,
+    "elapsed": 14.7,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Footer – Lösungen list (Heim speicher / Gewerbespeicher / Großspeicher)",
+          "description": "The third list row 'Großspeicher' is rendered in a noticeably lighter gray than the two sibling rows above it, which are in dark text. Within an identical row style this reads as an inconsistent/failed state and reduces readability of that item's label."
+        }
+      ]
+    }
+  },
+  {
+    "file": "de-6633-genie-1440.png",
+    "key": "https://de-linker.com/de/genie/@1440",
+    "path": "/de/genie/",
+    "width": 1440,
+    "size": [
+      1440,
+      1496
+    ],
+    "tiles": 1,
+    "elapsed": 10.5,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Footer – Lösungen cards",
+          "description": "The first solution card is labeled \"Heimspeler\" – a misspelling of the German word \"Heimspeicher\" (missing \"ch\"). This is a rendered text/translation defect visible in the German footer panel."
+        },
+        {
+          "area": "Header – main navigation",
+          "description": "The nav menu item reads \"Überuns\" without a space; the correct German label is \"Über uns\". The missing space makes the menu label look broken/misencoded."
+        }
+      ]
+    }
+  },
+  {
+    "file": "de-6633-genie-390.png",
+    "key": "https://de-linker.com/de/genie/@390",
+    "path": "/de/genie/",
+    "width": 390,
+    "size": [
+      390,
+      1737
+    ],
+    "tiles": 1,
+    "elapsed": 14.6,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "de-6693-loesungskonfigurator-1440.png",
+    "key": "https://de-linker.com/de/loesungskonfigurator/@1440",
+    "path": "/de/loesungskonfigurator/",
+    "width": 1440,
+    "size": [
+      1440,
+      2529
+    ],
+    "tiles": 2,
+    "elapsed": 40.2,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Header / Hauptinhalt (rechter Rand)",
+          "description": "Der Inhaltsbereich läuft horizontal über den Viewport hinaus: Am oberen rechten Rand ist ein abgeschnittenes Buchstabenfragment (\"N\") sichtbar, und Trennlinien, Formularfelder sowie die Karte des Projektarbeitsbereichs enden bündig an der Bildschirmkante, während der Header rechts den normalen Abstand hat. Dadurch werden rechtsliegende Elemente (z. B. das Aktualisieren-Icon) beschnitten bzw. an den Rand gedrückt."
+        },
+        {
+          "area": "Footer – Liste \"Lösungen\"",
+          "description": "Die erste Lösungskarte ist in der deutschen Version mit \"Heimspüler\" statt \"Heimspeicher\" beschriftet – falscher Begriff/Übersetzungsfehler, inkonsistent zu \"Gewerbespeicher\" und \"Großspeicher\"."
+        },
+        {
+          "area": "Schnellstart-Text (Einleitung)",
+          "description": "Schließendes deutsches Anführungszeichen fehlt/falsch: „Lösung berechnen\" verwendet ein gerades Ersatzzeichen statt \" – typografischer Darstellungsfehler im deutschen Text."
+        }
+      ]
+    }
+  },
+  {
+    "file": "de-6693-loesungskonfigurator-390.png",
+    "key": "https://de-linker.com/de/loesungskonfigurator/@390",
+    "path": "/de/loesungskonfigurator/",
+    "width": 390,
+    "size": [
+      390,
+      3072
+    ],
+    "tiles": 2,
+    "elapsed": 39.1,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "de-6853-produkte-1440.png",
+    "key": "https://de-linker.com/de/produkte/@1440",
+    "path": "/de/produkte/",
+    "width": 1440,
+    "size": [
+      1440,
+      9883
+    ],
+    "tiles": 5,
+    "elapsed": 45.3,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Filter-Sidebar (Abschnitt \"Phase\")",
+          "description": "Der Filterbereich ist am Ende abgeschnitten: Die Zeile \"1-phasig\" (49) unter der Überschrift \"Phase\" ist vertikal geclippt (Label nur halb sichtbar), und weitere Phasen-Optionen (z. B. \"Dreiphasig\") fehlen vollständig, obwohl der Filterbereich offensichtlich weitergehen müsste – der Container schneidet die Liste ab (overflow hidden / feste Höhe)."
+        },
+        {
+          "area": "Produktkarten – Feldlabel",
+          "description": "Auf jeder Produktkarte wird das Feld als \"Model\" beschriftet statt korrekt deutsch \"Modell\" – nicht übersetzter String (englisch/niederländisch) in der de-DE-Version."
+        },
+        {
+          "area": "Produktkarten – Zahlenformatierung",
+          "description": "Inkonsistente Dezimaltrennzeichen innerhalb derselben Karte: Punkt in englischem Format (z. B. \"10.0 kW\", \"12.5 kg\", \"8.0 kWh\", \"5.0 kWh\") neben korrekt deutscher Komma-Schreibweise (\"98,2 %\", \"29,999 kW\", \"124,99 kW\")."
+        },
+        {
+          "area": "Kontakt-Box \"Kontakt zu Linker\"",
+          "description": "Die Box enthält den überflüssigen Formular-Hilfetext \"Ihre Frage enthält den Bezug zu dieser Seite. Sie können ihn vor dem Senden entfernen.\", obwohl in dieser Box gar kein Kontaktformular vorhanden ist – zurückgebliebener/misplatzierter UI-String."
+        },
+        {
+          "area": "Footer-Links",
+          "description": "Footer-Link \"Produkteigung\" ist ein fehlerhaftes/abgeschnittenes Wort (vermutlich \"Produkteignung\") und erscheint als kaputter Text in der untersten Linkzeile."
+        }
+      ]
+    }
+  },
+  {
+    "file": "de-6853-produkte-390.png",
+    "key": "https://de-linker.com/de/produkte/@390",
+    "path": "/de/produkte/",
+    "width": 390,
+    "size": [
+      390,
+      14100
+    ],
+    "tiles": 7,
+    "elapsed": 46.5,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "de-6855-loesungsentwurf-1440.png",
+    "key": "https://de-linker.com/de/loesungsentwurf/@1440",
+    "path": "/de/loesungsentwurf/",
+    "width": 1440,
+    "size": [
+      1440,
+      1300
+    ],
+    "tiles": 1,
+    "elapsed": 5.2,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "de-6855-loesungsentwurf-390.png",
+    "key": "https://de-linker.com/de/loesungsentwurf/@390",
+    "path": "/de/loesungsentwurf/",
+    "width": 390,
+    "size": [
+      390,
+      1639
+    ],
+    "tiles": 1,
+    "elapsed": 20.3,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "de-6857-proforma-anfrage-1440.png",
+    "key": "https://de-linker.com/de/proforma-anfrage/@1440",
+    "path": "/de/proforma-anfrage/",
+    "width": 1440,
+    "size": [
+      1440,
+      1716
+    ],
+    "tiles": 1,
+    "elapsed": 35.2,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "de-6857-proforma-anfrage-390.png",
+    "key": "https://de-linker.com/de/proforma-anfrage/@390",
+    "path": "/de/proforma-anfrage/",
+    "width": 390,
+    "size": [
+      390,
+      2353
+    ],
+    "tiles": 1,
+    "elapsed": 14.6,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "de-6859-mein-konto-1440.png",
+    "key": "https://de-linker.com/de/mein-konto/@1440",
+    "path": "/de/mein-konto/",
+    "width": 1440,
+    "size": [
+      1440,
+      1432
+    ],
+    "tiles": 1,
+    "elapsed": 16,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Footer – bottom utility links row",
+          "description": "Mistranslated/typo'd German link label \"Wechslerrichter-Kompatibilität\" (should be \"Wechselrichter-Kompatibilität\", i.e. inverter compatibility). \"Wechslerrichter\" is not a German word and reads as a broken auto-translation of \"inverter\"."
+        },
+        {
+          "area": "Floating widget button (right edge, above footer)",
+          "description": "The round dark floating button shows a very small, partially clipped/illegible glyph inside an oversized circle – the icon appears not to have rendered at its intended size and looks cropped within the button."
+        },
+        {
+          "area": "Login card – left dark panel logo",
+          "description": "The white Linker logo in the dark sidebar renders with a visible ghosted/duplicated arc overlapping the wordmark, unlike the crisp logos in the header and footer (artefact of an overlapping logo asset)."
+        }
+      ]
+    }
+  },
+  {
+    "file": "de-6859-mein-konto-390.png",
+    "key": "https://de-linker.com/de/mein-konto/@390",
+    "path": "/de/mein-konto/",
+    "width": 390,
+    "size": [
+      390,
+      1607
+    ],
+    "tiles": 1,
+    "elapsed": 37.7,
+    "model": "deepseek-flash",
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Footer nav tab strip (Produkte / Technologie / Service)",
+          "description": "The horizontal tab row overflows at 390px: the third pill 'Service' runs into the right edge of the viewport and is clipped — its right rounded corner and right padding are cut off, and the strip extends past the surrounding card boundary instead of fitting/wrapping inside it."
+        },
+        {
+          "area": "Footer quick-links grid (Lösungen / Dienstleistungen / Planen mit Linker + Konto / Linker kontaktieren)",
+          "description": "The second row is misaligned with the 3-column row above it: the 'Konto' card is noticeably wider than the 'Linker kontaktieren' card, so the column edges and gutters do not line up between the two rows."
+        }
+      ]
+    }
+  }
+]

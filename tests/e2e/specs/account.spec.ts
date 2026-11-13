@@ -452,6 +452,11 @@ test('en: the register form carries its client constraints and refuses a bad ema
 	await page
 		.locator('label.radio[for="linker_customer_role_installer"]')
 		.click();
+	await page.selectOption('#billing_country', 'DE');
+	await page.fill(
+		'#linker_company_website',
+		'https://constraint-check.example'
+	);
 	await page.locator('[data-next]').click();
 	await expect(page.locator('form[data-linker-register]')).toHaveAttribute(
 		'data-active-step',
@@ -503,9 +508,10 @@ test('en: sign-in and sign-up are two pages and link to each other', async ({
 	await toRegister.click();
 	await page.waitForLoadState('load');
 
-	// The register page is the sign-up card alone, and links back.
+	// The register page opens step 1 of the sign-up card alone, and links back.
 	await expect(page.locator('.linker-auth-register')).toBeVisible();
-	await expect(page.locator('#reg_email')).toBeVisible();
+	await expect(page.locator('#billing_company')).toBeVisible();
+	await expect(page.locator('#reg_email')).toHaveCount(1);
 	await expect(
 		page.locator('#password'),
 		'the sign-in password field is not on the register page'
@@ -808,12 +814,24 @@ test('en: a restricted account signs in, keeps the workplace and reads its gate 
 		page.locator('body'),
 		'the workplace stays open'
 	).toContainText(/Overview/);
+	const accountNotice = page.locator(
+		'section[aria-label="Access currently limited"]'
+	);
+	await expect(
+		accountNotice.locator('a[href="mailto:sales@de-linker.com"]'),
+		'the account status card links the team mailbox'
+	).toBeVisible();
+	const accountNoticeBg = await accountNotice
+		.locator('.notice-info')
+		.evaluate((node) => getComputedStyle(node).backgroundColor);
+	expect(
+		accountNoticeBg,
+		'the account status reason notice is tinted, not bare text'
+	).not.toBe('rgba(0, 0, 0, 0)');
 
 	await page.goto(url('/proforma-request/'));
 	await page.waitForLoadState('load');
-	const gate = page.locator(
-		'section[aria-label="Account with limited access"]'
-	);
+	const gate = page.locator('section[aria-label="Access currently limited"]');
 	await expect(
 		gate,
 		'the inquiry page reads the restriction gate'
@@ -824,22 +842,20 @@ test('en: a restricted account signs in, keeps the workplace and reads its gate 
 	await expect(gate, 'the gate carries the reason').toContainText(
 		/E2E: documents under review/
 	);
-	// The reason is a coloured notice card, and the contact sentence links its
-	// own address (the message carries the placeholder, so the wording cannot
-	// drop the link): both as the prototype draws them.
+	await expect(
+		page.locator('form.linker-inquiry-form'),
+		'a restricted account can still submit an inquiry'
+	).toBeVisible();
+	// The restriction card itself has a solid surface and embeds the reason row.
 	const notice = gate.locator('.notice-info');
 	await expect(notice, "the reason is the card's info notice").toBeVisible();
 	await expect(notice, 'the notice names the reason').toContainText(
 		/Our reason:/
 	);
-	await expect(
-		gate.locator('a[href="mailto:sales@de-linker.com"]'),
-		'the gate links the team mailbox'
-	).toBeVisible();
-	const noticeBackground = await notice.evaluate(
+	const gateBackground = await gate.evaluate(
 		(node) => getComputedStyle(node).backgroundColor
 	);
-	expect(noticeBackground, 'the notice is tinted, not bare text').not.toBe(
+	expect(gateBackground, 'the restriction card has a solid surface').not.toBe(
 		'rgba(0, 0, 0, 0)'
 	);
 	await shot(page, 'en-restricted-inquiry-gate');
@@ -867,11 +883,24 @@ test('de: the restricted gate speaks German and links its own address', async ({
 	]);
 
 	await signIn(page, login, PASSWORD);
+	await page.goto(url('/de/mein-konto/'));
+	await page.waitForLoadState('load');
+	const accountNotice = page.locator(
+		'section[aria-label="Zugriff derzeit eingeschränkt"]'
+	);
+	await expect(
+		accountNotice.locator('a[href="mailto:sales@de-linker.com"]'),
+		'the German account status sentence links the team mailbox'
+	).toBeVisible();
+	await expect(accountNotice, 'the sentence reads as reviewed').toContainText(
+		/Ihre Fragen an sales@de-linker\.com schreiben/
+	);
+
 	await page.goto(url('/de/proforma-anfrage/'));
 	await page.waitForLoadState('load');
 
 	const gate = page.locator(
-		'section[aria-label="Konto mit eingeschränktem Zugriff"]'
+		'section[aria-label="Zugriff derzeit eingeschränkt"]'
 	);
 	await expect(gate, 'the German inquiry page reads the gate').toBeVisible();
 	await expect(gate, 'the gate names the limit in German').toContainText(
@@ -880,15 +909,10 @@ test('de: the restricted gate speaks German and links its own address', async ({
 	await expect(gate, 'the gate carries the team reason').toContainText(
 		/E2E: Unterlagen in Prüfung/
 	);
-	// The German sentence carries the placeholder, so the reviewed wording is
-	// what shows and the address is still the link (ticket #184 review, St-4).
 	await expect(
-		gate.locator('a[href="mailto:sales@de-linker.com"]'),
-		'the German sentence links the team mailbox'
+		page.locator('form.linker-inquiry-form'),
+		'the German inquiry form remains available to restricted partners'
 	).toBeVisible();
-	await expect(gate, 'the sentence reads as reviewed').toContainText(
-		/Schreiben Sie an sales@de-linker.com/
-	);
 	await shot(page, 'de-restricted-inquiry-gate');
 });
 

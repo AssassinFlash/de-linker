@@ -1,0 +1,631 @@
+{
+  "config": {
+    "argv": [
+      "/opt/homebrew/Cellar/node@24/24.22.0/bin/node",
+      "/Users/chesterjohn/Documents/de-linker/tests/e2e/node_modules/.bin/playwright",
+      "test",
+      "tests/e2e/specs/genie-reply-presentation.spec.ts"
+    ],
+    "configFile": "/Users/chesterjohn/Documents/de-linker/tests/e2e/playwright.config.ts",
+    "rootDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": "/Users/chesterjohn/Documents/de-linker/tests/e2e/lib/health.ts",
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 300000
+      },
+      {
+        "outputDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "header-parity.spec.ts"
+        ],
+        "timeout": 300000
+      },
+      {
+        "outputDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "header-parity.spec.ts"
+        ],
+        "timeout": 300000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "snapshotDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 300000,
+        "use": {
+          "trace": "off",
+          "screenshot": "off",
+          "video": "off",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "webkit",
+        "testDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "snapshotDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": "header-parity.spec.ts",
+        "timeout": 300000,
+        "use": {
+          "trace": "off",
+          "screenshot": "off",
+          "video": "off",
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1792,
+            "height": 1120
+          },
+          "deviceScaleFactor": 2,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "webkit"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "webkit"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "firefox",
+        "testDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "snapshotDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": "header-parity.spec.ts",
+        "timeout": 300000,
+        "use": {
+          "trace": "off",
+          "screenshot": "off",
+          "video": "off",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:157.0) Gecko/20100101 Firefox/157.0",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "firefox"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "firefox"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "artifacts/report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "genie-reply-presentation.spec.ts",
+      "file": "genie-reply-presentation.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "en-1440-dock: waiting, formatted response and reader-controlled scroll",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4478,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:28:18.217Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results/genie-reply-presentation-e-f2438-nd-reader-controlled-scroll-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "7f95d142a0e8e2cdc8a6-9695ccb8b3588d5110b5",
+          "file": "genie-reply-presentation.spec.ts",
+          "line": 33,
+          "column": 4
+        },
+        {
+          "title": "en-1440-workspace: waiting, formatted response and reader-controlled scroll",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2126,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:28:22.887Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results/genie-reply-presentation-e-4454b-nd-reader-controlled-scroll-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "7f95d142a0e8e2cdc8a6-2604b77194626baad66a",
+          "file": "genie-reply-presentation.spec.ts",
+          "line": 33,
+          "column": 4
+        },
+        {
+          "title": "en-390-dock: waiting, formatted response and reader-controlled scroll",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3541,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:28:25.019Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results/genie-reply-presentation-e-4615d-nd-reader-controlled-scroll-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "7f95d142a0e8e2cdc8a6-e47bd1fe7cecc65c0466",
+          "file": "genie-reply-presentation.spec.ts",
+          "line": 33,
+          "column": 4
+        },
+        {
+          "title": "en-390-workspace: waiting, formatted response and reader-controlled scroll",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2484,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:28:28.566Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results/genie-reply-presentation-e-0c7a5-nd-reader-controlled-scroll-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "7f95d142a0e8e2cdc8a6-190ed9e0c679774a98e6",
+          "file": "genie-reply-presentation.spec.ts",
+          "line": 33,
+          "column": 4
+        },
+        {
+          "title": "de-1440-dock: waiting, formatted response and reader-controlled scroll",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4122,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:28:31.063Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results/genie-reply-presentation-d-79538-nd-reader-controlled-scroll-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "7f95d142a0e8e2cdc8a6-4163d9e82881f2043f2d",
+          "file": "genie-reply-presentation.spec.ts",
+          "line": 33,
+          "column": 4
+        },
+        {
+          "title": "de-1440-workspace: waiting, formatted response and reader-controlled scroll",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2032,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:28:35.190Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results/genie-reply-presentation-d-c4296-nd-reader-controlled-scroll-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "7f95d142a0e8e2cdc8a6-008b3bfd401419243e1e",
+          "file": "genie-reply-presentation.spec.ts",
+          "line": 33,
+          "column": 4
+        },
+        {
+          "title": "de-390-dock: waiting, formatted response and reader-controlled scroll",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3913,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:28:37.226Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results/genie-reply-presentation-d-767a5-nd-reader-controlled-scroll-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "7f95d142a0e8e2cdc8a6-f734211779fffe2de3a4",
+          "file": "genie-reply-presentation.spec.ts",
+          "line": 33,
+          "column": 4
+        },
+        {
+          "title": "de-390-workspace: waiting, formatted response and reader-controlled scroll",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1813,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:28:41.144Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results/genie-reply-presentation-d-cdb98-nd-reader-controlled-scroll-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "7f95d142a0e8e2cdc8a6-2a34e500867eea173556",
+          "file": "genie-reply-presentation.spec.ts",
+          "line": 33,
+          "column": 4
+        },
+        {
+          "title": "reduced-motion: waiting stays static and a received answer appears immediately",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 969,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:28:42.962Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results/genie-reply-presentation-r-db067--answer-appears-immediately-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "7f95d142a0e8e2cdc8a6-477d399b1a656f0b3ed3",
+          "file": "genie-reply-presentation.spec.ts",
+          "line": 266,
+          "column": 1
+        },
+        {
+          "title": "history: a restored long answer starts at its beginning without replay",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1300,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:28:43.937Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results/genie-reply-presentation-h-c92a9-ts-beginning-without-replay-chromium/video.webm"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "7f95d142a0e8e2cdc8a6-2d198a587a06ed0f5805",
+          "file": "genie-reply-presentation.spec.ts",
+          "line": 308,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-13T10:28:17.645Z",
+    "duration": 27629.639,
+    "expected": 10,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

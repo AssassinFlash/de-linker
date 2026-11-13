@@ -1099,29 +1099,44 @@ for (const locale of ['en', 'de'] as const) {
 			page,
 		}) => {
 			let available = false;
+			let holdConversation = false;
+			let releaseConversation: (() => void) | null = null;
 			const original =
 				locale === 'de'
 					? 'Meine ursprüngliche Frage zum Schaltplan.'
 					: 'My original schematic question.';
 			await page.addInitScript(
-				({ text }) =>
+				({ text }) => {
+					const scope = 'a'.repeat(64);
+					const attempt = 'home-scope-fixture';
 					sessionStorage.setItem(
-						'linker-genie-turn-failure',
+						`linker-genie-turn-failure:v2:${scope}`,
 						JSON.stringify({
-							v: 1,
-							kind: null,
-							text,
-							question: text,
-							uploads: [],
-							omitted: [],
-							entryId: 'home-scope-fixture',
-							entryScope: 'a'.repeat(64),
+							v: 2,
+							scope,
+							active: attempt,
+							order: [attempt],
+							records: {
+								[attempt]: {
+									revision: 1,
+									record: {
+										v: 1,
+										kind: 'upstream',
+										text,
+										question: text,
+										uploads: [],
+										omitted: [],
+										owner: { scope, attempt },
+									},
+								},
+							},
 						})
-					),
+					);
+				},
 				{ text: original }
 			);
 			await page.route(
-				'**/wp-json/linker-ai/v1/genie/entry-context',
+				'**/wp-json/linker-ai/v1/genie/entry-context*',
 				(route) =>
 					available
 						? route.fulfill({ json: { scope: 'a'.repeat(64) } })
@@ -1136,8 +1151,27 @@ for (const locale of ['en', 'de'] as const) {
 				width,
 				locale === 'de' ? '/de/' : '/'
 			);
+			await page.route(
+				'**/wp-json/linker-ai/v1/genie/conversation*',
+				async (route) => {
+					if (route.request().url().includes('/conversations')) {
+						return route.fulfill({
+							json: { current_id: 0, conversations: [] },
+						});
+					}
+					if (holdConversation) {
+						await new Promise<void>((resolve) => {
+							releaseConversation = resolve;
+						});
+					}
+					return route.fulfill({
+						json: { messages: [], stream: '' },
+					});
+				}
+			);
 			const surface = page.locator('#linker-genie-hero-surface');
 			await expect(surface).toBeVisible();
+			await expect(source).toBeDisabled();
 			await expect(source).toHaveValue('');
 			await expect(surface).not.toContainText(original);
 			await expect(
@@ -1150,15 +1184,19 @@ for (const locale of ['en', 'de'] as const) {
 				locale === 'de'
 					? 'Mein neuer ungesendeter Entwurf.'
 					: 'My new unsent draft.';
-			await source.fill(fresh);
 			available = true;
+			holdConversation = true;
 			await surface
 				.getByRole('button', { name: /^(Try again|Erneut versuchen)$/ })
 				.click();
+			await expect(source).toBeEnabled();
+			await expect.poll(() => releaseConversation !== null).toBe(true);
+			await source.fill(fresh);
+			holdConversation = false;
+			releaseConversation!();
+			const parked = surface.locator('[data-genie-owned-recovery]');
 			await expect(source).toHaveValue(fresh);
-			await expect(
-				surface.locator('[data-genie-parked-draft]')
-			).toContainText(original);
+			await expect(parked).toContainText(original);
 			expect(requests).toHaveLength(0);
 			await snapshot(page, `home-recovery-${locale}-${width}-parked`);
 			await surface
@@ -1167,9 +1205,7 @@ for (const locale of ['en', 'de'] as const) {
 				})
 				.click();
 			await expect(source).toHaveValue(original);
-			await expect(
-				surface.locator('[data-genie-parked-draft]')
-			).toContainText(fresh);
+			await expect(parked).toContainText(fresh);
 			expect(requests).toHaveLength(0);
 			expect(errors).toEqual([]);
 			await snapshot(page, `home-recovery-${locale}-${width}-restored`);

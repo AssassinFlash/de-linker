@@ -1,0 +1,86 @@
+{
+  "user": 71,
+  "status": "approved",
+  "stored_status": "approved",
+  "orders": [
+    {
+      "customer": 71,
+      "status": "inquiry-received",
+      "items": 1
+    }
+  ],
+  "mail": [
+    {
+      "to": [
+        "tester222-de-1440-1794564980907@example.test"
+      ],
+      "subject": "Ihr Partner-Konto ist freigegeben",
+      "headers": [
+        "Reply-to: Linker <sales@de-linker.com>",
+        "From: Linker <sales@de-linker.com>",
+        "Content-Type: text/html; charset=UTF-8"
+      ]
+    },
+    {
+      "to": [
+        "tester222@example.test"
+      ],
+      "headers": null,
+      "subject": "New customer: 222 Browser Solar GmbH"
+    },
+    {
+      "to": [
+        "tester222@example.test"
+      ],
+      "headers": null,
+      "subject": "Wir haben Ihre Partner-Registrierung erhalten"
+    },
+    {
+      "to": [
+        "tester222@example.test"
+      ],
+      "headers": null,
+      "subject": "New inquiry #8871 from Weber Solar"
+    },
+    {
+      "to": [
+        "tester222@example.test"
+      ],
+      "headers": null,
+      "subject": "Your inquiry #8871 has been received"
+    },
+    {
+      "to": [
+        "tester222@example.test"
+      ],
+      "headers": null,
+      "subject": "New inquiry #8882 from linker-e2e-232@example.test"
+    },
+    {
+      "to": [
+        "tester222@example.test"
+      ],
+      "headers": null,
+      "subject": "Ihre Anfrage #8882 ist eingegangen"
+    },
+    {
+      "to": [
+        "tester222@example.test"
+      ],
+      "headers": null,
+      "subject": "New inquiry #8886 from Weber Solar"
+    },
+    {
+      "to": [
+        "tester222@example.test"
+      ],
+      "headers": null,
+      "subject": "Ihre Anfrage #8886 ist eingegangen"
+    }
+  ],
+  "responseStatus": 200,
+  "fromServiceWorker": false,
+  "cacheControl": "no-cache, must-revalidate, max-age=0, no-store, private",
+  "responseHasPendingNotice": false,
+  "pendingNoticeCount": 0
+}

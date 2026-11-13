@@ -1,0 +1,104 @@
+[
+  {
+    "slug": "heimspeicher",
+    "width": 1440,
+    "visible": true,
+    "rect": {
+      "top": 268,
+      "left": 100,
+      "w": 649,
+      "h": 365
+    },
+    "readyState": 4,
+    "videoWidth": 1280,
+    "videoHeight": 800,
+    "poster": "https://de-linker.com/wp-content/uploads/2026/09/linker-genie-lookup-for-installers-de-poster.webp",
+    "src": "/wp-content/uploads/2026/09/linker-genie-lookup-for-installers-de.mp4",
+    "screenshot": "docs/acceptance/2026-11-13/de-genie-preview-media/heimspeicher-de-1440.png"
+  },
+  {
+    "slug": "heimspeicher",
+    "width": 390,
+    "visible": true,
+    "rect": {
+      "top": 323,
+      "left": 18,
+      "w": 354,
+      "h": 199
+    },
+    "readyState": 4,
+    "videoWidth": 1280,
+    "videoHeight": 800,
+    "poster": "https://de-linker.com/wp-content/uploads/2026/09/linker-genie-lookup-for-installers-de-poster.webp",
+    "src": "/wp-content/uploads/2026/09/linker-genie-lookup-for-installers-de.mp4",
+    "screenshot": "docs/acceptance/2026-11-13/de-genie-preview-media/heimspeicher-de-390.png"
+  },
+  {
+    "slug": "gewerbespeicher",
+    "width": 1440,
+    "visible": true,
+    "rect": {
+      "top": 257,
+      "left": 131,
+      "w": 683,
+      "h": 384
+    },
+    "readyState": 4,
+    "videoWidth": 1280,
+    "videoHeight": 800,
+    "poster": "https://de-linker.com/wp-content/uploads/2026/09/linker-genie-lookup-for-ci-de-poster.webp",
+    "src": "/wp-content/uploads/2026/09/linker-genie-lookup-for-ci-de.mp4",
+    "screenshot": "docs/acceptance/2026-11-13/de-genie-preview-media/gewerbespeicher-de-1440.png"
+  },
+  {
+    "slug": "gewerbespeicher",
+    "width": 390,
+    "visible": true,
+    "rect": {
+      "top": 333,
+      "left": 36,
+      "w": 318,
+      "h": 179
+    },
+    "readyState": 4,
+    "videoWidth": 1280,
+    "videoHeight": 800,
+    "poster": "https://de-linker.com/wp-content/uploads/2026/09/linker-genie-lookup-for-ci-de-poster.webp",
+    "src": "/wp-content/uploads/2026/09/linker-genie-lookup-for-ci-de.mp4",
+    "screenshot": "docs/acceptance/2026-11-13/de-genie-preview-media/gewerbespeicher-de-390.png"
+  },
+  {
+    "slug": "fuer-installateur",
+    "width": 1440,
+    "visible": false,
+    "rect": {
+      "top": 0,
+      "left": 0,
+      "w": 0,
+      "h": 0
+    },
+    "readyState": 4,
+    "videoWidth": 1280,
+    "videoHeight": 800,
+    "poster": "https://de-linker.com/wp-content/uploads/2026/09/linker-genie-lookup-for-installers-de-poster.webp",
+    "src": "/wp-content/uploads/2026/09/linker-genie-lookup-for-installers-de.mp4",
+    "screenshot": "docs/acceptance/2026-11-13/de-genie-preview-media/fuer-installateur-de-1440.png"
+  },
+  {
+    "slug": "fuer-installateur",
+    "width": 390,
+    "visible": false,
+    "rect": {
+      "top": 0,
+      "left": 0,
+      "w": 0,
+      "h": 0
+    },
+    "readyState": 4,
+    "videoWidth": 1280,
+    "videoHeight": 800,
+    "poster": "https://de-linker.com/wp-content/uploads/2026/09/linker-genie-lookup-for-installers-de-poster.webp",
+    "src": "/wp-content/uploads/2026/09/linker-genie-lookup-for-installers-de.mp4",
+    "screenshot": "docs/acceptance/2026-11-13/de-genie-preview-media/fuer-installateur-de-390.png"
+  }
+]

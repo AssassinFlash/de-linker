@@ -1,0 +1,1235 @@
+{
+  "config": {
+    "argv": [
+      "/opt/homebrew/Cellar/node@24/24.22.0/bin/node",
+      "/Users/chesterjohn/Documents/de-linker/tests/e2e/node_modules/.bin/playwright",
+      "test",
+      "tests/e2e/specs/account.spec.ts"
+    ],
+    "configFile": "/Users/chesterjohn/Documents/de-linker/tests/e2e/playwright.config.ts",
+    "rootDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": "/Users/chesterjohn/Documents/de-linker/tests/e2e/lib/health.ts",
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 300000
+      },
+      {
+        "outputDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "header-parity.spec.ts"
+        ],
+        "timeout": 300000
+      },
+      {
+        "outputDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "header-parity.spec.ts"
+        ],
+        "timeout": 300000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "snapshotDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 300000,
+        "use": {
+          "trace": "off",
+          "screenshot": "off",
+          "video": "off",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "webkit",
+        "testDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "snapshotDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": "header-parity.spec.ts",
+        "timeout": 300000,
+        "use": {
+          "trace": "off",
+          "screenshot": "off",
+          "video": "off",
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1792,
+            "height": 1120
+          },
+          "deviceScaleFactor": 2,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "webkit"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "webkit"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "firefox",
+        "testDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "snapshotDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": "header-parity.spec.ts",
+        "timeout": 300000,
+        "use": {
+          "trace": "off",
+          "screenshot": "off",
+          "video": "off",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:157.0) Gecko/20100101 Firefox/157.0",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "firefox"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "firefox"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "artifacts/report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "account.spec.ts",
+      "file": "account.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "en: a wrong password is refused with the form's own error",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3726,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:24:27.039Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-1bbc041ad3ab323d6fb6",
+          "file": "account.spec.ts",
+          "line": 120,
+          "column": 2
+        },
+        {
+          "title": "en-1440: the lost-password request answers and its link opens the new-password card",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8918,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:24:30.941Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-8464255d1d1641893d25",
+          "file": "account.spec.ts",
+          "line": 144,
+          "column": 3
+        },
+        {
+          "title": "en-390: the lost-password request answers and its link opens the new-password card",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8481,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:24:39.866Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-7f88e443ec1d9ed7e337",
+          "file": "account.spec.ts",
+          "line": 144,
+          "column": 3
+        },
+        {
+          "title": "en-1440: a wrong or spent reset key never offers the new-password form",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7434,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:24:48.353Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-f6dbb9afd3984b256c22",
+          "file": "account.spec.ts",
+          "line": 276,
+          "column": 3
+        },
+        {
+          "title": "en-390: a wrong or spent reset key never offers the new-password form",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6717,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:24:55.795Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-18337e9915ee64f442b8",
+          "file": "account.spec.ts",
+          "line": 276,
+          "column": 3
+        },
+        {
+          "title": "en-1440: account details save names its error and keeps the typing",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4814,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:25:02.519Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-6ae64b3d1fcdd327d3d3",
+          "file": "account.spec.ts",
+          "line": 356,
+          "column": 3
+        },
+        {
+          "title": "en-390: account details save names its error and keeps the typing",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4610,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:25:07.343Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-a70bc88395ac00c50c64",
+          "file": "account.spec.ts",
+          "line": 356,
+          "column": 3
+        },
+        {
+          "title": "de: a wrong password is refused with the form's own error",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3332,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:25:11.962Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-c452fc9e04b704f939e1",
+          "file": "account.spec.ts",
+          "line": 120,
+          "column": 2
+        },
+        {
+          "title": "de-1440: the lost-password request answers and its link opens the new-password card",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8327,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:25:15.300Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-9fdd7c3cdeb9d141e74e",
+          "file": "account.spec.ts",
+          "line": 144,
+          "column": 3
+        },
+        {
+          "title": "de-390: the lost-password request answers and its link opens the new-password card",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 10860,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:25:23.634Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-6e2a785d7f5f18218205",
+          "file": "account.spec.ts",
+          "line": 144,
+          "column": 3
+        },
+        {
+          "title": "de-1440: a wrong or spent reset key never offers the new-password form",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7563,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:25:34.503Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-99c2ec1601a4114837a1",
+          "file": "account.spec.ts",
+          "line": 276,
+          "column": 3
+        },
+        {
+          "title": "de-390: a wrong or spent reset key never offers the new-password form",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6842,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:25:42.082Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-675866ceae2bbdbc84f2",
+          "file": "account.spec.ts",
+          "line": 276,
+          "column": 3
+        },
+        {
+          "title": "de-1440: account details save names its error and keeps the typing",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5058,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:25:48.932Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-2a5d8fa2f3687895dc00",
+          "file": "account.spec.ts",
+          "line": 356,
+          "column": 3
+        },
+        {
+          "title": "de-390: account details save names its error and keeps the typing",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4584,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:25:53.996Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-10a04ec7d6094495195a",
+          "file": "account.spec.ts",
+          "line": 356,
+          "column": 3
+        },
+        {
+          "title": "en: the register form carries its client constraints and refuses a bad email server-side",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 15638,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('form[data-linker-register]')\nExpected: \u001b[32m\"2\"\u001b[39m\nReceived: \u001b[31m\"1\"\u001b[39m\nTimeout:  15000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" locator('form[data-linker-register]') with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for locator('form[data-linker-register]')\u001b[22m\n\u001b[2m    34 × locator resolved to <form method=\"post\" data-active-step=\"1\" data-linker-register=\"\" class=\"woocommerce-form woocommerce-form-register register linker-auth-register-form is-split\">…</form>\u001b[22m\n\u001b[2m       - unexpected value \"1\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('form[data-linker-register]')\nExpected: \u001b[32m\"2\"\u001b[39m\nReceived: \u001b[31m\"1\"\u001b[39m\nTimeout:  15000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" locator('form[data-linker-register]') with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for locator('form[data-linker-register]')\u001b[22m\n\u001b[2m    34 × locator resolved to <form method=\"post\" data-active-step=\"1\" data-linker-register=\"\" class=\"woocommerce-form woocommerce-form-register register linker-auth-register-form is-split\">…</form>\u001b[22m\n\u001b[2m       - unexpected value \"1\"\u001b[22m\n\n    at /Users/chesterjohn/Documents/de-linker/tests/e2e/specs/account.spec.ts:456:59",
+                    "location": {
+                      "file": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs/account.spec.ts",
+                      "column": 59,
+                      "line": 456
+                    },
+                    "snippet": "  454 | \t\t.click();\n  455 | \tawait page.locator('[data-next]').click();\n> 456 | \tawait expect(page.locator('form[data-linker-register]')).toHaveAttribute(\n      | \t                                                         ^\n  457 | \t\t'data-active-step',\n  458 | \t\t'2'\n  459 | \t);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs/account.spec.ts",
+                        "column": 59,
+                        "line": 456
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('form[data-linker-register]')\nExpected: \u001b[32m\"2\"\u001b[39m\nReceived: \u001b[31m\"1\"\u001b[39m\nTimeout:  15000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" locator('form[data-linker-register]') with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for locator('form[data-linker-register]')\u001b[22m\n\u001b[2m    34 × locator resolved to <form method=\"post\" data-active-step=\"1\" data-linker-register=\"\" class=\"woocommerce-form woocommerce-form-register register linker-auth-register-form is-split\">…</form>\u001b[22m\n\u001b[2m       - unexpected value \"1\"\u001b[22m\n\n\n  454 | \t\t.click();\n  455 | \tawait page.locator('[data-next]').click();\n> 456 | \tawait expect(page.locator('form[data-linker-register]')).toHaveAttribute(\n      | \t                                                         ^\n  457 | \t\t'data-active-step',\n  458 | \t\t'2'\n  459 | \t);\n    at /Users/chesterjohn/Documents/de-linker/tests/e2e/specs/account.spec.ts:456:59"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:25:58.587Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results/account-en-the-register-fo-fae4b-ses-a-bad-email-server-side-chromium/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs/account.spec.ts",
+                    "column": 59,
+                    "line": 456
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-172c553a98f166c0f1a1",
+          "file": "account.spec.ts",
+          "line": 430,
+          "column": 1
+        },
+        {
+          "title": "en: sign-in and sign-up are two pages and link to each other",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 15863,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('#reg_email')\nExpected: visible\nReceived: hidden\nTimeout:  15000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" locator('#reg_email') with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for locator('#reg_email')\u001b[22m\n\u001b[2m    34 × locator resolved to <input value=\"\" disabled required=\"\" type=\"email\" name=\"email\" id=\"reg_email\" autocomplete=\"email\" aria-required=\"true\" class=\"woocommerce-Input woocommerce-Input--text input-text\"/>\u001b[22m\n\u001b[2m       - unexpected value \"hidden\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('#reg_email')\nExpected: visible\nReceived: hidden\nTimeout:  15000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" locator('#reg_email') with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for locator('#reg_email')\u001b[22m\n\u001b[2m    34 × locator resolved to <input value=\"\" disabled required=\"\" type=\"email\" name=\"email\" id=\"reg_email\" autocomplete=\"email\" aria-required=\"true\" class=\"woocommerce-Input woocommerce-Input--text input-text\"/>\u001b[22m\n\u001b[2m       - unexpected value \"hidden\"\u001b[22m\n\n    at /Users/chesterjohn/Documents/de-linker/tests/e2e/specs/account.spec.ts:508:43",
+                    "location": {
+                      "file": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs/account.spec.ts",
+                      "column": 43,
+                      "line": 508
+                    },
+                    "snippet": "  506 | \t// The register page is the sign-up card alone, and links back.\n  507 | \tawait expect(page.locator('.linker-auth-register')).toBeVisible();\n> 508 | \tawait expect(page.locator('#reg_email')).toBeVisible();\n      | \t                                         ^\n  509 | \tawait expect(\n  510 | \t\tpage.locator('#password'),\n  511 | \t\t'the sign-in password field is not on the register page'"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs/account.spec.ts",
+                        "column": 43,
+                        "line": 508
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('#reg_email')\nExpected: visible\nReceived: hidden\nTimeout:  15000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" locator('#reg_email') with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for locator('#reg_email')\u001b[22m\n\u001b[2m    34 × locator resolved to <input value=\"\" disabled required=\"\" type=\"email\" name=\"email\" id=\"reg_email\" autocomplete=\"email\" aria-required=\"true\" class=\"woocommerce-Input woocommerce-Input--text input-text\"/>\u001b[22m\n\u001b[2m       - unexpected value \"hidden\"\u001b[22m\n\n\n  506 | \t// The register page is the sign-up card alone, and links back.\n  507 | \tawait expect(page.locator('.linker-auth-register')).toBeVisible();\n> 508 | \tawait expect(page.locator('#reg_email')).toBeVisible();\n      | \t                                         ^\n  509 | \tawait expect(\n  510 | \t\tpage.locator('#password'),\n  511 | \t\t'the sign-in password field is not on the register page'\n    at /Users/chesterjohn/Documents/de-linker/tests/e2e/specs/account.spec.ts:508:43"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:26:14.538Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results/account-en-sign-in-and-sig-5003a-ages-and-link-to-each-other-chromium/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs/account.spec.ts",
+                    "column": 43,
+                    "line": 508
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-869e033fc2af8b3cd027",
+          "file": "account.spec.ts",
+          "line": 483,
+          "column": 1
+        },
+        {
+          "title": "en: an approved partner saves account details and company, and signs out",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 14851,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:26:30.816Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-f56c7598f89f8b73967b",
+          "file": "account.spec.ts",
+          "line": 525,
+          "column": 1
+        },
+        {
+          "title": "en: a fresh account reads the designed empty states",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4441,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:26:45.792Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-68851714c227e8e24942",
+          "file": "account.spec.ts",
+          "line": 656,
+          "column": 1
+        },
+        {
+          "title": "en: a VAT ID VIES cannot check never blocks registration, and the account is flagged",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 11829,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:26:50.239Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-ff84ddaea28dab288aa6",
+          "file": "account.spec.ts",
+          "line": 734,
+          "column": 1
+        },
+        {
+          "title": "en: an EU-format VAT ID is checked at registration and the verdict kept",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 9253,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:27:02.074Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-610477c06e7daba513a8",
+          "file": "account.spec.ts",
+          "line": 758,
+          "column": 1
+        },
+        {
+          "title": "en: a restricted account signs in, keeps the workplace and reads its gate on the inquiry page",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 21215,
+                  "error": {
+                    "message": "Error: the inquiry page reads the restriction gate\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('section[aria-label=\"Account with limited access\"]')\nExpected: visible\nTimeout: 15000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - the inquiry page reads the restriction gate locator('section[aria-label=\"Account with limited access\"]') with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for locator('section[aria-label=\"Account with limited access\"]')\u001b[22m\n",
+                    "stack": "Error: the inquiry page reads the restriction gate\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('section[aria-label=\"Account with limited access\"]')\nExpected: visible\nTimeout: 15000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - the inquiry page reads the restriction gate locator('section[aria-label=\"Account with limited access\"]') with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for locator('section[aria-label=\"Account with limited access\"]')\u001b[22m\n\n    at /Users/chesterjohn/Documents/de-linker/tests/e2e/specs/account.spec.ts:820:4",
+                    "location": {
+                      "file": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs/account.spec.ts",
+                      "column": 4,
+                      "line": 820
+                    },
+                    "snippet": "  818 | \t\tgate,\n  819 | \t\t'the inquiry page reads the restriction gate'\n> 820 | \t).toBeVisible();\n      | \t  ^\n  821 | \tawait expect(gate, 'the gate names the limit').toContainText(\n  822 | \t\t/Access currently limited/\n  823 | \t);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs/account.spec.ts",
+                        "column": 4,
+                        "line": 820
+                      },
+                      "message": "Error: the inquiry page reads the restriction gate\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('section[aria-label=\"Account with limited access\"]')\nExpected: visible\nTimeout: 15000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - the inquiry page reads the restriction gate locator('section[aria-label=\"Account with limited access\"]') with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for locator('section[aria-label=\"Account with limited access\"]')\u001b[22m\n\n\n  818 | \t\tgate,\n  819 | \t\t'the inquiry page reads the restriction gate'\n> 820 | \t).toBeVisible();\n      | \t  ^\n  821 | \tawait expect(gate, 'the gate names the limit').toContainText(\n  822 | \t\t/Access currently limited/\n  823 | \t);\n    at /Users/chesterjohn/Documents/de-linker/tests/e2e/specs/account.spec.ts:820:4"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:27:11.334Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results/account-en-a-restricted-ac-8a1dc-ts-gate-on-the-inquiry-page-chromium/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs/account.spec.ts",
+                    "column": 4,
+                    "line": 820
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-3f05b4c65b752f664e19",
+          "file": "account.spec.ts",
+          "line": 781,
+          "column": 1
+        },
+        {
+          "title": "de: the restricted gate speaks German and links its own address",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 21448,
+                  "error": {
+                    "message": "Error: the German inquiry page reads the gate\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('section[aria-label=\"Konto mit eingeschränktem Zugriff\"]')\nExpected: visible\nTimeout: 15000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - the German inquiry page reads the gate locator('section[aria-label=\"Konto mit eingeschränktem Zugriff\"]') with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for locator('section[aria-label=\"Konto mit eingeschränktem Zugriff\"]')\u001b[22m\n",
+                    "stack": "Error: the German inquiry page reads the gate\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('section[aria-label=\"Konto mit eingeschränktem Zugriff\"]')\nExpected: visible\nTimeout: 15000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - the German inquiry page reads the gate locator('section[aria-label=\"Konto mit eingeschränktem Zugriff\"]') with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for locator('section[aria-label=\"Konto mit eingeschränktem Zugriff\"]')\u001b[22m\n\n    at /Users/chesterjohn/Documents/de-linker/tests/e2e/specs/account.spec.ts:876:63",
+                    "location": {
+                      "file": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs/account.spec.ts",
+                      "column": 63,
+                      "line": 876
+                    },
+                    "snippet": "  874 | \t\t'section[aria-label=\"Konto mit eingeschränktem Zugriff\"]'\n  875 | \t);\n> 876 | \tawait expect(gate, 'the German inquiry page reads the gate').toBeVisible();\n      | \t                                                             ^\n  877 | \tawait expect(gate, 'the gate names the limit in German').toContainText(\n  878 | \t\t/Zugriff derzeit eingeschränkt/\n  879 | \t);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs/account.spec.ts",
+                        "column": 63,
+                        "line": 876
+                      },
+                      "message": "Error: the German inquiry page reads the gate\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('section[aria-label=\"Konto mit eingeschränktem Zugriff\"]')\nExpected: visible\nTimeout: 15000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - the German inquiry page reads the gate locator('section[aria-label=\"Konto mit eingeschränktem Zugriff\"]') with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for locator('section[aria-label=\"Konto mit eingeschränktem Zugriff\"]')\u001b[22m\n\n\n  874 | \t\t'section[aria-label=\"Konto mit eingeschränktem Zugriff\"]'\n  875 | \t);\n> 876 | \tawait expect(gate, 'the German inquiry page reads the gate').toBeVisible();\n      | \t                                                             ^\n  877 | \tawait expect(gate, 'the gate names the limit in German').toContainText(\n  878 | \t\t/Zugriff derzeit eingeschränkt/\n  879 | \t);\n    at /Users/chesterjohn/Documents/de-linker/tests/e2e/specs/account.spec.ts:876:63"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:27:32.889Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results/account-de-the-restricted--4bcd5-n-and-links-its-own-address-chromium/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs/account.spec.ts",
+                    "column": 63,
+                    "line": 876
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-4259fcc2fb03f2f2adf1",
+          "file": "account.spec.ts",
+          "line": 848,
+          "column": 1
+        },
+        {
+          "title": "en-1440: a rejected account cannot sign in and reads the refusal",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6079,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:27:54.767Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-7e012c014cdeb0214d6d",
+          "file": "account.spec.ts",
+          "line": 897,
+          "column": 3
+        },
+        {
+          "title": "en-390: a rejected account cannot sign in and reads the refusal",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5252,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:28:00.984Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-25622b8e24ca10356293",
+          "file": "account.spec.ts",
+          "line": 897,
+          "column": 3
+        },
+        {
+          "title": "de-1440: a rejected account cannot sign in and reads the refusal",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5467,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:28:06.242Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-ccba33c79e58b84d0b5d",
+          "file": "account.spec.ts",
+          "line": 897,
+          "column": 3
+        },
+        {
+          "title": "de-390: a rejected account cannot sign in and reads the refusal",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5149,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:28:11.715Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad4620ead4e6d9cc2627-948909917d23b5e1f6dd",
+          "file": "account.spec.ts",
+          "line": 897,
+          "column": 3
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-13T10:24:26.390Z",
+    "duration": 230524.706,
+    "expected": 22,
+    "skipped": 0,
+    "unexpected": 4,
+    "flaky": 0
+  }
+}

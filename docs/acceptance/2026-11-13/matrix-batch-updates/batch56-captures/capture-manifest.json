@@ -1,0 +1,738 @@
+[
+  {
+    "key": "https://de-linker.com/products/@1440",
+    "id": 1034,
+    "lang": "en",
+    "path": "/products/",
+    "width": 1440,
+    "height": 900,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-1034-products-1440.png",
+    "domMeta": {
+      "docLang": "en-US",
+      "title": "Browse Inverters, Batteries and Systems | Linker",
+      "h1": "Products",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 9883
+    },
+    "imgStats": {
+      "visibleImages": 26,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [],
+    "consoleErrors": []
+  },
+  {
+    "key": "https://de-linker.com/products/@390",
+    "id": 1034,
+    "lang": "en",
+    "path": "/products/",
+    "width": 390,
+    "height": 844,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-1034-products-390.png",
+    "domMeta": {
+      "docLang": "en-US",
+      "title": "Browse Inverters, Batteries and Systems | Linker",
+      "h1": "Products",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 13678
+    },
+    "imgStats": {
+      "visibleImages": 26,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [],
+    "consoleErrors": []
+  },
+  {
+    "key": "https://de-linker.com/cart/@1440",
+    "id": 1035,
+    "lang": "en",
+    "path": "/cart/",
+    "width": 1440,
+    "height": 900,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-1035-cart-1440.png",
+    "domMeta": {
+      "docLang": "en-US",
+      "title": "Solution draft | Linker",
+      "h1": "Your solution draft is empty.",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 1300
+    },
+    "imgStats": {
+      "visibleImages": 2,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [],
+    "consoleErrors": []
+  },
+  {
+    "key": "https://de-linker.com/cart/@390",
+    "id": 1035,
+    "lang": "en",
+    "path": "/cart/",
+    "width": 390,
+    "height": 844,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-1035-cart-390.png",
+    "domMeta": {
+      "docLang": "en-US",
+      "title": "Solution draft | Linker",
+      "h1": "Your solution draft is empty.",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 1594
+    },
+    "imgStats": {
+      "visibleImages": 2,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [],
+    "consoleErrors": []
+  },
+  {
+    "key": "https://de-linker.com/proforma-request/@1440",
+    "id": 1036,
+    "lang": "en",
+    "path": "/proforma-request/",
+    "width": 1440,
+    "height": 900,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-1036-proforma-request-1440.png",
+    "domMeta": {
+      "docLang": "en-US",
+      "title": "Send an inquiry | Linker",
+      "h1": "Send an inquiry",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 1652
+    },
+    "imgStats": {
+      "visibleImages": 2,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [],
+    "consoleErrors": []
+  },
+  {
+    "key": "https://de-linker.com/proforma-request/@390",
+    "id": 1036,
+    "lang": "en",
+    "path": "/proforma-request/",
+    "width": 390,
+    "height": 844,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-1036-proforma-request-390.png",
+    "domMeta": {
+      "docLang": "en-US",
+      "title": "Send an inquiry | Linker",
+      "h1": "Send an inquiry",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 2244
+    },
+    "imgStats": {
+      "visibleImages": 2,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [],
+    "consoleErrors": []
+  },
+  {
+    "key": "https://de-linker.com/my-account/@1440",
+    "id": 1037,
+    "lang": "en",
+    "path": "/my-account/",
+    "width": 1440,
+    "height": 900,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-1037-my-account-1440.png",
+    "domMeta": {
+      "docLang": "en-US",
+      "title": "Partner Account: Sign In or Register | Linker",
+      "h1": "Sign in",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 1432
+    },
+    "imgStats": {
+      "visibleImages": 3,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [],
+    "consoleErrors": []
+  },
+  {
+    "key": "https://de-linker.com/my-account/@390",
+    "id": 1037,
+    "lang": "en",
+    "path": "/my-account/",
+    "width": 390,
+    "height": 844,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-1037-my-account-390.png",
+    "domMeta": {
+      "docLang": "en-US",
+      "title": "Partner Account: Sign In or Register | Linker",
+      "h1": "Sign in",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 1562
+    },
+    "imgStats": {
+      "visibleImages": 2,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [],
+    "consoleErrors": []
+  },
+  {
+    "key": "https://de-linker.com/solution-configurator/@1440",
+    "id": 3302,
+    "lang": "en",
+    "path": "/solution-configurator/",
+    "width": 1440,
+    "height": 900,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-3302-solution-configurator-1440.png",
+    "domMeta": {
+      "docLang": "en-US",
+      "title": "Solution Configurator | Linker",
+      "h1": "Your projects",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 2529
+    },
+    "imgStats": {
+      "visibleImages": 2,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [
+      {
+        "status": 400,
+        "method": "GET",
+        "url": "https://de-linker.com/wp-admin/admin-ajax.php?action=rest-nonce",
+        "body": "0"
+      }
+    ],
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 400 ()"
+    ]
+  },
+  {
+    "key": "https://de-linker.com/solution-configurator/@390",
+    "id": 3302,
+    "lang": "en",
+    "path": "/solution-configurator/",
+    "width": 390,
+    "height": 844,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-3302-solution-configurator-390.png",
+    "domMeta": {
+      "docLang": "en-US",
+      "title": "Solution Configurator | Linker",
+      "h1": "Your projects",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 2972
+    },
+    "imgStats": {
+      "visibleImages": 2,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [
+      {
+        "status": 400,
+        "method": "GET",
+        "url": "https://de-linker.com/wp-admin/admin-ajax.php?action=rest-nonce",
+        "body": "0"
+      }
+    ],
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 400 ()"
+    ]
+  },
+  {
+    "key": "https://de-linker.com/genie/@1440",
+    "id": 4083,
+    "lang": "en",
+    "path": "/genie/",
+    "width": 1440,
+    "height": 900,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-4083-genie-1440.png",
+    "domMeta": {
+      "docLang": "en-US",
+      "title": "Ask About a Product, Model or Datasheet | Linker",
+      "h1": "Genie – Linker’s AI assistant",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 1496
+    },
+    "imgStats": {
+      "visibleImages": 2,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [],
+    "consoleErrors": []
+  },
+  {
+    "key": "https://de-linker.com/genie/@390",
+    "id": 4083,
+    "lang": "en",
+    "path": "/genie/",
+    "width": 390,
+    "height": 844,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-4083-genie-390.png",
+    "domMeta": {
+      "docLang": "en-US",
+      "title": "Ask About a Product, Model or Datasheet | Linker",
+      "h1": "Genie – Linker’s AI assistant",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 1692
+    },
+    "imgStats": {
+      "visibleImages": 2,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [],
+    "consoleErrors": []
+  },
+  {
+    "key": "https://de-linker.com/compare-products/@1440",
+    "id": 5385,
+    "lang": "en",
+    "path": "/compare-products/",
+    "width": 1440,
+    "height": 900,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-5385-compare-products-1440.png",
+    "domMeta": {
+      "docLang": "en-US",
+      "title": "Compare products | Linker",
+      "h1": "Compare products",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 1076
+    },
+    "imgStats": {
+      "visibleImages": 2,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [],
+    "consoleErrors": []
+  },
+  {
+    "key": "https://de-linker.com/compare-products/@390",
+    "id": 5385,
+    "lang": "en",
+    "path": "/compare-products/",
+    "width": 390,
+    "height": 844,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/en-5385-compare-products-390.png",
+    "domMeta": {
+      "docLang": "en-US",
+      "title": "Compare products | Linker",
+      "h1": "Compare products",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 1373
+    },
+    "imgStats": {
+      "visibleImages": 2,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [],
+    "consoleErrors": []
+  },
+  {
+    "key": "https://de-linker.com/de/produkte-vergleichen/@1440",
+    "id": 6600,
+    "lang": "de",
+    "path": "/de/produkte-vergleichen/",
+    "width": 1440,
+    "height": 900,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6600-produkte-vergleichen-1440.png",
+    "domMeta": {
+      "docLang": "de-DE",
+      "title": "Produkte vergleichen | Linker",
+      "h1": "Produkte vergleichen",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 1103
+    },
+    "imgStats": {
+      "visibleImages": 2,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [],
+    "consoleErrors": []
+  },
+  {
+    "key": "https://de-linker.com/de/produkte-vergleichen/@390",
+    "id": 6600,
+    "lang": "de",
+    "path": "/de/produkte-vergleichen/",
+    "width": 390,
+    "height": 844,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6600-produkte-vergleichen-390.png",
+    "domMeta": {
+      "docLang": "de-DE",
+      "title": "Produkte vergleichen | Linker",
+      "h1": "Produkte vergleichen",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 1470
+    },
+    "imgStats": {
+      "visibleImages": 2,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [],
+    "consoleErrors": []
+  },
+  {
+    "key": "https://de-linker.com/de/genie/@1440",
+    "id": 6633,
+    "lang": "de",
+    "path": "/de/genie/",
+    "width": 1440,
+    "height": 900,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6633-genie-1440.png",
+    "domMeta": {
+      "docLang": "de-DE",
+      "title": "Fragen Sie nach einem Produkt, Modell oder Datenblatt | Linker",
+      "h1": "Genie – der KI-Assistent von Linker",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 1496
+    },
+    "imgStats": {
+      "visibleImages": 2,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [],
+    "consoleErrors": []
+  },
+  {
+    "key": "https://de-linker.com/de/genie/@390",
+    "id": 6633,
+    "lang": "de",
+    "path": "/de/genie/",
+    "width": 390,
+    "height": 844,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6633-genie-390.png",
+    "domMeta": {
+      "docLang": "de-DE",
+      "title": "Fragen Sie nach einem Produkt, Modell oder Datenblatt | Linker",
+      "h1": "Genie – der KI-Assistent von Linker",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 1737
+    },
+    "imgStats": {
+      "visibleImages": 2,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [],
+    "consoleErrors": []
+  },
+  {
+    "key": "https://de-linker.com/de/loesungskonfigurator/@1440",
+    "id": 6693,
+    "lang": "de",
+    "path": "/de/loesungskonfigurator/",
+    "width": 1440,
+    "height": 900,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6693-loesungskonfigurator-1440.png",
+    "domMeta": {
+      "docLang": "de-DE",
+      "title": "Lösungskonfigurator | Linker",
+      "h1": "Ihre Projekte",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 2529
+    },
+    "imgStats": {
+      "visibleImages": 2,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [
+      {
+        "status": 400,
+        "method": "GET",
+        "url": "https://de-linker.com/wp-admin/admin-ajax.php?action=rest-nonce",
+        "body": "0"
+      }
+    ],
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 400 ()"
+    ]
+  },
+  {
+    "key": "https://de-linker.com/de/loesungskonfigurator/@390",
+    "id": 6693,
+    "lang": "de",
+    "path": "/de/loesungskonfigurator/",
+    "width": 390,
+    "height": 844,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6693-loesungskonfigurator-390.png",
+    "domMeta": {
+      "docLang": "de-DE",
+      "title": "Lösungskonfigurator | Linker",
+      "h1": "Ihre Projekte",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 3072
+    },
+    "imgStats": {
+      "visibleImages": 2,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [
+      {
+        "status": 400,
+        "method": "GET",
+        "url": "https://de-linker.com/wp-admin/admin-ajax.php?action=rest-nonce",
+        "body": "0"
+      }
+    ],
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 400 ()"
+    ]
+  },
+  {
+    "key": "https://de-linker.com/de/produkte/@1440",
+    "id": 6853,
+    "lang": "de",
+    "path": "/de/produkte/",
+    "width": 1440,
+    "height": 900,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6853-produkte-1440.png",
+    "domMeta": {
+      "docLang": "de-DE",
+      "title": "Wechselrichter, Speicher und Systeme | Linker",
+      "h1": "Produkte",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 9883
+    },
+    "imgStats": {
+      "visibleImages": 26,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [],
+    "consoleErrors": []
+  },
+  {
+    "key": "https://de-linker.com/de/produkte/@390",
+    "id": 6853,
+    "lang": "de",
+    "path": "/de/produkte/",
+    "width": 390,
+    "height": 844,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6853-produkte-390.png",
+    "domMeta": {
+      "docLang": "de-DE",
+      "title": "Wechselrichter, Speicher und Systeme | Linker",
+      "h1": "Produkte",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 14100
+    },
+    "imgStats": {
+      "visibleImages": 26,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [],
+    "consoleErrors": []
+  },
+  {
+    "key": "https://de-linker.com/de/loesungsentwurf/@1440",
+    "id": 6855,
+    "lang": "de",
+    "path": "/de/loesungsentwurf/",
+    "width": 1440,
+    "height": 900,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6855-loesungsentwurf-1440.png",
+    "domMeta": {
+      "docLang": "de-DE",
+      "title": "Lösungsentwurf | Linker",
+      "h1": "Ihr Lösungsentwurf ist leer.",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 1300
+    },
+    "imgStats": {
+      "visibleImages": 2,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [],
+    "consoleErrors": []
+  },
+  {
+    "key": "https://de-linker.com/de/loesungsentwurf/@390",
+    "id": 6855,
+    "lang": "de",
+    "path": "/de/loesungsentwurf/",
+    "width": 390,
+    "height": 844,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6855-loesungsentwurf-390.png",
+    "domMeta": {
+      "docLang": "de-DE",
+      "title": "Lösungsentwurf | Linker",
+      "h1": "Ihr Lösungsentwurf ist leer.",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 1639
+    },
+    "imgStats": {
+      "visibleImages": 2,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [],
+    "consoleErrors": []
+  },
+  {
+    "key": "https://de-linker.com/de/proforma-anfrage/@1440",
+    "id": 6857,
+    "lang": "de",
+    "path": "/de/proforma-anfrage/",
+    "width": 1440,
+    "height": 900,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6857-proforma-anfrage-1440.png",
+    "domMeta": {
+      "docLang": "de-DE",
+      "title": "Anfrage senden | Linker",
+      "h1": "Anfrage senden",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 1716
+    },
+    "imgStats": {
+      "visibleImages": 2,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [],
+    "consoleErrors": []
+  },
+  {
+    "key": "https://de-linker.com/de/proforma-anfrage/@390",
+    "id": 6857,
+    "lang": "de",
+    "path": "/de/proforma-anfrage/",
+    "width": 390,
+    "height": 844,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6857-proforma-anfrage-390.png",
+    "domMeta": {
+      "docLang": "de-DE",
+      "title": "Anfrage senden | Linker",
+      "h1": "Anfrage senden",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 2353
+    },
+    "imgStats": {
+      "visibleImages": 2,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [],
+    "consoleErrors": []
+  },
+  {
+    "key": "https://de-linker.com/de/mein-konto/@1440",
+    "id": 6859,
+    "lang": "de",
+    "path": "/de/mein-konto/",
+    "width": 1440,
+    "height": 900,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6859-mein-konto-1440.png",
+    "domMeta": {
+      "docLang": "de-DE",
+      "title": "Beim Partnerkonto anmelden | Linker",
+      "h1": "Anmelden",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 1432
+    },
+    "imgStats": {
+      "visibleImages": 3,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [],
+    "consoleErrors": []
+  },
+  {
+    "key": "https://de-linker.com/de/mein-konto/@390",
+    "id": 6859,
+    "lang": "de",
+    "path": "/de/mein-konto/",
+    "width": 390,
+    "height": 844,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/screenshots/de-6859-mein-konto-390.png",
+    "domMeta": {
+      "docLang": "de-DE",
+      "title": "Beim Partnerkonto anmelden | Linker",
+      "h1": "Anmelden",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 1607
+    },
+    "imgStats": {
+      "visibleImages": 2,
+      "missingSrc": [],
+      "zeroNatural": []
+    },
+    "httpErrors": [],
+    "consoleErrors": []
+  }
+]

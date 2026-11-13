@@ -1,0 +1,1714 @@
+{
+  "generatedAt": "2026-11-13T10:26:53.207Z",
+  "cacheBypassParam": "v=<random>",
+  "checks": {
+    "pdp_related_grid_before_pseudo": [
+      {
+        "id": 6321,
+        "url": "https://de-linker.com/product/goodwe-esa-gw125-261-esa-lcn-g10/",
+        "testedUrl": "https://de-linker.com/product/goodwe-esa-gw125-261-esa-lcn-g10/?v=mweu159u63oz4",
+        "status": 200,
+        "present": true,
+        "beforeContent": "none",
+        "beforeDisplay": "none",
+        "afterContent": "none",
+        "afterDisplay": "none",
+        "cardCount": 4,
+        "cards": [
+          {
+            "x": 80,
+            "y": 6668.8,
+            "w": 305,
+            "h": 435.2
+          },
+          {
+            "x": 405,
+            "y": 6668.8,
+            "w": 305,
+            "h": 435.2
+          },
+          {
+            "x": 730,
+            "y": 6668.8,
+            "w": 305,
+            "h": 435.2
+          },
+          {
+            "x": 1055,
+            "y": 6668.8,
+            "w": 305,
+            "h": 435.2
+          }
+        ],
+        "firstCardX": 80,
+        "sameRow": true,
+        "pass": true
+      },
+      {
+        "id": 6599,
+        "url": "https://de-linker.com/de/produkt/goodwe-esa-gw125-261-esa-lcn-g10/",
+        "testedUrl": "https://de-linker.com/de/produkt/goodwe-esa-gw125-261-esa-lcn-g10/?v=mweu159u8nbji",
+        "status": 200,
+        "present": true,
+        "beforeContent": "none",
+        "beforeDisplay": "none",
+        "afterContent": "none",
+        "afterDisplay": "none",
+        "cardCount": 4,
+        "cards": [
+          {
+            "x": 80,
+            "y": 6722.8,
+            "w": 305,
+            "h": 435.2
+          },
+          {
+            "x": 405,
+            "y": 6722.8,
+            "w": 305,
+            "h": 435.2
+          },
+          {
+            "x": 730,
+            "y": 6722.8,
+            "w": 305,
+            "h": 435.2
+          },
+          {
+            "x": 1055,
+            "y": 6722.8,
+            "w": 305,
+            "h": 435.2
+          }
+        ],
+        "firstCardX": 80,
+        "sameRow": true,
+        "pass": true
+      },
+      {
+        "id": 2003,
+        "url": "https://de-linker.com/product/pylontech-optim-us-l260-omni/",
+        "testedUrl": "https://de-linker.com/product/pylontech-optim-us-l260-omni/?v=mweu159uwbn95",
+        "status": 200,
+        "present": true,
+        "beforeContent": "none",
+        "beforeDisplay": "none",
+        "afterContent": "none",
+        "afterDisplay": "none",
+        "cardCount": 4,
+        "cards": [
+          {
+            "x": 80,
+            "y": 7207.6,
+            "w": 305,
+            "h": 454.8
+          },
+          {
+            "x": 405,
+            "y": 7207.6,
+            "w": 305,
+            "h": 454.8
+          },
+          {
+            "x": 730,
+            "y": 7207.6,
+            "w": 305,
+            "h": 454.8
+          },
+          {
+            "x": 1055,
+            "y": 7207.6,
+            "w": 305,
+            "h": 454.8
+          }
+        ],
+        "firstCardX": 80,
+        "sameRow": true,
+        "pass": true
+      },
+      {
+        "id": 6769,
+        "url": "https://de-linker.com/de/produkt/pylontech-optim-us-l260-omni/",
+        "testedUrl": "https://de-linker.com/de/produkt/pylontech-optim-us-l260-omni/?v=mweu159ux39oj",
+        "status": 200,
+        "present": true,
+        "beforeContent": "none",
+        "beforeDisplay": "none",
+        "afterContent": "none",
+        "afterDisplay": "none",
+        "cardCount": 4,
+        "cards": [
+          {
+            "x": 80,
+            "y": 7288.6,
+            "w": 305,
+            "h": 454.8
+          },
+          {
+            "x": 405,
+            "y": 7288.6,
+            "w": 305,
+            "h": 454.8
+          },
+          {
+            "x": 730,
+            "y": 7288.6,
+            "w": 305,
+            "h": 454.8
+          },
+          {
+            "x": 1055,
+            "y": 7288.6,
+            "w": 305,
+            "h": 454.8
+          }
+        ],
+        "firstCardX": 80,
+        "sameRow": true,
+        "pass": true
+      },
+      {
+        "id": 1179,
+        "url": "https://de-linker.com/product/saj-h2-25k-t3/",
+        "testedUrl": "https://de-linker.com/product/saj-h2-25k-t3/?v=mweu19wra8n0r",
+        "status": 200,
+        "present": true,
+        "beforeContent": "none",
+        "beforeDisplay": "none",
+        "afterContent": "none",
+        "afterDisplay": "none",
+        "cardCount": 4,
+        "cards": [
+          {
+            "x": 80,
+            "y": 7829,
+            "w": 305,
+            "h": 454.8
+          },
+          {
+            "x": 405,
+            "y": 7829,
+            "w": 305,
+            "h": 454.8
+          },
+          {
+            "x": 730,
+            "y": 7829,
+            "w": 305,
+            "h": 454.8
+          },
+          {
+            "x": 1055,
+            "y": 7829,
+            "w": 305,
+            "h": 454.8
+          }
+        ],
+        "firstCardX": 80,
+        "sameRow": true,
+        "pass": true
+      },
+      {
+        "id": 6838,
+        "url": "https://de-linker.com/de/produkt/saj-h2-25k-t3/",
+        "testedUrl": "https://de-linker.com/de/produkt/saj-h2-25k-t3/?v=mweu1aedv2zyl",
+        "status": 200,
+        "present": true,
+        "beforeContent": "none",
+        "beforeDisplay": "none",
+        "afterContent": "none",
+        "afterDisplay": "none",
+        "cardCount": 4,
+        "cards": [
+          {
+            "x": 80,
+            "y": 7886.8,
+            "w": 305,
+            "h": 454.8
+          },
+          {
+            "x": 405,
+            "y": 7886.8,
+            "w": 305,
+            "h": 454.8
+          },
+          {
+            "x": 730,
+            "y": 7886.8,
+            "w": 305,
+            "h": 454.8
+          },
+          {
+            "x": 1055,
+            "y": 7886.8,
+            "w": 305,
+            "h": 454.8
+          }
+        ],
+        "firstCardX": 80,
+        "sameRow": true,
+        "pass": true
+      },
+      {
+        "id": 1178,
+        "url": "https://de-linker.com/product/saj-ats1-t63-a/",
+        "testedUrl": "https://de-linker.com/product/saj-ats1-t63-a/?v=mweu1akei9eaj",
+        "status": 200,
+        "present": true,
+        "beforeContent": "none",
+        "beforeDisplay": "none",
+        "afterContent": "none",
+        "afterDisplay": "none",
+        "cardCount": 3,
+        "cards": [
+          {
+            "x": 80,
+            "y": 5587.9,
+            "w": 305,
+            "h": 435.2
+          },
+          {
+            "x": 405,
+            "y": 5587.9,
+            "w": 305,
+            "h": 435.2
+          },
+          {
+            "x": 730,
+            "y": 5587.9,
+            "w": 305,
+            "h": 435.2
+          }
+        ],
+        "firstCardX": 80,
+        "sameRow": true,
+        "pass": true
+      },
+      {
+        "id": 6839,
+        "url": "https://de-linker.com/de/produkt/saj-ats1-t63-a/",
+        "testedUrl": "https://de-linker.com/de/produkt/saj-ats1-t63-a/?v=mweu1anmxjeb0",
+        "status": 200,
+        "present": true,
+        "beforeContent": "none",
+        "beforeDisplay": "none",
+        "afterContent": "none",
+        "afterDisplay": "none",
+        "cardCount": 3,
+        "cards": [
+          {
+            "x": 80,
+            "y": 5620.9,
+            "w": 305,
+            "h": 435.2
+          },
+          {
+            "x": 405,
+            "y": 5620.9,
+            "w": 305,
+            "h": 435.2
+          },
+          {
+            "x": 730,
+            "y": 5620.9,
+            "w": 305,
+            "h": 435.2
+          }
+        ],
+        "firstCardX": 80,
+        "sameRow": true,
+        "pass": true
+      }
+    ],
+    "pdp_faqs_and_ats_grammar": [
+      {
+        "id": 1178,
+        "pair": "1178/6839",
+        "lang": "en",
+        "url": "https://de-linker.com/product/saj-ats1-t63-a/",
+        "testedUrl": "https://de-linker.com/product/saj-ats1-t63-a/?v=mweu1g55f3dqu",
+        "status": 200,
+        "sectionPresent": true,
+        "sectionSelector": "pdp-block pdp-faqs sf-container",
+        "faqCount": 3,
+        "questions": [
+          "What current does the ATS1-T63-A carry?",
+          "Which circuit breakers does the installation need?",
+          "Where can the panel be installed?"
+        ],
+        "hasInDerAtsBox": false,
+        "hasImAtsBox": false,
+        "grammarOk": true,
+        "pass": true
+      },
+      {
+        "id": 6839,
+        "pair": "1178/6839",
+        "lang": "de",
+        "url": "https://de-linker.com/de/produkt/saj-ats1-t63-a/",
+        "testedUrl": "https://de-linker.com/de/produkt/saj-ats1-t63-a/?v=mweu1g55niybo",
+        "status": 200,
+        "sectionPresent": true,
+        "sectionSelector": "pdp-block pdp-faqs sf-container",
+        "faqCount": 3,
+        "questions": [
+          "Welchen Strom führt die ATS1-T63-A?",
+          "Welche Leitungsschutzschalter braucht die Installation?",
+          "Wo kann die Einheit montiert werden?"
+        ],
+        "hasInDerAtsBox": true,
+        "hasImAtsBox": false,
+        "grammarOk": true,
+        "pass": true
+      },
+      {
+        "id": 1179,
+        "pair": "1179/6838",
+        "lang": "en",
+        "url": "https://de-linker.com/product/saj-h2-25k-t3/",
+        "testedUrl": "https://de-linker.com/product/saj-h2-25k-t3/?v=mweu1g5448fjp",
+        "status": 200,
+        "sectionPresent": true,
+        "sectionSelector": "pdp-block pdp-faqs sf-container",
+        "faqCount": 2,
+        "questions": [
+          "What does the H2-25K-T3 package contain?",
+          "Which circuit breaker and AC cable does the H2-25K-T3 need?"
+        ],
+        "hasInDerAtsBox": false,
+        "hasImAtsBox": false,
+        "grammarOk": true,
+        "pass": true
+      },
+      {
+        "id": 6838,
+        "pair": "1179/6838",
+        "lang": "de",
+        "url": "https://de-linker.com/de/produkt/saj-h2-25k-t3/",
+        "testedUrl": "https://de-linker.com/de/produkt/saj-h2-25k-t3/?v=mweu1g5557x79",
+        "status": 200,
+        "sectionPresent": true,
+        "sectionSelector": "pdp-block pdp-faqs sf-container",
+        "faqCount": 2,
+        "questions": [
+          "Was gehört zum Lieferumfang des H2-25K-T3?",
+          "Welchen Leitungsschutzschalter und welches AC-Kabel braucht der H2-25K-T3?"
+        ],
+        "hasInDerAtsBox": false,
+        "hasImAtsBox": false,
+        "grammarOk": true,
+        "pass": true
+      },
+      {
+        "id": 1181,
+        "pair": "1181/6837",
+        "lang": "en",
+        "url": "https://de-linker.com/product/saj-h2-30k-t3-de/",
+        "testedUrl": "https://de-linker.com/product/saj-h2-30k-t3-de/?v=mweu1l1g6vzmz",
+        "status": 200,
+        "sectionPresent": true,
+        "sectionSelector": "pdp-block pdp-faqs sf-container",
+        "faqCount": 3,
+        "questions": [
+          "What are the rated AC power and the maximum apparent power of the H2-30K-T3-DE?",
+          "What does the H2-30K-T3-DE package contain?",
+          "Which circuit breaker and AC cable does the H2-30K-T3-DE need?"
+        ],
+        "hasInDerAtsBox": false,
+        "hasImAtsBox": false,
+        "grammarOk": true,
+        "pass": true
+      },
+      {
+        "id": 6837,
+        "pair": "1181/6837",
+        "lang": "de",
+        "url": "https://de-linker.com/de/produkt/saj-h2-30k-t3-de/",
+        "testedUrl": "https://de-linker.com/de/produkt/saj-h2-30k-t3-de/?v=mweu1l4u9n8p8",
+        "status": 200,
+        "sectionPresent": true,
+        "sectionSelector": "pdp-block pdp-faqs sf-container",
+        "faqCount": 3,
+        "questions": [
+          "Welche AC-Nennleistung und welche maximale Scheinleistung hat der H2-30K-T3-DE?",
+          "Was gehört zum Lieferumfang des H2-30K-T3-DE?",
+          "Welchen Leitungsschutzschalter und welches AC-Kabel braucht der H2-30K-T3-DE?"
+        ],
+        "hasInDerAtsBox": false,
+        "hasImAtsBox": false,
+        "grammarOk": true,
+        "pass": true
+      },
+      {
+        "id": 1182,
+        "pair": "1182/6836",
+        "lang": "en",
+        "url": "https://de-linker.com/product/saj-hs2-10k-t2-x/",
+        "testedUrl": "https://de-linker.com/product/saj-hs2-10k-t2-x/?v=mweu1laqsz2ou",
+        "status": 200,
+        "sectionPresent": true,
+        "sectionSelector": "pdp-block pdp-faqs sf-container",
+        "faqCount": 3,
+        "questions": [
+          "Which battery modules does the HS2-10K-T2-X take, and how many?",
+          "What does the backup output of the HS2-10K-T2-X deliver when the grid fails?",
+          "What does the AC side of the HS2-10K-T2-X need at installation?"
+        ],
+        "hasInDerAtsBox": false,
+        "hasImAtsBox": false,
+        "grammarOk": true,
+        "pass": true
+      },
+      {
+        "id": 6836,
+        "pair": "1182/6836",
+        "lang": "de",
+        "url": "https://de-linker.com/de/produkt/saj-hs2-10k-t2-x/",
+        "testedUrl": "https://de-linker.com/de/produkt/saj-hs2-10k-t2-x/?v=mweu1lda2sp8x",
+        "status": 200,
+        "sectionPresent": true,
+        "sectionSelector": "pdp-block pdp-faqs sf-container",
+        "faqCount": 3,
+        "questions": [
+          "Welche Batteriemodule passen zum HS2-10K-T2-X, und wie viele?",
+          "Was liefert der Notstromausgang des HS2-10K-T2-X bei Netzausfall?",
+          "Was braucht die AC-Seite des HS2-10K-T2-X bei der Installation?"
+        ],
+        "hasInDerAtsBox": false,
+        "hasImAtsBox": false,
+        "grammarOk": true,
+        "pass": true
+      },
+      {
+        "id": 1183,
+        "pair": "1183/6835",
+        "lang": "en",
+        "url": "https://de-linker.com/product/saj-hs2-6k-t2-x/",
+        "testedUrl": "https://de-linker.com/product/saj-hs2-6k-t2-x/?v=mweu1q9be9fem",
+        "status": 200,
+        "sectionPresent": true,
+        "sectionSelector": "pdp-block pdp-faqs sf-container",
+        "faqCount": 2,
+        "questions": [
+          "What does the backup output of the HS2-6K-T2-X deliver when the grid fails?",
+          "What does the AC side of the HS2-6K-T2-X need at installation?"
+        ],
+        "hasInDerAtsBox": false,
+        "hasImAtsBox": false,
+        "grammarOk": true,
+        "pass": true
+      },
+      {
+        "id": 6835,
+        "pair": "1183/6835",
+        "lang": "de",
+        "url": "https://de-linker.com/de/produkt/saj-hs2-6k-t2-x/",
+        "testedUrl": "https://de-linker.com/de/produkt/saj-hs2-6k-t2-x/?v=mweu1qdqzpgdh",
+        "status": 200,
+        "sectionPresent": true,
+        "sectionSelector": "pdp-block pdp-faqs sf-container",
+        "faqCount": 2,
+        "questions": [
+          "Was liefert der Notstromausgang des HS2-6K-T2-X bei Netzausfall?",
+          "Was braucht die AC-Seite des HS2-6K-T2-X bei der Installation?"
+        ],
+        "hasInDerAtsBox": false,
+        "hasImAtsBox": false,
+        "grammarOk": true,
+        "pass": true
+      },
+      {
+        "id": 1184,
+        "pair": "1184/6834",
+        "lang": "en",
+        "url": "https://de-linker.com/product/saj-hs2-8k-t2-x/",
+        "testedUrl": "https://de-linker.com/product/saj-hs2-8k-t2-x/?v=mweu1qgrg31nz",
+        "status": 200,
+        "sectionPresent": true,
+        "sectionSelector": "pdp-block pdp-faqs sf-container",
+        "faqCount": 2,
+        "questions": [
+          "What does the backup output of the HS2-8K-T2-X deliver when the grid fails?",
+          "What does the AC side of the HS2-8K-T2-X need at installation?"
+        ],
+        "hasInDerAtsBox": false,
+        "hasImAtsBox": false,
+        "grammarOk": true,
+        "pass": true
+      },
+      {
+        "id": 6834,
+        "pair": "1184/6834",
+        "lang": "de",
+        "url": "https://de-linker.com/de/produkt/saj-hs2-8k-t2-x/",
+        "testedUrl": "https://de-linker.com/de/produkt/saj-hs2-8k-t2-x/?v=mweu1qzjtwes3",
+        "status": 200,
+        "sectionPresent": true,
+        "sectionSelector": "pdp-block pdp-faqs sf-container",
+        "faqCount": 2,
+        "questions": [
+          "Was liefert der Notstromausgang des HS2-8K-T2-X bei Netzausfall?",
+          "Was braucht die AC-Seite des HS2-8K-T2-X bei der Installation?"
+        ],
+        "hasInDerAtsBox": false,
+        "hasImAtsBox": false,
+        "grammarOk": true,
+        "pass": true
+      },
+      {
+        "id": 2003,
+        "pair": "2003/6769",
+        "lang": "en",
+        "url": "https://de-linker.com/product/pylontech-optim-us-l260-omni/",
+        "testedUrl": "https://de-linker.com/product/pylontech-optim-us-l260-omni/?v=mweu1v1ylo0pm",
+        "status": 200,
+        "sectionPresent": true,
+        "sectionSelector": "pdp-block pdp-faqs sf-container",
+        "faqCount": 1,
+        "questions": [
+          "What are the physical dimensions and weight of the L260-OMNI station?"
+        ],
+        "hasInDerAtsBox": false,
+        "hasImAtsBox": false,
+        "grammarOk": true,
+        "pass": true
+      },
+      {
+        "id": 6769,
+        "pair": "2003/6769",
+        "lang": "de",
+        "url": "https://de-linker.com/de/produkt/pylontech-optim-us-l260-omni/",
+        "testedUrl": "https://de-linker.com/de/produkt/pylontech-optim-us-l260-omni/?v=mweu1vajxigyg",
+        "status": 200,
+        "sectionPresent": true,
+        "sectionSelector": "pdp-block pdp-faqs sf-container",
+        "faqCount": 1,
+        "questions": [
+          "Welche Abmessungen und welches Gewicht hat die L260-OMNI-Station?"
+        ],
+        "hasInDerAtsBox": false,
+        "hasImAtsBox": false,
+        "grammarOk": true,
+        "pass": true
+      },
+      {
+        "id": 2394,
+        "pair": "2394/6717",
+        "lang": "en",
+        "url": "https://de-linker.com/product/goodwe-gm330/",
+        "testedUrl": "https://de-linker.com/product/goodwe-gm330/?v=mweu1vm4nj55n",
+        "status": 200,
+        "sectionPresent": true,
+        "sectionSelector": "pdp-block pdp-faqs sf-container",
+        "faqCount": 2,
+        "questions": [
+          "Are current transformers included with GM330?",
+          "Can GM330 replace the utility meter used for billing?"
+        ],
+        "hasInDerAtsBox": false,
+        "hasImAtsBox": false,
+        "grammarOk": true,
+        "pass": true
+      },
+      {
+        "id": 6717,
+        "pair": "2394/6717",
+        "lang": "de",
+        "url": "https://de-linker.com/de/produkt/goodwe-gm330/",
+        "testedUrl": "https://de-linker.com/de/produkt/goodwe-gm330/?v=mweu1vo7w9k8t",
+        "status": 200,
+        "sectionPresent": true,
+        "sectionSelector": "pdp-block pdp-faqs sf-container",
+        "faqCount": 2,
+        "questions": [
+          "Sind beim GM330 Stromwandler im Lieferumfang?",
+          "Kann GM330 den abrechnungsrelevanten Zähler des Netzbetreibers ersetzen?"
+        ],
+        "hasInDerAtsBox": false,
+        "hasImAtsBox": false,
+        "grammarOk": true,
+        "pass": true
+      },
+      {
+        "id": 2397,
+        "pair": "2397/6716",
+        "lang": "en",
+        "url": "https://de-linker.com/product/goodwe-gmk330/",
+        "testedUrl": "https://de-linker.com/product/goodwe-gmk330/?v=mweu1zrnqfuec",
+        "status": 200,
+        "sectionPresent": true,
+        "sectionSelector": "pdp-block pdp-faqs sf-container",
+        "faqCount": 2,
+        "questions": [
+          "Which CT version is included with this GMK330?",
+          "Can these GMK330 readings be used for utility billing?"
+        ],
+        "hasInDerAtsBox": false,
+        "hasImAtsBox": false,
+        "grammarOk": true,
+        "pass": true
+      },
+      {
+        "id": 6716,
+        "pair": "2397/6716",
+        "lang": "de",
+        "url": "https://de-linker.com/de/produkt/goodwe-gmk330/",
+        "testedUrl": "https://de-linker.com/de/produkt/goodwe-gmk330/?v=mweu20a1niebe",
+        "status": 200,
+        "sectionPresent": true,
+        "sectionSelector": "pdp-block pdp-faqs sf-container",
+        "faqCount": 2,
+        "questions": [
+          "Welche Stromwandlerversion ist mit dieser GMK330 enthalten?",
+          "Dürfen die GMK330-Messwerte zur Stromabrechnung genutzt werden?"
+        ],
+        "hasInDerAtsBox": false,
+        "hasImAtsBox": false,
+        "grammarOk": true,
+        "pass": true
+      }
+    ],
+    "pdp_feature_white_bg_contrast": [
+      {
+        "id": 2092,
+        "url": "https://de-linker.com/product/saj-bc2-hv1/",
+        "testedUrl": "https://de-linker.com/product/saj-bc2-hv1/?v=mweu24m3aen3w",
+        "status": 200,
+        "bandCount": 1,
+        "bands": [
+          {
+            "headline": "On top of the stack, fixed to the wall.",
+            "afterContent": "\"\"",
+            "afterBackgroundImage": "linear-gradient(90deg, rgba(16, 44, 48, 0.96) 0%, rgba(16, 44, 48, 0.85) 48%, rgba(16, 44, 48, 0) 76%)",
+            "afterPosition": "absolute",
+            "copyColor": "rgb(255, 255, 255)",
+            "mediaWidth": 1280,
+            "mediaHeight": 520
+          }
+        ],
+        "pass": true
+      },
+      {
+        "id": 6736,
+        "url": "https://de-linker.com/de/produkt/saj-bc2-hv1/",
+        "testedUrl": "https://de-linker.com/de/produkt/saj-bc2-hv1/?v=mweu24m3tqv65",
+        "status": 200,
+        "bandCount": 1,
+        "bands": [
+          {
+            "headline": "Oben auf dem Stapel, an der Wand befestigt.",
+            "afterContent": "\"\"",
+            "afterBackgroundImage": "linear-gradient(90deg, rgba(16, 44, 48, 0.96) 0%, rgba(16, 44, 48, 0.85) 48%, rgba(16, 44, 48, 0) 76%)",
+            "afterPosition": "absolute",
+            "copyColor": "rgb(255, 255, 255)",
+            "mediaWidth": 1280,
+            "mediaHeight": 520
+          }
+        ],
+        "pass": true
+      },
+      {
+        "id": 2093,
+        "url": "https://de-linker.com/product/saj-bu3-5-0-tv2-pro/",
+        "testedUrl": "https://de-linker.com/product/saj-bu3-5-0-tv2-pro/?v=mweu24m2jo2yc",
+        "status": 200,
+        "bandCount": 1,
+        "bands": [
+          {
+            "headline": "LiFePO4 module with DC/DC optimiser and BMS.",
+            "afterContent": "\"\"",
+            "afterBackgroundImage": "linear-gradient(90deg, rgba(16, 44, 48, 0.96) 0%, rgba(16, 44, 48, 0.85) 48%, rgba(16, 44, 48, 0) 76%)",
+            "afterPosition": "absolute",
+            "copyColor": "rgb(255, 255, 255)",
+            "mediaWidth": 1280,
+            "mediaHeight": 520
+          }
+        ],
+        "pass": true
+      },
+      {
+        "id": 6735,
+        "url": "https://de-linker.com/de/produkt/saj-bu3-5-0-tv2-pro/",
+        "testedUrl": "https://de-linker.com/de/produkt/saj-bu3-5-0-tv2-pro/?v=mweu24m3prjv4",
+        "status": 200,
+        "bandCount": 1,
+        "bands": [
+          {
+            "headline": "LiFePO4-Modul mit DC/DC-Optimierer und BMS.",
+            "afterContent": "\"\"",
+            "afterBackgroundImage": "linear-gradient(90deg, rgba(16, 44, 48, 0.96) 0%, rgba(16, 44, 48, 0.85) 48%, rgba(16, 44, 48, 0) 76%)",
+            "afterPosition": "absolute",
+            "copyColor": "rgb(255, 255, 255)",
+            "mediaWidth": 1280,
+            "mediaHeight": 520
+          }
+        ],
+        "pass": true
+      }
+    ],
+    "pdp_de_feature_h3_hyphenation": [
+      {
+        "id": 6689,
+        "width": 1440,
+        "url": "https://de-linker.com/de/produkt/goodwe-hca-g2-gw11k-hca-20-11-kw-dreiphasige-ladestation/",
+        "testedUrl": "https://de-linker.com/de/produkt/goodwe-hca-g2-gw11k-hca-20-11-kw-dreiphasige-ladestation/?v=mweu2a1agln38",
+        "status": 200,
+        "docLang": "de-DE",
+        "docOverflowX": false,
+        "titles": [
+          {
+            "tag": "H2",
+            "text": "GoodWe HCA G2 GW11K-HCA-20 (11 kW dreiphasige Wallbox, 7,5 m Kabel)",
+            "hyphens": "auto",
+            "webkitHyphens": "",
+            "scrollWidth": 1280,
+            "clientWidth": 1280,
+            "overflowX": false,
+            "lines": [
+              "GoodWe HCA G2 GW11K-HCA-20 (11 kW dreiphasige Wallbox, 7,5 m Kabel)"
+            ],
+            "orphanMidWord": false
+          },
+          {
+            "tag": "H3",
+            "text": "Vorgeschalteter Schutz",
+            "hyphens": "auto",
+            "webkitHyphens": "",
+            "scrollWidth": 528,
+            "clientWidth": 528,
+            "overflowX": false,
+            "lines": [
+              "Vorgeschalt",
+              "eter Schutz"
+            ],
+            "orphanMidWord": false
+          },
+          {
+            "tag": "H3",
+            "text": "Fest angeschlagenes 7,5-m-Typ-2-Kabel",
+            "hyphens": "auto",
+            "webkitHyphens": "",
+            "scrollWidth": 528,
+            "clientWidth": 528,
+            "overflowX": false,
+            "lines": [
+              "Fest angeschlagenes",
+              "7,5-m-Typ-2-Kabel"
+            ],
+            "orphanMidWord": false
+          },
+          {
+            "tag": "H3",
+            "text": "Netzbezugsbegrenzung an Bord",
+            "hyphens": "auto",
+            "webkitHyphens": "",
+            "scrollWidth": 528,
+            "clientWidth": 528,
+            "overflowX": false,
+            "lines": [
+              "Netzbezugsbeg",
+              "renzung an Bord"
+            ],
+            "orphanMidWord": false
+          },
+          {
+            "tag": "H2",
+            "text": "Technische Daten",
+            "hyphens": "auto",
+            "webkitHyphens": "",
+            "scrollWidth": 1280,
+            "clientWidth": 1280,
+            "overflowX": false,
+            "lines": [
+              "Technische Daten"
+            ],
+            "orphanMidWord": false
+          },
+          {
+            "tag": "H3",
+            "text": "11 kW / 16 A an 400 V",
+            "hyphens": "auto",
+            "webkitHyphens": "",
+            "scrollWidth": 1280,
+            "clientWidth": 1280,
+            "overflowX": false,
+            "lines": [
+              "11 kW / 16 A an 400 V"
+            ],
+            "orphanMidWord": false
+          },
+          {
+            "tag": "H2",
+            "text": "Wo dieses Modell passt.",
+            "hyphens": "auto",
+            "webkitHyphens": "",
+            "scrollWidth": 1280,
+            "clientWidth": 1280,
+            "overflowX": false,
+            "lines": [
+              "Wo dieses Modell passt."
+            ],
+            "orphanMidWord": false
+          },
+          {
+            "tag": "H2",
+            "text": "Dokumente",
+            "hyphens": "auto",
+            "webkitHyphens": "",
+            "scrollWidth": 1280,
+            "clientWidth": 1280,
+            "overflowX": false,
+            "lines": [
+              "Dokumente"
+            ],
+            "orphanMidWord": false
+          },
+          {
+            "tag": "H2",
+            "text": "Produktfragen",
+            "hyphens": "auto",
+            "webkitHyphens": "",
+            "scrollWidth": 1280,
+            "clientWidth": 1280,
+            "overflowX": false,
+            "lines": [
+              "Produktfragen"
+            ],
+            "orphanMidWord": false
+          }
+        ],
+        "pass": true
+      },
+      {
+        "id": 6689,
+        "width": 390,
+        "url": "https://de-linker.com/de/produkt/goodwe-hca-g2-gw11k-hca-20-11-kw-dreiphasige-ladestation/",
+        "testedUrl": "https://de-linker.com/de/produkt/goodwe-hca-g2-gw11k-hca-20-11-kw-dreiphasige-ladestation/?v=mweu2a1anwoie",
+        "status": 200,
+        "docLang": "de-DE",
+        "docOverflowX": false,
+        "titles": [
+          {
+            "tag": "H2",
+            "text": "GoodWe HCA G2 GW11K-HCA-20 (11 kW dreiphasige Wallbox, 7,5 m Kabel)",
+            "hyphens": "auto",
+            "webkitHyphens": "",
+            "scrollWidth": 350,
+            "clientWidth": 350,
+            "overflowX": false,
+            "lines": [
+              "GoodWe HCA G2 GW11K-",
+              "HCA-20 (11 kW dreiphasige",
+              "Wallbox, 7,5 m Kabel)"
+            ],
+            "orphanMidWord": false
+          },
+          {
+            "tag": "H3",
+            "text": "Vorgeschalteter Schutz",
+            "hyphens": "auto",
+            "webkitHyphens": "",
+            "scrollWidth": 302,
+            "clientWidth": 302,
+            "overflowX": false,
+            "lines": [
+              "Vorgeschalt",
+              "eter Schutz"
+            ],
+            "orphanMidWord": false
+          },
+          {
+            "tag": "H3",
+            "text": "Fest angeschlagenes 7,5-m-Typ-2-Kabel",
+            "hyphens": "auto",
+            "webkitHyphens": "",
+            "scrollWidth": 302,
+            "clientWidth": 302,
+            "overflowX": false,
+            "lines": [
+              "Fest angeschlagenes",
+              "7,5-m-Typ-2-Kabel"
+            ],
+            "orphanMidWord": false
+          },
+          {
+            "tag": "H3",
+            "text": "Netzbezugsbegrenzung an Bord",
+            "hyphens": "auto",
+            "webkitHyphens": "",
+            "scrollWidth": 302,
+            "clientWidth": 302,
+            "overflowX": false,
+            "lines": [
+              "Netzbezugsbeg",
+              "renzung an Bord"
+            ],
+            "orphanMidWord": false
+          },
+          {
+            "tag": "H2",
+            "text": "Technische Daten",
+            "hyphens": "auto",
+            "webkitHyphens": "",
+            "scrollWidth": 350,
+            "clientWidth": 350,
+            "overflowX": false,
+            "lines": [
+              "Technische Daten"
+            ],
+            "orphanMidWord": false
+          },
+          {
+            "tag": "H3",
+            "text": "11 kW / 16 A an 400 V",
+            "hyphens": "auto",
+            "webkitHyphens": "",
+            "scrollWidth": 350,
+            "clientWidth": 350,
+            "overflowX": false,
+            "lines": [
+              "11 kW / 16 A an 400 V"
+            ],
+            "orphanMidWord": false
+          },
+          {
+            "tag": "H2",
+            "text": "Wo dieses Modell passt.",
+            "hyphens": "auto",
+            "webkitHyphens": "",
+            "scrollWidth": 350,
+            "clientWidth": 350,
+            "overflowX": false,
+            "lines": [
+              "Wo dieses Modell passt."
+            ],
+            "orphanMidWord": false
+          },
+          {
+            "tag": "H2",
+            "text": "Dokumente",
+            "hyphens": "auto",
+            "webkitHyphens": "",
+            "scrollWidth": 350,
+            "clientWidth": 350,
+            "overflowX": false,
+            "lines": [
+              "Dokumente"
+            ],
+            "orphanMidWord": false
+          },
+          {
+            "tag": "H2",
+            "text": "Produktfragen",
+            "hyphens": "auto",
+            "webkitHyphens": "",
+            "scrollWidth": 350,
+            "clientWidth": 350,
+            "overflowX": false,
+            "lines": [
+              "Produktfragen"
+            ],
+            "orphanMidWord": false
+          }
+        ],
+        "pass": true
+      },
+      {
+        "id": 6720,
+        "width": 390,
+        "url": "https://de-linker.com/de/produkt/chint-dtsu666/",
+        "testedUrl": "https://de-linker.com/de/produkt/chint-dtsu666/?v=mweu2a1axmqzw",
+        "status": 200,
+        "docLang": "de-DE",
+        "docOverflowX": false,
+        "titles": [
+          {
+            "tag": "H2",
+            "text": "Chint DTSU666",
+            "hyphens": "auto",
+            "webkitHyphens": "",
+            "scrollWidth": 350,
+            "clientWidth": 350,
+            "overflowX": false,
+            "lines": [
+              "Chint DTSU666"
+            ],
+            "orphanMidWord": false
+          },
+          {
+            "tag": "H3",
+            "text": "Nulleinspeisungsregelung mit zertifizierter Präzision.",
+            "hyphens": "auto",
+            "webkitHyphens": "",
+            "scrollWidth": 302,
+            "clientWidth": 302,
+            "overflowX": false,
+            "lines": [
+              "Nulleinspeisungsr",
+              "egelung mit",
+              "zertifizierter Präzision."
+            ],
+            "orphanMidWord": false
+          },
+          {
+            "tag": "H2",
+            "text": "Technische Daten",
+            "hyphens": "auto",
+            "webkitHyphens": "",
+            "scrollWidth": 350,
+            "clientWidth": 350,
+            "overflowX": false,
+            "lines": [
+              "Technische Daten"
+            ],
+            "orphanMidWord": false
+          },
+          {
+            "tag": "H3",
+            "text": "80-A-Direktanschluss-Drehstromzähler mit MID-Zertifizierung und Genauigkeitsklasse 1,0.",
+            "hyphens": "auto",
+            "webkitHyphens": "",
+            "scrollWidth": 350,
+            "clientWidth": 350,
+            "overflowX": false,
+            "lines": [
+              "80-A-Direktanschluss-Drehs",
+              "tromzähler mit MID-Zertifizierung",
+              "und Genauigkeitsklasse 1,0."
+            ],
+            "orphanMidWord": false
+          },
+          {
+            "tag": "H2",
+            "text": "Dokumente",
+            "hyphens": "auto",
+            "webkitHyphens": "",
+            "scrollWidth": 350,
+            "clientWidth": 350,
+            "overflowX": false,
+            "lines": [
+              "Dokumente"
+            ],
+            "orphanMidWord": false
+          }
+        ],
+        "pass": true
+      }
+    ],
+    "archive_de_card_facts_dt_overflow": [
+      {
+        "id": 625,
+        "width": 390,
+        "url": "https://de-linker.com/de/produkt-kategorie/zubehoer/",
+        "testedUrl": "https://de-linker.com/de/produkt-kategorie/zubehoer/?v=mweu2f3tnnmyr",
+        "status": 200,
+        "totalDts": 28,
+        "overflowCount": 0,
+        "overflowItems": [],
+        "kommunikationSample": {
+          "text": "Kommunikation",
+          "scrollWidth": 154,
+          "clientWidth": 154,
+          "overflowWrap": "anywhere",
+          "overflows": false
+        },
+        "pass": true
+      },
+      {
+        "id": 632,
+        "width": 390,
+        "url": "https://de-linker.com/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/",
+        "testedUrl": "https://de-linker.com/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/?v=mweu2f3tt1kjj",
+        "status": 200,
+        "totalDts": 12,
+        "overflowCount": 0,
+        "overflowItems": [],
+        "kommunikationSample": {
+          "text": "Kommunikation",
+          "scrollWidth": 154,
+          "clientWidth": 154,
+          "overflowWrap": "anywhere",
+          "overflows": false
+        },
+        "pass": true
+      }
+    ],
+    "services_hero_and_tabs": [
+      {
+        "id": 2748,
+        "width": 1440,
+        "url": "https://de-linker.com/services-support/",
+        "testedUrl": "https://de-linker.com/services-support/?v=mweu2jlzims4m",
+        "status": 200,
+        "h1Width": 855.8,
+        "h1ScrollWidth": 856,
+        "h1ClientWidth": 856,
+        "displayFontSize": "96px",
+        "displayWidth": 855.8,
+        "overflowPx": 0,
+        "docOverflowX": false,
+        "tabs": [
+          {
+            "text": "For Solar Installers",
+            "fontSize": "14px",
+            "width": 159.8,
+            "height": 44
+          },
+          {
+            "text": "For Commercial EPCs",
+            "fontSize": "14px",
+            "width": 182,
+            "height": 44
+          }
+        ],
+        "pass": true
+      },
+      {
+        "id": 6700,
+        "width": 1440,
+        "url": "https://de-linker.com/de/kundendienst/",
+        "testedUrl": "https://de-linker.com/de/kundendienst/?v=mweu2jlzxlx8o",
+        "status": 200,
+        "h1Width": 880.7,
+        "h1ScrollWidth": 881,
+        "h1ClientWidth": 881,
+        "displayFontSize": "96px",
+        "displayWidth": 880.7,
+        "overflowPx": 0,
+        "docOverflowX": false,
+        "tabs": [
+          {
+            "text": "Für Solarinstallateure",
+            "fontSize": "14px",
+            "width": 179.5,
+            "height": 44
+          },
+          {
+            "text": "Für gewerbliche EPCs",
+            "fontSize": "14px",
+            "width": 183.6,
+            "height": 44
+          }
+        ],
+        "pass": true
+      },
+      {
+        "id": 6700,
+        "width": 390,
+        "url": "https://de-linker.com/de/kundendienst/",
+        "testedUrl": "https://de-linker.com/de/kundendienst/?v=mweu2jlz9tpnv",
+        "status": 200,
+        "h1Width": 328,
+        "h1ScrollWidth": 328,
+        "h1ClientWidth": 328,
+        "displayFontSize": "59px",
+        "displayWidth": 328,
+        "overflowPx": 0,
+        "docOverflowX": false,
+        "tabs": [
+          {
+            "text": "Für Solarinstallateure",
+            "fontSize": "14px",
+            "width": 174,
+            "height": 44
+          },
+          {
+            "text": "Für gewerbliche EPCs",
+            "fontSize": "14px",
+            "width": 174,
+            "height": 44
+          }
+        ],
+        "pass": true
+      }
+    ],
+    "de_solution_scale_tab_label_overflow": {
+      "id": 6871,
+      "width": 390,
+      "url": "https://de-linker.com/de/loesung/",
+      "testedUrl": "https://de-linker.com/de/loesung/?v=mweu2o1gyjjrz",
+      "status": 200,
+      "labels": [
+        {
+          "text": "HEIMSPEICHER",
+          "maxWidth": "none",
+          "fontSize": "14px",
+          "scrollWidth": 104,
+          "clientWidth": 104,
+          "overflows": false
+        },
+        {
+          "text": "GEWERBLICHER SPEICHER",
+          "maxWidth": "none",
+          "fontSize": "14px",
+          "scrollWidth": 183,
+          "clientWidth": 183,
+          "overflows": false
+        },
+        {
+          "text": "GROSSSPEICHER",
+          "maxWidth": "none",
+          "fontSize": "14px",
+          "scrollWidth": 120,
+          "clientWidth": 120,
+          "overflows": false
+        }
+      ],
+      "docOverflowX": false,
+      "pass": true
+    },
+    "de_installer_mobile_input": {
+      "id": 6869,
+      "width": 390,
+      "url": "https://de-linker.com/de/fuer-installateur/",
+      "testedUrl": "https://de-linker.com/de/fuer-installateur/?v=mweu2s3ljxhtm",
+      "status": 200,
+      "desktopRowDisplay": "none",
+      "desktopInputVisible": false,
+      "mobileTextareaPresent": true,
+      "mobileTextareaVisible": true,
+      "mobileTextareaRect": {
+        "w": 312,
+        "h": 68
+      },
+      "mobilePlaceholder": "Suche nach Wechselrichtermodell, Batteriekapazität, Notstromlösungen oder Handbüchern...",
+      "toolVideos": [
+        {
+          "src": "https://de-linker.com/wp-content/uploads/2026/09/linker-advisor-lookup-for-installers.mp4",
+          "poster": "/wp-content/uploads/2026/10/linker-advisor-result-preview.webp"
+        },
+        {
+          "src": "/wp-content/uploads/2026/09/linker-advisor-lookup-for-installers.mp4",
+          "poster": null
+        }
+      ],
+      "pass": true
+    },
+    "de_heimspeicher_hero_hyphens": [
+      {
+        "id": 6923,
+        "width": 1440,
+        "url": "https://de-linker.com/de/loesung/heimspeicher/",
+        "testedUrl": "https://de-linker.com/de/loesung/heimspeicher/?v=mweu2w02l7z5t",
+        "status": 200,
+        "h1Text": "Mehr Energie bleibt dort, wo sie gebraucht wird.",
+        "h1Hyphens": "manual",
+        "h1OverflowX": false,
+        "pane0ImgSrc": "/wp-content/uploads/2026/09/planner-de.jpg",
+        "pane2VideoSrc": null,
+        "docOverflowX": false,
+        "pass": true
+      },
+      {
+        "id": 6923,
+        "width": 390,
+        "url": "https://de-linker.com/de/loesung/heimspeicher/",
+        "testedUrl": "https://de-linker.com/de/loesung/heimspeicher/?v=mweu2w01mf4oz",
+        "status": 200,
+        "h1Text": "Mehr Energie bleibt dort, wo sie gebraucht wird.",
+        "h1Hyphens": "manual",
+        "h1OverflowX": false,
+        "pane0ImgSrc": "/wp-content/uploads/2026/09/planner-de.jpg",
+        "pane2VideoSrc": null,
+        "docOverflowX": false,
+        "pass": true
+      }
+    ],
+    "legal_2713_backslash": [
+      {
+        "id": 1038,
+        "width": 1440,
+        "url": "https://de-linker.com/refund-returns/",
+        "testedUrl": "https://de-linker.com/refund-returns/?v=mweu30hq301u8",
+        "status": 200,
+        "hasBroken2713": false,
+        "hasEscapedOrCheck": true,
+        "anyLiteral2713Before": false,
+        "sec4LiCount": 3,
+        "sec4BeforeContents": [
+          "\"✓\" / \"\"",
+          "\"✓\" / \"\"",
+          "\"✓\" / \"\""
+        ],
+        "pass": true
+      },
+      {
+        "id": 1038,
+        "width": 390,
+        "url": "https://de-linker.com/refund-returns/",
+        "testedUrl": "https://de-linker.com/refund-returns/?v=mweu30hn5mpqx",
+        "status": 200,
+        "hasBroken2713": false,
+        "hasEscapedOrCheck": true,
+        "anyLiteral2713Before": false,
+        "sec4LiCount": 3,
+        "sec4BeforeContents": [
+          "\"✓\" / \"\"",
+          "\"✓\" / \"\"",
+          "\"✓\" / \"\""
+        ],
+        "pass": true
+      },
+      {
+        "id": 6698,
+        "width": 1440,
+        "url": "https://de-linker.com/de/rueckgabe-erstattung/",
+        "testedUrl": "https://de-linker.com/de/rueckgabe-erstattung/?v=mweu30hwyje7f",
+        "status": 200,
+        "hasBroken2713": false,
+        "hasEscapedOrCheck": true,
+        "anyLiteral2713Before": false,
+        "sec4LiCount": 3,
+        "sec4BeforeContents": [
+          "\"✓\" / \"\"",
+          "\"✓\" / \"\"",
+          "\"✓\" / \"\""
+        ],
+        "pass": true
+      },
+      {
+        "id": 6698,
+        "width": 390,
+        "url": "https://de-linker.com/de/rueckgabe-erstattung/",
+        "testedUrl": "https://de-linker.com/de/rueckgabe-erstattung/?v=mweu30hpa34q6",
+        "status": 200,
+        "hasBroken2713": false,
+        "hasEscapedOrCheck": true,
+        "anyLiteral2713Before": false,
+        "sec4LiCount": 3,
+        "sec4BeforeContents": [
+          "\"✓\" / \"\"",
+          "\"✓\" / \"\"",
+          "\"✓\" / \"\""
+        ],
+        "pass": true
+      },
+      {
+        "id": 1673,
+        "width": 1440,
+        "url": "https://de-linker.com/privacy-policy/",
+        "testedUrl": "https://de-linker.com/privacy-policy/?v=mweu33xhg8mya",
+        "status": 200,
+        "hasBroken2713": false,
+        "hasEscapedOrCheck": true,
+        "anyLiteral2713Before": false,
+        "sec4LiCount": 0,
+        "sec4BeforeContents": [],
+        "pass": true
+      },
+      {
+        "id": 1673,
+        "width": 390,
+        "url": "https://de-linker.com/privacy-policy/",
+        "testedUrl": "https://de-linker.com/privacy-policy/?v=mweu341b0oegy",
+        "status": 200,
+        "hasBroken2713": false,
+        "hasEscapedOrCheck": true,
+        "anyLiteral2713Before": false,
+        "sec4LiCount": 0,
+        "sec4BeforeContents": [],
+        "pass": true
+      },
+      {
+        "id": 6827,
+        "width": 1440,
+        "url": "https://de-linker.com/de/datenschutz/",
+        "testedUrl": "https://de-linker.com/de/datenschutz/?v=mweu343ucri83",
+        "status": 200,
+        "hasBroken2713": false,
+        "hasEscapedOrCheck": true,
+        "anyLiteral2713Before": false,
+        "sec4LiCount": 0,
+        "sec4BeforeContents": [],
+        "pass": true
+      },
+      {
+        "id": 6827,
+        "width": 390,
+        "url": "https://de-linker.com/de/datenschutz/",
+        "testedUrl": "https://de-linker.com/de/datenschutz/?v=mweu34dupeead",
+        "status": 200,
+        "hasBroken2713": false,
+        "hasEscapedOrCheck": true,
+        "anyLiteral2713Before": false,
+        "sec4LiCount": 0,
+        "sec4BeforeContents": [],
+        "pass": true
+      }
+    ],
+    "blog_cover_alts": [
+      {
+        "id": 559,
+        "lang": "en",
+        "width": 1440,
+        "url": "https://de-linker.com/residential-storage-backup-self-consumption/",
+        "testedUrl": "https://de-linker.com/residential-storage-backup-self-consumption/?v=mweu37ugwb7x6",
+        "status": 200,
+        "present": true,
+        "alt": "A wall-mounted hybrid inverter with stacked battery packs and conduit running above it.",
+        "src": "https://de-linker.com/wp-content/uploads/2026/05/6b86cffac875a2ed_962a9ca0-9b53-48b4-98c2-50b3798519b1-scaled.jpg",
+        "looksGerman": true,
+        "pass": true
+      },
+      {
+        "id": 559,
+        "lang": "en",
+        "width": 390,
+        "url": "https://de-linker.com/residential-storage-backup-self-consumption/",
+        "testedUrl": "https://de-linker.com/residential-storage-backup-self-consumption/?v=mweu37uf9qvbt",
+        "status": 200,
+        "present": true,
+        "alt": "A wall-mounted hybrid inverter with stacked battery packs and conduit running above it.",
+        "src": "https://de-linker.com/wp-content/uploads/2026/05/6b86cffac875a2ed_962a9ca0-9b53-48b4-98c2-50b3798519b1-scaled.jpg",
+        "looksGerman": true,
+        "pass": true
+      },
+      {
+        "id": 560,
+        "lang": "en",
+        "width": 1440,
+        "url": "https://de-linker.com/ci-storage-peak-shaving-backup-scalability/",
+        "testedUrl": "https://de-linker.com/ci-storage-peak-shaving-backup-scalability/?v=mweu37ugcpkb3",
+        "status": 200,
+        "present": true,
+        "alt": "Home battery units and a wall-mounted inverter installed on a garage wall with protective bollards.",
+        "src": "https://de-linker.com/wp-content/uploads/2026/05/0b10b1e5d05f9d4e_5aa6a47f-a81e-483a-9aff-0e173c4a7e65.jpg",
+        "looksGerman": true,
+        "pass": true
+      },
+      {
+        "id": 560,
+        "lang": "en",
+        "width": 390,
+        "url": "https://de-linker.com/ci-storage-peak-shaving-backup-scalability/",
+        "testedUrl": "https://de-linker.com/ci-storage-peak-shaving-backup-scalability/?v=mweu37ugx0ivx",
+        "status": 200,
+        "present": true,
+        "alt": "Home battery units and a wall-mounted inverter installed on a garage wall with protective bollards.",
+        "src": "https://de-linker.com/wp-content/uploads/2026/05/0b10b1e5d05f9d4e_5aa6a47f-a81e-483a-9aff-0e173c4a7e65.jpg",
+        "looksGerman": true,
+        "pass": true
+      },
+      {
+        "id": 6899,
+        "lang": "de",
+        "width": 1440,
+        "url": "https://de-linker.com/de/heimspeicher-notstrom-eigenverbrauch/",
+        "testedUrl": "https://de-linker.com/de/heimspeicher-notstrom-eigenverbrauch/?v=mweu3bj7z3dba",
+        "status": 200,
+        "present": true,
+        "alt": "Ein wandmontierter Hybrid-Wechselrichter mit gestapelten Batteriepaketen und darüber verlaufendem Kabelkanal.",
+        "src": "https://de-linker.com/wp-content/uploads/2026/05/6b86cffac875a2ed_962a9ca0-9b53-48b4-98c2-50b3798519b1-scaled.jpg",
+        "looksGerman": true,
+        "pass": true
+      },
+      {
+        "id": 6899,
+        "lang": "de",
+        "width": 390,
+        "url": "https://de-linker.com/de/heimspeicher-notstrom-eigenverbrauch/",
+        "testedUrl": "https://de-linker.com/de/heimspeicher-notstrom-eigenverbrauch/?v=mweu3bjr2k4x2",
+        "status": 200,
+        "present": true,
+        "alt": "Ein wandmontierter Hybrid-Wechselrichter mit gestapelten Batteriepaketen und darüber verlaufendem Kabelkanal.",
+        "src": "https://de-linker.com/wp-content/uploads/2026/05/6b86cffac875a2ed_962a9ca0-9b53-48b4-98c2-50b3798519b1-scaled.jpg",
+        "looksGerman": true,
+        "pass": true
+      },
+      {
+        "id": 6901,
+        "lang": "de",
+        "width": 1440,
+        "url": "https://de-linker.com/de/gewerbespeicher-lastspitzenkappung-notstrom-skalierbarkeit/",
+        "testedUrl": "https://de-linker.com/de/gewerbespeicher-lastspitzenkappung-notstrom-skalierbarkeit/?v=mweu3bqq3wi4y",
+        "status": 200,
+        "present": true,
+        "alt": "Heimspeicher und ein wandmontierter Wechselrichter, an einer Garagenwand mit Schutzpoller installiert.",
+        "src": "https://de-linker.com/wp-content/uploads/2026/05/0b10b1e5d05f9d4e_5aa6a47f-a81e-483a-9aff-0e173c4a7e65.jpg",
+        "looksGerman": true,
+        "pass": true
+      },
+      {
+        "id": 6901,
+        "lang": "de",
+        "width": 390,
+        "url": "https://de-linker.com/de/gewerbespeicher-lastspitzenkappung-notstrom-skalierbarkeit/",
+        "testedUrl": "https://de-linker.com/de/gewerbespeicher-lastspitzenkappung-notstrom-skalierbarkeit/?v=mweu3bsha053a",
+        "status": 200,
+        "present": true,
+        "alt": "Heimspeicher und ein wandmontierter Wechselrichter, an einer Garagenwand mit Schutzpoller installiert.",
+        "src": "https://de-linker.com/wp-content/uploads/2026/05/0b10b1e5d05f9d4e_5aa6a47f-a81e-483a-9aff-0e173c4a7e65.jpg",
+        "looksGerman": true,
+        "pass": true
+      },
+      {
+        "id": 6887,
+        "lang": "de",
+        "width": 390,
+        "url": "https://de-linker.com/de/batteriegroesse-heimspeicher-notstrom/",
+        "testedUrl": "https://de-linker.com/de/batteriegroesse-heimspeicher-notstrom/?v=mweu3f6ps976l",
+        "status": 200,
+        "present": true,
+        "alt": "GoodWe Lynx Home F Hochvolt-Batterie",
+        "src": "https://de-linker.com/wp-content/uploads/2026/07/goodwe-lynx-home-f-battery.png",
+        "looksGerman": true,
+        "pass": true
+      },
+      {
+        "id": 6889,
+        "lang": "de",
+        "width": 390,
+        "url": "https://de-linker.com/de/innen-vs-aussen-akku-planung/",
+        "testedUrl": "https://de-linker.com/de/innen-vs-aussen-akku-planung/?v=mweu3fbcrvh09",
+        "status": 200,
+        "present": true,
+        "alt": "Eine GoodWe-Batterie und ein Hybrid-Wechselrichter sind an der Außenwand eines Hauses montiert.",
+        "src": "https://de-linker.com/wp-content/uploads/2026/07/scene-goodwe-lynx-home.jpg",
+        "looksGerman": true,
+        "pass": true
+      }
+    ],
+    "document_generic_source_labels": [
+      {
+        "id": 2003,
+        "kind": "pdp",
+        "url": "https://de-linker.com/product/pylontech-optim-us-l260-omni/",
+        "testedUrl": "https://de-linker.com/product/pylontech-optim-us-l260-omni/?v=mweu3ixs37rnf",
+        "status": 200,
+        "docsCount": 3,
+        "genericHits": [],
+        "l260Doc": {
+          "href": "https://de-linker.com/wp-content/uploads/2026/10/pylontech-l260-pp20-21.pdf",
+          "title": "Pylontech Utility, C&I ESS product portfolio PY2412EN-SD - L260-OMNI: PDF pp. 20-21 (EN)Brochure · PDF · EN",
+          "meta": "Brochure · PDF · EN"
+        },
+        "pass": true
+      },
+      {
+        "id": 6769,
+        "kind": "pdp",
+        "url": "https://de-linker.com/de/produkt/pylontech-optim-us-l260-omni/",
+        "testedUrl": "https://de-linker.com/de/produkt/pylontech-optim-us-l260-omni/?v=mweu3ixxmfn9c",
+        "status": 200,
+        "docsCount": 3,
+        "genericHits": [],
+        "l260Doc": {
+          "href": "https://de-linker.com/wp-content/uploads/2026/10/pylontech-l260-pp20-21.pdf",
+          "title": "Pylontech Utility, C&I ESS product portfolio PY2412EN-SD - L260-OMNI: PDF pp. 20-21 (EN)Broschüre · PDF · EN",
+          "meta": "Broschüre · PDF · EN"
+        },
+        "pass": true
+      },
+      {
+        "id": 2807,
+        "kind": "library",
+        "url": "https://de-linker.com/faq-download/?tab=documents",
+        "testedUrl": "https://de-linker.com/faq-download/?tab=documents&v=mweu3ixtyy0ud",
+        "status": 200,
+        "genericChips": [],
+        "hasDocument1": false,
+        "pass": true
+      },
+      {
+        "id": 6702,
+        "kind": "library",
+        "url": "https://de-linker.com/de/faq-dokumente/?tab=documents",
+        "testedUrl": "https://de-linker.com/de/faq-dokumente/?tab=documents&v=mweu3ixtkjvwk",
+        "status": 200,
+        "genericChips": [],
+        "hasDocument1": false,
+        "pass": true
+      }
+    ],
+    "pdp_article_product_terminology": [
+      {
+        "id": 6321,
+        "url": "https://de-linker.com/product/goodwe-esa-gw125-261-esa-lcn-g10/",
+        "testedUrl": "https://de-linker.com/product/goodwe-esa-gw125-261-esa-lcn-g10/?v=mweu3op3x0t4m",
+        "status": 200,
+        "allMatches": [
+          "015/863, Regulation (EU) 2023/1542 Articles 10, 12 and 14SafetyEN 62477-1:2012"
+        ],
+        "nonLegalMatches": [],
+        "pass": true
+      },
+      {
+        "id": 6599,
+        "url": "https://de-linker.com/de/produkt/goodwe-esa-gw125-261-esa-lcn-g10/",
+        "testedUrl": "https://de-linker.com/de/produkt/goodwe-esa-gw125-261-esa-lcn-g10/?v=mweu3op7imeuf",
+        "status": 200,
+        "allMatches": [
+          "015/863, Verordnung (EU) 2023/1542 Artikel 10, 12 und 14SicherheitEN 62477-1:"
+        ],
+        "nonLegalMatches": [],
+        "pass": true
+      },
+      {
+        "id": 3573,
+        "url": "https://de-linker.com/product/saj-esolar-aio3-data-collector-wifi-lan-bluetooth/",
+        "testedUrl": "https://de-linker.com/product/saj-esolar-aio3-data-collector-wifi-lan-bluetooth/?v=mweu3op4px6dw",
+        "status": 200,
+        "allMatches": [],
+        "nonLegalMatches": [],
+        "pass": true
+      },
+      {
+        "id": 6676,
+        "url": "https://de-linker.com/de/produkt/saj-esolar-aio3-datensammler-wifi-lan-bluetooth/",
+        "testedUrl": "https://de-linker.com/de/produkt/saj-esolar-aio3-datensammler-wifi-lan-bluetooth/?v=mweu3op4doo6d",
+        "status": 200,
+        "allMatches": [],
+        "nonLegalMatches": [],
+        "pass": true
+      }
+    ],
+    "etr_pairing_label": [
+      {
+        "id": 3595,
+        "lang": "en",
+        "url": "https://de-linker.com/product/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/",
+        "testedUrl": "https://de-linker.com/product/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/?v=mweu3u3iq03ft",
+        "status": 200,
+        "pairingCount": 2,
+        "gw208": {
+          "text": "GoodWe GW208.9-BAT-LCD-G10Item number DLK-GOODWE-GW2089BATLCDG10Partially documented",
+          "chip": "Partially documented"
+        },
+        "allCards": [
+          {
+            "text": "GoodWe GW208.9-BAT-LCD-G10Item number DLK-GOODWE-GW2089BATLCDG10Partially documented",
+            "chip": "Partially documented"
+          },
+          {
+            "text": "GoodWe GW261.2-BAT-LCD-G10Item number DLK-GOODWE-GW2612BATLCDG10Documented by GoodWe",
+            "chip": "Documented by GoodWe"
+          }
+        ],
+        "pass": true
+      },
+      {
+        "id": 6654,
+        "lang": "de",
+        "url": "https://de-linker.com/de/produkt/goodwe-etr-125-kw-ci-dreiphasiger-hybridwechselrichter-1000v/",
+        "testedUrl": "https://de-linker.com/de/produkt/goodwe-etr-125-kw-ci-dreiphasiger-hybridwechselrichter-1000v/?v=mweu3u3jr51er",
+        "status": 200,
+        "pairingCount": 2,
+        "gw208": {
+          "text": "GoodWe GW208.9-BAT-LCD-G10Produktnummer DLK-GOODWE-GW2089BATLCDG10Teilweise dokumentiert",
+          "chip": "Teilweise dokumentiert"
+        },
+        "allCards": [
+          {
+            "text": "GoodWe GW208.9-BAT-LCD-G10Produktnummer DLK-GOODWE-GW2089BATLCDG10Teilweise dokumentiert",
+            "chip": "Teilweise dokumentiert"
+          },
+          {
+            "text": "GoodWe GW261.2-BAT-LCD-G10Produktnummer DLK-GOODWE-GW2612BATLCDG10Von GoodWe dokumentiert",
+            "chip": "Von GoodWe dokumentiert"
+          }
+        ],
+        "pass": true
+      }
+    ]
+  }
+}

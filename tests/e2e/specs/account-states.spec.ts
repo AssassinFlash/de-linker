@@ -54,6 +54,7 @@ interface Language {
 	emptyDocuments: string;
 	emptySolutions: string;
 	configurator: string;
+	configuratorPath: string;
 	signedOut: string;
 	adminTitle: string;
 	adminExplanation: string;
@@ -62,6 +63,8 @@ interface Language {
 	statusReceived: string;
 	productCount: string;
 	invalidOrder: string;
+	newProject: string;
+	createProject: string;
 }
 
 const LANGUAGES: Language[] = [
@@ -82,6 +85,7 @@ const LANGUAGES: Language[] = [
 		emptySolutions:
 			'Solutions you save in the Solution Configurator appear here, with their design report.',
 		configurator: 'Open the Solution Configurator',
+		configuratorPath: '/solution-configurator/',
 		signedOut: 'You have been signed out.',
 		adminTitle: 'Linker staff only',
 		adminExplanation: 'The admin area is for Linker staff only.',
@@ -90,6 +94,8 @@ const LANGUAGES: Language[] = [
 		statusReceived: 'Inquiry received',
 		productCount: '1 product',
 		invalidOrder: 'Invalid order.',
+		newProject: 'New project',
+		createProject: 'Create project',
 	},
 	{
 		lang: 'de',
@@ -108,6 +114,7 @@ const LANGUAGES: Language[] = [
 		emptySolutions:
 			'Lösungen, die Sie im Lösungskonfigurator speichern, erscheinen hier mit ihrem Auslegungsbericht.',
 		configurator: 'Lösungskonfigurator öffnen',
+		configuratorPath: '/de/loesungskonfigurator/',
 		signedOut: 'Sie wurden abgemeldet.',
 		adminTitle: 'Bereich für Linker-Mitarbeitende',
 		adminExplanation:
@@ -117,6 +124,8 @@ const LANGUAGES: Language[] = [
 		statusReceived: 'Anfrage eingegangen',
 		productCount: '1 Produkt',
 		invalidOrder: 'Ungültige Bestellung.',
+		newProject: 'Neues Projekt',
+		createProject: 'Projekt anlegen',
 	},
 ];
 
@@ -363,6 +372,150 @@ for (const language of LANGUAGES) {
 				await expect(
 					page.locator('a[href*="action=logout"]').first()
 				).toBeAttached();
+			} finally {
+				await context.close();
+				remove([customer]);
+			}
+		});
+
+		test(`${tag}: the language switch keeps the account section the visitor is reading`, async ({
+			browser,
+		}) => {
+			const context = await browser.newContext({
+				viewport: { width, height: width === 390 ? 844 : 900 },
+				reducedMotion: 'reduce',
+			});
+			try {
+				await seedConsentCookies(context);
+				const page = await context.newPage();
+				// Both cards the account chain opens by fragment: the sign-in card
+				// and the lost-password card. The server builds every language
+				// link from the request, which never carries a fragment, so the
+				// switch has to carry it (assets/language-hash.js).
+				const other = language.lang === 'en' ? 'de' : 'en';
+				const signInHash = '#linker-auth-signin';
+				const resetHash = '#linker-auth-reset';
+				await page.goto(base() + language.account + signInHash);
+				await page.waitForLoadState('load');
+				await page
+					.locator(
+						`header a[data-linker-language-choice="${other}"]:visible`
+					)
+					.first()
+					.click();
+				await page.waitForLoadState('load');
+				expect(
+					new URL(page.url()).hash,
+					'the sign-in card survives the language switch'
+				).toBe(signInHash);
+
+				await page.goto(
+					base() +
+						(language.lang === 'en'
+							? '/my-account/lost-password/'
+							: '/de/mein-konto/passwort-zuruecksetzen/') +
+						resetHash
+				);
+				await page.waitForLoadState('load');
+				await page
+					.locator(
+						`header a[data-linker-language-choice="${other}"]:visible`
+					)
+					.first()
+					.click();
+				await page.waitForLoadState('load');
+				const switched = new URL(page.url());
+				expect(
+					switched.hash,
+					'the lost-password card survives the language switch'
+				).toBe(resetHash);
+				expect(
+					switched.pathname,
+					'the account endpoint is translated, not dropped'
+				).toMatch(/lost-password|passwort-zuruecksetzen/);
+				await expectNoOverflow(page, width);
+				await shot(
+					page,
+					`${language.lang}-${width}-language-switch-fragment`
+				);
+			} finally {
+				await context.close();
+			}
+		});
+
+		test(`${tag}: a saved planning project appears in the account and opens`, async ({
+			browser,
+		}) => {
+			const customer = makeCustomer('approved', tag);
+			const context = await browser.newContext({
+				viewport: { width, height: width === 390 ? 844 : 900 },
+				reducedMotion: 'reduce',
+			});
+			const title = `E2E plan ${tag}`;
+			try {
+				await seedConsentCookies(context);
+				const page = await context.newPage();
+				await signIn(page, customer, language.account);
+
+				// A project made while signed in belongs to this account's own
+				// principal, so the account row reads it back from the planner's
+				// private index - never from a second store.
+				await page.goto(base() + language.configuratorPath, {
+					waitUntil: 'networkidle',
+				});
+				await page
+					.getByRole('button', { name: language.newProject })
+					.first()
+					.click();
+				await page
+					.locator('input[maxlength="256"]')
+					.first()
+					.fill(title);
+				await page
+					.getByRole('button', { name: language.createProject })
+					.click();
+				await expect(page).toHaveURL(/project=[a-f0-9]{32}/, {
+					timeout: 60_000,
+				});
+				const projectId = new URL(page.url()).searchParams.get(
+					'project'
+				)!;
+				await expect(page.locator('.lp-save-state')).toBeVisible({
+					timeout: 30_000,
+				});
+
+				await page.goto(base() + language.solutions);
+				const panel = page.locator(
+					'section[aria-labelledby="linker-account-projects-title"]'
+				);
+				await expect(
+					panel,
+					'the account lists the planning projects'
+				).toBeVisible();
+				const row = panel
+					.locator('.linker-account-products li')
+					.filter({ hasText: title });
+				await expect(
+					row,
+					'the project row carries its title'
+				).toBeVisible();
+				const href = await row
+					.locator('a')
+					.first()
+					.getAttribute('href');
+				expect(href, 'the row opens the project it names').toContain(
+					`project=${projectId}#lp-overview`
+				);
+				await row.locator('a').first().click();
+				await page.waitForLoadState('load');
+				await expect(page).toHaveURL(
+					new RegExp(`project=${projectId}`)
+				);
+				await expectNoOverflow(page, width);
+				await shot(
+					page,
+					`${language.lang}-${width}-solutions-populated`
+				);
 			} finally {
 				await context.close();
 				remove([customer]);

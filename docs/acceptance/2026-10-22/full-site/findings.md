@@ -586,3 +586,24 @@ PR #862 清理工作树时误删的 `docs/acceptance/2026-10-22/full-site/` 下 
 - **需要邮件纪律的提交运行**（contact/inquiry 提交态 16+40）：tester 单地址重写 + Outbox 队列断言。
 
 draft 加购链路疑点已定性：真实客户路径（CTA 点击→内联 Jev 校验→带凭证重放）在真实 Chrome 中加购/移除全程通畅；裸 URL 拒绝与自动 Chromium 挑战挂起均为防护设计本身（证据 `draft-family-states-20261107.json`）。
+
+
+## 2026-11-13 · 三矩阵全量收口、生产实修读回与本地 E2E 全绿闭环
+
+本轮完成全站验收三矩阵（`page-matrix.json` 708 行、`template-matrix.json` 31 行、`state-matrix.json` 1,044 行）的全部开放缺陷清零、生产部署与缓存穿透读回、德语 Genie 演示媒体实录替换及本地隔离栈 E2E 验证：
+
+1. **代码修复、GitHub Actions CI 全绿与生产部署读回**（生产当前运行 `ef0f9f305` 及后续测试夹具校准，部署快照 `/home/u388076051/deploy-prev/20261113T101252419239Z-ef0f9f305`，完整数据备份 `cutover-20261113-0826`）：
+   - **Planner 初始锚点落点校正**（`dc1d96a6a`）：`apps/planner` 初次测量吸顶栏后执行单次锚点重对齐，生产 EN/DE `390` 新鲜加载验收通过（`docs/acceptance/2026-11-13/planner-anchor-390/`）。
+   - **德语商城动态模板抢占修复**（`12150da77`）：`plugins/linker-i18n/includes/DynamicTemplates.php` 消除 `is_archive()` 提前命中 `6905` 短路 `is_shop()` 的缺陷；线上实测 `https://de-linker.com/de/produkte/` 稳定输出 `<!-- LC DT ID: 6961 -->`，德语分类归档仍输出 `6905`。`template-matrix.json` 的 `6961` 与 `6905` 两处开放 `defect` 均已移入 `resolved_findings`。
+   - **全站 8 处样式与排版修复 + FAQ 证据重绑**（`7d8ebe52e` + WindPress `cache 1794560610`）：清除 PDP `.pdp-related ul.products::before/::after` 伪元素占格（恢复 170 个桌面产品行 4 列网格）、补齐 `.pdp-feature-media::after` 文字对比遮罩、德语 `.pdp-section-title` 音节断词、`.card-facts dt` 换行、安装商桌面输入框 `@media (min-width: 761px)` 门禁、`#tv-rs-page-v1 .lk-hero-title` 加入 `hyphens: manual`、`.sol-tab-label` 取消 14px 宽度截断、`#service-redesign .service-hero-display` 上限收敛至 `96px`；同时扩展 `EvidenceBindings::repair_unchanged()` 与 `tools/faq/wordpress.php` 支持 FAQ 续绑，线上 9 个商品（18 页）FAQ 区块已全部恢复渲染。
+   - **配对脚注共享前缀截断修复与构建清单同步**（`ef0f9f305`，CI Run `43407142704` 全绿）：修复 `ProductShortcodes::shared_constraint_prefix()` 句末误切问题并同步 `plugins/linker-tools/build/manifest.json`，生产 `/product/saj-h2-20k-t3/` 读回精确输出 3 段零重复。
+2. **生产数据与德语 Genie 演示视频上线读回**（备份 `cutover-20261113-0826`）：
+   - 恢复法务页 `1038/6698/1673/6827` 内联 CSS `content: "\2713"`（保持单反斜杠字节形态，通过 `201-consent.php` 守卫）；清理 `6321/3573` 德语 ACF 的 4 处 `Artikel` 残留；补齐附件 `421/422` 封面 `alt` 及德语自动派生；将 `2003` 的 `pylontech-l260-pp20-21.pdf` 归类为 `brochure`（文档库 `Document 1` 清零）。
+   - 基于生产 Genie 真实德语 SSE 会话（Turn `766` SAJ H2-10K-T3 与 Turn `764` GoodWe GW125K-ETR）录制并经多模态核验生成 `1280×800` 德语演示视频与封面（`linker-genie-lookup-for-installers-de.{mp4,webp}`、`linker-genie-lookup-for-ci-de.{mp4,webp}`），上传生产并更新德语页 `6923`（`/de/loesung/heimspeicher/`）、`6921`（`/de/loesung/gewerbespeicher/`）、`6869`（`/de/fuer-installateur/`），LiteSpeed 全量刷新后 6 视口（`1440`/`390`）实测 `readyState=4, 1280×800, htmlHasOld=false`（`docs/acceptance/2026-11-13/de-genie-preview-media/verification.json`）。
+3. **本地僵尸实例退役、本地 E2E 补跑与 3 处历史夹具/选择器根因修复**：
+   - 退役僵尸实例 `c332` 与 `graccess`（Redis `SCAN`+`UNLINK` 清理 `11,840` 键，释放约 `4.58 GiB`），保留 `c222` 与 `review`（收尾均 `stopped`）。
+   - 补跑 `state-matrix.json` 最后 3 条 `pending` 行及 8 条关联证据行全部通过（`docs/acceptance/2026-11-13/matrix-batch-updates/local-e2e-report.md`）；定位并修复 `BrowserFixture.php` / `pending-account.php` 未同步清除 `OptionBudgetLedger::OPTION` 原子邮件账本、`account.spec.ts` 两步注册与受限横幅选择器、`genie-marketing-entries.spec.ts` `home-recovery-*` 归属隔离门禁与路由拦截共 9 个附带旧用例，实跑 9/9 全绿。
+4. **三矩阵最终实时统计**（`docs/acceptance/2026-11-13/matrix-batch-updates/` 全批次无损合并后）：
+   - `page-matrix.json`（708 行）：`visual_review = {"partially-verified": 620, "not-applicable": 88}`，`interaction = {"partially-verified": 620, "not-applicable": 88}`，**开放 `findings = 0`、`pending = 0`、`partial-with-finding = 0`**。
+   - `template-matrix.json`（31 行）：`status = {"partially-verified": 30, "not-applicable": 1}`，**开放 `findings = 0`、`pending = 0`**。
+   - `state-matrix.json`（1,044 行）：`status = {"pass": 460, "verified-production-20261107": 341, "verified-production-20261108": 97, "verified-production-20261113": 74, "verified-production-20261111": 18, "not-applicable-today": 19, "passed": 16, "not-applicable-by-ruling": 7, "not-applicable": 6, "partially-verified": 6}`，`applicability.status = {"applicable": 18, "applicable-observed": 10, "not-applicable": 8, null: 1008}`，**`pending = 0`、`applicability.pending = 0`、开放 `findings = 0`、空证据 `pass = 0`**（仅保留 6 行具名细粒度边界于 `partially-verified`，详见 `state-pv-report.md` 第三节）。

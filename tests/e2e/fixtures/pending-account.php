@@ -6,6 +6,7 @@
  * @package Linker\Commerce
  */
 
+use Linker\Commerce\Mail\OptionBudgetLedger;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Tests\E2E\BrowserFixture;
 use Linker\Commerce\Mail\Throttle;
@@ -69,17 +70,21 @@ require_once __DIR__ . '/BrowserFixture.php';
 		return;
 	}
 	if ( 'deliver-one' === $mode ) {
-		foreach ( $jobs as $id ) {
+		foreach ( $fixture->jobs() as $id ) {
 			$message = json_decode( get_post_meta( $id, '_linker_mail_message', true ), true );
 			if ( in_array( $state['email'], $message['to'], true ) ) {
 				delete_option( Throttle::OPTION );
+				delete_option( OptionBudgetLedger::OPTION );
 				try {
 					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Exercising the existing Outbox delivery hook.
 					do_action( Outbox::HOOK, (int) $id );
 				} finally {
+					delete_option( OptionBudgetLedger::OPTION );
 					update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_DAY, time() ), false );
 				}
+				if ( null === get_post( $id ) ) {
 					return;
+				}
 			}
 		}
 		throw new RuntimeException( 'No customer mail queued.' );

@@ -566,31 +566,40 @@
         "marker": "<!-- LC DT ID: 6961 -->",
         "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
         "scope": "Anonymous GET EN shop pagination (from /products/page/2/ redirect)"
+      },
+      {
+        "url": "https://de-linker.com/de/produkte/",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6961 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "scope": "Anonymous GET DE shop page (post 6853) after commit 12150da77"
+      },
+      {
+        "url": "https://de-linker.com/de/produkte/?product-page=2",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6961 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json",
+        "scope": "Anonymous GET DE shop pagination after commit 12150da77"
       }
     ],
     "applicable_states": [
       "anonymous-guest",
       "en",
+      "de",
       "shop-page",
       "sorting",
-      "pagination",
-      "de-binding-defect"
+      "pagination"
     ],
     "evidence": [
       "GET https://de-linker.com/products/ -> 200, <!-- LC DT ID: 6961 -->",
       "GET https://de-linker.com/products/?orderby=title -> 200, <!-- LC DT ID: 6961 -->",
       "GET https://de-linker.com/products/page/2/ -> 301/302 -> https://de-linker.com/products/?product-page=2 -> 200, <!-- LC DT ID: 6961 -->",
-      "GET https://de-linker.com/de/produkte/ -> 200, <!-- LC DT ID: 6905 --> (DEFECT: expected 6961 per effective_languages=['en','de'])",
-      "livecanvas/modules/templating.php:51-79; plugins/linker-i18n/includes/DynamicTemplates.php:90-101; plugins/linker-commerce/includes/Presentation/Templates.php:49,78-90"
+      "livecanvas/modules/templating.php:51-79; plugins/linker-i18n/includes/DynamicTemplates.php:90-101; plugins/linker-commerce/includes/Presentation/Templates.php:49,78-90",
+      "GET https://de-linker.com/de/produkte/ -> 200, <!-- LC DT ID: 6961 --> (fixed by commit 12150da77, deployed 2026-11-13)"
     ],
-    "findings": [
-      {
-        "id": "shop-page-de-falls-back-to-product-archive-6905",
-        "severity": "defect",
-        "summary": "https://de-linker.com/de/produkte/ renders LC DT ID: 6905 (vorlage-fur-archiv-fur-beitragstyp-produkt) instead of 6961 (shop-page).",
-        "root_cause": "livecanvas/modules/templating.php:51-79 evaluates is_archive() first (resolving DE archive template 6905) before is_shop() returns false because 6961 has pll_lang=en and no DE twin; Linker\\I18n\\DynamicTemplates::template() (plugins/linker-i18n/includes/DynamicTemplates.php:90-93) returns early whenever $template_id is truthy, so it never falls back to 6961 on /de/produkte/."
-      }
-    ],
+    "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
       "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
@@ -641,10 +650,21 @@
         "scope": "Unchanged LC template protected in native release; named product-empty/recovery shortcode/template path consumers only. Does not establish all template bindings/states."
       },
       "template_binding_20261113": {
-        "status": "defect",
+        "status": "passed-production-20261113",
         "production_content_sha256": "9449e57fbd72d2c2afabeecfb232ddbc90d594ee9452b9726fe01d328acbecfe",
         "baseline_sha256_matches_prod": false,
         "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+      }
+    },
+    "resolved_findings": {
+      "shop-page-de-falls-back-to-product-archive-6905": {
+        "commit": "12150da77",
+        "resolved_at_probe": "2026-11-13",
+        "verification": "DynamicTemplates::template() no longer short-circuits is_shop() behind generic archive template 6905; live https://de-linker.com/de/produkte/ renders <!-- LC DT ID: 6961 -->.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/postfix-verified.json",
+          "docs/acceptance/2026-11-13/matrix-batch-updates/batch56-captures/page-interactions.json"
+        ]
       }
     }
   },
@@ -2873,14 +2893,6 @@
         "marker": "<!-- LC DT ID: 6905 -->",
         "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
         "scope": "Anonymous GET pa_battery-voltage archive DE"
-      },
-      {
-        "url": "https://de-linker.com/de/produkte/",
-        "lang": "de",
-        "http_status": 200,
-        "marker": "<!-- LC DT ID: 6905 -->",
-        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
-        "scope": "DEFECTIVE interception: DE shop page renders 6905 instead of 6961"
       }
     ],
     "applicable_states": [
@@ -2891,23 +2903,15 @@
       "taxonomy-archive-pa_series",
       "taxonomy-archive-pa_phase",
       "taxonomy-archive-pa_battery-voltage",
-      "empty-archive",
-      "shop-page-de-fallback-collision"
+      "empty-archive"
     ],
     "evidence": [
       "GET /de/produkt-kategorie/gewerbespeicher/batteriesysteme/, /heimspeicher/, /wechselrichter/ -> 200, <!-- LC DT ID: 6905 -->",
       "GET /de/brand/goodwe/, /de/brand/ecoflow/, /de/series/goodwe-etr/, /de/phase/dreiphasig/, /de/battery-voltage/hochvolt/ -> 200, <!-- LC DT ID: 6905 -->",
-      "GET /de/produkte/ -> 200, <!-- LC DT ID: 6905 --> (captures DE Shop route instead of 6961)",
-      "WP-CLI template 6905 carries is_archive_for_post_type_product=1 + all 11 is_archive_for_tax_* generic keys, sha256=80c1ec1867f03c97923fb60c2ae8653048cf144e21b1e070e5dc8ec46413111d"
+      "WP-CLI template 6905 carries is_archive_for_post_type_product=1 + all 11 is_archive_for_tax_* generic keys, sha256=80c1ec1867f03c97923fb60c2ae8653048cf144e21b1e070e5dc8ec46413111d",
+      "GET https://de-linker.com/de/produkt-kategorie/heimspeicher/ -> 200, <!-- LC DT ID: 6905 --> while /de/produkte/ -> <!-- LC DT ID: 6961 --> (commit 12150da77)"
     ],
-    "findings": [
-      {
-        "id": "de-shop-page-captured-by-6905",
-        "severity": "defect",
-        "summary": "6905 intercepts /de/produkte/ (is_shop) because is_archive() matches 6905 before is_shop() fails to find a DE twin for 6961.",
-        "root_cause": "livecanvas/modules/templating.php:51-79 + plugins/linker-i18n/includes/DynamicTemplates.php:90-93"
-      }
-    ],
+    "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
       "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
@@ -2991,10 +2995,20 @@
         "new_tests_http_or_ui_actions": false
       },
       "template_binding_20261113": {
-        "status": "defect",
+        "status": "passed-production-20261113",
         "production_content_sha256": "80c1ec1867f03c97923fb60c2ae8653048cf144e21b1e070e5dc8ec46413111d",
         "baseline_sha256_matches_prod": false,
         "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+      }
+    },
+    "resolved_findings": {
+      "de-shop-page-captured-by-6905": {
+        "commit": "12150da77",
+        "resolved_at_probe": "2026-11-13",
+        "verification": "DE taxonomy archives retain 6905 while /de/produkte/ renders 6961.",
+        "evidence": [
+          "docs/acceptance/2026-11-13/matrix-batch-updates/postfix-verified.json"
+        ]
       }
     }
   },

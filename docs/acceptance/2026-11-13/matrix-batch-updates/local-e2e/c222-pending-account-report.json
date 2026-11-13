@@ -1,0 +1,397 @@
+{
+  "config": {
+    "argv": [
+      "/opt/homebrew/Cellar/node@24/24.22.0/bin/node",
+      "/Users/chesterjohn/Documents/de-linker/tests/e2e/node_modules/.bin/playwright",
+      "test",
+      "tests/e2e/specs/pending-account.spec.ts"
+    ],
+    "configFile": "/Users/chesterjohn/Documents/de-linker/tests/e2e/playwright.config.ts",
+    "rootDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": "/Users/chesterjohn/Documents/de-linker/tests/e2e/lib/health.ts",
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 300000
+      },
+      {
+        "outputDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "header-parity.spec.ts"
+        ],
+        "timeout": 300000
+      },
+      {
+        "outputDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "header-parity.spec.ts"
+        ],
+        "timeout": 300000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "snapshotDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 300000,
+        "use": {
+          "trace": "off",
+          "screenshot": "off",
+          "video": "off",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "webkit",
+        "testDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "snapshotDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": "header-parity.spec.ts",
+        "timeout": 300000,
+        "use": {
+          "trace": "off",
+          "screenshot": "off",
+          "video": "off",
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1792,
+            "height": 1120
+          },
+          "deviceScaleFactor": 2,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "webkit"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "webkit"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "firefox",
+        "testDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "snapshotDir": "/Users/chesterjohn/Documents/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": "header-parity.spec.ts",
+        "timeout": 300000,
+        "use": {
+          "trace": "off",
+          "screenshot": "off",
+          "video": "off",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:157.0) Gecko/20100101 Firefox/157.0",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "firefox"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "firefox"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "artifacts/report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "pending-account.spec.ts",
+      "file": "pending-account.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "en 1440: register → pending workspace and inquiry → approve in the same session",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 30607,
+                  "error": {
+                    "message": "Error: just wp c222 eval-file /Users/chesterjohn/Documents/de-linker/tests/e2e/fixtures/pending-account.php deliver-one failed: PHP=/opt/homebrew/opt/php@8.3/bin/php uv run --locked --project tools/local linker-local wp \"$@\"\nError: There has been a critical error on this website.Learn more about troubleshooting WordPress. There has been a critical error on this website.\nerror: recipe `wp` failed on line 440 with exit code 1\n",
+                    "stack": "Error: just wp c222 eval-file /Users/chesterjohn/Documents/de-linker/tests/e2e/fixtures/pending-account.php deliver-one failed: PHP=/opt/homebrew/opt/php@8.3/bin/php uv run --locked --project tools/local linker-local wp \"$@\"\nError: There has been a critical error on this website.Learn more about troubleshooting WordPress. There has been a critical error on this website.\nerror: recipe `wp` failed on line 440 with exit code 1\n\n    at runJust (/Users/chesterjohn/Documents/de-linker/tests/e2e/lib/instance.ts:288:9)\n    at wp (/Users/chesterjohn/Documents/de-linker/tests/e2e/lib/instance.ts:147:9)\n    at run (/Users/chesterjohn/Documents/de-linker/tests/e2e/specs/pending-account.spec.ts:10:36)\n    at /Users/chesterjohn/Documents/de-linker/tests/e2e/specs/pending-account.spec.ts:346:6",
+                    "location": {
+                      "file": "/Users/chesterjohn/Documents/de-linker/tests/e2e/lib/instance.ts",
+                      "column": 9,
+                      "line": 288
+                    },
+                    "snippet": "   at ../lib/instance.ts:288\n\n  286 | \t\t\tmessage: string;\n  287 | \t\t};\n> 288 | \t\tthrow new Error(\n      | \t\t      ^\n  289 | \t\t\t`just ${args.join(' ')} failed: ${failure.stderr || failure.stdout || failure.message}`\n  290 | \t\t);\n  291 | \t}"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/chesterjohn/Documents/de-linker/tests/e2e/lib/instance.ts",
+                        "column": 9,
+                        "line": 288
+                      },
+                      "message": "Error: just wp c222 eval-file /Users/chesterjohn/Documents/de-linker/tests/e2e/fixtures/pending-account.php deliver-one failed: PHP=/opt/homebrew/opt/php@8.3/bin/php uv run --locked --project tools/local linker-local wp \"$@\"\nError: There has been a critical error on this website.Learn more about troubleshooting WordPress. There has been a critical error on this website.\nerror: recipe `wp` failed on line 440 with exit code 1\n\n\n   at ../lib/instance.ts:288\n\n  286 | \t\t\tmessage: string;\n  287 | \t\t};\n> 288 | \t\tthrow new Error(\n      | \t\t      ^\n  289 | \t\t\t`just ${args.join(' ')} failed: ${failure.stderr || failure.stdout || failure.message}`\n  290 | \t\t);\n  291 | \t}\n    at runJust (/Users/chesterjohn/Documents/de-linker/tests/e2e/lib/instance.ts:288:9)\n    at wp (/Users/chesterjohn/Documents/de-linker/tests/e2e/lib/instance.ts:147:9)\n    at run (/Users/chesterjohn/Documents/de-linker/tests/e2e/specs/pending-account.spec.ts:10:36)\n    at /Users/chesterjohn/Documents/de-linker/tests/e2e/specs/pending-account.spec.ts:346:6"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:15:16.295Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/chesterjohn/Documents/de-linker/tests/e2e/artifacts/test-results/pending-account-en-1440-re-ba6e7-approve-in-the-same-session-chromium/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/chesterjohn/Documents/de-linker/tests/e2e/lib/instance.ts",
+                    "column": 9,
+                    "line": 288
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "5689507064014f01c86b-f97ce5f30fe8c2787b75",
+          "file": "pending-account.spec.ts",
+          "line": 48,
+          "column": 3
+        },
+        {
+          "title": "en 390: register → pending workspace and inquiry → approve in the same session",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 33148,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:15:47.616Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "5689507064014f01c86b-4ad6036b393c1363c8bc",
+          "file": "pending-account.spec.ts",
+          "line": 48,
+          "column": 3
+        },
+        {
+          "title": "de 1440: register → pending workspace and inquiry → approve in the same session",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 33984,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:16:20.901Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "5689507064014f01c86b-cea96c69274e09d057f4",
+          "file": "pending-account.spec.ts",
+          "line": 48,
+          "column": 3
+        },
+        {
+          "title": "de 390: register → pending workspace and inquiry → approve in the same session",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 32133,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-13T10:16:54.890Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "5689507064014f01c86b-66c6eb7657cfb20ff759",
+          "file": "pending-account.spec.ts",
+          "line": 48,
+          "column": 3
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-13T10:15:15.733Z",
+    "duration": 131332.89700000003,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}
