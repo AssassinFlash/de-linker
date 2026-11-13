@@ -6,7 +6,7 @@ The model channels, customer ownership rules and private historical PDF download
 
 ## Runtime
 
-`GENIE_WP_URL` supplies the sole publication authority. Every turn reads the no-store Woo manifest and validates the complete input dependency set again before release. Product tools validate all returned candidates, not only displayed cards. A missing authority closes the affected turn. Product vocabulary and page/draft caches are also invalidated by the current source revision; hooks are an optimization rather than permission.
+`GENIE_WP_URL` supplies the sole publication authority. **On the Mac build machine it must be exported for every `just index` / `publication_worker.py` run**: `publication.current()` falls back to `http://127.0.0.1`, where no publication endpoint exists, and the build then dies with `PublicationUnavailable: Woo publication permission unavailable` after ten minutes of chunking (measured 2026-11-13). The VPS gets the variable from `/etc/linker-genie.env`; the Mac has no such file. Every turn reads the no-store Woo manifest and validates the complete input dependency set again before release. Product tools validate all returned candidates, not only displayed cards. A missing authority closes the affected turn. Product vocabulary and page/draft caches are also invalidated by the current source revision; hooks are an optimization rather than permission.
 
 Knowledge search intersects current Woo product/document revisions with the actual loaded SQLite proof tables. Empty filters authorize no passages. Fallback and same-page/short-datasheet expansion use the same permitted rows. Content SHA reuses parsing, not authorization; document IDs, content revisions and per-product associations remain separate.
 
