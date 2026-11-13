@@ -25,13 +25,15 @@ namespace Linker\I18n;
  *
  * LiveCanvas's own last word on the choice is the lc_modify_template_id
  * filter (modules/templating.php), which runs after every one of its cases,
- * including a template a page names for itself. A page that already resolved
- * to a template is left as it is. Only a German request that resolved to none,
- * and that is one of the four WooCommerce page types, is answered with the
- * English template of that type — the language the missing German one is
- * written in. The lookup is LiveCanvas's own, run while Polylang's current
- * language is the source language, so it finds exactly the template the
- * English page renders through.
+ * including a template a page names for itself. A template that owns this
+ * page type's assignment — a German one of its own, or the English one an
+ * English request resolves to — is left as it is. A German request of one of
+ * the four WooCommerce page types that resolved to something else is answered
+ * with the English template of that type: the shop page is also a product
+ * archive, so LiveCanvas's archive case hands a German shop the German
+ * product-archive template before its shop case can miss. The lookup is
+ * LiveCanvas's own, run while Polylang's current language is the source
+ * language, so it finds exactly the template the English page renders through.
  */
 final class DynamicTemplates {
 
@@ -82,17 +84,23 @@ final class DynamicTemplates {
 	/**
 	 * The template a request renders through (filter `lc_modify_template_id`).
 	 *
-	 * A resolved template, a request in the source language and a request that
-	 * is not one of the four page types pass through unchanged.
+	 * A request in the source language, a request that is not one of the four
+	 * page types, and a resolved template that carries the page type's own
+	 * assignment pass through unchanged. A German page type that resolved to
+	 * another template — the shop page is also a product archive — renders
+	 * through the English template of its type.
 	 *
 	 * @param int|false $template_id The template LiveCanvas resolved, or false.
 	 */
 	public function template( int|false $template_id ): int|false {
-		if ( $template_id || Languages::SOURCE === $this->languages->current() || ! $this->languages->ready() ) {
+		if ( Languages::SOURCE === $this->languages->current() || ! $this->languages->ready() ) {
 			return $template_id;
 		}
 		$key = $this->page_type();
 		if ( null === $key ) {
+			return $template_id;
+		}
+		if ( $template_id && (int) get_post_meta( $template_id, $key, true ) ) {
 			return $template_id;
 		}
 		$english = $this->english_template( $key );

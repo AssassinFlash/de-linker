@@ -93,15 +93,40 @@ final class DynamicTemplatesTest extends TestCase {
 	}
 
 	/**
-	 * A template LiveCanvas already resolved is never replaced, even on a
-	 * German cart request.
+	 * A template that carries the page type's own assignment is kept, even on
+	 * a German cart request.
 	 */
-	public function test_a_resolved_template_is_kept(): void {
+	public function test_a_resolved_template_of_this_page_type_is_kept(): void {
 		$this->wordpress();
+		PolylangDouble::$polylang->curlang = PolylangDouble::language( Languages::TARGET );
+		WP_Mock::userFunction( 'get_post_meta' )
+			->once()
+			->with( 6915, 'is_cart_page', true )
+			->andReturn( '1' );
 
 		$resolved = $this->resolver( 'is_cart' )->template( 6915 );
 
 		$this->assertSame( 6915, $resolved );
+	}
+
+	/**
+	 * A German shop LiveCanvas resolved to the German product-archive template
+	 * — the shop page is also a product archive, so the archive case runs
+	 * first — renders through the English shop template instead.
+	 */
+	public function test_a_german_shop_resolved_to_the_archive_template_renders_through_the_english_shop_template(): void {
+		$this->wordpress();
+		PolylangDouble::$polylang->curlang = PolylangDouble::language( Languages::TARGET );
+		WP_Mock::userFunction( 'get_post_meta' )
+			->once()
+			->with( 6905, 'is_shop_page', true )
+			->andReturn( '' );
+		WP_Mock::userFunction( 'get_posts', array( 'return' => array( PolylangDouble::post( 6961 ) ) ) );
+
+		$resolved = $this->resolver( 'is_shop' )->template( 6905 );
+
+		$this->assertSame( 6961, $resolved );
+		$this->assertSame( Languages::TARGET, $this->current() );
 	}
 
 	/**
