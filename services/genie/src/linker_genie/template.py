@@ -387,9 +387,7 @@ def _pair_condition_refs(facts: TurnFacts) -> list[str]:
     return [fact_id for _, fact_id in sorted(found)]
 
 
-def _released_pair_fallback(
-    facts: TurnFacts, language: Locale
-) -> TurnOutput | None:
+def _released_pair_fallback(facts: TurnFacts, language: Locale) -> TurnOutput | None:
     """The released pair's own conditions, when the model phrased none.
 
     One released set is one answer. Its conditions are contract facts
@@ -406,7 +404,11 @@ def _released_pair_fallback(
     conditions: list[str] = []
     for partner_id in partner_ids:
         for fact_id in sorted(
-            (fid for fid in facts.facts if fid.startswith(f"compat.condition.{partner_id}.")),
+            (
+                fid
+                for fid in facts.facts
+                if fid.startswith(f"compat.condition.{partner_id}.")
+            ),
             key=lambda fid: int(fid.rsplit(".", 1)[1]),
         ):
             fact = facts.facts[fact_id]
@@ -421,7 +423,11 @@ def _released_pair_fallback(
     blocks: list[Block] = [TextBlock(text=" ".join(conditions), refs=refs)]
     for partner_id in partner_ids:
         for fact_id in sorted(
-            (fid for fid in facts.documents if fid.startswith(f"compat.document.{partner_id}.")),
+            (
+                fid
+                for fid in facts.documents
+                if fid.startswith(f"compat.document.{partner_id}.")
+            ),
             key=lambda fid: int(fid.rsplit(".", 1)[1]),
         ):
             blocks.append(DocumentBlock(ref=fact_id))
