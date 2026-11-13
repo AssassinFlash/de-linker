@@ -545,11 +545,15 @@ export function QuickStart({
 		<section className="lp-quickstart" aria-labelledby="lp-quickstart-heading">
 			<header className="lp-quickstart-head">
 				<span className="lp-eyebrow">{__("Quick start", "linker-tools")}</span>
-				<h1 id="lp-quickstart-heading">
+				{/* The workspace header already carries this page's h1 ("Your
+				    projects"). Two h1s on one document flatten the outline, so the
+				    quick start's own heading is the section's h2; it still names the
+				    section through aria-labelledby above. */}
+				<h2 id="lp-quickstart-heading">
 					{existingProject
 						? __("Re-plan this project in one screen", "linker-tools")
 						: __("Plan a system in one screen", "linker-tools")}
-				</h1>
+				</h2>
 				<p>
 					{__(
 						"Pick from the lists and press Generate solution. The workspace saves the project, fetches the data it can and shows the matching equipment with its bill of materials.",
