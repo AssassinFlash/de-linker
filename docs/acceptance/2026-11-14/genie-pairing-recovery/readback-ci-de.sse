@@ -18,4 +18,3 @@ data: {"type": "cards", "product_ids": [3595, 1957, 1958], "prices": [{"product_
 
 event: done
 data: {"ok": true}
-
