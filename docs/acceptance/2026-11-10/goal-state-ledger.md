@@ -2382,3 +2382,55 @@ Every item left open at the end of the previous section was executed and verifie
   - `page-matrix.json` (708 rows): `620 partially-verified` + `88 not-applicable` (`interaction: pending = 0`, `partial-with-finding = 0`, open `findings = 0`), incorporating Batch 4 (368 product/term interactions + 222 post-fix closures), Batch 5/6 (28 commerce/tool pages), 6 DE Genie media rows, and 42 historical withdrawn EcoFlow rows.
   - `template-matrix.json` (31 rows): `30 partially-verified` + `1 not-applicable` (`pending = 0`, open `findings = 0`, `6961`/`6905` DE shop routing defect archived to `resolved_findings`).
   - `state-matrix.json` (1,044 rows): `pending = 0`, `applicability.pending = 0`, open `findings = 0`, empty-evidence `pass = 0` (`108/114` `partially-verified` rows upgraded via `state-pv-rows.json`, `6` granular boundary rows honestly retained in `partially-verified`).
+
+## Genie pairing recovery: two defects, one self-inflicted outage, and all six videos (2026-11-14)
+
+The German demo videos named as remaining above were finished on 2026-11-13; this
+round closed the pairing answer itself and everything it depended on.
+
+- **A released pair kept losing its own evidence.** `template.fallback()` answered
+  "Here are matching products from our range" whenever the model's draft was refused
+  twice, dropping the `compat.condition` and `compat.document` facts the same turn
+  had already collected. Production EN read 119 characters with zero documents, DE
+  126 with zero — while the index held `inv 3595 / bat 1958 / ETR 80-125kW` and the
+  engineering feed carried `3595+1958 → released`. `_released_pair_fallback()` now
+  assembles the answer from those tool facts.
+- **A re-embed bound the index to a runtime that no longer existed.**
+  `index.build.embed_corpus()` copied the source corpus's `serving_revision` and wrote
+  none into the manifest, so every `search-knowledge` call failed with "managed
+  knowledge index needs matching serving rules" and the customer saw only the
+  degraded sentence. The new build computes the deployed runtime's value into both
+  the corpus meta and the manifest.
+- **Six hypotheses were ruled out with evidence before either fix**: missing index
+  data, a bare compatibility table, a missing feed pair, a missing model-series
+  mapping, page context affecting routing, and a language-channel failure. Each has
+  the measurement in `docs/acceptance/2026-11-14/genie-pairing-recovery/README.md`.
+- **An operator mistake of mine broke production for ~40 minutes.** Replacing
+  `template.py` in place changed `serving_revision` to a value WordPress's
+  `expected_serving_revision` did not know, and every knowledge read failed. Rolled
+  back from the backup taken before the write, then republished through
+  `publication_worker.py` — the only path that moves runtime and index together.
+  Two further environment defects surfaced and are fixed: `GENIE_WP_URL` must be
+  exported on the Mac (documented in `services/genie/ops/PUBLICATION.md`), and the
+  launchd publication source is a separate copy under
+  `de-linker-ops/knowledge-publication/source` that nothing kept in step.
+- **Production readback** (serving `8d50d2cf`, index `20261113T172753Z-024519000`,
+  job `ready`; six SSE captures in the same directory): GoodWe pairing EN 119 → 1222
+  characters and 0 → 3 documents; DE 126 → 1387 and 0 → 3; SAJ pairing EN 755/4, DE
+  470–965/1–4 across three runs; MPPT 88/1; GoodWe efficiency DE 740/3. Four
+  document-class questions returned zero `serving` failures.
+- **The two pairing answers still report `grounded: false`** — the model's own draft
+  was refused (EN cited `p3595.document.12`, one past the twelve documents the
+  product holds) and the fallback then assembled the answer. The flag describes the
+  model's attempt, not the answer's quality; the customer reads the full conditions.
+- **English demo videos delivered** for the three English pages from real service
+  turns, framed on the answer rather than the cards, verified by reading the
+  screenshots back; all six videos (three DE, three EN) play on production
+  (`playing: true`, 5 s, 1280 wide).
+- **Saved solutions got their first browser test**: the card and its four actions
+  (bill of materials, design report, add to draft, removal behind its own
+  confirmation) had no coverage at all. Eight cases, EN/DE at 1440 and 390.
+- **Three matrices unchanged and clean**: page 708 / state 1,044 / template 31 rows
+  with zero open findings and zero pending; the 30 template rows stay
+  `partially-verified` because a template cannot prove every state combination, and
+  none of them carries a failing check.
