@@ -405,7 +405,10 @@
     "status": "verified-production-20261113",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/footer-readable-controls.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/state-pv-report.md"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -439,7 +442,8 @@
         "scope": "Production de@390 (/de/): sequential Tab lands on brand link -> header search -> EN -> DE -> #tv-mobile-toggle with 2px solid focus outlines; Enter opens #tv-mobile-panel[data-open='true'], Escape closes panel and restores focus to #tv-mobile-toggle; combined with 675 footer keyboard proof.",
         "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/state-pv-report.md"
       }
-    }
+    },
+    "evidence_derivation": "Top-level evidence was empty; filled from the row own verified_checks payloads by the 2026-11-13 audit: 675_footer_language_keyboard_focus, state_pv_audit_20261113"
   },
   {
     "key": "global-navigation:language-switch-current-route:en:1440",
@@ -739,7 +743,11 @@
     "status": "verified-production-20261113",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-site-search.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/state-pv-report.md"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -776,7 +784,8 @@
         "scope": "Production en@1440: /?s=SAJ renders localized search template (H1='SAJ', input retains 'SAJ', 10 results, decorative product thumbnail alt='', sections precede pagination on mobile, next page link preserves ?s=SAJ), scrollWidth=1440.",
         "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/state-pv-report.md"
       }
-    }
+    },
+    "evidence_derivation": "Top-level evidence was empty; filled from the row own verified_checks payloads by the 2026-11-13 audit: 679_708_native_site_search_results, state_pv_audit_20261113"
   },
   {
     "key": "global-navigation:search-results:en:390",
@@ -842,7 +851,12 @@
     "status": "verified-production-20261113",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-site-search.json",
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/746-blog-online-browser.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/state-pv-report.md"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -884,7 +898,8 @@
         "scope": "Production de@390: /de/?s=SAJ renders localized search template (H1='SAJ', input retains 'SAJ', 10 results, decorative product thumbnail alt='', sections precede pagination on mobile, next page link preserves ?s=SAJ), scrollWidth=390.",
         "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/state-pv-report.md"
       }
-    }
+    },
+    "evidence_derivation": "Top-level evidence was empty; filled from the row own verified_checks payloads by the 2026-11-13 audit: 679_708_native_site_search_results, 746_journal_query_language_consumer, state_pv_audit_20261113"
   },
   {
     "key": "global-navigation:search-empty:en:1440",
@@ -2706,7 +2721,10 @@
     "status": "verified-production-20261113",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "products/live-review.md currentDE390brand/application/reset paragraph",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/state-pv-report.md"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -2729,7 +2747,8 @@
         "scope": "Production de@390 (/de/produkte/ now rendering LC DT ID 6961 after 12150da77, PR #1069 anwendung=application parity active): mobile filter drawer aria-expanded false->true, applying brand=goodwe (24 cards) + application=home narrows to 23 GoodWe residential families, scrollWidth=390.",
         "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/state-pv-report.md"
       }
-    }
+    },
+    "evidence_derivation": "Top-level evidence was empty; filled from the row own verified_checks payloads by the 2026-11-13 audit: current_native_brand_application_reset, state_pv_audit_20261113"
   },
   {
     "key": "product-archive:clear-filters:en:1440",
@@ -18898,7 +18917,11 @@
     "status": "verified-production-20261113",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-contact-source.json",
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-contact-guidance.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/state-pv-report.md"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -18928,7 +18951,8 @@
         "scope": "Production en@1440 (/contact/ without ?source=): clean empty form (sourceCardPresent=false, name/email/message='', consentChecked=false), sticky header opaque rgb(255,255,255), scrollWidth=1440; combined with contact-states-20261107.json & contact-selection-continuity.spec.ts.",
         "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/state-pv-report.md"
       }
-    }
+    },
+    "evidence_derivation": "Top-level evidence was empty; filled from the row own verified_checks payloads by the 2026-11-13 audit: 650_contact_source_language, 651_contact_heading_source, state_pv_audit_20261113"
   },
   {
     "key": "contact:empty:en:390",
@@ -18939,7 +18963,11 @@
     "status": "verified-production-20261113",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-contact-source.json",
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-contact-guidance.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/state-pv-report.md"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -18969,7 +18997,8 @@
         "scope": "Production en@390 (/contact/ without ?source=): clean empty form (sourceCardPresent=false, name/email/message='', consentChecked=false), sticky header opaque rgb(255,255,255), scrollWidth=390; combined with contact-states-20261107.json & contact-selection-continuity.spec.ts.",
         "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/state-pv-report.md"
       }
-    }
+    },
+    "evidence_derivation": "Top-level evidence was empty; filled from the row own verified_checks payloads by the 2026-11-13 audit: 650_contact_source_language, 651_contact_heading_source, state_pv_audit_20261113"
   },
   {
     "key": "contact:empty:de:1440",
@@ -18980,7 +19009,11 @@
     "status": "verified-production-20261113",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-contact-source.json",
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-contact-guidance.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/state-pv-report.md"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -19010,7 +19043,8 @@
         "scope": "Production de@1440 (/de/kontakt/ without ?source=): clean empty form (sourceCardPresent=false, name/email/message='', consentChecked=false), sticky header opaque rgb(255,255,255), scrollWidth=1440; combined with contact-states-20261107.json & contact-selection-continuity.spec.ts.",
         "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/state-pv-report.md"
       }
-    }
+    },
+    "evidence_derivation": "Top-level evidence was empty; filled from the row own verified_checks payloads by the 2026-11-13 audit: 650_contact_source_language, 651_contact_heading_source, state_pv_audit_20261113"
   },
   {
     "key": "contact:empty:de:390",
@@ -19021,7 +19055,11 @@
     "status": "verified-production-20261113",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-contact-source.json",
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-contact-guidance.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/state-pv-report.md"
+    ],
     "findings": [],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
@@ -19051,7 +19089,8 @@
         "scope": "Production de@390 (/de/kontakt/ without ?source=): clean empty form (sourceCardPresent=false, name/email/message='', consentChecked=false), sticky header opaque rgb(255,255,255), scrollWidth=390; combined with contact-states-20261107.json & contact-selection-continuity.spec.ts.",
         "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/state-pv-report.md"
       }
-    }
+    },
+    "evidence_derivation": "Top-level evidence was empty; filled from the row own verified_checks payloads by the 2026-11-13 audit: 650_contact_source_language, 651_contact_heading_source, state_pv_audit_20261113"
   },
   {
     "key": "contact:validation:en:1440",
@@ -35298,7 +35337,11 @@
     "status": "verified-production-20261113",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/integrated-731-library-online.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/state-pv-report.md"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -35340,7 +35383,8 @@
         "scope": "Production en@1440: language switch links preserve query, filter, and page number across site search (/page/2/?s=SAJ <-> /de/seite/2/?s=SAJ), shop filtered page 2 (?brand=goodwe&product-page=2), journal search (?s=...&post_type=post), and document library (?q=GW10K-EHA-G20&tab=documents&type=manual).",
         "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/state-pv-report.md"
       }
-    }
+    },
+    "evidence_derivation": "Top-level evidence was empty; filled from the row own verified_checks payloads by the 2026-11-13 audit: 679_native_search_language_query_page, 731_library_filter_language_readback, state_pv_audit_20261113"
   },
   {
     "key": "global-navigation:language-switch-query-filter-pagination:en:390",
@@ -35423,7 +35467,13 @@
     "status": "verified-production-20261113",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/integrated-731-library-online.json",
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/746-blog-online-browser.json",
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/state-pv-report.md"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -35475,7 +35525,8 @@
         "scope": "Production de@390: language switch links preserve query, filter, and page number across site search (/page/2/?s=SAJ <-> /de/seite/2/?s=SAJ), shop filtered page 2 (?brand=goodwe&product-page=2), journal search (?s=...&post_type=post), and document library (?q=GW10K-EHA-G20&tab=documents&type=manual).",
         "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/state-pv-report.md"
       }
-    }
+    },
+    "evidence_derivation": "Top-level evidence was empty; filled from the row own verified_checks payloads by the 2026-11-13 audit: 679_native_search_language_query_page, 731_library_filter_language_readback, 746_journal_query_language_consumer, 751_product_query_language_switch, state_pv_audit_20261113"
   },
   {
     "key": "global-navigation:language-switch-account-endpoint-and-fragment:en:1440",
@@ -36251,7 +36302,10 @@
     "status": "verified-production-20261113",
     "environment": null,
     "url": null,
-    "evidence": [],
+    "evidence": [
+      "products/live-review.md currentDE390brand/application/reset paragraph",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/state-pv-report.md"
+    ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
     "coverage_contract": "coverage-contract.md",
@@ -36275,7 +36329,8 @@
         "scope": "Production de@390: /de/produkte/?application=home page 1 shows 24 families, page 2 shows 9 families (33 unique product IDs, 0 overlap across pages), and out-of-range ?product-page=3 301-redirects to ?product-page=2, scrollWidth=390.",
         "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/state-pv-report.md"
       }
-    }
+    },
+    "evidence_derivation": "Top-level evidence was empty; filled from the row own verified_checks payloads by the 2026-11-13 audit: current_native_brand_application_reset, state_pv_audit_20261113"
   },
   {
     "key": "blog:pagination-out-of-range:en:1440",
