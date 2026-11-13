@@ -474,7 +474,13 @@ def embed_corpus(
         embedding=embedder.fingerprint,
         publication=meta.publication,
         recipe_revision=meta.recipe_revision,
-        serving_revision=meta.serving_revision,
+        # Serving rules are the runtime's, not the source corpus's: this build
+        # will be served by whatever code is deployed when it activates. Reusing
+        # the source's value made a re-embed silently bind the index to a
+        # runtime that no longer exists, and every knowledge read then failed
+        # with "managed knowledge index needs matching serving rules"
+        # (production, 2026-11-13).
+        serving_revision=serving_revision(),
         model_identity_revision=meta.model_identity_revision,
         activation_epoch=meta.activation_epoch,
     )
@@ -490,6 +496,12 @@ def embed_corpus(
         embedding_model=model_identity(embedder),
         dimensions=embedder.dimensions,
         embedded_from=meta.version,
+        # Serving rules are the runtime's, not the source corpus's: this build
+        # is served by whatever code is deployed when it activates. Copying the
+        # source's value bound a re-embed to a runtime that no longer existed,
+        # and every knowledge read then failed with "managed knowledge index
+        # needs matching serving rules" (production, 2026-11-13).
+        serving_revision=new_meta.serving_revision,
         file={
             "name": INDEX_FILE,
             "bytes": index_path.stat().st_size,

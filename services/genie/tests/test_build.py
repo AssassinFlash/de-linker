@@ -215,3 +215,48 @@ def test_the_embedding_cache_reuses_vectors_per_encoder_fingerprint(
     # cache); the rebuilt encoder recomputes instead of silently reusing its vectors.
     assert embedder.embedded == 2
     assert rebuilt.embedded == 2
+
+
+def test_re_embedding_recomputes_the_serving_revision(tmp_path: Path) -> None:
+    """A `--from-corpus` build must describe the runtime that will serve it.
+
+    Production 2026-11-13: a re-embed copied the source corpus's serving
+    revision, so the manifest and index bound themselves to a runtime that was
+    no longer deployed. Every knowledge read then failed with "managed
+    knowledge index needs matching serving rules" and the customer saw only
+    the degraded sentence.
+    """
+    from index import corpus as corpus_module
+    from index.build import embed_corpus
+    from linker_genie.preparation import serving_revision
+
+    source = tmp_path / "source"
+    corpus_dir = source / "corpus"
+    corpus_dir.mkdir(parents=True)
+    stale = "0" * 64
+    assert stale != serving_revision()
+    meta = corpus_module.Meta(
+        "source-build",
+        "counting",
+        2,
+        "docling",
+        512,
+        embedding={"model": "counting", "dimensions": "2"},
+        publication={},
+        recipe_revision="recipe",
+        serving_revision=stale,
+        model_identity_revision="model",
+        activation_epoch=1,
+    )
+    corpus_module.write(corpus_dir, meta, [], [], [])
+    (source / "coverage.json").write_text("[]", encoding="utf-8")
+    (source / "manifest.json").write_text(
+        json.dumps({"version": "source-build", "seconds": {}, "chunks": 0}), encoding="utf-8"
+    )
+
+    build_dir = embed_corpus(corpus_dir, tmp_path / "out", CountingEmbedder())
+
+    manifest = json.loads((build_dir / "manifest.json").read_text(encoding="utf-8"))
+    written = corpus_module.read_meta(build_dir / "corpus")
+    assert manifest["serving_revision"] == serving_revision()
+    assert written.serving_revision == serving_revision()
