@@ -1562,8 +1562,11 @@ final class ProductShortcodes {
 					. '</span></a>',
 			);
 			$constraint = Materials::localized_text( $relationship, 'constraint', $locale );
-			if ( '' !== $constraint && ! isset( $notes[ $constraint ] ) ) {
-				$notes[ $constraint ] = true;
+			if ( '' !== $constraint ) {
+				// One registry cell expands to many relationships that each repeat
+				// the cell's shared sentences and add a pairing-specific tail.
+				$cell = Materials::relationship_cell_id( $relationship );
+				$notes[ '' !== $cell ? $cell : $constraint ][ $constraint ] = true;
 			}
 		}
 		if ( array() === $cards ) {
@@ -1571,10 +1574,38 @@ final class ProductShortcodes {
 		}
 		\usort( $cards, static fn( array $left, array $right ): int => strnatcasecmp( $left['name'], $right['name'] ) );
 		$html = '<div class="pdp-pairings">' . implode( '', array_column( $cards, 'html' ) ) . '</div>';
-		foreach ( array_keys( $notes ) as $note ) {
-			$html .= '<div class="pdp-pairing-footnote pdp-reading pdp-muted"><p>' . esc_html( (string) $note ) . '</p></div>';
+		foreach ( $notes as $constraints ) {
+			$shared = self::shared_constraint_prefix( array_keys( $constraints ) );
+			$html  .= '<div class="pdp-pairing-footnote pdp-reading pdp-muted"><p>' . esc_html( $shared ) . '</p>';
+			foreach ( array_keys( $constraints ) as $constraint ) {
+				$tail = \trim( \substr( $constraint, \strlen( $shared ) ) );
+				if ( '' !== $tail ) {
+					$html .= '<p>' . esc_html( $tail ) . '</p>';
+				}
+			}
+			$html .= '</div>';
 		}
 		return $html;
+	}
+
+	/**
+	 * The sentences every constraint of one registry cell repeats, so a cell
+	 * expansion prints them once instead of once per pairing.
+	 *
+	 * @param string[] $constraints The cell's localized constraints.
+	 */
+	private static function shared_constraint_prefix( array $constraints ): string {
+		if ( 2 > \count( $constraints ) ) {
+			return (string) ( $constraints[0] ?? '' );
+		}
+		$shared = (string) ( $constraints[0] ?? '' );
+		foreach ( $constraints as $constraint ) {
+			$cut    = \strspn( $shared ^ $constraint, "\0" );
+			$shared = \substr( $shared, 0, $cut );
+		}
+		// Version numbers and model names hold periods; share whole sentences only.
+		$boundary = \strrpos( $shared, '. ' );
+		return false === $boundary ? $shared : \substr( $shared, 0, $boundary + 1 );
 	}
 
 	/**
