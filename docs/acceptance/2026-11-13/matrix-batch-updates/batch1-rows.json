@@ -1,0 +1,2354 @@
+[
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/trina-solar-tsm-460neg9r-28/@1440",
+    "updates": {
+      "interaction": "not-applicable",
+      "product_detail_applicability": {
+        "status": "not-applicable",
+        "reason": "Engineering reference PV module (role reference_pv_module); Publication excludes reference items from the customer surface and EN/DE URLs return HTTP 404.",
+        "evidence": [
+          "docs/acceptance/2026-10-22/full-site/inventory-baseline.json",
+          "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
+        ]
+      }
+    },
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/page-matrix.json (all 84 EcoFlow not-applicable rows set render=interaction=visual_review='not-applicable')",
+      "2026-11-13 curl -I https://de-linker.com/product/trina-solar-tsm-460neg9r-28/ -> HTTP 404",
+      "2026-11-13 curl -I https://de-linker.com/de/produkt/trina-solar-tsm-460neg9r-28/ -> HTTP 404"
+    ],
+    "reason": "Trina 8349/8350 的 render 与 visual_review 已标 not-applicable，但 interaction 仍残留 pending 且缺 product_detail_applicability；对照 84 条 EcoFlow N/A 行与生产 404 实测补齐为全轴 not-applicable。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/trina-solar-tsm-460neg9r-28/@390",
+    "updates": {
+      "interaction": "not-applicable",
+      "product_detail_applicability": {
+        "status": "not-applicable",
+        "reason": "Engineering reference PV module (role reference_pv_module); Publication excludes reference items from the customer surface and EN/DE URLs return HTTP 404.",
+        "evidence": [
+          "docs/acceptance/2026-10-22/full-site/inventory-baseline.json",
+          "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
+        ]
+      }
+    },
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/page-matrix.json (all 84 EcoFlow not-applicable rows set render=interaction=visual_review='not-applicable')",
+      "2026-11-13 curl -I https://de-linker.com/product/trina-solar-tsm-460neg9r-28/ -> HTTP 404",
+      "2026-11-13 curl -I https://de-linker.com/de/produkt/trina-solar-tsm-460neg9r-28/ -> HTTP 404"
+    ],
+    "reason": "Trina 8349/8350 的 render 与 visual_review 已标 not-applicable，但 interaction 仍残留 pending 且缺 product_detail_applicability；对照 84 条 EcoFlow N/A 行与生产 404 实测补齐为全轴 not-applicable。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/produkt/trina-solar-tsm-460neg9r-28/@1440",
+    "updates": {
+      "interaction": "not-applicable",
+      "product_detail_applicability": {
+        "status": "not-applicable",
+        "reason": "Engineering reference PV module (role reference_pv_module); Publication excludes reference items from the customer surface and EN/DE URLs return HTTP 404.",
+        "evidence": [
+          "docs/acceptance/2026-10-22/full-site/inventory-baseline.json",
+          "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
+        ]
+      }
+    },
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/page-matrix.json (all 84 EcoFlow not-applicable rows set render=interaction=visual_review='not-applicable')",
+      "2026-11-13 curl -I https://de-linker.com/product/trina-solar-tsm-460neg9r-28/ -> HTTP 404",
+      "2026-11-13 curl -I https://de-linker.com/de/produkt/trina-solar-tsm-460neg9r-28/ -> HTTP 404"
+    ],
+    "reason": "Trina 8349/8350 的 render 与 visual_review 已标 not-applicable，但 interaction 仍残留 pending 且缺 product_detail_applicability；对照 84 条 EcoFlow N/A 行与生产 404 实测补齐为全轴 not-applicable。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/produkt/trina-solar-tsm-460neg9r-28/@390",
+    "updates": {
+      "interaction": "not-applicable",
+      "product_detail_applicability": {
+        "status": "not-applicable",
+        "reason": "Engineering reference PV module (role reference_pv_module); Publication excludes reference items from the customer surface and EN/DE URLs return HTTP 404.",
+        "evidence": [
+          "docs/acceptance/2026-10-22/full-site/inventory-baseline.json",
+          "docs/acceptance/2026-10-22/full-site/product-data-check-20261107.json"
+        ]
+      }
+    },
+    "evidence": [
+      "docs/acceptance/2026-10-22/full-site/page-matrix.json (all 84 EcoFlow not-applicable rows set render=interaction=visual_review='not-applicable')",
+      "2026-11-13 curl -I https://de-linker.com/product/trina-solar-tsm-460neg9r-28/ -> HTTP 404",
+      "2026-11-13 curl -I https://de-linker.com/de/produkt/trina-solar-tsm-460neg9r-28/ -> HTTP 404"
+    ],
+    "reason": "Trina 8349/8350 的 render 与 visual_review 已标 not-applicable，但 interaction 仍残留 pending 且缺 product_detail_applicability；对照 84 条 EcoFlow N/A 行与生产 404 实测补齐为全轴 not-applicable。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/produkte/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "mobile-compare-chip-covers-account": {
+          "pr": 664,
+          "commit": "096cc3befb84edef609f2149da7e596378e82451",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-mobile-compare-header.json",
+            "2026-11-13 Playwright production probe (390x844): [data-compare-chip] fixed bar at x=0,y=81,w=390,h=52,bottom=133; card .linker-create-account at x=33,y=842,w=103,h=44; overlaps=false; bottom-left (40,720) no compare pill"
+          ]
+        }
+      },
+      "verified_checks": {
+        "compare_continuity_661": {
+          "status": "pass",
+          "source": "f93504305156974fcddf04d67834fd4b8c176f5d",
+          "receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-compare-continuity.json",
+          "scope": "Actual guest DE390 Compare label/check/toggle,chip and destination agree;44pxcard/64pxPDP. Other page/state status retained."
+        },
+        "comparison_identity_662_663": {
+          "status": "pass",
+          "source": "1b76c61cf7c2e4d3e456b1474347798b329720ae",
+          "receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-compare-family-cache.json",
+          "scope": "Actual list native language switches/cancelENDE1440/390;DE390family samecachedbrowser freshversion+source/localized/selectedrepaint. Existing layout evidence reused;wholepage status retained."
+        },
+        "account_cta_under_compare_chip": {
+          "status": "pass",
+          "pr": 664,
+          "receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-mobile-compare-header.json",
+          "reverified_at": "2026-11-13",
+          "scope": "PR #664 moved mobile compare chip to a fixed 52px bar directly beneath #lc-header (y=81..133). 2026-11-13 live 390x844 probe confirms zero overlap with .linker-create-account and no floating pill at bottom-left."
+        },
+        "751_recovery_component": {
+          "status": "pass-scoped-component-only",
+          "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json",
+          "scope": "Product archive empty/reset or signed-in lost-password subroute only; not entire page/account lifecycle."
+        },
+        "customer_chain_readonly_walk_20261103": {
+          "status": "pass-bounded-production",
+          "evidence": "docs/acceptance/2026-11-03/customer-chain/README.md",
+          "followup_deploy": "docs/acceptance/2026-11-03/548/INDEX.md#L182-L192",
+          "scope": "2026-11-03 EN/DE × 1440/390 production customer-chain walk (lang, scrollWidth<=innerWidth, H1, 0 console errors, key interactions). D1 (/de/mein-konto/unternehmen/ 390 CookieYes overflow) and O2 (PDP tab aria-selected) fixed in PR #874 and verified in production (deploy main 7e2f6502, WindPress ver=1793704734)."
+        }
+      }
+    },
+    "evidence": [
+      "commit 096cc3bef (PR #664)",
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-mobile-compare-header.json",
+      "2026-11-13 Playwright 390x844 https://de-linker.com/de/produkte/ (2 items selected -> chip fixed y=81..133, h=52, overlaps=false)"
+    ],
+    "reason": "PR #664 已将移动端比较入口改为页头下方固定顶栏（y=81..133），不再以底部胶囊遮挡产品卡 Konto erstellen 按钮，线上实测生效，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-10k0-s2-10-kw-three-phase-hybrid-2026-flagship/@1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-10k0-s2-10-kw-three-phase-hybrid-2026-flagship/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-10k0-s2-10-kw-three-phase-hybrid-2026-flagship/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-10k0-s2-10-kw-three-phase-hybrid-2026-flagship/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-10k0-s2-10-kw-three-phase-hybrid-2026-flagship/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-10k0-s2-10-kw-three-phase-hybrid-2026-flagship/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-10k0-s2-10-kw-three-phase-hybrid-2026-flagship/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-10k0-s2-10-kw-three-phase-hybrid-2026-flagship/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-6k0-s2-6-kw-three-phase-hybrid-2026-flagship/@1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-6k0-s2-6-kw-three-phase-hybrid-2026-flagship/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-6k0-s2-6-kw-three-phase-hybrid-2026-flagship/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-6k0-s2-6-kw-three-phase-hybrid-2026-flagship/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-6k0-s2-6-kw-three-phase-hybrid-2026-flagship/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-6k0-s2-6-kw-three-phase-hybrid-2026-flagship/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-6k0-s2-6-kw-three-phase-hybrid-2026-flagship/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-6k0-s2-6-kw-three-phase-hybrid-2026-flagship/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-three-phase-hybrid-2026-flagship/@1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-three-phase-hybrid-2026-flagship/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-three-phase-hybrid-2026-flagship/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-three-phase-hybrid-2026-flagship/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-three-phase-hybrid-2026-flagship/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-three-phase-hybrid-2026-flagship/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-three-phase-hybrid-2026-flagship/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-three-phase-hybrid-2026-flagship/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-12k0-s2-12-kw-three-phase-hybrid-2026-flagship/@1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-12k0-s2-12-kw-three-phase-hybrid-2026-flagship/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-12k0-s2-12-kw-three-phase-hybrid-2026-flagship/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-12k0-s2-12-kw-three-phase-hybrid-2026-flagship/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-12k0-s2-12-kw-three-phase-hybrid-2026-flagship/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-12k0-s2-12-kw-three-phase-hybrid-2026-flagship/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-12k0-s2-12-kw-three-phase-hybrid-2026-flagship/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-12k0-s2-12-kw-three-phase-hybrid-2026-flagship/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k0-s2-6-kw-single-phase-hybrid-2026-flagship/@1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k0-s2-6-kw-single-phase-hybrid-2026-flagship/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k0-s2-6-kw-single-phase-hybrid-2026-flagship/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k0-s2-6-kw-single-phase-hybrid-2026-flagship/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k0-s2-6-kw-single-phase-hybrid-2026-flagship/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k0-s2-6-kw-single-phase-hybrid-2026-flagship/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k0-s2-6-kw-single-phase-hybrid-2026-flagship/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k0-s2-6-kw-single-phase-hybrid-2026-flagship/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-8k0-s2-8-kw-single-phase-hybrid-2026-flagship/@1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-8k0-s2-8-kw-single-phase-hybrid-2026-flagship/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-8k0-s2-8-kw-single-phase-hybrid-2026-flagship/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-8k0-s2-8-kw-single-phase-hybrid-2026-flagship/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-8k0-s2-8-kw-single-phase-hybrid-2026-flagship/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-8k0-s2-8-kw-single-phase-hybrid-2026-flagship/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-8k0-s2-8-kw-single-phase-hybrid-2026-flagship/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-8k0-s2-8-kw-single-phase-hybrid-2026-flagship/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-10k0-s2-10-kw-single-phase-hybrid-2026-flagship/@1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-10k0-s2-10-kw-single-phase-hybrid-2026-flagship/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-10k0-s2-10-kw-single-phase-hybrid-2026-flagship/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-10k0-s2-10-kw-single-phase-hybrid-2026-flagship/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-10k0-s2-10-kw-single-phase-hybrid-2026-flagship/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-10k0-s2-10-kw-single-phase-hybrid-2026-flagship/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-10k0-s2-10-kw-single-phase-hybrid-2026-flagship/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-10k0-s2-10-kw-single-phase-hybrid-2026-flagship/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-12k0-s2-12-kw-single-phase-hybrid-2026-flagship/@1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-12k0-s2-12-kw-single-phase-hybrid-2026-flagship/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-12k0-s2-12-kw-single-phase-hybrid-2026-flagship/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-12k0-s2-12-kw-single-phase-hybrid-2026-flagship/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-12k0-s2-12-kw-single-phase-hybrid-2026-flagship/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-12k0-s2-12-kw-single-phase-hybrid-2026-flagship/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-12k0-s2-12-kw-single-phase-hybrid-2026-flagship/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-12k0-s2-12-kw-single-phase-hybrid-2026-flagship/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2/@1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2/@1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-lfp-battery-base/@1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-lfp-battery-base/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-lfp-battery-base/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-lfp-battery-base/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-lfp-battery-base/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-lfp-battery-base/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-lfp-battery-base/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-lfp-battery-base/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-battery-stack-bridge/@1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-battery-stack-bridge/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-battery-stack-bridge/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-battery-stack-bridge/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-battery-stack-bridge/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-battery-stack-bridge/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-battery-stack-bridge/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-battery-stack-bridge/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-5k0-s2-5-kw-three-phase-hybrid/@1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-5k0-s2-5-kw-three-phase-hybrid/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-5k0-s2-5-kw-three-phase-hybrid/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-5k0-s2-5-kw-three-phase-hybrid/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-5k0-s2-5-kw-three-phase-hybrid/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-5k0-s2-5-kw-three-phase-hybrid/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-5k0-s2-5-kw-three-phase-hybrid/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-5k0-s2-5-kw-three-phase-hybrid/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-15k-g2-15-kw-three-phase-hybrid/@1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-15k-g2-15-kw-three-phase-hybrid/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-15k-g2-15-kw-three-phase-hybrid/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-15k-g2-15-kw-three-phase-hybrid/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-15k-g2-15-kw-three-phase-hybrid/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-15k-g2-15-kw-three-phase-hybrid/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-15k-g2-15-kw-three-phase-hybrid/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-15k-g2-15-kw-three-phase-hybrid/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-15k-g2f-15-kw-three-phase-hybrid/@1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-15k-g2f-15-kw-three-phase-hybrid/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-15k-g2f-15-kw-three-phase-hybrid/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-15k-g2f-15-kw-three-phase-hybrid/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-15k-g2f-15-kw-three-phase-hybrid/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-15k-g2f-15-kw-three-phase-hybrid/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p3-15k-g2f-15-kw-three-phase-hybrid/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p3-15k-g2f-15-kw-three-phase-hybrid/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k-s2-3-kw-single-phase-hybrid/@1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k-s2-3-kw-single-phase-hybrid/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k-s2-3-kw-single-phase-hybrid/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k-s2-3-kw-single-phase-hybrid/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k-s2-3-kw-single-phase-hybrid/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k-s2-3-kw-single-phase-hybrid/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k-s2-3-kw-single-phase-hybrid/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k-s2-3-kw-single-phase-hybrid/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-single-phase-hybrid/@1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-single-phase-hybrid/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-single-phase-hybrid/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-single-phase-hybrid/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-single-phase-hybrid/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-single-phase-hybrid/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-single-phase-hybrid/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-single-phase-hybrid/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-4k6-s2-4-6-kw-single-phase-hybrid/@1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-4k6-s2-4-6-kw-single-phase-hybrid/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-4k6-s2-4-6-kw-single-phase-hybrid/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-4k6-s2-4-6-kw-single-phase-hybrid/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-4k6-s2-4-6-kw-single-phase-hybrid/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-4k6-s2-4-6-kw-single-phase-hybrid/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-4k6-s2-4-6-kw-single-phase-hybrid/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-4k6-s2-4-6-kw-single-phase-hybrid/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k-s2-5-kw-single-phase-hybrid/@1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k-s2-5-kw-single-phase-hybrid/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k-s2-5-kw-single-phase-hybrid/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k-s2-5-kw-single-phase-hybrid/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k-s2-5-kw-single-phase-hybrid/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k-s2-5-kw-single-phase-hybrid/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k-s2-5-kw-single-phase-hybrid/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k-s2-5-kw-single-phase-hybrid/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k75-s2-5-75-kw-single-phase-hybrid/@1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k75-s2-5-75-kw-single-phase-hybrid/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k75-s2-5-75-kw-single-phase-hybrid/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k75-s2-5-75-kw-single-phase-hybrid/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k75-s2-5-75-kw-single-phase-hybrid/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k75-s2-5-75-kw-single-phase-hybrid/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k75-s2-5-75-kw-single-phase-hybrid/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-5k75-s2-5-75-kw-single-phase-hybrid/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k-s2-6-kw-single-phase-hybrid/@1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k-s2-6-kw-single-phase-hybrid/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k-s2-6-kw-single-phase-hybrid/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k-s2-6-kw-single-phase-hybrid/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k-s2-6-kw-single-phase-hybrid/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "withdrawn-english-old-slug-redirects-to-german-draft": {
+          "pr": 734,
+          "merge_commit": "fe7550a9e",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json#current_historical_route_followup_20261028.production_readback_20261028",
+            "2026-11-13 curl -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k-s2-6-kw-single-phase-hybrid/ -> HTTP 404 (no Location redirect)"
+          ]
+        }
+      },
+      "verified_checks": {
+        "withdrawn_product_current_public_route_20261028": {
+          "status": "pass",
+          "environment": "production-anonymousHTTP+nativeWooWPCLI",
+          "evidence": "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+          "receipt_key": "current_historical_route_followup_20261028",
+          "status_code": 404,
+          "final_url": "https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k-s2-6-kw-single-phase-hybrid/",
+          "scope": "PR #734 (fe7550a9e) requires published same-language target in GermanUrlMigration::old_post; 2026-11-13 production curl -I returns direct 404 with empty redirect_url.",
+          "pr": 734,
+          "reverified_at": "2026-11-13",
+          "redirect_url": null
+        }
+      }
+    },
+    "evidence": [
+      "PR #734 (merge fe7550a9e)",
+      "/Users/chesterjohn/de-linker-data/ecoflow-withdrawal-20261023/public-product-verification.json",
+      "2026-11-13 curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' -I https://de-linker.com/product/ecoflow-ocean-2-hd-p1-6k-s2-6-kw-single-phase-hybrid/ -> 404 (empty redirect_url)"
+    ],
+    "reason": "PR #734 修复了 GermanUrlMigration::old_post 对未发布德语草稿的误重定向；2026-11-13 生产只读 curl -I 实证 21/21 URL（对应 42 个 1440/390 矩阵行）均直接返回 404 且无跳转头，核销 findings。"
+  },
+  {
+    "matrix": "state",
+    "key": "authentication:pending-submit:de:1440",
+    "updates": {
+      "status": "pending",
+      "findings": [
+        "需本地实例补跑: tests/e2e/specs/pending-account.spec.ts (de 1440: register → pending workspace and inquiry → approve in the same session (requires c222)) — 原 2026-11-08 42feb9a637 批量置 pass 时未落盘产物，goal-state-ledger.md:154-159 驳回代填并要求独立重验。"
+      ]
+    },
+    "evidence": [
+      "docs/acceptance/2026-11-10/goal-state-ledger.md:154-159",
+      "tests/e2e/artifacts/report.json (only contains 2026-11-11 planner-country-rules.spec.ts)",
+      "docs/acceptance/2026-10-18/222/ (pre-rewrite Oct 18 artifacts exist for c222 de-1440, stale relative to PR #589/#678/#1003/#1015/#1061/#1067)"
+    ],
+    "reason": "tests/e2e/artifacts/ 无对应运行报告，docs/acceptance/ 仅存 10-13/10-18 改版前旧截图，且 goal-state-ledger.md:154-159 明确要求独立重验；提案标为需本地实例补跑并回退为 pending 待补跑。"
+  },
+  {
+    "matrix": "state",
+    "key": "authentication:registration-success:de:1440",
+    "updates": {
+      "status": "pending",
+      "findings": [
+        "需本地实例补跑: tests/e2e/specs/pending-account.spec.ts (de 1440: register → pending workspace and inquiry → approve in the same session (requires c222)) — 原 2026-11-08 42feb9a637 批量置 pass 时未落盘产物，goal-state-ledger.md:154-159 驳回代填并要求独立重验。"
+      ]
+    },
+    "evidence": [
+      "docs/acceptance/2026-11-10/goal-state-ledger.md:154-159",
+      "tests/e2e/artifacts/report.json (only contains 2026-11-11 planner-country-rules.spec.ts)",
+      "docs/acceptance/2026-10-18/222/ (pre-rewrite Oct 18 artifacts exist for c222 de-1440, stale relative to PR #589/#678/#1003/#1015/#1061/#1067)"
+    ],
+    "reason": "tests/e2e/artifacts/ 无对应运行报告，docs/acceptance/ 仅存 10-13/10-18 改版前旧截图，且 goal-state-ledger.md:154-159 明确要求独立重验；提案标为需本地实例补跑并回退为 pending 待补跑。"
+  },
+  {
+    "matrix": "state",
+    "key": "authentication:password-email-confirmation:de:1440",
+    "updates": {
+      "status": "pending",
+      "findings": [
+        "需本地实例补跑: tests/e2e/specs/account.spec.ts (de-1440: the lost-password request answers and its link opens the new-password card (review instance; plus Outbox email check if required)) — 原 2026-11-08 42feb9a637 批量置 pass 时未落盘产物，goal-state-ledger.md:154-159 驳回代填并要求独立重验。"
+      ]
+    },
+    "evidence": [
+      "docs/acceptance/2026-11-10/goal-state-ledger.md:154-159",
+      "tests/e2e/artifacts/report.json (only contains 2026-11-11 planner-country-rules.spec.ts)",
+      "docs/acceptance/2026-10-13/account-auth/shots/de-lost-password.png (pre-redesign Oct 13 artifact on t110, stale relative to PR #187/#678/#751/#1055)"
+    ],
+    "reason": "tests/e2e/artifacts/ 无对应运行报告，docs/acceptance/ 仅存 10-13/10-18 改版前旧截图，且 goal-state-ledger.md:154-159 明确要求独立重验；提案标为需本地实例补跑并回退为 pending 待补跑。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/kundendienst/@390",
+    "updates": {
+      "visual_review": "partially-verified",
+      "findings": [],
+      "resolved_findings": {
+        "services-audience-tabs-small": {
+          "prs": [
+            701,
+            889
+          ],
+          "commits": [
+            "c8e5126c9",
+            "ed68d1c3f"
+          ],
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-marketing-correction.json",
+            "2026-11-13 Playwright 390x844 https://de-linker.com/de/kundendienst/: both .service-role-nav buttons fontSize=14px, lineHeight=19.6px, height=44px, width=174px, scrollWidth=390=innerWidth"
+          ]
+        }
+      }
+    },
+    "evidence": [
+      "PR #701 (c8e5126c9) + PR #889 (ed68d1c3f)",
+      "2026-11-13 Playwright 390x844 https://de-linker.com/de/kundendienst/ -> 14px / 44px / 0 overflow",
+      "docs/acceptance/2026-11-13/matrix-batch-updates/known-defects-probe.json#deKundendienst.390"
+    ],
+    "reason": "PR #701 与 #889 已将受众切换按钮放大至 14px 字号 / 44px 高度，verified_checks.marketing_controls_701 已记 bounded-pass，2026-11-13 线上实测确认；消除 page-matrix 唯一残留的 partial-with-finding。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/@1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "etr-manual-only-pairing-labelled-compatibility-list": {
+          "commit": "a316a69aca194179a94bd63803dc316e35e9637d",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "plugins/linker-commerce/includes/Presentation/ProductShortcodes.php::pairing_status()",
+            "2026-11-13 Playwright live probe: GW208.9-BAT-LCD-G10 displays 'Partially documented' (EN) / 'Teilweise dokumentiert' (DE); GW261.2-BAT-LCD-G10 displays 'Documented by GoodWe' / 'Von GoodWe dokumentiert'"
+          ]
+        }
+      }
+    },
+    "evidence": [
+      "commit a316a69ac (ProductShortcodes::pairing_status one_way branch)",
+      "2026-11-13 Playwright live probe on EN/DE GoodWe ETR 125kW PDP"
+    ],
+    "reason": "a316a69ac 已区分 one_way 手册关系与正式兼容列表；线上实测 GW208.9 显示 Partially documented / Teilweise dokumentiert，已不再误标为兼容列表，可核销。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/produkt/goodwe-etr-125-kw-ci-dreiphasiger-hybridwechselrichter-1000v/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "etr-manual-only-pairing-labelled-compatibility-list": {
+          "commit": "a316a69aca194179a94bd63803dc316e35e9637d",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "plugins/linker-commerce/includes/Presentation/ProductShortcodes.php::pairing_status()",
+            "2026-11-13 Playwright live probe: GW208.9-BAT-LCD-G10 displays 'Partially documented' (EN) / 'Teilweise dokumentiert' (DE); GW261.2-BAT-LCD-G10 displays 'Documented by GoodWe' / 'Von GoodWe dokumentiert'"
+          ]
+        }
+      }
+    },
+    "evidence": [
+      "commit a316a69ac (ProductShortcodes::pairing_status one_way branch)",
+      "2026-11-13 Playwright live probe on EN/DE GoodWe ETR 125kW PDP"
+    ],
+    "reason": "a316a69ac 已区分 one_way 手册关系与正式兼容列表；线上实测 GW208.9 显示 Partially documented / Teilweise dokumentiert，已不再误标为兼容列表，可核销。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/product/goodwe-esa-gw125-261-esa-lcn-g10/@1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "pdp-6321-article-product-terminology": {
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "2026-11-13 Playwright live probe on https://de-linker.com/product/goodwe-esa-gw125-261-esa-lcn-g10/: 'This product is one cabinet; with a SEC3000C controller up to 20 cabinets operate in parallel.' and 'With a GoodWe STS switching cabinet (separate device, not part of this product)'; 0 matches for 'This article is one cabinet' or 'not part of this article'"
+          ]
+        }
+      }
+    },
+    "evidence": [
+      "2026-11-13 Playwright live probe on https://de-linker.com/product/goodwe-esa-gw125-261-esa-lcn-g10/"
+    ],
+    "reason": "2026-11-13 线上 PDP 实测 intro 与 spec 均已改为 'This product is one cabinet' 与 'not part of this product'，原 article 禁用词已消除，可核销。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/produkt/saj-ats1-t63-a/@1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "saj-ats-de-faq-grammar": {
+          "commit": "66c31e3738eb7aee1fa7fc85bdb5e14ee605e383",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "2026-11-13 Playwright live probe on https://de-linker.com/de/produkt/saj-ats1-t63-a/: full textContent shows 0 occurrences of 'im ATS Box'; breaker FAQ reads 'in der Einheit oder im externen Verteiler montiert'"
+          ]
+        }
+      }
+    },
+    "evidence": [
+      "commit 66c31e373",
+      "2026-11-13 Playwright live probe on https://de-linker.com/de/produkt/saj-ats1-t63-a/"
+    ],
+    "reason": "66c31e373 修正 FAQ 措辞且 2026-11-13 线上实测整页 textContent 已无 'im ATS Box'（现为 'in der Einheit oder im externen Verteiler montiert'），可核销。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/produkt/saj-ats1-t63-a/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "saj-ats-de-faq-grammar": {
+          "commit": "66c31e3738eb7aee1fa7fc85bdb5e14ee605e383",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "2026-11-13 Playwright live probe on https://de-linker.com/de/produkt/saj-ats1-t63-a/: full textContent shows 0 occurrences of 'im ATS Box'; breaker FAQ reads 'in der Einheit oder im externen Verteiler montiert'"
+          ]
+        }
+      }
+    },
+    "evidence": [
+      "commit 66c31e373",
+      "2026-11-13 Playwright live probe on https://de-linker.com/de/produkt/saj-ats1-t63-a/"
+    ],
+    "reason": "66c31e373 修正 FAQ 措辞且 2026-11-13 线上实测整页 textContent 已无 'im ATS Box'（现为 'in der Einheit oder im externen Verteiler montiert'），可核销。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/batteriegroesse-heimspeicher-notstrom/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "blog-de-independent-cover-alt-english": {
+          "pr": 747,
+          "commit": "c89ca5a0cb0534c839bb5b1ea37347b70ac0502a",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "2026-11-13 Playwright live probe: cover img alt='GoodWe Lynx Home F Hochvolt-Batterie'; related card img alt=''",
+            "docs/acceptance/2026-11-13/matrix-batch-updates/known-defects-probe.json#deBlogCoverAlts"
+          ]
+        }
+      }
+    },
+    "evidence": [
+      "PR #747 (c89ca5a0c, CoverAlt.php)",
+      "2026-11-13 Playwright live probe: cover img alt='GoodWe Lynx Home F Hochvolt-Batterie'"
+    ],
+    "reason": "PR #747 已完成德语博客封面 alt 本地化（CoverAlt.php），2026-11-13 线上实测两篇文章封面 alt 均为准确德语，相关文章缩略图 alt=''，可核销。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/innen-vs-aussen-akku-planung/@390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "blog-de-independent-cover-alt-english": {
+          "pr": 747,
+          "commit": "c89ca5a0cb0534c839bb5b1ea37347b70ac0502a",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "2026-11-13 Playwright live probe: cover img alt='Eine GoodWe-Batterie und ein Hybrid-Wechselrichter sind an der Außenwand eines Hauses montiert.'; related card img alt=''",
+            "docs/acceptance/2026-11-13/matrix-batch-updates/known-defects-probe.json#deBlogCoverAlts"
+          ]
+        }
+      }
+    },
+    "evidence": [
+      "PR #747 (c89ca5a0c, CoverAlt.php)",
+      "2026-11-13 Playwright live probe: cover img alt='Eine GoodWe-Batterie und ein Hybrid-Wechselrichter sind an der Außenwand eines Hauses montiert.'"
+    ],
+    "reason": "PR #747 已完成德语博客封面 alt 本地化（CoverAlt.php），2026-11-13 线上实测两篇文章封面 alt 均为准确德语，相关文章缩略图 alt=''，可核销。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/loesung/heimspeicher/@1440",
+    "updates": {
+      "findings": [
+        "Partial residual only (default pane-0/pane-1 media & .lk-h2/.lk-h3 hyphens:manual resolved by PR #721/#722): H1 .lk-hero-title still computes hyphens:auto (no break observed) and non-default tool-pane-2 video/poster remains English (linker-advisor-lookup-for-installers.mp4)."
+      ],
+      "resolved_findings": {
+        "residential-de-section-headings-and-default-preview": {
+          "prs": [
+            721,
+            722
+          ],
+          "commits": [
+            "b74b9b18a",
+            "c7b82be46"
+          ],
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "2026-11-13 Playwright 390/1440 https://de-linker.com/de/loesung/heimspeicher/: .lk-h2/.lk-h3 hyphens=manual; tool-pane-0 uses /wp-content/uploads/2026/09/planner-de.jpg (alt='Lösungskonfigurator')"
+          ]
+        }
+      }
+    },
+    "evidence": [
+      "PR #721 (b74b9b18a) + PR #722 (c7b82be46)",
+      "2026-11-13 Playwright 390/1440 probe + known-defects-probe.json#deHeimspeicher"
+    ],
+    "reason": "PR #721/#722 已解决默认预览图（planner-de.jpg）与正文二级/三级标题断词（hyphens:manual），但实测 H1 仍为 hyphens:auto 且第 3 面板视频仍为英文，收窄 findings 为仅保留真实余项。"
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/loesung/heimspeicher/@390",
+    "updates": {
+      "findings": [
+        "Partial residual only (default pane-0/pane-1 media & .lk-h2/.lk-h3 hyphens:manual resolved by PR #721/#722): H1 .lk-hero-title still computes hyphens:auto (no break observed) and non-default tool-pane-2 video/poster remains English (linker-advisor-lookup-for-installers.mp4)."
+      ],
+      "resolved_findings": {
+        "residential-de-section-headings-and-default-preview": {
+          "prs": [
+            721,
+            722
+          ],
+          "commits": [
+            "b74b9b18a",
+            "c7b82be46"
+          ],
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "2026-11-13 Playwright 390/1440 https://de-linker.com/de/loesung/heimspeicher/: .lk-h2/.lk-h3 hyphens=manual; tool-pane-0 uses /wp-content/uploads/2026/09/planner-de.jpg (alt='Lösungskonfigurator')"
+          ]
+        }
+      }
+    },
+    "evidence": [
+      "PR #721 (b74b9b18a) + PR #722 (c7b82be46)",
+      "2026-11-13 Playwright 390/1440 probe + known-defects-probe.json#deHeimspeicher"
+    ],
+    "reason": "PR #721/#722 已解决默认预览图（planner-de.jpg）与正文二级/三级标题断词（hyphens:manual），但实测 H1 仍为 hyphens:auto 且第 3 面板视频仍为英文，收窄 findings 为仅保留真实余项。"
+  },
+  {
+    "matrix": "state",
+    "key": "global-navigation:search-empty:en:390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "product-q-only-empty-filter-guidance": {
+          "pr": 751,
+          "commit": "1ef69c11b",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "2026-11-13 Playwright 390x844 https://de-linker.com/products/?q=xyzzy-nonexistent shows q-only empty message with no clear-filter prompt"
+          ]
+        }
+      }
+    },
+    "evidence": [
+      "PR #751 (1ef69c11b)",
+      "verified_checks.751_product_q_only_empty (already marked resolved-by-751-production-readback)",
+      "2026-11-13 Playwright 390x844 https://de-linker.com/products/?q=xyzzy-nonexistent"
+    ],
+    "reason": "行内 verified_checks.751_product_q_only_empty 已标 resolved-by-751-production-readback，且 2026-11-13 线上实测无筛选器时不再提示清除筛选，清空残留 findings[]。"
+  },
+  {
+    "matrix": "state",
+    "key": "global-navigation:search-empty:de:390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "product-q-only-empty-filter-guidance": {
+          "pr": 751,
+          "commit": "1ef69c11b",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "2026-11-13 Playwright 390x844 https://de-linker.com/de/produkte/?q=xyzzy-nonexistent shows q-only empty message with no clear-filter prompt"
+          ]
+        }
+      }
+    },
+    "evidence": [
+      "PR #751 (1ef69c11b)",
+      "verified_checks.751_product_q_only_empty (already marked resolved-by-751-production-readback)",
+      "2026-11-13 Playwright 390x844 https://de-linker.com/de/produkte/?q=xyzzy-nonexistent"
+    ],
+    "reason": "行内 verified_checks.751_product_q_only_empty 已标 resolved-by-751-production-readback，且 2026-11-13 线上实测无筛选器时不再提示清除筛选，清空残留 findings[]。"
+  },
+  {
+    "matrix": "state",
+    "key": "blog:index:de:1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "legacy-blog-finding": {
+          "pr_ref": "PR #746 (03a58911d) + PR #747 (3ff49c684)",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "2026-11-13 Playwright https://de-linker.com/de/blog/: all 12 linked card img elements have alt=''"
+          ]
+        }
+      }
+    },
+    "evidence": [
+      "PR #746 (03a58911d) + PR #747 (3ff49c684)",
+      "2026-11-13 Playwright https://de-linker.com/de/blog/: all 12 linked card img elements have alt=''"
+    ],
+    "reason": "PR #746 (03a58911d) + PR #747 (3ff49c684) 已修复并经 2026-11-13 生产只读 Playwright 探针证实，核销残留的 local candidate only 提示。"
+  },
+  {
+    "matrix": "state",
+    "key": "blog:article-related:de:390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "legacy-blog-finding": {
+          "pr_ref": "PR #746 (03a58911d)",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "2026-11-13 Playwright https://de-linker.com/de/batteriegroesse-heimspeicher-notstrom/ & /de/innen-vs-aussen-akku-planung/: related card img elements have alt=''"
+          ]
+        }
+      }
+    },
+    "evidence": [
+      "PR #746 (03a58911d)",
+      "2026-11-13 Playwright https://de-linker.com/de/batteriegroesse-heimspeicher-notstrom/ & /de/innen-vs-aussen-akku-planung/: related card img elements have alt=''"
+    ],
+    "reason": "PR #746 (03a58911d) 已修复并经 2026-11-13 生产只读 Playwright 探针证实，核销残留的 local candidate only 提示。"
+  },
+  {
+    "matrix": "state",
+    "key": "blog:search-results:de:390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "legacy-blog-finding": {
+          "pr_ref": "PR #746 (03a58911d)",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "2026-11-13 Playwright https://de-linker.com/de/?s=&post_type=post: h1='Alle Beiträge', title='Alle Beiträge | Linker'"
+          ]
+        }
+      }
+    },
+    "evidence": [
+      "PR #746 (03a58911d)",
+      "2026-11-13 Playwright https://de-linker.com/de/?s=&post_type=post: h1='Alle Beiträge', title='Alle Beiträge | Linker'"
+    ],
+    "reason": "PR #746 (03a58911d) 已修复并经 2026-11-13 生产只读 Playwright 探针证实，核销残留的 local candidate only 提示。"
+  },
+  {
+    "matrix": "state",
+    "key": "blog:search-pagination-query-preserved:de:390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "legacy-blog-finding": {
+          "pr_ref": "PR #746 (03a58911d)",
+          "resolved_at_probe": "2026-11-13",
+          "evidence": [
+            "2026-11-13 Playwright https://de-linker.com/de/?s=Notstrom&post_type=post -> EN link https://de-linker.com/?s=Notstrom&post_type=post (htmlLang=en-US, lang param absent)"
+          ]
+        }
+      }
+    },
+    "evidence": [
+      "PR #746 (03a58911d)",
+      "2026-11-13 Playwright https://de-linker.com/de/?s=Notstrom&post_type=post -> EN link https://de-linker.com/?s=Notstrom&post_type=post (htmlLang=en-US, lang param absent)"
+    ],
+    "reason": "PR #746 (03a58911d) 已修复并经 2026-11-13 生产只读 Playwright 探针证实，核销残留的 local candidate only 提示。"
+  },
+  {
+    "matrix": "state",
+    "key": "genie:ordinary-draft-failure-owner-isolation:en:1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "ordinary-draft-failure-owner-isolation-discovery": {
+          "commit": "ac5bfe31926b1529b720fe6c6ca1f8d31af1387e",
+          "evidence": [
+            "tests/e2e/specs/genie-failure-ownership.spec.ts (2026-11-10 differential run green across en/de x 1440/390)"
+          ]
+        }
+      }
+    },
+    "evidence": [
+      "commit ac5bfe319 (status already flipped to pass via genie-failure-ownership.spec.ts)",
+      "docs/acceptance/2026-11-10/goal-state-ledger.md:72-75"
+    ],
+    "reason": "状态已于 ac5bfe319 凭 genie-failure-ownership.spec.ts 闭环为 pass，findings[] 仍留存发现期旧文，移入 resolved_findings。"
+  },
+  {
+    "matrix": "state",
+    "key": "genie:ordinary-draft-failure-owner-isolation:en:390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "ordinary-draft-failure-owner-isolation-discovery": {
+          "commit": "ac5bfe31926b1529b720fe6c6ca1f8d31af1387e",
+          "evidence": [
+            "tests/e2e/specs/genie-failure-ownership.spec.ts (2026-11-10 differential run green across en/de x 1440/390)"
+          ]
+        }
+      }
+    },
+    "evidence": [
+      "commit ac5bfe319 (status already flipped to pass via genie-failure-ownership.spec.ts)",
+      "docs/acceptance/2026-11-10/goal-state-ledger.md:72-75"
+    ],
+    "reason": "状态已于 ac5bfe319 凭 genie-failure-ownership.spec.ts 闭环为 pass，findings[] 仍留存发现期旧文，移入 resolved_findings。"
+  },
+  {
+    "matrix": "state",
+    "key": "genie:ordinary-draft-failure-owner-isolation:de:1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "ordinary-draft-failure-owner-isolation-discovery": {
+          "commit": "ac5bfe31926b1529b720fe6c6ca1f8d31af1387e",
+          "evidence": [
+            "tests/e2e/specs/genie-failure-ownership.spec.ts (2026-11-10 differential run green across en/de x 1440/390)"
+          ]
+        }
+      }
+    },
+    "evidence": [
+      "commit ac5bfe319 (status already flipped to pass via genie-failure-ownership.spec.ts)",
+      "docs/acceptance/2026-11-10/goal-state-ledger.md:72-75"
+    ],
+    "reason": "状态已于 ac5bfe319 凭 genie-failure-ownership.spec.ts 闭环为 pass，findings[] 仍留存发现期旧文，移入 resolved_findings。"
+  },
+  {
+    "matrix": "state",
+    "key": "genie:ordinary-draft-failure-owner-isolation:de:390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "ordinary-draft-failure-owner-isolation-discovery": {
+          "commit": "ac5bfe31926b1529b720fe6c6ca1f8d31af1387e",
+          "evidence": [
+            "tests/e2e/specs/genie-failure-ownership.spec.ts (2026-11-10 differential run green across en/de x 1440/390)"
+          ]
+        }
+      }
+    },
+    "evidence": [
+      "commit ac5bfe319 (status already flipped to pass via genie-failure-ownership.spec.ts)",
+      "docs/acceptance/2026-11-10/goal-state-ledger.md:72-75"
+    ],
+    "reason": "状态已于 ac5bfe319 凭 genie-failure-ownership.spec.ts 闭环为 pass，findings[] 仍留存发现期旧文，移入 resolved_findings。"
+  },
+  {
+    "matrix": "state",
+    "key": "genie:dock-keyboard-focus-escape-and-return:en:390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "dock-keyboard-focus-escape-and-return": {
+          "prs": [
+            1050,
+            1082
+          ],
+          "commits": [
+            "9d17eb4e9",
+            "157576b4b",
+            "fba99fdc2"
+          ],
+          "evidence": [
+            "genie-dock.spec.ts 'the side panel takes focus, traps Tab, and Escape returns it' (en 390x844) - green on the instance cdock390 built from snapshot 20261105-1208 (2 passed, 7.8s). The spec drives the side-panel continuation: hero prompt -> Enter -> 'Continue in the side panel' -> the dock's bottom sheet. Asserts role=dialog + aria-modal=true, page inert, body scroll held, composer as the entrance focus, 14 Tabs all inside the mount with the guest account links reachable, nested Help taking the first Escape and giving focus back to its summary, the second Escape closing the sheet and releasing inert/scroll, and focus returning to .hero-prompt, which then reopens the hero from the keyboard. Regression proof: with useHelperDialog reverted to main and the bundle rebuilt, both locales fail at the composer entrance assertion."
+          ]
+        }
+      }
+    },
+    "evidence": [
+      "PR #1082 (157576b4b, genie-dock.spec.ts 390 side-panel continuation + useHelperDialog fix)",
+      "PR #1050 (9d17eb4e9, genie-cross-surface-entry across en/de x 1440/390)",
+      "commit fba99fdc2 (1440 dock escape-return)"
+    ],
+    "reason": "390 行 findings[] 内已自带 resolved 2026-11-11；1440 行仍挂历史 Batch A 手机端 Continue 旧文，相关规格已由 PR #1050/#1082 与 fba99fdc2 闭环，统一迁入 resolved_findings。"
+  },
+  {
+    "matrix": "state",
+    "key": "genie:dock-keyboard-focus-escape-and-return:de:390",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "dock-keyboard-focus-escape-and-return": {
+          "prs": [
+            1050,
+            1082
+          ],
+          "commits": [
+            "9d17eb4e9",
+            "157576b4b",
+            "fba99fdc2"
+          ],
+          "evidence": [
+            "genie-dock.spec.ts 'the side panel takes focus, traps Tab, and Escape returns it' (de 390x844) - green on the instance cdock390 built from snapshot 20261105-1208 (2 passed, 7.8s). The spec drives the side-panel continuation: hero prompt -> Enter -> 'In der Seitenleiste fortsetzen' -> the dock's bottom sheet. Asserts role=dialog + aria-modal=true, page inert, body scroll held, composer as the entrance focus, 14 Tabs all inside the mount with the guest account links reachable, nested Help taking the first Escape and giving focus back to its summary, the second Escape closing the sheet and releasing inert/scroll, and focus returning to .hero-prompt, which then reopens the hero from the keyboard. Regression proof: with useHelperDialog reverted to main and the bundle rebuilt, both locales fail at the composer entrance assertion."
+          ]
+        }
+      }
+    },
+    "evidence": [
+      "PR #1082 (157576b4b, genie-dock.spec.ts 390 side-panel continuation + useHelperDialog fix)",
+      "PR #1050 (9d17eb4e9, genie-cross-surface-entry across en/de x 1440/390)",
+      "commit fba99fdc2 (1440 dock escape-return)"
+    ],
+    "reason": "390 行 findings[] 内已自带 resolved 2026-11-11；1440 行仍挂历史 Batch A 手机端 Continue 旧文，相关规格已由 PR #1050/#1082 与 fba99fdc2 闭环，统一迁入 resolved_findings。"
+  },
+  {
+    "matrix": "state",
+    "key": "genie:dock-keyboard-focus-escape-and-return:en:1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "dock-keyboard-focus-escape-and-return": {
+          "prs": [
+            1050,
+            1082
+          ],
+          "commits": [
+            "9d17eb4e9",
+            "157576b4b",
+            "fba99fdc2"
+          ],
+          "evidence": [
+            "genie-live-turns-20261107.json"
+          ]
+        }
+      }
+    },
+    "evidence": [
+      "PR #1082 (157576b4b, genie-dock.spec.ts 390 side-panel continuation + useHelperDialog fix)",
+      "PR #1050 (9d17eb4e9, genie-cross-surface-entry across en/de x 1440/390)",
+      "commit fba99fdc2 (1440 dock escape-return)"
+    ],
+    "reason": "390 行 findings[] 内已自带 resolved 2026-11-11；1440 行仍挂历史 Batch A 手机端 Continue 旧文，相关规格已由 PR #1050/#1082 与 fba99fdc2 闭环，统一迁入 resolved_findings。"
+  },
+  {
+    "matrix": "state",
+    "key": "genie:dock-keyboard-focus-escape-and-return:de:1440",
+    "updates": {
+      "findings": [],
+      "resolved_findings": {
+        "dock-keyboard-focus-escape-and-return": {
+          "prs": [
+            1050,
+            1082
+          ],
+          "commits": [
+            "9d17eb4e9",
+            "157576b4b",
+            "fba99fdc2"
+          ],
+          "evidence": [
+            "review-instance keyboard probe 2026-11-11 (Playwright real keys, 2.4s): dock opens at de 1440, Escape hides the app and focus returns to a BUTTON - the escape-return contract"
+          ]
+        }
+      }
+    },
+    "evidence": [
+      "PR #1082 (157576b4b, genie-dock.spec.ts 390 side-panel continuation + useHelperDialog fix)",
+      "PR #1050 (9d17eb4e9, genie-cross-surface-entry across en/de x 1440/390)",
+      "commit fba99fdc2 (1440 dock escape-return)"
+    ],
+    "reason": "390 行 findings[] 内已自带 resolved 2026-11-11；1440 行仍挂历史 Batch A 手机端 Continue 旧文，相关规格已由 PR #1050/#1082 与 fba99fdc2 闭环，统一迁入 resolved_findings。"
+  }
+]

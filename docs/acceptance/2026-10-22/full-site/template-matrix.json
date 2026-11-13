@@ -5,10 +5,38 @@
     "title": "FAQ & documents",
     "lang": "en",
     "sha256": "f9d1c42ea4a0f8828a6f23767a43f6ecfe1ed07b8595c844ae1e52530f7fec10",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
-    "evidence": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/faq-download/",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6969 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET; page 932 lc_use_template_of_slug=linker-faq"
+      },
+      {
+        "url": "https://de-linker.com/faq-download/?tab=documents",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6969 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET documents tab query state"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "en",
+      "singular-page-lc_use_template_of_slug",
+      "faq-tab",
+      "documents-tab"
+    ],
+    "evidence": [
+      "GET https://de-linker.com/faq-download/ -> 200, <!-- LC DT ID: 6969 -->",
+      "GET https://de-linker.com/faq-download/?tab=documents -> 200, <!-- LC DT ID: 6969 -->",
+      "WP-CLI post 932 lc_use_template_of_slug=linker-faq; template 6969 pll_lang=en, sha256=e8c4a9db62db7a1dbfd2e1e68a709f2fea8b161ae1bc0dbd1183ed7f7258cc6a (matches plugins/linker-commerce/content/livecanvas/faq_page.html)",
+      "plugins/linker-commerce/includes/Presentation/Templates.php:144,858-867"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -58,6 +86,12 @@
         "receipt_key": "language_selection_followup.production_native_731",
         "scope": "Existing staff session: native EN→DE→EN with GW10K-EHA-G20, documents tab and manual type retained; the resulting EN/DE views were read at 1440 and 390, then Clear removed q while retaining tab/type. These are two language actions plus four viewport readbacks, not four independent switch actions; anonymous permissions and whole-page acceptance remain open.",
         "binding_boundary": "Actual named library pages were exercised; this does not independently prove template assignment or close overall template status."
+      },
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "e8c4a9db62db7a1dbfd2e1e68a709f2fea8b161ae1bc0dbd1183ed7f7258cc6a",
+        "baseline_sha256_matches_prod": false,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
       }
     }
   },
@@ -67,10 +101,38 @@
     "title": "FAQ & Dokumente",
     "lang": "en",
     "sha256": "b1d82f2328cafd8fe7698fc42cf76c0cfd55301b839c8d73653e13073a0d6a4d",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
-    "evidence": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/faq-dokumente/",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6970 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET; page 6863 lc_use_template_of_slug=linker-faq-de"
+      },
+      {
+        "url": "https://de-linker.com/de/faq-dokumente/?tab=documents",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6970 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET documents tab query state"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "de",
+      "singular-page-lc_use_template_of_slug",
+      "faq-tab",
+      "documents-tab"
+    ],
+    "evidence": [
+      "GET https://de-linker.com/de/faq-dokumente/ -> 200, <!-- LC DT ID: 6970 -->",
+      "GET https://de-linker.com/de/faq-dokumente/?tab=documents -> 200, <!-- LC DT ID: 6970 -->",
+      "WP-CLI post 6863 lc_use_template_of_slug=linker-faq-de; template 6970 pll_lang=en (singular name lookup ignores lang), sha256=93c06cc513c49be550bb044247a8c0bfe6d9ead59a1f8f5843c1b9a66db28da3 (matches plugins/linker-commerce/content/livecanvas/de/faq_page.html)",
+      "livecanvas/modules/templating.php:103-106,143-151; plugins/linker-commerce/includes/Presentation/Templates.php:145"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -121,6 +183,12 @@
         "receipt_key": "language_selection_followup.production_native_731",
         "scope": "Existing staff session: native EN→DE→EN with GW10K-EHA-G20, documents tab and manual type retained; the resulting EN/DE views were read at 1440 and 390, then Clear removed q while retaining tab/type. These are two language actions plus four viewport readbacks, not four independent switch actions; anonymous permissions and whole-page acceptance remain open.",
         "binding_boundary": "Actual named library pages were exercised; this does not independently prove template assignment or close overall template status."
+      },
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "93c06cc513c49be550bb044247a8c0bfe6d9ead59a1f8f5843c1b9a66db28da3",
+        "baseline_sha256_matches_prod": false,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
       }
     }
   },
@@ -130,11 +198,27 @@
     "title": "Genie",
     "lang": "en",
     "sha256": "07af703cb97defb8b657d4fce909dc27bfb71298308321ea3ed434f4d8d6cc91",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/genie/",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6971 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET; page 4083 lc_use_template_of_slug=linker-advisor"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "en",
+      "singular-page-lc_use_template_of_slug"
+    ],
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-genie-recovery.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-genie-recovery.json",
+      "GET https://de-linker.com/genie/ -> 200, <!-- LC DT ID: 6971 -->",
+      "WP-CLI post 4083 lc_use_template_of_slug=linker-advisor; sha256=07af703cb97defb8b657d4fce909dc27bfb71298308321ea3ed434f4d8d6cc91 (matches plugins/linker-commerce/content/livecanvas/advisor_page.html)",
+      "plugins/linker-commerce/includes/Presentation/Templates.php:146"
     ],
     "findings": [],
     "assignment_baseline": {
@@ -198,6 +282,12 @@
         },
         "route": "https://de-linker.com/genie/",
         "template_attribution_boundary": "Named candidate-route workspace consumer only. This CSS fault/retry evidence does not independently prove literal numericLCtemplate assignment or all template states; baseline IDs, template overallstatus, rendered_routes and assignments unchanged."
+      },
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "07af703cb97defb8b657d4fce909dc27bfb71298308321ea3ed434f4d8d6cc91",
+        "baseline_sha256_matches_prod": true,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
       }
     }
   },
@@ -207,11 +297,27 @@
     "title": "Genie",
     "lang": "en",
     "sha256": "07af703cb97defb8b657d4fce909dc27bfb71298308321ea3ed434f4d8d6cc91",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/genie/",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6972 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET; page 6633 lc_use_template_of_slug=linker-advisor-de"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "de",
+      "singular-page-lc_use_template_of_slug"
+    ],
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-genie-recovery.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-genie-recovery.json",
+      "GET https://de-linker.com/de/genie/ -> 200, <!-- LC DT ID: 6972 -->",
+      "WP-CLI post 6633 lc_use_template_of_slug=linker-advisor-de; template 6972 pll_lang=en (singular name lookup), sha256=07af703cb97defb8b657d4fce909dc27bfb71298308321ea3ed434f4d8d6cc91 (matches plugins/linker-commerce/content/livecanvas/de/advisor_page.html)",
+      "plugins/linker-commerce/includes/Presentation/Templates.php:147"
     ],
     "findings": [],
     "assignment_baseline": {
@@ -277,6 +383,12 @@
         },
         "route": "https://de-linker.com/de/genie/",
         "template_attribution_boundary": "Named candidate-route workspace consumer only. This CSS fault/retry evidence does not independently prove literal numericLCtemplate assignment or all template states; baseline IDs, template overallstatus, rendered_routes and assignments unchanged."
+      },
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "07af703cb97defb8b657d4fce909dc27bfb71298308321ea3ed434f4d8d6cc91",
+        "baseline_sha256_matches_prod": true,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
       }
     }
   },
@@ -286,10 +398,27 @@
     "title": "Solution Configurator",
     "lang": "en",
     "sha256": "d1d98433d21093a3096b40306170507d32b6bcc2a66952c501ccc3396b5ec141",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
-    "evidence": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/solution-configurator/",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6973 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET; page 3302 lc_use_template_of_slug=linker-configurator"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "en",
+      "singular-page-lc_use_template_of_slug"
+    ],
+    "evidence": [
+      "GET https://de-linker.com/solution-configurator/ -> 200, <!-- LC DT ID: 6973 -->",
+      "WP-CLI post 3302 lc_use_template_of_slug=linker-configurator; sha256=e37d4a5a9fc1a143056cafff6502d5e6272e219d886cc8d6537d21ef4c46e6c7 (matches plugins/linker-commerce/content/livecanvas/configurator_page.html)",
+      "plugins/linker-commerce/includes/Presentation/Templates.php:156"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -324,7 +453,15 @@
       "provenance"
     ],
     "coverage_contract": "coverage-contract.md",
-    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use."
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "e37d4a5a9fc1a143056cafff6502d5e6272e219d886cc8d6537d21ef4c46e6c7",
+        "baseline_sha256_matches_prod": false,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+      }
+    }
   },
   {
     "kind": "lc_dynamic_template",
@@ -332,10 +469,27 @@
     "title": "Lösungskonfigurator",
     "lang": "en",
     "sha256": "d1d98433d21093a3096b40306170507d32b6bcc2a66952c501ccc3396b5ec141",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
-    "evidence": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/loesungskonfigurator/",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6974 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET; page 6693 lc_use_template_of_slug=linker-configurator-de"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "de",
+      "singular-page-lc_use_template_of_slug"
+    ],
+    "evidence": [
+      "GET https://de-linker.com/de/loesungskonfigurator/ -> 200, <!-- LC DT ID: 6974 -->",
+      "WP-CLI post 6693 lc_use_template_of_slug=linker-configurator-de; template 6974 pll_lang=en (singular name lookup), sha256=e37d4a5a9fc1a143056cafff6502d5e6272e219d886cc8d6537d21ef4c46e6c7 (matches plugins/linker-commerce/content/livecanvas/configurator_page.html)",
+      "plugins/linker-commerce/includes/Presentation/Templates.php:157"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -371,7 +525,15 @@
       "provenance"
     ],
     "coverage_contract": "coverage-contract.md",
-    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use."
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "e37d4a5a9fc1a143056cafff6502d5e6272e219d886cc8d6537d21ef4c46e6c7",
+        "baseline_sha256_matches_prod": false,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+      }
+    }
   },
   {
     "kind": "lc_dynamic_template",
@@ -379,11 +541,56 @@
     "title": "Shop page",
     "lang": "en",
     "sha256": "4d9854644ed3c2208dde57f7fe6ad66fa54bf9933fe6d95eb27abdd092a74b5b",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
-    "evidence": [],
-    "findings": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/products/",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6961 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET EN shop page (post 1034)"
+      },
+      {
+        "url": "https://de-linker.com/products/?orderby=title",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6961 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET EN shop sorted"
+      },
+      {
+        "url": "https://de-linker.com/products/?product-page=2",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6961 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET EN shop pagination (from /products/page/2/ redirect)"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "en",
+      "shop-page",
+      "sorting",
+      "pagination",
+      "de-binding-defect"
+    ],
+    "evidence": [
+      "GET https://de-linker.com/products/ -> 200, <!-- LC DT ID: 6961 -->",
+      "GET https://de-linker.com/products/?orderby=title -> 200, <!-- LC DT ID: 6961 -->",
+      "GET https://de-linker.com/products/page/2/ -> 301/302 -> https://de-linker.com/products/?product-page=2 -> 200, <!-- LC DT ID: 6961 -->",
+      "GET https://de-linker.com/de/produkte/ -> 200, <!-- LC DT ID: 6905 --> (DEFECT: expected 6961 per effective_languages=['en','de'])",
+      "livecanvas/modules/templating.php:51-79; plugins/linker-i18n/includes/DynamicTemplates.php:90-101; plugins/linker-commerce/includes/Presentation/Templates.php:49,78-90"
+    ],
+    "findings": [
+      {
+        "id": "shop-page-de-falls-back-to-product-archive-6905",
+        "severity": "defect",
+        "summary": "https://de-linker.com/de/produkte/ renders LC DT ID: 6905 (vorlage-fur-archiv-fur-beitragstyp-produkt) instead of 6961 (shop-page).",
+        "root_cause": "livecanvas/modules/templating.php:51-79 evaluates is_archive() first (resolving DE archive template 6905) before is_shop() returns false because 6961 has pll_lang=en and no DE twin; Linker\\I18n\\DynamicTemplates::template() (plugins/linker-i18n/includes/DynamicTemplates.php:90-93) returns early whenever $template_id is truthy, so it never falls back to 6961 on /de/produkte/."
+      }
+    ],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
       "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
@@ -432,6 +639,12 @@
         "status": "pass-scoped-rendered-consumer",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json",
         "scope": "Unchanged LC template protected in native release; named product-empty/recovery shortcode/template path consumers only. Does not establish all template bindings/states."
+      },
+      "template_binding_20261113": {
+        "status": "defect",
+        "production_content_sha256": "9449e57fbd72d2c2afabeecfb232ddbc90d594ee9452b9726fe01d328acbecfe",
+        "baseline_sha256_matches_prod": false,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
       }
     }
   },
@@ -441,15 +654,41 @@
     "title": "Solution draft",
     "lang": "en",
     "sha256": "e24d4358f583077161de55b7a0b0c82ed74e0244fc169d4108a8ae0ba0def3e6",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/cart/",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6962 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET empty solution draft EN (post 1035)"
+      },
+      {
+        "url": "https://de-linker.com/de/loesungsentwurf/",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6962 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET empty solution draft DE (post 6855 via DynamicTemplates::template fallback)"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "en",
+      "de",
+      "empty-draft"
+    ],
     "evidence": [
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-online-en1440.png",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-online-de1440.png",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-online-de390.png",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-online-en390.png"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-spacing-online-en390.png",
+      "GET https://de-linker.com/cart/ -> 200, <!-- LC DT ID: 6962 -->",
+      "GET https://de-linker.com/de/loesungsentwurf/ -> 200, <!-- LC DT ID: 6962 -->",
+      "WP-CLI woocommerce_cart_page_id=1035 (DE twin 6855); template 6962 is_cart_page=1, pll_lang=en",
+      "plugins/linker-i18n/includes/DynamicTemplates.php:49-54,90-101"
     ],
     "findings": [],
     "assignment_baseline": {
@@ -511,6 +750,12 @@
           "de390"
         ],
         "scope": "Shared Solution draft initial guest-empty action spacing accepted locally and online in all four views. Template markup and native behavior unchanged. This does not establish whole-template acceptance, populated states, last-item Remove/zero, Undo, or other unique draft transitions; existing status and binding/state lists retained."
+      },
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "794f581e81b4de7bbe0c2d5e075ac0cc3664da58e73c80432abc0e5b6ea943da",
+        "baseline_sha256_matches_prod": false,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
       }
     }
   },
@@ -520,11 +765,38 @@
     "title": "Proforma request",
     "lang": "en",
     "sha256": "6ba4be52970f04b17970efb31ad00dc20f3dc2bbd1bdaa3d23dbf4d886ac34cf",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/proforma-request/",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6963 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET inquiry/checkout page EN (post 1036)"
+      },
+      {
+        "url": "https://de-linker.com/de/proforma-anfrage/",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6963 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET inquiry/checkout page DE (post 6857 via DynamicTemplates::template fallback)"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "en",
+      "de",
+      "empty-draft-inquiry-form"
+    ],
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/draft-inquiry-flow.json",
+      "GET https://de-linker.com/proforma-request/ -> 200, <!-- LC DT ID: 6963 -->",
+      "GET https://de-linker.com/de/proforma-anfrage/ -> 200, <!-- LC DT ID: 6963 -->",
+      "GET https://de-linker.com/proforma-request/order-received/ -> 404 (LC DT ID: 940; unkeyed confirmation endpoint returns 404)",
+      "WP-CLI woocommerce_checkout_page_id=1036 (DE twin 6857); template 6963 is_checkout_page=1, pll_lang=en",
+      "plugins/linker-i18n/includes/DynamicTemplates.php:49-54,90-101"
     ],
     "findings": [],
     "assignment_baseline": {
@@ -897,6 +1169,12 @@
         "delivery_phase": "published-official-compiled-public-loader-readback-native-archived",
         "overall_acceptance_boundary": "Named Notes/style delta only; retain existing overall status and unverified template binding, inquiry send/success, owner/guest/receipt contents and production keyed-page visual gates.",
         "template_scope": "Shared checkout/native Woo family for EN/DE; no new selected-ID/binding or whole-template acceptance."
+      },
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "6ba4be52970f04b17970efb31ad00dc20f3dc2bbd1bdaa3d23dbf4d886ac34cf",
+        "baseline_sha256_matches_prod": true,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
       }
     }
   },
@@ -906,10 +1184,71 @@
     "title": "Account",
     "lang": "en",
     "sha256": "6ff7873f87bfc33a20253ca5223eaedbab74d43f0b80fc7dad55b3a83e80a9a7",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
-    "evidence": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/my-account/",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6964 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET sign-in gate EN (post 1037)"
+      },
+      {
+        "url": "https://de-linker.com/my-account/register/",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6964 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET register endpoint EN"
+      },
+      {
+        "url": "https://de-linker.com/my-account/lost-password/",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6964 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET lost-password endpoint EN"
+      },
+      {
+        "url": "https://de-linker.com/de/mein-konto/",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6964 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET sign-in gate DE (post 6859 via DynamicTemplates::template fallback)"
+      },
+      {
+        "url": "https://de-linker.com/de/mein-konto/registrieren/",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6964 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET register endpoint DE (GermanRoutes ENDPOINTS['register'])"
+      },
+      {
+        "url": "https://de-linker.com/de/mein-konto/passwort-zuruecksetzen/",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6964 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET lost-password endpoint DE (GermanRoutes ENDPOINTS['lost-password'])"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "en",
+      "de",
+      "sign-in",
+      "register",
+      "lost-password"
+    ],
+    "evidence": [
+      "GET https://de-linker.com/my-account/ & /register/ & /lost-password/ -> 200, <!-- LC DT ID: 6964 -->",
+      "GET https://de-linker.com/de/mein-konto/ & /registrieren/ & /passwort-zuruecksetzen/ -> 200, <!-- LC DT ID: 6964 -->",
+      "WP-CLI woocommerce_myaccount_page_id=1037 (DE twin 6859); template 6964 is_account_page=1, pll_lang=en",
+      "plugins/linker-i18n/includes/DynamicTemplates.php:49-54,90-101; plugins/linker-i18n/includes/GermanRoutes.php:77-88"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -962,6 +1301,12 @@
         "status": "pass-scoped-rendered-consumer",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json",
         "scope": "Unchanged LC template protected in native release; named product-empty/recovery shortcode/template path consumers only. Does not establish all template bindings/states."
+      },
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "6ff7873f87bfc33a20253ca5223eaedbab74d43f0b80fc7dad55b3a83e80a9a7",
+        "baseline_sha256_matches_prod": true,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
       }
     }
   },
@@ -971,10 +1316,38 @@
     "title": "Compare products",
     "lang": "en",
     "sha256": "0f8355269d0f5120a4d7d42137001b2c2dafd6228b26e5dec05b770d10176076",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
-    "evidence": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/compare-products/",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6967 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET empty comparison EN (post 5385)"
+      },
+      {
+        "url": "https://de-linker.com/compare-products/?ids=1832,6530",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6967 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET populated comparison EN"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "en",
+      "singular-page-lc_use_template_of_slug",
+      "empty-selection",
+      "populated-comparison"
+    ],
+    "evidence": [
+      "GET https://de-linker.com/compare-products/ -> 200, <!-- LC DT ID: 6967 -->",
+      "GET https://de-linker.com/compare-products/?ids=1832,6530 -> 200, <!-- LC DT ID: 6967 -->",
+      "WP-CLI post 5385 lc_use_template_of_slug=linker-compare",
+      "plugins/linker-commerce/includes/Presentation/Templates.php:142"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -1019,6 +1392,12 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/753-online-consumers.json",
         "delivery_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/comparison-integrity-browser.json",
         "scope": "Named EN comparison route, actual 1440/390 grouped and sparse power rows for products 1832 and 6530 read correctly; mobile scroll evidenced. The entry is associated with the candidate template only: template binding, other states and overall template status remain pending."
+      },
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "0f8355269d0f5120a4d7d42137001b2c2dafd6228b26e5dec05b770d10176076",
+        "baseline_sha256_matches_prod": true,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
       }
     }
   },
@@ -1028,10 +1407,38 @@
     "title": "Produkte vergleichen",
     "lang": "en",
     "sha256": "69a8e0f2302984a9673c69b1fef9ae1b4058d3e8540dcfcc0435e74e54c4ca32",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
-    "evidence": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/produkte-vergleichen/",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6968 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET empty comparison DE (post 6600)"
+      },
+      {
+        "url": "https://de-linker.com/de/produkte-vergleichen/?ids=1832,6530",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6968 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET populated comparison DE"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "de",
+      "singular-page-lc_use_template_of_slug",
+      "empty-selection",
+      "populated-comparison"
+    ],
+    "evidence": [
+      "GET https://de-linker.com/de/produkte-vergleichen/ -> 200, <!-- LC DT ID: 6968 -->",
+      "GET https://de-linker.com/de/produkte-vergleichen/?ids=1832,6530 -> 200, <!-- LC DT ID: 6968 -->",
+      "WP-CLI post 6600 lc_use_template_of_slug=linker-compare-de; template 6968 pll_lang=en (singular name lookup)",
+      "plugins/linker-commerce/includes/Presentation/Templates.php:143"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -1077,6 +1484,12 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/753-online-consumers.json",
         "delivery_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/comparison-integrity-browser.json",
         "scope": "Named DE comparison route, actual 1440/390 grouped and sparse power rows for products 1832 and 6530 read correctly; mobile scroll evidenced. The entry is associated with the candidate template only: template binding, other states and overall template status remain pending."
+      },
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "69a8e0f2302984a9673c69b1fef9ae1b4058d3e8540dcfcc0435e74e54c4ca32",
+        "baseline_sha256_matches_prod": true,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
       }
     }
   },
@@ -1086,10 +1499,55 @@
     "title": "Template for 404",
     "lang": "en",
     "sha256": "2bc5956df04e195a386a16ee24e3b2793413699c6c97f6d7b2b2453119e1149d",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
-    "evidence": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/_coverage-review-missing-route/",
+        "lang": "en",
+        "http_status": 404,
+        "marker": "<!-- LC DT ID: 940 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET synthetic missing EN route"
+      },
+      {
+        "url": "https://de-linker.com/products/?pa_brand=nonexistent_zzz",
+        "lang": "en",
+        "http_status": 404,
+        "marker": "<!-- LC DT ID: 940 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET invalid taxonomy filter query"
+      },
+      {
+        "url": "https://de-linker.com/products/page/999/",
+        "lang": "en",
+        "http_status": 404,
+        "marker": "<!-- LC DT ID: 940 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET out-of-range shop pagination"
+      },
+      {
+        "url": "https://de-linker.com/author/admin/",
+        "lang": "en",
+        "http_status": 404,
+        "marker": "<!-- LC DT ID: 940 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET disabled/empty author archive"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "en",
+      "http-404",
+      "out-of-range-pagination",
+      "missing-route"
+    ],
+    "evidence": [
+      "GET https://de-linker.com/_coverage-review-missing-route/ -> 404, <!-- LC DT ID: 940 -->",
+      "GET https://de-linker.com/products/?pa_brand=nonexistent_zzz -> 404, <!-- LC DT ID: 940 -->",
+      "GET https://de-linker.com/products/page/999/ -> 404, <!-- LC DT ID: 940 -->",
+      "GET https://de-linker.com/author/admin/ -> 404, <!-- LC DT ID: 940 -->",
+      "Playwright desktop 1440 verified header (Primary navigation) & footer (Footer navigation) present on 404 EN"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -1124,7 +1582,15 @@
       "provenance"
     ],
     "coverage_contract": "coverage-contract.md",
-    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use."
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "2bc5956df04e195a386a16ee24e3b2793413699c6c97f6d7b2b2453119e1149d",
+        "baseline_sha256_matches_prod": true,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+      }
+    }
   },
   {
     "kind": "lc_dynamic_template",
@@ -1132,10 +1598,54 @@
     "title": "Vorlage für 404",
     "lang": "de",
     "sha256": "1fbec46ac6f24b8bc4b2bd9ff3b6495c551ecb23a86bace71bda88e2ed168398",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
-    "evidence": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/_coverage-review-missing-route/",
+        "lang": "de",
+        "http_status": 404,
+        "marker": "<!-- LC DT ID: 6861 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET synthetic missing DE route"
+      },
+      {
+        "url": "https://de-linker.com/de/produkte/?pa_brand=nonexistent_zzz",
+        "lang": "de",
+        "http_status": 404,
+        "marker": "<!-- LC DT ID: 6861 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET invalid DE taxonomy filter query"
+      },
+      {
+        "url": "https://de-linker.com/de/produkte/seite/999/",
+        "lang": "de",
+        "http_status": 404,
+        "marker": "<!-- LC DT ID: 6861 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET out-of-range DE shop pagination"
+      },
+      {
+        "url": "https://de-linker.com/de/mein-konto/passwort-vergessen/",
+        "lang": "de",
+        "http_status": 404,
+        "marker": "<!-- LC DT ID: 6861 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET non-existent account endpoint alias (actual slug is passwort-zuruecksetzen)"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "de",
+      "http-404",
+      "out-of-range-pagination",
+      "missing-route"
+    ],
+    "evidence": [
+      "GET https://de-linker.com/de/_coverage-review-missing-route/ -> 404, <!-- LC DT ID: 6861 -->",
+      "GET https://de-linker.com/de/produkte/?pa_brand=nonexistent_zzz -> 404, <!-- LC DT ID: 6861 -->",
+      "GET https://de-linker.com/de/produkte/seite/999/ -> 404, <!-- LC DT ID: 6861 -->",
+      "Playwright desktop 1440 verified header (Primäre Navigation) & footer (Fußzeilen-Navigation) present on 404 DE"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -1170,7 +1680,15 @@
       "provenance"
     ],
     "coverage_contract": "coverage-contract.md",
-    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use."
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "1e9a125febb6f98985989be3636c9e72a1855cc9389e728925b587983cbc1df3",
+        "baseline_sha256_matches_prod": false,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+      }
+    }
   },
   {
     "kind": "lc_dynamic_template",
@@ -1178,11 +1696,46 @@
     "title": "Blog search results",
     "lang": "en",
     "sha256": "8a8170434531cbe463558f078137feb841df7f9b36fb4a349b8cd4494d20940d",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/?s=SAJ",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 619 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET global search with results EN"
+      },
+      {
+        "url": "https://de-linker.com/?s=nonexistent_zzz_123",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 619 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET global search empty results EN"
+      },
+      {
+        "url": "https://de-linker.com/?s=SAJ&post_type=post",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 619 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET journal-scoped search EN"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "en",
+      "search-with-results",
+      "search-empty-results",
+      "journal-search"
+    ],
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+      "GET https://de-linker.com/?s=SAJ -> 200, <!-- LC DT ID: 619 -->",
+      "GET https://de-linker.com/?s=nonexistent_zzz_123 -> 200, <!-- LC DT ID: 619 -->",
+      "GET https://de-linker.com/?s=SAJ&post_type=post -> 200, <!-- LC DT ID: 619 -->",
+      "WP-CLI template 619 is_search=1, pll_lang=en, sha256=7e5d7456889e3eb93dd0362cf290264f3b9fa2f408e16b51dffc50fe8315d8fc (matches search.html)"
     ],
     "findings": [],
     "assignment_baseline": {
@@ -1273,6 +1826,12 @@
         "body_sha256_at_release": "7e5d7456889e3eb93dd0362cf290264f3b9fa2f408e16b51dffc50fe8315d8fc",
         "consumer_evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/746-blog-online-browser.json",
         "scope": "Current after PR 746: search LC body read back exactly; staff 390 bilingual journal search and language-switch cases observed, earlier 1440 proof reused. No whole-template visual or binding closure."
+      },
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "7e5d7456889e3eb93dd0362cf290264f3b9fa2f408e16b51dffc50fe8315d8fc",
+        "baseline_sha256_matches_prod": false,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
       }
     }
   },
@@ -1282,11 +1841,46 @@
     "title": "Vorlage für die Suche",
     "lang": "de",
     "sha256": "ce230ffe9b8ec62d6f565b6c111db7cbe5d4352a7c823d14598715801586f591",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/?s=SAJ",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6875 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET global search with results DE"
+      },
+      {
+        "url": "https://de-linker.com/de/?s=nonexistent_zzz_123",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6875 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET global search empty results DE"
+      },
+      {
+        "url": "https://de-linker.com/de/?s=Notstrom&post_type=post",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6875 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET journal-scoped search DE"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "de",
+      "search-with-results",
+      "search-empty-results",
+      "journal-search"
+    ],
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+      "GET https://de-linker.com/de/?s=SAJ -> 200, <!-- LC DT ID: 6875 -->",
+      "GET https://de-linker.com/de/?s=nonexistent_zzz_123 -> 200, <!-- LC DT ID: 6875 -->",
+      "GET https://de-linker.com/de/?s=Notstrom&post_type=post -> 200, <!-- LC DT ID: 6875 -->",
+      "WP-CLI template 6875 is_search=1, pll_lang=de, sha256=c7daa8f39fdf21dc6c9728c6a6eb142ce174f667fcf877ea4bb0c13d94d854dd (matches de/search.html)"
     ],
     "findings": [],
     "assignment_baseline": {
@@ -1377,6 +1971,12 @@
         "body_sha256_at_release": "c7daa8f39fdf21dc6c9728c6a6eb142ce174f667fcf877ea4bb0c13d94d854dd",
         "consumer_evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/746-blog-online-browser.json",
         "scope": "Current after PR 746: search LC body read back exactly; staff 390 bilingual journal search and language-switch cases observed, earlier 1440 proof reused. No whole-template visual or binding closure."
+      },
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "c7daa8f39fdf21dc6c9728c6a6eb142ce174f667fcf877ea4bb0c13d94d854dd",
+        "baseline_sha256_matches_prod": false,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
       }
     }
   },
@@ -1401,11 +2001,25 @@
         "lang": "en",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json",
         "scope": "649 controls only"
+      },
+      {
+        "url": "https://de-linker.com/hybrid-inverter-vs-ac-coupled-storage/",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 613 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET blog single post EN (post 551)"
       }
     ],
-    "applicable_states": [],
+    "applicable_states": [
+      "anonymous-guest",
+      "en",
+      "single-post"
+    ],
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json",
+      "GET https://de-linker.com/hybrid-inverter-vs-ac-coupled-storage/ -> 200, <!-- LC DT ID: 613 -->",
+      "WP-CLI template 613 is_single_post=1, pll_lang=en, sha256=8e8b12df1163d177037c97a4137473e0e596bdcac3baba895c590d49dbe85ec5 (matches blog_single.html)"
     ],
     "findings": [],
     "assignment_baseline": {
@@ -1449,6 +2063,12 @@
         "deploy_id": "20261025T090725Z-blog-controls-5b16bd70",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json",
         "scope": "Main/secondary article CTA, Back/All posts 44px, mobile TOC44px, action spacing, hover/focus; all labels/hrefs/prose preserved. ENDE1440/390. Native keyboard, DE mobile TOC destination and quote contact landing. Other article states/fullpage remain open."
+      },
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "8e8b12df1163d177037c97a4137473e0e596bdcac3baba895c590d49dbe85ec5",
+        "baseline_sha256_matches_prod": false,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
       }
     },
     "resolved_findings": {
@@ -1479,11 +2099,25 @@
         "lang": "de",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json",
         "scope": "649 controls only"
+      },
+      {
+        "url": "https://de-linker.com/de/hybridwechselrichter-vs-ac-speicher/",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6877 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET blog single post DE (post 6883)"
       }
     ],
-    "applicable_states": [],
+    "applicable_states": [
+      "anonymous-guest",
+      "de",
+      "single-post"
+    ],
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json",
+      "GET https://de-linker.com/de/hybridwechselrichter-vs-ac-speicher/ -> 200, <!-- LC DT ID: 6877 -->",
+      "WP-CLI template 6877 is_single_post=1, pll_lang=de, sha256=8b461729a554ac42e3555019bf9e44a9f96cf49d8bc87cf34084d75c57e7530f (matches de/blog_single.html)"
     ],
     "findings": [],
     "assignment_baseline": {
@@ -1527,6 +2161,12 @@
         "deploy_id": "20261025T090725Z-blog-controls-5b16bd70",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json",
         "scope": "Main/secondary article CTA, Back/All posts 44px, mobile TOC44px, action spacing, hover/focus; all labels/hrefs/prose preserved. ENDE1440/390. Native keyboard, DE mobile TOC destination and quote contact landing. Other article states/fullpage remain open."
+      },
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "8b461729a554ac42e3555019bf9e44a9f96cf49d8bc87cf34084d75c57e7530f",
+        "baseline_sha256_matches_prod": false,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
       }
     },
     "resolved_findings": {
@@ -1542,11 +2182,26 @@
     "title": "Blog category archive",
     "lang": "en",
     "sha256": "f8d2fd7e85d2e4a720601697d0df7a4934a9126e23aaa57957231c4061fb2460",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/category/applications-blog/",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 607 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET blog category archive EN (term 14)"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "en",
+      "taxonomy-archive-category"
+    ],
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+      "GET https://de-linker.com/category/applications-blog/ -> 200, <!-- LC DT ID: 607 -->",
+      "WP-CLI template 607 is_archive_for_tax_category=1, pll_lang=en, sha256=cefbd01515b313774dfea3611cbfdcfc052742f26df8ddafc3684fc2be92d113 (matches category_archive.html)"
     ],
     "findings": [],
     "assignment_baseline": {
@@ -1590,6 +2245,12 @@
         "metadata_and_pairs_unchanged": true,
         "scope": "Native LC screen_reader_text parameter, published body readback; shared numeric/hidden rule proved in site search, current one-page EN blog and EN/DE category checked. Does not close all template bindings or required families.",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      },
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "cefbd01515b313774dfea3611cbfdcfc052742f26df8ddafc3684fc2be92d113",
+        "baseline_sha256_matches_prod": false,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
       }
     }
   },
@@ -1599,11 +2260,26 @@
     "title": "Vorlage für Archiv der Steuerkategorie",
     "lang": "de",
     "sha256": "43aff298cce307024df69f491efae66aec124a7d33876ae463c43cfd512e5314",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/kategorie/anwendungen/",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6879 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET blog category archive DE (term 574)"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "de",
+      "taxonomy-archive-category"
+    ],
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+      "GET https://de-linker.com/de/kategorie/anwendungen/ -> 200, <!-- LC DT ID: 6879 -->",
+      "WP-CLI template 6879 is_archive_for_tax_category=1, pll_lang=de, sha256=e85a2f2dbf985b40420716f7bbbae2c184d36978140aa74b3f93ad698dac8acd (matches de/category_archive.html)"
     ],
     "findings": [],
     "assignment_baseline": {
@@ -1647,6 +2323,12 @@
         "metadata_and_pairs_unchanged": true,
         "scope": "Native LC screen_reader_text parameter, published body readback; shared numeric/hidden rule proved in site search, current one-page EN blog and EN/DE category checked. Does not close all template bindings or required families.",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      },
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "e85a2f2dbf985b40420716f7bbbae2c184d36978140aa74b3f93ad698dac8acd",
+        "baseline_sha256_matches_prod": false,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
       }
     }
   },
@@ -1656,11 +2338,27 @@
     "title": "Blog posts index",
     "lang": "en",
     "sha256": "42dde3ad317a1ce5d7486f7fefd88093cc11a59abab4e418d2baf05338e34dfc",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/blog/",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 574 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET blog posts index EN (page 14)"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "en",
+      "blog-posts-index"
+    ],
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+      "GET https://de-linker.com/blog/ -> 200, <!-- LC DT ID: 574 -->",
+      "GET https://de-linker.com/blog/page/2/ -> canonical redirect to /blog/ (single page of 10 EN posts)",
+      "WP-CLI template 574 is_blog_posts_index=1, pll_lang=en, sha256=2f0631e17c7b8a797d75c5d4d46ef9c1eab575c01aeab66fb5c9eb1a1964cc83 (matches blog_index.html)"
     ],
     "findings": [],
     "assignment_baseline": {
@@ -1704,6 +2402,12 @@
         "metadata_and_pairs_unchanged": true,
         "scope": "Native LC screen_reader_text parameter, published body readback; shared numeric/hidden rule proved in site search, current one-page EN blog and EN/DE category checked. Does not close all template bindings or required families.",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      },
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "2f0631e17c7b8a797d75c5d4d46ef9c1eab575c01aeab66fb5c9eb1a1964cc83",
+        "baseline_sha256_matches_prod": false,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
       }
     }
   },
@@ -1713,11 +2417,27 @@
     "title": "Vorlage für Blog-Beitragsindex",
     "lang": "de",
     "sha256": "cb237b5c97363742238ae448f0860a0f7468ab5eadb9ea93a4fbe991932d5939",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/blog/",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6881 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET blog posts index DE (page 6915)"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "de",
+      "blog-posts-index"
+    ],
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
+      "GET https://de-linker.com/de/blog/ -> 200, <!-- LC DT ID: 6881 -->",
+      "GET https://de-linker.com/de/blog/seite/2/ -> canonical redirect to /de/blog/ (single page of 10 DE posts)",
+      "WP-CLI template 6881 is_blog_posts_index=1, pll_lang=de, sha256=7a763e2b3c9b734f731e280868e29f9663ea405a35e2e7c5cb4972b1658c1535 (matches de/blog_index.html)"
     ],
     "findings": [],
     "assignment_baseline": {
@@ -1761,6 +2481,12 @@
         "metadata_and_pairs_unchanged": true,
         "scope": "Native LC screen_reader_text parameter, published body readback; shared numeric/hidden rule proved in site search, current one-page EN blog and EN/DE category checked. Does not close all template bindings or required families.",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json"
+      },
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "7a763e2b3c9b734f731e280868e29f9663ea405a35e2e7c5cb4972b1658c1535",
+        "baseline_sha256_matches_prod": false,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
       }
     }
   },
@@ -1770,10 +2496,26 @@
     "title": "Single product",
     "lang": "en",
     "sha256": "a6f090b41d435cb9052543d600aa5b3378ce02170f5093f467c7f622db4719c2",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
-    "evidence": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/product/saj-ats1-t63-a/",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 234 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET single product EN (post 1178)"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "en",
+      "single-product"
+    ],
+    "evidence": [
+      "GET https://de-linker.com/product/saj-ats1-t63-a/ -> 200, <!-- LC DT ID: 234 -->",
+      "WP-CLI template 234 is_single_product=1, pll_lang=en, sha256=bb362aa23eba8aae3365e5d9898299a5570fd85c17e9fabbaefc289eaf7d3118 (matches single_product.html)"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -1808,7 +2550,15 @@
       "provenance"
     ],
     "coverage_contract": "coverage-contract.md",
-    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use."
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "bb362aa23eba8aae3365e5d9898299a5570fd85c17e9fabbaefc289eaf7d3118",
+        "baseline_sha256_matches_prod": false,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+      }
+    }
   },
   {
     "kind": "lc_dynamic_template",
@@ -1816,10 +2566,26 @@
     "title": "Vorlage für einzelnes Produkt",
     "lang": "de",
     "sha256": "e12c8970c0f470068eef9c5b354d74908f4854bb4f204ec18cb4c55dc9978f98",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
-    "evidence": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/produkt/goodwe-gw60k-sts-g10/",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6903 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET single product DE (post 6565)"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "de",
+      "single-product"
+    ],
+    "evidence": [
+      "GET https://de-linker.com/de/produkt/goodwe-gw60k-sts-g10/ -> 200, <!-- LC DT ID: 6903 -->",
+      "WP-CLI template 6903 is_single_product=1, pll_lang=de, sha256=ca783bf0916f265bba9b042070623599d658e8ce7cfa728beb6eadf8c8d353a8 (matches de/single_product.html)"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -1854,7 +2620,15 @@
       "provenance"
     ],
     "coverage_contract": "coverage-contract.md",
-    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use."
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "ca783bf0916f265bba9b042070623599d658e8ce7cfa728beb6eadf8c8d353a8",
+        "baseline_sha256_matches_prod": false,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+      }
+    }
   },
   {
     "kind": "lc_dynamic_template",
@@ -1862,10 +2636,89 @@
     "title": "Product archive",
     "lang": "en",
     "sha256": "4d9854644ed3c2208dde57f7fe6ad66fa54bf9933fe6d95eb27abdd092a74b5b",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
-    "evidence": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/product-category/accessories/",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 231 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET product_cat archive EN"
+      },
+      {
+        "url": "https://de-linker.com/product-category/home-storage/",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 231 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET product_cat archive EN (home-storage)"
+      },
+      {
+        "url": "https://de-linker.com/product-category/inverters/",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 231 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET product_cat archive EN (inverters)"
+      },
+      {
+        "url": "https://de-linker.com/brand/goodwe/",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 231 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET product_brand/pa_brand shared archive EN"
+      },
+      {
+        "url": "https://de-linker.com/brand/ecoflow/",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 231 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET empty brand archive EN (0 cards)"
+      },
+      {
+        "url": "https://de-linker.com/series/goodwe-etr/",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 231 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET pa_series archive EN"
+      },
+      {
+        "url": "https://de-linker.com/phase/single-phase/",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 231 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET pa_phase archive EN"
+      },
+      {
+        "url": "https://de-linker.com/battery-voltage/high-voltage/",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 231 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET pa_battery-voltage archive EN"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "en",
+      "taxonomy-archive-product_cat",
+      "taxonomy-archive-brand",
+      "taxonomy-archive-pa_series",
+      "taxonomy-archive-pa_phase",
+      "taxonomy-archive-pa_battery-voltage",
+      "empty-archive"
+    ],
+    "evidence": [
+      "GET /product-category/accessories/, /home-storage/, /inverters/ -> 200, <!-- LC DT ID: 231 -->",
+      "GET /brand/goodwe/, /brand/ecoflow/, /brand/chint/, /series/goodwe-etr/, /series/goodwe-esa-3-10kw-eha-g20/ -> 200, <!-- LC DT ID: 231 -->",
+      "GET /phase/single-phase/, /battery-voltage/high-voltage/, /battery-voltage/low-voltage/ -> 200, <!-- LC DT ID: 231 -->",
+      "WP-CLI template 231 carries is_archive_for_post_type_product=1 + all 11 is_archive_for_tax_* generic keys (ArchiveAssignments.php), sha256=a0fb0b3f993c93edf67bd06f6de5ed098e301d12a8d6ca4099fc65caa3174652"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -1948,6 +2801,12 @@
         "final_solution_draft_consumer": "OPEN",
         "overall_template_status_unchanged": true,
         "new_tests_http_or_ui_actions": false
+      },
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "a0fb0b3f993c93edf67bd06f6de5ed098e301d12a8d6ca4099fc65caa3174652",
+        "baseline_sha256_matches_prod": false,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
       }
     }
   },
@@ -1957,11 +2816,98 @@
     "title": "Vorlage für Archiv für Beitragstyp Produkt",
     "lang": "de",
     "sha256": "857843c916e4fd0b0c06ae741189141ac5fa1d9d8789fdb3d88db4214d0e8ba8",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
-    "evidence": [],
-    "findings": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/batteriesysteme/",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6905 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET product_cat archive DE"
+      },
+      {
+        "url": "https://de-linker.com/de/produkt-kategorie/heimspeicher/",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6905 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET product_cat archive DE (heimspeicher)"
+      },
+      {
+        "url": "https://de-linker.com/de/brand/goodwe/",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6905 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET shared brand archive DE"
+      },
+      {
+        "url": "https://de-linker.com/de/brand/ecoflow/",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6905 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET empty brand archive DE (0 cards)"
+      },
+      {
+        "url": "https://de-linker.com/de/series/goodwe-etr/",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6905 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET pa_series archive DE"
+      },
+      {
+        "url": "https://de-linker.com/de/phase/dreiphasig/",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6905 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET pa_phase archive DE"
+      },
+      {
+        "url": "https://de-linker.com/de/battery-voltage/hochvolt/",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6905 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Anonymous GET pa_battery-voltage archive DE"
+      },
+      {
+        "url": "https://de-linker.com/de/produkte/",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<!-- LC DT ID: 6905 -->",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "DEFECTIVE interception: DE shop page renders 6905 instead of 6961"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "de",
+      "taxonomy-archive-product_cat",
+      "taxonomy-archive-brand",
+      "taxonomy-archive-pa_series",
+      "taxonomy-archive-pa_phase",
+      "taxonomy-archive-pa_battery-voltage",
+      "empty-archive",
+      "shop-page-de-fallback-collision"
+    ],
+    "evidence": [
+      "GET /de/produkt-kategorie/gewerbespeicher/batteriesysteme/, /heimspeicher/, /wechselrichter/ -> 200, <!-- LC DT ID: 6905 -->",
+      "GET /de/brand/goodwe/, /de/brand/ecoflow/, /de/series/goodwe-etr/, /de/phase/dreiphasig/, /de/battery-voltage/hochvolt/ -> 200, <!-- LC DT ID: 6905 -->",
+      "GET /de/produkte/ -> 200, <!-- LC DT ID: 6905 --> (captures DE Shop route instead of 6961)",
+      "WP-CLI template 6905 carries is_archive_for_post_type_product=1 + all 11 is_archive_for_tax_* generic keys, sha256=80c1ec1867f03c97923fb60c2ae8653048cf144e21b1e070e5dc8ec46413111d"
+    ],
+    "findings": [
+      {
+        "id": "de-shop-page-captured-by-6905",
+        "severity": "defect",
+        "summary": "6905 intercepts /de/produkte/ (is_shop) because is_archive() matches 6905 before is_shop() fails to find a DE twin for 6961.",
+        "root_cause": "livecanvas/modules/templating.php:51-79 + plugins/linker-i18n/includes/DynamicTemplates.php:90-93"
+      }
+    ],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
       "scope": "Local live-snapshot assignment; actual route/state render approval remains pending."
@@ -2043,6 +2989,12 @@
         "final_solution_draft_consumer": "OPEN",
         "overall_template_status_unchanged": true,
         "new_tests_http_or_ui_actions": false
+      },
+      "template_binding_20261113": {
+        "status": "defect",
+        "production_content_sha256": "80c1ec1867f03c97923fb60c2ae8653048cf144e21b1e070e5dc8ec46413111d",
+        "baseline_sha256_matches_prod": false,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
       }
     }
   },
@@ -2052,10 +3004,37 @@
     "title": "Global JavaScript Code",
     "lang": "en",
     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
-    "evidence": [],
+    "status": "not-applicable",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/",
+        "lang": "en",
+        "http_status": 200,
+        "marker": "<script id=\"lc_script_tag\" type=\"module\"></script>",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Empty stock slot emitted in wp_footer on EN home"
+      },
+      {
+        "url": "https://de-linker.com/de/",
+        "lang": "de",
+        "http_status": 200,
+        "marker": "<script id=\"lc_script_tag\" type=\"module\"></script>",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Empty stock slot emitted in wp_footer on DE home"
+      }
+    ],
+    "applicable_states": [
+      "not-applicable",
+      "empty-stock-slot",
+      "en",
+      "de",
+      "anonymous-guest"
+    ],
+    "evidence": [
+      "docs/audit/2026-11-04-lc-global-js-partial.md",
+      "WP-CLI ID 30 post_content len=0, sha256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "Playwright verified <script id=\"lc_script_tag\" type=\"module\"></script> (textContent.length=0) on EN/DE home, cart, privacy, 404 with 0 pageerror; site JS runs via enqueued plugin scripts (linker-header-menu, footer-app.js)."
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -2104,7 +3083,15 @@
     ],
     "coverage_contract": "coverage-contract.md",
     "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
-    "required_execution_evidence": "Prove the installed global JavaScript executes its applicable behavior on a real route; database assignment or an empty screenshot is insufficient."
+    "required_execution_evidence": "Prove the installed global JavaScript executes its applicable behavior on a real route; database assignment or an empty screenshot is insufficient.",
+    "verified_checks": {
+      "template_binding_20261113": {
+        "status": "not-applicable",
+        "production_content_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "baseline_sha256_matches_prod": true,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+      }
+    }
   },
   {
     "kind": "lc_partial",
@@ -2112,10 +3099,72 @@
     "title": "Header",
     "lang": "en",
     "sha256": "1ec44224f94e0535cb114a8571a02812710b6d7bf16eeb1fc315ce09a9e1f4e3",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
-    "evidence": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/",
+        "lang": "en",
+        "http_status": 200,
+        "width": 1440,
+        "marker": "<header id='lc-header'> #tv-header-v2 aria-label=\"Primary navigation\"",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Long page EN (docHeight 8388px)"
+      },
+      {
+        "url": "https://de-linker.com/",
+        "lang": "en",
+        "http_status": 200,
+        "width": 390,
+        "marker": "<header id='lc-header'> #tv-mobile-toggle / #tv-mobile-panel",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Long page mobile EN"
+      },
+      {
+        "url": "https://de-linker.com/cart/",
+        "lang": "en",
+        "http_status": 200,
+        "width": 1440,
+        "marker": "<header id='lc-header'> #tv-header-v2 aria-label=\"Primary navigation\"",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Short page EN (docHeight 1300px)"
+      },
+      {
+        "url": "https://de-linker.com/privacy-policy/",
+        "lang": "en",
+        "http_status": 200,
+        "width": 1440,
+        "marker": "<header id='lc-header'> #tv-header-v2 aria-label=\"Primary navigation\"",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Long legal page EN + header language switch -> /de/datenschutz/"
+      },
+      {
+        "url": "https://de-linker.com/_coverage-review-missing-route/",
+        "lang": "en",
+        "http_status": 404,
+        "width": 1440,
+        "marker": "<header id='lc-header'> #tv-header-v2 aria-label=\"Primary navigation\"",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "404 page EN"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "en",
+      "long-page",
+      "short-page",
+      "404",
+      "desktop-1440",
+      "mobile-390",
+      "dropdown-open-close-esc",
+      "mobile-drawer-open-esc",
+      "language-switch"
+    ],
+    "evidence": [
+      "Playwright headless Chromium 2026-11-13: 1440 desktop Products dropdown click -> aria-expanded=true + mega menu visible -> Esc -> aria-expanded=false",
+      "Playwright headless Chromium 2026-11-13: 390 mobile #tv-mobile-toggle -> data-open=true, accordion details open, Esc -> data-open=false",
+      "Playwright headless Chromium 2026-11-13: /privacy-policy/ header language link clicked -> navigated to https://de-linker.com/de/datenschutz/ (de-DE)",
+      "livecanvas/livecanvas-plugin-index.php:817-830; WP-CLI ID 17 pll_lang=en, sha256=25350e04a9933ed766081bdf175c4f277790b22829b7f9ca5543460388ed115d (matches partials/header.html)"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -2171,6 +3220,12 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json",
         "scope": "Actual staff Chrome: EN/DE 1440 desktop five groups and EN/DE 390 mobile five groups expanded/closed; EN desktop Products had Tab to first card and Escape back to trigger, mobile Escape closed menu and returned focus in both languages. Four EN desktop non-product groups, all five EN mobile groups and four DE mobile non-product groups have collected link lists; EN desktop Products and DE mobile Products were directly opened but not every link was captured. Does not prove every destination, guest identity, touchscreen or whole-template parity.",
         "binding_boundary": "Observed shared header on real production pages; does not independently close all template assignments, roles or routes."
+      },
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "25350e04a9933ed766081bdf175c4f277790b22829b7f9ca5543460388ed115d",
+        "baseline_sha256_matches_prod": false,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
       }
     }
   },
@@ -2180,10 +3235,70 @@
     "title": "Footer",
     "lang": "en",
     "sha256": "baddb86fa90ab09a4ce5035d3cff84ccbfa29f82f05624fca2fa2f36717fd110",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
-    "evidence": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/",
+        "lang": "en",
+        "http_status": 200,
+        "width": 1440,
+        "marker": "<footer id='lc-footer'> #tv-footer-v2.footer-ready aria-label=\"Footer navigation\"",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Long page EN (docHeight 8388px)"
+      },
+      {
+        "url": "https://de-linker.com/",
+        "lang": "en",
+        "http_status": 200,
+        "width": 390,
+        "marker": "<footer id='lc-footer'> #tv-footer-v2.footer-ready",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Long page mobile EN"
+      },
+      {
+        "url": "https://de-linker.com/cart/",
+        "lang": "en",
+        "http_status": 200,
+        "width": 1440,
+        "marker": "<footer id='lc-footer'> #tv-footer-v2.footer-ready",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Short page EN (docHeight 1300px)"
+      },
+      {
+        "url": "https://de-linker.com/privacy-policy/",
+        "lang": "en",
+        "http_status": 200,
+        "width": 1440,
+        "marker": "<footer id='lc-footer'> #tv-footer-v2.footer-ready",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Long legal page EN"
+      },
+      {
+        "url": "https://de-linker.com/_coverage-review-missing-route/",
+        "lang": "en",
+        "http_status": 404,
+        "width": 1440,
+        "marker": "<footer id='lc-footer'> #tv-footer-v2.footer-ready",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "404 page EN"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "en",
+      "long-page",
+      "short-page",
+      "404",
+      "desktop-1440",
+      "mobile-390",
+      "footer-tabs",
+      "language-switch"
+    ],
+    "evidence": [
+      "Playwright headless Chromium 2026-11-13: footer-app.js added .footer-ready; clicking tab 'planning' at 1440 and 'contact' at 390 switched aria-selected=true and unhid target panel",
+      "Playwright headless Chromium 2026-11-13: footer language switch clicked on / -> /de/ (de-DE) and on /cart/ -> /de/loesungsentwurf/ (de-DE)",
+      "livecanvas/livecanvas-plugin-index.php:834-847; WP-CLI ID 18 pll_lang=en, sha256=baddb86fa90ab09a4ce5035d3cff84ccbfa29f82f05624fca2fa2f36717fd110 (matches partials/footer.html)"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -2232,7 +3347,15 @@
       "provenance"
     ],
     "coverage_contract": "coverage-contract.md",
-    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use."
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "baddb86fa90ab09a4ce5035d3cff84ccbfa29f82f05624fca2fa2f36717fd110",
+        "baseline_sha256_matches_prod": true,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+      }
+    }
   },
   {
     "kind": "lc_partial",
@@ -2240,10 +3363,71 @@
     "title": "Kopfzeile",
     "lang": "de",
     "sha256": "daf8d1a6372ba7df23ef429fb9bf44432119ac9930c9aa21d8ed4d3f0f235415",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
-    "evidence": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/",
+        "lang": "de",
+        "http_status": 200,
+        "width": 1440,
+        "marker": "<header id='lc-header'> #tv-header-v2 aria-label=\"Primäre Navigation\"",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Long page DE (docHeight 8613px)"
+      },
+      {
+        "url": "https://de-linker.com/de/",
+        "lang": "de",
+        "http_status": 200,
+        "width": 390,
+        "marker": "<header id='lc-header'> #tv-mobile-toggle / #tv-mobile-panel",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Long page mobile DE"
+      },
+      {
+        "url": "https://de-linker.com/de/loesungsentwurf/",
+        "lang": "de",
+        "http_status": 200,
+        "width": 1440,
+        "marker": "<header id='lc-header'> #tv-header-v2 aria-label=\"Primäre Navigation\"",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Short page DE (docHeight 1300px)"
+      },
+      {
+        "url": "https://de-linker.com/de/datenschutz/",
+        "lang": "de",
+        "http_status": 200,
+        "width": 1440,
+        "marker": "<header id='lc-header'> #tv-header-v2 aria-label=\"Primäre Navigation\"",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Long legal page DE"
+      },
+      {
+        "url": "https://de-linker.com/de/_coverage-review-missing-route/",
+        "lang": "de",
+        "http_status": 404,
+        "width": 1440,
+        "marker": "<header id='lc-header'> #tv-header-v2 aria-label=\"Primäre Navigation\"",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "404 page DE"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "de",
+      "long-page",
+      "short-page",
+      "404",
+      "desktop-1440",
+      "mobile-390",
+      "dropdown-open-close-esc",
+      "mobile-drawer-open-esc",
+      "language-switch"
+    ],
+    "evidence": [
+      "Playwright headless Chromium 2026-11-13: 1440 desktop Produkte dropdown click -> aria-expanded=true + mega menu visible -> Esc -> aria-expanded=false",
+      "Playwright headless Chromium 2026-11-13: 390 mobile #tv-mobile-toggle -> details.open=true, data-open=true, aria-label='Menü schließen'; Esc -> details.open=false, data-open=false",
+      "livecanvas/livecanvas-plugin-index.php:817-830; WP-CLI ID 6909 pll_lang=de, sha256=5e59aa1313699263a68353f4ae68a153ed51b4bb940a684e3f1f86bc6c72cd09 (matches partials/de/header.html)"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -2299,6 +3483,12 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json",
         "scope": "Actual staff Chrome: EN/DE 1440 desktop five groups and EN/DE 390 mobile five groups expanded/closed; EN desktop Products had Tab to first card and Escape back to trigger, mobile Escape closed menu and returned focus in both languages. Four EN desktop non-product groups, all five EN mobile groups and four DE mobile non-product groups have collected link lists; EN desktop Products and DE mobile Products were directly opened but not every link was captured. Does not prove every destination, guest identity, touchscreen or whole-template parity.",
         "binding_boundary": "Observed shared header on real production pages; does not independently close all template assignments, roles or routes."
+      },
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "5e59aa1313699263a68353f4ae68a153ed51b4bb940a684e3f1f86bc6c72cd09",
+        "baseline_sha256_matches_prod": false,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
       }
     }
   },
@@ -2308,10 +3498,70 @@
     "title": "Fußzeile",
     "lang": "de",
     "sha256": "c84e4ba2824651ddff96ed5ab987cdb40b95e63c4757d5bc682d1f254053070c",
-    "status": "pending",
-    "rendered_routes": [],
-    "applicable_states": [],
-    "evidence": [],
+    "status": "partially-verified",
+    "rendered_routes": [
+      {
+        "url": "https://de-linker.com/de/",
+        "lang": "de",
+        "http_status": 200,
+        "width": 1440,
+        "marker": "<footer id='lc-footer'> #tv-footer-v2.footer-ready aria-label=\"Fußzeilen-Navigation\"",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Long page DE (docHeight 8613px)"
+      },
+      {
+        "url": "https://de-linker.com/de/",
+        "lang": "de",
+        "http_status": 200,
+        "width": 390,
+        "marker": "<footer id='lc-footer'> #tv-footer-v2.footer-ready",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Long page mobile DE"
+      },
+      {
+        "url": "https://de-linker.com/de/loesungsentwurf/",
+        "lang": "de",
+        "http_status": 200,
+        "width": 1440,
+        "marker": "<footer id='lc-footer'> #tv-footer-v2.footer-ready",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Short page DE (docHeight 1300px)"
+      },
+      {
+        "url": "https://de-linker.com/de/datenschutz/",
+        "lang": "de",
+        "http_status": 200,
+        "width": 1440,
+        "marker": "<footer id='lc-footer'> #tv-footer-v2.footer-ready",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "Long legal page DE"
+      },
+      {
+        "url": "https://de-linker.com/de/_coverage-review-missing-route/",
+        "lang": "de",
+        "http_status": 404,
+        "width": 1440,
+        "marker": "<footer id='lc-footer'> #tv-footer-v2.footer-ready",
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+        "scope": "404 page DE"
+      }
+    ],
+    "applicable_states": [
+      "anonymous-guest",
+      "de",
+      "long-page",
+      "short-page",
+      "404",
+      "desktop-1440",
+      "mobile-390",
+      "footer-tabs",
+      "language-switch"
+    ],
+    "evidence": [
+      "Playwright headless Chromium 2026-11-13: footer-app.js added .footer-ready; clicking tab 'planning' at 1440 and 'contact' at 390 switched aria-selected=true and unhid target panel",
+      "Playwright headless Chromium 2026-11-13: footer EN link on /de/ clicked -> navigated to https://de-linker.com/ (en-US)",
+      "livecanvas/livecanvas-plugin-index.php:834-847; WP-CLI ID 6911 pll_lang=de, sha256=c84e4ba2824651ddff96ed5ab987cdb40b95e63c4757d5bc682d1f254053070c (matches partials/de/footer.html)"
+    ],
     "findings": [],
     "assignment_baseline": {
       "source": "template-assignments-local.json",
@@ -2360,6 +3610,14 @@
       "provenance"
     ],
     "coverage_contract": "coverage-contract.md",
-    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use."
+    "coverage_boundary": "Candidates and required families are planning data. rendered_routes/applicable_states/status change only after actual runtime evidence; one candidate does not prove every use.",
+    "verified_checks": {
+      "template_binding_20261113": {
+        "status": "pass",
+        "production_content_sha256": "c84e4ba2824651ddff96ed5ab987cdb40b95e63c4757d5bc682d1f254053070c",
+        "baseline_sha256_matches_prod": true,
+        "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+      }
+    }
   }
 ]

@@ -902,7 +902,10 @@
     "environment": null,
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json",
+      "PR #751 (1ef69c11b)",
+      "verified_checks.751_product_q_only_empty (already marked resolved-by-751-production-readback)",
+      "2026-11-13 Playwright 390x844 https://de-linker.com/products/?q=xyzzy-nonexistent"
     ],
     "findings": [
       "Open 2026-10-29: product search with q only and zero active filters says to clear a filter; repair assigned /root/terra_search_recovery_delivery. See 751-navigation-consumers.json.search.finding."
@@ -932,6 +935,16 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json",
         "release_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json#customer_recovery_delivery",
         "scope": "Actual ENDE1440/390 named component. Search: empty guidance and ENClearall preserveq/sort; local finalsource otherreset variants/category/encoding reused. Recovery: signed-in card/locale/52px controls/focus; native session/render failure fixture local, no production303/key/mail/guest claim."
+      }
+    },
+    "resolved_findings": {
+      "product-q-only-empty-filter-guidance": {
+        "pr": 751,
+        "commit": "1ef69c11b",
+        "resolved_at_probe": "2026-11-13",
+        "evidence": [
+          "2026-11-13 Playwright 390x844 https://de-linker.com/products/?q=xyzzy-nonexistent shows q-only empty message with no clear-filter prompt"
+        ]
       }
     }
   },
@@ -993,7 +1006,10 @@
     "environment": null,
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json",
+      "PR #751 (1ef69c11b)",
+      "verified_checks.751_product_q_only_empty (already marked resolved-by-751-production-readback)",
+      "2026-11-13 Playwright 390x844 https://de-linker.com/de/produkte/?q=xyzzy-nonexistent"
     ],
     "findings": [
       "Open 2026-10-29: product search with q only and zero active filters says to clear a filter; repair assigned /root/terra_search_recovery_delivery. See 751-navigation-consumers.json.search.finding."
@@ -1018,6 +1034,16 @@
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-online-consumers.json",
         "release_receipt": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/751-navigation-consumers.json#customer_recovery_delivery",
         "scope": "Actual ENDE1440/390 named component. Search: empty guidance and ENClearall preserveq/sort; local finalsource otherreset variants/category/encoding reused. Recovery: signed-in card/locale/52px controls/focus; native session/render failure fixture local, no production303/key/mail/guest claim."
+      }
+    },
+    "resolved_findings": {
+      "product-q-only-empty-filter-guidance": {
+        "pr": 751,
+        "commit": "1ef69c11b",
+        "resolved_at_probe": "2026-11-13",
+        "evidence": [
+          "2026-11-13 Playwright 390x844 https://de-linker.com/de/produkte/?q=xyzzy-nonexistent shows q-only empty message with no clear-filter prompt"
+        ]
       }
     }
   },
@@ -6908,7 +6934,9 @@
     "url": "https://de-linker.com/de/blog/",
     "evidence": [
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/blog-reading-rhythm.json",
-      "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+      "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json",
+      "PR #746 (03a58911d) + PR #747 (3ff49c684)",
+      "2026-11-13 Playwright https://de-linker.com/de/blog/: all 12 linked card img elements have alt=''"
     ],
     "findings": [
       "Production DE linked card image alts leak English into accessible card names; local candidate only."
@@ -6931,6 +6959,15 @@
         "environment": "production; built-in browser (EN interactions, language round trip) + playwright-core headless probes (icons, serialization, DE interactions); consent cookie seeded in probes",
         "evidence": [
           "docs/acceptance/2026-10-22/full-site/blog-legal-states-20261108.json"
+        ]
+      }
+    },
+    "resolved_findings": {
+      "legacy-blog-finding": {
+        "pr_ref": "PR #746 (03a58911d) + PR #747 (3ff49c684)",
+        "resolved_at_probe": "2026-11-13",
+        "evidence": [
+          "2026-11-13 Playwright https://de-linker.com/de/blog/: all 12 linked card img elements have alt=''"
         ]
       }
     }
@@ -7605,7 +7642,9 @@
     "evidence": [
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-query-retention.json",
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/blog-reading-rhythm.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/blog-reading-rhythm.json",
+      "PR #746 (03a58911d)",
+      "2026-11-13 Playwright https://de-linker.com/de/?s=&post_type=post: h1='Alle Beiträge', title='Alle Beiträge | Linker'"
     ],
     "findings": [
       "Production cleared journal search has an empty H1; local candidate only."
@@ -7645,7 +7684,16 @@
         "scope": "Production DE Notstrom returned four DE posts with English card alt; clearing yielded empty H1. Local candidate retains titles, decorative card images, and empty H1 fallback; production unchanged."
       }
     },
-    "remaining_scope": "Named679 checks only; retained prior results, whole content/query/permission/edge-state contracts remain open unless separately proved."
+    "remaining_scope": "Named679 checks only; retained prior results, whole content/query/permission/edge-state contracts remain open unless separately proved.",
+    "resolved_findings": {
+      "legacy-blog-finding": {
+        "pr_ref": "PR #746 (03a58911d)",
+        "resolved_at_probe": "2026-11-13",
+        "evidence": [
+          "2026-11-13 Playwright https://de-linker.com/de/?s=&post_type=post: h1='Alle Beiträge', title='Alle Beiträge | Linker'"
+        ]
+      }
+    }
   },
   {
     "key": "blog:search-empty:en:1440",
@@ -8077,7 +8125,9 @@
     "environment": null,
     "url": null,
     "evidence": [
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/blog-reading-rhythm.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/blog-reading-rhythm.json",
+      "PR #746 (03a58911d)",
+      "2026-11-13 Playwright https://de-linker.com/de/batteriegroesse-heimspeicher-notstrom/ & /de/innen-vs-aussen-akku-planung/: related card img elements have alt=''"
     ],
     "findings": [
       "Production DE related-card accessible name includes English image alt; local candidate only."
@@ -8102,6 +8152,15 @@
         "at": "2026-11-03T17:15:54.547068+00:00",
         "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/blog-reading-rhythm.json",
         "scope": "Actual DE Indoor vs Outdoor related -> sizing article, correct DE URL; related accessible name includes English thumbnail alt. Local candidate names link in German without thumbnail alt; production remains open."
+      }
+    },
+    "resolved_findings": {
+      "legacy-blog-finding": {
+        "pr_ref": "PR #746 (03a58911d)",
+        "resolved_at_probe": "2026-11-13",
+        "evidence": [
+          "2026-11-13 Playwright https://de-linker.com/de/batteriegroesse-heimspeicher-notstrom/ & /de/innen-vs-aussen-akku-planung/: related card img elements have alt=''"
+        ]
       }
     }
   },
@@ -20273,11 +20332,17 @@
     "state": "pending-submit",
     "lang": "de",
     "width": 1440,
-    "status": "pass",
+    "status": "pending",
     "environment": "review instance e2e (de 1440) 2026-11-08",
     "url": null,
-    "evidence": [],
-    "findings": [],
+    "evidence": [
+      "docs/acceptance/2026-11-10/goal-state-ledger.md:154-159",
+      "tests/e2e/artifacts/report.json (only contains 2026-11-11 planner-country-rules.spec.ts)",
+      "docs/acceptance/2026-10-18/222/ (pre-rewrite Oct 18 artifacts exist for c222 de-1440, stale relative to PR #589/#678/#1003/#1015/#1061/#1067)"
+    ],
+    "findings": [
+      "需本地实例补跑: tests/e2e/specs/pending-account.spec.ts (de 1440: register → pending workspace and inquiry → approve in the same session (requires c222)) — 原 2026-11-08 42feb9a637 批量置 pass 时未落盘产物，goal-state-ledger.md:154-159 驳回代填并要求独立重验。"
+    ],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
       "route-fixtures",
@@ -20364,11 +20429,17 @@
     "state": "registration-success",
     "lang": "de",
     "width": 1440,
-    "status": "pass",
+    "status": "pending",
     "environment": "review instance e2e (de 1440) 2026-11-08",
     "url": null,
-    "evidence": [],
-    "findings": [],
+    "evidence": [
+      "docs/acceptance/2026-11-10/goal-state-ledger.md:154-159",
+      "tests/e2e/artifacts/report.json (only contains 2026-11-11 planner-country-rules.spec.ts)",
+      "docs/acceptance/2026-10-18/222/ (pre-rewrite Oct 18 artifacts exist for c222 de-1440, stale relative to PR #589/#678/#1003/#1015/#1061/#1067)"
+    ],
+    "findings": [
+      "需本地实例补跑: tests/e2e/specs/pending-account.spec.ts (de 1440: register → pending workspace and inquiry → approve in the same session (requires c222)) — 原 2026-11-08 42feb9a637 批量置 pass 时未落盘产物，goal-state-ledger.md:154-159 驳回代填并要求独立重验。"
+    ],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
       "route-fixtures",
@@ -20623,11 +20694,17 @@
     "state": "password-email-confirmation",
     "lang": "de",
     "width": 1440,
-    "status": "pass",
+    "status": "pending",
     "environment": "review instance e2e (de legs) 2026-11-08",
     "url": null,
-    "evidence": [],
-    "findings": [],
+    "evidence": [
+      "docs/acceptance/2026-11-10/goal-state-ledger.md:154-159",
+      "tests/e2e/artifacts/report.json (only contains 2026-11-11 planner-country-rules.spec.ts)",
+      "docs/acceptance/2026-10-13/account-auth/shots/de-lost-password.png (pre-redesign Oct 13 artifact on t110, stale relative to PR #187/#678/#751/#1055)"
+    ],
+    "findings": [
+      "需本地实例补跑: tests/e2e/specs/account.spec.ts (de-1440: the lost-password request answers and its link opens the new-password card (review instance; plus Outbox email check if required)) — 原 2026-11-08 42feb9a637 批量置 pass 时未落盘产物，goal-state-ledger.md:154-159 驳回代填并要求独立重验。"
+    ],
     "coverage_contract": "coverage-contract.md",
     "required_fixture_contracts": [
       "route-fixtures",
@@ -35359,7 +35436,9 @@
     "url": null,
     "evidence": [
       "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/search-pagination.json",
-      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/blog-reading-rhythm.json"
+      "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/blog-reading-rhythm.json",
+      "PR #746 (03a58911d)",
+      "2026-11-13 Playwright https://de-linker.com/de/?s=Notstrom&post_type=post -> EN link https://de-linker.com/?s=Notstrom&post_type=post (htmlLang=en-US, lang param absent)"
     ],
     "findings": [
       "Production DE-to-EN journal search retains lang=de and displays German results; local candidate only."
@@ -35384,7 +35463,16 @@
         "scope": "Actual DE Notstrom -> EN preserved stale lang=de: English UI with four German posts. Empty query also lost post_type. Local candidate target lang and empty s/post_type retained; no production pass."
       }
     },
-    "remaining_scope": "Named679 checks only; retained prior results, whole content/query/permission/edge-state contracts remain open unless separately proved."
+    "remaining_scope": "Named679 checks only; retained prior results, whole content/query/permission/edge-state contracts remain open unless separately proved.",
+    "resolved_findings": {
+      "legacy-blog-finding": {
+        "pr_ref": "PR #746 (03a58911d)",
+        "resolved_at_probe": "2026-11-13",
+        "evidence": [
+          "2026-11-13 Playwright https://de-linker.com/de/?s=Notstrom&post_type=post -> EN link https://de-linker.com/?s=Notstrom&post_type=post (htmlLang=en-US, lang param absent)"
+        ]
+      }
+    }
   },
   {
     "key": "account:owner-other-customer-guest-access:en:1440",
@@ -37940,7 +38028,10 @@
     "environment": "production",
     "url": null,
     "evidence": [
-      "genie-live-turns-20261107.json"
+      "genie-live-turns-20261107.json",
+      "PR #1082 (157576b4b, genie-dock.spec.ts 390 side-panel continuation + useHelperDialog fix)",
+      "PR #1050 (9d17eb4e9, genie-cross-surface-entry across en/de x 1440/390)",
+      "commit fba99fdc2 (1440 dock escape-return)"
     ],
     "findings": [
       "Home Continue to phone dock leaves focus in the background; native Escape does not close. Repair in current Batch A."
@@ -37969,6 +38060,22 @@
     },
     "verified_checks": {
       "live-turn": true
+    },
+    "resolved_findings": {
+      "dock-keyboard-focus-escape-and-return": {
+        "prs": [
+          1050,
+          1082
+        ],
+        "commits": [
+          "9d17eb4e9",
+          "157576b4b",
+          "fba99fdc2"
+        ],
+        "evidence": [
+          "genie-live-turns-20261107.json"
+        ]
+      }
     }
   },
   {
@@ -37981,7 +38088,10 @@
     "environment": null,
     "url": null,
     "evidence": [
-      "genie-dock.spec.ts 'the side panel takes focus, traps Tab, and Escape returns it' (en 390x844) - green on the instance cdock390 built from snapshot 20261105-1208 (2 passed, 7.8s). The spec drives the side-panel continuation: hero prompt -> Enter -> 'Continue in the side panel' -> the dock's bottom sheet. Asserts role=dialog + aria-modal=true, page inert, body scroll held, composer as the entrance focus, 14 Tabs all inside the mount with the guest account links reachable, nested Help taking the first Escape and giving focus back to its summary, the second Escape closing the sheet and releasing inert/scroll, and focus returning to .hero-prompt, which then reopens the hero from the keyboard. Regression proof: with useHelperDialog reverted to main and the bundle rebuilt, both locales fail at the composer entrance assertion."
+      "genie-dock.spec.ts 'the side panel takes focus, traps Tab, and Escape returns it' (en 390x844) - green on the instance cdock390 built from snapshot 20261105-1208 (2 passed, 7.8s). The spec drives the side-panel continuation: hero prompt -> Enter -> 'Continue in the side panel' -> the dock's bottom sheet. Asserts role=dialog + aria-modal=true, page inert, body scroll held, composer as the entrance focus, 14 Tabs all inside the mount with the guest account links reachable, nested Help taking the first Escape and giving focus back to its summary, the second Escape closing the sheet and releasing inert/scroll, and focus returning to .hero-prompt, which then reopens the hero from the keyboard. Regression proof: with useHelperDialog reverted to main and the bundle rebuilt, both locales fail at the composer entrance assertion.",
+      "PR #1082 (157576b4b, genie-dock.spec.ts 390 side-panel continuation + useHelperDialog fix)",
+      "PR #1050 (9d17eb4e9, genie-cross-surface-entry across en/de x 1440/390)",
+      "commit fba99fdc2 (1440 dock escape-return)"
     ],
     "findings": [
       "finding 2026-11-11: the floating dock is hidden below 860px by design (storefront.css); the 390 entry surface is the hero, so this dock-specific keyboard state needs the side-panel continuation path - left pending rather than force-fit",
@@ -38012,7 +38122,23 @@
       ],
       "result": "The dock's keyboard contract was exercised through the side-panel continuation at 390: modal boundary, Tab trap, nested Escape priority, and escape-return to the hero entry."
     },
-    "verified_checks": {}
+    "verified_checks": {},
+    "resolved_findings": {
+      "dock-keyboard-focus-escape-and-return": {
+        "prs": [
+          1050,
+          1082
+        ],
+        "commits": [
+          "9d17eb4e9",
+          "157576b4b",
+          "fba99fdc2"
+        ],
+        "evidence": [
+          "genie-dock.spec.ts 'the side panel takes focus, traps Tab, and Escape returns it' (en 390x844) - green on the instance cdock390 built from snapshot 20261105-1208 (2 passed, 7.8s). The spec drives the side-panel continuation: hero prompt -> Enter -> 'Continue in the side panel' -> the dock's bottom sheet. Asserts role=dialog + aria-modal=true, page inert, body scroll held, composer as the entrance focus, 14 Tabs all inside the mount with the guest account links reachable, nested Help taking the first Escape and giving focus back to its summary, the second Escape closing the sheet and releasing inert/scroll, and focus returning to .hero-prompt, which then reopens the hero from the keyboard. Regression proof: with useHelperDialog reverted to main and the bundle rebuilt, both locales fail at the composer entrance assertion."
+        ]
+      }
+    }
   },
   {
     "key": "genie:dock-keyboard-focus-escape-and-return:de:1440",
@@ -38024,7 +38150,10 @@
     "environment": null,
     "url": null,
     "evidence": [
-      "review-instance keyboard probe 2026-11-11 (Playwright real keys, 2.4s): dock opens at de 1440, Escape hides the app and focus returns to a BUTTON - the escape-return contract"
+      "review-instance keyboard probe 2026-11-11 (Playwright real keys, 2.4s): dock opens at de 1440, Escape hides the app and focus returns to a BUTTON - the escape-return contract",
+      "PR #1082 (157576b4b, genie-dock.spec.ts 390 side-panel continuation + useHelperDialog fix)",
+      "PR #1050 (9d17eb4e9, genie-cross-surface-entry across en/de x 1440/390)",
+      "commit fba99fdc2 (1440 dock escape-return)"
     ],
     "findings": [
       "Home Continue to phone dock leaves focus in the background; native Escape does not close. Repair in current Batch A."
@@ -38051,7 +38180,23 @@
       "predicate": "Genie helper can be opened at this width; phone modal and desktop nonmodal boundaries are validated separately.",
       "evidence": []
     },
-    "verified_checks": {}
+    "verified_checks": {},
+    "resolved_findings": {
+      "dock-keyboard-focus-escape-and-return": {
+        "prs": [
+          1050,
+          1082
+        ],
+        "commits": [
+          "9d17eb4e9",
+          "157576b4b",
+          "fba99fdc2"
+        ],
+        "evidence": [
+          "review-instance keyboard probe 2026-11-11 (Playwright real keys, 2.4s): dock opens at de 1440, Escape hides the app and focus returns to a BUTTON - the escape-return contract"
+        ]
+      }
+    }
   },
   {
     "key": "genie:dock-keyboard-focus-escape-and-return:de:390",
@@ -38063,7 +38208,10 @@
     "environment": null,
     "url": null,
     "evidence": [
-      "genie-dock.spec.ts 'the side panel takes focus, traps Tab, and Escape returns it' (de 390x844) - green on the instance cdock390 built from snapshot 20261105-1208 (2 passed, 7.8s). The spec drives the side-panel continuation: hero prompt -> Enter -> 'In der Seitenleiste fortsetzen' -> the dock's bottom sheet. Asserts role=dialog + aria-modal=true, page inert, body scroll held, composer as the entrance focus, 14 Tabs all inside the mount with the guest account links reachable, nested Help taking the first Escape and giving focus back to its summary, the second Escape closing the sheet and releasing inert/scroll, and focus returning to .hero-prompt, which then reopens the hero from the keyboard. Regression proof: with useHelperDialog reverted to main and the bundle rebuilt, both locales fail at the composer entrance assertion."
+      "genie-dock.spec.ts 'the side panel takes focus, traps Tab, and Escape returns it' (de 390x844) - green on the instance cdock390 built from snapshot 20261105-1208 (2 passed, 7.8s). The spec drives the side-panel continuation: hero prompt -> Enter -> 'In der Seitenleiste fortsetzen' -> the dock's bottom sheet. Asserts role=dialog + aria-modal=true, page inert, body scroll held, composer as the entrance focus, 14 Tabs all inside the mount with the guest account links reachable, nested Help taking the first Escape and giving focus back to its summary, the second Escape closing the sheet and releasing inert/scroll, and focus returning to .hero-prompt, which then reopens the hero from the keyboard. Regression proof: with useHelperDialog reverted to main and the bundle rebuilt, both locales fail at the composer entrance assertion.",
+      "PR #1082 (157576b4b, genie-dock.spec.ts 390 side-panel continuation + useHelperDialog fix)",
+      "PR #1050 (9d17eb4e9, genie-cross-surface-entry across en/de x 1440/390)",
+      "commit fba99fdc2 (1440 dock escape-return)"
     ],
     "findings": [
       "finding 2026-11-11: the floating dock is hidden below 860px by design (storefront.css); the 390 entry surface is the hero, so this dock-specific keyboard state needs the side-panel continuation path - left pending rather than force-fit",
@@ -38094,7 +38242,23 @@
       ],
       "result": "The dock's keyboard contract was exercised through the side-panel continuation at 390: modal boundary, Tab trap, nested Escape priority, and escape-return to the hero entry."
     },
-    "verified_checks": {}
+    "verified_checks": {},
+    "resolved_findings": {
+      "dock-keyboard-focus-escape-and-return": {
+        "prs": [
+          1050,
+          1082
+        ],
+        "commits": [
+          "9d17eb4e9",
+          "157576b4b",
+          "fba99fdc2"
+        ],
+        "evidence": [
+          "genie-dock.spec.ts 'the side panel takes focus, traps Tab, and Escape returns it' (de 390x844) - green on the instance cdock390 built from snapshot 20261105-1208 (2 passed, 7.8s). The spec drives the side-panel continuation: hero prompt -> Enter -> 'In der Seitenleiste fortsetzen' -> the dock's bottom sheet. Asserts role=dialog + aria-modal=true, page inert, body scroll held, composer as the entrance focus, 14 Tabs all inside the mount with the guest account links reachable, nested Help taking the first Escape and giving focus back to its summary, the second Escape closing the sheet and releasing inert/scroll, and focus returning to .hero-prompt, which then reopens the hero from the keyboard. Regression proof: with useHelperDialog reverted to main and the bundle rebuilt, both locales fail at the composer entrance assertion."
+        ]
+      }
+    }
   },
   {
     "key": "genie:ordinary-draft-failure-owner-isolation:en:1440",
@@ -38107,7 +38271,9 @@
     "url": null,
     "evidence": [
       "genie-failure-ownership.spec.ts - real producer retains A while guest B writes separately and A explicitly restores; plus auth test: native logout and same-account new session cannot claim the previous failure",
-      "merged spec, green"
+      "merged spec, green",
+      "commit ac5bfe319 (status already flipped to pass via genie-failure-ownership.spec.ts)",
+      "docs/acceptance/2026-11-10/goal-state-ledger.md:72-75"
     ],
     "findings": [
       "Local diagnostic consumers confirm unscoped ordinary failure text and PDF recovery across identity changes; repair and final browser/production readback pending."
@@ -38136,6 +38302,14 @@
     },
     "verified_checks": {
       "owner_isolation": "genie-failure-ownership.spec.ts"
+    },
+    "resolved_findings": {
+      "ordinary-draft-failure-owner-isolation-discovery": {
+        "commit": "ac5bfe31926b1529b720fe6c6ca1f8d31af1387e",
+        "evidence": [
+          "tests/e2e/specs/genie-failure-ownership.spec.ts (2026-11-10 differential run green across en/de x 1440/390)"
+        ]
+      }
     }
   },
   {
@@ -38148,7 +38322,9 @@
     "environment": "review",
     "url": null,
     "evidence": [
-      "genie-failure-ownership.spec.ts runs locale x width x surface (home/workspace): green in the 2026-11-10 differential run on review"
+      "genie-failure-ownership.spec.ts runs locale x width x surface (home/workspace): green in the 2026-11-10 differential run on review",
+      "commit ac5bfe319 (status already flipped to pass via genie-failure-ownership.spec.ts)",
+      "docs/acceptance/2026-11-10/goal-state-ledger.md:72-75"
     ],
     "findings": [
       "Local diagnostic consumers confirm unscoped ordinary failure text and PDF recovery across identity changes; repair and final browser/production readback pending."
@@ -38175,7 +38351,15 @@
       "predicate": "All surfaces accepting ordinary private text or files at this viewport.",
       "evidence": []
     },
-    "verified_checks": {}
+    "verified_checks": {},
+    "resolved_findings": {
+      "ordinary-draft-failure-owner-isolation-discovery": {
+        "commit": "ac5bfe31926b1529b720fe6c6ca1f8d31af1387e",
+        "evidence": [
+          "tests/e2e/specs/genie-failure-ownership.spec.ts (2026-11-10 differential run green across en/de x 1440/390)"
+        ]
+      }
+    }
   },
   {
     "key": "genie:ordinary-draft-failure-owner-isolation:de:1440",
@@ -38188,7 +38372,9 @@
     "url": null,
     "evidence": [
       "genie-failure-isolation-discovery.md",
-      "docs/acceptance/2026-10-22/genie-failure-ownership/browser/20261108T140004814Z/summary.json"
+      "docs/acceptance/2026-10-22/genie-failure-ownership/browser/20261108T140004814Z/summary.json",
+      "commit ac5bfe319 (status already flipped to pass via genie-failure-ownership.spec.ts)",
+      "docs/acceptance/2026-11-10/goal-state-ledger.md:72-75"
     ],
     "findings": [
       "Local diagnostic consumers confirm unscoped ordinary failure text and PDF recovery across identity changes; repair and final browser/production readback pending."
@@ -38220,6 +38406,14 @@
         "result": "passed",
         "scope": "real producer retains A while guest B writes separately and A explicitly restores (de-1440); follow-up run 20261108T140130675Z all 9 cases passed"
       }
+    },
+    "resolved_findings": {
+      "ordinary-draft-failure-owner-isolation-discovery": {
+        "commit": "ac5bfe31926b1529b720fe6c6ca1f8d31af1387e",
+        "evidence": [
+          "tests/e2e/specs/genie-failure-ownership.spec.ts (2026-11-10 differential run green across en/de x 1440/390)"
+        ]
+      }
     }
   },
   {
@@ -38232,7 +38426,9 @@
     "environment": "review",
     "url": null,
     "evidence": [
-      "genie-failure-ownership.spec.ts runs locale x width x surface (home/workspace): green in the 2026-11-10 differential run on review"
+      "genie-failure-ownership.spec.ts runs locale x width x surface (home/workspace): green in the 2026-11-10 differential run on review",
+      "commit ac5bfe319 (status already flipped to pass via genie-failure-ownership.spec.ts)",
+      "docs/acceptance/2026-11-10/goal-state-ledger.md:72-75"
     ],
     "findings": [
       "Local diagnostic consumers confirm unscoped ordinary failure text and PDF recovery across identity changes; repair and final browser/production readback pending."
@@ -38259,7 +38455,15 @@
       "predicate": "All surfaces accepting ordinary private text or files at this viewport.",
       "evidence": []
     },
-    "verified_checks": {}
+    "verified_checks": {},
+    "resolved_findings": {
+      "ordinary-draft-failure-owner-isolation-discovery": {
+        "commit": "ac5bfe31926b1529b720fe6c6ca1f8d31af1387e",
+        "evidence": [
+          "tests/e2e/specs/genie-failure-ownership.spec.ts (2026-11-10 differential run green across en/de x 1440/390)"
+        ]
+      }
+    }
   },
   {
     "key": "genie:lazy-bundle-failure-retry-close-focus:en:1440",

@@ -1,0 +1,1883 @@
+[
+  {
+    "file": "de-6599-1440.png",
+    "size": [
+      1440,
+      8397
+    ],
+    "tiles": 3,
+    "elapsed": 28.0,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "de-6599-390.png",
+    "size": [
+      390,
+      14899
+    ],
+    "tiles": 6,
+    "elapsed": 41.1,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Footer bottom navigation grid",
+          "description": "The second row of footer action buttons is misaligned: Konto and Linker kontaktieren are shifted into the middle/right columns, leaving an empty cell under Lösungen."
+        }
+      ]
+    }
+  },
+  {
+    "file": "de-6654-1440.png",
+    "size": [
+      1440,
+      11764
+    ],
+    "tiles": 5,
+    "elapsed": 14.0,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "de-6654-390.png",
+    "size": [
+      390,
+      16967
+    ],
+    "tiles": 6,
+    "elapsed": 33.5,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "de-6689-1440.png",
+    "size": [
+      1440,
+      8230
+    ],
+    "tiles": 3,
+    "elapsed": 30.6,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Feature card 'Netzbezugsbegrenzung an Bord'",
+          "description": "The German heading is awkwardly wrapped mid-word into 'Netzbezugsbegrenzu' / 'ng an Bord' without a hyphen, making the heading look broken and harder to read."
+        }
+      ]
+    }
+  },
+  {
+    "file": "de-6689-390.png",
+    "size": [
+      390,
+      10945
+    ],
+    "tiles": 4,
+    "elapsed": 17.1,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Feature card heading",
+          "description": "The heading “Netzbezugsbegrenzung an Bord” breaks mid-word, leaving “Netzbezugsbegrenzun” on one line and an orphaned “g” at the start of the next line."
+        }
+      ]
+    }
+  },
+  {
+    "file": "de-6690-1440.png",
+    "size": [
+      1440,
+      10756
+    ],
+    "tiles": 4,
+    "elapsed": 29.6,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Main product description (behind cookie banner)",
+          "description": "The text is garbled and duplicated ('20 kW PV an vier Trackern mit 21 A, 11,0 kVA' is repeated consecutively) and there is a clipped, floating text fragment ('BE') on the left margin."
+        },
+        {
+          "area": "Ähnliche Produkte (Similar Products) section",
+          "description": "The fourth product's text block is left-aligned while the text for the first three products is center-aligned, resulting in a misaligned grid."
+        }
+      ]
+    }
+  },
+  {
+    "file": "de-6690-390.png",
+    "size": [
+      390,
+      16061
+    ],
+    "tiles": 6,
+    "elapsed": 15.2,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "de-6720-1440.png",
+    "size": [
+      1440,
+      5860
+    ],
+    "tiles": 3,
+    "elapsed": 8.5,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Product description text",
+          "description": "Text lines are overlapping, making the first few lines of the description partially unreadable."
+        }
+      ]
+    }
+  },
+  {
+    "file": "de-6720-390.png",
+    "size": [
+      390,
+      8996
+    ],
+    "tiles": 4,
+    "elapsed": 16.1,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Promotional Banner (Image 2)",
+          "description": "The heading text is badly broken across lines without a hyphen. 'Nulleinspeisungsregelung' is split into 'Nulleinspeisungsregelu' and 'ng'."
+        },
+        {
+          "area": "Footer Grid Layout (Image 4)",
+          "description": "The grid of links is misaligned. The 'Lösungen' card is much taller than the adjacent cards in its row, causing the cards below it ('Konto', 'Linker kontaktieren') to be misaligned and creating awkward large gaps in the layout."
+        }
+      ]
+    }
+  },
+  {
+    "file": "de-6752-1440.png",
+    "size": [
+      1440,
+      9909
+    ],
+    "tiles": 4,
+    "elapsed": 36.6,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Ähnliche Produkte",
+          "description": "Product image tiles are missing/blank for multiple related-product cards, specifically the GoodWe GW100K-ETR-G10 and SAJ HS2-5K-T2 X cards, leaving empty grey image placeholders."
+        }
+      ]
+    }
+  },
+  {
+    "file": "de-6752-390.png",
+    "size": [
+      390,
+      15887
+    ],
+    "tiles": 6,
+    "elapsed": 14.2,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Ähnliche Produkte – SAJ H2-5K-T2-X",
+          "description": "Product image is missing; the card shows an empty grey placeholder instead of the inverter image."
+        }
+      ]
+    }
+  },
+  {
+    "file": "de-6769-1440.png",
+    "size": [
+      1440,
+      8402
+    ],
+    "tiles": 4,
+    "elapsed": 38.2,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Wo dieses Modell passt section",
+          "description": "Typo in the text: 'Stromaribtrage' should be 'Stromarbitrage'."
+        }
+      ]
+    }
+  },
+  {
+    "file": "de-6769-390.png",
+    "size": [
+      390,
+      12984
+    ],
+    "tiles": 5,
+    "elapsed": 9.0,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "de-6798-1440.png",
+    "size": [
+      1440,
+      10234
+    ],
+    "tiles": 4,
+    "elapsed": 11.2,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "de-6798-390.png",
+    "size": [
+      390,
+      15942
+    ],
+    "tiles": 6,
+    "elapsed": 29.7,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Footer – Lösungen list",
+          "description": "The first storage category is labeled \"Heimspieler\" instead of \"Heimspeicher\"; this is a mistranslated/garbled label in the German footer navigation."
+        }
+      ]
+    }
+  },
+  {
+    "file": "de-6836-1440.png",
+    "size": [
+      1440,
+      8486
+    ],
+    "tiles": 4,
+    "elapsed": 17.3,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Technische Daten section",
+          "description": "Typo in table header 'AC-EINGANG (NETZGEEKOPPELT)' - should be 'NETZGEKOPPELT'."
+        }
+      ]
+    }
+  },
+  {
+    "file": "de-6836-390.png",
+    "size": [
+      390,
+      13694
+    ],
+    "tiles": 5,
+    "elapsed": 30.1,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "de-6839-1440.png",
+    "size": [
+      1440,
+      6310
+    ],
+    "tiles": 3,
+    "elapsed": 15.9,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "de-6839-390.png",
+    "size": [
+      390,
+      9568
+    ],
+    "tiles": 4,
+    "elapsed": 34.0,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-1178-1440.png",
+    "size": [
+      1440,
+      6277
+    ],
+    "tiles": 3,
+    "elapsed": 37.1,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-1178-390.png",
+    "size": [
+      390,
+      9369
+    ],
+    "tiles": 4,
+    "elapsed": 44.9,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-1184-1440.png",
+    "size": [
+      1440,
+      8442
+    ],
+    "tiles": 4,
+    "elapsed": 34.7,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Related products",
+          "description": "All related-product cards display blank light-grey placeholder boxes where product images should appear; the product images are missing/not loading."
+        },
+        {
+          "area": "Compatibility records",
+          "description": "The SAJ BU2-5.0-HVI compatibility record shows a blank grey placeholder thumbnail instead of a product image."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-1184-390.png",
+    "size": [
+      390,
+      13490
+    ],
+    "tiles": 5,
+    "elapsed": 20.5,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Compatibility records",
+          "description": "The thumbnail image for 'SAJ BU2-5.0-HV1' is extremely faint, washed out, and barely visible against the white background, appearing broken or improperly loaded."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-1832-1440.png",
+    "size": [
+      1440,
+      7834
+    ],
+    "tiles": 3,
+    "elapsed": 11.3,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-1832-390.png",
+    "size": [
+      390,
+      10927
+    ],
+    "tiles": 4,
+    "elapsed": 42.2,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-1948-1440.png",
+    "size": [
+      1440,
+      8921
+    ],
+    "tiles": 4,
+    "elapsed": 11.5,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Related products section",
+          "description": "Three out of four product cards (SAJ H2-30K-T3-DE, GoodWe GW80K-ETR-G10, and GoodWe GW125K-ETR-G10) are missing their product images, displaying blank grey placeholder boxes instead."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-1948-390.png",
+    "size": [
+      390,
+      12396
+    ],
+    "tiles": 5,
+    "elapsed": 28.9,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-1955-1440.png",
+    "size": [
+      1440,
+      9407
+    ],
+    "tiles": 4,
+    "elapsed": 23.2,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-1955-390.png",
+    "size": [
+      390,
+      13336
+    ],
+    "tiles": 5,
+    "elapsed": 15.9,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-1956-1440.png",
+    "size": [
+      1440,
+      8376
+    ],
+    "tiles": 3,
+    "elapsed": 8.2,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-1956-390.png",
+    "size": [
+      390,
+      10843
+    ],
+    "tiles": 4,
+    "elapsed": 8.9,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-1957-1440.png",
+    "size": [
+      1440,
+      7863
+    ],
+    "tiles": 3,
+    "elapsed": 9.1,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Related products section",
+          "description": "The fourth product card (GoodWe GW208.9-BAT-LCD-G10) is misaligned and has a broken layout. Its image container is smaller than the grid items above it, causing the product image to be clipped on the right side."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-1957-390.png",
+    "size": [
+      390,
+      10498
+    ],
+    "tiles": 4,
+    "elapsed": 17.4,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Product navigation tabs",
+          "description": "The rightmost tab label is truncated/clipped at the right edge of the viewport ('Docu' instead of 'Documents'), indicating horizontal overflow."
+        },
+        {
+          "area": "Footer",
+          "description": "Typo in the copyright text: 'Allrights' is missing a space."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-1958-1440.png",
+    "size": [
+      1440,
+      8574
+    ],
+    "tiles": 4,
+    "elapsed": 29.3,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Documents section",
+          "description": "Document titles contain missing spaces, resulting in garbled text (e.g., 'GoodWeBAT-C Series' and 'GoodWeBAT-C208.9')."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-1958-390.png",
+    "size": [
+      390,
+      11857
+    ],
+    "tiles": 5,
+    "elapsed": 9.7,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-1961-1440.png",
+    "size": [
+      1440,
+      10039
+    ],
+    "tiles": 4,
+    "elapsed": 7.0,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-1961-390.png",
+    "size": [
+      390,
+      15502
+    ],
+    "tiles": 6,
+    "elapsed": 11.2,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-1973-1440.png",
+    "size": [
+      1440,
+      6705
+    ],
+    "tiles": 3,
+    "elapsed": 8.9,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Related products section",
+          "description": "The product images for all four related items are missing, displaying as blank grey placeholder boxes."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-1973-390.png",
+    "size": [
+      390,
+      9647
+    ],
+    "tiles": 4,
+    "elapsed": 8.3,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Related products section",
+          "description": "The product image for 'GoodWe EzManager3000 HEMS Gateway' is missing, displaying only an empty grey placeholder box."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-2003-1440.png",
+    "size": [
+      1440,
+      8321
+    ],
+    "tiles": 3,
+    "elapsed": 42.8,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-2003-390.png",
+    "size": [
+      390,
+      12462
+    ],
+    "tiles": 5,
+    "elapsed": 4.8,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Product details tabs",
+          "description": "The rightmost tab is horizontally clipped, displaying 'Docu' instead of the full 'Documents' label."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-2064-1440.png",
+    "size": [
+      1440,
+      9779
+    ],
+    "tiles": 4,
+    "elapsed": 16.3,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Compatibility records",
+          "description": "Product images are misaligned and clipped on the left side within their containers."
+        },
+        {
+          "area": "Text block below Compatibility records",
+          "description": "The paragraph starting with 'SAJ's Configuration Instructions V1.0...' is duplicated multiple times consecutively."
+        },
+        {
+          "area": "Related products",
+          "description": "The product image for the second item 'SAJ HS2-8K-T2-X' is missing, displaying only a blank grey placeholder."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-2064-390.png",
+    "size": [
+      390,
+      15397
+    ],
+    "tiles": 6,
+    "elapsed": 9.9,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Compatibility records section",
+          "description": "The large paragraph of text beginning with 'SAJ's Configuration Instructions V1.0 (Section 2)...' is duplicated three times consecutively, resulting in a significant layout and content repetition defect."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-2070-1440.png",
+    "size": [
+      1440,
+      8378
+    ],
+    "tiles": 3,
+    "elapsed": 20.7,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-2070-390.png",
+    "size": [
+      390,
+      12468
+    ],
+    "tiles": 5,
+    "elapsed": 13.9,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "SAJ BU2-HV1 product image",
+          "description": "The large product image of the battery stack has a broken, jagged shadow/reflection effect at the bottom, with a hard vertical cut-off on the right side, making the image look poorly cropped."
+        },
+        {
+          "area": "Footer",
+          "description": "The logo image at the top of the footer appears broken or severely cropped, showing only a small green fragment instead of the full company logo."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-2090-1440.png",
+    "size": [
+      1440,
+      8461
+    ],
+    "tiles": 4,
+    "elapsed": 12.2,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-2090-390.png",
+    "size": [
+      390,
+      12360
+    ],
+    "tiles": 5,
+    "elapsed": 9.7,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Related products",
+          "description": "Product thumbnails are broken/missing: the GoodWe card shows only a thin logo strip instead of a product image, and the SAJ B2-25.0-HV1, SAJ B2-5.0-HV1, and SAJ BU3-5.0-TV2-PRO cards display blank grey placeholders with no product images."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-2092-1440.png",
+    "size": [
+      1440,
+      7961
+    ],
+    "tiles": 3,
+    "elapsed": 16.0,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "'On top of the stack, fixed to the wall.' dark product-highlight section",
+          "description": "The headline/body copy extends over the product image, causing white text to become obscured and partially unreadable against the light image area."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-2092-390.png",
+    "size": [
+      390,
+      10831
+    ],
+    "tiles": 4,
+    "elapsed": 8.8,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Product Images",
+          "description": "Several SAJ product images (e.g., top of page, and in the 'Related products' section) are extremely faint and washed out with very poor contrast against the white background, making them appear broken or missing compared to the clearly visible GoodWe images."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-2093-1440.png",
+    "size": [
+      1440,
+      7654
+    ],
+    "tiles": 3,
+    "elapsed": 7.3,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Bottom green banner section (Image 1)",
+          "description": "Text overlaps the product image, causing readability issues. The white heading and paragraph text extend over the white battery image, making parts of the text completely unreadable due to the lack of contrast."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-2093-390.png",
+    "size": [
+      390,
+      11063
+    ],
+    "tiles": 4,
+    "elapsed": 22.1,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Related products",
+          "description": "The SAJ B2-5.0-HV1 and SAJ B2-10.0-HV1 product cards show empty gray image placeholders with no product image, indicating missing/broken images."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-2199-1440.png",
+    "size": [
+      1440,
+      8968
+    ],
+    "tiles": 4,
+    "elapsed": 41.2,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-2199-390.png",
+    "size": [
+      390,
+      13592
+    ],
+    "tiles": 5,
+    "elapsed": 31.3,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Compatibility records",
+          "description": "The product thumbnail next to 'SAJ BU3-5.0-TV2-PRO' appears blank/cropped, showing only a tiny dark fragment; the image is effectively missing/unreadable."
+        },
+        {
+          "area": "Footer language switcher",
+          "description": "The German language option is labeled 'Deutscher' instead of 'Deutsch'; this is an incorrect localization/garbled label."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-2281-1440.png",
+    "size": [
+      1440,
+      5765
+    ],
+    "tiles": 3,
+    "elapsed": 7.6,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-2281-390.png",
+    "size": [
+      390,
+      8679
+    ],
+    "tiles": 4,
+    "elapsed": 24.3,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-2394-1440.png",
+    "size": [
+      1440,
+      7186
+    ],
+    "tiles": 3,
+    "elapsed": 7.8,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Related products",
+          "description": "The product image for 'Chint DTSU666' is missing, leaving a blank grey placeholder box."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-2394-390.png",
+    "size": [
+      390,
+      9493
+    ],
+    "tiles": 4,
+    "elapsed": 11.5,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Horizontal Tab Navigation",
+          "description": "The last tab in the navigation bar (likely 'Documents') is clipped and displays only 'Docu' at the right edge, indicating a horizontal overflow issue."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-2397-1440.png",
+    "size": [
+      1440,
+      7256
+    ],
+    "tiles": 3,
+    "elapsed": 7.7,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Related products section",
+          "description": "The product images for 'Chint DTSU666' and 'GoodWe GM330' are missing, leaving empty gray placeholder boxes."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-2397-390.png",
+    "size": [
+      390,
+      9441
+    ],
+    "tiles": 4,
+    "elapsed": 6.3,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Product Navigation Tabs (Slice 1)",
+          "description": "The rightmost tab label is clipped horizontally, showing only 'Docu' instead of 'Documents'."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-2403-1440.png",
+    "size": [
+      1440,
+      7296
+    ],
+    "tiles": 3,
+    "elapsed": 10.9,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-2403-390.png",
+    "size": [
+      390,
+      10466
+    ],
+    "tiles": 4,
+    "elapsed": 9.6,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Product tabs navigation",
+          "description": "The rightmost tab 'Docu...' is clipped horizontally at the right edge of the screen."
+        },
+        {
+          "area": "Related products section",
+          "description": "The image for the first related product ('SAJ ATS1-T63-A') is clipped at the top edge of its container."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-2409-1440.png",
+    "size": [
+      1440,
+      7999
+    ],
+    "tiles": 3,
+    "elapsed": 35.0,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-2409-390.png",
+    "size": [
+      390,
+      11236
+    ],
+    "tiles": 5,
+    "elapsed": 39.3,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Related products first card",
+          "description": "The image shown for 'SAJ eManager (energy management system module)' is an EATON xComfort device, so the product image is mismatched/wrong."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-2415-1440.png",
+    "size": [
+      1440,
+      7948
+    ],
+    "tiles": 3,
+    "elapsed": 15.9,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-2415-390.png",
+    "size": [
+      390,
+      11266
+    ],
+    "tiles": 5,
+    "elapsed": 8.1,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Product navigation tabs",
+          "description": "The horizontal tab row (Description, Technical data, Applications, Documents) overflows the viewport width, resulting in the 'Documents' tab being clipped on the right edge."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-3556-1440.png",
+    "size": [
+      1440,
+      10603
+    ],
+    "tiles": 4,
+    "elapsed": 10.5,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Related products",
+          "description": "Two product cards (GoodWe GW125K-ETR-G10 and SAJ H2-20K-T3) show blank light-grey image placeholders with no product image, while other cards load images correctly."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-3556-390.png",
+    "size": [
+      390,
+      15488
+    ],
+    "tiles": 6,
+    "elapsed": 17.6,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-3557-1440.png",
+    "size": [
+      1440,
+      8217
+    ],
+    "tiles": 3,
+    "elapsed": 17.6,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-3557-390.png",
+    "size": [
+      390,
+      10631
+    ],
+    "tiles": 4,
+    "elapsed": 11.2,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Navigation Tabs (Image 1)",
+          "description": "The horizontal tab navigation bar is overflowing, causing the final tab ('Docu...') to be visibly clipped on the right edge."
+        },
+        {
+          "area": "Product Details (Image 1)",
+          "description": "There is a stray, partially obscured line of text ('multiple items is confirmed separately.') visible below the cookie banner, indicating clipped or overlapping text."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-3573-1440.png",
+    "size": [
+      1440,
+      6074
+    ],
+    "tiles": 3,
+    "elapsed": 11.4,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Product description section",
+          "description": "There is a text overlap where a stray 'DE' text and a vertical grey rectangular element overlap the main paragraph text (starting with 'SAJ eSolar AIO3...') on the left side."
+        },
+        {
+          "area": "Related products section",
+          "description": "Three out of four product cards display blank grey placeholder boxes instead of product images (for GoodWe SEC3000C, GoodWe EzManager3000, and SAJ eManager-C1 Pro)."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-3573-390.png",
+    "size": [
+      390,
+      9029
+    ],
+    "tiles": 4,
+    "elapsed": 4.9,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Related products",
+          "description": "The product image for 'SAJ eManager-C1 Pro' is missing, displaying a blank grey placeholder box instead."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-3587-1440.png",
+    "size": [
+      1440,
+      8246
+    ],
+    "tiles": 3,
+    "elapsed": 6.5,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-3587-390.png",
+    "size": [
+      390,
+      10607
+    ],
+    "tiles": 4,
+    "elapsed": 24.2,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-3595-1440.png",
+    "size": [
+      1440,
+      11416
+    ],
+    "tiles": 5,
+    "elapsed": 7.6,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-3595-390.png",
+    "size": [
+      390,
+      16299
+    ],
+    "tiles": 6,
+    "elapsed": 28.3,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Product tabs navigation",
+          "description": "The rightmost tab label is clipped at the viewport edge, showing only 'Docu' instead of the full 'Documents' label, indicating horizontal overflow/truncated text."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-3612-1440.png",
+    "size": [
+      1440,
+      10297
+    ],
+    "tiles": 4,
+    "elapsed": 13.9,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-3612-390.png",
+    "size": [
+      390,
+      13907
+    ],
+    "tiles": 5,
+    "elapsed": 16.7,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Navigation Tabs",
+          "description": "The 'Documents' tab is horizontally clipped on the right edge, showing only 'Docu', which indicates horizontal overflow or truncated text."
+        },
+        {
+          "area": "Footer",
+          "description": "Typo in the copyright text: 'Allrights' is missing a space and should read 'All rights'."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-3618-1440.png",
+    "size": [
+      1440,
+      6715
+    ],
+    "tiles": 3,
+    "elapsed": 6.9,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Related products section",
+          "description": "Images for the 'SAJ eManager-C1 Pro' and 'SAJ eSolar AIO3 data collector' product cards are missing, resulting in empty grey placeholder boxes."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-3618-390.png",
+    "size": [
+      390,
+      10566
+    ],
+    "tiles": 4,
+    "elapsed": 30.2,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-4106-1440.png",
+    "size": [
+      1440,
+      6957
+    ],
+    "tiles": 3,
+    "elapsed": 9.1,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Product introduction paragraph",
+          "description": "Text overlap in the paragraph immediately below the product details section (and cookie banner), causing the text to be garbled and unreadable. The product heading appears to be rendered on top of the body text."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-4106-390.png",
+    "size": [
+      390,
+      10445
+    ],
+    "tiles": 4,
+    "elapsed": 6.8,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-4108-1440.png",
+    "size": [
+      1440,
+      9725
+    ],
+    "tiles": 4,
+    "elapsed": 6.6,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Related products section",
+          "description": "Missing product images for the GoodWe ESA GW8K-ETA-G20 and GoodWe ESA GW10K-ETA-G20 items; blank gray placeholders are shown instead."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-4108-390.png",
+    "size": [
+      390,
+      15406
+    ],
+    "tiles": 6,
+    "elapsed": 31.4,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-4109-1440.png",
+    "size": [
+      1440,
+      8992
+    ],
+    "tiles": 4,
+    "elapsed": 15.6,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Compatibility records",
+          "description": "Broken/missing image placeholder displayed for the SAJ BU2-5.0-HV1 product thumbnail."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-4109-390.png",
+    "size": [
+      390,
+      14107
+    ],
+    "tiles": 6,
+    "elapsed": 4.9,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-6321-1440.png",
+    "size": [
+      1440,
+      8343
+    ],
+    "tiles": 3,
+    "elapsed": 33.2,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-6321-390.png",
+    "size": [
+      390,
+      14566
+    ],
+    "tiles": 6,
+    "elapsed": 43.8,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-6506-1440.png",
+    "size": [
+      1440,
+      6812
+    ],
+    "tiles": 3,
+    "elapsed": 10.0,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-6506-390.png",
+    "size": [
+      390,
+      10224
+    ],
+    "tiles": 4,
+    "elapsed": 7.4,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Product tabs navigation",
+          "description": "The rightmost tab is clipped/truncated at the right edge of the screen, showing only 'Docu' instead of the full word, indicating horizontal overflow."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-6511-1440.png",
+    "size": [
+      1440,
+      6938
+    ],
+    "tiles": 3,
+    "elapsed": 8.0,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Related products section",
+          "description": "All four product images in the related products grid are missing, displaying only blank light-gray placeholder boxes."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-6511-390.png",
+    "size": [
+      390,
+      10757
+    ],
+    "tiles": 4,
+    "elapsed": 17.6,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-6518-1440.png",
+    "size": [
+      1440,
+      7674
+    ],
+    "tiles": 3,
+    "elapsed": 6.1,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Related products",
+          "description": "The product images for the first three items (SAJ H2-30K-T3-DE, SAJ H2-10K-T3, and SAJ H2-25K-T3) are missing or broken, displaying only blank grey placeholder boxes."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-6518-390.png",
+    "size": [
+      390,
+      12060
+    ],
+    "tiles": 5,
+    "elapsed": 40.5,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-6520-1440.png",
+    "size": [
+      1440,
+      7621
+    ],
+    "tiles": 3,
+    "elapsed": 8.2,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-6520-390.png",
+    "size": [
+      390,
+      11997
+    ],
+    "tiles": 5,
+    "elapsed": 6.2,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-6522-1440.png",
+    "size": [
+      1440,
+      6937
+    ],
+    "tiles": 3,
+    "elapsed": 9.2,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-6522-390.png",
+    "size": [
+      390,
+      10699
+    ],
+    "tiles": 4,
+    "elapsed": 12.2,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-6528-1440.png",
+    "size": [
+      1440,
+      6928
+    ],
+    "tiles": 3,
+    "elapsed": 36.9,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Related products grid",
+          "description": "The first row of product cards is shifted right into the second column, leaving an empty first column under the section heading; the fourth product wraps to the left column, so the grid columns are misaligned."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-6528-390.png",
+    "size": [
+      390,
+      10520
+    ],
+    "tiles": 4,
+    "elapsed": 20.8,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Related products",
+          "description": "Three related product cards (GoodWe GW100K-ET-G10, GoodWe ESA GW8K-ETA-G20, and SAJ HS3-8K-T2-W/G-PX) show large blank gray image placeholders instead of product images."
+        }
+      ]
+    }
+  },
+  {
+    "file": "en-6529-1440.png",
+    "size": [
+      1440,
+      5134
+    ],
+    "tiles": 2,
+    "elapsed": 29.2,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-6529-390.png",
+    "size": [
+      390,
+      7402
+    ],
+    "tiles": 3,
+    "elapsed": 14.8,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-6530-1440.png",
+    "size": [
+      1440,
+      5720
+    ],
+    "tiles": 3,
+    "elapsed": 9.3,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "en-6530-390.png",
+    "size": [
+      390,
+      8222
+    ],
+    "tiles": 3,
+    "elapsed": 8.8,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Sticky tab navigation",
+          "description": "The 'Documentation' tab text is clipped at the right edge of the screen, displaying only 'Docu'."
+        },
+        {
+          "area": "Content below Documents section",
+          "description": "A large empty grey rectangular block is present, indicating a missing or broken image."
+        },
+        {
+          "area": "Related products section",
+          "description": "Two product cards ('GoodWe GW125K-STS-G10' and 'SAJ ATS1-T63-A') display large empty grey placeholders instead of product images."
+        }
+      ]
+    }
+  },
+  {
+    "file": "term-0-product_cat-en-1440.png",
+    "size": [
+      1440,
+      9790
+    ],
+    "tiles": 4,
+    "elapsed": 21.1,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "term-0-product_cat-en-390.png",
+    "size": [
+      390,
+      13609
+    ],
+    "tiles": 5,
+    "elapsed": 12.5,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "term-1-product_cat-de-1440.png",
+    "size": [
+      1440,
+      4099
+    ],
+    "tiles": 2,
+    "elapsed": 44.3,
+    "result": {
+      "status": "ISSUE",
+      "issues": [
+        {
+          "area": "Filter sidebar category list",
+          "description": "Several category labels are horizontally clipped/truncated (e.g. 'EMS und Üb', 'Ladestati', 'Energie...', 'Notstro...'), making those filter options unreadable."
+        }
+      ]
+    }
+  },
+  {
+    "file": "term-1-product_cat-de-390.png",
+    "size": [
+      390,
+      5276
+    ],
+    "tiles": 2,
+    "elapsed": 23.2,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "term-2-product_cat-de-1440.png",
+    "size": [
+      1440,
+      2743
+    ],
+    "tiles": 1,
+    "elapsed": 20.3,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "term-2-product_cat-de-390.png",
+    "size": [
+      390,
+      3334
+    ],
+    "tiles": 2,
+    "elapsed": 31.0,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "term-3-phase-en-1440.png",
+    "size": [
+      1440,
+      9819
+    ],
+    "tiles": 4,
+    "elapsed": 7.9,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "term-3-phase-en-390.png",
+    "size": [
+      390,
+      13719
+    ],
+    "tiles": 5,
+    "elapsed": 6.0,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "term-4-phase-de-1440.png",
+    "size": [
+      1440,
+      9819
+    ],
+    "tiles": 4,
+    "elapsed": 36.1,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "term-4-phase-de-390.png",
+    "size": [
+      390,
+      14027
+    ],
+    "tiles": 6,
+    "elapsed": 30.0,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "term-5-battery_voltage-en-1440.png",
+    "size": [
+      1440,
+      4108
+    ],
+    "tiles": 2,
+    "elapsed": 49.0,
+    "result": {
+      "status": "PARSE_ERR",
+      "raw": ""
+    }
+  },
+  {
+    "file": "term-5-battery_voltage-en-390.png",
+    "size": [
+      390,
+      5612
+    ],
+    "tiles": 3,
+    "elapsed": 14.0,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "term-6-category-en-1440.png",
+    "size": [
+      1440,
+      1450
+    ],
+    "tiles": 1,
+    "elapsed": 11.8,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "term-6-category-en-390.png",
+    "size": [
+      390,
+      1558
+    ],
+    "tiles": 1,
+    "elapsed": 9.6,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "term-7-category-de-1440.png",
+    "size": [
+      1440,
+      1450
+    ],
+    "tiles": 1,
+    "elapsed": 13.7,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  },
+  {
+    "file": "term-7-category-de-390.png",
+    "size": [
+      390,
+      1603
+    ],
+    "tiles": 1,
+    "elapsed": 44.8,
+    "result": {
+      "status": "PASS",
+      "issues": []
+    }
+  }
+]

@@ -1,0 +1,1650 @@
+[
+  {
+    "key": "https://de-linker.com/battery-voltage/high-voltage/@1440",
+    "id": 326,
+    "kind": "term",
+    "lang": "en",
+    "title": "High Voltage",
+    "url": "https://de-linker.com/battery-voltage/high-voltage/"
+  },
+  {
+    "key": "https://de-linker.com/category/applications-blog/@1440",
+    "id": 14,
+    "kind": "term",
+    "lang": "en",
+    "title": "Applications",
+    "url": "https://de-linker.com/category/applications-blog/"
+  },
+  {
+    "key": "https://de-linker.com/category/battery-storage-blog/@1440",
+    "id": 11,
+    "kind": "term",
+    "lang": "en",
+    "title": "Battery Storage",
+    "url": "https://de-linker.com/category/battery-storage-blog/"
+  },
+  {
+    "key": "https://de-linker.com/category/installation-commissioning/@1440",
+    "id": 12,
+    "kind": "term",
+    "lang": "en",
+    "title": "Installation &amp; Commissioning",
+    "url": "https://de-linker.com/category/installation-commissioning/"
+  },
+  {
+    "key": "https://de-linker.com/category/monitoring-energy-management/@1440",
+    "id": 13,
+    "kind": "term",
+    "lang": "en",
+    "title": "Monitoring &amp; Energy Management",
+    "url": "https://de-linker.com/category/monitoring-energy-management/"
+  },
+  {
+    "key": "https://de-linker.com/category/system-design/@1440",
+    "id": 10,
+    "kind": "term",
+    "lang": "en",
+    "title": "System Design",
+    "url": "https://de-linker.com/category/system-design/"
+  },
+  {
+    "key": "https://de-linker.com/de/battery-voltage/hochvolt/@1440",
+    "id": 598,
+    "kind": "term",
+    "lang": "de",
+    "title": "Hochvolt",
+    "url": "https://de-linker.com/de/battery-voltage/hochvolt/"
+  },
+  {
+    "key": "https://de-linker.com/de/kategorie/anwendungen/@1440",
+    "id": 574,
+    "kind": "term",
+    "lang": "de",
+    "title": "Anwendungen",
+    "url": "https://de-linker.com/de/kategorie/anwendungen/"
+  },
+  {
+    "key": "https://de-linker.com/de/kategorie/batteriespeicher/@1440",
+    "id": 577,
+    "kind": "term",
+    "lang": "de",
+    "title": "Batteriespeicher",
+    "url": "https://de-linker.com/de/kategorie/batteriespeicher/"
+  },
+  {
+    "key": "https://de-linker.com/de/kategorie/installation-inbetriebnahme/@1440",
+    "id": 580,
+    "kind": "term",
+    "lang": "de",
+    "title": "Installation &amp; Inbetriebnahme",
+    "url": "https://de-linker.com/de/kategorie/installation-inbetriebnahme/"
+  },
+  {
+    "key": "https://de-linker.com/de/kategorie/systemauslegung/@1440",
+    "id": 586,
+    "kind": "term",
+    "lang": "de",
+    "title": "Systemauslegung",
+    "url": "https://de-linker.com/de/kategorie/systemauslegung/"
+  },
+  {
+    "key": "https://de-linker.com/de/kategorie/ueberwachung-energiemanagement/@1440",
+    "id": 583,
+    "kind": "term",
+    "lang": "de",
+    "title": "Überwachung &amp; Energiemanagement",
+    "url": "https://de-linker.com/de/kategorie/ueberwachung-energiemanagement/"
+  },
+  {
+    "key": "https://de-linker.com/de/phase/dreiphasig/@1440",
+    "id": 607,
+    "kind": "term",
+    "lang": "de",
+    "title": "Dreiphasig",
+    "url": "https://de-linker.com/de/phase/dreiphasig/"
+  },
+  {
+    "key": "https://de-linker.com/de/phase/einphasig/@1440",
+    "id": 604,
+    "kind": "term",
+    "lang": "de",
+    "title": "Einphasig",
+    "url": "https://de-linker.com/de/phase/einphasig/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt-kategorie/ems-ueberwachung/@1440",
+    "id": 619,
+    "kind": "term",
+    "lang": "de",
+    "title": "EMS und Überwachung",
+    "url": "https://de-linker.com/de/produkt-kategorie/ems-ueberwachung/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/@1440",
+    "id": 616,
+    "kind": "term",
+    "lang": "de",
+    "title": "Gewerbespeicher",
+    "url": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/batteriesysteme/@1440",
+    "id": 630,
+    "kind": "term",
+    "lang": "de",
+    "title": "Batteriesysteme",
+    "url": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/batteriesysteme/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/komplettsysteme/@1440",
+    "id": 628,
+    "kind": "term",
+    "lang": "de",
+    "title": "Komplettsysteme",
+    "url": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/komplettsysteme/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt-kategorie/heimspeicher/@1440",
+    "id": 613,
+    "kind": "term",
+    "lang": "de",
+    "title": "Heimspeicher",
+    "url": "https://de-linker.com/de/produkt-kategorie/heimspeicher/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt-kategorie/ladestationen/@1440",
+    "id": 622,
+    "kind": "term",
+    "lang": "de",
+    "title": "Ladestationen",
+    "url": "https://de-linker.com/de/produkt-kategorie/ladestationen/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt-kategorie/wechselrichter/@1440",
+    "id": 610,
+    "kind": "term",
+    "lang": "de",
+    "title": "Wechselrichter",
+    "url": "https://de-linker.com/de/produkt-kategorie/wechselrichter/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt-kategorie/zubehoer/@1440",
+    "id": 625,
+    "kind": "term",
+    "lang": "de",
+    "title": "Zubehör",
+    "url": "https://de-linker.com/de/produkt-kategorie/zubehoer/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/@1440",
+    "id": 632,
+    "kind": "term",
+    "lang": "de",
+    "title": "Energiezähler &amp; Stromwandler",
+    "url": "https://de-linker.com/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt-kategorie/zubehoer/notstrom/@1440",
+    "id": 634,
+    "kind": "term",
+    "lang": "de",
+    "title": "Notstrom",
+    "url": "https://de-linker.com/de/produkt-kategorie/zubehoer/notstrom/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/chint-dtsu666/@1440",
+    "id": 6720,
+    "kind": "product",
+    "lang": "de",
+    "title": "Chint DTSU666",
+    "url": "https://de-linker.com/de/produkt/chint-dtsu666/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-esa-gw10k-eha-g20-10-kw-einphasiges-leistungsmodul/@1440",
+    "id": 6567,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe ESA GW10K-EHA-G20 (10 kW einphasiges Leistungsmodul)",
+    "url": "https://de-linker.com/de/produkt/goodwe-esa-gw10k-eha-g20-10-kw-einphasiges-leistungsmodul/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-esa-gw10k-eta-g20-10-kw-dreiphasiges-komplettsystem/@1440",
+    "id": 6690,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe ESA GW10K-ETA-G20 (dreiphasiges 10-kW-Leistungsmodul)",
+    "url": "https://de-linker.com/de/produkt/goodwe-esa-gw10k-eta-g20-10-kw-dreiphasiges-komplettsystem/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-esa-gw125-261-esa-lcn-g10/@1440",
+    "id": 6599,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh All-in-One-Speicherschrank)",
+    "url": "https://de-linker.com/de/produkt/goodwe-esa-gw125-261-esa-lcn-g10/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-esa-gw12k-eta-g20-12-kw-dreiphasiges-komplettsystem/@1440",
+    "id": 6665,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe ESA GW12K-ETA-G20 (dreiphasiges 12-kW-Leistungsmodul)",
+    "url": "https://de-linker.com/de/produkt/goodwe-esa-gw12k-eta-g20-12-kw-dreiphasiges-komplettsystem/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-esa-gw15k-eta-g20-15-kw-dreiphasiges-komplettsystem/@1440",
+    "id": 6664,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe ESA GW15K-ETA-G20 (dreiphasiges 15-kW-Leistungsmodul)",
+    "url": "https://de-linker.com/de/produkt/goodwe-esa-gw15k-eta-g20-15-kw-dreiphasiges-komplettsystem/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-esa-gw20k-eta-g20-20-kw-dreiphasiges-leistungsmodul/@1440",
+    "id": 6580,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe ESA GW20K-ETA-G20 (20 kW dreiphasiges Leistungsmodul)",
+    "url": "https://de-linker.com/de/produkt/goodwe-esa-gw20k-eta-g20-20-kw-dreiphasiges-leistungsmodul/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-esa-gw25k-eta-g20-25-kw-dreiphasiges-leistungsmodul/@1440",
+    "id": 6579,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe ESA GW25K-ETA-G20 (25 kW dreiphasiges Leistungsmodul)",
+    "url": "https://de-linker.com/de/produkt/goodwe-esa-gw25k-eta-g20-25-kw-dreiphasiges-leistungsmodul/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-esa-gw29-999k-eta-g20-29-999-kw-dreiphasiges-leistungsmodul/@1440",
+    "id": 6578,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe ESA GW29.999K-ETA-G20 (29,999 kW dreiphasiges Leistungsmodul)",
+    "url": "https://de-linker.com/de/produkt/goodwe-esa-gw29-999k-eta-g20-29-999-kw-dreiphasiges-leistungsmodul/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-esa-gw3-6k-eha-g20-3-6-kw-einphasiges-leistungsmodul/@1440",
+    "id": 6571,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe ESA GW3.6K-EHA-G20 (3,6 kW einphasiges Leistungsmodul)",
+    "url": "https://de-linker.com/de/produkt/goodwe-esa-gw3-6k-eha-g20-3-6-kw-einphasiges-leistungsmodul/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-esa-gw30k-eta-g20-30-kw-dreiphasiges-leistungsmodul/@1440",
+    "id": 6577,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe ESA GW30K-ETA-G20 (30 kW dreiphasiges Leistungsmodul)",
+    "url": "https://de-linker.com/de/produkt/goodwe-esa-gw30k-eta-g20-30-kw-dreiphasiges-leistungsmodul/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-esa-gw3k-eha-g20-3-kw-einphasiges-leistungsmodul/@1440",
+    "id": 6572,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe ESA GW3K-EHA-G20 (3 kW einphasiges Leistungsmodul)",
+    "url": "https://de-linker.com/de/produkt/goodwe-esa-gw3k-eha-g20-3-kw-einphasiges-leistungsmodul/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-esa-gw5k-eha-g20-5-kw-einphasiges-leistungsmodul/@1440",
+    "id": 6570,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe ESA GW5K-EHA-G20 (einphasiges 5-kW-Leistungsmodul)",
+    "url": "https://de-linker.com/de/produkt/goodwe-esa-gw5k-eha-g20-5-kw-einphasiges-leistungsmodul/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-esa-gw5k-eta-g20-5-kw-dreiphasiges-leistungsmodul/@1440",
+    "id": 6583,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe ESA GW5K-ETA-G20 (5-kW-dreiphasiges Leistungsmodul)",
+    "url": "https://de-linker.com/de/produkt/goodwe-esa-gw5k-eta-g20-5-kw-dreiphasiges-leistungsmodul/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-esa-gw6k-eha-g20-6-kw-einphasiges-leistungsmodul/@1440",
+    "id": 6569,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe ESA GW6K-EHA-G20 (6 kW einphasiges Leistungsmodul)",
+    "url": "https://de-linker.com/de/produkt/goodwe-esa-gw6k-eha-g20-6-kw-einphasiges-leistungsmodul/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-esa-gw6k-eta-g20-6-kw-dreiphasiges-leistungsmodul/@1440",
+    "id": 6582,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe ESA GW6K-ETA-G20 (6 kW dreiphasiges Leistungsmodul)",
+    "url": "https://de-linker.com/de/produkt/goodwe-esa-gw6k-eta-g20-6-kw-dreiphasiges-leistungsmodul/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-esa-gw8k-eha-g20-8-kw-einphasiges-leistungsmodul/@1440",
+    "id": 6568,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe ESA GW8K-EHA-G20 (8-kW-einphasiges Leistungsmodul)",
+    "url": "https://de-linker.com/de/produkt/goodwe-esa-gw8k-eha-g20-8-kw-einphasiges-leistungsmodul/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-esa-gw8k-eta-g20-8-kw-dreiphasiges-komplettsystem/@1440",
+    "id": 6666,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe ESA GW8K-ETA-G20 (dreiphasiges 8-kW-Leistungsmodul)",
+    "url": "https://de-linker.com/de/produkt/goodwe-esa-gw8k-eta-g20-8-kw-dreiphasiges-komplettsystem/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-esa-gw9-999k-eta-g20-9-999-kw-dreiphasiges-leistungsmodul/@1440",
+    "id": 6581,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe ESA GW9.999K-ETA-G20 (9,999 kW dreiphasiges Leistungsmodul)",
+    "url": "https://de-linker.com/de/produkt/goodwe-esa-gw9-999k-eta-g20-9-999-kw-dreiphasiges-leistungsmodul/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-etr-125-kw-ci-dreiphasiger-hybridwechselrichter-1000v/@1440",
+    "id": 6654,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GW125K-ETR-G10 (125 kW dreiphasiger Hybrid-Wechselrichter)",
+    "url": "https://de-linker.com/de/produkt/goodwe-etr-125-kw-ci-dreiphasiger-hybridwechselrichter-1000v/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-ezmanager3000-hems-kommunikationsschnittstelle/@1440",
+    "id": 6710,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe EzManager3000 HEMS-Gateway",
+    "url": "https://de-linker.com/de/produkt/goodwe-ezmanager3000-hems-kommunikationsschnittstelle/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gm330/@1440",
+    "id": 6717,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GM330",
+    "url": "https://de-linker.com/de/produkt/goodwe-gm330/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gmk330/@1440",
+    "id": 6716,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GMK330",
+    "url": "https://de-linker.com/de/produkt/goodwe-gmk330/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gw100k-et-g10/@1440",
+    "id": 6809,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GW100K-ET-G10",
+    "url": "https://de-linker.com/de/produkt/goodwe-gw100k-et-g10/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gw100k-etr-g10-100-kw-dreiphasiger-hybridwechselrichter/@1440",
+    "id": 6586,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GW100K-ETR-G10 (100 kW dreiphasiger Hybrid-Wechselrichter)",
+    "url": "https://de-linker.com/de/produkt/goodwe-gw100k-etr-g10-100-kw-dreiphasiger-hybridwechselrichter/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gw110k-etr-g10-110-kw-dreiphasiger-hybridwechselrichter/@1440",
+    "id": 6585,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GW110K-ETR-G10 (110 kW dreiphasiger Hybrid-Wechselrichter)",
+    "url": "https://de-linker.com/de/produkt/goodwe-gw110k-etr-g10-110-kw-dreiphasiger-hybridwechselrichter/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gw112-6-bat-ac-g10/@1440",
+    "id": 6802,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GW112.6-BAT-AC-G10",
+    "url": "https://de-linker.com/de/produkt/goodwe-gw112-6-bat-ac-g10/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gw124-99k-etr-g10-124-99-kw-dreiphasiger-hybridwechselrichter/@1440",
+    "id": 6584,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GW124.99K-ETR-G10 (124,99 kW dreiphasiger Hybrid-Wechselrichter)",
+    "url": "https://de-linker.com/de/produkt/goodwe-gw124-99k-etr-g10-124-99-kw-dreiphasiger-hybridwechselrichter/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gw125k-sts-g10/@1440",
+    "id": 6714,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GW125K-STS-G10",
+    "url": "https://de-linker.com/de/produkt/goodwe-gw125k-sts-g10/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gw208-9-bat-lc-g10/@1440",
+    "id": 6801,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GW208.9-BAT-LC-G10",
+    "url": "https://de-linker.com/de/produkt/goodwe-gw208-9-bat-lc-g10/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gw208-9-bat-lcd-g10/@1440",
+    "id": 6800,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GW208.9-BAT-LCD-G10",
+    "url": "https://de-linker.com/de/produkt/goodwe-gw208-9-bat-lcd-g10/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gw261-2-bat-lcd-g10/@1440",
+    "id": 6799,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GW261.2-BAT-LCD-G10",
+    "url": "https://de-linker.com/de/produkt/goodwe-gw261-2-bat-lcd-g10/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gw30k-sts-g10/@1440",
+    "id": 6566,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GW30K-STS-G10",
+    "url": "https://de-linker.com/de/produkt/goodwe-gw30k-sts-g10/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gw5-1-bat-d-g20-esa-batteriemodul-5-12-kwh/@1440",
+    "id": 6576,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GW5.1-BAT-D-G20 (ESA-Batteriemodul, 5,12 kWh)",
+    "url": "https://de-linker.com/de/produkt/goodwe-gw5-1-bat-d-g20-esa-batteriemodul-5-12-kwh/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gw5-1-bat-d-g21-esa-batteriemodul-5-12-kwh/@1440",
+    "id": 6574,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GW5.1-BAT-D-G21 (ESA-Batteriemodul, 5,12 kWh)",
+    "url": "https://de-linker.com/de/produkt/goodwe-gw5-1-bat-d-g21-esa-batteriemodul-5-12-kwh/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gw6-0-bat-d-g20-esa-batteriemodul-6-0-kwh/@1440",
+    "id": 6650,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GW6.0-BAT-D-G20 (ESA-Batteriemodul, 6,0 kWh)",
+    "url": "https://de-linker.com/de/produkt/goodwe-gw6-0-bat-d-g20-esa-batteriemodul-6-0-kwh/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gw60k-sts-g10/@1440",
+    "id": 6565,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GW60K-STS-G10",
+    "url": "https://de-linker.com/de/produkt/goodwe-gw60k-sts-g10/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gw61-4-bat-ac-g10/@1440",
+    "id": 6803,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GW61.4-BAT-AC-G10",
+    "url": "https://de-linker.com/de/produkt/goodwe-gw61-4-bat-ac-g10/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gw75k-et-g10/@1440",
+    "id": 6589,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GW75K-ET-G10",
+    "url": "https://de-linker.com/de/produkt/goodwe-gw75k-et-g10/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gw8-3-bat-d-g20-esa-batteriemodul-8-32-kwh/@1440",
+    "id": 6575,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GW8.3-BAT-D-G20 (ESA-Batteriemodul, 8,32 kWh)",
+    "url": "https://de-linker.com/de/produkt/goodwe-gw8-3-bat-d-g20-esa-batteriemodul-8-32-kwh/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gw8-3-bat-d-g21-esa-batteriemodul-8-32-kwh/@1440",
+    "id": 6573,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GW8.3-BAT-D-G21 (ESA-Batteriemodul, 8,32 kWh)",
+    "url": "https://de-linker.com/de/produkt/goodwe-gw8-3-bat-d-g21-esa-batteriemodul-8-32-kwh/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gw80k-et-g10/@1440",
+    "id": 6811,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GW80K-ET-G10",
+    "url": "https://de-linker.com/de/produkt/goodwe-gw80k-et-g10/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gw80k-etr-g10-80-kw-dreiphasiger-hybridwechselrichter/@1440",
+    "id": 6588,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GW80K-ETR-G10 (80 kW dreiphasiger Hybrid-Wechselrichter)",
+    "url": "https://de-linker.com/de/produkt/goodwe-gw80k-etr-g10-80-kw-dreiphasiger-hybridwechselrichter/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gw9-0-bat-d-g20-esa-batteriemodul-9-0-kwh/@1440",
+    "id": 6649,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GW9.0-BAT-D-G20 (ESA-Batteriemodul, 9,0 kWh)",
+    "url": "https://de-linker.com/de/produkt/goodwe-gw9-0-bat-d-g20-esa-batteriemodul-9-0-kwh/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gw99-99k-et-g10/@1440",
+    "id": 6810,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GW99.99K-ET-G10",
+    "url": "https://de-linker.com/de/produkt/goodwe-gw99-99k-et-g10/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-gw99-99k-etr-g10-99-99-kw-dreiphasiger-hybridwechselrichter/@1440",
+    "id": 6587,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe GW99.99K-ETR-G10 (99,99 kW dreiphasiger Hybrid-Wechselrichter)",
+    "url": "https://de-linker.com/de/produkt/goodwe-gw99-99k-etr-g10-99-99-kw-dreiphasiger-hybridwechselrichter/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-hca-g2-gw11k-hca-20-11-kw-dreiphasige-ladestation/@1440",
+    "id": 6689,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe HCA G2 GW11K-HCA-20 (11 kW dreiphasige Wallbox, 7,5 m Kabel)",
+    "url": "https://de-linker.com/de/produkt/goodwe-hca-g2-gw11k-hca-20-11-kw-dreiphasige-ladestation/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-hca-gw22k-hca-22-kw-dreiphasige-ladestation/@1440",
+    "id": 6662,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe HCA G2 GW22K-HCA-20 (22 kW dreiphasige Wallbox, 7,5 m Kabel)",
+    "url": "https://de-linker.com/de/produkt/goodwe-hca-gw22k-hca-22-kw-dreiphasige-ladestation/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-hca-gw7k-hca-7-kw-einphasige-ladestation/@1440",
+    "id": 6663,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe HCA G2 GW7K-HCA-20 (7 kW einphasige EV-Ladeeinrichtung, 7,5 m Kabel)",
+    "url": "https://de-linker.com/de/produkt/goodwe-hca-gw7k-hca-7-kw-einphasige-ladestation/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/goodwe-sec3000c-intelligente-energiesteuerung/@1440",
+    "id": 6712,
+    "kind": "product",
+    "lang": "de",
+    "title": "GoodWe SEC3000C (intelligenter Energieregler)",
+    "url": "https://de-linker.com/de/produkt/goodwe-sec3000c-intelligente-energiesteuerung/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/pylontech-optim-us-l260-omni/@1440",
+    "id": 6769,
+    "kind": "product",
+    "lang": "de",
+    "title": "Pylontech OPTIM US L260-OMNI",
+    "url": "https://de-linker.com/de/produkt/pylontech-optim-us-l260-omni/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-ats1-t63-a/@1440",
+    "id": 6839,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ ATS1-T63-A",
+    "url": "https://de-linker.com/de/produkt/saj-ats1-t63-a/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-b2-10-0-hv1/@1440",
+    "id": 6750,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ B2-10.0-HV1",
+    "url": "https://de-linker.com/de/produkt/saj-b2-10-0-hv1/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-b2-15-0-hv1/@1440",
+    "id": 6749,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ B2-15.0-HV1",
+    "url": "https://de-linker.com/de/produkt/saj-b2-15-0-hv1/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-b2-20-0-hv1/@1440",
+    "id": 6748,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ B2-20.0-HV1",
+    "url": "https://de-linker.com/de/produkt/saj-b2-20-0-hv1/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-b2-25-0-hv1/@1440",
+    "id": 6747,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ B2-25.0-HV1",
+    "url": "https://de-linker.com/de/produkt/saj-b2-25-0-hv1/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-b2-5-0-hv1/@1440",
+    "id": 6818,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ B2-5.0-HV1",
+    "url": "https://de-linker.com/de/produkt/saj-b2-5-0-hv1/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-bc2-hv1/@1440",
+    "id": 6736,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ BC2-HV1",
+    "url": "https://de-linker.com/de/produkt/saj-bc2-hv1/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-bu2-5-0-hv1/@1440",
+    "id": 6738,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ BU2-5.0-HV1",
+    "url": "https://de-linker.com/de/produkt/saj-bu2-5-0-hv1/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-bu3-5-0-tv2-pro/@1440",
+    "id": 6735,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ BU3-5.0-TV2-PRO",
+    "url": "https://de-linker.com/de/produkt/saj-bu3-5-0-tv2-pro/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-cb2-100-3-hv5/@1440",
+    "id": 6629,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ CB2-100.3-HV5 (100,3 kWh C&#038;I-Batteriespeicherschrank)",
+    "url": "https://de-linker.com/de/produkt/saj-cb2-100-3-hv5/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-cb2-57-3-hv5/@1440",
+    "id": 6632,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ CB2-57.3-HV5 (57,3 kWh C&#038;I-Batterieschrank)",
+    "url": "https://de-linker.com/de/produkt/saj-cb2-57-3-hv5/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-cb2-71-6-hv5/@1440",
+    "id": 6631,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ CB2-71.6-HV5 (71,6 kWh C&#038;I-Batteriespeicherschrank)",
+    "url": "https://de-linker.com/de/produkt/saj-cb2-71-6-hv5/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-cb2-85-9-hv5/@1440",
+    "id": 6630,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ CB2-85.9-HV5 (85,9 kWh C&#038;I-Batteriespeicherschrank)",
+    "url": "https://de-linker.com/de/produkt/saj-cb2-85-9-hv5/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-chs2-29-9k-t4-x/@1440",
+    "id": 6798,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ CHS2-29.9K-T4-X",
+    "url": "https://de-linker.com/de/produkt/saj-chs2-29-9k-t4-x/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-chs2-30k-t4-x/@1440",
+    "id": 6797,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ CHS2-30K-T4-X",
+    "url": "https://de-linker.com/de/produkt/saj-chs2-30k-t4-x/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-chs2-50k-t6-x/@1440",
+    "id": 6796,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ CHS2-50K-T6-X",
+    "url": "https://de-linker.com/de/produkt/saj-chs2-50k-t6-x/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-emanager-c1-pro/@1440",
+    "id": 6784,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ eManager-C1 Pro",
+    "url": "https://de-linker.com/de/produkt/saj-emanager-c1-pro/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-emanager-emanager-5-0-heim-energiemanager/@1440",
+    "id": 6643,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ eManager (Energiemanagement-Systemmodul)",
+    "url": "https://de-linker.com/de/produkt/saj-emanager-emanager-5-0-heim-energiemanager/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-esolar-aio3-datensammler-wifi-lan-bluetooth/@1440",
+    "id": 6676,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ eSolar AIO3 Datenlogger (WLAN/Ethernet/Bluetooth)",
+    "url": "https://de-linker.com/de/produkt/saj-esolar-aio3-datensammler-wifi-lan-bluetooth/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-h2-10k-t3/@1440",
+    "id": 6628,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ H2-10K-T3 (10-kW-Dreiphasen-Hybrid-Wechselrichter)",
+    "url": "https://de-linker.com/de/produkt/saj-h2-10k-t3/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-h2-12k-t3/@1440",
+    "id": 6627,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ H2-12K-T3 (12-kW-Dreiphasen-Hybrid-Wechselrichter)",
+    "url": "https://de-linker.com/de/produkt/saj-h2-12k-t3/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-h2-15k-t3/@1440",
+    "id": 6752,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ H2-15K-T3",
+    "url": "https://de-linker.com/de/produkt/saj-h2-15k-t3/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-h2-20k-t3/@1440",
+    "id": 6751,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ H2-20K-T3",
+    "url": "https://de-linker.com/de/produkt/saj-h2-20k-t3/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-h2-25k-t3/@1440",
+    "id": 6838,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ H2-25K-T3",
+    "url": "https://de-linker.com/de/produkt/saj-h2-25k-t3/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-h2-30k-t3-de/@1440",
+    "id": 6837,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ H2-30K-T3-DE",
+    "url": "https://de-linker.com/de/produkt/saj-h2-30k-t3-de/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-hs2-10k-t2-x/@1440",
+    "id": 6836,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ HS2-10K-T2-X",
+    "url": "https://de-linker.com/de/produkt/saj-hs2-10k-t2-x/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-hs2-5k-t2-x/@1440",
+    "id": 6626,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ HS2-5K-T2-X (5-kW-Dreiphasen-Hybrid-Wechselrichter)",
+    "url": "https://de-linker.com/de/produkt/saj-hs2-5k-t2-x/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-hs2-6k-t2-x/@1440",
+    "id": 6835,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ HS2-6K-T2-X",
+    "url": "https://de-linker.com/de/produkt/saj-hs2-6k-t2-x/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-hs2-8k-t2-x/@1440",
+    "id": 6834,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ HS2-8K-T2-X",
+    "url": "https://de-linker.com/de/produkt/saj-hs2-8k-t2-x/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-hs3-10k-t2-w-p/@1440",
+    "id": 6729,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ HS3-10K-T2-W/G-PX",
+    "url": "https://de-linker.com/de/produkt/saj-hs3-10k-t2-w-p/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-hs3-12k-t2-w-p/@1440",
+    "id": 6833,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ HS3-12K-T2-W/G-PX",
+    "url": "https://de-linker.com/de/produkt/saj-hs3-12k-t2-w-p/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-hs3-5k-t2-w-p/@1440",
+    "id": 6730,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ HS3-5K-T2-W/G-PX",
+    "url": "https://de-linker.com/de/produkt/saj-hs3-5k-t2-w-p/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-hs3-6k-t2-w-p/@1440",
+    "id": 6832,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ HS3-6K-T2-W/G-PX",
+    "url": "https://de-linker.com/de/produkt/saj-hs3-6k-t2-w-p/"
+  },
+  {
+    "key": "https://de-linker.com/de/produkt/saj-hs3-8k-t2-w-p/@1440",
+    "id": 6831,
+    "kind": "product",
+    "lang": "de",
+    "title": "SAJ HS3-8K-T2-W/G-PX",
+    "url": "https://de-linker.com/de/produkt/saj-hs3-8k-t2-w-p/"
+  },
+  {
+    "key": "https://de-linker.com/phase/single-phase/@1440",
+    "id": 323,
+    "kind": "term",
+    "lang": "en",
+    "title": "Single-phase",
+    "url": "https://de-linker.com/phase/single-phase/"
+  },
+  {
+    "key": "https://de-linker.com/phase/three-phase/@1440",
+    "id": 324,
+    "kind": "term",
+    "lang": "en",
+    "title": "Three-phase",
+    "url": "https://de-linker.com/phase/three-phase/"
+  },
+  {
+    "key": "https://de-linker.com/product-category/accessories/@1440",
+    "id": 456,
+    "kind": "term",
+    "lang": "en",
+    "title": "Accessories",
+    "url": "https://de-linker.com/product-category/accessories/"
+  },
+  {
+    "key": "https://de-linker.com/product-category/accessories/backup-power/@1440",
+    "id": 458,
+    "kind": "term",
+    "lang": "en",
+    "title": "Backup Power",
+    "url": "https://de-linker.com/product-category/accessories/backup-power/"
+  },
+  {
+    "key": "https://de-linker.com/product-category/accessories/meters-current-transformers/@1440",
+    "id": 457,
+    "kind": "term",
+    "lang": "en",
+    "title": "Meters &amp; Current Transformers",
+    "url": "https://de-linker.com/product-category/accessories/meters-current-transformers/"
+  },
+  {
+    "key": "https://de-linker.com/product-category/commercial-storage/@1440",
+    "id": 451,
+    "kind": "term",
+    "lang": "en",
+    "title": "Commercial Storage",
+    "url": "https://de-linker.com/product-category/commercial-storage/"
+  },
+  {
+    "key": "https://de-linker.com/product-category/commercial-storage/all-in-one-systems/@1440",
+    "id": 452,
+    "kind": "term",
+    "lang": "en",
+    "title": "All-in-One Systems",
+    "url": "https://de-linker.com/product-category/commercial-storage/all-in-one-systems/"
+  },
+  {
+    "key": "https://de-linker.com/product-category/commercial-storage/battery-systems/@1440",
+    "id": 453,
+    "kind": "term",
+    "lang": "en",
+    "title": "Battery Systems",
+    "url": "https://de-linker.com/product-category/commercial-storage/battery-systems/"
+  },
+  {
+    "key": "https://de-linker.com/product-category/ems-monitoring/@1440",
+    "id": 454,
+    "kind": "term",
+    "lang": "en",
+    "title": "EMS &amp; Monitoring",
+    "url": "https://de-linker.com/product-category/ems-monitoring/"
+  },
+  {
+    "key": "https://de-linker.com/product-category/ev-chargers/@1440",
+    "id": 455,
+    "kind": "term",
+    "lang": "en",
+    "title": "EV Chargers",
+    "url": "https://de-linker.com/product-category/ev-chargers/"
+  },
+  {
+    "key": "https://de-linker.com/product-category/home-storage/@1440",
+    "id": 450,
+    "kind": "term",
+    "lang": "en",
+    "title": "Home Storage",
+    "url": "https://de-linker.com/product-category/home-storage/"
+  },
+  {
+    "key": "https://de-linker.com/product-category/inverters/@1440",
+    "id": 449,
+    "kind": "term",
+    "lang": "en",
+    "title": "Inverters",
+    "url": "https://de-linker.com/product-category/inverters/"
+  },
+  {
+    "key": "https://de-linker.com/product/chint-dtsu666/@1440",
+    "id": 2281,
+    "kind": "product",
+    "lang": "en",
+    "title": "Chint DTSU666",
+    "url": "https://de-linker.com/product/chint-dtsu666/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/@1440",
+    "id": 6528,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe ESA GW10K-EHA-G20 (10 kW single-phase power module)",
+    "url": "https://de-linker.com/product/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one/@1440",
+    "id": 3556,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+    "url": "https://de-linker.com/product/goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-esa-gw125-261-esa-lcn-g10/@1440",
+    "id": 6321,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+    "url": "https://de-linker.com/product/goodwe-esa-gw125-261-esa-lcn-g10/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-esa-gw12k-eta-g20-12-kw-three-phase-all-in-one/@1440",
+    "id": 3584,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe ESA GW12K-ETA-G20 (12 kW three-phase power module)",
+    "url": "https://de-linker.com/product/goodwe-esa-gw12k-eta-g20-12-kw-three-phase-all-in-one/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-esa-gw15k-eta-g20-15-kw-three-phase-all-in-one/@1440",
+    "id": 3585,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe ESA GW15K-ETA-G20 (15 kW three-phase power module)",
+    "url": "https://de-linker.com/product/goodwe-esa-gw15k-eta-g20-15-kw-three-phase-all-in-one/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-esa-gw20k-eta-g20-20-kw-three-phase-power-module/@1440",
+    "id": 6515,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe ESA GW20K-ETA-G20 (20 kW three-phase power module)",
+    "url": "https://de-linker.com/product/goodwe-esa-gw20k-eta-g20-20-kw-three-phase-power-module/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-esa-gw25k-eta-g20-25-kw-three-phase-power-module/@1440",
+    "id": 6516,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe ESA GW25K-ETA-G20 (25 kW three-phase power module)",
+    "url": "https://de-linker.com/product/goodwe-esa-gw25k-eta-g20-25-kw-three-phase-power-module/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-esa-gw29-999k-eta-g20-29-999-kw-three-phase-power-module/@1440",
+    "id": 6517,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe ESA GW29.999K-ETA-G20 (29.999 kW three-phase power module)",
+    "url": "https://de-linker.com/product/goodwe-esa-gw29-999k-eta-g20-29-999-kw-three-phase-power-module/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-esa-gw3-6k-eha-g20-3-6-kw-single-phase-power-module/@1440",
+    "id": 6524,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe ESA GW3.6K-EHA-G20 (3.6 kW single-phase power module)",
+    "url": "https://de-linker.com/product/goodwe-esa-gw3-6k-eha-g20-3-6-kw-single-phase-power-module/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-esa-gw30k-eta-g20-30-kw-three-phase-power-module/@1440",
+    "id": 6518,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe ESA GW30K-ETA-G20 (30 kW three-phase power module)",
+    "url": "https://de-linker.com/product/goodwe-esa-gw30k-eta-g20-30-kw-three-phase-power-module/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-esa-gw3k-eha-g20-3-kw-single-phase-power-module/@1440",
+    "id": 6523,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe ESA GW3K-EHA-G20 (3 kW single-phase power module)",
+    "url": "https://de-linker.com/product/goodwe-esa-gw3k-eha-g20-3-kw-single-phase-power-module/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-esa-gw5k-eha-g20-5-kw-single-phase-power-module/@1440",
+    "id": 6525,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe ESA GW5K-EHA-G20 (5 kW single-phase power module)",
+    "url": "https://de-linker.com/product/goodwe-esa-gw5k-eha-g20-5-kw-single-phase-power-module/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-esa-gw5k-eta-g20-5-kw-three-phase-power-module/@1440",
+    "id": 6512,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe ESA GW5K-ETA-G20 (5 kW three-phase power module)",
+    "url": "https://de-linker.com/product/goodwe-esa-gw5k-eta-g20-5-kw-three-phase-power-module/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-esa-gw6k-eha-g20-6-kw-single-phase-power-module/@1440",
+    "id": 6526,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe ESA GW6K-EHA-G20 (6 kW single-phase power module)",
+    "url": "https://de-linker.com/product/goodwe-esa-gw6k-eha-g20-6-kw-single-phase-power-module/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-esa-gw6k-eta-g20-6-kw-three-phase-power-module/@1440",
+    "id": 6513,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe ESA GW6K-ETA-G20 (6 kW three-phase power module)",
+    "url": "https://de-linker.com/product/goodwe-esa-gw6k-eta-g20-6-kw-three-phase-power-module/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-esa-gw8k-eha-g20-8-kw-single-phase-power-module/@1440",
+    "id": 6527,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe ESA GW8K-EHA-G20 (8 kW single-phase power module)",
+    "url": "https://de-linker.com/product/goodwe-esa-gw8k-eha-g20-8-kw-single-phase-power-module/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-esa-gw8k-eta-g20-8-kw-three-phase-all-in-one/@1440",
+    "id": 3583,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe ESA GW8K-ETA-G20 (8 kW three-phase power module)",
+    "url": "https://de-linker.com/product/goodwe-esa-gw8k-eta-g20-8-kw-three-phase-all-in-one/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-esa-gw9-999k-eta-g20-9-999-kw-three-phase-power-module/@1440",
+    "id": 6514,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe ESA GW9.999K-ETA-G20 (9.999 kW three-phase power module)",
+    "url": "https://de-linker.com/product/goodwe-esa-gw9-999k-eta-g20-9-999-kw-three-phase-power-module/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/@1440",
+    "id": 3595,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GW125K-ETR-G10 (125 kW three-phase hybrid inverter)",
+    "url": "https://de-linker.com/product/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-ezmanager3000-hems-gateway/@1440",
+    "id": 2415,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe EzManager3000 HEMS Gateway",
+    "url": "https://de-linker.com/product/goodwe-ezmanager3000-hems-gateway/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gm330/@1440",
+    "id": 2394,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GM330",
+    "url": "https://de-linker.com/product/goodwe-gm330/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gmk330/@1440",
+    "id": 2397,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GMK330",
+    "url": "https://de-linker.com/product/goodwe-gmk330/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gw100k-et-g10/@1440",
+    "id": 1948,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GW100K-ET-G10",
+    "url": "https://de-linker.com/product/goodwe-gw100k-et-g10/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gw100k-etr-g10-100-kw-three-phase-hybrid-inverter/@1440",
+    "id": 6509,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GW100K-ETR-G10 (100 kW three-phase hybrid inverter)",
+    "url": "https://de-linker.com/product/goodwe-gw100k-etr-g10-100-kw-three-phase-hybrid-inverter/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gw110k-etr-g10-110-kw-three-phase-hybrid-inverter/@1440",
+    "id": 6510,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GW110K-ETR-G10 (110 kW three-phase hybrid inverter)",
+    "url": "https://de-linker.com/product/goodwe-gw110k-etr-g10-110-kw-three-phase-hybrid-inverter/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gw112-6-bat-ac-g10/@1440",
+    "id": 1955,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GW112.6-BAT-AC-G10",
+    "url": "https://de-linker.com/product/goodwe-gw112-6-bat-ac-g10/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gw124-99k-etr-g10-124-99-kw-three-phase-hybrid-inverter/@1440",
+    "id": 6511,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GW124.99K-ETR-G10 (124.99 kW three-phase hybrid inverter)",
+    "url": "https://de-linker.com/product/goodwe-gw124-99k-etr-g10-124-99-kw-three-phase-hybrid-inverter/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gw125k-sts-g10/@1440",
+    "id": 2403,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GW125K-STS-G10",
+    "url": "https://de-linker.com/product/goodwe-gw125k-sts-g10/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gw208-9-bat-lc-g10/@1440",
+    "id": 1956,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GW208.9-BAT-LC-G10",
+    "url": "https://de-linker.com/product/goodwe-gw208-9-bat-lc-g10/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gw208-9-bat-lcd-g10/@1440",
+    "id": 1957,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GW208.9-BAT-LCD-G10",
+    "url": "https://de-linker.com/product/goodwe-gw208-9-bat-lcd-g10/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gw261-2-bat-lcd-g10/@1440",
+    "id": 1958,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GW261.2-BAT-LCD-G10",
+    "url": "https://de-linker.com/product/goodwe-gw261-2-bat-lcd-g10/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gw30k-sts-g10/@1440",
+    "id": 6529,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GW30K-STS-G10",
+    "url": "https://de-linker.com/product/goodwe-gw30k-sts-g10/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gw5-1-bat-d-g20-esa-battery-module-5-12-kwh/@1440",
+    "id": 6519,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GW5.1-BAT-D-G20 (ESA battery module, 5.12 kWh)",
+    "url": "https://de-linker.com/product/goodwe-gw5-1-bat-d-g20-esa-battery-module-5-12-kwh/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/@1440",
+    "id": 6521,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GW5.1-BAT-D-G21 (ESA battery module, 5.12 kWh)",
+    "url": "https://de-linker.com/product/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gw6-0-bat-d-g20-esa-battery-module-6-0-kwh/@1440",
+    "id": 3611,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh)",
+    "url": "https://de-linker.com/product/goodwe-gw6-0-bat-d-g20-esa-battery-module-6-0-kwh/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gw60k-sts-g10/@1440",
+    "id": 6530,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GW60K-STS-G10",
+    "url": "https://de-linker.com/product/goodwe-gw60k-sts-g10/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gw61-4-bat-ac-g10/@1440",
+    "id": 1954,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GW61.4-BAT-AC-G10",
+    "url": "https://de-linker.com/product/goodwe-gw61-4-bat-ac-g10/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gw75k-et-g10/@1440",
+    "id": 6506,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GW75K-ET-G10",
+    "url": "https://de-linker.com/product/goodwe-gw75k-et-g10/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gw8-3-bat-d-g20-esa-battery-module-8-32-kwh/@1440",
+    "id": 6520,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GW8.3-BAT-D-G20 (ESA battery module, 8.32 kWh)",
+    "url": "https://de-linker.com/product/goodwe-gw8-3-bat-d-g20-esa-battery-module-8-32-kwh/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gw8-3-bat-d-g21-esa-battery-module-8-32-kwh/@1440",
+    "id": 6522,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GW8.3-BAT-D-G21 (ESA battery module, 8.32 kWh)",
+    "url": "https://de-linker.com/product/goodwe-gw8-3-bat-d-g21-esa-battery-module-8-32-kwh/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gw80k-et-g10/@1440",
+    "id": 1946,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GW80K-ET-G10",
+    "url": "https://de-linker.com/product/goodwe-gw80k-et-g10/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gw80k-etr-g10-80-kw-three-phase-hybrid-inverter/@1440",
+    "id": 6507,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GW80K-ETR-G10 (80 kW three-phase hybrid inverter)",
+    "url": "https://de-linker.com/product/goodwe-gw80k-etr-g10-80-kw-three-phase-hybrid-inverter/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gw9-0-bat-d-g20-esa-battery-module-9-0-kwh/@1440",
+    "id": 3612,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GW9.0-BAT-D-G20 (ESA battery module, 9.0 kWh)",
+    "url": "https://de-linker.com/product/goodwe-gw9-0-bat-d-g20-esa-battery-module-9-0-kwh/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gw99-99k-et-g10/@1440",
+    "id": 1947,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GW99.99K-ET-G10",
+    "url": "https://de-linker.com/product/goodwe-gw99-99k-et-g10/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-gw99-99k-etr-g10-99-99-kw-three-phase-hybrid-inverter/@1440",
+    "id": 6508,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe GW99.99K-ETR-G10 (99.99 kW three-phase hybrid inverter)",
+    "url": "https://de-linker.com/product/goodwe-gw99-99k-etr-g10-99-99-kw-three-phase-hybrid-inverter/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-hca-g2-gw11k-hca-20-11-kw-three-phase-ev-charger/@1440",
+    "id": 3557,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe HCA G2 GW11K-HCA-20 (11 kW three-phase EV charger, 7.5 m cable)",
+    "url": "https://de-linker.com/product/goodwe-hca-g2-gw11k-hca-20-11-kw-three-phase-ev-charger/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-hca-gw22k-hca-22-kw-three-phase-ev-charger/@1440",
+    "id": 3587,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe HCA G2 GW22K-HCA-20 (22 kW three-phase EV charger, 7.5 m cable)",
+    "url": "https://de-linker.com/product/goodwe-hca-gw22k-hca-22-kw-three-phase-ev-charger/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-hca-gw7k-hca-7-kw-single-phase-ev-charger/@1440",
+    "id": 3586,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe HCA G2 GW7K-HCA-20 (7 kW single-phase EV charger, 7.5 m cable)",
+    "url": "https://de-linker.com/product/goodwe-hca-gw7k-hca-7-kw-single-phase-ev-charger/"
+  },
+  {
+    "key": "https://de-linker.com/product/goodwe-sec3000c-smart-energy-controller/@1440",
+    "id": 2409,
+    "kind": "product",
+    "lang": "en",
+    "title": "GoodWe SEC3000C Smart Energy Controller",
+    "url": "https://de-linker.com/product/goodwe-sec3000c-smart-energy-controller/"
+  },
+  {
+    "key": "https://de-linker.com/product/pylontech-optim-us-l260-omni/@1440",
+    "id": 2003,
+    "kind": "product",
+    "lang": "en",
+    "title": "Pylontech OPTIM US L260-OMNI",
+    "url": "https://de-linker.com/product/pylontech-optim-us-l260-omni/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-ats1-t63-a/@1440",
+    "id": 1178,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ ATS1-T63-A",
+    "url": "https://de-linker.com/product/saj-ats1-t63-a/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-b2-10-0-hv1/@1440",
+    "id": 2067,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ B2-10.0-HV1",
+    "url": "https://de-linker.com/product/saj-b2-10-0-hv1/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-b2-15-0-hv1/@1440",
+    "id": 2068,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ B2-15.0-HV1",
+    "url": "https://de-linker.com/product/saj-b2-15-0-hv1/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-b2-20-0-hv1/@1440",
+    "id": 2069,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ B2-20.0-HV1",
+    "url": "https://de-linker.com/product/saj-b2-20-0-hv1/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-b2-25-0-hv1/@1440",
+    "id": 2070,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ B2-25.0-HV1",
+    "url": "https://de-linker.com/product/saj-b2-25-0-hv1/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-b2-5-0-hv1/@1440",
+    "id": 1832,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ B2-5.0-HV1",
+    "url": "https://de-linker.com/product/saj-b2-5-0-hv1/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-bc2-hv1/@1440",
+    "id": 2092,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ BC2-HV1",
+    "url": "https://de-linker.com/product/saj-bc2-hv1/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-bu2-5-0-hv1/@1440",
+    "id": 2090,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ BU2-5.0-HV1",
+    "url": "https://de-linker.com/product/saj-bu2-5-0-hv1/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-bu3-5-0-tv2-pro/@1440",
+    "id": 2093,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ BU3-5.0-TV2-PRO",
+    "url": "https://de-linker.com/product/saj-bu3-5-0-tv2-pro/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-cb2-100-3-hv5/@1440",
+    "id": 4106,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ CB2-100.3-HV5 (100.3 kWh C&amp;I battery cabinet)",
+    "url": "https://de-linker.com/product/saj-cb2-100-3-hv5/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-cb2-57-3-hv5/@1440",
+    "id": 4103,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ CB2-57.3-HV5 (57.3 kWh C&amp;I battery cabinet)",
+    "url": "https://de-linker.com/product/saj-cb2-57-3-hv5/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-cb2-71-6-hv5/@1440",
+    "id": 4104,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ CB2-71.6-HV5 (71.6 kWh C&amp;I battery cabinet)",
+    "url": "https://de-linker.com/product/saj-cb2-71-6-hv5/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-cb2-85-9-hv5/@1440",
+    "id": 4105,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ CB2-85.9-HV5 (85.9 kWh C&amp;I battery cabinet)",
+    "url": "https://de-linker.com/product/saj-cb2-85-9-hv5/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-chs2-29-9k-t4-x/@1440",
+    "id": 1959,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ CHS2-29.9K-T4-X",
+    "url": "https://de-linker.com/product/saj-chs2-29-9k-t4-x/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-chs2-30k-t4-x/@1440",
+    "id": 1960,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ CHS2-30K-T4-X",
+    "url": "https://de-linker.com/product/saj-chs2-30k-t4-x/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-chs2-50k-t6-x/@1440",
+    "id": 1961,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ CHS2-50K-T6-X",
+    "url": "https://de-linker.com/product/saj-chs2-50k-t6-x/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-emanager-c1-pro/@1440",
+    "id": 1973,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ eManager-C1 Pro",
+    "url": "https://de-linker.com/product/saj-emanager-c1-pro/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-emanager-emanager-5-0-residential-energy-manager/@1440",
+    "id": 3618,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ eManager (energy management system module)",
+    "url": "https://de-linker.com/product/saj-emanager-emanager-5-0-residential-energy-manager/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-esolar-aio3-data-collector-wifi-lan-bluetooth/@1440",
+    "id": 3573,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ eSolar AIO3 data collector (Wi-Fi/Ethernet/Bluetooth)",
+    "url": "https://de-linker.com/product/saj-esolar-aio3-data-collector-wifi-lan-bluetooth/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-h2-10k-t3/@1440",
+    "id": 4107,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)",
+    "url": "https://de-linker.com/product/saj-h2-10k-t3/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-h2-12k-t3/@1440",
+    "id": 4108,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ H2-12K-T3 (12 kW three-phase hybrid inverter)",
+    "url": "https://de-linker.com/product/saj-h2-12k-t3/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-h2-15k-t3/@1440",
+    "id": 2063,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ H2-15K-T3",
+    "url": "https://de-linker.com/product/saj-h2-15k-t3/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-h2-20k-t3/@1440",
+    "id": 2064,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ H2-20K-T3",
+    "url": "https://de-linker.com/product/saj-h2-20k-t3/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-h2-25k-t3/@1440",
+    "id": 1179,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ H2-25K-T3",
+    "url": "https://de-linker.com/product/saj-h2-25k-t3/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-h2-30k-t3-de/@1440",
+    "id": 1181,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ H2-30K-T3-DE",
+    "url": "https://de-linker.com/product/saj-h2-30k-t3-de/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-hs2-10k-t2-x/@1440",
+    "id": 1182,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ HS2-10K-T2-X",
+    "url": "https://de-linker.com/product/saj-hs2-10k-t2-x/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-hs2-5k-t2-x/@1440",
+    "id": 4109,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ HS2-5K-T2-X (5 kW three-phase hybrid inverter)",
+    "url": "https://de-linker.com/product/saj-hs2-5k-t2-x/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-hs2-6k-t2-x/@1440",
+    "id": 1183,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ HS2-6K-T2-X",
+    "url": "https://de-linker.com/product/saj-hs2-6k-t2-x/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-hs2-8k-t2-x/@1440",
+    "id": 1184,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ HS2-8K-T2-X",
+    "url": "https://de-linker.com/product/saj-hs2-8k-t2-x/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-hs3-10k-t2-w-p/@1440",
+    "id": 2199,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ HS3-10K-T2-W/G-PX",
+    "url": "https://de-linker.com/product/saj-hs3-10k-t2-w-p/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-hs3-12k-t2-w-p/@1440",
+    "id": 1185,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ HS3-12K-T2-W/G-PX",
+    "url": "https://de-linker.com/product/saj-hs3-12k-t2-w-p/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-hs3-5k-t2-w-p/@1440",
+    "id": 2198,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ HS3-5K-T2-W/G-PX",
+    "url": "https://de-linker.com/product/saj-hs3-5k-t2-w-p/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-hs3-6k-t2-w-p/@1440",
+    "id": 1186,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ HS3-6K-T2-W/G-PX",
+    "url": "https://de-linker.com/product/saj-hs3-6k-t2-w-p/"
+  },
+  {
+    "key": "https://de-linker.com/product/saj-hs3-8k-t2-w-p/@1440",
+    "id": 1187,
+    "kind": "product",
+    "lang": "en",
+    "title": "SAJ HS3-8K-T2-W/G-PX",
+    "url": "https://de-linker.com/product/saj-hs3-8k-t2-w-p/"
+  }
+]

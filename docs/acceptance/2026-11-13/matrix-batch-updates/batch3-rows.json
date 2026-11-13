@@ -1,0 +1,2313 @@
+[
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/@1440",
+    "id": 13,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, hero_prompt_input_only(no_submit). Remaining (not executed in readonly mode): Genie prompt submission, attachment/voice upload, advantage/testimonial carousel states."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/@390",
+    "id": 13,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, hero_prompt_input_only(no_submit). Remaining (not executed in readonly mode): Genie prompt submission, attachment/voice upload, advantage/testimonial carousel states."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/blog/@1440",
+    "id": 14,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/blog/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/blog/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/blog/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, blog_index_search_input_only, blog_index_category_links, blog_search_get_and_out_of_range_pagination_redirect. Remaining (not executed in readonly mode): topic navigation roundtrips."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/blog/@390",
+    "id": 14,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/blog/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/blog/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/blog/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, blog_index_search_input_only, blog_index_category_links, blog_search_get_and_out_of_range_pagination_redirect. Remaining (not executed in readonly mode): topic navigation roundtrips."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/contact/@1440",
+    "id": 28,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/contact/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/contact/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/contact/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, contact_input_only(no_submit), contact_edit_state_preserved_on_lang_switch(EN<->DE@1440/390,with_source). Remaining (not executed in readonly mode): form submission, Turnstile, email notification & validation POST."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/contact/@390",
+    "id": 28,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/contact/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/contact/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/contact/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, contact_input_only(no_submit), contact_edit_state_preserved_on_lang_switch(EN<->DE@1440/390,with_source). Remaining (not executed in readonly mode): form submission, Turnstile, email notification & validation POST."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/hybrid-inverter-vs-ac-coupled-storage/@1440",
+    "id": 551,
+    "kind": "post",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/hybrid-inverter-vs-ac-coupled-storage/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/hybrid-inverter-vs-ac-coupled-storage/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/hybrid-inverter-vs-ac-coupled-storage/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target, blog_search_input_only(no_submit). Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/hybrid-inverter-vs-ac-coupled-storage/@390",
+    "id": 551,
+    "kind": "post",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/hybrid-inverter-vs-ac-coupled-storage/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/hybrid-inverter-vs-ac-coupled-storage/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/hybrid-inverter-vs-ac-coupled-storage/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target. Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/installer-checklist-inverter-battery-pairing/@1440",
+    "id": 552,
+    "kind": "post",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/installer-checklist-inverter-battery-pairing/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/installer-checklist-inverter-battery-pairing/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/installer-checklist-inverter-battery-pairing/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target, blog_search_input_only(no_submit). Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/installer-checklist-inverter-battery-pairing/@390",
+    "id": 552,
+    "kind": "post",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/installer-checklist-inverter-battery-pairing/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/installer-checklist-inverter-battery-pairing/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/installer-checklist-inverter-battery-pairing/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target. Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/size-battery-storage-residential-backup/@1440",
+    "id": 553,
+    "kind": "post",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/size-battery-storage-residential-backup/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/size-battery-storage-residential-backup/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/size-battery-storage-residential-backup/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target, blog_search_input_only(no_submit). Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/size-battery-storage-residential-backup/@390",
+    "id": 553,
+    "kind": "post",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/size-battery-storage-residential-backup/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/size-battery-storage-residential-backup/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/size-battery-storage-residential-backup/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target. Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/indoor-vs-outdoor-battery-storage-planning/@1440",
+    "id": 554,
+    "kind": "post",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/indoor-vs-outdoor-battery-storage-planning/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/indoor-vs-outdoor-battery-storage-planning/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/indoor-vs-outdoor-battery-storage-planning/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target, blog_search_input_only(no_submit). Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/indoor-vs-outdoor-battery-storage-planning/@390",
+    "id": 554,
+    "kind": "post",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/indoor-vs-outdoor-battery-storage-planning/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/indoor-vs-outdoor-battery-storage-planning/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/indoor-vs-outdoor-battery-storage-planning/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target. Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/solar-plus-storage-commissioning-checklist/@1440",
+    "id": 555,
+    "kind": "post",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/solar-plus-storage-commissioning-checklist/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/solar-plus-storage-commissioning-checklist/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/solar-plus-storage-commissioning-checklist/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target, blog_search_input_only(no_submit). Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/solar-plus-storage-commissioning-checklist/@390",
+    "id": 555,
+    "kind": "post",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/solar-plus-storage-commissioning-checklist/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/solar-plus-storage-commissioning-checklist/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/solar-plus-storage-commissioning-checklist/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target. Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/installer-handover-documentation-checklist/@1440",
+    "id": 556,
+    "kind": "post",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/installer-handover-documentation-checklist/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/installer-handover-documentation-checklist/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/installer-handover-documentation-checklist/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target, blog_search_input_only(no_submit). Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/installer-handover-documentation-checklist/@390",
+    "id": 556,
+    "kind": "post",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/installer-handover-documentation-checklist/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/installer-handover-documentation-checklist/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/installer-handover-documentation-checklist/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target. Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/remote-monitoring-after-installation/@1440",
+    "id": 557,
+    "kind": "post",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/remote-monitoring-after-installation/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/remote-monitoring-after-installation/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/remote-monitoring-after-installation/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target, blog_search_input_only(no_submit). Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/remote-monitoring-after-installation/@390",
+    "id": 557,
+    "kind": "post",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/remote-monitoring-after-installation/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/remote-monitoring-after-installation/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/remote-monitoring-after-installation/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target. Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/gateway-meter-cloud-monitoring-data-layer/@1440",
+    "id": 558,
+    "kind": "post",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/gateway-meter-cloud-monitoring-data-layer/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/gateway-meter-cloud-monitoring-data-layer/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/gateway-meter-cloud-monitoring-data-layer/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target, blog_search_input_only(no_submit). Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/gateway-meter-cloud-monitoring-data-layer/@390",
+    "id": 558,
+    "kind": "post",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/gateway-meter-cloud-monitoring-data-layer/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/gateway-meter-cloud-monitoring-data-layer/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/gateway-meter-cloud-monitoring-data-layer/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target. Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/residential-storage-backup-self-consumption/@1440",
+    "id": 559,
+    "kind": "post",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/residential-storage-backup-self-consumption/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/residential-storage-backup-self-consumption/@1440)"
+      ],
+      "findings": [
+        "blog-cover-attachment-alt-empty: .reader-cover img alt='' because WP media attachment _wp_attachment_image_alt is empty on EN source (CoverAlt.php:64-67 fallback yields empty string)."
+      ]
+    },
+    "reason": "Readonly production check (/residential-storage-backup-self-consumption/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target, blog_search_input_only(no_submit). Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation. Open findings: 1."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/residential-storage-backup-self-consumption/@390",
+    "id": 559,
+    "kind": "post",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/residential-storage-backup-self-consumption/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/residential-storage-backup-self-consumption/@390)"
+      ],
+      "findings": [
+        "blog-cover-attachment-alt-empty: .reader-cover img alt='' because WP media attachment _wp_attachment_image_alt is empty on EN source (CoverAlt.php:64-67 fallback yields empty string)."
+      ]
+    },
+    "reason": "Readonly production check (/residential-storage-backup-self-consumption/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target. Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation. Open findings: 1."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/ci-storage-peak-shaving-backup-scalability/@1440",
+    "id": 560,
+    "kind": "post",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/ci-storage-peak-shaving-backup-scalability/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/ci-storage-peak-shaving-backup-scalability/@1440)"
+      ],
+      "findings": [
+        "blog-cover-attachment-alt-empty: .reader-cover img alt='' because WP media attachment _wp_attachment_image_alt is empty on EN source (CoverAlt.php:64-67 fallback yields empty string)."
+      ]
+    },
+    "reason": "Readonly production check (/ci-storage-peak-shaving-backup-scalability/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target, blog_search_input_only(no_submit). Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation. Open findings: 1."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/ci-storage-peak-shaving-backup-scalability/@390",
+    "id": 560,
+    "kind": "post",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/ci-storage-peak-shaving-backup-scalability/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/ci-storage-peak-shaving-backup-scalability/@390)"
+      ],
+      "findings": [
+        "blog-cover-attachment-alt-empty: .reader-cover img alt='' because WP media attachment _wp_attachment_image_alt is empty on EN source (CoverAlt.php:64-67 fallback yields empty string)."
+      ]
+    },
+    "reason": "Readonly production check (/ci-storage-peak-shaving-backup-scalability/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target. Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation. Open findings: 1."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/thank-you/@1440",
+    "id": 623,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/thank-you/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/thank-you/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/thank-you/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, header_menu_and_lang_switch. Remaining (not executed in readonly mode): link destinations."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/thank-you/@390",
+    "id": 623,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/thank-you/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/thank-you/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/thank-you/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, header_menu_and_lang_switch. Remaining (not executed in readonly mode): link destinations."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/solution/@1440",
+    "id": 746,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/solution/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/solution/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/solution/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, solution_scale_tab_switch. Remaining (not executed in readonly mode): external CTA destinations & 320px breakpoint."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/solution/@390",
+    "id": 746,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/solution/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/solution/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/solution/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, solution_scale_tab_switch. Remaining (not executed in readonly mode): external CTA destinations & 320px breakpoint."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/solution/residential-storage/@1440",
+    "id": 749,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/solution/residential-storage/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/solution/residential-storage/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/solution/residential-storage/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, tooldeck_tab_switch, hero_prompt_input_only(no_submit). Remaining (not executed in readonly mode): Genie prompt submission, video playback, configurator handoff."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/solution/residential-storage/@390",
+    "id": 749,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/solution/residential-storage/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/solution/residential-storage/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/solution/residential-storage/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, tooldeck_tab_switch, hero_prompt_input_only(no_submit). Remaining (not executed in readonly mode): Genie prompt submission, video playback, configurator handoff."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/solution/commercial-storage/@1440",
+    "id": 792,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/solution/commercial-storage/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/solution/commercial-storage/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/solution/commercial-storage/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, tooldeck_tab_switch, hero_prompt_input_only(no_submit). Remaining (not executed in readonly mode): Genie prompt submission, video playback, configurator handoff."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/solution/commercial-storage/@390",
+    "id": 792,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/solution/commercial-storage/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/solution/commercial-storage/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/solution/commercial-storage/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, tooldeck_tab_switch, hero_prompt_input_only(no_submit). Remaining (not executed in readonly mode): Genie prompt submission, video playback, configurator handoff."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/for-installer/@1440",
+    "id": 826,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/for-installer/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/for-installer/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/for-installer/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: lang_switch_roundtrip_nav, installer_timeline_node_switch, installer_faq_details_toggle, lki_hero_query_input_only(no_submit). Remaining (not executed in readonly mode): Genie mobile handoff & Configurator desktop brief handoff."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/for-installer/@390",
+    "id": 826,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/for-installer/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/for-installer/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/for-installer/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, installer_tool_switch, installer_mobile_query_input_only(no_submit). Remaining (not executed in readonly mode): Genie mobile handoff & Configurator desktop brief handoff."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/for-epc/@1440",
+    "id": 842,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/for-epc/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/for-epc/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/for-epc/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: sticky_header_opaque_on_scroll, epc_faq_summary_toggle, epc_workbench_bar_switch. Remaining (not executed in readonly mode): testimonial slider & video playback."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/for-epc/@390",
+    "id": 842,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/for-epc/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/for-epc/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/for-epc/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, epc_faq_topic_switch. Remaining (not executed in readonly mode): testimonial slider & video playback."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/about/@1440",
+    "id": 862,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/about/@1440)",
+        "live-dom-css-probe@2026-11-13 (/about/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/about/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, about_chapter_tab_switch. Remaining (not executed in readonly mode): FAQ details & anchor destinations."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/about/@390",
+    "id": 862,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/about/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/about/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/about/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, about_chapter_tab_switch. Remaining (not executed in readonly mode): FAQ details & anchor destinations."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/about/capability/@1440",
+    "id": 874,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/about/capability/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/about/capability/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/about/capability/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, navigation_and_lang_switch. Remaining (not executed in readonly mode): testimonial slider arrows/pills."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/about/capability/@390",
+    "id": 874,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/about/capability/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/about/capability/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/about/capability/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, navigation_and_lang_switch. Remaining (not executed in readonly mode): testimonial slider arrows/pills."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/faq-download/@1440",
+    "id": 932,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/faq-download/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/faq-download/@1440)",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-captures/defect-sticky-_faq-download_-1440.png"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/faq-download/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, faq_documents_tab_switch, faq_search_input_only. Remaining (not executed in readonly mode): PDF file downloads, search suggestion listbox keyboard & pagination."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/faq-download/@390",
+    "id": 932,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/faq-download/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/faq-download/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/faq-download/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, faq_documents_tab_switch, faq_search_input_only. Remaining (not executed in readonly mode): PDF file downloads, search suggestion listbox keyboard & pagination."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/refund-returns/@1440",
+    "id": 1038,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-production",
+      "interaction": "partially-verified",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/refund-returns/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/refund-returns/@1440)",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-captures/evidence-de-refund-section4-1440.png"
+      ],
+      "findings": [
+        "legal-refund-returns-2713-backslash-stripped: inline <style> lost backslash in content:'\\2713', rendering literal '2713' prefix on 3 visible <li> items in #section-4."
+      ]
+    },
+    "reason": "Readonly production check (/refund-returns/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, legal_toc_toggle, legal_section_anchor_jump, legal_back_to_top. Remaining (not executed in readonly mode): print preview / OS print dialog & copy-link tooltip. Open findings: 1."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/refund-returns/@390",
+    "id": 1038,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-production",
+      "interaction": "partially-verified",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/refund-returns/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/refund-returns/@390)",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-captures/evidence-de-refund-section4-1440.png"
+      ],
+      "findings": [
+        "legal-refund-returns-2713-backslash-stripped: inline <style> lost backslash in content:'\\2713', rendering literal '2713' prefix on 3 visible <li> items in #section-4."
+      ]
+    },
+    "reason": "Readonly production check (/refund-returns/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, legal_toc_toggle, legal_section_anchor_jump, legal_back_to_top. Remaining (not executed in readonly mode): print preview / OS print dialog & copy-link tooltip. Open findings: 1."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/imprint/@1440",
+    "id": 1672,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/imprint/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/imprint/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/imprint/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, legal_toc_toggle, legal_section_anchor_jump, legal_back_to_top. Remaining (not executed in readonly mode): print preview / OS print dialog & copy-link tooltip."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/imprint/@390",
+    "id": 1672,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/imprint/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/imprint/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/imprint/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, legal_toc_toggle, legal_section_anchor_jump, legal_back_to_top. Remaining (not executed in readonly mode): print preview / OS print dialog & copy-link tooltip."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/privacy-policy/@1440",
+    "id": 1673,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-production",
+      "interaction": "partially-verified",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/privacy-policy/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/privacy-policy/@1440)"
+      ],
+      "findings": [
+        "legal-privacy-latent-2713-css-backslash-stripped: inline <style> contains content:'2713' (missing backslash), currently 0 visible <li> matched in DOM (latent risk if list class applied)."
+      ]
+    },
+    "reason": "Readonly production check (/privacy-policy/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, legal_toc_toggle, legal_section_anchor_jump, legal_back_to_top. Remaining (not executed in readonly mode): print preview / OS print dialog & copy-link tooltip. Open findings: 1."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/privacy-policy/@390",
+    "id": 1673,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-production",
+      "interaction": "partially-verified",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/privacy-policy/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/privacy-policy/@390)"
+      ],
+      "findings": [
+        "legal-privacy-latent-2713-css-backslash-stripped: inline <style> contains content:'2713' (missing backslash), currently 0 visible <li> matched in DOM (latent risk if list class applied)."
+      ]
+    },
+    "reason": "Readonly production check (/privacy-policy/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, legal_toc_toggle, legal_section_anchor_jump, legal_back_to_top. Remaining (not executed in readonly mode): print preview / OS print dialog & copy-link tooltip. Open findings: 1."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/terms-of-sale/@1440",
+    "id": 1674,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/terms-of-sale/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/terms-of-sale/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/terms-of-sale/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, legal_toc_toggle, legal_section_anchor_jump, legal_back_to_top. Remaining (not executed in readonly mode): print preview / OS print dialog & copy-link tooltip."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/terms-of-sale/@390",
+    "id": 1674,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/terms-of-sale/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/terms-of-sale/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/terms-of-sale/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, legal_toc_toggle, legal_section_anchor_jump, legal_back_to_top. Remaining (not executed in readonly mode): print preview / OS print dialog & copy-link tooltip."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/solution/utility-storage/@1440",
+    "id": 1755,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/solution/utility-storage/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/solution/utility-storage/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/solution/utility-storage/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, sticky_header_past_cover. Remaining (not executed in readonly mode): engineering <details> accordion & exec-deck interactions."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/solution/utility-storage/@390",
+    "id": 1755,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/solution/utility-storage/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/solution/utility-storage/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/solution/utility-storage/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, sticky_header_past_cover. Remaining (not executed in readonly mode): engineering <details> accordion & exec-deck interactions."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/services-support/@1440",
+    "id": 2748,
+    "kind": "page",
+    "lang": "en",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/services-support/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/services-support/@1440)"
+      ],
+      "findings": [
+        "services-hero-display-overflow-x: #service-redesign .service-hero-display has font-size:clamp(59px,7.8vw,108px) + white-space:nowrap, overflowing h1.lk-hero-h1 max-width:950px by 13px at 1440px."
+      ]
+    },
+    "reason": "Readonly production check (/services-support/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, services_audience_tab_switch, services_stage_tab_switch. Remaining (not executed in readonly mode): FAQ details & keyboard Arrow/Home/End. Open findings: 1."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/services-support/@390",
+    "id": 2748,
+    "kind": "page",
+    "lang": "en",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/services-support/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/services-support/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/services-support/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, services_audience_tab_switch, services_stage_tab_switch. Remaining (not executed in readonly mode): FAQ details & keyboard Arrow/Home/End."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/rueckgabe-erstattung/@1440",
+    "id": 6698,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-production",
+      "interaction": "partially-verified",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/rueckgabe-erstattung/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/rueckgabe-erstattung/@1440)",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-captures/evidence-de-refund-section4-1440.png"
+      ],
+      "findings": [
+        "legal-refund-returns-2713-backslash-stripped: inline <style> lost backslash in content:'\\2713', rendering literal '2713' prefix on 3 visible <li> items in #section-4."
+      ]
+    },
+    "reason": "Readonly production check (/de/rueckgabe-erstattung/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, legal_toc_toggle, legal_section_anchor_jump, legal_back_to_top. Remaining (not executed in readonly mode): print preview / OS print dialog & copy-link tooltip. Open findings: 1."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/rueckgabe-erstattung/@390",
+    "id": 6698,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-production",
+      "interaction": "partially-verified",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/rueckgabe-erstattung/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/rueckgabe-erstattung/@390)",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-captures/evidence-de-refund-section4-1440.png"
+      ],
+      "findings": [
+        "legal-refund-returns-2713-backslash-stripped: inline <style> lost backslash in content:'\\2713', rendering literal '2713' prefix on 3 visible <li> items in #section-4."
+      ]
+    },
+    "reason": "Readonly production check (/de/rueckgabe-erstattung/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, legal_toc_toggle, legal_section_anchor_jump, legal_back_to_top. Remaining (not executed in readonly mode): print preview / OS print dialog & copy-link tooltip. Open findings: 1."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/kundendienst/@1440",
+    "id": 6700,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/kundendienst/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/kundendienst/@1440)",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-captures/evidence-de-kundendienst-1440-h1.png"
+      ],
+      "findings": [
+        "services-hero-display-overflow-x: #service-redesign .service-hero-display has font-size:clamp(59px,7.8vw,108px) + white-space:nowrap, overflowing h1.lk-hero-h1 max-width:950px by 40.8px at 1440px."
+      ]
+    },
+    "reason": "Readonly production check (/de/kundendienst/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, services_audience_tab_switch, services_stage_tab_switch. Remaining (not executed in readonly mode): FAQ details & keyboard Arrow/Home/End. Open findings: 1."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/kundendienst/@390",
+    "id": 6700,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/kundendienst/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/kundendienst/@390)",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-captures/defect-kundendienst-de-390.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-captures/evidence-de-kundendienst-390-stage.png"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/kundendienst/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, services_audience_tab_switch, services_stage_tab_switch. Remaining (not executed in readonly mode): FAQ details & keyboard Arrow/Home/End. Resolved prior findings: services-audience-tabs-small (verified live: fontSize=14px, height=44px, minHeight=44px via marketing-rhythm.css:98-108 & service-intro.css:208-211)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/verkaufsbedingungen/@1440",
+    "id": 6825,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/verkaufsbedingungen/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/verkaufsbedingungen/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/verkaufsbedingungen/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, legal_toc_toggle, legal_section_anchor_jump, legal_back_to_top. Remaining (not executed in readonly mode): print preview / OS print dialog & copy-link tooltip."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/verkaufsbedingungen/@390",
+    "id": 6825,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/verkaufsbedingungen/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/verkaufsbedingungen/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/verkaufsbedingungen/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, legal_toc_toggle, legal_section_anchor_jump, legal_back_to_top. Remaining (not executed in readonly mode): print preview / OS print dialog & copy-link tooltip."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/datenschutz/@1440",
+    "id": 6827,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-production",
+      "interaction": "partially-verified",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/datenschutz/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/datenschutz/@1440)"
+      ],
+      "findings": [
+        "legal-privacy-latent-2713-css-backslash-stripped: inline <style> contains content:'2713' (missing backslash), currently 0 visible <li> matched in DOM (latent risk if list class applied)."
+      ]
+    },
+    "reason": "Readonly production check (/de/datenschutz/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, legal_toc_toggle, legal_section_anchor_jump, legal_back_to_top. Remaining (not executed in readonly mode): print preview / OS print dialog & copy-link tooltip. Open findings: 1."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/datenschutz/@390",
+    "id": 6827,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-production",
+      "interaction": "partially-verified",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/datenschutz/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/datenschutz/@390)"
+      ],
+      "findings": [
+        "legal-privacy-latent-2713-css-backslash-stripped: inline <style> contains content:'2713' (missing backslash), currently 0 visible <li> matched in DOM (latent risk if list class applied)."
+      ]
+    },
+    "reason": "Readonly production check (/de/datenschutz/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, legal_toc_toggle, legal_section_anchor_jump, legal_back_to_top. Remaining (not executed in readonly mode): print preview / OS print dialog & copy-link tooltip. Open findings: 1."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/impressum/@1440",
+    "id": 6829,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/impressum/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/impressum/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/impressum/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, legal_toc_toggle, legal_section_anchor_jump, legal_back_to_top. Remaining (not executed in readonly mode): print preview / OS print dialog & copy-link tooltip."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/impressum/@390",
+    "id": 6829,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/impressum/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/impressum/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/impressum/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, legal_toc_toggle, legal_section_anchor_jump, legal_back_to_top. Remaining (not executed in readonly mode): print preview / OS print dialog & copy-link tooltip."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/faq-dokumente/@1440",
+    "id": 6863,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/faq-dokumente/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/faq-dokumente/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/faq-dokumente/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, faq_documents_tab_switch, faq_search_input_only. Remaining (not executed in readonly mode): PDF file downloads, search suggestion listbox keyboard & pagination."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/faq-dokumente/@390",
+    "id": 6863,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/faq-dokumente/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/faq-dokumente/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/faq-dokumente/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, faq_documents_tab_switch, faq_search_input_only. Remaining (not executed in readonly mode): PDF file downloads, search suggestion listbox keyboard & pagination."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/ueber-uns/@1440",
+    "id": 6865,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/ueber-uns/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/ueber-uns/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/ueber-uns/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, about_chapter_tab_switch. Remaining (not executed in readonly mode): FAQ details & anchor destinations."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/ueber-uns/@390",
+    "id": 6865,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/ueber-uns/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/ueber-uns/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/ueber-uns/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, about_chapter_tab_switch. Remaining (not executed in readonly mode): FAQ details & anchor destinations."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/fuer-epc/@1440",
+    "id": 6867,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/fuer-epc/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/fuer-epc/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/fuer-epc/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: sticky_header_opaque_on_scroll, epc_faq_summary_toggle, epc_workbench_bar_switch. Remaining (not executed in readonly mode): testimonial slider & video playback."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/fuer-epc/@390",
+    "id": 6867,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/fuer-epc/@390)",
+        "live-dom-css-probe@2026-11-13 (/de/fuer-epc/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/fuer-epc/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, epc_faq_topic_switch. Remaining (not executed in readonly mode): testimonial slider & video playback."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/fuer-installateur/@1440",
+    "id": 6869,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/fuer-installateur/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/fuer-installateur/@1440)",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-captures/probe-installer-de-clean-1440.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-captures/defect-installer-de-1440.png"
+      ],
+      "findings": [
+        "de-installer-english-genie-preview-media: #tools stage 03 uses English Genie demo video/poster linker-advisor-lookup-for-installers.mp4 / linker-advisor-result-preview.webp."
+      ]
+    },
+    "reason": "Readonly production check (/de/fuer-installateur/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: installer_timeline_node_switch, installer_faq_details_toggle, lki_hero_query_input_only(no_submit). Remaining (not executed in readonly mode): Genie mobile handoff & Configurator desktop brief handoff. Open findings: 1."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/fuer-installateur/@390",
+    "id": 6869,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partial-with-finding",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/fuer-installateur/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/fuer-installateur/@390)",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-captures/probe-installer-de-clean-390.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-captures/evidence-de-installer-390-tools.png"
+      ],
+      "findings": [
+        "de-installer-mobile-desktop-input-exposed-placeholder-clipped: marketing-rhythm.css:26-29 sets display:grid on .lk-hero-console .lk-console-input-row without desktop @media guard, overriding inline mobile display:none and exposing single-line #lki-hero-query (innerW=328px < placeholder=564.1px) with text-overflow:ellipsis clipping 'Handbuechern'.",
+        "de-installer-english-genie-preview-media: #tools stage 03 uses English Genie demo video/poster linker-advisor-lookup-for-installers.mp4 / linker-advisor-result-preview.webp."
+      ]
+    },
+    "reason": "Readonly production check (/de/fuer-installateur/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, installer_tool_switch, installer_mobile_query_input_only(no_submit). Remaining (not executed in readonly mode): Genie mobile handoff & Configurator desktop brief handoff. Open findings: 2."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/loesung/@1440",
+    "id": 6871,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/loesung/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/loesung/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/loesung/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, solution_scale_tab_switch. Remaining (not executed in readonly mode): external CTA destinations & 320px breakpoint."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/loesung/@390",
+    "id": 6871,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/loesung/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/loesung/@390)",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-captures/evidence-de-loesung-390-tabs.png"
+      ],
+      "findings": [
+        "de-solution-scale-tab-label-overflow: #sol-scale-tab-1 (109>106px) & #sol-scale-tab-2 (113>106px) .sol-tab-label constrained by inline max-width:106px after marketing-rhythm.css:150 bumped font to 14px."
+      ]
+    },
+    "reason": "Readonly production check (/de/loesung/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, solution_scale_tab_switch. Remaining (not executed in readonly mode): external CTA destinations & 320px breakpoint. Open findings: 1."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/danke/@1440",
+    "id": 6873,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/danke/@1440)",
+        "live-dom-css-probe@2026-11-13 (/de/danke/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/danke/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, header_menu_and_lang_switch. Remaining (not executed in readonly mode): link destinations."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/danke/@390",
+    "id": 6873,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/danke/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/danke/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/danke/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, header_menu_and_lang_switch. Remaining (not executed in readonly mode): link destinations."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/hybridwechselrichter-vs-ac-speicher/@1440",
+    "id": 6883,
+    "kind": "post",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/hybridwechselrichter-vs-ac-speicher/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/hybridwechselrichter-vs-ac-speicher/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/hybridwechselrichter-vs-ac-speicher/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target, blog_search_input_only(no_submit). Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/hybridwechselrichter-vs-ac-speicher/@390",
+    "id": 6883,
+    "kind": "post",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/hybridwechselrichter-vs-ac-speicher/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/hybridwechselrichter-vs-ac-speicher/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/hybridwechselrichter-vs-ac-speicher/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target. Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/installateur-checkliste-wechselrichter-akku/@1440",
+    "id": 6885,
+    "kind": "post",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/installateur-checkliste-wechselrichter-akku/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/installateur-checkliste-wechselrichter-akku/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/installateur-checkliste-wechselrichter-akku/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target, blog_search_input_only(no_submit). Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/installateur-checkliste-wechselrichter-akku/@390",
+    "id": 6885,
+    "kind": "post",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/installateur-checkliste-wechselrichter-akku/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/installateur-checkliste-wechselrichter-akku/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/installateur-checkliste-wechselrichter-akku/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target. Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/batteriegroesse-heimspeicher-notstrom/@1440",
+    "id": 6887,
+    "kind": "post",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/batteriegroesse-heimspeicher-notstrom/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/batteriegroesse-heimspeicher-notstrom/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/batteriegroesse-heimspeicher-notstrom/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target, blog_search_input_only(no_submit). Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/batteriegroesse-heimspeicher-notstrom/@390",
+    "id": 6887,
+    "kind": "post",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/batteriegroesse-heimspeicher-notstrom/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/batteriegroesse-heimspeicher-notstrom/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/batteriegroesse-heimspeicher-notstrom/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target. Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation. Resolved prior findings: blog-de-independent-cover-alt-english (verified live: DE cover alt present via CoverAlt / _linker_i18n_cover_alt_display)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/innen-vs-aussen-akku-planung/@1440",
+    "id": 6889,
+    "kind": "post",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/innen-vs-aussen-akku-planung/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/innen-vs-aussen-akku-planung/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/innen-vs-aussen-akku-planung/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target, blog_search_input_only(no_submit). Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/innen-vs-aussen-akku-planung/@390",
+    "id": 6889,
+    "kind": "post",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/innen-vs-aussen-akku-planung/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/innen-vs-aussen-akku-planung/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/innen-vs-aussen-akku-planung/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target. Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation. Resolved prior findings: blog-de-independent-cover-alt-english (verified live: DE cover alt present via CoverAlt / _linker_i18n_cover_alt_display)."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/solar-speicher-inbetriebnahme-checkliste/@1440",
+    "id": 6891,
+    "kind": "post",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/solar-speicher-inbetriebnahme-checkliste/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/solar-speicher-inbetriebnahme-checkliste/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/solar-speicher-inbetriebnahme-checkliste/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target, blog_search_input_only(no_submit). Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/solar-speicher-inbetriebnahme-checkliste/@390",
+    "id": 6891,
+    "kind": "post",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/solar-speicher-inbetriebnahme-checkliste/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/solar-speicher-inbetriebnahme-checkliste/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/solar-speicher-inbetriebnahme-checkliste/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target. Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/installateur-uebergabe-dokumentation-checkliste/@1440",
+    "id": 6893,
+    "kind": "post",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/installateur-uebergabe-dokumentation-checkliste/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/installateur-uebergabe-dokumentation-checkliste/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/installateur-uebergabe-dokumentation-checkliste/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target, blog_search_input_only(no_submit). Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/installateur-uebergabe-dokumentation-checkliste/@390",
+    "id": 6893,
+    "kind": "post",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/installateur-uebergabe-dokumentation-checkliste/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/installateur-uebergabe-dokumentation-checkliste/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/installateur-uebergabe-dokumentation-checkliste/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target. Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/fernueberwachung-nach-installation/@1440",
+    "id": 6895,
+    "kind": "post",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/fernueberwachung-nach-installation/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/fernueberwachung-nach-installation/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/fernueberwachung-nach-installation/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target, blog_search_input_only(no_submit). Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/fernueberwachung-nach-installation/@390",
+    "id": 6895,
+    "kind": "post",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/fernueberwachung-nach-installation/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/fernueberwachung-nach-installation/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/fernueberwachung-nach-installation/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target. Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/kommunikationsschnittstelle-zaehler-fernueberwachung-datenebene/@1440",
+    "id": 6897,
+    "kind": "post",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/kommunikationsschnittstelle-zaehler-fernueberwachung-datenebene/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/kommunikationsschnittstelle-zaehler-fernueberwachung-datenebene/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/kommunikationsschnittstelle-zaehler-fernueberwachung-datenebene/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target, blog_search_input_only(no_submit). Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/kommunikationsschnittstelle-zaehler-fernueberwachung-datenebene/@390",
+    "id": 6897,
+    "kind": "post",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/kommunikationsschnittstelle-zaehler-fernueberwachung-datenebene/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/kommunikationsschnittstelle-zaehler-fernueberwachung-datenebene/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/kommunikationsschnittstelle-zaehler-fernueberwachung-datenebene/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target. Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/heimspeicher-notstrom-eigenverbrauch/@1440",
+    "id": 6899,
+    "kind": "post",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/heimspeicher-notstrom-eigenverbrauch/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/heimspeicher-notstrom-eigenverbrauch/@1440)"
+      ],
+      "findings": [
+        "blog-cover-attachment-alt-empty: .reader-cover img alt='' because WP media attachment _wp_attachment_image_alt is empty on EN source (CoverAlt.php:64-67 fallback yields empty string)."
+      ]
+    },
+    "reason": "Readonly production check (/de/heimspeicher-notstrom-eigenverbrauch/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target, blog_search_input_only(no_submit). Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation. Open findings: 1."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/heimspeicher-notstrom-eigenverbrauch/@390",
+    "id": 6899,
+    "kind": "post",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/heimspeicher-notstrom-eigenverbrauch/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/heimspeicher-notstrom-eigenverbrauch/@390)"
+      ],
+      "findings": [
+        "blog-cover-attachment-alt-empty: .reader-cover img alt='' because WP media attachment _wp_attachment_image_alt is empty on EN source (CoverAlt.php:64-67 fallback yields empty string)."
+      ]
+    },
+    "reason": "Readonly production check (/de/heimspeicher-notstrom-eigenverbrauch/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target. Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation. Open findings: 1."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/gewerbespeicher-lastspitzenkappung-notstrom-skalierbarkeit/@1440",
+    "id": 6901,
+    "kind": "post",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/gewerbespeicher-lastspitzenkappung-notstrom-skalierbarkeit/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/gewerbespeicher-lastspitzenkappung-notstrom-skalierbarkeit/@1440)"
+      ],
+      "findings": [
+        "blog-cover-attachment-alt-empty: .reader-cover img alt='' because WP media attachment _wp_attachment_image_alt is empty on EN source (CoverAlt.php:64-67 fallback yields empty string)."
+      ]
+    },
+    "reason": "Readonly production check (/de/gewerbespeicher-lastspitzenkappung-notstrom-skalierbarkeit/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target, blog_search_input_only(no_submit). Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation. Open findings: 1."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/gewerbespeicher-lastspitzenkappung-notstrom-skalierbarkeit/@390",
+    "id": 6901,
+    "kind": "post",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "pass",
+      "interaction": "partially-verified",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/gewerbespeicher-lastspitzenkappung-notstrom-skalierbarkeit/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/gewerbespeicher-lastspitzenkappung-notstrom-skalierbarkeit/@390)"
+      ],
+      "findings": [
+        "blog-cover-attachment-alt-empty: .reader-cover img alt='' because WP media attachment _wp_attachment_image_alt is empty on EN source (CoverAlt.php:64-67 fallback yields empty string)."
+      ]
+    },
+    "reason": "Readonly production check (/de/gewerbespeicher-lastspitzenkappung-notstrom-skalierbarkeit/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_toc_anchor_jump_below_sticky_header, blog_lang_switch_target. Remaining (not executed in readonly mode): share buttons, PDF manual links, related-post navigation. Open findings: 1."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/kontakt/@1440",
+    "id": 6907,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/kontakt/@1440)",
+        "live-dom-css-probe@2026-11-13 (/de/kontakt/@1440)",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-captures/defect-sticky-_de_kontakt_-1440.png"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/kontakt/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, contact_input_only(no_submit), contact_edit_state_preserved_on_lang_switch(EN<->DE@1440/390,with_source). Remaining (not executed in readonly mode): form submission, Turnstile, email notification & validation POST."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/kontakt/@390",
+    "id": 6907,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/kontakt/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/kontakt/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/kontakt/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, contact_input_only(no_submit), contact_edit_state_preserved_on_lang_switch(EN<->DE@1440/390,with_source). Remaining (not executed in readonly mode): form submission, Turnstile, email notification & validation POST."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/@1440",
+    "id": 6913,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, hero_prompt_input_only(no_submit). Remaining (not executed in readonly mode): Genie prompt submission, attachment/voice upload, advantage/testimonial carousel states."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/@390",
+    "id": 6913,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/@390)",
+        "live-dom-css-probe@2026-11-13 (/de/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, lang_switch_roundtrip_nav, hero_prompt_input_only(no_submit). Remaining (not executed in readonly mode): Genie prompt submission, attachment/voice upload, advantage/testimonial carousel states."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/blog/@1440",
+    "id": 6915,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/blog/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/blog/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/blog/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_index_search_input_only, blog_index_category_links, blog_search_get_and_out_of_range_pagination_redirect. Remaining (not executed in readonly mode): topic navigation roundtrips."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/blog/@390",
+    "id": 6915,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/blog/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/blog/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/blog/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, blog_index_search_input_only, blog_index_category_links, blog_search_get_and_out_of_range_pagination_redirect. Remaining (not executed in readonly mode): topic navigation roundtrips."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/loesung/grossspeicher/@1440",
+    "id": 6917,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/loesung/grossspeicher/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/loesung/grossspeicher/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/loesung/grossspeicher/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, sticky_header_past_cover. Remaining (not executed in readonly mode): engineering <details> accordion & exec-deck interactions."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/loesung/grossspeicher/@390",
+    "id": 6917,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/loesung/grossspeicher/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/loesung/grossspeicher/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/loesung/grossspeicher/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, sticky_header_past_cover. Remaining (not executed in readonly mode): engineering <details> accordion & exec-deck interactions."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/ueber-uns/leistungsfaehigkeit/@1440",
+    "id": 6919,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/ueber-uns/leistungsfaehigkeit/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/ueber-uns/leistungsfaehigkeit/@1440)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/ueber-uns/leistungsfaehigkeit/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, navigation_and_lang_switch. Remaining (not executed in readonly mode): testimonial slider arrows/pills."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/ueber-uns/leistungsfaehigkeit/@390",
+    "id": 6919,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partially-verified",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/ueber-uns/leistungsfaehigkeit/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/ueber-uns/leistungsfaehigkeit/@390)"
+      ],
+      "findings": []
+    },
+    "reason": "Readonly production check (/de/ueber-uns/leistungsfaehigkeit/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, navigation_and_lang_switch. Remaining (not executed in readonly mode): testimonial slider arrows/pills."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/loesung/gewerbespeicher/@1440",
+    "id": 6921,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/loesung/gewerbespeicher/@1440)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/loesung/gewerbespeicher/@1440)"
+      ],
+      "findings": [
+        "de-commercial-toolpane2-english-media: #engineering-tools #tool-pane-2 embeds English linker-advisor-lookup-for-ci.mp4 / -poster.webp (tool-pane-0 & tool-pane-1 localized)."
+      ]
+    },
+    "reason": "Readonly production check (/de/loesung/gewerbespeicher/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, tooldeck_tab_switch, hero_prompt_input_only(no_submit). Remaining (not executed in readonly mode): Genie prompt submission, video playback, configurator handoff. Open findings: 1."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/loesung/gewerbespeicher/@390",
+    "id": 6921,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/loesung/gewerbespeicher/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/loesung/gewerbespeicher/@390)"
+      ],
+      "findings": [
+        "de-commercial-toolpane2-english-media: #engineering-tools #tool-pane-2 embeds English linker-advisor-lookup-for-ci.mp4 / -poster.webp (tool-pane-0 & tool-pane-1 localized)."
+      ]
+    },
+    "reason": "Readonly production check (/de/loesung/gewerbespeicher/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, tooldeck_tab_switch, hero_prompt_input_only(no_submit). Remaining (not executed in readonly mode): Genie prompt submission, video playback, configurator handoff. Open findings: 1."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/loesung/heimspeicher/@1440",
+    "id": 6923,
+    "kind": "page",
+    "lang": "de",
+    "width": 1440,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/loesung/heimspeicher/@1440)",
+        "live-dom-css-probe@2026-11-13 (/de/loesung/heimspeicher/@1440)",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-captures/defect-heimspeicher-de-1440.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-captures/evidence-de-heimspeicher-toolpane2-en-video.png"
+      ],
+      "findings": [
+        "de-heimspeicher-hero-hyphens-auto-omission: #tv-rs-page-v1 .lk-hero-title omitted from marketing-rhythm.css:42-67 manual-hyphens override (inherits hyphens:auto from site-base.css:37); body paragraphs also split DE compounds (e.g. Batteriespei-cher-Paket, Hochvolt-Batte-rie-tuerme).",
+        "de-heimspeicher-toolpane2-english-media: #engineering-tools #tool-pane-2 (03 SUPPORT) still embeds English video/poster linker-advisor-lookup-for-installers.mp4 / -poster.webp (tool-pane-0 & tool-pane-1 localized)."
+      ]
+    },
+    "reason": "Readonly production check (/de/loesung/heimspeicher/@1440): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: desktop_header_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, tooldeck_tab_switch, hero_prompt_input_only(no_submit). Remaining (not executed in readonly mode): Genie prompt submission, video playback, configurator handoff. Open findings: 2."
+  },
+  {
+    "matrix": "page",
+    "key": "https://de-linker.com/de/loesung/heimspeicher/@390",
+    "id": 6923,
+    "kind": "page",
+    "lang": "de",
+    "width": 390,
+    "updates": {
+      "render": "verified-basic-local-and-production",
+      "interaction": "partially-verified",
+      "visual_review": "partial-with-finding",
+      "evidence": [
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-report.md",
+        "layout-selfcheck.mjs@2026-11-13 (/de/loesung/heimspeicher/@390)",
+        "deepseek-flash-vision+dom-probe@2026-11-13 (/de/loesung/heimspeicher/@390)",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-captures/defect-heimspeicher-de-390.png",
+        "docs/acceptance/2026-11-13/matrix-batch-updates/batch3-captures/evidence-de-heimspeicher-toolpane2-en-video.png"
+      ],
+      "findings": [
+        "de-heimspeicher-hero-hyphens-auto-omission: #tv-rs-page-v1 .lk-hero-title omitted from marketing-rhythm.css:42-67 manual-hyphens override (inherits hyphens:auto from site-base.css:37); body paragraphs also split DE compounds (e.g. Batteriespei-cher-Paket, Hochvolt-Batte-rie-tuerme).",
+        "de-heimspeicher-toolpane2-english-media: #engineering-tools #tool-pane-2 (03 SUPPORT) still embeds English video/poster linker-advisor-lookup-for-installers.mp4 / -poster.webp (tool-pane-0 & tool-pane-1 localized)."
+      ]
+    },
+    "reason": "Readonly production check (/de/loesung/heimspeicher/@390): HTTP 200, 0 image-broken, 0 font-error. Verified readonly interactions: mobile_menu_toggle, sticky_header_opaque_on_scroll, lang_switch_target_present, tooldeck_tab_switch, hero_prompt_input_only(no_submit). Remaining (not executed in readonly mode): Genie prompt submission, video playback, configurator handoff. Open findings: 2."
+  }
+]

@@ -1,0 +1,496 @@
+{
+  "en6528_related_grid": {
+    "display": "grid",
+    "gridTemplateColumns": "305px 305px 305px 305px",
+    "beforeContent": "\" \"",
+    "beforeDisplay": "table",
+    "items": [
+      {
+        "title": "SAJ HS2-5K-T2-X (5 kW three-phase hybrid inverter)",
+        "x": 405,
+        "y": 5234,
+        "w": 305
+      },
+      {
+        "title": "SAJ HS3-10K-T2-W/G-PX",
+        "x": 730,
+        "y": 5234,
+        "w": 305
+      },
+      {
+        "title": "GoodWe GW100K-ET-G10",
+        "x": 1055,
+        "y": 5234,
+        "w": 305
+      },
+      {
+        "title": "GoodWe ESA GW15K-ETA-G20 (15 kW three-phase power module)",
+        "x": 80,
+        "y": 5728,
+        "w": 305
+      }
+    ]
+  },
+  "en2064_pairings": {
+    "noteCount": 3,
+    "notes": [
+      "SAJ's Configuration Instructions V1.0 (Section 2) give the H2 series system as H2 + BC2 + BU2. SAJ's B2 datasheet names B2-5.0 to B2-25.0 as one to five BU2-5.0 modules with one BC2-HV1 control module, and SAJ's B2 manual (V1.2, PDF p5) says the B2 can only be used as a set with SAJ's H2 high voltage series storage inverter. The listing does not cover the one-module B2-5.0, whose operating voltage lies below the H2 T3's battery voltage range. SAJ's B2 datasheet gives 179.2 to 230.4 V for the two-module B2-10.0; the H2 T3 manual's battery voltage range begins at 180 V.",
+      "SAJ's Configuration Instructions V1.0 (Section 2) give the H2 series system as H2 + BC2 + BU2. SAJ's B2 datasheet names B2-5.0 to B2-25.0 as one to five BU2-5.0 modules with one BC2-HV1 control module, and SAJ's B2 manual (V1.2, PDF p5) says the B2 can only be used as a set with SAJ's H2 high voltage series storage inverter. The listing does not cover the one-module B2-5.0, whose operating voltage lies below the H2 T3's battery voltage range.",
+      "SAJ's Configuration Instructions V1.0 (Section 2) give the H2 series system as H2 + BC2 + BU2. SAJ's B2 datasheet names B2-5.0 to B2-25.0 as one to five BU2-5.0 modules with one BC2-HV1 control module, and SAJ's B2 manual (V1.2, PDF p5) says the B2 can only be used as a set with SAJ's H2 high voltage series storage inverter. The listing does not cover the one-module B2-5.0, whose operating voltage lies below the H2 T3's battery voltage range. One BU2-5.0 module alone operates at 89.6 to 115.2 V (SAJ's B2 datasheet gives this for the one-module B2-5.0), below the H2 T3's battery voltage range of 180 to 800 V; two modules operate at 179.2 to 230.4 V."
+    ],
+    "cards": [
+      {
+        "name": "SAJ B2-10.0-HV1",
+        "imgRect": {
+          "x": 80,
+          "y": 6692,
+          "width": 120,
+          "height": 144,
+          "top": 6692,
+          "right": 200,
+          "bottom": 6836,
+          "left": 80
+        },
+        "cardRect": {
+          "x": 80,
+          "y": 6664,
+          "width": 620,
+          "height": 201,
+          "top": 6664,
+          "right": 700,
+          "bottom": 6865,
+          "left": 80
+        }
+      },
+      {
+        "name": "SAJ B2-15.0-HV1",
+        "imgRect": {
+          "x": 740,
+          "y": 6692,
+          "width": 120,
+          "height": 144,
+          "top": 6692,
+          "right": 860,
+          "bottom": 6836,
+          "left": 740
+        },
+        "cardRect": {
+          "x": 740,
+          "y": 6664,
+          "width": 620,
+          "height": 201,
+          "top": 6664,
+          "right": 1360,
+          "bottom": 6865,
+          "left": 740
+        }
+      },
+      {
+        "name": "SAJ B2-20.0-HV1",
+        "imgRect": {
+          "x": 80,
+          "y": 6893,
+          "width": 120,
+          "height": 144,
+          "top": 6893,
+          "right": 200,
+          "bottom": 7037,
+          "left": 80
+        },
+        "cardRect": {
+          "x": 80,
+          "y": 6865,
+          "width": 620,
+          "height": 201,
+          "top": 6865,
+          "right": 700,
+          "bottom": 7066,
+          "left": 80
+        }
+      },
+      {
+        "name": "SAJ B2-25.0-HV1",
+        "imgRect": {
+          "x": 740,
+          "y": 6893,
+          "width": 120,
+          "height": 144,
+          "top": 6893,
+          "right": 860,
+          "bottom": 7037,
+          "left": 740
+        },
+        "cardRect": {
+          "x": 740,
+          "y": 6865,
+          "width": 620,
+          "height": 201,
+          "top": 6865,
+          "right": 1360,
+          "bottom": 7066,
+          "left": 740
+        }
+      },
+      {
+        "name": "SAJ BC2-HV1",
+        "imgRect": {
+          "x": 80,
+          "y": 7094,
+          "width": 120,
+          "height": 144,
+          "top": 7094,
+          "right": 200,
+          "bottom": 7238,
+          "left": 80
+        },
+        "cardRect": {
+          "x": 80,
+          "y": 7066,
+          "width": 620,
+          "height": 201,
+          "top": 7066,
+          "right": 700,
+          "bottom": 7267,
+          "left": 80
+        }
+      },
+      {
+        "name": "SAJ BU2-5.0-HV1",
+        "imgRect": {
+          "x": 740,
+          "y": 7094,
+          "width": 120,
+          "height": 144,
+          "top": 7094,
+          "right": 860,
+          "bottom": 7238,
+          "left": 740
+        },
+        "cardRect": {
+          "x": 740,
+          "y": 7066,
+          "width": 620,
+          "height": 201,
+          "top": 7066,
+          "right": 1360,
+          "bottom": 7267,
+          "left": 740
+        }
+      }
+    ]
+  },
+  "de6689_1440": {
+    "featureH3": {
+      "text": "Vorgeschalteter Schutz",
+      "overflowWrap": "anywhere",
+      "wordBreak": "normal",
+      "hyphens": "manual",
+      "fontSize": "52px",
+      "width": 528,
+      "height": 112
+    },
+    "footerLinks": [
+      {
+        "text": "Englisch",
+        "x": 140,
+        "y": 7953,
+        "w": 74,
+        "h": 44
+      },
+      {
+        "text": "Deutsch",
+        "x": 216,
+        "y": 7953,
+        "w": 74,
+        "h": 44
+      },
+      {
+        "text": "Produkte",
+        "x": 135,
+        "y": 7810,
+        "w": 90,
+        "h": 44
+      },
+      {
+        "text": "Technologie",
+        "x": 233,
+        "y": 7810,
+        "w": 104,
+        "h": 44
+      },
+      {
+        "text": "Service",
+        "x": 345,
+        "y": 7810,
+        "w": 82,
+        "h": 44
+      },
+      {
+        "text": "Heimspeicher",
+        "x": 492,
+        "y": 7778,
+        "w": 392,
+        "h": 70
+      },
+      {
+        "text": "Gewerbespeicher",
+        "x": 894,
+        "y": 7778,
+        "w": 392,
+        "h": 70
+      },
+      {
+        "text": "Großspeicher",
+        "x": 492,
+        "y": 7858,
+        "w": 392,
+        "h": 70
+      },
+      {
+        "text": "Projektplanung",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "text": "Technischer Support",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "text": "Kundendienst",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "text": "Genie – der KI-Assistent von Linker",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      }
+    ]
+  },
+  "de6720_390": {
+    "featureH3": {
+      "text": "Nulleinspeisungsregelung mit zertifizierter Präzision.",
+      "overflowWrap": "anywhere",
+      "wordBreak": "normal",
+      "hyphens": "manual",
+      "fontSize": "27.3px",
+      "width": 302,
+      "height": 88
+    },
+    "footerLinks": [
+      {
+        "text": "Englisch",
+        "x": 220,
+        "y": 7985,
+        "w": 66,
+        "h": 44
+      },
+      {
+        "text": "Deutsch",
+        "x": 288,
+        "y": 7985,
+        "w": 66,
+        "h": 44
+      },
+      {
+        "text": "Produkte",
+        "x": 32,
+        "y": 8068,
+        "w": 101,
+        "h": 44
+      },
+      {
+        "text": "Technologie",
+        "x": 141,
+        "y": 8068,
+        "w": 116,
+        "h": 44
+      },
+      {
+        "text": "Service",
+        "x": 265,
+        "y": 8068,
+        "w": 93,
+        "h": 44
+      },
+      {
+        "text": "Heimspeicher",
+        "x": 49,
+        "y": 8244,
+        "w": 292,
+        "h": 48
+      },
+      {
+        "text": "Gewerbespeicher",
+        "x": 49,
+        "y": 8299,
+        "w": 292,
+        "h": 48
+      },
+      {
+        "text": "Großspeicher",
+        "x": 49,
+        "y": 8354,
+        "w": 292,
+        "h": 48
+      },
+      {
+        "text": "Projektplanung",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "text": "Technischer Support",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "text": "Kundendienst",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "text": "Genie – der KI-Assistent von Linker",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      }
+    ]
+  },
+  "de6599_390": {
+    "featureH3": null,
+    "footerLinks": [
+      {
+        "text": "Englisch",
+        "x": 220,
+        "y": 13887,
+        "w": 66,
+        "h": 44
+      },
+      {
+        "text": "Deutsch",
+        "x": 288,
+        "y": 13887,
+        "w": 66,
+        "h": 44
+      },
+      {
+        "text": "Produkte",
+        "x": 32,
+        "y": 13970,
+        "w": 101,
+        "h": 44
+      },
+      {
+        "text": "Technologie",
+        "x": 141,
+        "y": 13970,
+        "w": 116,
+        "h": 44
+      },
+      {
+        "text": "Service",
+        "x": 265,
+        "y": 13970,
+        "w": 93,
+        "h": 44
+      },
+      {
+        "text": "Heimspeicher",
+        "x": 49,
+        "y": 14146,
+        "w": 292,
+        "h": 48
+      },
+      {
+        "text": "Gewerbespeicher",
+        "x": 49,
+        "y": 14201,
+        "w": 292,
+        "h": 48
+      },
+      {
+        "text": "Großspeicher",
+        "x": 49,
+        "y": 14256,
+        "w": 292,
+        "h": 48
+      },
+      {
+        "text": "Projektplanung",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "text": "Technischer Support",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "text": "Kundendienst",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "text": "Genie – der KI-Assistent von Linker",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      }
+    ]
+  },
+  "en1958_docs": [
+    "GoodWe BAT-C Series 208.9–261.2 kWh Datasheet (EMEA, EN, V1.1)",
+    "GoodWe BAT-C Series 208.9–261.2 kWh Datasheet (EMEA, DE, V1.1)",
+    "GoodWe BAT-C 208.9–261.2 kWh Commercial and Industrial Battery System User Manual (EN)",
+    "GoodWe BAT-C 208–261 kWh User Manual (DE)",
+    "GoodWe BAT-C 208–261 kWh Limited Warranty (Europe)",
+    "GoodWe Battery Compatibility Overview (EMEA, EN)",
+    "GoodWe BAT-C 208–261 kWh EU Declaration of Conformity",
+    "GoodWe Batterie-Kompatibilitätsübersicht (EMEA)"
+  ],
+  "de6690": {
+    "intro": "Der GW10K-ETA-G20 ist GoodWes 10-kW-Modell der ESA G20: 10 kVA Nenn-Notstromversorgung, 20 kW PV an vier Trackern mit 21 A, 11,0 kVA Dauerbetrieb im Inselbetrieb und 20,0 kVA für 10 s.",
+    "relatedAligns": [
+      {
+        "text": "GoodWe ESA GW3K-EHA-G20 (3 kW einphasiges Leistungsmodul)",
+        "textAlign": "start"
+      },
+      {
+        "text": "GoodWe ESA GW8K-EHA-G20 (8-kW-einphasiges Leistungsmodul)",
+        "textAlign": "start"
+      },
+      {
+        "text": "SAJ H2-10K-T3 (10-kW-Dreiphasen-Hybrid-Wechselrichter)",
+        "textAlign": "start"
+      },
+      {
+        "text": "GoodWe ESA GW6K-ETA-G20 (6 kW dreiphasiges Leistungsmodul)",
+        "textAlign": "start"
+      }
+    ]
+  }
+}

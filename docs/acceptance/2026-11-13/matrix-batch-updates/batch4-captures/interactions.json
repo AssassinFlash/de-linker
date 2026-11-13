@@ -1,0 +1,2899 @@
+{
+  "generatedAt": "2026-11-13T07:55:26.387Z",
+  "pdpResults": [
+    {
+      "name": "gw125-261-en",
+      "url": "/product/goodwe-esa-gw125-261-esa-lcn-g10/",
+      "viewport": "1440x900",
+      "status": 200,
+      "specResult": {
+        "mode": "tabs",
+        "visibleTabs": 5,
+        "beforeSel": "false",
+        "afterSel": "true",
+        "backSel": "true",
+        "ok": true
+      },
+      "descToggleOk": null,
+      "faqCount": 4,
+      "faqToggleOk": true,
+      "thumbSwitchOk": true,
+      "docsCount": 15,
+      "genericDocCount": 0,
+      "samplePdfCheck": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+        "status": 200,
+        "contentType": "application/pdf"
+      },
+      "addBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/proforma-request/?add-to-cart=6321",
+        "text": "Add to solution draft",
+        "rect": {
+          "x": 804,
+          "y": 520,
+          "w": 556,
+          "h": 51
+        }
+      },
+      "askBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-secondary",
+        "href": "https://de-linker.com/contact/?intent=product&kind=product&title=GoodWe%20ESA%20GW125%2F261-ESA-LCN-G10%20%28125%20kW%20%2F%20261%20kWh%20all-in-one%20storage%20cabinet%29&source_id=6321&product_id=6321&source=https://de-linker.com/product/goodwe-esa-gw125-261-esa-lcn-g10/",
+        "text": "Ask about this product",
+        "rect": {
+          "x": 804,
+          "y": 581,
+          "w": 556,
+          "h": 51
+        }
+      },
+      "askGenieBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "BUTTON",
+        "hitClass": "pdp-tool",
+        "href": null,
+        "text": "Ask Genie",
+        "rect": {
+          "x": 995,
+          "y": 665,
+          "w": 175,
+          "h": 48
+        }
+      },
+      "projCheckToggle": true,
+      "compareResult": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "chipVisible": true,
+        "chipText": "Compare 1/4",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/de/produkt/goodwe-esa-gw125-261-esa-lcn-g10/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "gw125-261-en",
+      "url": "/product/goodwe-esa-gw125-261-esa-lcn-g10/",
+      "viewport": "390x844",
+      "status": 200,
+      "specResult": {
+        "mode": "tabs",
+        "visibleTabs": 5,
+        "beforeSel": "false",
+        "afterSel": "true",
+        "backSel": "true",
+        "ok": true
+      },
+      "descToggleOk": null,
+      "faqCount": 4,
+      "faqToggleOk": true,
+      "thumbSwitchOk": true,
+      "docsCount": 15,
+      "genericDocCount": 0,
+      "samplePdfCheck": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+        "status": 200,
+        "contentType": "application/pdf"
+      },
+      "addBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/proforma-request/?add-to-cart=6321",
+        "text": "Add to solution draft",
+        "rect": {
+          "x": 23,
+          "y": 773,
+          "w": 344,
+          "h": 48
+        }
+      },
+      "askBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": false,
+        "href": "https://de-linker.com/contact/?intent=product&kind=product&title=GoodWe%20ESA%20GW125%2F261-ESA-LCN-G10%20%28125%20kW%20%2F%20261%20kWh%20all-in-one%20storage%20cabinet%29&source_id=6321&product_id=6321&source=https://de-linker.com/product/goodwe-esa-gw125-261-esa-lcn-g10/",
+        "text": "Ask about this product",
+        "rect": {
+          "x": 20,
+          "y": 937,
+          "w": 350,
+          "h": 52
+        }
+      },
+      "askGenieBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": false,
+        "href": null,
+        "text": "Ask Genie",
+        "rect": {
+          "x": 142,
+          "y": 1022,
+          "w": 106,
+          "h": 64
+        }
+      },
+      "projCheckToggle": true,
+      "compareResult": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "chipVisible": true,
+        "chipText": "Compare 1/4",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/de/produkt/goodwe-esa-gw125-261-esa-lcn-g10/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "gw125-261-de",
+      "url": "/de/produkt/goodwe-esa-gw125-261-esa-lcn-g10/",
+      "viewport": "1440x900",
+      "status": 200,
+      "specResult": {
+        "mode": "tabs",
+        "visibleTabs": 5,
+        "beforeSel": "false",
+        "afterSel": "true",
+        "backSel": "true",
+        "ok": true
+      },
+      "descToggleOk": null,
+      "faqCount": 4,
+      "faqToggleOk": true,
+      "thumbSwitchOk": true,
+      "docsCount": 15,
+      "genericDocCount": 0,
+      "samplePdfCheck": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+        "status": 200,
+        "contentType": "application/pdf"
+      },
+      "addBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/de/proforma-anfrage/?add-to-cart=6599",
+        "text": "Zum Lösungsentwurf hinzufügen",
+        "rect": {
+          "x": 804,
+          "y": 553,
+          "w": 556,
+          "h": 51
+        }
+      },
+      "askBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-secondary",
+        "href": "https://de-linker.com/de/kontakt/?intent=product&kind=product&title=GoodWe%20ESA%20GW125%2F261-ESA-LCN-G10%20%28125%20kW%20%2F%20261%20kWh%20All-in-One-Speicherschrank%29&source_id=6599&product_id=6599&source=https://de-linker.com/de/produkt/goodwe-esa-gw125-261-esa-lcn-g10/",
+        "text": "Produkt anfragen",
+        "rect": {
+          "x": 804,
+          "y": 614,
+          "w": 556,
+          "h": 51
+        }
+      },
+      "askGenieBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "BUTTON",
+        "hitClass": "pdp-tool",
+        "href": null,
+        "text": "Genie fragen",
+        "rect": {
+          "x": 995,
+          "y": 698,
+          "w": 175,
+          "h": 48
+        }
+      },
+      "projCheckToggle": true,
+      "compareResult": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "chipVisible": true,
+        "chipText": "Vergleichen 1/4",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/product/goodwe-esa-gw125-261-esa-lcn-g10/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "gw125-261-de",
+      "url": "/de/produkt/goodwe-esa-gw125-261-esa-lcn-g10/",
+      "viewport": "390x844",
+      "status": 200,
+      "specResult": {
+        "mode": "tabs",
+        "visibleTabs": 5,
+        "beforeSel": "false",
+        "afterSel": "true",
+        "backSel": "true",
+        "ok": true
+      },
+      "descToggleOk": null,
+      "faqCount": 4,
+      "faqToggleOk": true,
+      "thumbSwitchOk": true,
+      "docsCount": 15,
+      "genericDocCount": 0,
+      "samplePdfCheck": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+        "status": 200,
+        "contentType": "application/pdf"
+      },
+      "addBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/de/proforma-anfrage/?add-to-cart=6599",
+        "text": "Zum Lösungsentwurf hinzufügen",
+        "rect": {
+          "x": 23,
+          "y": 773,
+          "w": 344,
+          "h": 48
+        }
+      },
+      "askBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": false,
+        "href": "https://de-linker.com/de/kontakt/?intent=product&kind=product&title=GoodWe%20ESA%20GW125%2F261-ESA-LCN-G10%20%28125%20kW%20%2F%20261%20kWh%20All-in-One-Speicherschrank%29&source_id=6599&product_id=6599&source=https://de-linker.com/de/produkt/goodwe-esa-gw125-261-esa-lcn-g10/",
+        "text": "Produkt anfragen",
+        "rect": {
+          "x": 20,
+          "y": 936,
+          "w": 350,
+          "h": 52
+        }
+      },
+      "askGenieBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": false,
+        "href": null,
+        "text": "Genie fragen",
+        "rect": {
+          "x": 142,
+          "y": 1021,
+          "w": 106,
+          "h": 64
+        }
+      },
+      "projCheckToggle": true,
+      "compareResult": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "chipVisible": true,
+        "chipText": "Vergleichen 1/4",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/product/goodwe-esa-gw125-261-esa-lcn-g10/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "gw125k-etr-en",
+      "url": "/product/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/",
+      "viewport": "1440x900",
+      "status": 200,
+      "specResult": {
+        "mode": "tabs",
+        "visibleTabs": 5,
+        "beforeSel": "false",
+        "afterSel": "true",
+        "backSel": "true",
+        "ok": true
+      },
+      "descToggleOk": true,
+      "faqCount": 3,
+      "faqToggleOk": true,
+      "thumbSwitchOk": true,
+      "docsCount": 12,
+      "genericDocCount": 0,
+      "samplePdfCheck": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+        "status": 200,
+        "contentType": "application/pdf"
+      },
+      "addBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/proforma-request/?add-to-cart=3595",
+        "text": "Add to solution draft",
+        "rect": {
+          "x": 804,
+          "y": 355,
+          "w": 556,
+          "h": 51
+        }
+      },
+      "askBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-secondary",
+        "href": "https://de-linker.com/contact/?intent=product&kind=product&title=GoodWe%20GW125K-ETR-G10%20%28125%20kW%20three-phase%20hybrid%20inverter%29&source_id=3595&product_id=3595&source=https://de-linker.com/product/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/",
+        "text": "Ask about this product",
+        "rect": {
+          "x": 804,
+          "y": 416,
+          "w": 556,
+          "h": 51
+        }
+      },
+      "askGenieBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "BUTTON",
+        "hitClass": "pdp-tool",
+        "href": null,
+        "text": "Ask Genie",
+        "rect": {
+          "x": 995,
+          "y": 500,
+          "w": 175,
+          "h": 48
+        }
+      },
+      "projCheckToggle": true,
+      "compareResult": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "chipVisible": true,
+        "chipText": "Compare 1/4",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/de/produkt/goodwe-etr-125-kw-ci-dreiphasiger-hybridwechselrichter-1000v/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "gw125k-etr-en",
+      "url": "/product/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/",
+      "viewport": "390x844",
+      "status": 200,
+      "specResult": {
+        "mode": "tabs",
+        "visibleTabs": 5,
+        "beforeSel": "false",
+        "afterSel": "true",
+        "backSel": "true",
+        "ok": true
+      },
+      "descToggleOk": true,
+      "faqCount": 3,
+      "faqToggleOk": true,
+      "thumbSwitchOk": true,
+      "docsCount": 12,
+      "genericDocCount": 0,
+      "samplePdfCheck": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+        "status": 200,
+        "contentType": "application/pdf"
+      },
+      "addBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/proforma-request/?add-to-cart=3595",
+        "text": "Add to solution draft",
+        "rect": {
+          "x": 23,
+          "y": 773,
+          "w": 344,
+          "h": 48
+        }
+      },
+      "askBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": false,
+        "href": "https://de-linker.com/contact/?intent=product&kind=product&title=GoodWe%20GW125K-ETR-G10%20%28125%20kW%20three-phase%20hybrid%20inverter%29&source_id=3595&product_id=3595&source=https://de-linker.com/product/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/",
+        "text": "Ask about this product",
+        "rect": {
+          "x": 20,
+          "y": 955,
+          "w": 350,
+          "h": 52
+        }
+      },
+      "askGenieBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": false,
+        "href": null,
+        "text": "Ask Genie",
+        "rect": {
+          "x": 142,
+          "y": 1040,
+          "w": 106,
+          "h": 64
+        }
+      },
+      "projCheckToggle": true,
+      "compareResult": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "chipVisible": true,
+        "chipText": "Compare 1/4",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/de/produkt/goodwe-etr-125-kw-ci-dreiphasiger-hybridwechselrichter-1000v/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "gw125k-etr-de",
+      "url": "/de/produkt/goodwe-etr-125-kw-ci-dreiphasiger-hybridwechselrichter-1000v/",
+      "viewport": "1440x900",
+      "status": 200,
+      "specResult": {
+        "mode": "tabs",
+        "visibleTabs": 5,
+        "beforeSel": "false",
+        "afterSel": "true",
+        "backSel": "true",
+        "ok": true
+      },
+      "descToggleOk": true,
+      "faqCount": 3,
+      "faqToggleOk": true,
+      "thumbSwitchOk": true,
+      "docsCount": 12,
+      "genericDocCount": 0,
+      "samplePdfCheck": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+        "status": 200,
+        "contentType": "application/pdf"
+      },
+      "addBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/de/proforma-anfrage/?add-to-cart=6654",
+        "text": "Zum Lösungsentwurf hinzufügen",
+        "rect": {
+          "x": 804,
+          "y": 388,
+          "w": 556,
+          "h": 51
+        }
+      },
+      "askBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-secondary",
+        "href": "https://de-linker.com/de/kontakt/?intent=product&kind=product&title=GoodWe%20GW125K-ETR-G10%20%28125%20kW%20dreiphasiger%20Hybrid-Wechselrichter%29&source_id=6654&product_id=6654&source=https://de-linker.com/de/produkt/goodwe-etr-125-kw-ci-dreiphasiger-hybridwechselrichter-1000v/",
+        "text": "Produkt anfragen",
+        "rect": {
+          "x": 804,
+          "y": 449,
+          "w": 556,
+          "h": 51
+        }
+      },
+      "askGenieBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "BUTTON",
+        "hitClass": "pdp-tool",
+        "href": null,
+        "text": "Genie fragen",
+        "rect": {
+          "x": 995,
+          "y": 533,
+          "w": 175,
+          "h": 48
+        }
+      },
+      "projCheckToggle": true,
+      "compareResult": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "chipVisible": true,
+        "chipText": "Vergleichen 1/4",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/product/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "gw125k-etr-de",
+      "url": "/de/produkt/goodwe-etr-125-kw-ci-dreiphasiger-hybridwechselrichter-1000v/",
+      "viewport": "390x844",
+      "status": 200,
+      "specResult": {
+        "mode": "tabs",
+        "visibleTabs": 5,
+        "beforeSel": "false",
+        "afterSel": "true",
+        "backSel": "true",
+        "ok": true
+      },
+      "descToggleOk": true,
+      "faqCount": 3,
+      "faqToggleOk": true,
+      "thumbSwitchOk": true,
+      "docsCount": 12,
+      "genericDocCount": 0,
+      "samplePdfCheck": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+        "status": 200,
+        "contentType": "application/pdf"
+      },
+      "addBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/de/proforma-anfrage/?add-to-cart=6654",
+        "text": "Zum Lösungsentwurf hinzufügen",
+        "rect": {
+          "x": 23,
+          "y": 773,
+          "w": 344,
+          "h": 48
+        }
+      },
+      "askBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": false,
+        "href": "https://de-linker.com/de/kontakt/?intent=product&kind=product&title=GoodWe%20GW125K-ETR-G10%20%28125%20kW%20dreiphasiger%20Hybrid-Wechselrichter%29&source_id=6654&product_id=6654&source=https://de-linker.com/de/produkt/goodwe-etr-125-kw-ci-dreiphasiger-hybridwechselrichter-1000v/",
+        "text": "Produkt anfragen",
+        "rect": {
+          "x": 20,
+          "y": 975,
+          "w": 350,
+          "h": 52
+        }
+      },
+      "askGenieBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": false,
+        "href": null,
+        "text": "Genie fragen",
+        "rect": {
+          "x": 142,
+          "y": 1060,
+          "w": 106,
+          "h": 64
+        }
+      },
+      "projCheckToggle": true,
+      "compareResult": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "chipVisible": true,
+        "chipText": "Vergleichen 1/4",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/product/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "saj-ats1-en",
+      "url": "/product/saj-ats1-t63-a/",
+      "viewport": "1440x900",
+      "status": 200,
+      "specResult": {
+        "mode": "tabs",
+        "visibleTabs": 5,
+        "beforeSel": "false",
+        "afterSel": "true",
+        "backSel": "true",
+        "ok": true
+      },
+      "descToggleOk": true,
+      "faqCount": 0,
+      "faqToggleOk": null,
+      "thumbSwitchOk": true,
+      "docsCount": 3,
+      "genericDocCount": 0,
+      "samplePdfCheck": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_ATS1_Datasheet_EN-BEU.pdf",
+        "status": 200,
+        "contentType": "application/pdf"
+      },
+      "addBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/proforma-request/?add-to-cart=1178",
+        "text": "Add to solution draft",
+        "rect": {
+          "x": 804,
+          "y": 428,
+          "w": 556,
+          "h": 51
+        }
+      },
+      "askBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-secondary",
+        "href": "https://de-linker.com/contact/?intent=product&kind=product&title=SAJ%20ATS1-T63-A&source_id=1178&product_id=1178&source=https://de-linker.com/product/saj-ats1-t63-a/",
+        "text": "Ask about this product",
+        "rect": {
+          "x": 804,
+          "y": 489,
+          "w": 556,
+          "h": 51
+        }
+      },
+      "askGenieBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "BUTTON",
+        "hitClass": "pdp-tool",
+        "href": null,
+        "text": "Ask Genie",
+        "rect": {
+          "x": 995,
+          "y": 573,
+          "w": 175,
+          "h": 48
+        }
+      },
+      "projCheckToggle": true,
+      "compareResult": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "chipVisible": true,
+        "chipText": "Compare 1/4",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/de/produkt/saj-ats1-t63-a/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "saj-ats1-en",
+      "url": "/product/saj-ats1-t63-a/",
+      "viewport": "390x844",
+      "status": 200,
+      "specResult": {
+        "mode": "tabs",
+        "visibleTabs": 5,
+        "beforeSel": "false",
+        "afterSel": "true",
+        "backSel": "true",
+        "ok": true
+      },
+      "descToggleOk": true,
+      "faqCount": 0,
+      "faqToggleOk": null,
+      "thumbSwitchOk": true,
+      "docsCount": 3,
+      "genericDocCount": 0,
+      "samplePdfCheck": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_ATS1_Datasheet_EN-BEU.pdf",
+        "status": 200,
+        "contentType": "application/pdf"
+      },
+      "addBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/proforma-request/?add-to-cart=1178",
+        "text": "Add to solution draft",
+        "rect": {
+          "x": 23,
+          "y": 773,
+          "w": 344,
+          "h": 48
+        }
+      },
+      "askBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": false,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/contact/?intent=product&kind=product&title=SAJ%20ATS1-T63-A&source_id=1178&product_id=1178&source=https://de-linker.com/product/saj-ats1-t63-a/",
+        "text": "Ask about this product",
+        "rect": {
+          "x": 20,
+          "y": 772,
+          "w": 350,
+          "h": 52
+        }
+      },
+      "askGenieBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": false,
+        "href": null,
+        "text": "Ask Genie",
+        "rect": {
+          "x": 142,
+          "y": 857,
+          "w": 106,
+          "h": 64
+        }
+      },
+      "projCheckToggle": true,
+      "compareResult": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "chipVisible": true,
+        "chipText": "Compare 1/4",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/de/produkt/saj-ats1-t63-a/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "saj-ats1-de",
+      "url": "/de/produkt/saj-ats1-t63-a/",
+      "viewport": "1440x900",
+      "status": 200,
+      "specResult": {
+        "mode": "tabs",
+        "visibleTabs": 5,
+        "beforeSel": "false",
+        "afterSel": "true",
+        "backSel": "true",
+        "ok": true
+      },
+      "descToggleOk": true,
+      "faqCount": 0,
+      "faqToggleOk": null,
+      "thumbSwitchOk": true,
+      "docsCount": 3,
+      "genericDocCount": 0,
+      "samplePdfCheck": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_ATS1_Datasheet_EN-BEU.pdf",
+        "status": 200,
+        "contentType": "application/pdf"
+      },
+      "addBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/de/proforma-anfrage/?add-to-cart=6839",
+        "text": "Zum Lösungsentwurf hinzufügen",
+        "rect": {
+          "x": 804,
+          "y": 428,
+          "w": 556,
+          "h": 51
+        }
+      },
+      "askBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-secondary",
+        "href": "https://de-linker.com/de/kontakt/?intent=product&kind=product&title=SAJ%20ATS1-T63-A&source_id=6839&product_id=6839&source=https://de-linker.com/de/produkt/saj-ats1-t63-a/",
+        "text": "Produkt anfragen",
+        "rect": {
+          "x": 804,
+          "y": 489,
+          "w": 556,
+          "h": 51
+        }
+      },
+      "askGenieBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "BUTTON",
+        "hitClass": "pdp-tool",
+        "href": null,
+        "text": "Genie fragen",
+        "rect": {
+          "x": 995,
+          "y": 573,
+          "w": 175,
+          "h": 48
+        }
+      },
+      "projCheckToggle": true,
+      "compareResult": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "chipVisible": true,
+        "chipText": "Vergleichen 1/4",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/product/saj-ats1-t63-a/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "saj-ats1-de",
+      "url": "/de/produkt/saj-ats1-t63-a/",
+      "viewport": "390x844",
+      "status": 200,
+      "specResult": {
+        "mode": "tabs",
+        "visibleTabs": 5,
+        "beforeSel": "false",
+        "afterSel": "true",
+        "backSel": "true",
+        "ok": true
+      },
+      "descToggleOk": true,
+      "faqCount": 0,
+      "faqToggleOk": null,
+      "thumbSwitchOk": true,
+      "docsCount": 3,
+      "genericDocCount": 0,
+      "samplePdfCheck": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_ATS1_Datasheet_EN-BEU.pdf",
+        "status": 200,
+        "contentType": "application/pdf"
+      },
+      "addBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/de/proforma-anfrage/?add-to-cart=6839",
+        "text": "Zum Lösungsentwurf hinzufügen",
+        "rect": {
+          "x": 23,
+          "y": 773,
+          "w": 344,
+          "h": 48
+        }
+      },
+      "askBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": false,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/de/kontakt/?intent=product&kind=product&title=SAJ%20ATS1-T63-A&source_id=6839&product_id=6839&source=https://de-linker.com/de/produkt/saj-ats1-t63-a/",
+        "text": "Produkt anfragen",
+        "rect": {
+          "x": 20,
+          "y": 792,
+          "w": 350,
+          "h": 52
+        }
+      },
+      "askGenieBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": false,
+        "href": null,
+        "text": "Genie fragen",
+        "rect": {
+          "x": 142,
+          "y": 877,
+          "w": 106,
+          "h": 64
+        }
+      },
+      "projCheckToggle": true,
+      "compareResult": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "chipVisible": true,
+        "chipText": "Vergleichen 1/4",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/product/saj-ats1-t63-a/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "pylontech-l260-en",
+      "url": "/product/pylontech-optim-us-l260-omni/",
+      "viewport": "1440x900",
+      "status": 200,
+      "specResult": {
+        "mode": "tabs",
+        "visibleTabs": 5,
+        "beforeSel": "false",
+        "afterSel": "true",
+        "backSel": "true",
+        "ok": true
+      },
+      "descToggleOk": true,
+      "faqCount": 0,
+      "faqToggleOk": null,
+      "thumbSwitchOk": true,
+      "docsCount": 3,
+      "genericDocCount": 1,
+      "samplePdfCheck": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/OPTIMUSL260-OMNI_20240926105739A032.pdf",
+        "status": 200,
+        "contentType": "application/pdf"
+      },
+      "addBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/proforma-request/?add-to-cart=2003",
+        "text": "Add to solution draft",
+        "rect": {
+          "x": 804,
+          "y": 421,
+          "w": 556,
+          "h": 51
+        }
+      },
+      "askBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-secondary",
+        "href": "https://de-linker.com/contact/?intent=product&kind=product&title=Pylontech%20OPTIM%20US%20L260-OMNI&source_id=2003&product_id=2003&source=https://de-linker.com/product/pylontech-optim-us-l260-omni/",
+        "text": "Ask about this product",
+        "rect": {
+          "x": 804,
+          "y": 482,
+          "w": 556,
+          "h": 51
+        }
+      },
+      "askGenieBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "BUTTON",
+        "hitClass": "pdp-tool",
+        "href": null,
+        "text": "Ask Genie",
+        "rect": {
+          "x": 995,
+          "y": 566,
+          "w": 175,
+          "h": 48
+        }
+      },
+      "projCheckToggle": true,
+      "compareResult": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "chipVisible": true,
+        "chipText": "Compare 1/4",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/de/produkt/pylontech-optim-us-l260-omni/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "pylontech-l260-en",
+      "url": "/product/pylontech-optim-us-l260-omni/",
+      "viewport": "390x844",
+      "status": 200,
+      "specResult": {
+        "mode": "tabs",
+        "visibleTabs": 5,
+        "beforeSel": "false",
+        "afterSel": "true",
+        "backSel": "true",
+        "ok": true
+      },
+      "descToggleOk": true,
+      "faqCount": 0,
+      "faqToggleOk": null,
+      "thumbSwitchOk": true,
+      "docsCount": 3,
+      "genericDocCount": 1,
+      "samplePdfCheck": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/OPTIMUSL260-OMNI_20240926105739A032.pdf",
+        "status": 200,
+        "contentType": "application/pdf"
+      },
+      "addBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/proforma-request/?add-to-cart=2003",
+        "text": "Add to solution draft",
+        "rect": {
+          "x": 23,
+          "y": 773,
+          "w": 344,
+          "h": 48
+        }
+      },
+      "askBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": false,
+        "href": "https://de-linker.com/contact/?intent=product&kind=product&title=Pylontech%20OPTIM%20US%20L260-OMNI&source_id=2003&product_id=2003&source=https://de-linker.com/product/pylontech-optim-us-l260-omni/",
+        "text": "Ask about this product",
+        "rect": {
+          "x": 20,
+          "y": 936,
+          "w": 350,
+          "h": 52
+        }
+      },
+      "askGenieBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": false,
+        "href": null,
+        "text": "Ask Genie",
+        "rect": {
+          "x": 142,
+          "y": 1021,
+          "w": 106,
+          "h": 64
+        }
+      },
+      "projCheckToggle": true,
+      "compareResult": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "chipVisible": true,
+        "chipText": "Compare 1/4",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/de/produkt/pylontech-optim-us-l260-omni/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "pylontech-l260-de",
+      "url": "/de/produkt/pylontech-optim-us-l260-omni/",
+      "viewport": "1440x900",
+      "status": 200,
+      "specResult": {
+        "mode": "tabs",
+        "visibleTabs": 5,
+        "beforeSel": "false",
+        "afterSel": "true",
+        "backSel": "true",
+        "ok": true
+      },
+      "descToggleOk": true,
+      "faqCount": 0,
+      "faqToggleOk": null,
+      "thumbSwitchOk": true,
+      "docsCount": 3,
+      "genericDocCount": 1,
+      "samplePdfCheck": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/OPTIMUSL260-OMNI_20240926105739A032.pdf",
+        "status": 200,
+        "contentType": "application/pdf"
+      },
+      "addBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/de/proforma-anfrage/?add-to-cart=6769",
+        "text": "Zum Lösungsentwurf hinzufügen",
+        "rect": {
+          "x": 804,
+          "y": 454,
+          "w": 556,
+          "h": 51
+        }
+      },
+      "askBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-secondary",
+        "href": "https://de-linker.com/de/kontakt/?intent=product&kind=product&title=Pylontech%20OPTIM%20US%20L260-OMNI&source_id=6769&product_id=6769&source=https://de-linker.com/de/produkt/pylontech-optim-us-l260-omni/",
+        "text": "Produkt anfragen",
+        "rect": {
+          "x": 804,
+          "y": 515,
+          "w": 556,
+          "h": 51
+        }
+      },
+      "askGenieBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "BUTTON",
+        "hitClass": "pdp-tool",
+        "href": null,
+        "text": "Genie fragen",
+        "rect": {
+          "x": 995,
+          "y": 599,
+          "w": 175,
+          "h": 48
+        }
+      },
+      "projCheckToggle": true,
+      "compareResult": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "chipVisible": true,
+        "chipText": "Vergleichen 1/4",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/product/pylontech-optim-us-l260-omni/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "pylontech-l260-de",
+      "url": "/de/produkt/pylontech-optim-us-l260-omni/",
+      "viewport": "390x844",
+      "status": 200,
+      "specResult": {
+        "mode": "tabs",
+        "visibleTabs": 5,
+        "beforeSel": "false",
+        "afterSel": "true",
+        "backSel": "true",
+        "ok": true
+      },
+      "descToggleOk": true,
+      "faqCount": 0,
+      "faqToggleOk": null,
+      "thumbSwitchOk": true,
+      "docsCount": 3,
+      "genericDocCount": 1,
+      "samplePdfCheck": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/OPTIMUSL260-OMNI_20240926105739A032.pdf",
+        "status": 200,
+        "contentType": "application/pdf"
+      },
+      "addBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/de/proforma-anfrage/?add-to-cart=6769",
+        "text": "Zum Lösungsentwurf hinzufügen",
+        "rect": {
+          "x": 23,
+          "y": 773,
+          "w": 344,
+          "h": 48
+        }
+      },
+      "askBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": false,
+        "href": "https://de-linker.com/de/kontakt/?intent=product&kind=product&title=Pylontech%20OPTIM%20US%20L260-OMNI&source_id=6769&product_id=6769&source=https://de-linker.com/de/produkt/pylontech-optim-us-l260-omni/",
+        "text": "Produkt anfragen",
+        "rect": {
+          "x": 20,
+          "y": 936,
+          "w": 350,
+          "h": 52
+        }
+      },
+      "askGenieBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": false,
+        "href": null,
+        "text": "Genie fragen",
+        "rect": {
+          "x": 142,
+          "y": 1021,
+          "w": 106,
+          "h": 64
+        }
+      },
+      "projCheckToggle": true,
+      "compareResult": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "chipVisible": true,
+        "chipText": "Vergleichen 1/4",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/product/pylontech-optim-us-l260-omni/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "saj-h2-10k-en",
+      "url": "/product/saj-h2-10k-t3/",
+      "viewport": "1440x900",
+      "status": 200,
+      "specResult": {
+        "mode": "tabs",
+        "visibleTabs": 5,
+        "beforeSel": "false",
+        "afterSel": "true",
+        "backSel": "true",
+        "ok": true
+      },
+      "descToggleOk": true,
+      "faqCount": 3,
+      "faqToggleOk": true,
+      "thumbSwitchOk": true,
+      "docsCount": 4,
+      "genericDocCount": 0,
+      "samplePdfCheck": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+        "status": 200,
+        "contentType": "application/pdf"
+      },
+      "addBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/proforma-request/?add-to-cart=4107",
+        "text": "Add to solution draft",
+        "rect": {
+          "x": 804,
+          "y": 421,
+          "w": 556,
+          "h": 51
+        }
+      },
+      "askBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-secondary",
+        "href": "https://de-linker.com/contact/?intent=product&kind=product&title=SAJ%20H2-10K-T3%20%2810%20kW%20three-phase%20hybrid%20inverter%29&source_id=4107&product_id=4107&source=https://de-linker.com/product/saj-h2-10k-t3/",
+        "text": "Ask about this product",
+        "rect": {
+          "x": 804,
+          "y": 482,
+          "w": 556,
+          "h": 51
+        }
+      },
+      "askGenieBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "BUTTON",
+        "hitClass": "pdp-tool",
+        "href": null,
+        "text": "Ask Genie",
+        "rect": {
+          "x": 995,
+          "y": 566,
+          "w": 175,
+          "h": 48
+        }
+      },
+      "projCheckToggle": true,
+      "compareResult": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "chipVisible": true,
+        "chipText": "Compare 1/4",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/de/produkt/saj-h2-10k-t3/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "saj-h2-10k-en",
+      "url": "/product/saj-h2-10k-t3/",
+      "viewport": "390x844",
+      "status": 200,
+      "specResult": {
+        "mode": "tabs",
+        "visibleTabs": 5,
+        "beforeSel": "false",
+        "afterSel": "true",
+        "backSel": "true",
+        "ok": true
+      },
+      "descToggleOk": true,
+      "faqCount": 3,
+      "faqToggleOk": true,
+      "thumbSwitchOk": true,
+      "docsCount": 4,
+      "genericDocCount": 0,
+      "samplePdfCheck": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+        "status": 200,
+        "contentType": "application/pdf"
+      },
+      "addBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/proforma-request/?add-to-cart=4107",
+        "text": "Add to solution draft",
+        "rect": {
+          "x": 23,
+          "y": 773,
+          "w": 344,
+          "h": 48
+        }
+      },
+      "askBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": false,
+        "href": "https://de-linker.com/contact/?intent=product&kind=product&title=SAJ%20H2-10K-T3%20%2810%20kW%20three-phase%20hybrid%20inverter%29&source_id=4107&product_id=4107&source=https://de-linker.com/product/saj-h2-10k-t3/",
+        "text": "Ask about this product",
+        "rect": {
+          "x": 20,
+          "y": 955,
+          "w": 350,
+          "h": 52
+        }
+      },
+      "askGenieBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": false,
+        "href": null,
+        "text": "Ask Genie",
+        "rect": {
+          "x": 142,
+          "y": 1040,
+          "w": 106,
+          "h": 64
+        }
+      },
+      "projCheckToggle": true,
+      "compareResult": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "chipVisible": true,
+        "chipText": "Compare 1/4",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/de/produkt/saj-h2-10k-t3/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "saj-h2-10k-de",
+      "url": "/de/produkt/saj-h2-10k-t3/",
+      "viewport": "1440x900",
+      "status": 200,
+      "specResult": {
+        "mode": "tabs",
+        "visibleTabs": 5,
+        "beforeSel": "false",
+        "afterSel": "true",
+        "backSel": "true",
+        "ok": true
+      },
+      "descToggleOk": true,
+      "faqCount": 3,
+      "faqToggleOk": true,
+      "thumbSwitchOk": true,
+      "docsCount": 4,
+      "genericDocCount": 0,
+      "samplePdfCheck": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+        "status": 200,
+        "contentType": "application/pdf"
+      },
+      "addBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/de/proforma-anfrage/?add-to-cart=6628",
+        "text": "Zum Lösungsentwurf hinzufügen",
+        "rect": {
+          "x": 804,
+          "y": 454,
+          "w": 556,
+          "h": 51
+        }
+      },
+      "askBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-secondary",
+        "href": "https://de-linker.com/de/kontakt/?intent=product&kind=product&title=SAJ%20H2-10K-T3%20%2810-kW-Dreiphasen-Hybrid-Wechselrichter%29&source_id=6628&product_id=6628&source=https://de-linker.com/de/produkt/saj-h2-10k-t3/",
+        "text": "Produkt anfragen",
+        "rect": {
+          "x": 804,
+          "y": 515,
+          "w": 556,
+          "h": 51
+        }
+      },
+      "askGenieBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "BUTTON",
+        "hitClass": "pdp-tool",
+        "href": null,
+        "text": "Genie fragen",
+        "rect": {
+          "x": 995,
+          "y": 599,
+          "w": 175,
+          "h": 48
+        }
+      },
+      "projCheckToggle": true,
+      "compareResult": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "chipVisible": true,
+        "chipText": "Vergleichen 1/4",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/product/saj-h2-10k-t3/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "saj-h2-10k-de",
+      "url": "/de/produkt/saj-h2-10k-t3/",
+      "viewport": "390x844",
+      "status": 200,
+      "specResult": {
+        "mode": "tabs",
+        "visibleTabs": 5,
+        "beforeSel": "false",
+        "afterSel": "true",
+        "backSel": "true",
+        "ok": true
+      },
+      "descToggleOk": true,
+      "faqCount": 3,
+      "faqToggleOk": true,
+      "thumbSwitchOk": true,
+      "docsCount": 4,
+      "genericDocCount": 0,
+      "samplePdfCheck": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+        "status": 200,
+        "contentType": "application/pdf"
+      },
+      "addBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/de/proforma-anfrage/?add-to-cart=6628",
+        "text": "Zum Lösungsentwurf hinzufügen",
+        "rect": {
+          "x": 23,
+          "y": 773,
+          "w": 344,
+          "h": 48
+        }
+      },
+      "askBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": false,
+        "href": "https://de-linker.com/de/kontakt/?intent=product&kind=product&title=SAJ%20H2-10K-T3%20%2810-kW-Dreiphasen-Hybrid-Wechselrichter%29&source_id=6628&product_id=6628&source=https://de-linker.com/de/produkt/saj-h2-10k-t3/",
+        "text": "Produkt anfragen",
+        "rect": {
+          "x": 20,
+          "y": 975,
+          "w": 350,
+          "h": 52
+        }
+      },
+      "askGenieBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": false,
+        "href": null,
+        "text": "Genie fragen",
+        "rect": {
+          "x": 142,
+          "y": 1060,
+          "w": 106,
+          "h": 64
+        }
+      },
+      "projCheckToggle": true,
+      "compareResult": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "chipVisible": true,
+        "chipText": "Vergleichen 1/4",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/product/saj-h2-10k-t3/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "goodwe-esa-10k-en",
+      "url": "/product/goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one/",
+      "viewport": "1440x900",
+      "status": 200,
+      "specResult": {
+        "mode": "tabs",
+        "visibleTabs": 5,
+        "beforeSel": "false",
+        "afterSel": "true",
+        "backSel": "true",
+        "ok": true
+      },
+      "descToggleOk": true,
+      "faqCount": 3,
+      "faqToggleOk": true,
+      "thumbSwitchOk": true,
+      "docsCount": 13,
+      "genericDocCount": 0,
+      "samplePdfCheck": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+        "status": 200,
+        "contentType": "application/pdf"
+      },
+      "addBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/proforma-request/?add-to-cart=3556",
+        "text": "Add to solution draft",
+        "rect": {
+          "x": 804,
+          "y": 388,
+          "w": 556,
+          "h": 51
+        }
+      },
+      "askBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-secondary",
+        "href": "https://de-linker.com/contact/?intent=product&kind=product&title=GoodWe%20ESA%20GW10K-ETA-G20%20%2810%20kW%20three-phase%20power%20module%29&source_id=3556&product_id=3556&source=https://de-linker.com/product/goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one/",
+        "text": "Ask about this product",
+        "rect": {
+          "x": 804,
+          "y": 449,
+          "w": 556,
+          "h": 51
+        }
+      },
+      "askGenieBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "BUTTON",
+        "hitClass": "pdp-tool",
+        "href": null,
+        "text": "Ask Genie",
+        "rect": {
+          "x": 995,
+          "y": 533,
+          "w": 175,
+          "h": 48
+        }
+      },
+      "projCheckToggle": true,
+      "compareResult": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "chipVisible": true,
+        "chipText": "Compare 1/4",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/de/produkt/goodwe-esa-gw10k-eta-g20-10-kw-dreiphasiges-komplettsystem/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "goodwe-esa-10k-en",
+      "url": "/product/goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one/",
+      "viewport": "390x844",
+      "status": 200,
+      "specResult": {
+        "mode": "tabs",
+        "visibleTabs": 5,
+        "beforeSel": "false",
+        "afterSel": "true",
+        "backSel": "true",
+        "ok": true
+      },
+      "descToggleOk": true,
+      "faqCount": 3,
+      "faqToggleOk": true,
+      "thumbSwitchOk": true,
+      "docsCount": 13,
+      "genericDocCount": 0,
+      "samplePdfCheck": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+        "status": 200,
+        "contentType": "application/pdf"
+      },
+      "addBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/proforma-request/?add-to-cart=3556",
+        "text": "Add to solution draft",
+        "rect": {
+          "x": 23,
+          "y": 773,
+          "w": 344,
+          "h": 48
+        }
+      },
+      "askBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": false,
+        "href": "https://de-linker.com/contact/?intent=product&kind=product&title=GoodWe%20ESA%20GW10K-ETA-G20%20%2810%20kW%20three-phase%20power%20module%29&source_id=3556&product_id=3556&source=https://de-linker.com/product/goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one/",
+        "text": "Ask about this product",
+        "rect": {
+          "x": 20,
+          "y": 956,
+          "w": 350,
+          "h": 52
+        }
+      },
+      "askGenieBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": false,
+        "href": null,
+        "text": "Ask Genie",
+        "rect": {
+          "x": 142,
+          "y": 1041,
+          "w": 106,
+          "h": 64
+        }
+      },
+      "projCheckToggle": true,
+      "compareResult": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "chipVisible": true,
+        "chipText": "Compare 1/4",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/de/produkt/goodwe-esa-gw10k-eta-g20-10-kw-dreiphasiges-komplettsystem/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "chint-dtsu666-de",
+      "url": "/de/produkt/chint-dtsu666/",
+      "viewport": "1440x900",
+      "status": 200,
+      "specResult": {
+        "mode": "tabs",
+        "visibleTabs": 5,
+        "beforeSel": "false",
+        "afterSel": "true",
+        "backSel": "true",
+        "ok": true
+      },
+      "descToggleOk": true,
+      "faqCount": 0,
+      "faqToggleOk": null,
+      "thumbSwitchOk": true,
+      "docsCount": 2,
+      "genericDocCount": 0,
+      "samplePdfCheck": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/07/chint_dtsu666_catalog_en.pdf",
+        "status": 200,
+        "contentType": "application/pdf"
+      },
+      "addBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/de/proforma-anfrage/?add-to-cart=6720",
+        "text": "Zum Lösungsentwurf hinzufügen",
+        "rect": {
+          "x": 804,
+          "y": 454,
+          "w": 556,
+          "h": 51
+        }
+      },
+      "askBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-secondary",
+        "href": "https://de-linker.com/de/kontakt/?intent=product&kind=product&title=Chint%20DTSU666&source_id=6720&product_id=6720&source=https://de-linker.com/de/produkt/chint-dtsu666/",
+        "text": "Produkt anfragen",
+        "rect": {
+          "x": 804,
+          "y": 515,
+          "w": 556,
+          "h": 51
+        }
+      },
+      "askGenieBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "BUTTON",
+        "hitClass": "pdp-tool",
+        "href": null,
+        "text": "Genie fragen",
+        "rect": {
+          "x": 995,
+          "y": 599,
+          "w": 175,
+          "h": 48
+        }
+      },
+      "projCheckToggle": true,
+      "compareResult": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "chipVisible": true,
+        "chipText": "Vergleichen 1/4",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/product/chint-dtsu666/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "chint-dtsu666-de",
+      "url": "/de/produkt/chint-dtsu666/",
+      "viewport": "390x844",
+      "status": 200,
+      "specResult": {
+        "mode": "tabs",
+        "visibleTabs": 5,
+        "beforeSel": "false",
+        "afterSel": "true",
+        "backSel": "true",
+        "ok": true
+      },
+      "descToggleOk": true,
+      "faqCount": 0,
+      "faqToggleOk": null,
+      "thumbSwitchOk": true,
+      "docsCount": 2,
+      "genericDocCount": 0,
+      "samplePdfCheck": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/07/chint_dtsu666_catalog_en.pdf",
+        "status": 200,
+        "contentType": "application/pdf"
+      },
+      "addBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": true,
+        "hitTag": "A",
+        "hitClass": "pdp-btn pdp-btn-dark",
+        "href": "https://de-linker.com/de/proforma-anfrage/?add-to-cart=6720",
+        "text": "Zum Lösungsentwurf hinzufügen",
+        "rect": {
+          "x": 23,
+          "y": 773,
+          "w": 344,
+          "h": 48
+        }
+      },
+      "askBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": false,
+        "href": "https://de-linker.com/de/kontakt/?intent=product&kind=product&title=Chint%20DTSU666&source_id=6720&product_id=6720&source=https://de-linker.com/de/produkt/chint-dtsu666/",
+        "text": "Produkt anfragen",
+        "rect": {
+          "x": 20,
+          "y": 972,
+          "w": 350,
+          "h": 52
+        }
+      },
+      "askGenieBtn": {
+        "present": true,
+        "visible": true,
+        "clickable": false,
+        "href": null,
+        "text": "Genie fragen",
+        "rect": {
+          "x": 142,
+          "y": 1057,
+          "w": 106,
+          "h": 64
+        }
+      },
+      "projCheckToggle": true,
+      "compareResult": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "chipVisible": true,
+        "chipText": "Vergleichen 1/4",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/product/chint-dtsu666/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    }
+  ],
+  "termResults": [
+    {
+      "name": "cat-inverters-en",
+      "kind": "product_cat",
+      "url": "/product-category/inverters/",
+      "viewport": "1440x900",
+      "status": 200,
+      "cardCount": 24,
+      "filterInfo": {
+        "filterCountInputs": 10,
+        "drawerOpened": null,
+        "clickedFilter": {
+          "beforeUrl": "https://de-linker.com/product-category/inverters/",
+          "afterUrl": "https://de-linker.com/product-category/inverters/?application=home",
+          "changed": true,
+          "afterCards": 17
+        }
+      },
+      "sortInfo": {
+        "present": true,
+        "options": [
+          "Recommended",
+          "Newest first",
+          "Name A-Z",
+          "Power high-low",
+          "Power low-high"
+        ],
+        "values": [
+          "recommended",
+          "newest",
+          "name",
+          "power-desc",
+          "power-asc"
+        ],
+        "sortChanged": true,
+        "sortUrl": "https://de-linker.com/product-category/inverters/?sort=newest",
+        "sortCards": 24
+      },
+      "paginationInfo": {
+        "present": false
+      },
+      "compareInfo": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/de/produkt-kategorie/wechselrichter/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "cat-inverters-en",
+      "kind": "product_cat",
+      "url": "/product-category/inverters/",
+      "viewport": "390x844",
+      "status": 200,
+      "cardCount": 24,
+      "filterInfo": {
+        "filterCountInputs": 10,
+        "drawerOpened": "true",
+        "clickedFilter": {
+          "beforeUrl": "https://de-linker.com/product-category/inverters/",
+          "afterUrl": "https://de-linker.com/product-category/inverters/?application=home",
+          "changed": true,
+          "afterCards": 17
+        }
+      },
+      "sortInfo": {
+        "present": true,
+        "options": [
+          "Recommended",
+          "Newest first",
+          "Name A-Z",
+          "Power high-low",
+          "Power low-high"
+        ],
+        "values": [
+          "recommended",
+          "newest",
+          "name",
+          "power-desc",
+          "power-asc"
+        ],
+        "sortChanged": true,
+        "sortUrl": "https://de-linker.com/product-category/inverters/?sort=newest",
+        "sortCards": 24
+      },
+      "paginationInfo": {
+        "present": false
+      },
+      "compareInfo": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/de/produkt-kategorie/wechselrichter/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "cat-inverters-de",
+      "kind": "product_cat",
+      "url": "/de/produkt-kategorie/wechselrichter/",
+      "viewport": "1440x900",
+      "status": 200,
+      "cardCount": 24,
+      "filterInfo": {
+        "filterCountInputs": 10,
+        "drawerOpened": null,
+        "clickedFilter": {
+          "beforeUrl": "https://de-linker.com/de/produkt-kategorie/wechselrichter/",
+          "afterUrl": "https://de-linker.com/de/produkt-kategorie/wechselrichter/?application=home",
+          "changed": true,
+          "afterCards": 17
+        }
+      },
+      "sortInfo": {
+        "present": true,
+        "options": [
+          "Empfohlen",
+          "Neueste zuerst",
+          "Name A-Z",
+          "Leistung hoch-niedrig",
+          "Leistung niedrig-hoch"
+        ],
+        "values": [
+          "recommended",
+          "newest",
+          "name",
+          "power-desc",
+          "power-asc"
+        ],
+        "sortChanged": true,
+        "sortUrl": "https://de-linker.com/de/produkt-kategorie/wechselrichter/?sort=newest",
+        "sortCards": 24
+      },
+      "paginationInfo": {
+        "present": false
+      },
+      "compareInfo": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/product-category/inverters/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "cat-inverters-de",
+      "kind": "product_cat",
+      "url": "/de/produkt-kategorie/wechselrichter/",
+      "viewport": "390x844",
+      "status": 200,
+      "cardCount": 24,
+      "filterInfo": {
+        "filterCountInputs": 10,
+        "drawerOpened": "true",
+        "clickedFilter": {
+          "beforeUrl": "https://de-linker.com/de/produkt-kategorie/wechselrichter/",
+          "afterUrl": "https://de-linker.com/de/produkt-kategorie/wechselrichter/?application=home",
+          "changed": true,
+          "afterCards": 17
+        }
+      },
+      "sortInfo": {
+        "present": true,
+        "options": [
+          "Empfohlen",
+          "Neueste zuerst",
+          "Name A-Z",
+          "Leistung hoch-niedrig",
+          "Leistung niedrig-hoch"
+        ],
+        "values": [
+          "recommended",
+          "newest",
+          "name",
+          "power-desc",
+          "power-asc"
+        ],
+        "sortChanged": true,
+        "sortUrl": "https://de-linker.com/de/produkt-kategorie/wechselrichter/?sort=newest",
+        "sortCards": 24
+      },
+      "paginationInfo": {
+        "present": false
+      },
+      "compareInfo": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/product-category/inverters/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "cat-accessories-de",
+      "kind": "product_cat",
+      "url": "/de/produkt-kategorie/zubehoer/",
+      "viewport": "1440x900",
+      "status": 200,
+      "cardCount": 7,
+      "filterInfo": {
+        "filterCountInputs": 9,
+        "drawerOpened": null,
+        "clickedFilter": {
+          "beforeUrl": "https://de-linker.com/de/produkt-kategorie/zubehoer/",
+          "afterUrl": "https://de-linker.com/de/produkt-kategorie/zubehoer/?application=home",
+          "changed": true,
+          "afterCards": 3
+        }
+      },
+      "sortInfo": {
+        "present": true,
+        "options": [
+          "Empfohlen",
+          "Neueste zuerst",
+          "Name A-Z",
+          "Leistung hoch-niedrig",
+          "Leistung niedrig-hoch"
+        ],
+        "values": [
+          "recommended",
+          "newest",
+          "name",
+          "power-desc",
+          "power-asc"
+        ],
+        "sortChanged": true,
+        "sortUrl": "https://de-linker.com/de/produkt-kategorie/zubehoer/?sort=newest",
+        "sortCards": 7
+      },
+      "paginationInfo": {
+        "present": false
+      },
+      "compareInfo": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/product-category/accessories/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "cat-accessories-de",
+      "kind": "product_cat",
+      "url": "/de/produkt-kategorie/zubehoer/",
+      "viewport": "390x844",
+      "status": 200,
+      "cardCount": 7,
+      "filterInfo": {
+        "filterCountInputs": 9,
+        "drawerOpened": "true",
+        "clickedFilter": {
+          "beforeUrl": "https://de-linker.com/de/produkt-kategorie/zubehoer/",
+          "afterUrl": "https://de-linker.com/de/produkt-kategorie/zubehoer/?application=home",
+          "changed": true,
+          "afterCards": 3
+        }
+      },
+      "sortInfo": {
+        "present": true,
+        "options": [
+          "Empfohlen",
+          "Neueste zuerst",
+          "Name A-Z",
+          "Leistung hoch-niedrig",
+          "Leistung niedrig-hoch"
+        ],
+        "values": [
+          "recommended",
+          "newest",
+          "name",
+          "power-desc",
+          "power-asc"
+        ],
+        "sortChanged": true,
+        "sortUrl": "https://de-linker.com/de/produkt-kategorie/zubehoer/?sort=newest",
+        "sortCards": 7
+      },
+      "paginationInfo": {
+        "present": false
+      },
+      "compareInfo": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/product-category/accessories/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "cat-meters-de",
+      "kind": "product_cat",
+      "url": "/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/",
+      "viewport": "1440x900",
+      "status": 200,
+      "cardCount": 3,
+      "filterInfo": {
+        "filterCountInputs": 2,
+        "drawerOpened": null,
+        "clickedFilter": {
+          "beforeUrl": "https://de-linker.com/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/",
+          "afterUrl": "https://de-linker.com/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/?brand=chint",
+          "changed": true,
+          "afterCards": 1
+        }
+      },
+      "sortInfo": {
+        "present": true,
+        "options": [
+          "Empfohlen",
+          "Neueste zuerst",
+          "Name A-Z",
+          "Leistung hoch-niedrig",
+          "Leistung niedrig-hoch"
+        ],
+        "values": [
+          "recommended",
+          "newest",
+          "name",
+          "power-desc",
+          "power-asc"
+        ],
+        "sortChanged": true,
+        "sortUrl": "https://de-linker.com/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/?sort=newest",
+        "sortCards": 3
+      },
+      "paginationInfo": {
+        "present": false
+      },
+      "compareInfo": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/product-category/accessories/meters-current-transformers/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "cat-meters-de",
+      "kind": "product_cat",
+      "url": "/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/",
+      "viewport": "390x844",
+      "status": 200,
+      "cardCount": 3,
+      "filterInfo": {
+        "filterCountInputs": 2,
+        "drawerOpened": "true",
+        "clickedFilter": {
+          "beforeUrl": "https://de-linker.com/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/",
+          "afterUrl": "https://de-linker.com/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/?brand=chint",
+          "changed": true,
+          "afterCards": 1
+        }
+      },
+      "sortInfo": {
+        "present": true,
+        "options": [
+          "Empfohlen",
+          "Neueste zuerst",
+          "Name A-Z",
+          "Leistung hoch-niedrig",
+          "Leistung niedrig-hoch"
+        ],
+        "values": [
+          "recommended",
+          "newest",
+          "name",
+          "power-desc",
+          "power-asc"
+        ],
+        "sortChanged": true,
+        "sortUrl": "https://de-linker.com/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/?sort=newest",
+        "sortCards": 3
+      },
+      "paginationInfo": {
+        "present": false
+      },
+      "compareInfo": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/product-category/accessories/meters-current-transformers/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "phase-3p-en",
+      "kind": "phase",
+      "url": "/phase/three-phase/",
+      "viewport": "1440x900",
+      "status": 200,
+      "cardCount": 24,
+      "filterInfo": {
+        "filterCountInputs": 8,
+        "drawerOpened": null,
+        "clickedFilter": {
+          "beforeUrl": "https://de-linker.com/phase/three-phase/",
+          "afterUrl": "https://de-linker.com/phase/three-phase/?application=home",
+          "changed": true,
+          "afterCards": 15
+        }
+      },
+      "sortInfo": {
+        "present": true,
+        "options": [
+          "Recommended",
+          "Newest first",
+          "Name A-Z",
+          "Power high-low",
+          "Power low-high"
+        ],
+        "values": [
+          "recommended",
+          "newest",
+          "name",
+          "power-desc",
+          "power-asc"
+        ],
+        "sortChanged": true,
+        "sortUrl": "https://de-linker.com/phase/three-phase/?sort=newest",
+        "sortCards": 24
+      },
+      "paginationInfo": {
+        "present": true,
+        "nextHref": "https://de-linker.com/phase/three-phase/?product-page=2",
+        "p2Url": "https://de-linker.com/phase/three-phase/?product-page=2",
+        "p2Cards": 1
+      },
+      "compareInfo": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/de/phase/dreiphasig/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "phase-3p-en",
+      "kind": "phase",
+      "url": "/phase/three-phase/",
+      "viewport": "390x844",
+      "status": 200,
+      "cardCount": 24,
+      "filterInfo": {
+        "filterCountInputs": 8,
+        "drawerOpened": "true",
+        "clickedFilter": {
+          "beforeUrl": "https://de-linker.com/phase/three-phase/",
+          "afterUrl": "https://de-linker.com/phase/three-phase/?application=home",
+          "changed": true,
+          "afterCards": 15
+        }
+      },
+      "sortInfo": {
+        "present": true,
+        "options": [
+          "Recommended",
+          "Newest first",
+          "Name A-Z",
+          "Power high-low",
+          "Power low-high"
+        ],
+        "values": [
+          "recommended",
+          "newest",
+          "name",
+          "power-desc",
+          "power-asc"
+        ],
+        "sortChanged": true,
+        "sortUrl": "https://de-linker.com/phase/three-phase/?sort=newest",
+        "sortCards": 24
+      },
+      "paginationInfo": {
+        "present": true,
+        "nextHref": "https://de-linker.com/phase/three-phase/?product-page=2",
+        "p2Url": "https://de-linker.com/phase/three-phase/?product-page=2",
+        "p2Cards": 1
+      },
+      "compareInfo": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/de/phase/dreiphasig/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "phase-3p-de",
+      "kind": "phase",
+      "url": "/de/phase/dreiphasig/",
+      "viewport": "1440x900",
+      "status": 200,
+      "cardCount": 24,
+      "filterInfo": {
+        "filterCountInputs": 8,
+        "drawerOpened": null,
+        "clickedFilter": {
+          "beforeUrl": "https://de-linker.com/de/phase/dreiphasig/",
+          "afterUrl": "https://de-linker.com/de/phase/dreiphasig/?application=home",
+          "changed": true,
+          "afterCards": 15
+        }
+      },
+      "sortInfo": {
+        "present": true,
+        "options": [
+          "Empfohlen",
+          "Neueste zuerst",
+          "Name A-Z",
+          "Leistung hoch-niedrig",
+          "Leistung niedrig-hoch"
+        ],
+        "values": [
+          "recommended",
+          "newest",
+          "name",
+          "power-desc",
+          "power-asc"
+        ],
+        "sortChanged": true,
+        "sortUrl": "https://de-linker.com/de/phase/dreiphasig/?sort=newest",
+        "sortCards": 24
+      },
+      "paginationInfo": {
+        "present": true,
+        "nextHref": "https://de-linker.com/de/phase/dreiphasig/?product-page=2",
+        "p2Url": "https://de-linker.com/de/phase/dreiphasig/?product-page=2",
+        "p2Cards": 1
+      },
+      "compareInfo": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/phase/three-phase/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "phase-3p-de",
+      "kind": "phase",
+      "url": "/de/phase/dreiphasig/",
+      "viewport": "390x844",
+      "status": 200,
+      "cardCount": 24,
+      "filterInfo": {
+        "filterCountInputs": 8,
+        "drawerOpened": "true",
+        "clickedFilter": {
+          "beforeUrl": "https://de-linker.com/de/phase/dreiphasig/",
+          "afterUrl": "https://de-linker.com/de/phase/dreiphasig/?application=home",
+          "changed": true,
+          "afterCards": 15
+        }
+      },
+      "sortInfo": {
+        "present": true,
+        "options": [
+          "Empfohlen",
+          "Neueste zuerst",
+          "Name A-Z",
+          "Leistung hoch-niedrig",
+          "Leistung niedrig-hoch"
+        ],
+        "values": [
+          "recommended",
+          "newest",
+          "name",
+          "power-desc",
+          "power-asc"
+        ],
+        "sortChanged": true,
+        "sortUrl": "https://de-linker.com/de/phase/dreiphasig/?sort=newest",
+        "sortCards": 24
+      },
+      "paginationInfo": {
+        "present": true,
+        "nextHref": "https://de-linker.com/de/phase/dreiphasig/?product-page=2",
+        "p2Url": "https://de-linker.com/de/phase/dreiphasig/?product-page=2",
+        "p2Cards": 1
+      },
+      "compareInfo": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/phase/three-phase/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "bv-hv-en",
+      "kind": "battery_voltage",
+      "url": "/battery-voltage/high-voltage/",
+      "viewport": "1440x900",
+      "status": 200,
+      "cardCount": 8,
+      "filterInfo": {
+        "filterCountInputs": 4,
+        "drawerOpened": null,
+        "clickedFilter": {
+          "beforeUrl": "https://de-linker.com/battery-voltage/high-voltage/",
+          "afterUrl": "https://de-linker.com/battery-voltage/high-voltage/?application=home",
+          "changed": true,
+          "afterCards": 4
+        }
+      },
+      "sortInfo": {
+        "present": true,
+        "options": [
+          "Recommended",
+          "Newest first",
+          "Name A-Z",
+          "Power high-low",
+          "Power low-high"
+        ],
+        "values": [
+          "recommended",
+          "newest",
+          "name",
+          "power-desc",
+          "power-asc"
+        ],
+        "sortChanged": true,
+        "sortUrl": "https://de-linker.com/battery-voltage/high-voltage/?sort=newest",
+        "sortCards": 8
+      },
+      "paginationInfo": {
+        "present": false
+      },
+      "compareInfo": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/de/battery-voltage/hochvolt/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "bv-hv-en",
+      "kind": "battery_voltage",
+      "url": "/battery-voltage/high-voltage/",
+      "viewport": "390x844",
+      "status": 200,
+      "cardCount": 8,
+      "filterInfo": {
+        "filterCountInputs": 4,
+        "drawerOpened": "true",
+        "clickedFilter": {
+          "beforeUrl": "https://de-linker.com/battery-voltage/high-voltage/",
+          "afterUrl": "https://de-linker.com/battery-voltage/high-voltage/?application=home",
+          "changed": true,
+          "afterCards": 4
+        }
+      },
+      "sortInfo": {
+        "present": true,
+        "options": [
+          "Recommended",
+          "Newest first",
+          "Name A-Z",
+          "Power high-low",
+          "Power low-high"
+        ],
+        "values": [
+          "recommended",
+          "newest",
+          "name",
+          "power-desc",
+          "power-asc"
+        ],
+        "sortChanged": true,
+        "sortUrl": "https://de-linker.com/battery-voltage/high-voltage/?sort=newest",
+        "sortCards": 8
+      },
+      "paginationInfo": {
+        "present": false
+      },
+      "compareInfo": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/de/battery-voltage/hochvolt/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "bv-hv-de",
+      "kind": "battery_voltage",
+      "url": "/de/battery-voltage/hochvolt/",
+      "viewport": "1440x900",
+      "status": 200,
+      "cardCount": 8,
+      "filterInfo": {
+        "filterCountInputs": 4,
+        "drawerOpened": null,
+        "clickedFilter": {
+          "beforeUrl": "https://de-linker.com/de/battery-voltage/hochvolt/",
+          "afterUrl": "https://de-linker.com/de/battery-voltage/hochvolt/?application=home",
+          "changed": true,
+          "afterCards": 4
+        }
+      },
+      "sortInfo": {
+        "present": true,
+        "options": [
+          "Empfohlen",
+          "Neueste zuerst",
+          "Name A-Z",
+          "Leistung hoch-niedrig",
+          "Leistung niedrig-hoch"
+        ],
+        "values": [
+          "recommended",
+          "newest",
+          "name",
+          "power-desc",
+          "power-asc"
+        ],
+        "sortChanged": true,
+        "sortUrl": "https://de-linker.com/de/battery-voltage/hochvolt/?sort=newest",
+        "sortCards": 8
+      },
+      "paginationInfo": {
+        "present": false
+      },
+      "compareInfo": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/battery-voltage/high-voltage/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "bv-hv-de",
+      "kind": "battery_voltage",
+      "url": "/de/battery-voltage/hochvolt/",
+      "viewport": "390x844",
+      "status": 200,
+      "cardCount": 8,
+      "filterInfo": {
+        "filterCountInputs": 4,
+        "drawerOpened": "true",
+        "clickedFilter": {
+          "beforeUrl": "https://de-linker.com/de/battery-voltage/hochvolt/",
+          "afterUrl": "https://de-linker.com/de/battery-voltage/hochvolt/?application=home",
+          "changed": true,
+          "afterCards": 4
+        }
+      },
+      "sortInfo": {
+        "present": true,
+        "options": [
+          "Empfohlen",
+          "Neueste zuerst",
+          "Name A-Z",
+          "Leistung hoch-niedrig",
+          "Leistung niedrig-hoch"
+        ],
+        "values": [
+          "recommended",
+          "newest",
+          "name",
+          "power-desc",
+          "power-asc"
+        ],
+        "sortChanged": true,
+        "sortUrl": "https://de-linker.com/de/battery-voltage/hochvolt/?sort=newest",
+        "sortCards": 8
+      },
+      "paginationInfo": {
+        "present": false
+      },
+      "compareInfo": {
+        "present": true,
+        "before": "false",
+        "after": "true",
+        "reverted": "false",
+        "ok": true
+      },
+      "langHref": "https://de-linker.com/battery-voltage/high-voltage/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "blog-sys-en",
+      "kind": "category",
+      "url": "/category/system-design/",
+      "viewport": "1440x900",
+      "status": 200,
+      "cardCount": 2,
+      "filterInfo": null,
+      "sortInfo": null,
+      "paginationInfo": {
+        "present": false,
+        "nextHref": null
+      },
+      "compareInfo": null,
+      "langHref": "https://de-linker.com/de/kategorie/systemauslegung/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "blog-sys-en",
+      "kind": "category",
+      "url": "/category/system-design/",
+      "viewport": "390x844",
+      "status": 200,
+      "cardCount": 2,
+      "filterInfo": null,
+      "sortInfo": null,
+      "paginationInfo": {
+        "present": false,
+        "nextHref": null
+      },
+      "compareInfo": null,
+      "langHref": "https://de-linker.com/de/kategorie/systemauslegung/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "blog-sys-de",
+      "kind": "category",
+      "url": "/de/kategorie/systemauslegung/",
+      "viewport": "1440x900",
+      "status": 200,
+      "cardCount": 2,
+      "filterInfo": null,
+      "sortInfo": null,
+      "paginationInfo": {
+        "present": false,
+        "nextHref": null
+      },
+      "compareInfo": null,
+      "langHref": "https://de-linker.com/category/system-design/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "name": "blog-sys-de",
+      "kind": "category",
+      "url": "/de/kategorie/systemauslegung/",
+      "viewport": "390x844",
+      "status": 200,
+      "cardCount": 2,
+      "filterInfo": null,
+      "sortInfo": null,
+      "paginationInfo": {
+        "present": false,
+        "nextHref": null
+      },
+      "compareInfo": null,
+      "langHref": "https://de-linker.com/category/system-design/",
+      "langSwitchStatus": 200,
+      "consoleErrors": [],
+      "pageErrors": []
+    }
+  ]
+}

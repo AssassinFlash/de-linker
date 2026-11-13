@@ -1,0 +1,1358 @@
+{
+  "signatureCount": 42,
+  "enReps": [
+    {
+      "en_id": 6530,
+      "de_id": 6565,
+      "slug": "goodwe-gw60k-sts-g10",
+      "title": "GoodWe GW60K-STS-G10",
+      "en_url": "https://de-linker.com/product/goodwe-gw60k-sts-g10/",
+      "de_url": "https://de-linker.com/de/produkt/goodwe-gw60k-sts-g10/",
+      "sig": "4|3|3|0",
+      "data": {
+        "url": "https://de-linker.com/product/goodwe-gw60k-sts-g10/",
+        "id": 6530,
+        "status": 200,
+        "h1": "GW60K-STS-G10",
+        "sku": "Item number: DLK-GOODWE-GW60KSTSG10",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 3,
+        "projectCheck": true,
+        "statCards": 3,
+        "pairingRows": 0
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        6530
+      ]
+    },
+    {
+      "en_id": 6529,
+      "de_id": 6566,
+      "slug": "goodwe-gw30k-sts-g10",
+      "title": "GoodWe GW30K-STS-G10",
+      "en_url": "https://de-linker.com/product/goodwe-gw30k-sts-g10/",
+      "de_url": "https://de-linker.com/de/produkt/goodwe-gw30k-sts-g10/",
+      "sig": "4|2|3|0",
+      "data": {
+        "url": "https://de-linker.com/product/goodwe-gw30k-sts-g10/",
+        "id": 6529,
+        "status": 200,
+        "h1": "GW30K-STS-G10",
+        "sku": "Item number: DLK-GOODWE-GW30KSTSG10",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 3,
+        "projectCheck": true,
+        "statCards": 2,
+        "pairingRows": 0
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        6529
+      ]
+    },
+    {
+      "en_id": 6528,
+      "de_id": 6567,
+      "slug": "goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module",
+      "title": "GoodWe ESA GW10K-EHA-G20 (10 kW single-phase power module)",
+      "en_url": "https://de-linker.com/product/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/",
+      "de_url": "https://de-linker.com/de/produkt/goodwe-esa-gw10k-eha-g20-10-kw-einphasiges-leistungsmodul/",
+      "sig": "3|5|4|4",
+      "data": {
+        "url": "https://de-linker.com/product/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/",
+        "id": 6528,
+        "status": 200,
+        "h1": "GW10K-EHA-G20",
+        "sku": "Item number: DLK-GOODWE-GW10KEHAG20",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 3,
+        "docs": 4,
+        "projectCheck": true,
+        "statCards": 5,
+        "pairingRows": 4
+      },
+      "pick_lang": "en",
+      "group_size": 6,
+      "members": [
+        6528,
+        6527,
+        6526,
+        6525,
+        6524,
+        6523
+      ]
+    },
+    {
+      "en_id": 6522,
+      "de_id": 6573,
+      "slug": "goodwe-gw8-3-bat-d-g21-esa-battery-module-8-32-kwh",
+      "title": "GoodWe GW8.3-BAT-D-G21 (ESA battery module, 8.32 kWh)",
+      "en_url": "https://de-linker.com/product/goodwe-gw8-3-bat-d-g21-esa-battery-module-8-32-kwh/",
+      "de_url": "https://de-linker.com/de/produkt/goodwe-gw8-3-bat-d-g21-esa-batteriemodul-8-32-kwh/",
+      "sig": "4|3|4|11",
+      "data": {
+        "url": "https://de-linker.com/product/goodwe-gw8-3-bat-d-g21-esa-battery-module-8-32-kwh/",
+        "id": 6522,
+        "status": 200,
+        "h1": "GW8.3-BAT-D-G21",
+        "sku": "Item number: DLK-GOODWE-GW83BATDG21",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 4,
+        "projectCheck": true,
+        "statCards": 3,
+        "pairingRows": 11
+      },
+      "pick_lang": "en",
+      "group_size": 2,
+      "members": [
+        6522,
+        6521
+      ]
+    },
+    {
+      "en_id": 6520,
+      "de_id": 6575,
+      "slug": "goodwe-gw8-3-bat-d-g20-esa-battery-module-8-32-kwh",
+      "title": "GoodWe GW8.3-BAT-D-G20 (ESA battery module, 8.32 kWh)",
+      "en_url": "https://de-linker.com/product/goodwe-gw8-3-bat-d-g20-esa-battery-module-8-32-kwh/",
+      "de_url": "https://de-linker.com/de/produkt/goodwe-gw8-3-bat-d-g20-esa-batteriemodul-8-32-kwh/",
+      "sig": "4|3|6|17",
+      "data": {
+        "url": "https://de-linker.com/product/goodwe-gw8-3-bat-d-g20-esa-battery-module-8-32-kwh/",
+        "id": 6520,
+        "status": 200,
+        "h1": "GW8.3-BAT-D-G20",
+        "sku": "Item number: DLK-GOODWE-GW83BATDG20",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 6,
+        "projectCheck": true,
+        "statCards": 3,
+        "pairingRows": 17
+      },
+      "pick_lang": "en",
+      "group_size": 2,
+      "members": [
+        6520,
+        6519
+      ]
+    },
+    {
+      "en_id": 6518,
+      "de_id": 6577,
+      "slug": "goodwe-esa-gw30k-eta-g20-30-kw-three-phase-power-module",
+      "title": "GoodWe ESA GW30K-ETA-G20 (30 kW three-phase power module)",
+      "en_url": "https://de-linker.com/product/goodwe-esa-gw30k-eta-g20-30-kw-three-phase-power-module/",
+      "de_url": "https://de-linker.com/de/produkt/goodwe-esa-gw30k-eta-g20-30-kw-dreiphasiges-leistungsmodul/",
+      "sig": "4|5|12|6",
+      "data": {
+        "url": "https://de-linker.com/product/goodwe-esa-gw30k-eta-g20-30-kw-three-phase-power-module/",
+        "id": 6518,
+        "status": 200,
+        "h1": "GW30K-ETA-G20",
+        "sku": "Item number: DLK-GOODWE-GW30KETAG20",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 12,
+        "projectCheck": true,
+        "statCards": 5,
+        "pairingRows": 6
+      },
+      "pick_lang": "en",
+      "group_size": 2,
+      "members": [
+        6518,
+        6514
+      ]
+    },
+    {
+      "en_id": 3556,
+      "de_id": 6690,
+      "slug": "goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one",
+      "title": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+      "en_url": "https://de-linker.com/product/goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one/",
+      "de_url": "https://de-linker.com/de/produkt/goodwe-esa-gw10k-eta-g20-10-kw-dreiphasiges-komplettsystem/",
+      "sig": "4|5|13|6",
+      "data": {
+        "url": "https://de-linker.com/product/goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one/",
+        "id": 3556,
+        "status": 200,
+        "h1": "GW10K-ETA-G20",
+        "sku": "Item number: DLK-GOODWE-GW10KETAG20",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 13,
+        "projectCheck": true,
+        "statCards": 5,
+        "pairingRows": 6
+      },
+      "pick_lang": "en",
+      "group_size": 9,
+      "members": [
+        6517,
+        6516,
+        6515,
+        6513,
+        6512,
+        3585,
+        3584,
+        3583,
+        3556
+      ]
+    },
+    {
+      "en_id": 6511,
+      "de_id": 6584,
+      "slug": "goodwe-gw124-99k-etr-g10-124-99-kw-three-phase-hybrid-inverter",
+      "title": "GoodWe GW124.99K-ETR-G10 (124.99 kW three-phase hybrid inverter)",
+      "en_url": "https://de-linker.com/product/goodwe-gw124-99k-etr-g10-124-99-kw-three-phase-hybrid-inverter/",
+      "de_url": "https://de-linker.com/de/produkt/goodwe-gw124-99k-etr-g10-124-99-kw-dreiphasiger-hybridwechselrichter/",
+      "sig": "4|5|12|1",
+      "data": {
+        "url": "https://de-linker.com/product/goodwe-gw124-99k-etr-g10-124-99-kw-three-phase-hybrid-inverter/",
+        "id": 6511,
+        "status": 200,
+        "h1": "GW124.99K-ETR-G10",
+        "sku": "Item number: DLK-GOODWE-GW12499KETRG10",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 12,
+        "projectCheck": true,
+        "statCards": 5,
+        "pairingRows": 1
+      },
+      "pick_lang": "en",
+      "group_size": 5,
+      "members": [
+        6511,
+        6510,
+        6509,
+        6508,
+        6507
+      ]
+    },
+    {
+      "en_id": 6506,
+      "de_id": 6589,
+      "slug": "goodwe-gw75k-et-g10",
+      "title": "GoodWe GW75K-ET-G10",
+      "en_url": "https://de-linker.com/product/goodwe-gw75k-et-g10/",
+      "de_url": "https://de-linker.com/de/produkt/goodwe-gw75k-et-g10/",
+      "sig": "4|5|6|0",
+      "data": {
+        "url": "https://de-linker.com/product/goodwe-gw75k-et-g10/",
+        "id": 6506,
+        "status": 200,
+        "h1": "GW75K-ET-G10",
+        "sku": "Item number: DLK-GOODWE-GW75KETG10",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 6,
+        "projectCheck": true,
+        "statCards": 5,
+        "pairingRows": 0
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        6506
+      ]
+    },
+    {
+      "en_id": 6321,
+      "de_id": 6599,
+      "slug": "goodwe-esa-gw125-261-esa-lcn-g10",
+      "title": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+      "en_url": "https://de-linker.com/product/goodwe-esa-gw125-261-esa-lcn-g10/",
+      "de_url": "https://de-linker.com/de/produkt/goodwe-esa-gw125-261-esa-lcn-g10/",
+      "sig": "4|7|15|0",
+      "data": {
+        "url": "https://de-linker.com/product/goodwe-esa-gw125-261-esa-lcn-g10/",
+        "id": 6321,
+        "status": 200,
+        "h1": "GW125/261-ESA-LCN-G10",
+        "sku": "Item number: DLK-GOODWE-GW125261ESALCNG10",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 15,
+        "projectCheck": true,
+        "statCards": 7,
+        "pairingRows": 0
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        6321
+      ]
+    },
+    {
+      "en_id": 4109,
+      "de_id": 6626,
+      "slug": "saj-hs2-5k-t2-x",
+      "title": "SAJ HS2-5K-T2-X (5 kW three-phase hybrid inverter)",
+      "en_url": "https://de-linker.com/product/saj-hs2-5k-t2-x/",
+      "de_url": "https://de-linker.com/de/produkt/saj-hs2-5k-t2-x/",
+      "sig": "4|9|5|1",
+      "data": {
+        "url": "https://de-linker.com/product/saj-hs2-5k-t2-x/",
+        "id": 4109,
+        "status": 200,
+        "h1": "HS2-5K-T2-X",
+        "sku": "Item number: DLK-SAJ-HS25KT2X",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 5,
+        "projectCheck": true,
+        "statCards": 9,
+        "pairingRows": 1
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        4109
+      ]
+    },
+    {
+      "en_id": 4108,
+      "de_id": 6627,
+      "slug": "saj-h2-12k-t3",
+      "title": "SAJ H2-12K-T3 (12 kW three-phase hybrid inverter)",
+      "en_url": "https://de-linker.com/product/saj-h2-12k-t3/",
+      "de_url": "https://de-linker.com/de/produkt/saj-h2-12k-t3/",
+      "sig": "4|9|4|6",
+      "data": {
+        "url": "https://de-linker.com/product/saj-h2-12k-t3/",
+        "id": 4108,
+        "status": 200,
+        "h1": "H2-12K-T3",
+        "sku": "Item number: DLK-SAJ-H212KT3",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 4,
+        "projectCheck": true,
+        "statCards": 9,
+        "pairingRows": 6
+      },
+      "pick_lang": "en",
+      "group_size": 2,
+      "members": [
+        4108,
+        4107
+      ]
+    },
+    {
+      "en_id": 4106,
+      "de_id": 6629,
+      "slug": "saj-cb2-100-3-hv5",
+      "title": "SAJ CB2-100.3-HV5 (100.3 kWh C&amp;I battery cabinet)",
+      "en_url": "https://de-linker.com/product/saj-cb2-100-3-hv5/",
+      "de_url": "https://de-linker.com/de/produkt/saj-cb2-100-3-hv5/",
+      "sig": "3|5|5|0",
+      "data": {
+        "url": "https://de-linker.com/product/saj-cb2-100-3-hv5/",
+        "id": 4106,
+        "status": 200,
+        "h1": "CB2-100.3-HV5",
+        "sku": "Item number: DLK-SAJ-CB21003HV5",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 3,
+        "docs": 5,
+        "projectCheck": true,
+        "statCards": 5,
+        "pairingRows": 0
+      },
+      "pick_lang": "en",
+      "group_size": 4,
+      "members": [
+        4106,
+        4105,
+        4104,
+        4103
+      ]
+    },
+    {
+      "en_id": 3618,
+      "de_id": 6643,
+      "slug": "saj-emanager-emanager-5-0-residential-energy-manager",
+      "title": "SAJ eManager (energy management system module)",
+      "en_url": "https://de-linker.com/product/saj-emanager-emanager-5-0-residential-energy-manager/",
+      "de_url": "https://de-linker.com/de/produkt/saj-emanager-emanager-5-0-heim-energiemanager/",
+      "sig": "1|8|3|0",
+      "data": {
+        "url": "https://de-linker.com/product/saj-emanager-emanager-5-0-residential-energy-manager/",
+        "id": 3618,
+        "status": 200,
+        "h1": "eManager",
+        "sku": "Item number: DLK-SAJ-EMANAGER",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 1,
+        "docs": 3,
+        "projectCheck": true,
+        "statCards": 8,
+        "pairingRows": 0
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        3618
+      ]
+    },
+    {
+      "en_id": 3612,
+      "de_id": 6649,
+      "slug": "goodwe-gw9-0-bat-d-g20-esa-battery-module-9-0-kwh",
+      "title": "GoodWe GW9.0-BAT-D-G20 (ESA battery module, 9.0 kWh)",
+      "en_url": "https://de-linker.com/product/goodwe-gw9-0-bat-d-g20-esa-battery-module-9-0-kwh/",
+      "de_url": "https://de-linker.com/de/produkt/goodwe-gw9-0-bat-d-g20-esa-batteriemodul-9-0-kwh/",
+      "sig": "4|2|7|17",
+      "data": {
+        "url": "https://de-linker.com/product/goodwe-gw9-0-bat-d-g20-esa-battery-module-9-0-kwh/",
+        "id": 3612,
+        "status": 200,
+        "h1": "GW9.0-BAT-D-G20",
+        "sku": "Item number: DLK-GOODWE-GW90BATDG20",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 7,
+        "projectCheck": true,
+        "statCards": 2,
+        "pairingRows": 17
+      },
+      "pick_lang": "en",
+      "group_size": 2,
+      "members": [
+        3612,
+        3611
+      ]
+    },
+    {
+      "en_id": 3595,
+      "de_id": 6654,
+      "slug": "goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v",
+      "title": "GoodWe GW125K-ETR-G10 (125 kW three-phase hybrid inverter)",
+      "en_url": "https://de-linker.com/product/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/",
+      "de_url": "https://de-linker.com/de/produkt/goodwe-etr-125-kw-ci-dreiphasiger-hybridwechselrichter-1000v/",
+      "sig": "4|5|12|2",
+      "data": {
+        "url": "https://de-linker.com/product/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/",
+        "id": 3595,
+        "status": 200,
+        "h1": "GW125K-ETR-G10",
+        "sku": "Item number: DLK-GOODWE-ETR125",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 12,
+        "projectCheck": true,
+        "statCards": 5,
+        "pairingRows": 2
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        3595
+      ]
+    },
+    {
+      "en_id": 3587,
+      "de_id": 6662,
+      "slug": "goodwe-hca-gw22k-hca-22-kw-three-phase-ev-charger",
+      "title": "GoodWe HCA G2 GW22K-HCA-20 (22 kW three-phase EV charger, 7.5 m cable)",
+      "en_url": "https://de-linker.com/product/goodwe-hca-gw22k-hca-22-kw-three-phase-ev-charger/",
+      "de_url": "https://de-linker.com/de/produkt/goodwe-hca-gw22k-hca-22-kw-dreiphasige-ladestation/",
+      "sig": "1|4|8|0",
+      "data": {
+        "url": "https://de-linker.com/product/goodwe-hca-gw22k-hca-22-kw-three-phase-ev-charger/",
+        "id": 3587,
+        "status": 200,
+        "h1": "GW22K-HCA-20",
+        "sku": "Item number: DLK-GOODWE-GW22KHCA20",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 1,
+        "docs": 8,
+        "projectCheck": true,
+        "statCards": 4,
+        "pairingRows": 0
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        3587
+      ]
+    },
+    {
+      "en_id": 3557,
+      "de_id": 6689,
+      "slug": "goodwe-hca-g2-gw11k-hca-20-11-kw-three-phase-ev-charger",
+      "title": "GoodWe HCA G2 GW11K-HCA-20 (11 kW three-phase EV charger, 7.5 m cable)",
+      "en_url": "https://de-linker.com/product/goodwe-hca-g2-gw11k-hca-20-11-kw-three-phase-ev-charger/",
+      "de_url": "https://de-linker.com/de/produkt/goodwe-hca-g2-gw11k-hca-20-11-kw-dreiphasige-ladestation/",
+      "sig": "2|4|8|0",
+      "data": {
+        "url": "https://de-linker.com/product/goodwe-hca-g2-gw11k-hca-20-11-kw-three-phase-ev-charger/",
+        "id": 3557,
+        "status": 200,
+        "h1": "GW11K-HCA-20",
+        "sku": "Item number: DLK-GOODWE-GW11KHCA20",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 2,
+        "docs": 8,
+        "projectCheck": true,
+        "statCards": 4,
+        "pairingRows": 0
+      },
+      "pick_lang": "en",
+      "group_size": 2,
+      "members": [
+        3586,
+        3557
+      ]
+    },
+    {
+      "en_id": 3573,
+      "de_id": 6676,
+      "slug": "saj-esolar-aio3-data-collector-wifi-lan-bluetooth",
+      "title": "SAJ eSolar AIO3 data collector (Wi-Fi/Ethernet/Bluetooth)",
+      "en_url": "https://de-linker.com/product/saj-esolar-aio3-data-collector-wifi-lan-bluetooth/",
+      "de_url": "https://de-linker.com/de/produkt/saj-esolar-aio3-datensammler-wifi-lan-bluetooth/",
+      "sig": "1|5|3|0",
+      "data": {
+        "url": "https://de-linker.com/product/saj-esolar-aio3-data-collector-wifi-lan-bluetooth/",
+        "id": 3573,
+        "status": 200,
+        "h1": "eSolar AIO3",
+        "sku": "Item number: DLK-SAJ-ESOLAR-AIO3",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 1,
+        "docs": 3,
+        "projectCheck": true,
+        "statCards": 5,
+        "pairingRows": 0
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        3573
+      ]
+    },
+    {
+      "en_id": 2415,
+      "de_id": 6710,
+      "slug": "goodwe-ezmanager3000-hems-gateway",
+      "title": "GoodWe EzManager3000 HEMS Gateway",
+      "en_url": "https://de-linker.com/product/goodwe-ezmanager3000-hems-gateway/",
+      "de_url": "https://de-linker.com/de/produkt/goodwe-ezmanager3000-hems-kommunikationsschnittstelle/",
+      "sig": "3|3|4|0",
+      "data": {
+        "url": "https://de-linker.com/product/goodwe-ezmanager3000-hems-gateway/",
+        "id": 2415,
+        "status": 200,
+        "h1": "EzManager3000",
+        "sku": "Item number: DLK-GOODWE-EZMANAGER3000",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 3,
+        "docs": 4,
+        "projectCheck": true,
+        "statCards": 3,
+        "pairingRows": 0
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        2415
+      ]
+    },
+    {
+      "en_id": 2409,
+      "de_id": 6712,
+      "slug": "goodwe-sec3000c-smart-energy-controller",
+      "title": "GoodWe SEC3000C Smart Energy Controller",
+      "en_url": "https://de-linker.com/product/goodwe-sec3000c-smart-energy-controller/",
+      "de_url": "https://de-linker.com/de/produkt/goodwe-sec3000c-intelligente-energiesteuerung/",
+      "sig": "3|3|5|0",
+      "data": {
+        "url": "https://de-linker.com/product/goodwe-sec3000c-smart-energy-controller/",
+        "id": 2409,
+        "status": 200,
+        "h1": "SEC3000C",
+        "sku": "Item number: DLK-GOODWE-SEC3000C",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 3,
+        "docs": 5,
+        "projectCheck": true,
+        "statCards": 3,
+        "pairingRows": 0
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        2409
+      ]
+    },
+    {
+      "en_id": 2403,
+      "de_id": 6714,
+      "slug": "goodwe-gw125k-sts-g10",
+      "title": "GoodWe GW125K-STS-G10",
+      "en_url": "https://de-linker.com/product/goodwe-gw125k-sts-g10/",
+      "de_url": "https://de-linker.com/de/produkt/goodwe-gw125k-sts-g10/",
+      "sig": "4|3|5|0",
+      "data": {
+        "url": "https://de-linker.com/product/goodwe-gw125k-sts-g10/",
+        "id": 2403,
+        "status": 200,
+        "h1": "GW125K-STS-G10",
+        "sku": "Item number: DLK-GOODWE-GW125KSTSG10",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 5,
+        "projectCheck": true,
+        "statCards": 3,
+        "pairingRows": 0
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        2403
+      ]
+    },
+    {
+      "en_id": 2397,
+      "de_id": 6716,
+      "slug": "goodwe-gmk330",
+      "title": "GoodWe GMK330",
+      "en_url": "https://de-linker.com/product/goodwe-gmk330/",
+      "de_url": "https://de-linker.com/de/produkt/goodwe-gmk330/",
+      "sig": "3|3|6|0",
+      "data": {
+        "url": "https://de-linker.com/product/goodwe-gmk330/",
+        "id": 2397,
+        "status": 200,
+        "h1": "GMK330",
+        "sku": "Item number: DLK-GOODWE-GMK330",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 3,
+        "docs": 6,
+        "projectCheck": true,
+        "statCards": 3,
+        "pairingRows": 0
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        2397
+      ]
+    },
+    {
+      "en_id": 2394,
+      "de_id": 6717,
+      "slug": "goodwe-gm330",
+      "title": "GoodWe GM330",
+      "en_url": "https://de-linker.com/product/goodwe-gm330/",
+      "de_url": "https://de-linker.com/de/produkt/goodwe-gm330/",
+      "sig": "2|3|5|0",
+      "data": {
+        "url": "https://de-linker.com/product/goodwe-gm330/",
+        "id": 2394,
+        "status": 200,
+        "h1": "GM330",
+        "sku": "Item number: DLK-GOODWE-GM330",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 2,
+        "docs": 5,
+        "projectCheck": true,
+        "statCards": 3,
+        "pairingRows": 0
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        2394
+      ]
+    },
+    {
+      "en_id": 2281,
+      "de_id": 6720,
+      "slug": "chint-dtsu666",
+      "title": "Chint DTSU666",
+      "en_url": "https://de-linker.com/product/chint-dtsu666/",
+      "de_url": "https://de-linker.com/de/produkt/chint-dtsu666/",
+      "sig": "4|5|2|0",
+      "data": {
+        "url": "https://de-linker.com/product/chint-dtsu666/",
+        "id": 2281,
+        "status": 200,
+        "h1": "DTSU666",
+        "sku": "Item number: DLK-CHINT-DTSU666",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 2,
+        "projectCheck": true,
+        "statCards": 5,
+        "pairingRows": 0
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        2281
+      ]
+    },
+    {
+      "en_id": 2199,
+      "de_id": 6729,
+      "slug": "saj-hs3-10k-t2-w-p",
+      "title": "SAJ HS3-10K-T2-W/G-PX",
+      "en_url": "https://de-linker.com/product/saj-hs3-10k-t2-w-p/",
+      "de_url": "https://de-linker.com/de/produkt/saj-hs3-10k-t2-w-p/",
+      "sig": "4|8|7|1",
+      "data": {
+        "url": "https://de-linker.com/product/saj-hs3-10k-t2-w-p/",
+        "id": 2199,
+        "status": 200,
+        "h1": "HS3-10K-T2-W/G-PX",
+        "sku": "Item number: DLK-SAJ-HS310KT2WP",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 7,
+        "projectCheck": true,
+        "statCards": 8,
+        "pairingRows": 1
+      },
+      "pick_lang": "en",
+      "group_size": 5,
+      "members": [
+        2199,
+        2198,
+        1187,
+        1186,
+        1185
+      ]
+    },
+    {
+      "en_id": 2093,
+      "de_id": 6735,
+      "slug": "saj-bu3-5-0-tv2-pro",
+      "title": "SAJ BU3-5.0-TV2-PRO",
+      "en_url": "https://de-linker.com/product/saj-bu3-5-0-tv2-pro/",
+      "de_url": "https://de-linker.com/de/produkt/saj-bu3-5-0-tv2-pro/",
+      "sig": "4|3|5|5",
+      "data": {
+        "url": "https://de-linker.com/product/saj-bu3-5-0-tv2-pro/",
+        "id": 2093,
+        "status": 200,
+        "h1": "BU3-5.0-TV2-PRO",
+        "sku": "Item number: DLK-SAJ-BU350TV2PRO",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 5,
+        "projectCheck": true,
+        "statCards": 3,
+        "pairingRows": 5
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        2093
+      ]
+    },
+    {
+      "en_id": 2092,
+      "de_id": 6736,
+      "slug": "saj-bc2-hv1",
+      "title": "SAJ BC2-HV1",
+      "en_url": "https://de-linker.com/product/saj-bc2-hv1/",
+      "de_url": "https://de-linker.com/de/produkt/saj-bc2-hv1/",
+      "sig": "4|3|4|6",
+      "data": {
+        "url": "https://de-linker.com/product/saj-bc2-hv1/",
+        "id": 2092,
+        "status": 200,
+        "h1": "BC2-HV1",
+        "sku": "Item number: DLK-SAJ-BC2HV1",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 4,
+        "projectCheck": true,
+        "statCards": 3,
+        "pairingRows": 6
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        2092
+      ]
+    },
+    {
+      "en_id": 2090,
+      "de_id": 6738,
+      "slug": "saj-bu2-5-0-hv1",
+      "title": "SAJ BU2-5.0-HV1",
+      "en_url": "https://de-linker.com/product/saj-bu2-5-0-hv1/",
+      "de_url": "https://de-linker.com/de/produkt/saj-bu2-5-0-hv1/",
+      "sig": "4|3|4|10",
+      "data": {
+        "url": "https://de-linker.com/product/saj-bu2-5-0-hv1/",
+        "id": 2090,
+        "status": 200,
+        "h1": "BU2-5.0-HV1",
+        "sku": "Item number: DLK-SAJ-BU250HV1",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 4,
+        "projectCheck": true,
+        "statCards": 3,
+        "pairingRows": 10
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        2090
+      ]
+    },
+    {
+      "en_id": 2070,
+      "de_id": 6747,
+      "slug": "saj-b2-25-0-hv1",
+      "title": "SAJ B2-25.0-HV1",
+      "en_url": "https://de-linker.com/product/saj-b2-25-0-hv1/",
+      "de_url": "https://de-linker.com/de/produkt/saj-b2-25-0-hv1/",
+      "sig": "4|4|6|6",
+      "data": {
+        "url": "https://de-linker.com/product/saj-b2-25-0-hv1/",
+        "id": 2070,
+        "status": 200,
+        "h1": "B2-25.0-HV1",
+        "sku": "Item number: DLK-SAJ-B2250HV1",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 6,
+        "projectCheck": true,
+        "statCards": 4,
+        "pairingRows": 6
+      },
+      "pick_lang": "en",
+      "group_size": 4,
+      "members": [
+        2070,
+        2069,
+        2068,
+        2067
+      ]
+    },
+    {
+      "en_id": 2064,
+      "de_id": 6751,
+      "slug": "saj-h2-20k-t3",
+      "title": "SAJ H2-20K-T3",
+      "en_url": "https://de-linker.com/product/saj-h2-20k-t3/",
+      "de_url": "https://de-linker.com/de/produkt/saj-h2-20k-t3/",
+      "sig": "4|9|5|6",
+      "data": {
+        "url": "https://de-linker.com/product/saj-h2-20k-t3/",
+        "id": 2064,
+        "status": 200,
+        "h1": "H2-20K-T3",
+        "sku": "Item number: DLK-SAJ-H220KT3",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 5,
+        "projectCheck": true,
+        "statCards": 9,
+        "pairingRows": 6
+      },
+      "pick_lang": "en",
+      "group_size": 4,
+      "members": [
+        2064,
+        2063,
+        1181,
+        1179
+      ]
+    },
+    {
+      "en_id": 2003,
+      "de_id": 6769,
+      "slug": "pylontech-optim-us-l260-omni",
+      "title": "Pylontech OPTIM US L260-OMNI",
+      "en_url": "https://de-linker.com/product/pylontech-optim-us-l260-omni/",
+      "de_url": "https://de-linker.com/de/produkt/pylontech-optim-us-l260-omni/",
+      "sig": "4|6|3|0",
+      "data": {
+        "url": "https://de-linker.com/product/pylontech-optim-us-l260-omni/",
+        "id": 2003,
+        "status": 200,
+        "h1": "L260-OMNI",
+        "sku": "Item number: DLK-PYLONTECH-OPTIMUSL260OMNI",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 3,
+        "projectCheck": true,
+        "statCards": 6,
+        "pairingRows": 0
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        2003
+      ]
+    },
+    {
+      "en_id": 1973,
+      "de_id": 6784,
+      "slug": "saj-emanager-c1-pro",
+      "title": "SAJ eManager-C1 Pro",
+      "en_url": "https://de-linker.com/product/saj-emanager-c1-pro/",
+      "de_url": "https://de-linker.com/de/produkt/saj-emanager-c1-pro/",
+      "sig": "2|4|3|0",
+      "data": {
+        "url": "https://de-linker.com/product/saj-emanager-c1-pro/",
+        "id": 1973,
+        "status": 200,
+        "h1": "eManager-C1 Pro",
+        "sku": "Item number: DLK-SAJ-EMANAGERC1PRO",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 2,
+        "docs": 3,
+        "projectCheck": true,
+        "statCards": 4,
+        "pairingRows": 0
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        1973
+      ]
+    },
+    {
+      "en_id": 1961,
+      "de_id": 6796,
+      "slug": "saj-chs2-50k-t6-x",
+      "title": "SAJ CHS2-50K-T6-X",
+      "en_url": "https://de-linker.com/product/saj-chs2-50k-t6-x/",
+      "de_url": "https://de-linker.com/de/produkt/saj-chs2-50k-t6-x/",
+      "sig": "4|10|5|0",
+      "data": {
+        "url": "https://de-linker.com/product/saj-chs2-50k-t6-x/",
+        "id": 1961,
+        "status": 200,
+        "h1": "CHS2-50K-T6-X",
+        "sku": "Item number: DLK-SAJ-CHS250KT6X",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 5,
+        "projectCheck": true,
+        "statCards": 10,
+        "pairingRows": 0
+      },
+      "pick_lang": "en",
+      "group_size": 3,
+      "members": [
+        1961,
+        1960,
+        1959
+      ]
+    },
+    {
+      "en_id": 1958,
+      "de_id": 6799,
+      "slug": "goodwe-gw261-2-bat-lcd-g10",
+      "title": "GoodWe GW261.2-BAT-LCD-G10",
+      "en_url": "https://de-linker.com/product/goodwe-gw261-2-bat-lcd-g10/",
+      "de_url": "https://de-linker.com/de/produkt/goodwe-gw261-2-bat-lcd-g10/",
+      "sig": "4|2|8|6",
+      "data": {
+        "url": "https://de-linker.com/product/goodwe-gw261-2-bat-lcd-g10/",
+        "id": 1958,
+        "status": 200,
+        "h1": "GW261.2-BAT-LCD-G10",
+        "sku": "Item number: DLK-GOODWE-GW2612BATLCDG10",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 8,
+        "projectCheck": true,
+        "statCards": 2,
+        "pairingRows": 6
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        1958
+      ]
+    },
+    {
+      "en_id": 1957,
+      "de_id": 6800,
+      "slug": "goodwe-gw208-9-bat-lcd-g10",
+      "title": "GoodWe GW208.9-BAT-LCD-G10",
+      "en_url": "https://de-linker.com/product/goodwe-gw208-9-bat-lcd-g10/",
+      "de_url": "https://de-linker.com/de/produkt/goodwe-gw208-9-bat-lcd-g10/",
+      "sig": "4|2|7|1",
+      "data": {
+        "url": "https://de-linker.com/product/goodwe-gw208-9-bat-lcd-g10/",
+        "id": 1957,
+        "status": 200,
+        "h1": "GW208.9-BAT-LCD-G10",
+        "sku": "Item number: DLK-GOODWE-GW2089BATLCDG10",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 7,
+        "projectCheck": true,
+        "statCards": 2,
+        "pairingRows": 1
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        1957
+      ]
+    },
+    {
+      "en_id": 1956,
+      "de_id": 6801,
+      "slug": "goodwe-gw208-9-bat-lc-g10",
+      "title": "GoodWe GW208.9-BAT-LC-G10",
+      "en_url": "https://de-linker.com/product/goodwe-gw208-9-bat-lc-g10/",
+      "de_url": "https://de-linker.com/de/produkt/goodwe-gw208-9-bat-lc-g10/",
+      "sig": "4|2|9|3",
+      "data": {
+        "url": "https://de-linker.com/product/goodwe-gw208-9-bat-lc-g10/",
+        "id": 1956,
+        "status": 200,
+        "h1": "GW208.9-BAT-LC-G10",
+        "sku": "Item number: DLK-GOODWE-GW2089BATLCG10",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 9,
+        "projectCheck": true,
+        "statCards": 2,
+        "pairingRows": 3
+      },
+      "pick_lang": "en",
+      "group_size": 2,
+      "members": [
+        1956,
+        1954
+      ]
+    },
+    {
+      "en_id": 1955,
+      "de_id": 6802,
+      "slug": "goodwe-gw112-6-bat-ac-g10",
+      "title": "GoodWe GW112.6-BAT-AC-G10",
+      "en_url": "https://de-linker.com/product/goodwe-gw112-6-bat-ac-g10/",
+      "de_url": "https://de-linker.com/de/produkt/goodwe-gw112-6-bat-ac-g10/",
+      "sig": "4|2|11|3",
+      "data": {
+        "url": "https://de-linker.com/product/goodwe-gw112-6-bat-ac-g10/",
+        "id": 1955,
+        "status": 200,
+        "h1": "GW112.6-BAT-AC-G10",
+        "sku": "Item number: DLK-GOODWE-GW1126BATACG10",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 11,
+        "projectCheck": true,
+        "statCards": 2,
+        "pairingRows": 3
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        1955
+      ]
+    },
+    {
+      "en_id": 1948,
+      "de_id": 6809,
+      "slug": "goodwe-gw100k-et-g10",
+      "title": "GoodWe GW100K-ET-G10",
+      "en_url": "https://de-linker.com/product/goodwe-gw100k-et-g10/",
+      "de_url": "https://de-linker.com/de/produkt/goodwe-gw100k-et-g10/",
+      "sig": "4|5|13|3",
+      "data": {
+        "url": "https://de-linker.com/product/goodwe-gw100k-et-g10/",
+        "id": 1948,
+        "status": 200,
+        "h1": "GW100K-ET-G10",
+        "sku": "Item number: DLK-GOODWE-GW100KETG10",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 13,
+        "projectCheck": true,
+        "statCards": 5,
+        "pairingRows": 3
+      },
+      "pick_lang": "en",
+      "group_size": 3,
+      "members": [
+        1948,
+        1947,
+        1946
+      ]
+    },
+    {
+      "en_id": 1832,
+      "de_id": 6818,
+      "slug": "saj-b2-5-0-hv1",
+      "title": "SAJ B2-5.0-HV1",
+      "en_url": "https://de-linker.com/product/saj-b2-5-0-hv1/",
+      "de_url": "https://de-linker.com/de/produkt/saj-b2-5-0-hv1/",
+      "sig": "4|4|6|0",
+      "data": {
+        "url": "https://de-linker.com/product/saj-b2-5-0-hv1/",
+        "id": 1832,
+        "status": 200,
+        "h1": "B2-5.0-HV1",
+        "sku": "Item number: DLK-SAJ-B250HV1",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 6,
+        "projectCheck": true,
+        "statCards": 4,
+        "pairingRows": 0
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        1832
+      ]
+    },
+    {
+      "en_id": 1184,
+      "de_id": 6834,
+      "slug": "saj-hs2-8k-t2-x",
+      "title": "SAJ HS2-8K-T2-X",
+      "en_url": "https://de-linker.com/product/saj-hs2-8k-t2-x/",
+      "de_url": "https://de-linker.com/de/produkt/saj-hs2-8k-t2-x/",
+      "sig": "4|9|6|1",
+      "data": {
+        "url": "https://de-linker.com/product/saj-hs2-8k-t2-x/",
+        "id": 1184,
+        "status": 200,
+        "h1": "HS2-8K-T2-X",
+        "sku": "Item number: DLK-SAJ-HS28KT2X",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 4,
+        "docs": 6,
+        "projectCheck": true,
+        "statCards": 9,
+        "pairingRows": 1
+      },
+      "pick_lang": "en",
+      "group_size": 3,
+      "members": [
+        1184,
+        1183,
+        1182
+      ]
+    },
+    {
+      "en_id": 1178,
+      "de_id": 6839,
+      "slug": "saj-ats1-t63-a",
+      "title": "SAJ ATS1-T63-A",
+      "en_url": "https://de-linker.com/product/saj-ats1-t63-a/",
+      "de_url": "https://de-linker.com/de/produkt/saj-ats1-t63-a/",
+      "sig": "1|4|3|0",
+      "data": {
+        "url": "https://de-linker.com/product/saj-ats1-t63-a/",
+        "id": 1178,
+        "status": 200,
+        "h1": "ATS1-T63-A",
+        "sku": "Item number: DLK-SAJ-ATS1T63A",
+        "availText": "In stock",
+        "availWait": false,
+        "specRows": 1,
+        "docs": 3,
+        "projectCheck": true,
+        "statCards": 4,
+        "pairingRows": 0
+      },
+      "pick_lang": "en",
+      "group_size": 1,
+      "members": [
+        1178
+      ]
+    }
+  ],
+  "deReps": [
+    {
+      "en_id": 6321,
+      "de_id": 6599,
+      "slug": "goodwe-esa-gw125-261-esa-lcn-g10",
+      "title": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+      "url": "https://de-linker.com/de/produkt/goodwe-esa-gw125-261-esa-lcn-g10/",
+      "pick_lang": "de",
+      "sig": "4|7|15|0"
+    },
+    {
+      "en_id": 3595,
+      "de_id": 6654,
+      "slug": "goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v",
+      "title": "GoodWe GW125K-ETR-G10 (125 kW three-phase hybrid inverter)",
+      "url": "https://de-linker.com/de/produkt/goodwe-etr-125-kw-ci-dreiphasiger-hybridwechselrichter-1000v/",
+      "pick_lang": "de",
+      "sig": "4|5|12|2"
+    },
+    {
+      "en_id": 3557,
+      "de_id": 6689,
+      "slug": "goodwe-hca-g2-gw11k-hca-20-11-kw-three-phase-ev-charger",
+      "title": "GoodWe HCA G2 GW11K-HCA-20 (11 kW three-phase EV charger, 7.5 m cable)",
+      "url": "https://de-linker.com/de/produkt/goodwe-hca-g2-gw11k-hca-20-11-kw-dreiphasige-ladestation/",
+      "pick_lang": "de",
+      "sig": "2|4|8|0"
+    },
+    {
+      "en_id": 3556,
+      "de_id": 6690,
+      "slug": "goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one",
+      "title": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+      "url": "https://de-linker.com/de/produkt/goodwe-esa-gw10k-eta-g20-10-kw-dreiphasiges-komplettsystem/",
+      "pick_lang": "de",
+      "sig": "4|5|13|6"
+    },
+    {
+      "en_id": 2281,
+      "de_id": 6720,
+      "slug": "chint-dtsu666",
+      "title": "Chint DTSU666",
+      "url": "https://de-linker.com/de/produkt/chint-dtsu666/",
+      "pick_lang": "de",
+      "sig": "4|5|2|0"
+    },
+    {
+      "en_id": 2063,
+      "de_id": 6752,
+      "slug": "saj-h2-15k-t3",
+      "title": "SAJ H2-15K-T3",
+      "url": "https://de-linker.com/de/produkt/saj-h2-15k-t3/",
+      "pick_lang": "de",
+      "sig": "4|9|5|6"
+    },
+    {
+      "en_id": 2003,
+      "de_id": 6769,
+      "slug": "pylontech-optim-us-l260-omni",
+      "title": "Pylontech OPTIM US L260-OMNI",
+      "url": "https://de-linker.com/de/produkt/pylontech-optim-us-l260-omni/",
+      "pick_lang": "de",
+      "sig": "4|6|3|0"
+    },
+    {
+      "en_id": 1959,
+      "de_id": 6798,
+      "slug": "saj-chs2-29-9k-t4-x",
+      "title": "SAJ CHS2-29.9K-T4-X",
+      "url": "https://de-linker.com/de/produkt/saj-chs2-29-9k-t4-x/",
+      "pick_lang": "de",
+      "sig": "4|10|5|0"
+    },
+    {
+      "en_id": 1182,
+      "de_id": 6836,
+      "slug": "saj-hs2-10k-t2-x",
+      "title": "SAJ HS2-10K-T2-X",
+      "url": "https://de-linker.com/de/produkt/saj-hs2-10k-t2-x/",
+      "pick_lang": "de",
+      "sig": "4|9|6|1"
+    },
+    {
+      "en_id": 1178,
+      "de_id": 6839,
+      "slug": "saj-ats1-t63-a",
+      "title": "SAJ ATS1-T63-A",
+      "url": "https://de-linker.com/de/produkt/saj-ats1-t63-a/",
+      "pick_lang": "de",
+      "sig": "1|4|3|0"
+    }
+  ],
+  "termReps": [
+    {
+      "kind": "product_cat",
+      "lang": "en",
+      "url": "https://de-linker.com/product-category/inverters/"
+    },
+    {
+      "kind": "product_cat",
+      "lang": "de",
+      "url": "https://de-linker.com/de/produkt-kategorie/zubehoer/"
+    },
+    {
+      "kind": "product_cat",
+      "lang": "de",
+      "url": "https://de-linker.com/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/"
+    },
+    {
+      "kind": "phase",
+      "lang": "en",
+      "url": "https://de-linker.com/phase/three-phase/"
+    },
+    {
+      "kind": "phase",
+      "lang": "de",
+      "url": "https://de-linker.com/de/phase/dreiphasig/"
+    },
+    {
+      "kind": "battery_voltage",
+      "lang": "en",
+      "url": "https://de-linker.com/battery-voltage/high-voltage/"
+    },
+    {
+      "kind": "category",
+      "lang": "en",
+      "url": "https://de-linker.com/category/system-design/"
+    },
+    {
+      "kind": "category",
+      "lang": "de",
+      "url": "https://de-linker.com/de/kategorie/systemauslegung/"
+    }
+  ]
+}

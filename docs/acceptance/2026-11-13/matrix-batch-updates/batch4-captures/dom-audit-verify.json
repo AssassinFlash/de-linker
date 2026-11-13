@@ -1,0 +1,689 @@
+{
+  "mobile_cta_check": {
+    ".pdp-mobile-action a.pdp-btn-dark": {
+      "rect": {
+        "x": 23,
+        "y": 773,
+        "w": 344,
+        "h": 48
+      },
+      "clickableAtCenter": true,
+      "hitTag": "A",
+      "hitId": "",
+      "hitClass": "pdp-btn pdp-btn-dark",
+      "stickyBarRect": {
+        "y": 704,
+        "h": 128,
+        "bottom": 832
+      },
+      "headerRect": {
+        "y": 0,
+        "h": 81,
+        "bottom": 81
+      }
+    },
+    ".pdp-purchase a.pdp-btn-secondary": {
+      "rect": {
+        "x": 20,
+        "y": 987,
+        "w": 350,
+        "h": 52
+      },
+      "clickableAtCenter": false,
+      "stickyBarRect": {
+        "y": 704,
+        "h": 128,
+        "bottom": 832
+      },
+      "headerRect": {
+        "y": 0,
+        "h": 81,
+        "bottom": 81
+      }
+    },
+    "[data-pdp-ask]": {
+      "rect": {
+        "x": 142,
+        "y": 1072,
+        "w": 106,
+        "h": 64
+      },
+      "clickableAtCenter": false,
+      "stickyBarRect": {
+        "y": 704,
+        "h": 128,
+        "bottom": 832
+      },
+      "headerRect": {
+        "y": 0,
+        "h": 81,
+        "bottom": 81
+      }
+    },
+    "askBtnScrolledClear": {
+      "rectY": 987,
+      "clickable": false
+    }
+  },
+  "imageAudit": [
+    {
+      "id": "en-1184",
+      "path": "/product/saj-hs2-8k-t2-x/",
+      "vp": "1440x900",
+      "totalImgs": 28,
+      "brokenCount": 1,
+      "broken": [
+        {
+          "src": "",
+          "alt": "",
+          "cls": "",
+          "w": 0,
+          "h": 0,
+          "complete": true,
+          "natW": 0
+        }
+      ],
+      "relatedCount": 5,
+      "relatedBroken": 0
+    },
+    {
+      "id": "en-1948",
+      "path": "/product/goodwe-gw100k-et-g10/",
+      "vp": "1440x900",
+      "totalImgs": 31,
+      "brokenCount": 1,
+      "broken": [
+        {
+          "src": "",
+          "alt": "",
+          "cls": "",
+          "w": 0,
+          "h": 0,
+          "complete": true,
+          "natW": 0
+        }
+      ],
+      "relatedCount": 7,
+      "relatedBroken": 0
+    },
+    {
+      "id": "en-1957",
+      "path": "/product/goodwe-gw208-9-bat-lcd-g10/",
+      "vp": "1440x900",
+      "totalImgs": 26,
+      "brokenCount": 1,
+      "broken": [
+        {
+          "src": "",
+          "alt": "",
+          "cls": "",
+          "w": 0,
+          "h": 0,
+          "complete": true,
+          "natW": 0
+        }
+      ],
+      "relatedCount": 5,
+      "relatedBroken": 0
+    },
+    {
+      "id": "en-1973",
+      "path": "/product/saj-emanager-c1-pro/",
+      "vp": "1440x900",
+      "totalImgs": 28,
+      "brokenCount": 1,
+      "broken": [
+        {
+          "src": "",
+          "alt": "",
+          "cls": "",
+          "w": 0,
+          "h": 0,
+          "complete": true,
+          "natW": 0
+        }
+      ],
+      "relatedCount": 4,
+      "relatedBroken": 0
+    },
+    {
+      "id": "en-2064",
+      "path": "/product/saj-h2-20k-t3/",
+      "vp": "1440x900",
+      "totalImgs": 36,
+      "brokenCount": 1,
+      "broken": [
+        {
+          "src": "",
+          "alt": "",
+          "cls": "",
+          "w": 0,
+          "h": 0,
+          "complete": true,
+          "natW": 0
+        }
+      ],
+      "relatedCount": 10,
+      "relatedBroken": 0
+    },
+    {
+      "id": "en-2090",
+      "path": "/product/saj-bu2-5-0-hv1/",
+      "vp": "390x844",
+      "totalImgs": 40,
+      "brokenCount": 1,
+      "broken": [
+        {
+          "src": "",
+          "alt": "",
+          "cls": "",
+          "w": 0,
+          "h": 0,
+          "complete": true,
+          "natW": 0
+        }
+      ],
+      "relatedCount": 14,
+      "relatedBroken": 0
+    },
+    {
+      "id": "en-2093",
+      "path": "/product/saj-bu3-5-0-tv2-pro/",
+      "vp": "1440x900",
+      "totalImgs": 34,
+      "brokenCount": 1,
+      "broken": [
+        {
+          "src": "",
+          "alt": "",
+          "cls": "",
+          "w": 0,
+          "h": 0,
+          "complete": true,
+          "natW": 0
+        }
+      ],
+      "relatedCount": 9,
+      "relatedBroken": 0
+    },
+    {
+      "id": "en-2394",
+      "path": "/product/goodwe-gm330/",
+      "vp": "1440x900",
+      "totalImgs": 22,
+      "brokenCount": 1,
+      "broken": [
+        {
+          "src": "",
+          "alt": "",
+          "cls": "",
+          "w": 0,
+          "h": 0,
+          "complete": true,
+          "natW": 0
+        }
+      ],
+      "relatedCount": 2,
+      "relatedBroken": 0
+    },
+    {
+      "id": "en-2397",
+      "path": "/product/goodwe-gmk330/",
+      "vp": "1440x900",
+      "totalImgs": 22,
+      "brokenCount": 1,
+      "broken": [
+        {
+          "src": "",
+          "alt": "",
+          "cls": "",
+          "w": 0,
+          "h": 0,
+          "complete": true,
+          "natW": 0
+        }
+      ],
+      "relatedCount": 2,
+      "relatedBroken": 0
+    },
+    {
+      "id": "en-3556",
+      "path": "/product/goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one/",
+      "vp": "1440x900",
+      "totalImgs": 34,
+      "brokenCount": 1,
+      "broken": [
+        {
+          "src": "",
+          "alt": "",
+          "cls": "",
+          "w": 0,
+          "h": 0,
+          "complete": true,
+          "natW": 0
+        }
+      ],
+      "relatedCount": 10,
+      "relatedBroken": 0
+    },
+    {
+      "id": "en-3573",
+      "path": "/product/saj-esolar-aio3-data-collector-wifi-lan-bluetooth/",
+      "vp": "1440x900",
+      "totalImgs": 27,
+      "brokenCount": 1,
+      "broken": [
+        {
+          "src": "",
+          "alt": "",
+          "cls": "",
+          "w": 0,
+          "h": 0,
+          "complete": true,
+          "natW": 0
+        }
+      ],
+      "relatedCount": 4,
+      "relatedBroken": 0
+    },
+    {
+      "id": "en-3618",
+      "path": "/product/saj-emanager-emanager-5-0-residential-energy-manager/",
+      "vp": "1440x900",
+      "totalImgs": 28,
+      "brokenCount": 1,
+      "broken": [
+        {
+          "src": "",
+          "alt": "",
+          "cls": "",
+          "w": 0,
+          "h": 0,
+          "complete": true,
+          "natW": 0
+        }
+      ],
+      "relatedCount": 4,
+      "relatedBroken": 0
+    },
+    {
+      "id": "en-4108",
+      "path": "/product/saj-h2-12k-t3/",
+      "vp": "1440x900",
+      "totalImgs": 36,
+      "brokenCount": 1,
+      "broken": [
+        {
+          "src": "",
+          "alt": "",
+          "cls": "",
+          "w": 0,
+          "h": 0,
+          "complete": true,
+          "natW": 0
+        }
+      ],
+      "relatedCount": 10,
+      "relatedBroken": 0
+    },
+    {
+      "id": "en-4109",
+      "path": "/product/saj-hs2-5k-t2-x/",
+      "vp": "1440x900",
+      "totalImgs": 29,
+      "brokenCount": 1,
+      "broken": [
+        {
+          "src": "",
+          "alt": "",
+          "cls": "",
+          "w": 0,
+          "h": 0,
+          "complete": true,
+          "natW": 0
+        }
+      ],
+      "relatedCount": 5,
+      "relatedBroken": 0
+    },
+    {
+      "id": "en-6511",
+      "path": "/product/goodwe-gw124-99k-etr-g10-124-99-kw-three-phase-hybrid-inverter/",
+      "vp": "1440x900",
+      "totalImgs": 27,
+      "brokenCount": 1,
+      "broken": [
+        {
+          "src": "",
+          "alt": "",
+          "cls": "",
+          "w": 0,
+          "h": 0,
+          "complete": true,
+          "natW": 0
+        }
+      ],
+      "relatedCount": 5,
+      "relatedBroken": 0
+    },
+    {
+      "id": "en-6518",
+      "path": "/product/goodwe-esa-gw30k-eta-g20-30-kw-three-phase-power-module/",
+      "vp": "1440x900",
+      "totalImgs": 32,
+      "brokenCount": 1,
+      "broken": [
+        {
+          "src": "",
+          "alt": "",
+          "cls": "",
+          "w": 0,
+          "h": 0,
+          "complete": true,
+          "natW": 0
+        }
+      ],
+      "relatedCount": 10,
+      "relatedBroken": 0
+    },
+    {
+      "id": "en-6528",
+      "path": "/product/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/",
+      "vp": "390x844",
+      "totalImgs": 31,
+      "brokenCount": 1,
+      "broken": [
+        {
+          "src": "",
+          "alt": "",
+          "cls": "",
+          "w": 0,
+          "h": 0,
+          "complete": true,
+          "natW": 0
+        }
+      ],
+      "relatedCount": 8,
+      "relatedBroken": 0
+    },
+    {
+      "id": "en-6530",
+      "path": "/product/goodwe-gw60k-sts-g10/",
+      "vp": "390x844",
+      "totalImgs": 26,
+      "brokenCount": 1,
+      "broken": [
+        {
+          "src": "",
+          "alt": "",
+          "cls": "",
+          "w": 0,
+          "h": 0,
+          "complete": true,
+          "natW": 0
+        }
+      ],
+      "relatedCount": 3,
+      "relatedBroken": 0
+    },
+    {
+      "id": "de-6752",
+      "path": "/de/produkt/saj-h2-15k-t3/",
+      "vp": "1440x900",
+      "totalImgs": 36,
+      "brokenCount": 1,
+      "broken": [
+        {
+          "src": "",
+          "alt": "",
+          "cls": "",
+          "w": 0,
+          "h": 0,
+          "complete": true,
+          "natW": 0
+        }
+      ],
+      "relatedCount": 10,
+      "relatedBroken": 0
+    }
+  ],
+  "de6720_1440_desc": {
+    "blockCount": 12,
+    "overlaps": [
+      [
+        {
+          "tag": "LI",
+          "text": "80-A-Direktmessung: Eliminiert externe Stromwandler (CTs) un",
+          "top": 1318,
+          "bottom": 1440,
+          "lineHeight": "24.8px",
+          "fontSize": "16px"
+        },
+        {
+          "tag": "P",
+          "text": "80-A-Direktmessung: Eliminiert externe Stromwandler (CTs) un",
+          "top": 1343,
+          "bottom": 1415,
+          "lineHeight": "24px",
+          "fontSize": "15px"
+        }
+      ],
+      [
+        {
+          "tag": "P",
+          "text": "80-A-Direktmessung: Eliminiert externe Stromwandler (CTs) un",
+          "top": 1343,
+          "bottom": 1415,
+          "lineHeight": "24px",
+          "fontSize": "15px"
+        },
+        {
+          "tag": "LI",
+          "text": "MID-zertifiziert (Klasse B / Genauigkeitsklasse 1,0): Zertif",
+          "top": 1318,
+          "bottom": 1440,
+          "lineHeight": "24.8px",
+          "fontSize": "16px"
+        }
+      ],
+      [
+        {
+          "tag": "LI",
+          "text": "MID-zertifiziert (Klasse B / Genauigkeitsklasse 1,0): Zertif",
+          "top": 1318,
+          "bottom": 1440,
+          "lineHeight": "24.8px",
+          "fontSize": "16px"
+        },
+        {
+          "tag": "P",
+          "text": "MID-zertifiziert (Klasse B / Genauigkeitsklasse 1,0): Zertif",
+          "top": 1343,
+          "bottom": 1415,
+          "lineHeight": "24px",
+          "fontSize": "15px"
+        }
+      ],
+      [
+        {
+          "tag": "LI",
+          "text": "SAJ-Systempaarung (Modbus RTU): Der Drehstromzähler, den das",
+          "top": 1456,
+          "bottom": 1602,
+          "lineHeight": "24.8px",
+          "fontSize": "16px"
+        },
+        {
+          "tag": "P",
+          "text": "SAJ-Systempaarung (Modbus RTU): Der Drehstromzähler, den das",
+          "top": 1481,
+          "bottom": 1577,
+          "lineHeight": "24px",
+          "fontSize": "15px"
+        }
+      ],
+      [
+        {
+          "tag": "P",
+          "text": "SAJ-Systempaarung (Modbus RTU): Der Drehstromzähler, den das",
+          "top": 1481,
+          "bottom": 1577,
+          "lineHeight": "24px",
+          "fontSize": "15px"
+        },
+        {
+          "tag": "LI",
+          "text": "Umfassendes Multi-Parameter-Display mit Hintergrundbeleuchtu",
+          "top": 1456,
+          "bottom": 1602,
+          "lineHeight": "24.8px",
+          "fontSize": "16px"
+        }
+      ],
+      [
+        {
+          "tag": "LI",
+          "text": "Umfassendes Multi-Parameter-Display mit Hintergrundbeleuchtu",
+          "top": 1456,
+          "bottom": 1602,
+          "lineHeight": "24.8px",
+          "fontSize": "16px"
+        },
+        {
+          "tag": "P",
+          "text": "Umfassendes Multi-Parameter-Display mit Hintergrundbeleuchtu",
+          "top": 1481,
+          "bottom": 1553,
+          "lineHeight": "24px",
+          "fontSize": "15px"
+        }
+      ],
+      [
+        {
+          "tag": "P",
+          "text": "72 x 100 x 65 mm auf Standard-35-mm-Schiene. Es ist sowohl v",
+          "top": 1697,
+          "bottom": 1771,
+          "lineHeight": "24.75px",
+          "fontSize": "15px"
+        },
+        {
+          "tag": "P",
+          "text": "2 W oder weniger bei 10 VA über 3x220/380 bis 3x240/415 V, u",
+          "top": 1760,
+          "bottom": 1810,
+          "lineHeight": "24.75px",
+          "fontSize": "15px"
+        }
+      ]
+    ],
+    "sample": [
+      {
+        "tag": "DIV",
+        "text": "Der Chint DTSU666 ist ein dreiphasiger 80-A-Energiezähler mi",
+        "top": 853,
+        "bottom": 1018,
+        "lineHeight": "33px",
+        "fontSize": "20px"
+      },
+      {
+        "tag": "LI",
+        "text": "80-A-Direktmessung: Eliminiert externe Stromwandler (CTs) un",
+        "top": 1318,
+        "bottom": 1440,
+        "lineHeight": "24.8px",
+        "fontSize": "16px"
+      },
+      {
+        "tag": "P",
+        "text": "80-A-Direktmessung: Eliminiert externe Stromwandler (CTs) un",
+        "top": 1343,
+        "bottom": 1415,
+        "lineHeight": "24px",
+        "fontSize": "15px"
+      },
+      {
+        "tag": "LI",
+        "text": "MID-zertifiziert (Klasse B / Genauigkeitsklasse 1,0): Zertif",
+        "top": 1318,
+        "bottom": 1440,
+        "lineHeight": "24.8px",
+        "fontSize": "16px"
+      },
+      {
+        "tag": "P",
+        "text": "MID-zertifiziert (Klasse B / Genauigkeitsklasse 1,0): Zertif",
+        "top": 1343,
+        "bottom": 1415,
+        "lineHeight": "24px",
+        "fontSize": "15px"
+      }
+    ]
+  },
+  "en2092_1440_feature": [
+    {
+      "title": "On top of the stack, fixed to the wall.",
+      "imgSrc": "https://de-linker.com/wp-content/uploads/2026/07/delinker-saj-bc2-768x335.jpg",
+      "mediaRect": {
+        "x": 80,
+        "w": 1280,
+        "h": 520
+      },
+      "imgRect": {
+        "x": 80,
+        "w": 1280,
+        "h": 520
+      },
+      "copyRect": {
+        "x": 80,
+        "right": 720,
+        "w": 640
+      },
+      "mediaAfterBg": "none",
+      "copyColor": "rgb(255, 255, 255)"
+    }
+  ],
+  "en2070_390": {
+    "mainImg": {
+      "rect": {
+        "x": 29,
+        "y": 146,
+        "width": 332,
+        "height": 300,
+        "top": 146,
+        "right": 361,
+        "bottom": 446,
+        "left": 29
+      },
+      "natW": 1200,
+      "natH": 1200
+    },
+    "footerLogo": {
+      "src": "https://de-linker.com/wp-content/uploads/2026/07/linker-logo-wordmark.png",
+      "rect": {
+        "x": 32,
+        "y": 11477.65625,
+        "width": 91,
+        "height": 34.640625,
+        "top": 11477.65625,
+        "right": 123,
+        "bottom": 11512.296875,
+        "left": 32
+      },
+      "natW": 717,
+      "natH": 273,
+      "overflow": false
+    }
+  },
+  "term1_sidebar": {
+    "total": 70,
+    "clipped": []
+  },
+  "term5_bv_en_1440": {
+    "h1": "High Voltage",
+    "scrollW": 1440,
+    "clientW": 1440,
+    "cards": 8,
+    "brokenImgs": 0
+  }
+}

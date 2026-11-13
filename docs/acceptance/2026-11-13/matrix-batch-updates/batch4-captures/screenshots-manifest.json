@@ -1,0 +1,2274 @@
+[
+  {
+    "id": "en-6530",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|3|3|0",
+    "url": "https://de-linker.com/product/goodwe-gw60k-sts-g10/",
+    "title": "GoodWe GW60K-STS-G10",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-6530-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 5720,
+      "h1": "GW60K-STS-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-6530",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|3|3|0",
+    "url": "https://de-linker.com/product/goodwe-gw60k-sts-g10/",
+    "title": "GoodWe GW60K-STS-G10",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-6530-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 8222,
+      "h1": "GW60K-STS-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-6529",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|2|3|0",
+    "url": "https://de-linker.com/product/goodwe-gw30k-sts-g10/",
+    "title": "GoodWe GW30K-STS-G10",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-6529-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 5134,
+      "h1": "GW30K-STS-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-6529",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|2|3|0",
+    "url": "https://de-linker.com/product/goodwe-gw30k-sts-g10/",
+    "title": "GoodWe GW30K-STS-G10",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-6529-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 7402,
+      "h1": "GW30K-STS-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-6528",
+    "kind": "product",
+    "lang": "en",
+    "sig": "3|5|4|4",
+    "url": "https://de-linker.com/product/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/",
+    "title": "GoodWe ESA GW10K-EHA-G20 (10 kW single-phase power module)",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-6528-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 6928,
+      "h1": "GW10K-EHA-G20",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-6528",
+    "kind": "product",
+    "lang": "en",
+    "sig": "3|5|4|4",
+    "url": "https://de-linker.com/product/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/",
+    "title": "GoodWe ESA GW10K-EHA-G20 (10 kW single-phase power module)",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-6528-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 10520,
+      "h1": "GW10K-EHA-G20",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-6522",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|3|4|11",
+    "url": "https://de-linker.com/product/goodwe-gw8-3-bat-d-g21-esa-battery-module-8-32-kwh/",
+    "title": "GoodWe GW8.3-BAT-D-G21 (ESA battery module, 8.32 kWh)",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-6522-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 6937,
+      "h1": "GW8.3-BAT-D-G21",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-6522",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|3|4|11",
+    "url": "https://de-linker.com/product/goodwe-gw8-3-bat-d-g21-esa-battery-module-8-32-kwh/",
+    "title": "GoodWe GW8.3-BAT-D-G21 (ESA battery module, 8.32 kWh)",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-6522-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 10699,
+      "h1": "GW8.3-BAT-D-G21",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-6520",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|3|6|17",
+    "url": "https://de-linker.com/product/goodwe-gw8-3-bat-d-g20-esa-battery-module-8-32-kwh/",
+    "title": "GoodWe GW8.3-BAT-D-G20 (ESA battery module, 8.32 kWh)",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-6520-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 7621,
+      "h1": "GW8.3-BAT-D-G20",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-6520",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|3|6|17",
+    "url": "https://de-linker.com/product/goodwe-gw8-3-bat-d-g20-esa-battery-module-8-32-kwh/",
+    "title": "GoodWe GW8.3-BAT-D-G20 (ESA battery module, 8.32 kWh)",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-6520-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 11997,
+      "h1": "GW8.3-BAT-D-G20",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-6518",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|5|12|6",
+    "url": "https://de-linker.com/product/goodwe-esa-gw30k-eta-g20-30-kw-three-phase-power-module/",
+    "title": "GoodWe ESA GW30K-ETA-G20 (30 kW three-phase power module)",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-6518-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 7674,
+      "h1": "GW30K-ETA-G20",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-6518",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|5|12|6",
+    "url": "https://de-linker.com/product/goodwe-esa-gw30k-eta-g20-30-kw-three-phase-power-module/",
+    "title": "GoodWe ESA GW30K-ETA-G20 (30 kW three-phase power module)",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-6518-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 12060,
+      "h1": "GW30K-ETA-G20",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-3556",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|5|13|6",
+    "url": "https://de-linker.com/product/goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one/",
+    "title": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-3556-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 10603,
+      "h1": "GW10K-ETA-G20",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-3556",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|5|13|6",
+    "url": "https://de-linker.com/product/goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one/",
+    "title": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-3556-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 15488,
+      "h1": "GW10K-ETA-G20",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-6511",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|5|12|1",
+    "url": "https://de-linker.com/product/goodwe-gw124-99k-etr-g10-124-99-kw-three-phase-hybrid-inverter/",
+    "title": "GoodWe GW124.99K-ETR-G10 (124.99 kW three-phase hybrid inverter)",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-6511-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 6938,
+      "h1": "GW124.99K-ETR-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-6511",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|5|12|1",
+    "url": "https://de-linker.com/product/goodwe-gw124-99k-etr-g10-124-99-kw-three-phase-hybrid-inverter/",
+    "title": "GoodWe GW124.99K-ETR-G10 (124.99 kW three-phase hybrid inverter)",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-6511-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 10757,
+      "h1": "GW124.99K-ETR-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-6506",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|5|6|0",
+    "url": "https://de-linker.com/product/goodwe-gw75k-et-g10/",
+    "title": "GoodWe GW75K-ET-G10",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-6506-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 6812,
+      "h1": "GW75K-ET-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-6506",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|5|6|0",
+    "url": "https://de-linker.com/product/goodwe-gw75k-et-g10/",
+    "title": "GoodWe GW75K-ET-G10",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-6506-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 10224,
+      "h1": "GW75K-ET-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-6321",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|7|15|0",
+    "url": "https://de-linker.com/product/goodwe-esa-gw125-261-esa-lcn-g10/",
+    "title": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-6321-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 8343,
+      "h1": "GW125/261-ESA-LCN-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-6321",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|7|15|0",
+    "url": "https://de-linker.com/product/goodwe-esa-gw125-261-esa-lcn-g10/",
+    "title": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-6321-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 14566,
+      "h1": "GW125/261-ESA-LCN-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-4109",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|9|5|1",
+    "url": "https://de-linker.com/product/saj-hs2-5k-t2-x/",
+    "title": "SAJ HS2-5K-T2-X (5 kW three-phase hybrid inverter)",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-4109-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 8992,
+      "h1": "HS2-5K-T2-X",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-4109",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|9|5|1",
+    "url": "https://de-linker.com/product/saj-hs2-5k-t2-x/",
+    "title": "SAJ HS2-5K-T2-X (5 kW three-phase hybrid inverter)",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-4109-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 14107,
+      "h1": "HS2-5K-T2-X",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-4108",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|9|4|6",
+    "url": "https://de-linker.com/product/saj-h2-12k-t3/",
+    "title": "SAJ H2-12K-T3 (12 kW three-phase hybrid inverter)",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-4108-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 9725,
+      "h1": "H2-12K-T3",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-4108",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|9|4|6",
+    "url": "https://de-linker.com/product/saj-h2-12k-t3/",
+    "title": "SAJ H2-12K-T3 (12 kW three-phase hybrid inverter)",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-4108-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 15406,
+      "h1": "H2-12K-T3",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-4106",
+    "kind": "product",
+    "lang": "en",
+    "sig": "3|5|5|0",
+    "url": "https://de-linker.com/product/saj-cb2-100-3-hv5/",
+    "title": "SAJ CB2-100.3-HV5 (100.3 kWh C&amp;I battery cabinet)",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-4106-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 6958,
+      "h1": "CB2-100.3-HV5",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-4106",
+    "kind": "product",
+    "lang": "en",
+    "sig": "3|5|5|0",
+    "url": "https://de-linker.com/product/saj-cb2-100-3-hv5/",
+    "title": "SAJ CB2-100.3-HV5 (100.3 kWh C&amp;I battery cabinet)",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-4106-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 10445,
+      "h1": "CB2-100.3-HV5",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-3618",
+    "kind": "product",
+    "lang": "en",
+    "sig": "1|8|3|0",
+    "url": "https://de-linker.com/product/saj-emanager-emanager-5-0-residential-energy-manager/",
+    "title": "SAJ eManager (energy management system module)",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-3618-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 6715,
+      "h1": "eManager",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-3618",
+    "kind": "product",
+    "lang": "en",
+    "sig": "1|8|3|0",
+    "url": "https://de-linker.com/product/saj-emanager-emanager-5-0-residential-energy-manager/",
+    "title": "SAJ eManager (energy management system module)",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-3618-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 10566,
+      "h1": "eManager",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-3612",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|2|7|17",
+    "url": "https://de-linker.com/product/goodwe-gw9-0-bat-d-g20-esa-battery-module-9-0-kwh/",
+    "title": "GoodWe GW9.0-BAT-D-G20 (ESA battery module, 9.0 kWh)",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-3612-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 10297,
+      "h1": "GW9.0-BAT-D-G20",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-3612",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|2|7|17",
+    "url": "https://de-linker.com/product/goodwe-gw9-0-bat-d-g20-esa-battery-module-9-0-kwh/",
+    "title": "GoodWe GW9.0-BAT-D-G20 (ESA battery module, 9.0 kWh)",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-3612-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 13907,
+      "h1": "GW9.0-BAT-D-G20",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-3595",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|5|12|2",
+    "url": "https://de-linker.com/product/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/",
+    "title": "GoodWe GW125K-ETR-G10 (125 kW three-phase hybrid inverter)",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-3595-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 11416,
+      "h1": "GW125K-ETR-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-3595",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|5|12|2",
+    "url": "https://de-linker.com/product/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/",
+    "title": "GoodWe GW125K-ETR-G10 (125 kW three-phase hybrid inverter)",
+    "viewport": "390x844",
+    "width": 390,
+    "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"https://de-linker.com/product/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/\", waiting until \"networkidle\"\n"
+  },
+  {
+    "id": "en-3587",
+    "kind": "product",
+    "lang": "en",
+    "sig": "1|4|8|0",
+    "url": "https://de-linker.com/product/goodwe-hca-gw22k-hca-22-kw-three-phase-ev-charger/",
+    "title": "GoodWe HCA G2 GW22K-HCA-20 (22 kW three-phase EV charger, 7.5 m cable)",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-3587-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 8246,
+      "h1": "GW22K-HCA-20",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-3587",
+    "kind": "product",
+    "lang": "en",
+    "sig": "1|4|8|0",
+    "url": "https://de-linker.com/product/goodwe-hca-gw22k-hca-22-kw-three-phase-ev-charger/",
+    "title": "GoodWe HCA G2 GW22K-HCA-20 (22 kW three-phase EV charger, 7.5 m cable)",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-3587-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 10607,
+      "h1": "GW22K-HCA-20",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-3557",
+    "kind": "product",
+    "lang": "en",
+    "sig": "2|4|8|0",
+    "url": "https://de-linker.com/product/goodwe-hca-g2-gw11k-hca-20-11-kw-three-phase-ev-charger/",
+    "title": "GoodWe HCA G2 GW11K-HCA-20 (11 kW three-phase EV charger, 7.5 m cable)",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-3557-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 8217,
+      "h1": "GW11K-HCA-20",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-3557",
+    "kind": "product",
+    "lang": "en",
+    "sig": "2|4|8|0",
+    "url": "https://de-linker.com/product/goodwe-hca-g2-gw11k-hca-20-11-kw-three-phase-ev-charger/",
+    "title": "GoodWe HCA G2 GW11K-HCA-20 (11 kW three-phase EV charger, 7.5 m cable)",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-3557-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 10631,
+      "h1": "GW11K-HCA-20",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-3573",
+    "kind": "product",
+    "lang": "en",
+    "sig": "1|5|3|0",
+    "url": "https://de-linker.com/product/saj-esolar-aio3-data-collector-wifi-lan-bluetooth/",
+    "title": "SAJ eSolar AIO3 data collector (Wi-Fi/Ethernet/Bluetooth)",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-3573-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 6074,
+      "h1": "eSolar AIO3",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-3573",
+    "kind": "product",
+    "lang": "en",
+    "sig": "1|5|3|0",
+    "url": "https://de-linker.com/product/saj-esolar-aio3-data-collector-wifi-lan-bluetooth/",
+    "title": "SAJ eSolar AIO3 data collector (Wi-Fi/Ethernet/Bluetooth)",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-3573-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 9029,
+      "h1": "eSolar AIO3",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2415",
+    "kind": "product",
+    "lang": "en",
+    "sig": "3|3|4|0",
+    "url": "https://de-linker.com/product/goodwe-ezmanager3000-hems-gateway/",
+    "title": "GoodWe EzManager3000 HEMS Gateway",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2415-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 7948,
+      "h1": "EzManager3000",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2415",
+    "kind": "product",
+    "lang": "en",
+    "sig": "3|3|4|0",
+    "url": "https://de-linker.com/product/goodwe-ezmanager3000-hems-gateway/",
+    "title": "GoodWe EzManager3000 HEMS Gateway",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2415-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 11266,
+      "h1": "EzManager3000",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2409",
+    "kind": "product",
+    "lang": "en",
+    "sig": "3|3|5|0",
+    "url": "https://de-linker.com/product/goodwe-sec3000c-smart-energy-controller/",
+    "title": "GoodWe SEC3000C Smart Energy Controller",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2409-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 7999,
+      "h1": "SEC3000C",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2409",
+    "kind": "product",
+    "lang": "en",
+    "sig": "3|3|5|0",
+    "url": "https://de-linker.com/product/goodwe-sec3000c-smart-energy-controller/",
+    "title": "GoodWe SEC3000C Smart Energy Controller",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2409-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 11236,
+      "h1": "SEC3000C",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2403",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|3|5|0",
+    "url": "https://de-linker.com/product/goodwe-gw125k-sts-g10/",
+    "title": "GoodWe GW125K-STS-G10",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2403-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 7296,
+      "h1": "GW125K-STS-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2403",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|3|5|0",
+    "url": "https://de-linker.com/product/goodwe-gw125k-sts-g10/",
+    "title": "GoodWe GW125K-STS-G10",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2403-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 10466,
+      "h1": "GW125K-STS-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2397",
+    "kind": "product",
+    "lang": "en",
+    "sig": "3|3|6|0",
+    "url": "https://de-linker.com/product/goodwe-gmk330/",
+    "title": "GoodWe GMK330",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2397-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 7256,
+      "h1": "GMK330",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2397",
+    "kind": "product",
+    "lang": "en",
+    "sig": "3|3|6|0",
+    "url": "https://de-linker.com/product/goodwe-gmk330/",
+    "title": "GoodWe GMK330",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2397-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 9441,
+      "h1": "GMK330",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2394",
+    "kind": "product",
+    "lang": "en",
+    "sig": "2|3|5|0",
+    "url": "https://de-linker.com/product/goodwe-gm330/",
+    "title": "GoodWe GM330",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2394-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 7186,
+      "h1": "GM330",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2394",
+    "kind": "product",
+    "lang": "en",
+    "sig": "2|3|5|0",
+    "url": "https://de-linker.com/product/goodwe-gm330/",
+    "title": "GoodWe GM330",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2394-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 9493,
+      "h1": "GM330",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2281",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|5|2|0",
+    "url": "https://de-linker.com/product/chint-dtsu666/",
+    "title": "Chint DTSU666",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2281-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 5765,
+      "h1": "DTSU666",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2281",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|5|2|0",
+    "url": "https://de-linker.com/product/chint-dtsu666/",
+    "title": "Chint DTSU666",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2281-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 8679,
+      "h1": "DTSU666",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2199",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|8|7|1",
+    "url": "https://de-linker.com/product/saj-hs3-10k-t2-w-p/",
+    "title": "SAJ HS3-10K-T2-W/G-PX",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2199-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 8968,
+      "h1": "HS3-10K-T2-W/G-PX",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2199",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|8|7|1",
+    "url": "https://de-linker.com/product/saj-hs3-10k-t2-w-p/",
+    "title": "SAJ HS3-10K-T2-W/G-PX",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2199-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 13592,
+      "h1": "HS3-10K-T2-W/G-PX",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2093",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|3|5|5",
+    "url": "https://de-linker.com/product/saj-bu3-5-0-tv2-pro/",
+    "title": "SAJ BU3-5.0-TV2-PRO",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2093-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 7654,
+      "h1": "BU3-5.0-TV2-PRO",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2093",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|3|5|5",
+    "url": "https://de-linker.com/product/saj-bu3-5-0-tv2-pro/",
+    "title": "SAJ BU3-5.0-TV2-PRO",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2093-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 11063,
+      "h1": "BU3-5.0-TV2-PRO",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2092",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|3|4|6",
+    "url": "https://de-linker.com/product/saj-bc2-hv1/",
+    "title": "SAJ BC2-HV1",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2092-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 7961,
+      "h1": "BC2-HV1",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2092",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|3|4|6",
+    "url": "https://de-linker.com/product/saj-bc2-hv1/",
+    "title": "SAJ BC2-HV1",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2092-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 10831,
+      "h1": "BC2-HV1",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2090",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|3|4|10",
+    "url": "https://de-linker.com/product/saj-bu2-5-0-hv1/",
+    "title": "SAJ BU2-5.0-HV1",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2090-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 8461,
+      "h1": "BU2-5.0-HV1",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2090",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|3|4|10",
+    "url": "https://de-linker.com/product/saj-bu2-5-0-hv1/",
+    "title": "SAJ BU2-5.0-HV1",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2090-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 12360,
+      "h1": "BU2-5.0-HV1",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2070",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|4|6|6",
+    "url": "https://de-linker.com/product/saj-b2-25-0-hv1/",
+    "title": "SAJ B2-25.0-HV1",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2070-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 8378,
+      "h1": "B2-25.0-HV1",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2070",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|4|6|6",
+    "url": "https://de-linker.com/product/saj-b2-25-0-hv1/",
+    "title": "SAJ B2-25.0-HV1",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2070-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 12468,
+      "h1": "B2-25.0-HV1",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2064",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|9|5|6",
+    "url": "https://de-linker.com/product/saj-h2-20k-t3/",
+    "title": "SAJ H2-20K-T3",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2064-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 9779,
+      "h1": "H2-20K-T3",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2064",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|9|5|6",
+    "url": "https://de-linker.com/product/saj-h2-20k-t3/",
+    "title": "SAJ H2-20K-T3",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2064-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 15397,
+      "h1": "H2-20K-T3",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2003",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|6|3|0",
+    "url": "https://de-linker.com/product/pylontech-optim-us-l260-omni/",
+    "title": "Pylontech OPTIM US L260-OMNI",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2003-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 8321,
+      "h1": "L260-OMNI",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-2003",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|6|3|0",
+    "url": "https://de-linker.com/product/pylontech-optim-us-l260-omni/",
+    "title": "Pylontech OPTIM US L260-OMNI",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-2003-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 12462,
+      "h1": "L260-OMNI",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-1973",
+    "kind": "product",
+    "lang": "en",
+    "sig": "2|4|3|0",
+    "url": "https://de-linker.com/product/saj-emanager-c1-pro/",
+    "title": "SAJ eManager-C1 Pro",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-1973-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 6705,
+      "h1": "eManager-C1 Pro",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-1973",
+    "kind": "product",
+    "lang": "en",
+    "sig": "2|4|3|0",
+    "url": "https://de-linker.com/product/saj-emanager-c1-pro/",
+    "title": "SAJ eManager-C1 Pro",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-1973-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 9647,
+      "h1": "eManager-C1 Pro",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-1961",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|10|5|0",
+    "url": "https://de-linker.com/product/saj-chs2-50k-t6-x/",
+    "title": "SAJ CHS2-50K-T6-X",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-1961-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 10039,
+      "h1": "CHS2-50K-T6-X",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-1961",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|10|5|0",
+    "url": "https://de-linker.com/product/saj-chs2-50k-t6-x/",
+    "title": "SAJ CHS2-50K-T6-X",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-1961-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 15502,
+      "h1": "CHS2-50K-T6-X",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-1958",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|2|8|6",
+    "url": "https://de-linker.com/product/goodwe-gw261-2-bat-lcd-g10/",
+    "title": "GoodWe GW261.2-BAT-LCD-G10",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-1958-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 8574,
+      "h1": "GW261.2-BAT-LCD-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-1958",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|2|8|6",
+    "url": "https://de-linker.com/product/goodwe-gw261-2-bat-lcd-g10/",
+    "title": "GoodWe GW261.2-BAT-LCD-G10",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-1958-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 11857,
+      "h1": "GW261.2-BAT-LCD-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-1957",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|2|7|1",
+    "url": "https://de-linker.com/product/goodwe-gw208-9-bat-lcd-g10/",
+    "title": "GoodWe GW208.9-BAT-LCD-G10",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-1957-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 7863,
+      "h1": "GW208.9-BAT-LCD-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-1957",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|2|7|1",
+    "url": "https://de-linker.com/product/goodwe-gw208-9-bat-lcd-g10/",
+    "title": "GoodWe GW208.9-BAT-LCD-G10",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-1957-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 10498,
+      "h1": "GW208.9-BAT-LCD-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-1956",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|2|9|3",
+    "url": "https://de-linker.com/product/goodwe-gw208-9-bat-lc-g10/",
+    "title": "GoodWe GW208.9-BAT-LC-G10",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-1956-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 8376,
+      "h1": "GW208.9-BAT-LC-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-1956",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|2|9|3",
+    "url": "https://de-linker.com/product/goodwe-gw208-9-bat-lc-g10/",
+    "title": "GoodWe GW208.9-BAT-LC-G10",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-1956-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 10843,
+      "h1": "GW208.9-BAT-LC-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-1955",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|2|11|3",
+    "url": "https://de-linker.com/product/goodwe-gw112-6-bat-ac-g10/",
+    "title": "GoodWe GW112.6-BAT-AC-G10",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-1955-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 9407,
+      "h1": "GW112.6-BAT-AC-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-1955",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|2|11|3",
+    "url": "https://de-linker.com/product/goodwe-gw112-6-bat-ac-g10/",
+    "title": "GoodWe GW112.6-BAT-AC-G10",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-1955-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 13336,
+      "h1": "GW112.6-BAT-AC-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-1948",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|5|13|3",
+    "url": "https://de-linker.com/product/goodwe-gw100k-et-g10/",
+    "title": "GoodWe GW100K-ET-G10",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-1948-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 8921,
+      "h1": "GW100K-ET-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-1948",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|5|13|3",
+    "url": "https://de-linker.com/product/goodwe-gw100k-et-g10/",
+    "title": "GoodWe GW100K-ET-G10",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-1948-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 12396,
+      "h1": "GW100K-ET-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-1832",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|4|6|0",
+    "url": "https://de-linker.com/product/saj-b2-5-0-hv1/",
+    "title": "SAJ B2-5.0-HV1",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-1832-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 7834,
+      "h1": "B2-5.0-HV1",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-1832",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|4|6|0",
+    "url": "https://de-linker.com/product/saj-b2-5-0-hv1/",
+    "title": "SAJ B2-5.0-HV1",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-1832-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 10927,
+      "h1": "B2-5.0-HV1",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-1184",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|9|6|1",
+    "url": "https://de-linker.com/product/saj-hs2-8k-t2-x/",
+    "title": "SAJ HS2-8K-T2-X",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-1184-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 8442,
+      "h1": "HS2-8K-T2-X",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-1184",
+    "kind": "product",
+    "lang": "en",
+    "sig": "4|9|6|1",
+    "url": "https://de-linker.com/product/saj-hs2-8k-t2-x/",
+    "title": "SAJ HS2-8K-T2-X",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-1184-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 13490,
+      "h1": "HS2-8K-T2-X",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-1178",
+    "kind": "product",
+    "lang": "en",
+    "sig": "1|4|3|0",
+    "url": "https://de-linker.com/product/saj-ats1-t63-a/",
+    "title": "SAJ ATS1-T63-A",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-1178-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 6277,
+      "h1": "ATS1-T63-A",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "en-1178",
+    "kind": "product",
+    "lang": "en",
+    "sig": "1|4|3|0",
+    "url": "https://de-linker.com/product/saj-ats1-t63-a/",
+    "title": "SAJ ATS1-T63-A",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/en-1178-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 9369,
+      "h1": "ATS1-T63-A",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "de-6599",
+    "kind": "product",
+    "lang": "de",
+    "sig": "4|7|15|0",
+    "url": "https://de-linker.com/de/produkt/goodwe-esa-gw125-261-esa-lcn-g10/",
+    "title": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/de-6599-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 8397,
+      "h1": "GW125/261-ESA-LCN-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "de-6599",
+    "kind": "product",
+    "lang": "de",
+    "sig": "4|7|15|0",
+    "url": "https://de-linker.com/de/produkt/goodwe-esa-gw125-261-esa-lcn-g10/",
+    "title": "GoodWe ESA GW125/261-ESA-LCN-G10 (125 kW / 261 kWh all-in-one storage cabinet)",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/de-6599-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 14899,
+      "h1": "GW125/261-ESA-LCN-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "de-6654",
+    "kind": "product",
+    "lang": "de",
+    "sig": "4|5|12|2",
+    "url": "https://de-linker.com/de/produkt/goodwe-etr-125-kw-ci-dreiphasiger-hybridwechselrichter-1000v/",
+    "title": "GoodWe GW125K-ETR-G10 (125 kW three-phase hybrid inverter)",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/de-6654-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 11764,
+      "h1": "GW125K-ETR-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "de-6654",
+    "kind": "product",
+    "lang": "de",
+    "sig": "4|5|12|2",
+    "url": "https://de-linker.com/de/produkt/goodwe-etr-125-kw-ci-dreiphasiger-hybridwechselrichter-1000v/",
+    "title": "GoodWe GW125K-ETR-G10 (125 kW three-phase hybrid inverter)",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/de-6654-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 16967,
+      "h1": "GW125K-ETR-G10",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "de-6689",
+    "kind": "product",
+    "lang": "de",
+    "sig": "2|4|8|0",
+    "url": "https://de-linker.com/de/produkt/goodwe-hca-g2-gw11k-hca-20-11-kw-dreiphasige-ladestation/",
+    "title": "GoodWe HCA G2 GW11K-HCA-20 (11 kW three-phase EV charger, 7.5 m cable)",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/de-6689-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 8230,
+      "h1": "GW11K-HCA-20",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "de-6689",
+    "kind": "product",
+    "lang": "de",
+    "sig": "2|4|8|0",
+    "url": "https://de-linker.com/de/produkt/goodwe-hca-g2-gw11k-hca-20-11-kw-dreiphasige-ladestation/",
+    "title": "GoodWe HCA G2 GW11K-HCA-20 (11 kW three-phase EV charger, 7.5 m cable)",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/de-6689-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 10945,
+      "h1": "GW11K-HCA-20",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "de-6690",
+    "kind": "product",
+    "lang": "de",
+    "sig": "4|5|13|6",
+    "url": "https://de-linker.com/de/produkt/goodwe-esa-gw10k-eta-g20-10-kw-dreiphasiges-komplettsystem/",
+    "title": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/de-6690-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 10756,
+      "h1": "GW10K-ETA-G20",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "de-6690",
+    "kind": "product",
+    "lang": "de",
+    "sig": "4|5|13|6",
+    "url": "https://de-linker.com/de/produkt/goodwe-esa-gw10k-eta-g20-10-kw-dreiphasiges-komplettsystem/",
+    "title": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/de-6690-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 16061,
+      "h1": "GW10K-ETA-G20",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "de-6720",
+    "kind": "product",
+    "lang": "de",
+    "sig": "4|5|2|0",
+    "url": "https://de-linker.com/de/produkt/chint-dtsu666/",
+    "title": "Chint DTSU666",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/de-6720-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 5860,
+      "h1": "DTSU666",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "de-6720",
+    "kind": "product",
+    "lang": "de",
+    "sig": "4|5|2|0",
+    "url": "https://de-linker.com/de/produkt/chint-dtsu666/",
+    "title": "Chint DTSU666",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/de-6720-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 8996,
+      "h1": "DTSU666",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "de-6752",
+    "kind": "product",
+    "lang": "de",
+    "sig": "4|9|5|6",
+    "url": "https://de-linker.com/de/produkt/saj-h2-15k-t3/",
+    "title": "SAJ H2-15K-T3",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/de-6752-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 9909,
+      "h1": "H2-15K-T3",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "de-6752",
+    "kind": "product",
+    "lang": "de",
+    "sig": "4|9|5|6",
+    "url": "https://de-linker.com/de/produkt/saj-h2-15k-t3/",
+    "title": "SAJ H2-15K-T3",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/de-6752-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 15887,
+      "h1": "H2-15K-T3",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "de-6769",
+    "kind": "product",
+    "lang": "de",
+    "sig": "4|6|3|0",
+    "url": "https://de-linker.com/de/produkt/pylontech-optim-us-l260-omni/",
+    "title": "Pylontech OPTIM US L260-OMNI",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/de-6769-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 8402,
+      "h1": "L260-OMNI",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "de-6769",
+    "kind": "product",
+    "lang": "de",
+    "sig": "4|6|3|0",
+    "url": "https://de-linker.com/de/produkt/pylontech-optim-us-l260-omni/",
+    "title": "Pylontech OPTIM US L260-OMNI",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/de-6769-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 12984,
+      "h1": "L260-OMNI",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "de-6798",
+    "kind": "product",
+    "lang": "de",
+    "sig": "4|10|5|0",
+    "url": "https://de-linker.com/de/produkt/saj-chs2-29-9k-t4-x/",
+    "title": "SAJ CHS2-29.9K-T4-X",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/de-6798-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 10234,
+      "h1": "CHS2-29.9K-T4-X",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "de-6798",
+    "kind": "product",
+    "lang": "de",
+    "sig": "4|10|5|0",
+    "url": "https://de-linker.com/de/produkt/saj-chs2-29-9k-t4-x/",
+    "title": "SAJ CHS2-29.9K-T4-X",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/de-6798-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 15942,
+      "h1": "CHS2-29.9K-T4-X",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "de-6836",
+    "kind": "product",
+    "lang": "de",
+    "sig": "4|9|6|1",
+    "url": "https://de-linker.com/de/produkt/saj-hs2-10k-t2-x/",
+    "title": "SAJ HS2-10K-T2-X",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/de-6836-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 8486,
+      "h1": "HS2-10K-T2-X",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "de-6836",
+    "kind": "product",
+    "lang": "de",
+    "sig": "4|9|6|1",
+    "url": "https://de-linker.com/de/produkt/saj-hs2-10k-t2-x/",
+    "title": "SAJ HS2-10K-T2-X",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/de-6836-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 13694,
+      "h1": "HS2-10K-T2-X",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "de-6839",
+    "kind": "product",
+    "lang": "de",
+    "sig": "1|4|3|0",
+    "url": "https://de-linker.com/de/produkt/saj-ats1-t63-a/",
+    "title": "SAJ ATS1-T63-A",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/de-6839-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 6310,
+      "h1": "ATS1-T63-A",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "de-6839",
+    "kind": "product",
+    "lang": "de",
+    "sig": "1|4|3|0",
+    "url": "https://de-linker.com/de/produkt/saj-ats1-t63-a/",
+    "title": "SAJ ATS1-T63-A",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/de-6839-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 9568,
+      "h1": "ATS1-T63-A",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "term-0-product_cat-en",
+    "kind": "term",
+    "lang": "en",
+    "sig": "product_cat",
+    "url": "https://de-linker.com/product-category/inverters/",
+    "title": "https://de-linker.com/product-category/inverters/",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/term-0-product_cat-en-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 9790,
+      "h1": "Inverters",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "term-0-product_cat-en",
+    "kind": "term",
+    "lang": "en",
+    "sig": "product_cat",
+    "url": "https://de-linker.com/product-category/inverters/",
+    "title": "https://de-linker.com/product-category/inverters/",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/term-0-product_cat-en-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 13609,
+      "h1": "Inverters",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "term-1-product_cat-de",
+    "kind": "term",
+    "lang": "de",
+    "sig": "product_cat",
+    "url": "https://de-linker.com/de/produkt-kategorie/zubehoer/",
+    "title": "https://de-linker.com/de/produkt-kategorie/zubehoer/",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/term-1-product_cat-de-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 4099,
+      "h1": "Zubehör",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "term-1-product_cat-de",
+    "kind": "term",
+    "lang": "de",
+    "sig": "product_cat",
+    "url": "https://de-linker.com/de/produkt-kategorie/zubehoer/",
+    "title": "https://de-linker.com/de/produkt-kategorie/zubehoer/",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/term-1-product_cat-de-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 5276,
+      "h1": "Zubehör",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "term-2-product_cat-de",
+    "kind": "term",
+    "lang": "de",
+    "sig": "product_cat",
+    "url": "https://de-linker.com/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/",
+    "title": "https://de-linker.com/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/term-2-product_cat-de-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 2743,
+      "h1": "Energiezähler & Stromwandler",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "term-2-product_cat-de",
+    "kind": "term",
+    "lang": "de",
+    "sig": "product_cat",
+    "url": "https://de-linker.com/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/",
+    "title": "https://de-linker.com/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/term-2-product_cat-de-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 3334,
+      "h1": "Energiezähler & Stromwandler",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "term-3-phase-en",
+    "kind": "term",
+    "lang": "en",
+    "sig": "phase",
+    "url": "https://de-linker.com/phase/three-phase/",
+    "title": "https://de-linker.com/phase/three-phase/",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/term-3-phase-en-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 9819,
+      "h1": "Three-phase",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "term-3-phase-en",
+    "kind": "term",
+    "lang": "en",
+    "sig": "phase",
+    "url": "https://de-linker.com/phase/three-phase/",
+    "title": "https://de-linker.com/phase/three-phase/",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/term-3-phase-en-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 13719,
+      "h1": "Three-phase",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "term-4-phase-de",
+    "kind": "term",
+    "lang": "de",
+    "sig": "phase",
+    "url": "https://de-linker.com/de/phase/dreiphasig/",
+    "title": "https://de-linker.com/de/phase/dreiphasig/",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/term-4-phase-de-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 9819,
+      "h1": "Dreiphasig",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "term-4-phase-de",
+    "kind": "term",
+    "lang": "de",
+    "sig": "phase",
+    "url": "https://de-linker.com/de/phase/dreiphasig/",
+    "title": "https://de-linker.com/de/phase/dreiphasig/",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/term-4-phase-de-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 14027,
+      "h1": "Dreiphasig",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "term-5-battery_voltage-en",
+    "kind": "term",
+    "lang": "en",
+    "sig": "battery_voltage",
+    "url": "https://de-linker.com/battery-voltage/high-voltage/",
+    "title": "https://de-linker.com/battery-voltage/high-voltage/",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/term-5-battery_voltage-en-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 4108,
+      "h1": "High Voltage",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "term-5-battery_voltage-en",
+    "kind": "term",
+    "lang": "en",
+    "sig": "battery_voltage",
+    "url": "https://de-linker.com/battery-voltage/high-voltage/",
+    "title": "https://de-linker.com/battery-voltage/high-voltage/",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/term-5-battery_voltage-en-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 5612,
+      "h1": "High Voltage",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "term-6-category-en",
+    "kind": "term",
+    "lang": "en",
+    "sig": "category",
+    "url": "https://de-linker.com/category/system-design/",
+    "title": "https://de-linker.com/category/system-design/",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/term-6-category-en-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 1450,
+      "h1": "System Design",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "term-6-category-en",
+    "kind": "term",
+    "lang": "en",
+    "sig": "category",
+    "url": "https://de-linker.com/category/system-design/",
+    "title": "https://de-linker.com/category/system-design/",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/term-6-category-en-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 1558,
+      "h1": "System Design",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "term-7-category-de",
+    "kind": "term",
+    "lang": "de",
+    "sig": "category",
+    "url": "https://de-linker.com/de/kategorie/systemauslegung/",
+    "title": "https://de-linker.com/de/kategorie/systemauslegung/",
+    "viewport": "1440x900",
+    "width": 1440,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/term-7-category-de-1440.png",
+    "metrics": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 1450,
+      "h1": "Systemauslegung",
+      "brokenImages": []
+    }
+  },
+  {
+    "id": "term-7-category-de",
+    "kind": "term",
+    "lang": "de",
+    "sig": "category",
+    "url": "https://de-linker.com/de/kategorie/systemauslegung/",
+    "title": "https://de-linker.com/de/kategorie/systemauslegung/",
+    "viewport": "390x844",
+    "width": 390,
+    "status": 200,
+    "screenshot": "docs/acceptance/2026-11-13/matrix-batch-updates/batch4-captures/screenshots/term-7-category-de-390.png",
+    "metrics": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 1603,
+      "h1": "Systemauslegung",
+      "brokenImages": []
+    }
+  }
+]

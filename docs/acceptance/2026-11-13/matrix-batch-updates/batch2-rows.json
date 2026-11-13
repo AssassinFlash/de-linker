@@ -1,0 +1,1751 @@
+[
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:6969:linker-faq",
+    "id": 6969,
+    "slug": "linker-faq",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/faq-download/",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6969 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET; page 932 lc_use_template_of_slug=linker-faq"
+        },
+        {
+          "url": "https://de-linker.com/faq-download/?tab=documents",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6969 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET documents tab query state"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "en",
+        "singular-page-lc_use_template_of_slug",
+        "faq-tab",
+        "documents-tab"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "e8c4a9db62db7a1dbfd2e1e68a709f2fea8b161ae1bc0dbd1183ed7f7258cc6a",
+          "baseline_sha256_matches_prod": false,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "GET https://de-linker.com/faq-download/ -> 200, <!-- LC DT ID: 6969 -->",
+      "GET https://de-linker.com/faq-download/?tab=documents -> 200, <!-- LC DT ID: 6969 -->",
+      "WP-CLI post 932 lc_use_template_of_slug=linker-faq; template 6969 pll_lang=en, sha256=e8c4a9db62db7a1dbfd2e1e68a709f2fea8b161ae1bc0dbd1183ed7f7258cc6a (matches plugins/linker-commerce/content/livecanvas/faq_page.html)",
+      "plugins/linker-commerce/includes/Presentation/Templates.php:144,858-867"
+    ],
+    "reason": "实测 EN /faq-download/ 及其 ?tab=documents 查询均稳定命中 LC DT ID: 6969，源码与生产模板 SHA 一致；因交互/视口/文件契约另在 state-matrix 跟踪，状态更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:6970:linker-faq-de",
+    "id": 6970,
+    "slug": "linker-faq-de",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/de/faq-dokumente/",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6970 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET; page 6863 lc_use_template_of_slug=linker-faq-de"
+        },
+        {
+          "url": "https://de-linker.com/de/faq-dokumente/?tab=documents",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6970 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET documents tab query state"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "de",
+        "singular-page-lc_use_template_of_slug",
+        "faq-tab",
+        "documents-tab"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "93c06cc513c49be550bb044247a8c0bfe6d9ead59a1f8f5843c1b9a66db28da3",
+          "baseline_sha256_matches_prod": false,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "GET https://de-linker.com/de/faq-dokumente/ -> 200, <!-- LC DT ID: 6970 -->",
+      "GET https://de-linker.com/de/faq-dokumente/?tab=documents -> 200, <!-- LC DT ID: 6970 -->",
+      "WP-CLI post 6863 lc_use_template_of_slug=linker-faq-de; template 6970 pll_lang=en (singular name lookup ignores lang), sha256=93c06cc513c49be550bb044247a8c0bfe6d9ead59a1f8f5843c1b9a66db28da3 (matches plugins/linker-commerce/content/livecanvas/de/faq_page.html)",
+      "livecanvas/modules/templating.php:103-106,143-151; plugins/linker-commerce/includes/Presentation/Templates.php:145"
+    ],
+    "reason": "实测 DE /de/faq-dokumente/ 及其 ?tab=documents 均命中 LC DT ID: 6970；模板元数据 pll_lang=en 但因 lc_get_template_id_by_slug 为按 name 的单篇查询而正确绑定 DE 页面 6863。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:6971:linker-advisor",
+    "id": 6971,
+    "slug": "linker-advisor",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/genie/",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6971 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET; page 4083 lc_use_template_of_slug=linker-advisor"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "en",
+        "singular-page-lc_use_template_of_slug"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "07af703cb97defb8b657d4fce909dc27bfb71298308321ea3ed434f4d8d6cc91",
+          "baseline_sha256_matches_prod": true,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "GET https://de-linker.com/genie/ -> 200, <!-- LC DT ID: 6971 -->",
+      "WP-CLI post 4083 lc_use_template_of_slug=linker-advisor; sha256=07af703cb97defb8b657d4fce909dc27bfb71298308321ea3ed434f4d8d6cc91 (matches plugins/linker-commerce/content/livecanvas/advisor_page.html)",
+      "plugins/linker-commerce/includes/Presentation/Templates.php:146"
+    ],
+    "reason": "实测 EN /genie/ 命中 LC DT ID: 6971，页面 4083 显式绑定 linker-advisor；登录态与营销入口消费者另在 state-matrix 跟踪，状态更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:6972:linker-advisor-de",
+    "id": 6972,
+    "slug": "linker-advisor-de",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/de/genie/",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6972 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET; page 6633 lc_use_template_of_slug=linker-advisor-de"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "de",
+        "singular-page-lc_use_template_of_slug"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "07af703cb97defb8b657d4fce909dc27bfb71298308321ea3ed434f4d8d6cc91",
+          "baseline_sha256_matches_prod": true,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "GET https://de-linker.com/de/genie/ -> 200, <!-- LC DT ID: 6972 -->",
+      "WP-CLI post 6633 lc_use_template_of_slug=linker-advisor-de; template 6972 pll_lang=en (singular name lookup), sha256=07af703cb97defb8b657d4fce909dc27bfb71298308321ea3ed434f4d8d6cc91 (matches plugins/linker-commerce/content/livecanvas/de/advisor_page.html)",
+      "plugins/linker-commerce/includes/Presentation/Templates.php:147"
+    ],
+    "reason": "实测 DE /de/genie/ 命中 LC DT ID: 6972，页面 6633 显式绑定 linker-advisor-de；登录态与营销入口消费者另在 state-matrix 跟踪，状态更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:6973:linker-configurator",
+    "id": 6973,
+    "slug": "linker-configurator",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/solution-configurator/",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6973 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET; page 3302 lc_use_template_of_slug=linker-configurator"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "en",
+        "singular-page-lc_use_template_of_slug"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "e37d4a5a9fc1a143056cafff6502d5e6272e219d886cc8d6537d21ef4c46e6c7",
+          "baseline_sha256_matches_prod": false,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "GET https://de-linker.com/solution-configurator/ -> 200, <!-- LC DT ID: 6973 -->",
+      "WP-CLI post 3302 lc_use_template_of_slug=linker-configurator; sha256=e37d4a5a9fc1a143056cafff6502d5e6272e219d886cc8d6537d21ef4c46e6c7 (matches plugins/linker-commerce/content/livecanvas/configurator_page.html)",
+      "plugins/linker-commerce/includes/Presentation/Templates.php:156"
+    ],
+    "reason": "实测 EN /solution-configurator/ 命中 LC DT ID: 6973，页面 3302 绑定 linker-configurator；配置器/屋顶/PDF 交互另在 state-matrix 跟踪，状态更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:6974:linker-configurator-de",
+    "id": 6974,
+    "slug": "linker-configurator-de",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/de/loesungskonfigurator/",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6974 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET; page 6693 lc_use_template_of_slug=linker-configurator-de"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "de",
+        "singular-page-lc_use_template_of_slug"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "e37d4a5a9fc1a143056cafff6502d5e6272e219d886cc8d6537d21ef4c46e6c7",
+          "baseline_sha256_matches_prod": false,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "GET https://de-linker.com/de/loesungskonfigurator/ -> 200, <!-- LC DT ID: 6974 -->",
+      "WP-CLI post 6693 lc_use_template_of_slug=linker-configurator-de; template 6974 pll_lang=en (singular name lookup), sha256=e37d4a5a9fc1a143056cafff6502d5e6272e219d886cc8d6537d21ef4c46e6c7 (matches plugins/linker-commerce/content/livecanvas/configurator_page.html)",
+      "plugins/linker-commerce/includes/Presentation/Templates.php:157"
+    ],
+    "reason": "实测 DE /de/loesungskonfigurator/ 命中 LC DT ID: 6974，页面 6693 绑定 linker-configurator-de；配置器/屋顶/PDF 交互另在 state-matrix 跟踪，状态更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:6961:shop-page",
+    "id": 6961,
+    "slug": "shop-page",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/products/",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6961 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET EN shop page (post 1034)"
+        },
+        {
+          "url": "https://de-linker.com/products/?orderby=title",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6961 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET EN shop sorted"
+        },
+        {
+          "url": "https://de-linker.com/products/?product-page=2",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6961 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET EN shop pagination (from /products/page/2/ redirect)"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "en",
+        "shop-page",
+        "sorting",
+        "pagination",
+        "de-binding-defect"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "defect",
+          "production_content_sha256": "9449e57fbd72d2c2afabeecfb232ddbc90d594ee9452b9726fe01d328acbecfe",
+          "baseline_sha256_matches_prod": false,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      },
+      "findings": [
+        {
+          "id": "shop-page-de-falls-back-to-product-archive-6905",
+          "severity": "defect",
+          "summary": "https://de-linker.com/de/produkte/ renders LC DT ID: 6905 (vorlage-fur-archiv-fur-beitragstyp-produkt) instead of 6961 (shop-page).",
+          "root_cause": "livecanvas/modules/templating.php:51-79 evaluates is_archive() first (resolving DE archive template 6905) before is_shop() returns false because 6961 has pll_lang=en and no DE twin; Linker\\I18n\\DynamicTemplates::template() (plugins/linker-i18n/includes/DynamicTemplates.php:90-93) returns early whenever $template_id is truthy, so it never falls back to 6961 on /de/produkte/."
+        }
+      ]
+    },
+    "evidence": [
+      "GET https://de-linker.com/products/ -> 200, <!-- LC DT ID: 6961 -->",
+      "GET https://de-linker.com/products/?orderby=title -> 200, <!-- LC DT ID: 6961 -->",
+      "GET https://de-linker.com/products/page/2/ -> 301/302 -> https://de-linker.com/products/?product-page=2 -> 200, <!-- LC DT ID: 6961 -->",
+      "GET https://de-linker.com/de/produkte/ -> 200, <!-- LC DT ID: 6905 --> (DEFECT: expected 6961 per effective_languages=['en','de'])",
+      "livecanvas/modules/templating.php:51-79; plugins/linker-i18n/includes/DynamicTemplates.php:90-101; plugins/linker-commerce/includes/Presentation/Templates.php:49,78-90"
+    ],
+    "reason": "EN /products/ 及其排序/分页命中 LC DT ID: 6961；但实测发现 DE /de/produkte/ 实际渲染 LC DT ID: 6905 而非 6961（is_archive 抢先赋值导致 DynamicTemplates::template 提前返回），记录为模板绑定缺陷并脱离 pending。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:6962:solution-draft",
+    "id": 6962,
+    "slug": "solution-draft",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/cart/",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6962 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET empty solution draft EN (post 1035)"
+        },
+        {
+          "url": "https://de-linker.com/de/loesungsentwurf/",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6962 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET empty solution draft DE (post 6855 via DynamicTemplates::template fallback)"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "en",
+        "de",
+        "empty-draft"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "794f581e81b4de7bbe0c2d5e075ac0cc3664da58e73c80432abc0e5b6ea943da",
+          "baseline_sha256_matches_prod": false,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "GET https://de-linker.com/cart/ -> 200, <!-- LC DT ID: 6962 -->",
+      "GET https://de-linker.com/de/loesungsentwurf/ -> 200, <!-- LC DT ID: 6962 -->",
+      "WP-CLI woocommerce_cart_page_id=1035 (DE twin 6855); template 6962 is_cart_page=1, pll_lang=en",
+      "plugins/linker-i18n/includes/DynamicTemplates.php:49-54,90-101"
+    ],
+    "reason": "实测 EN /cart/ 与 DE /de/loesungsentwurf/ 均命中 LC DT ID: 6962（DE 经 DynamicTemplates 兜底共享）；含商品草稿/数量修改/删除撤销等态未在本次只读 GET 触发，更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:6963:proforma-request",
+    "id": 6963,
+    "slug": "proforma-request",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/proforma-request/",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6963 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET inquiry/checkout page EN (post 1036)"
+        },
+        {
+          "url": "https://de-linker.com/de/proforma-anfrage/",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6963 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET inquiry/checkout page DE (post 6857 via DynamicTemplates::template fallback)"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "en",
+        "de",
+        "empty-draft-inquiry-form"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "6ba4be52970f04b17970efb31ad00dc20f3dc2bbd1bdaa3d23dbf4d886ac34cf",
+          "baseline_sha256_matches_prod": true,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "GET https://de-linker.com/proforma-request/ -> 200, <!-- LC DT ID: 6963 -->",
+      "GET https://de-linker.com/de/proforma-anfrage/ -> 200, <!-- LC DT ID: 6963 -->",
+      "GET https://de-linker.com/proforma-request/order-received/ -> 404 (LC DT ID: 940; unkeyed confirmation endpoint returns 404)",
+      "WP-CLI woocommerce_checkout_page_id=1036 (DE twin 6857); template 6963 is_checkout_page=1, pll_lang=en",
+      "plugins/linker-i18n/includes/DynamicTemplates.php:49-54,90-101"
+    ],
+    "reason": "实测 EN /proforma-request/ 与 DE /de/proforma-anfrage/ 均命中 LC DT ID: 6963（DE 经 DynamicTemplates 兜底共享）；含有效 key 的 order-received 及登录提交未在本轮只读生产测试触发，更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:6964:account",
+    "id": 6964,
+    "slug": "account",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/my-account/",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6964 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET sign-in gate EN (post 1037)"
+        },
+        {
+          "url": "https://de-linker.com/my-account/register/",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6964 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET register endpoint EN"
+        },
+        {
+          "url": "https://de-linker.com/my-account/lost-password/",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6964 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET lost-password endpoint EN"
+        },
+        {
+          "url": "https://de-linker.com/de/mein-konto/",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6964 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET sign-in gate DE (post 6859 via DynamicTemplates::template fallback)"
+        },
+        {
+          "url": "https://de-linker.com/de/mein-konto/registrieren/",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6964 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET register endpoint DE (GermanRoutes ENDPOINTS['register'])"
+        },
+        {
+          "url": "https://de-linker.com/de/mein-konto/passwort-zuruecksetzen/",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6964 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET lost-password endpoint DE (GermanRoutes ENDPOINTS['lost-password'])"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "en",
+        "de",
+        "sign-in",
+        "register",
+        "lost-password"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "6ff7873f87bfc33a20253ca5223eaedbab74d43f0b80fc7dad55b3a83e80a9a7",
+          "baseline_sha256_matches_prod": true,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "GET https://de-linker.com/my-account/ & /register/ & /lost-password/ -> 200, <!-- LC DT ID: 6964 -->",
+      "GET https://de-linker.com/de/mein-konto/ & /registrieren/ & /passwort-zuruecksetzen/ -> 200, <!-- LC DT ID: 6964 -->",
+      "WP-CLI woocommerce_myaccount_page_id=1037 (DE twin 6859); template 6964 is_account_page=1, pll_lang=en",
+      "plugins/linker-i18n/includes/DynamicTemplates.php:49-54,90-101; plugins/linker-i18n/includes/GermanRoutes.php:77-88"
+    ],
+    "reason": "实测 EN/DE 账户主入口及 register/lost-password 端点共 6 条路由均命中 LC DT ID: 6964（DE 经 DynamicTemplates 兜底共享）；登录后端点待在隔离环境验收，更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:6967:linker-compare",
+    "id": 6967,
+    "slug": "linker-compare",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/compare-products/",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6967 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET empty comparison EN (post 5385)"
+        },
+        {
+          "url": "https://de-linker.com/compare-products/?ids=1832,6530",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6967 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET populated comparison EN"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "en",
+        "singular-page-lc_use_template_of_slug",
+        "empty-selection",
+        "populated-comparison"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "0f8355269d0f5120a4d7d42137001b2c2dafd6228b26e5dec05b770d10176076",
+          "baseline_sha256_matches_prod": true,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "GET https://de-linker.com/compare-products/ -> 200, <!-- LC DT ID: 6967 -->",
+      "GET https://de-linker.com/compare-products/?ids=1832,6530 -> 200, <!-- LC DT ID: 6967 -->",
+      "WP-CLI post 5385 lc_use_template_of_slug=linker-compare",
+      "plugins/linker-commerce/includes/Presentation/Templates.php:142"
+    ],
+    "reason": "实测 EN 空对比与带 ids=1832,6530 对比页均命中 LC DT ID: 6967，状态更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:6968:linker-compare-de",
+    "id": 6968,
+    "slug": "linker-compare-de",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/de/produkte-vergleichen/",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6968 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET empty comparison DE (post 6600)"
+        },
+        {
+          "url": "https://de-linker.com/de/produkte-vergleichen/?ids=1832,6530",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6968 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET populated comparison DE"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "de",
+        "singular-page-lc_use_template_of_slug",
+        "empty-selection",
+        "populated-comparison"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "69a8e0f2302984a9673c69b1fef9ae1b4058d3e8540dcfcc0435e74e54c4ca32",
+          "baseline_sha256_matches_prod": true,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "GET https://de-linker.com/de/produkte-vergleichen/ -> 200, <!-- LC DT ID: 6968 -->",
+      "GET https://de-linker.com/de/produkte-vergleichen/?ids=1832,6530 -> 200, <!-- LC DT ID: 6968 -->",
+      "WP-CLI post 6600 lc_use_template_of_slug=linker-compare-de; template 6968 pll_lang=en (singular name lookup)",
+      "plugins/linker-commerce/includes/Presentation/Templates.php:143"
+    ],
+    "reason": "实测 DE 空对比与带 ids=1832,6530 对比页均命中 LC DT ID: 6968，状态更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:940:template-for-404",
+    "id": 940,
+    "slug": "template-for-404",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/_coverage-review-missing-route/",
+          "lang": "en",
+          "http_status": 404,
+          "marker": "<!-- LC DT ID: 940 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET synthetic missing EN route"
+        },
+        {
+          "url": "https://de-linker.com/products/?pa_brand=nonexistent_zzz",
+          "lang": "en",
+          "http_status": 404,
+          "marker": "<!-- LC DT ID: 940 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET invalid taxonomy filter query"
+        },
+        {
+          "url": "https://de-linker.com/products/page/999/",
+          "lang": "en",
+          "http_status": 404,
+          "marker": "<!-- LC DT ID: 940 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET out-of-range shop pagination"
+        },
+        {
+          "url": "https://de-linker.com/author/admin/",
+          "lang": "en",
+          "http_status": 404,
+          "marker": "<!-- LC DT ID: 940 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET disabled/empty author archive"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "en",
+        "http-404",
+        "out-of-range-pagination",
+        "missing-route"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "2bc5956df04e195a386a16ee24e3b2793413699c6c97f6d7b2b2453119e1149d",
+          "baseline_sha256_matches_prod": true,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "GET https://de-linker.com/_coverage-review-missing-route/ -> 404, <!-- LC DT ID: 940 -->",
+      "GET https://de-linker.com/products/?pa_brand=nonexistent_zzz -> 404, <!-- LC DT ID: 940 -->",
+      "GET https://de-linker.com/products/page/999/ -> 404, <!-- LC DT ID: 940 -->",
+      "GET https://de-linker.com/author/admin/ -> 404, <!-- LC DT ID: 940 -->",
+      "Playwright desktop 1440 verified header (Primary navigation) & footer (Footer navigation) present on 404 EN"
+    ],
+    "reason": "实测 EN 缺失路径、无效筛选、越界分页及空作者归档均返回 HTTP 404 并渲染 LC DT ID: 940，状态更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:6861:vorlage-fur-404",
+    "id": 6861,
+    "slug": "vorlage-fur-404",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/de/_coverage-review-missing-route/",
+          "lang": "de",
+          "http_status": 404,
+          "marker": "<!-- LC DT ID: 6861 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET synthetic missing DE route"
+        },
+        {
+          "url": "https://de-linker.com/de/produkte/?pa_brand=nonexistent_zzz",
+          "lang": "de",
+          "http_status": 404,
+          "marker": "<!-- LC DT ID: 6861 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET invalid DE taxonomy filter query"
+        },
+        {
+          "url": "https://de-linker.com/de/produkte/seite/999/",
+          "lang": "de",
+          "http_status": 404,
+          "marker": "<!-- LC DT ID: 6861 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET out-of-range DE shop pagination"
+        },
+        {
+          "url": "https://de-linker.com/de/mein-konto/passwort-vergessen/",
+          "lang": "de",
+          "http_status": 404,
+          "marker": "<!-- LC DT ID: 6861 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET non-existent account endpoint alias (actual slug is passwort-zuruecksetzen)"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "de",
+        "http-404",
+        "out-of-range-pagination",
+        "missing-route"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "1e9a125febb6f98985989be3636c9e72a1855cc9389e728925b587983cbc1df3",
+          "baseline_sha256_matches_prod": false,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "GET https://de-linker.com/de/_coverage-review-missing-route/ -> 404, <!-- LC DT ID: 6861 -->",
+      "GET https://de-linker.com/de/produkte/?pa_brand=nonexistent_zzz -> 404, <!-- LC DT ID: 6861 -->",
+      "GET https://de-linker.com/de/produkte/seite/999/ -> 404, <!-- LC DT ID: 6861 -->",
+      "Playwright desktop 1440 verified header (Primäre Navigation) & footer (Fußzeilen-Navigation) present on 404 DE"
+    ],
+    "reason": "实测 DE 缺失路径、无效筛选、越界分页均返回 HTTP 404 并渲染 LC DT ID: 6861，状态更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:619:template-for-search",
+    "id": 619,
+    "slug": "template-for-search",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/?s=SAJ",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 619 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET global search with results EN"
+        },
+        {
+          "url": "https://de-linker.com/?s=nonexistent_zzz_123",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 619 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET global search empty results EN"
+        },
+        {
+          "url": "https://de-linker.com/?s=SAJ&post_type=post",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 619 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET journal-scoped search EN"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "en",
+        "search-with-results",
+        "search-empty-results",
+        "journal-search"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "7e5d7456889e3eb93dd0362cf290264f3b9fa2f408e16b51dffc50fe8315d8fc",
+          "baseline_sha256_matches_prod": false,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "GET https://de-linker.com/?s=SAJ -> 200, <!-- LC DT ID: 619 -->",
+      "GET https://de-linker.com/?s=nonexistent_zzz_123 -> 200, <!-- LC DT ID: 619 -->",
+      "GET https://de-linker.com/?s=SAJ&post_type=post -> 200, <!-- LC DT ID: 619 -->",
+      "WP-CLI template 619 is_search=1, pll_lang=en, sha256=7e5d7456889e3eb93dd0362cf290264f3b9fa2f408e16b51dffc50fe8315d8fc (matches search.html)"
+    ],
+    "reason": "实测 EN 有结果搜索、无结果搜索及博客限定搜索均命中 LC DT ID: 619，状态更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:6875:vorlage-fur-die-suche",
+    "id": 6875,
+    "slug": "vorlage-fur-die-suche",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/de/?s=SAJ",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6875 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET global search with results DE"
+        },
+        {
+          "url": "https://de-linker.com/de/?s=nonexistent_zzz_123",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6875 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET global search empty results DE"
+        },
+        {
+          "url": "https://de-linker.com/de/?s=Notstrom&post_type=post",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6875 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET journal-scoped search DE"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "de",
+        "search-with-results",
+        "search-empty-results",
+        "journal-search"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "c7daa8f39fdf21dc6c9728c6a6eb142ce174f667fcf877ea4bb0c13d94d854dd",
+          "baseline_sha256_matches_prod": false,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "GET https://de-linker.com/de/?s=SAJ -> 200, <!-- LC DT ID: 6875 -->",
+      "GET https://de-linker.com/de/?s=nonexistent_zzz_123 -> 200, <!-- LC DT ID: 6875 -->",
+      "GET https://de-linker.com/de/?s=Notstrom&post_type=post -> 200, <!-- LC DT ID: 6875 -->",
+      "WP-CLI template 6875 is_search=1, pll_lang=de, sha256=c7daa8f39fdf21dc6c9728c6a6eb142ce174f667fcf877ea4bb0c13d94d854dd (matches de/search.html)"
+    ],
+    "reason": "实测 DE 有结果搜索、无结果搜索及博客限定搜索均命中 LC DT ID: 6875，状态更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:613:template-for-single-post",
+    "id": 613,
+    "slug": "template-for-single-post",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/installer-checklist-inverter-battery-pairing/",
+          "width": 1440,
+          "lang": "en",
+          "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json",
+          "scope": "649 controls only"
+        },
+        {
+          "url": "https://de-linker.com/installer-checklist-inverter-battery-pairing/",
+          "width": 390,
+          "lang": "en",
+          "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json",
+          "scope": "649 controls only"
+        },
+        {
+          "url": "https://de-linker.com/hybrid-inverter-vs-ac-coupled-storage/",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 613 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET blog single post EN (post 551)"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "en",
+        "single-post"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "8e8b12df1163d177037c97a4137473e0e596bdcac3baba895c590d49dbe85ec5",
+          "baseline_sha256_matches_prod": false,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "GET https://de-linker.com/hybrid-inverter-vs-ac-coupled-storage/ -> 200, <!-- LC DT ID: 613 -->",
+      "WP-CLI template 613 is_single_post=1, pll_lang=en, sha256=8e8b12df1163d177037c97a4137473e0e596bdcac3baba895c590d49dbe85ec5 (matches blog_single.html)"
+    ],
+    "reason": "保留既有 649 controls 路线并补齐 candidate /hybrid-inverter-vs-ac-coupled-storage/ 的 HTTP 200 + LC DT ID: 613 模板绑定及 applicable_states。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:6877:vorlage-fur-einzelnen-beitrag",
+    "id": 6877,
+    "slug": "vorlage-fur-einzelnen-beitrag",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/de/installateur-checkliste-wechselrichter-akku/",
+          "width": 1440,
+          "lang": "de",
+          "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json",
+          "scope": "649 controls only"
+        },
+        {
+          "url": "https://de-linker.com/de/installateur-checkliste-wechselrichter-akku/",
+          "width": 390,
+          "lang": "de",
+          "evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/production-blog-controls.json",
+          "scope": "649 controls only"
+        },
+        {
+          "url": "https://de-linker.com/de/hybridwechselrichter-vs-ac-speicher/",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6877 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET blog single post DE (post 6883)"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "de",
+        "single-post"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "8b461729a554ac42e3555019bf9e44a9f96cf49d8bc87cf34084d75c57e7530f",
+          "baseline_sha256_matches_prod": false,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "GET https://de-linker.com/de/hybridwechselrichter-vs-ac-speicher/ -> 200, <!-- LC DT ID: 6877 -->",
+      "WP-CLI template 6877 is_single_post=1, pll_lang=de, sha256=8b461729a554ac42e3555019bf9e44a9f96cf49d8bc87cf34084d75c57e7530f (matches de/blog_single.html)"
+    ],
+    "reason": "保留既有 649 controls 路线并补齐 candidate /de/hybridwechselrichter-vs-ac-speicher/ 的 HTTP 200 + LC DT ID: 6877 模板绑定及 applicable_states。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:607:template-for-archive-for-tax-category",
+    "id": 607,
+    "slug": "template-for-archive-for-tax-category",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/category/applications-blog/",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 607 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET blog category archive EN (term 14)"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "en",
+        "taxonomy-archive-category"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "cefbd01515b313774dfea3611cbfdcfc052742f26df8ddafc3684fc2be92d113",
+          "baseline_sha256_matches_prod": false,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "GET https://de-linker.com/category/applications-blog/ -> 200, <!-- LC DT ID: 607 -->",
+      "WP-CLI template 607 is_archive_for_tax_category=1, pll_lang=en, sha256=cefbd01515b313774dfea3611cbfdcfc052742f26df8ddafc3684fc2be92d113 (matches category_archive.html)"
+    ],
+    "reason": "实测 EN 博客分类归档 /category/applications-blog/ 命中 LC DT ID: 607，状态更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:6879:vorlage-fur-archiv-der-steuerkategorie",
+    "id": 6879,
+    "slug": "vorlage-fur-archiv-der-steuerkategorie",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/de/kategorie/anwendungen/",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6879 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET blog category archive DE (term 574)"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "de",
+        "taxonomy-archive-category"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "e85a2f2dbf985b40420716f7bbbae2c184d36978140aa74b3f93ad698dac8acd",
+          "baseline_sha256_matches_prod": false,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "GET https://de-linker.com/de/kategorie/anwendungen/ -> 200, <!-- LC DT ID: 6879 -->",
+      "WP-CLI template 6879 is_archive_for_tax_category=1, pll_lang=de, sha256=e85a2f2dbf985b40420716f7bbbae2c184d36978140aa74b3f93ad698dac8acd (matches de/category_archive.html)"
+    ],
+    "reason": "实测 DE 博客分类归档 /de/kategorie/anwendungen/ 命中 LC DT ID: 6879，状态更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:574:template-for-blog-posts-index",
+    "id": 574,
+    "slug": "template-for-blog-posts-index",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/blog/",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 574 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET blog posts index EN (page 14)"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "en",
+        "blog-posts-index"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "2f0631e17c7b8a797d75c5d4d46ef9c1eab575c01aeab66fb5c9eb1a1964cc83",
+          "baseline_sha256_matches_prod": false,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "GET https://de-linker.com/blog/ -> 200, <!-- LC DT ID: 574 -->",
+      "GET https://de-linker.com/blog/page/2/ -> canonical redirect to /blog/ (single page of 10 EN posts)",
+      "WP-CLI template 574 is_blog_posts_index=1, pll_lang=en, sha256=2f0631e17c7b8a797d75c5d4d46ef9c1eab575c01aeab66fb5c9eb1a1964cc83 (matches blog_index.html)"
+    ],
+    "reason": "实测 EN /blog/ 命中 LC DT ID: 574（当前共 10 篇 EN 博文单页展示），状态更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:6881:vorlage-fur-blog-beitragsindex",
+    "id": 6881,
+    "slug": "vorlage-fur-blog-beitragsindex",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/de/blog/",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6881 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET blog posts index DE (page 6915)"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "de",
+        "blog-posts-index"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "7a763e2b3c9b734f731e280868e29f9663ea405a35e2e7c5cb4972b1658c1535",
+          "baseline_sha256_matches_prod": false,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "GET https://de-linker.com/de/blog/ -> 200, <!-- LC DT ID: 6881 -->",
+      "GET https://de-linker.com/de/blog/seite/2/ -> canonical redirect to /de/blog/ (single page of 10 DE posts)",
+      "WP-CLI template 6881 is_blog_posts_index=1, pll_lang=de, sha256=7a763e2b3c9b734f731e280868e29f9663ea405a35e2e7c5cb4972b1658c1535 (matches de/blog_index.html)"
+    ],
+    "reason": "实测 DE /de/blog/ 命中 LC DT ID: 6881（当前共 10 篇 DE 博文单页展示），状态更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:234:template-for-single-product",
+    "id": 234,
+    "slug": "template-for-single-product",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/product/saj-ats1-t63-a/",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 234 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET single product EN (post 1178)"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "en",
+        "single-product"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "bb362aa23eba8aae3365e5d9898299a5570fd85c17e9fabbaefc289eaf7d3118",
+          "baseline_sha256_matches_prod": false,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "GET https://de-linker.com/product/saj-ats1-t63-a/ -> 200, <!-- LC DT ID: 234 -->",
+      "WP-CLI template 234 is_single_product=1, pll_lang=en, sha256=bb362aa23eba8aae3365e5d9898299a5570fd85c17e9fabbaefc289eaf7d3118 (matches single_product.html)"
+    ],
+    "reason": "实测 EN 单品页 /product/saj-ats1-t63-a/ 命中 LC DT ID: 234，状态更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:6903:vorlage-fur-einzelnes-produkt",
+    "id": 6903,
+    "slug": "vorlage-fur-einzelnes-produkt",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/de/produkt/goodwe-gw60k-sts-g10/",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6903 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET single product DE (post 6565)"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "de",
+        "single-product"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "ca783bf0916f265bba9b042070623599d658e8ce7cfa728beb6eadf8c8d353a8",
+          "baseline_sha256_matches_prod": false,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "GET https://de-linker.com/de/produkt/goodwe-gw60k-sts-g10/ -> 200, <!-- LC DT ID: 6903 -->",
+      "WP-CLI template 6903 is_single_product=1, pll_lang=de, sha256=ca783bf0916f265bba9b042070623599d658e8ce7cfa728beb6eadf8c8d353a8 (matches de/single_product.html)"
+    ],
+    "reason": "实测 DE 单品页 /de/produkt/goodwe-gw60k-sts-g10/ 命中 LC DT ID: 6903，状态更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:231:template-for-archive-for-post-type-product",
+    "id": 231,
+    "slug": "template-for-archive-for-post-type-product",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/product-category/accessories/",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 231 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET product_cat archive EN"
+        },
+        {
+          "url": "https://de-linker.com/product-category/home-storage/",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 231 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET product_cat archive EN (home-storage)"
+        },
+        {
+          "url": "https://de-linker.com/product-category/inverters/",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 231 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET product_cat archive EN (inverters)"
+        },
+        {
+          "url": "https://de-linker.com/brand/goodwe/",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 231 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET product_brand/pa_brand shared archive EN"
+        },
+        {
+          "url": "https://de-linker.com/brand/ecoflow/",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 231 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET empty brand archive EN (0 cards)"
+        },
+        {
+          "url": "https://de-linker.com/series/goodwe-etr/",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 231 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET pa_series archive EN"
+        },
+        {
+          "url": "https://de-linker.com/phase/single-phase/",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 231 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET pa_phase archive EN"
+        },
+        {
+          "url": "https://de-linker.com/battery-voltage/high-voltage/",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 231 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET pa_battery-voltage archive EN"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "en",
+        "taxonomy-archive-product_cat",
+        "taxonomy-archive-brand",
+        "taxonomy-archive-pa_series",
+        "taxonomy-archive-pa_phase",
+        "taxonomy-archive-pa_battery-voltage",
+        "empty-archive"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "a0fb0b3f993c93edf67bd06f6de5ed098e301d12a8d6ca4099fc65caa3174652",
+          "baseline_sha256_matches_prod": false,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "GET /product-category/accessories/, /home-storage/, /inverters/ -> 200, <!-- LC DT ID: 231 -->",
+      "GET /brand/goodwe/, /brand/ecoflow/, /brand/chint/, /series/goodwe-etr/, /series/goodwe-esa-3-10kw-eha-g20/ -> 200, <!-- LC DT ID: 231 -->",
+      "GET /phase/single-phase/, /battery-voltage/high-voltage/, /battery-voltage/low-voltage/ -> 200, <!-- LC DT ID: 231 -->",
+      "WP-CLI template 231 carries is_archive_for_post_type_product=1 + all 11 is_archive_for_tax_* generic keys (ArchiveAssignments.php), sha256=a0fb0b3f993c93edf67bd06f6de5ed098e301d12a8d6ca4099fc65caa3174652"
+    ],
+    "reason": "实测 EN 全部活跃产品分类/品牌/系列/相位/电池电压归档及空结果归档（/brand/ecoflow/）均明确命中 LC DT ID: 231，状态更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_dynamic_template:6905:vorlage-fur-archiv-fur-beitragstyp-produkt",
+    "id": 6905,
+    "slug": "vorlage-fur-archiv-fur-beitragstyp-produkt",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/de/produkt-kategorie/gewerbespeicher/batteriesysteme/",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6905 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET product_cat archive DE"
+        },
+        {
+          "url": "https://de-linker.com/de/produkt-kategorie/heimspeicher/",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6905 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET product_cat archive DE (heimspeicher)"
+        },
+        {
+          "url": "https://de-linker.com/de/brand/goodwe/",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6905 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET shared brand archive DE"
+        },
+        {
+          "url": "https://de-linker.com/de/brand/ecoflow/",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6905 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET empty brand archive DE (0 cards)"
+        },
+        {
+          "url": "https://de-linker.com/de/series/goodwe-etr/",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6905 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET pa_series archive DE"
+        },
+        {
+          "url": "https://de-linker.com/de/phase/dreiphasig/",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6905 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET pa_phase archive DE"
+        },
+        {
+          "url": "https://de-linker.com/de/battery-voltage/hochvolt/",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6905 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Anonymous GET pa_battery-voltage archive DE"
+        },
+        {
+          "url": "https://de-linker.com/de/produkte/",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<!-- LC DT ID: 6905 -->",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "DEFECTIVE interception: DE shop page renders 6905 instead of 6961"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "de",
+        "taxonomy-archive-product_cat",
+        "taxonomy-archive-brand",
+        "taxonomy-archive-pa_series",
+        "taxonomy-archive-pa_phase",
+        "taxonomy-archive-pa_battery-voltage",
+        "empty-archive",
+        "shop-page-de-fallback-collision"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "defect",
+          "production_content_sha256": "80c1ec1867f03c97923fb60c2ae8653048cf144e21b1e070e5dc8ec46413111d",
+          "baseline_sha256_matches_prod": false,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      },
+      "findings": [
+        {
+          "id": "de-shop-page-captured-by-6905",
+          "severity": "defect",
+          "summary": "6905 intercepts /de/produkte/ (is_shop) because is_archive() matches 6905 before is_shop() fails to find a DE twin for 6961.",
+          "root_cause": "livecanvas/modules/templating.php:51-79 + plugins/linker-i18n/includes/DynamicTemplates.php:90-93"
+        }
+      ]
+    },
+    "evidence": [
+      "GET /de/produkt-kategorie/gewerbespeicher/batteriesysteme/, /heimspeicher/, /wechselrichter/ -> 200, <!-- LC DT ID: 6905 -->",
+      "GET /de/brand/goodwe/, /de/brand/ecoflow/, /de/series/goodwe-etr/, /de/phase/dreiphasig/, /de/battery-voltage/hochvolt/ -> 200, <!-- LC DT ID: 6905 -->",
+      "GET /de/produkte/ -> 200, <!-- LC DT ID: 6905 --> (captures DE Shop route instead of 6961)",
+      "WP-CLI template 6905 carries is_archive_for_post_type_product=1 + all 11 is_archive_for_tax_* generic keys, sha256=80c1ec1867f03c97923fb60c2ae8653048cf144e21b1e070e5dc8ec46413111d"
+    ],
+    "reason": "实测 DE 全部分类/品牌/系列/相位/电池电压归档及空归档命中 LC DT ID: 6905，并发现其意外承接了 /de/produkte/（见 6961 缺陷），状态更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_partial:30:global-javascript-code",
+    "id": 30,
+    "slug": "global-javascript-code",
+    "updates": {
+      "status": "not-applicable",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/",
+          "lang": "en",
+          "http_status": 200,
+          "marker": "<script id=\"lc_script_tag\" type=\"module\"></script>",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Empty stock slot emitted in wp_footer on EN home"
+        },
+        {
+          "url": "https://de-linker.com/de/",
+          "lang": "de",
+          "http_status": 200,
+          "marker": "<script id=\"lc_script_tag\" type=\"module\"></script>",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Empty stock slot emitted in wp_footer on DE home"
+        }
+      ],
+      "applicable_states": [
+        "not-applicable",
+        "empty-stock-slot",
+        "en",
+        "de",
+        "anonymous-guest"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "not-applicable",
+          "production_content_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "baseline_sha256_matches_prod": true,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "docs/audit/2026-11-04-lc-global-js-partial.md",
+      "WP-CLI ID 30 post_content len=0, sha256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "Playwright verified <script id=\"lc_script_tag\" type=\"module\"></script> (textContent.length=0) on EN/DE home, cart, privacy, 404 with 0 pageerror; site JS runs via enqueued plugin scripts (linker-header-menu, footer-app.js)."
+    ],
+    "reason": "生产 WP-CLI 与 Playwright 证实 ID 30 为 LiveCanvas 刻意保留的空 Global JS 槽位（长度 0）；全站实际 JS 由插件/partial 独立脚本承担，按 docs/audit/2026-11-04-lc-global-js-partial.md 标为 not-applicable。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_partial:17:header",
+    "id": 17,
+    "slug": "header",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/",
+          "lang": "en",
+          "http_status": 200,
+          "width": 1440,
+          "marker": "<header id='lc-header'> #tv-header-v2 aria-label=\"Primary navigation\"",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Long page EN (docHeight 8388px)"
+        },
+        {
+          "url": "https://de-linker.com/",
+          "lang": "en",
+          "http_status": 200,
+          "width": 390,
+          "marker": "<header id='lc-header'> #tv-mobile-toggle / #tv-mobile-panel",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Long page mobile EN"
+        },
+        {
+          "url": "https://de-linker.com/cart/",
+          "lang": "en",
+          "http_status": 200,
+          "width": 1440,
+          "marker": "<header id='lc-header'> #tv-header-v2 aria-label=\"Primary navigation\"",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Short page EN (docHeight 1300px)"
+        },
+        {
+          "url": "https://de-linker.com/privacy-policy/",
+          "lang": "en",
+          "http_status": 200,
+          "width": 1440,
+          "marker": "<header id='lc-header'> #tv-header-v2 aria-label=\"Primary navigation\"",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Long legal page EN + header language switch -> /de/datenschutz/"
+        },
+        {
+          "url": "https://de-linker.com/_coverage-review-missing-route/",
+          "lang": "en",
+          "http_status": 404,
+          "width": 1440,
+          "marker": "<header id='lc-header'> #tv-header-v2 aria-label=\"Primary navigation\"",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "404 page EN"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "en",
+        "long-page",
+        "short-page",
+        "404",
+        "desktop-1440",
+        "mobile-390",
+        "dropdown-open-close-esc",
+        "mobile-drawer-open-esc",
+        "language-switch"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "25350e04a9933ed766081bdf175c4f277790b22829b7f9ca5543460388ed115d",
+          "baseline_sha256_matches_prod": false,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "Playwright headless Chromium 2026-11-13: 1440 desktop Products dropdown click -> aria-expanded=true + mega menu visible -> Esc -> aria-expanded=false",
+      "Playwright headless Chromium 2026-11-13: 390 mobile #tv-mobile-toggle -> data-open=true, accordion details open, Esc -> data-open=false",
+      "Playwright headless Chromium 2026-11-13: /privacy-policy/ header language link clicked -> navigated to https://de-linker.com/de/datenschutz/ (de-DE)",
+      "livecanvas/livecanvas-plugin-index.php:817-830; WP-CLI ID 17 pll_lang=en, sha256=25350e04a9933ed766081bdf175c4f277790b22829b7f9ca5543460388ed115d (matches partials/header.html)"
+    ],
+    "reason": "Playwright 只读实证 EN 长短页及 404 均渲染 ID 17（Primary navigation），1440 下拉展开/Esc、390 抽屉展开/手风琴/Esc、页头语言切换跳转全部通过；登录态账号菜单不在本次只读范围，更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_partial:18:footer",
+    "id": 18,
+    "slug": "footer",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/",
+          "lang": "en",
+          "http_status": 200,
+          "width": 1440,
+          "marker": "<footer id='lc-footer'> #tv-footer-v2.footer-ready aria-label=\"Footer navigation\"",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Long page EN (docHeight 8388px)"
+        },
+        {
+          "url": "https://de-linker.com/",
+          "lang": "en",
+          "http_status": 200,
+          "width": 390,
+          "marker": "<footer id='lc-footer'> #tv-footer-v2.footer-ready",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Long page mobile EN"
+        },
+        {
+          "url": "https://de-linker.com/cart/",
+          "lang": "en",
+          "http_status": 200,
+          "width": 1440,
+          "marker": "<footer id='lc-footer'> #tv-footer-v2.footer-ready",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Short page EN (docHeight 1300px)"
+        },
+        {
+          "url": "https://de-linker.com/privacy-policy/",
+          "lang": "en",
+          "http_status": 200,
+          "width": 1440,
+          "marker": "<footer id='lc-footer'> #tv-footer-v2.footer-ready",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Long legal page EN"
+        },
+        {
+          "url": "https://de-linker.com/_coverage-review-missing-route/",
+          "lang": "en",
+          "http_status": 404,
+          "width": 1440,
+          "marker": "<footer id='lc-footer'> #tv-footer-v2.footer-ready",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "404 page EN"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "en",
+        "long-page",
+        "short-page",
+        "404",
+        "desktop-1440",
+        "mobile-390",
+        "footer-tabs",
+        "language-switch"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "baddb86fa90ab09a4ce5035d3cff84ccbfa29f82f05624fca2fa2f36717fd110",
+          "baseline_sha256_matches_prod": true,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "Playwright headless Chromium 2026-11-13: footer-app.js added .footer-ready; clicking tab 'planning' at 1440 and 'contact' at 390 switched aria-selected=true and unhid target panel",
+      "Playwright headless Chromium 2026-11-13: footer language switch clicked on / -> /de/ (de-DE) and on /cart/ -> /de/loesungsentwurf/ (de-DE)",
+      "livecanvas/livecanvas-plugin-index.php:834-847; WP-CLI ID 18 pll_lang=en, sha256=baddb86fa90ab09a4ce5035d3cff84ccbfa29f82f05624fca2fa2f36717fd110 (matches partials/footer.html)"
+    ],
+    "reason": "Playwright 只读实证 EN 长短页及 404 均渲染 ID 18（Footer navigation + 英文版权），1440/390 Dock 标签页切换与页脚语言切换跳转均正常执行，更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_partial:6909:kopfzeile",
+    "id": 6909,
+    "slug": "kopfzeile",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/de/",
+          "lang": "de",
+          "http_status": 200,
+          "width": 1440,
+          "marker": "<header id='lc-header'> #tv-header-v2 aria-label=\"Primäre Navigation\"",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Long page DE (docHeight 8613px)"
+        },
+        {
+          "url": "https://de-linker.com/de/",
+          "lang": "de",
+          "http_status": 200,
+          "width": 390,
+          "marker": "<header id='lc-header'> #tv-mobile-toggle / #tv-mobile-panel",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Long page mobile DE"
+        },
+        {
+          "url": "https://de-linker.com/de/loesungsentwurf/",
+          "lang": "de",
+          "http_status": 200,
+          "width": 1440,
+          "marker": "<header id='lc-header'> #tv-header-v2 aria-label=\"Primäre Navigation\"",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Short page DE (docHeight 1300px)"
+        },
+        {
+          "url": "https://de-linker.com/de/datenschutz/",
+          "lang": "de",
+          "http_status": 200,
+          "width": 1440,
+          "marker": "<header id='lc-header'> #tv-header-v2 aria-label=\"Primäre Navigation\"",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Long legal page DE"
+        },
+        {
+          "url": "https://de-linker.com/de/_coverage-review-missing-route/",
+          "lang": "de",
+          "http_status": 404,
+          "width": 1440,
+          "marker": "<header id='lc-header'> #tv-header-v2 aria-label=\"Primäre Navigation\"",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "404 page DE"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "de",
+        "long-page",
+        "short-page",
+        "404",
+        "desktop-1440",
+        "mobile-390",
+        "dropdown-open-close-esc",
+        "mobile-drawer-open-esc",
+        "language-switch"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "5e59aa1313699263a68353f4ae68a153ed51b4bb940a684e3f1f86bc6c72cd09",
+          "baseline_sha256_matches_prod": false,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "Playwright headless Chromium 2026-11-13: 1440 desktop Produkte dropdown click -> aria-expanded=true + mega menu visible -> Esc -> aria-expanded=false",
+      "Playwright headless Chromium 2026-11-13: 390 mobile #tv-mobile-toggle -> details.open=true, data-open=true, aria-label='Menü schließen'; Esc -> details.open=false, data-open=false",
+      "livecanvas/livecanvas-plugin-index.php:817-830; WP-CLI ID 6909 pll_lang=de, sha256=5e59aa1313699263a68353f4ae68a153ed51b4bb940a684e3f1f86bc6c72cd09 (matches partials/de/header.html)"
+    ],
+    "reason": "Playwright 只读实证 DE 长短页及 404 均渲染 ID 6909（Primäre Navigation），1440 下拉展开/Esc、390 原生 details 抽屉展开/Esc 全部通过，更新为 partially-verified。"
+  },
+  {
+    "matrix": "template",
+    "key": "lc_partial:6911:fuszeile",
+    "id": 6911,
+    "slug": "fuszeile",
+    "updates": {
+      "status": "partially-verified",
+      "rendered_routes": [
+        {
+          "url": "https://de-linker.com/de/",
+          "lang": "de",
+          "http_status": 200,
+          "width": 1440,
+          "marker": "<footer id='lc-footer'> #tv-footer-v2.footer-ready aria-label=\"Fußzeilen-Navigation\"",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Long page DE (docHeight 8613px)"
+        },
+        {
+          "url": "https://de-linker.com/de/",
+          "lang": "de",
+          "http_status": 200,
+          "width": 390,
+          "marker": "<footer id='lc-footer'> #tv-footer-v2.footer-ready",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Long page mobile DE"
+        },
+        {
+          "url": "https://de-linker.com/de/loesungsentwurf/",
+          "lang": "de",
+          "http_status": 200,
+          "width": 1440,
+          "marker": "<footer id='lc-footer'> #tv-footer-v2.footer-ready",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Short page DE (docHeight 1300px)"
+        },
+        {
+          "url": "https://de-linker.com/de/datenschutz/",
+          "lang": "de",
+          "http_status": 200,
+          "width": 1440,
+          "marker": "<footer id='lc-footer'> #tv-footer-v2.footer-ready",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "Long legal page DE"
+        },
+        {
+          "url": "https://de-linker.com/de/_coverage-review-missing-route/",
+          "lang": "de",
+          "http_status": 404,
+          "width": 1440,
+          "marker": "<footer id='lc-footer'> #tv-footer-v2.footer-ready",
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md",
+          "scope": "404 page DE"
+        }
+      ],
+      "applicable_states": [
+        "anonymous-guest",
+        "de",
+        "long-page",
+        "short-page",
+        "404",
+        "desktop-1440",
+        "mobile-390",
+        "footer-tabs",
+        "language-switch"
+      ],
+      "verified_checks": {
+        "template_binding_20261113": {
+          "status": "pass",
+          "production_content_sha256": "c84e4ba2824651ddff96ed5ab987cdb40b95e63c4757d5bc682d1f254053070c",
+          "baseline_sha256_matches_prod": true,
+          "evidence": "docs/acceptance/2026-11-13/matrix-batch-updates/batch2-report.md"
+        }
+      }
+    },
+    "evidence": [
+      "Playwright headless Chromium 2026-11-13: footer-app.js added .footer-ready; clicking tab 'planning' at 1440 and 'contact' at 390 switched aria-selected=true and unhid target panel",
+      "Playwright headless Chromium 2026-11-13: footer EN link on /de/ clicked -> navigated to https://de-linker.com/ (en-US)",
+      "livecanvas/livecanvas-plugin-index.php:834-847; WP-CLI ID 6911 pll_lang=de, sha256=c84e4ba2824651ddff96ed5ab987cdb40b95e63c4757d5bc682d1f254053070c (matches partials/de/footer.html)"
+    ],
+    "reason": "Playwright 只读实证 DE 长短页及 404 均渲染 ID 6911（Fußzeilen-Navigation + 德文版权），1440/390 Dock 标签页切换与页脚语言切换跳转均正常执行，更新为 partially-verified。"
+  }
+]

@@ -1,0 +1,2201 @@
+[
+  {
+    "id": "en-2093",
+    "path": "/product/saj-bu3-5-0-tv2-pro/",
+    "vp": "1440x900",
+    "data": {
+      "images": {
+        "total": 16,
+        "broken": [
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-hs3-stack.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "GoodWe GW6.0-BAT-D-G20 ESA battery module, 6.0 kWh",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-esa-6-battery-module-studio-logo-20260928-300x225.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "GoodWe GW9.0-BAT-D-G20 ESA battery module",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-bat-d-g20-plate-20260928-300x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "SAJ B2-5.0-HV1: two white modules on a grey base, green ring",
+            "src": "https://de-linker.com/wp-content/uploads/2026/08/ext-saj-b2-5-hv1-still-300x215.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "SAJ B2-10.0-HV1: three white modules on a grey base",
+            "src": "https://de-linker.com/wp-content/uploads/2026/08/ext-saj-b2-10-hv1-still-300x300.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ],
+        "invisible": [
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-hs3-stack.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ],
+        "sample": [
+          {
+            "section": "gallery",
+            "alt": "SAJ BU3-5.0-TV2-PRO",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-saj-bu3.jpg",
+            "complete": true,
+            "naturalWidth": 1100,
+            "naturalHeight": 594,
+            "boxW": 665,
+            "boxH": 554,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-hs3-stack.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-saj-bu3-300x162.jpg",
+            "complete": true,
+            "naturalWidth": 72,
+            "naturalHeight": 38,
+            "boxW": 70,
+            "boxH": 50,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-hs3-stack-150x300.png",
+            "complete": true,
+            "naturalWidth": 72,
+            "naturalHeight": 144,
+            "boxW": 70,
+            "boxH": 50,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/08/our-gen-scene-bu3-hs3-technik-225x300.jpg",
+            "complete": true,
+            "naturalWidth": 72,
+            "naturalHeight": 96,
+            "boxW": 70,
+            "boxH": 50,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/08/our-fit-2093-a-300x200.jpg",
+            "complete": true,
+            "naturalWidth": 72,
+            "naturalHeight": 48,
+            "boxW": 70,
+            "boxH": 50,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ]
+      },
+      "overlap_feature": [
+        {
+          "cls": "pdp-feature",
+          "media": {
+            "x": 80,
+            "y": 1866.171875,
+            "width": 1280,
+            "height": 520,
+            "top": 1866.171875,
+            "right": 1360,
+            "bottom": 2386.171875,
+            "left": 80
+          },
+          "copy": {
+            "x": 80,
+            "y": 1931.15625,
+            "width": 640,
+            "height": 455.015625,
+            "top": 1931.15625,
+            "right": 720,
+            "bottom": 2386.171875,
+            "left": 80
+          },
+          "overlaps": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "en-2093-m",
+    "path": "/product/saj-bu3-5-0-tv2-pro/",
+    "vp": "390x844",
+    "data": {
+      "images": {
+        "total": 16,
+        "broken": [
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-hs3-stack.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-saj-bu3-300x162.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-hs3-stack-150x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/08/our-gen-scene-bu3-hs3-technik-225x300.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/08/our-fit-2093-a-300x200.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "pairings",
+            "alt": "SAJ HS3-5K-T2-W/G-PX",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-hs3-stack-150x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 84,
+            "boxH": 112,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "pairings",
+            "alt": "SAJ HS3-6K-T2-W/G-PX",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-hs3-stack-150x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 84,
+            "boxH": 112,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "pairings",
+            "alt": "SAJ HS3-8K-T2-W/G-PX",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-hs3-stack-150x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 84,
+            "boxH": 112,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "pairings",
+            "alt": "SAJ HS3-10K-T2-W/G-PX",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-hs3-stack-150x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 84,
+            "boxH": 112,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "pairings",
+            "alt": "SAJ HS3-12K-T2-W/G-PX",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-hs3-stack-150x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 84,
+            "boxH": 112,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "GoodWe GW6.0-BAT-D-G20 ESA battery module, 6.0 kWh",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-esa-6-battery-module-studio-logo-20260928-300x225.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 350,
+            "boxH": 350,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "GoodWe GW9.0-BAT-D-G20 ESA battery module",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-bat-d-g20-plate-20260928-300x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 350,
+            "boxH": 350,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "SAJ B2-5.0-HV1: two white modules on a grey base, green ring",
+            "src": "https://de-linker.com/wp-content/uploads/2026/08/ext-saj-b2-5-hv1-still-300x215.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 350,
+            "boxH": 350,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "SAJ B2-10.0-HV1: three white modules on a grey base",
+            "src": "https://de-linker.com/wp-content/uploads/2026/08/ext-saj-b2-10-hv1-still-300x300.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 350,
+            "boxH": 350,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ],
+        "invisible": [
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-hs3-stack.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-saj-bu3-300x162.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-hs3-stack-150x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/08/our-gen-scene-bu3-hs3-technik-225x300.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/08/our-fit-2093-a-300x200.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ],
+        "sample": [
+          {
+            "section": "gallery",
+            "alt": "SAJ BU3-5.0-TV2-PRO",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-saj-bu3.jpg",
+            "complete": true,
+            "naturalWidth": 1100,
+            "naturalHeight": 594,
+            "boxW": 332,
+            "boxH": 300,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-hs3-stack.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-saj-bu3-300x162.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-hs3-stack-150x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/08/our-gen-scene-bu3-hs3-technik-225x300.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/08/our-fit-2093-a-300x200.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "en-2199-m",
+    "path": "/product/saj-hs3-10k-t2-w-p/",
+    "vp": "390x844",
+    "data": {
+      "images": {
+        "total": 11,
+        "broken": [
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-hs3-stack-150x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/ext-ig-saj-battery-studio-300x281.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/08/our-fit-2199-a-300x200.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "pairings",
+            "alt": "SAJ BU3-5.0-TV2-PRO",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-saj-bu3-300x162.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 84,
+            "boxH": 112,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "SAJ H2 10-30K three-phase hybrid inverter",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-h2-inverter-600x633.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 350,
+            "boxH": 350,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "GoodWe ESA ETA-G20 power module on its floor base, without battery modules",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-300x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 350,
+            "boxH": 350,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "SAJ H2 10-30K three-phase hybrid inverter",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-h2-inverter-600x633.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 350,
+            "boxH": 350,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "SAJ HS2 all-in-one storage system installed against a wall in a residential utility room",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/ext-saj-hs2-installed-detail-300x164.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 350,
+            "boxH": 350,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ],
+        "invisible": [
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/ext-ig-saj-battery-studio-600x562.jpg",
+            "complete": true,
+            "naturalWidth": 390,
+            "naturalHeight": 365,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-hs3-stack-150x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/ext-ig-saj-battery-studio-300x281.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/08/our-fit-2199-a-300x200.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ],
+        "sample": [
+          {
+            "section": "gallery",
+            "alt": "SAJ HS3-10K-T2-W/G-PX",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-hs3-stack.png",
+            "complete": true,
+            "naturalWidth": 766,
+            "naturalHeight": 1531,
+            "boxW": 332,
+            "boxH": 300,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/ext-ig-saj-battery-studio-600x562.jpg",
+            "complete": true,
+            "naturalWidth": 390,
+            "naturalHeight": 365,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-hs3-stack-150x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/ext-ig-saj-battery-studio-300x281.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/08/our-fit-2199-a-300x200.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "feature",
+            "alt": "Two MPPTs with 20 A each.",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/ext-ig-saj-battery-studio-600x562.jpg",
+            "complete": true,
+            "naturalWidth": 390,
+            "naturalHeight": 365,
+            "boxW": 350,
+            "boxH": 330,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ]
+      },
+      "section_nav": {
+        "navOverflowX": "visible",
+        "navScrollW": 390,
+        "navClientW": 390,
+        "contOverflowX": "auto",
+        "contScrollW": 390,
+        "contClientW": 390,
+        "links": [
+          {
+            "text": "Description",
+            "left": 20,
+            "right": 118
+          },
+          {
+            "text": "Technical data",
+            "left": 126,
+            "right": 239
+          },
+          {
+            "text": "Documents",
+            "left": 247,
+            "right": 344
+          }
+        ]
+      },
+      "footer_text": {
+        "hasDeutscher": false,
+        "hasAllrightsNoSpace": false,
+        "copyrightMatch": "© 2026 Linker. All rights reserved. Imprint Privacy Policy Cookie settings Terms of Sale Refund & Returns Product fit·Inv",
+        "langLinks": [
+          "English",
+          "Deutsch"
+        ]
+      }
+    }
+  },
+  {
+    "id": "en-2394",
+    "path": "/product/goodwe-gm330/",
+    "vp": "1440x900",
+    "data": {
+      "images": {
+        "total": 4,
+        "broken": [
+          {
+            "section": "related",
+            "alt": "GoodWe GMK330 smart meter, front view",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-gmk330-front-20260928-300x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "Chint DTSU666 three-phase smart meter",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/chint-dtsu666-render-600x605.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ],
+        "invisible": [],
+        "sample": [
+          {
+            "section": "gallery",
+            "alt": "GoodWe GM330",
+            "src": "https://de-linker.com/wp-content/uploads/2026/08/ext-goodwe-gm330-hero.png",
+            "complete": true,
+            "naturalWidth": 1020,
+            "naturalHeight": 1300,
+            "boxW": 665,
+            "boxH": 554,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "feature",
+            "alt": "A clear CT choice for the meter point",
+            "src": "https://de-linker.com/wp-content/uploads/2026/08/ext-goodwe-gm330-hero-768x979.png",
+            "complete": true,
+            "naturalWidth": 640,
+            "naturalHeight": 815,
+            "boxW": 1280,
+            "boxH": 520,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "GoodWe GMK330 smart meter, front view",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-gmk330-front-20260928-300x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "Chint DTSU666 three-phase smart meter",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/chint-dtsu666-render-600x605.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "en-2394-m",
+    "path": "/product/goodwe-gm330/",
+    "vp": "390x844",
+    "data": {
+      "section_nav": {
+        "navOverflowX": "visible",
+        "navScrollW": 390,
+        "navClientW": 390,
+        "contOverflowX": "auto",
+        "contScrollW": 475,
+        "contClientW": 390,
+        "links": [
+          {
+            "text": "Description",
+            "left": 20,
+            "right": 118
+          },
+          {
+            "text": "Technical data",
+            "left": 126,
+            "right": 239
+          },
+          {
+            "text": "Applications",
+            "left": 247,
+            "right": 350
+          },
+          {
+            "text": "Documents",
+            "left": 358,
+            "right": 455
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "en-2397",
+    "path": "/product/goodwe-gmk330/",
+    "vp": "1440x900",
+    "data": {
+      "images": {
+        "total": 4,
+        "broken": [
+          {
+            "section": "related",
+            "alt": "Chint DTSU666 three-phase smart meter",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/chint-dtsu666-render-600x605.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "GoodWe GM330 three-phase smart meter, front view",
+            "src": "https://de-linker.com/wp-content/uploads/2026/08/ext-goodwe-gm330-hero-600x765.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ],
+        "invisible": [],
+        "sample": [
+          {
+            "section": "gallery",
+            "alt": "GoodWe GMK330",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-gmk330-front-20260928.png",
+            "complete": true,
+            "naturalWidth": 1000,
+            "naturalHeight": 1000,
+            "boxW": 665,
+            "boxH": 554,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "feature",
+            "alt": "Three specified CTs with this GMK330",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-gmk330-front-20260928-768x768.png",
+            "complete": true,
+            "naturalWidth": 640,
+            "naturalHeight": 640,
+            "boxW": 1280,
+            "boxH": 520,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "Chint DTSU666 three-phase smart meter",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/chint-dtsu666-render-600x605.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "GoodWe GM330 three-phase smart meter, front view",
+            "src": "https://de-linker.com/wp-content/uploads/2026/08/ext-goodwe-gm330-hero-600x765.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "en-2403-m",
+    "path": "/product/goodwe-gw125k-sts-g10/",
+    "vp": "390x844",
+    "data": {
+      "section_nav": {
+        "navOverflowX": "visible",
+        "navScrollW": 390,
+        "navClientW": 390,
+        "contOverflowX": "auto",
+        "contScrollW": 475,
+        "contClientW": 390,
+        "links": [
+          {
+            "text": "Description",
+            "left": 20,
+            "right": 118
+          },
+          {
+            "text": "Technical data",
+            "left": 126,
+            "right": 239
+          },
+          {
+            "text": "Applications",
+            "left": 247,
+            "right": 350
+          },
+          {
+            "text": "Documents",
+            "left": 358,
+            "right": 455
+          }
+        ]
+      },
+      "related_img_style": [
+        {
+          "alt": "SAJ ATS1-T63-A",
+          "w": 350,
+          "h": 350,
+          "natW": 0,
+          "natH": 0,
+          "objectFit": "contain"
+        },
+        {
+          "alt": "GoodWe GW30K/60K-STS-G10 static transfer switch, front view.",
+          "w": 350,
+          "h": 350,
+          "natW": 0,
+          "natH": 0,
+          "objectFit": "contain"
+        },
+        {
+          "alt": "GoodWe GW30K/60K-STS-G10 static transfer switch, front view.",
+          "w": 350,
+          "h": 350,
+          "natW": 0,
+          "natH": 0,
+          "objectFit": "contain"
+        }
+      ]
+    }
+  },
+  {
+    "id": "en-2409-m",
+    "path": "/product/goodwe-sec3000c-smart-energy-controller/",
+    "vp": "390x844",
+    "data": {
+      "images": {
+        "total": 6,
+        "broken": [
+          {
+            "section": "related",
+            "alt": "SAJ eManager residential energy manager DIN-rail communication module, studio render",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/our-saj-emanager-studio-300x300.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 350,
+            "boxH": 350,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "SAJ eSolar AIO3 WiFi/LAN/Bluetooth data collector on neutral background",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/ext-saj-esolar-aio3-collector-300x169.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 350,
+            "boxH": 350,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "GoodWe EzManager3000 home energy management gateway, DIN-rail",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/ezmanager3000-000-300x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 350,
+            "boxH": 350,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "SAJ eManager-C1 Pro smart communication box",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-emanager-600x673.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 350,
+            "boxH": 350,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ],
+        "invisible": [],
+        "sample": [
+          {
+            "section": "gallery",
+            "alt": "GoodWe SEC3000C Smart Energy Controller",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/sec3000c-000.png",
+            "complete": true,
+            "naturalWidth": 1020,
+            "naturalHeight": 1300,
+            "boxW": 332,
+            "boxH": 300,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "feature",
+            "alt": "Mixed fleets of C&I on-grid and hybrid inverters",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/sec3000c-000-600x765.png",
+            "complete": true,
+            "naturalWidth": 390,
+            "naturalHeight": 497,
+            "boxW": 350,
+            "boxH": 437,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "SAJ eManager residential energy manager DIN-rail communication module, studio render",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/our-saj-emanager-studio-300x300.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 350,
+            "boxH": 350,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "SAJ eSolar AIO3 WiFi/LAN/Bluetooth data collector on neutral background",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/ext-saj-esolar-aio3-collector-300x169.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 350,
+            "boxH": 350,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "GoodWe EzManager3000 home energy management gateway, DIN-rail",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/ezmanager3000-000-300x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 350,
+            "boxH": 350,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "SAJ eManager-C1 Pro smart communication box",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-emanager-600x673.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 350,
+            "boxH": 350,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ]
+      },
+      "emanager_img": [
+        {
+          "title": "SAJ eManager (energy management system module)",
+          "href": "https://de-linker.com/product/saj-emanager-emanager-5-0-residential-energy-manager/",
+          "imgSrc": "https://de-linker.com/wp-content/uploads/2026/07/our-saj-emanager-studio-300x300.jpg",
+          "imgAlt": "SAJ eManager residential energy manager DIN-rail communication module, studio render"
+        },
+        {
+          "href": "https://de-linker.com/my-account/"
+        },
+        {
+          "href": "https://de-linker.com/my-account/register/"
+        },
+        {
+          "href": "https://de-linker.com/product/goodwe-sec3000c-smart-energy-controller/?add-to-cart=3618"
+        },
+        {
+          "title": "SAJ eSolar AIO3 data collector (Wi-Fi/Ethernet/Bluetooth)",
+          "href": "https://de-linker.com/product/saj-esolar-aio3-data-collector-wifi-lan-bluetooth/",
+          "imgSrc": "https://de-linker.com/wp-content/uploads/2026/07/ext-saj-esolar-aio3-collector-300x169.jpg",
+          "imgAlt": "SAJ eSolar AIO3 WiFi/LAN/Bluetooth data collector on neutral background"
+        },
+        {
+          "href": "https://de-linker.com/my-account/"
+        },
+        {
+          "href": "https://de-linker.com/my-account/register/"
+        },
+        {
+          "href": "https://de-linker.com/product/goodwe-sec3000c-smart-energy-controller/?add-to-cart=3573"
+        },
+        {
+          "title": "GoodWe EzManager3000 HEMS Gateway",
+          "href": "https://de-linker.com/product/goodwe-ezmanager3000-hems-gateway/",
+          "imgSrc": "https://de-linker.com/wp-content/uploads/2026/07/ezmanager3000-000-300x300.png",
+          "imgAlt": "GoodWe EzManager3000 home energy management gateway, DIN-rail"
+        },
+        {
+          "href": "https://de-linker.com/my-account/"
+        },
+        {
+          "href": "https://de-linker.com/my-account/register/"
+        },
+        {
+          "href": "https://de-linker.com/product/goodwe-sec3000c-smart-energy-controller/?add-to-cart=2415"
+        },
+        {
+          "title": "SAJ eManager-C1 Pro",
+          "href": "https://de-linker.com/product/saj-emanager-c1-pro/",
+          "imgSrc": "https://de-linker.com/wp-content/uploads/2026/07/delinker-emanager-600x673.jpg",
+          "imgAlt": "SAJ eManager-C1 Pro smart communication box"
+        },
+        {
+          "href": "https://de-linker.com/my-account/"
+        },
+        {
+          "href": "https://de-linker.com/my-account/register/"
+        },
+        {
+          "href": "https://de-linker.com/product/goodwe-sec3000c-smart-energy-controller/?add-to-cart=1973"
+        }
+      ]
+    }
+  },
+  {
+    "id": "en-3556",
+    "path": "/product/goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one/",
+    "vp": "1440x900",
+    "data": {
+      "images": {
+        "total": 15,
+        "broken": [
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/10/goodwe-esa-5-30kw-eta-g20-tower-20261007-01.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "pairings",
+            "alt": "GoodWe GW5.1-BAT-D-G20 (ESA battery module, 5.12 kWh)",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-esa-6-battery-module-studio-logo-20260928-300x225.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 120,
+            "boxH": 144,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "pairings",
+            "alt": "GoodWe GW5.1-BAT-D-G21 (ESA battery module, 5.12 kWh)",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-esa-6-battery-module-studio-logo-20260928-300x225.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 120,
+            "boxH": 144,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "pairings",
+            "alt": "GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh)",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-esa-6-battery-module-studio-logo-20260928-300x225.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 120,
+            "boxH": 144,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "pairings",
+            "alt": "GoodWe GW8.3-BAT-D-G20 (ESA battery module, 8.32 kWh)",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-bat-d-g20-plate-20260928-300x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 120,
+            "boxH": 144,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "pairings",
+            "alt": "GoodWe GW8.3-BAT-D-G21 (ESA battery module, 8.32 kWh)",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-bat-d-g20-plate-20260928-300x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 120,
+            "boxH": 144,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "pairings",
+            "alt": "GoodWe GW9.0-BAT-D-G20 (ESA battery module, 9.0 kWh)",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-bat-d-g20-plate-20260928-300x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 120,
+            "boxH": 144,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "GoodWe ET G10 75–100 kW hybrid inverter",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-et-75-100kw-g10-20260929-300x200.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "GoodWe ET G10 75–100 kW hybrid inverter",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-et-75-100kw-g10-20260929-300x200.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "SAJ H2 10-30K three-phase hybrid inverter",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-h2-inverter-600x633.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ],
+        "invisible": [
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/10/goodwe-esa-5-30kw-eta-g20-tower-20261007-01.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ],
+        "sample": [
+          {
+            "section": "gallery",
+            "alt": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928.png",
+            "complete": true,
+            "naturalWidth": 1000,
+            "naturalHeight": 1000,
+            "boxW": 665,
+            "boxH": 554,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/10/goodwe-esa-5-30kw-eta-g20-tower-20261007-01.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-300x300.png",
+            "complete": true,
+            "naturalWidth": 72,
+            "naturalHeight": 72,
+            "boxW": 70,
+            "boxH": 50,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/10/goodwe-esa-5-30kw-eta-g20-tower-20261007-01-221x300.png",
+            "complete": true,
+            "naturalWidth": 72,
+            "naturalHeight": 97,
+            "boxW": 70,
+            "boxH": 50,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "feature",
+            "alt": "Whole-home 10 kVA backup on the 63 A bypass path.",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-768x768.png",
+            "complete": true,
+            "naturalWidth": 640,
+            "naturalHeight": 640,
+            "boxW": 1280,
+            "boxH": 520,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "pairings",
+            "alt": "GoodWe GW5.1-BAT-D-G20 (ESA battery module, 5.12 kWh)",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-esa-6-battery-module-studio-logo-20260928-300x225.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 120,
+            "boxH": 144,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "en-3557-m",
+    "path": "/product/goodwe-hca-g2-gw11k-hca-20-11-kw-three-phase-ev-charger/",
+    "vp": "390x844",
+    "data": {
+      "section_nav": {
+        "navOverflowX": "visible",
+        "navScrollW": 390,
+        "navClientW": 390,
+        "contOverflowX": "auto",
+        "contScrollW": 475,
+        "contClientW": 390,
+        "links": [
+          {
+            "text": "Description",
+            "left": 20,
+            "right": 118
+          },
+          {
+            "text": "Technical data",
+            "left": 126,
+            "right": 239
+          },
+          {
+            "text": "Applications",
+            "left": 247,
+            "right": 350
+          },
+          {
+            "text": "Documents",
+            "left": 358,
+            "right": 455
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "en-3573",
+    "path": "/product/saj-esolar-aio3-data-collector-wifi-lan-bluetooth/",
+    "vp": "1440x900",
+    "data": {
+      "images": {
+        "total": 9,
+        "broken": [
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/08/our-gen-chp-3573-a.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "SAJ eManager residential energy manager DIN-rail communication module, studio render",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/our-saj-emanager-studio-300x300.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "GoodWe SEC3000C Smart Energy Controller, IP66 wall-mounted enclosure",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/sec3000c-000-600x765.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "GoodWe EzManager3000 home energy management gateway, DIN-rail",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/ezmanager3000-000-300x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "SAJ eManager-C1 Pro smart communication box",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/delinker-emanager-600x673.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ],
+        "invisible": [
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/08/our-gen-chp-3573-a.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ],
+        "sample": [
+          {
+            "section": "gallery",
+            "alt": "SAJ eSolar AIO3 data collector (Wi-Fi/Ethernet/Bluetooth)",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/ext-saj-esolar-aio3-collector.jpg",
+            "complete": true,
+            "naturalWidth": 1280,
+            "naturalHeight": 720,
+            "boxW": 665,
+            "boxH": 554,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/08/our-gen-chp-3573-a.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/ext-saj-esolar-aio3-collector-300x169.jpg",
+            "complete": true,
+            "naturalWidth": 72,
+            "naturalHeight": 40,
+            "boxW": 70,
+            "boxH": 50,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/08/our-gen-chp-3573-a-300x225.jpg",
+            "complete": true,
+            "naturalWidth": 72,
+            "naturalHeight": 54,
+            "boxW": 70,
+            "boxH": 50,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/08/our-gen-chp-3573-b-300x225.jpg",
+            "complete": true,
+            "naturalWidth": 72,
+            "naturalHeight": 54,
+            "boxW": 70,
+            "boxH": 50,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "SAJ eManager residential energy manager DIN-rail communication module, studio render",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/our-saj-emanager-studio-300x300.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ]
+      },
+      "intro_overlap": {
+        "headerPosition": "sticky",
+        "headerRect": {
+          "x": 0,
+          "y": 0,
+          "width": 1440,
+          "height": 89,
+          "top": 0,
+          "right": 1440,
+          "bottom": 89,
+          "left": 0
+        },
+        "introRect": {
+          "x": 80,
+          "y": 786.3125,
+          "width": 666.765625,
+          "height": 198.59375,
+          "top": 786.3125,
+          "right": 746.765625,
+          "bottom": 984.90625,
+          "left": 80
+        },
+        "descRect": {
+          "x": 40,
+          "y": 1124.59375,
+          "width": 1360,
+          "height": 746.359375,
+          "top": 1124.59375,
+          "right": 1400,
+          "bottom": 1870.953125,
+          "left": 40
+        },
+        "introText": "Description SAJ eSolar AIO3 is a plug-in data collector for one SAJ inverter. It connects the inverter to the remote server over Wi-Fi or Et"
+      }
+    }
+  },
+  {
+    "id": "en-3612-m",
+    "path": "/product/goodwe-gw9-0-bat-d-g20-esa-battery-module-9-0-kwh/",
+    "vp": "390x844",
+    "data": {
+      "section_nav": {
+        "navOverflowX": "visible",
+        "navScrollW": 390,
+        "navClientW": 390,
+        "contOverflowX": "auto",
+        "contScrollW": 475,
+        "contClientW": 390,
+        "links": [
+          {
+            "text": "Description",
+            "left": 20,
+            "right": 118
+          },
+          {
+            "text": "Technical data",
+            "left": 126,
+            "right": 239
+          },
+          {
+            "text": "Applications",
+            "left": 247,
+            "right": 350
+          },
+          {
+            "text": "Documents",
+            "left": 358,
+            "right": 455
+          }
+        ]
+      },
+      "footer_text": {
+        "hasDeutscher": false,
+        "hasAllrightsNoSpace": false,
+        "copyrightMatch": "© 2026 Linker. All rights reserved. Imprint Privacy Policy Cookie settings Terms of Sale Refund & Returns Product fit·Inv",
+        "langLinks": [
+          "English",
+          "Deutsch"
+        ]
+      }
+    }
+  },
+  {
+    "id": "en-4106",
+    "path": "/product/saj-cb2-100-3-hv5/",
+    "vp": "1440x900",
+    "data": {
+      "intro_overlap": {
+        "headerPosition": "sticky",
+        "headerRect": {
+          "x": 0,
+          "y": 0,
+          "width": 1440,
+          "height": 89,
+          "top": 0,
+          "right": 1440,
+          "bottom": 89,
+          "left": 0
+        },
+        "introRect": {
+          "x": 80,
+          "y": 786.3125,
+          "width": 666.765625,
+          "height": 231.59375,
+          "top": 786.3125,
+          "right": 746.765625,
+          "bottom": 1017.90625,
+          "left": 80
+        },
+        "descRect": {
+          "x": 40,
+          "y": 1157.59375,
+          "width": 1360,
+          "height": 619.578125,
+          "top": 1157.59375,
+          "right": 1400,
+          "bottom": 1777.171875,
+          "left": 40
+        },
+        "introText": "Description SAJ CB2-100.3-HV5: a ground-mounted LiFePO4 battery cabinet with 100.3 kWh rated energy and 90.2 kWh usable energy from 7 CBU2-1"
+      }
+    }
+  },
+  {
+    "id": "en-6511",
+    "path": "/product/goodwe-gw124-99k-etr-g10-124-99-kw-three-phase-hybrid-inverter/",
+    "vp": "1440x900",
+    "data": {
+      "images": {
+        "total": 9,
+        "broken": [
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/10/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v-product-20261001-01.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "pairings",
+            "alt": "GoodWe GW261.2-BAT-LCD-G10",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-bat-c-208-261kwh-20260929-300x200.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 120,
+            "boxH": 144,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "SAJ HS2 all-in-one storage system installed against a wall in a residential utility room",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/ext-saj-hs2-installed-detail-300x164.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "GoodWe ET G10 75–100 kW hybrid inverter",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-et-75-100kw-g10-20260929-300x200.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "SAJ HS2 all-in-one storage system installed against a wall in a residential utility room",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/ext-saj-hs2-installed-detail-300x164.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "GoodWe ET G10 75–100 kW hybrid inverter",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-et-75-100kw-g10-20260929-300x200.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ],
+        "invisible": [
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/10/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v-product-20261001-01.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ],
+        "sample": [
+          {
+            "section": "gallery",
+            "alt": "GoodWe GW124.99K-ETR-G10 (124.99 kW three-phase hybrid inverter)",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/ext-goodwe-etr-g10.png",
+            "complete": true,
+            "naturalWidth": 1020,
+            "naturalHeight": 1300,
+            "boxW": 665,
+            "boxH": 554,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/10/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v-product-20261001-01.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/ext-goodwe-etr-g10-235x300.png",
+            "complete": true,
+            "naturalWidth": 72,
+            "naturalHeight": 91,
+            "boxW": 70,
+            "boxH": 50,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/10/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v-product-20261001-01-300x300.png",
+            "complete": true,
+            "naturalWidth": 72,
+            "naturalHeight": 72,
+            "boxW": 70,
+            "boxH": 50,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "pairings",
+            "alt": "GoodWe GW261.2-BAT-LCD-G10",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-bat-c-208-261kwh-20260929-300x200.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 120,
+            "boxH": 144,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "SAJ HS2 all-in-one storage system installed against a wall in a residential utility room",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/ext-saj-hs2-installed-detail-300x164.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 305,
+            "boxH": 305,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "en-6530-m",
+    "path": "/product/goodwe-gw60k-sts-g10/",
+    "vp": "390x844",
+    "data": {
+      "images": {
+        "total": 8,
+        "broken": [
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-product-20261007-01.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-cover-20261007-01-300x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-product-20261007-01-300x232.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-product-20261007-02-300x232.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "SAJ ATS1-T63-A",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/saj_ats1-t63-a_product_front-300x169.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 350,
+            "boxH": 350,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "GoodWe GW125K-STS-G10 static transfer switch",
+            "src": "https://de-linker.com/wp-content/uploads/2026/09/goodwe-sts-125kw-20260929-300x200.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 350,
+            "boxH": 350,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "GoodWe GW30K/60K-STS-G10 static transfer switch, front view.",
+            "src": "https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-cover-20261007-01-300x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 350,
+            "boxH": 350,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ],
+        "invisible": [
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-product-20261007-01.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-cover-20261007-01-300x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-product-20261007-01-300x232.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-product-20261007-02-300x232.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ],
+        "sample": [
+          {
+            "section": "gallery",
+            "alt": "GoodWe GW60K-STS-G10",
+            "src": "https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-cover-20261007-01.png",
+            "complete": true,
+            "naturalWidth": 1000,
+            "naturalHeight": 1000,
+            "boxW": 332,
+            "boxH": 300,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-product-20261007-01.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-cover-20261007-01-300x300.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-product-20261007-01-300x232.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "gallery",
+            "alt": "",
+            "src": "https://de-linker.com/wp-content/uploads/2026/10/goodwe-sts-30-60kw-g10-product-20261007-02-300x232.png",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 0,
+            "boxH": 0,
+            "opacity": "1",
+            "visibility": "visible"
+          },
+          {
+            "section": "related",
+            "alt": "SAJ ATS1-T63-A",
+            "src": "https://de-linker.com/wp-content/uploads/2026/07/saj_ats1-t63-a_product_front-300x169.jpg",
+            "complete": false,
+            "naturalWidth": 0,
+            "naturalHeight": 0,
+            "boxW": 350,
+            "boxH": 350,
+            "opacity": "1",
+            "visibility": "visible"
+          }
+        ]
+      },
+      "section_nav": {
+        "navOverflowX": "visible",
+        "navScrollW": 390,
+        "navClientW": 390,
+        "contOverflowX": "auto",
+        "contScrollW": 475,
+        "contClientW": 390,
+        "links": [
+          {
+            "text": "Description",
+            "left": 20,
+            "right": 118
+          },
+          {
+            "text": "Technical data",
+            "left": 126,
+            "right": 239
+          },
+          {
+            "text": "Applications",
+            "left": 247,
+            "right": 350
+          },
+          {
+            "text": "Documents",
+            "left": 358,
+            "right": 455
+          }
+        ]
+      }
+    }
+  }
+]
