@@ -251,7 +251,8 @@ def test_re_embedding_recomputes_the_serving_revision(tmp_path: Path) -> None:
     corpus_module.write(corpus_dir, meta, [], [], [])
     (source / "coverage.json").write_text("[]", encoding="utf-8")
     (source / "manifest.json").write_text(
-        json.dumps({"version": "source-build", "seconds": {}, "chunks": 0}), encoding="utf-8"
+        json.dumps({"version": "source-build", "seconds": {}, "chunks": 0}),
+        encoding="utf-8",
     )
 
     build_dir = embed_corpus(corpus_dir, tmp_path / "out", CountingEmbedder())
