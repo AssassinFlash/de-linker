@@ -1,0 +1,21 @@
+event: meta
+data: {"turn_id": 812, "grounded": true, "fallback": false, "attempts": 1, "failures": [], "language": "de", "route": "documents", "intent": "documents_specs", "jev_error": null, "timing": {"understand": 23.614, "understand.vocabulary": 0.0, "understand.attachments": 0.0, "understand.jev": 0.183, "understand.call.linker/search-products": 2.396, "understand.call.linker/search-knowledge": 22.833, "understand.calls": 22.834, "model.tool.linker/search-products": 2.361, "model.tool.linker/search-knowledge": 21.696, "model.attempt_1": 34.33, "model": 34.33, "ground": 0.001, "hydrate": 0.0, "log": 0.004, "first_event": 59.278, "total": 59.278}}
+
+event: block
+data: {"type": "text", "text": "Für den **GW125K-ETR** nennen unsere Dokumente in den verfügbaren Abschnitten keinen Wirkungsgrad.\n\n- Das Datenblatt der ETR-Serie enthält Wirkungsgrad-Zeilen (maximaler, europäischer, MPPT- und Batterie-zu-AC-Wirkungsgrad) nur für die Modelle **GW100K-ETR-G10** und **GW110K-ETR-G10**.\n- Für den **GW125K-ETR-G10** führt dasselbe Datenblatt die PV- und AC-Kenndaten auf, ohne Wirkungsgrad.\n\nDie Werte der anderen Modelle gebe ich daher nicht als Werte dieses Geräts aus. Ich habe die entsprechenden Abschnitte unten verlinkt, damit Sie die Stellen selbst prüfen können.\n\nHerstellerbedingung: \"Dieser Wirkungsgrad bezieht sich auf den Wirkungsgrad vom Batterieanschluss des Wechselrichters bis zum AC-Ausgangsanschluss des Wechselrichters.\"", "refs": ["8ced72d8cec0-p3-model-626b8fc9d001af24", "8ced72d8cec0-p3-model-ceeee9adf6a70076", "8ced72d8cec0-p3-model-354645dab1965ea4", "8ced72d8cec0-p3-model-88a2eec0f9f706e5", "8ced72d8cec0-p3-model-df71ff4d70235b14", "8ced72d8cec0-p3-model-e9247215f4bc4dc2", "8ced72d8cec0-p2-model-528690965576820a", "76df70ea8474-p2-model-6f16ff753e8121cb", "3595"]}
+
+event: block
+data: {"type": "cards", "product_ids": [3595], "prices": [{"product_id": 3595, "text": "Nettopreis nach Partner-Anmeldung", "reason": "login"}]}
+
+event: block
+data: {"type": "document", "ref": "8ced72d8cec0-p2-model-528690965576820a", "label": "GoodWe ETR Series 80–125 kW Datasheet (EMEA, DE) · S. 2, 3", "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ETR-50-125kW_Datasheet_EMEA-DE_V1.1.pdf#page=2", "document_id": "doc-9d1586fc259587ba13630c6bbee83c6a3e506dfea48ed10916cd63c8fbdc00d1", "document_revision": "7ae3132aa234b3414a13361b8f324484e65e91b172dfd6f92220c62a10e2b245"}
+
+event: block
+data: {"type": "document", "ref": "8ced72d8cec0-p3-model-df71ff4d70235b14", "label": "GoodWe ETR Series 80–125 kW Datasheet (EMEA, DE) · S. 3", "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ETR-50-125kW_Datasheet_EMEA-DE_V1.1.pdf#page=3", "document_id": "doc-9d1586fc259587ba13630c6bbee83c6a3e506dfea48ed10916cd63c8fbdc00d1", "document_revision": "7ae3132aa234b3414a13361b8f324484e65e91b172dfd6f92220c62a10e2b245"}
+
+event: block
+data: {"type": "document", "ref": "76df70ea8474-p2-model-6f16ff753e8121cb", "label": "GoodWe ETR Series 80–125 kW Datasheet (EMEA, EN) · S. 2", "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf#page=2", "document_id": "doc-5a1585e5321bd9b03831528f49079e164fa7b9f1f9df838f54ac338e81dada6e", "document_revision": "c8b726d98daa941a0883c59107d793abe0d49a32c12712d64228f0598fdd59b5"}
+
+event: done
+data: {"ok": true}
+

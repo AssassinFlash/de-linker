@@ -1,0 +1,12 @@
+event: meta
+data: {"turn_id": 809, "grounded": true, "fallback": false, "attempts": 1, "failures": [], "language": "en", "route": "documents", "intent": "documents_specs", "jev_error": null, "timing": {"understand": 22.802, "understand.vocabulary": 0.0, "understand.attachments": 0.0, "understand.jev": 0.271, "understand.call.linker/search-products": 2.591, "understand.call.linker/search-knowledge": 21.956, "understand.calls": 21.958, "model.attempt_1": 2.831, "model": 2.832, "ground": 0.001, "hydrate": 0.001, "log": 0.005, "first_event": 26.539, "total": 26.539}}
+
+event: block
+data: {"type": "text", "text": "The ETR series datasheet lists the GW125K-ETR-G10 with 10 MPPTs, and 2 strings per MPPT.", "refs": ["76df70ea8474-p2-model-6f16ff753e8121cb"]}
+
+event: block
+data: {"type": "document", "ref": "76df70ea8474-p2-model-6f16ff753e8121cb", "label": "GoodWe ETR Series 80–125 kW Datasheet (EMEA, EN) · p. 2", "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf#page=2", "document_id": "doc-5a1585e5321bd9b03831528f49079e164fa7b9f1f9df838f54ac338e81dada6e", "document_revision": "c8b726d98daa941a0883c59107d793abe0d49a32c12712d64228f0598fdd59b5"}
+
+event: done
+data: {"ok": true}
+

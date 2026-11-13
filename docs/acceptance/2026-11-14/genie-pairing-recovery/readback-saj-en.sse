@@ -1,0 +1,24 @@
+event: meta
+data: {"turn_id": 811, "grounded": true, "fallback": false, "attempts": 1, "failures": [], "language": "en", "route": "pairing", "intent": "pairing_compatibility", "jev_error": null, "timing": {"understand": 5.444, "understand.vocabulary": 0.0, "understand.attachments": 0.0, "understand.jev": 0.3, "understand.call.linker/search-products": 4.578, "understand.calls": 4.579, "model.tool.linker/get-product": 4.555, "model.attempt_1": 16.447, "model": 16.447, "ground": 0.001, "hydrate": 1.568, "log": 0.005, "first_event": 25.03, "total": 25.03}}
+
+event: block
+data: {"type": "text", "text": "### Documented pairings\n\nThese SAJ batteries carry a documented pairing with the SAJ H2-10K-T3; every pair is released with the matching accessory, and the conditions in full stand in the pairing documents below.\n\n- The B2-10.0 to B2-25.0 range: SAJ's configuration instructions give the H2 series system as H2 + BC2 + BU2, and the B2 manual states that a B2 may only be used as such a set with an H2 high-voltage series storage inverter. The BC2-HV1 control module is a product of its own, so it belongs to every B2 stack.\n- The smallest B2-5.0 stack is not covered by the listing, because its operating voltage lies below the battery voltage range of the H2 T3.\n\nApproved partner accounts see net prices on the product cards. Compatible models: BU2-5.0.", "refs": ["4107", "2067", "2068", "2069", "2070", "2090", "2092"]}
+
+event: block
+data: {"type": "cards", "product_ids": [4107, 2067, 2068, 2069, 2070, 2090, 2092], "prices": [{"product_id": 4107, "text": "Net price after partner sign-in", "reason": "login"}, {"product_id": 2067, "text": "Net price after partner sign-in", "reason": "login"}, {"product_id": 2068, "text": "Net price after partner sign-in", "reason": "login"}, {"product_id": 2069, "text": "Net price after partner sign-in", "reason": "login"}, {"product_id": 2070, "text": "Net price after partner sign-in", "reason": "login"}, {"product_id": 2090, "text": "Net price after partner sign-in", "reason": "login"}, {"product_id": 2092, "text": "Net price after partner sign-in", "reason": "login"}]}
+
+event: block
+data: {"type": "document", "ref": "compat.document.2067.0", "label": "H2 HS2 HS3 AS2 AS3 Configuration Instructions V1.0 en", "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf", "document_id": "doc-41aeedc383e05d42a18ddfc5aa392780833410786275d6c40ef3caa3b46d370e", "document_revision": "f3f2da5cc24ea457c239fa05acb0e2b638d880393d2bbdfe54fa3d94bb1ca877"}
+
+event: block
+data: {"type": "document", "ref": "compat.document.2067.1", "label": "B2 5.0 HV1 HV5 user manual EN EU", "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf", "document_id": "doc-08413cffa060d27713afae25ecab077bcac7f3c3fa327f7616902c98a4e6dd13", "document_revision": "8b215a9e1a2ef81a94d46799ae8663db404909eacdbd0789e66c0bccc6726da3"}
+
+event: block
+data: {"type": "document", "ref": "compat.document.2067.2", "label": "B2 5 25K HV1HV5 datasheet EN BEU · p. 2", "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf#page=2", "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904", "document_revision": "02d20e0d3ef6a38fc484e5ff72676b176baa4c26b9356993a0f41fe74cb41758"}
+
+event: block
+data: {"type": "document", "ref": "compat.document.2067.3", "label": "SAJ H2 10 30K User Manual DE EN EU · p. 37", "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf#page=37", "document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551", "document_revision": "ef3d49749a232536940ce99dcc245820cd53bbfa1cd05b12057d4e398c4cef49"}
+
+event: done
+data: {"ok": true}
+

@@ -1,0 +1,21 @@
+event: meta
+data: {"turn_id": 807, "grounded": false, "fallback": true, "attempts": 2, "failures": ["document 'p3595.document.12' is not in this turn's tools", "Remove introductory text blocks. Copy the complete matching warranty_answers value into one text block and cite that hit's chunk_id in its refs."], "language": "en", "route": "products", "intent": "pairing_compatibility", "jev_error": null, "timing": {"understand": 11.914, "understand.vocabulary": 8.258, "understand.attachments": 0.0, "understand.jev": 0.391, "understand.call.linker/search-products": 2.545, "understand.calls": 2.546, "model.tool.linker/search-products": 8.601, "model.attempt_1": 15.158, "model": 43.397, "ground": 0.002, "model.tool.linker/get-product": 3.781, "model.attempt_2": 28.239, "template": 0.0, "hydrate": 0.009, "log": 0.01, "first_event": 57.343, "total": 57.343}}
+
+event: block
+data: {"type": "text", "text": "Listed one-way: a cited document from GoodWe (ETR 50–125 kW) lists the pair; a cited document from GoodWe Battery Compatibility Overview does not. The GoodWe ETR 50–125 kW user manual (pp. 24–25) lists GW125K-ETR-G10 with GW208.9-BAT-LCD-G10 in its single-unit system table; pp. 26–27 repeat the pair for parallel systems, which require SEC3000C main program V7.8.19 or later. GoodWe's Battery Compatibility Overview (p. 6) does not name GW208.9-BAT-LCD-G10, so the manual's system table is not a complete warranty approval. GoodWe's Battery Compatibility Overview (p. 1) approves only the batteries it lists for connection under the GoodWe Limited Warranty. GW208.9-BAT-LCD-G10 is absent from its ETR 80–125 kW matrix on p. 6. GoodWe's Battery Compatibility Overview (p. 6) lists GW261.2-BAT-LCD-G10 in its ETR 80–125 kW column, and the GoodWe ETR 80–125 kW datasheet (EMEA, p. 2) names GW125K-ETR-G10 in that series. The GoodWe ETR 50–125 kW user manual (pp. 24–27) lists both models in its single-unit and parallel system tables; parallel systems require SEC3000C main program V7.8.19 or later. The datasheet (p. 3, footnote 4) requires a PV-string open-circuit input voltage above 813 V when this battery is connected.", "refs": ["p3595", "p1957", "p1958"]}
+
+event: block
+data: {"type": "document", "ref": "compat.document.1957.0", "label": "GW ETR 50 125kW User Manual DE", "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR-50-125kW_User-Manual-DE.pdf", "document_id": "doc-ca40ee41c12384ae775237021b65f05603ef8d9d3233c958cce5bb98b3d33c76", "document_revision": "e9837e659ed4399055f87a711515899e7790f4f7650e8468dd45183f91e40a3b"}
+
+event: block
+data: {"type": "document", "ref": "compat.document.1957.1", "label": "GW Battery Compatibility Overview EMEA EN 20260910", "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf", "document_id": "doc-f1d99247cac760c28d093a41555c4aef7304e127f39d40090b7dcabc176b0b4c", "document_revision": "fc737dde68c0f9c96aa2179c66972fcd6ffd8ef7393d270a7ab9c92a1eba2ed2"}
+
+event: block
+data: {"type": "document", "ref": "compat.document.1958.1", "label": "GW ETR Datasheet EMEA EN V1.1", "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf", "document_id": "doc-5a1585e5321bd9b03831528f49079e164fa7b9f1f9df838f54ac338e81dada6e", "document_revision": "c8b726d98daa941a0883c59107d793abe0d49a32c12712d64228f0598fdd59b5"}
+
+event: block
+data: {"type": "cards", "product_ids": [3595, 1957, 1958], "prices": [{"product_id": 3595, "text": "Net price after partner sign-in", "reason": "login"}, {"product_id": 1957, "text": "Net price after partner sign-in", "reason": "login"}, {"product_id": 1958, "text": "Net price after partner sign-in", "reason": "login"}]}
+
+event: done
+data: {"ok": true}
+

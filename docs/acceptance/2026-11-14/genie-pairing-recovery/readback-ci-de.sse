@@ -1,0 +1,21 @@
+event: meta
+data: {"turn_id": 808, "grounded": false, "fallback": true, "attempts": 2, "failures": ["Remove introductory text blocks. Copy the complete matching warranty_answers value into one text block and cite that hit's chunk_id in its refs."], "language": "de", "route": "products", "intent": "pairing_compatibility", "jev_error": null, "timing": {"understand": 3.191, "understand.vocabulary": 0.0, "understand.attachments": 0.0, "understand.jev": 0.252, "understand.call.linker/search-products": 2.385, "understand.calls": 2.386, "model.tool.linker/search-products": 9.598, "model.tool.linker/get-product": 1.34, "model.attempt_1": 21.429, "model": 57.446, "ground": 0.001, "model.tool.linker/search-knowledge": 5.181, "model.attempt_2": 36.017, "template": 0.003, "hydrate": 0.004, "log": 0.007, "first_event": 61.917, "total": 61.917}}
+
+event: block
+data: {"type": "text", "text": "Einseitig gelistet: Ein zitiertes Dokument von GoodWe (ETR 50–125 kW) führt das Paar auf; ein zitiertes Dokument von GoodWe Battery Compatibility Overview nicht. Das GoodWe-Benutzerhandbuch ETR 50–125 kW (S. 24–25) führt GW125K-ETR-G10 mit GW208.9-BAT-LCD-G10 in der Tabelle für Einzelanlagen auf; S. 26–27 nennen die Kombination auch für Parallelanlagen, die SEC3000C mit Hauptprogramm ab V7.8.19 erfordern. Die Batterie-Kompatibilitätsübersicht von GoodWe (S. 6) nennt GW208.9-BAT-LCD-G10 nicht; die Systemtabelle des Handbuchs belegt daher keine vollständige Freigabe im Rahmen der Garantie von GoodWe (GoodWe Limited Warranty). GoodWes Batterie-Kompatibilitätsübersicht (S. 1) gibt nur die dort aufgeführten Batterien für den Anschluss im Rahmen der GoodWe Limited Warranty frei. GW208.9-BAT-LCD-G10 fehlt in der ETR-80–125-kW-Matrix auf S. 6. Die Batterie-Kompatibilitätsübersicht von GoodWe (S. 6) führt GW261.2-BAT-LCD-G10 in der Spalte ETR 80–125 kW auf; das GoodWe-Datenblatt ETR 80–125 kW (EMEA, S. 2) nennt GW125K-ETR-G10 in dieser Serie. Das GoodWe-Benutzerhandbuch ETR 50–125 kW (S. 24–27) führt beide Modelle in den Tabellen für Einzel- und Parallelsysteme auf; für Parallelsysteme ist SEC3000C mit Hauptprogramm ab V7.8.19 erforderlich. Laut Datenblatt (S. 3, Fußnote 4) muss die Leerlaufspannung der PV-Strings am Eingang beim Anschluss dieser Batterie über 813 V liegen.", "refs": ["p3595", "p1957", "p1958"]}
+
+event: block
+data: {"type": "document", "ref": "compat.document.1957.0", "label": "GW ETR 50 125kW User Manual DE", "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR-50-125kW_User-Manual-DE.pdf", "document_id": "doc-ca40ee41c12384ae775237021b65f05603ef8d9d3233c958cce5bb98b3d33c76", "document_revision": "e9837e659ed4399055f87a711515899e7790f4f7650e8468dd45183f91e40a3b"}
+
+event: block
+data: {"type": "document", "ref": "compat.document.1957.1", "label": "GW Battery Compatibility Overview EMEA EN 20260910", "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf", "document_id": "doc-f1d99247cac760c28d093a41555c4aef7304e127f39d40090b7dcabc176b0b4c", "document_revision": "fc737dde68c0f9c96aa2179c66972fcd6ffd8ef7393d270a7ab9c92a1eba2ed2"}
+
+event: block
+data: {"type": "document", "ref": "compat.document.1958.1", "label": "GW ETR Datasheet EMEA EN V1.1", "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf", "document_id": "doc-5a1585e5321bd9b03831528f49079e164fa7b9f1f9df838f54ac338e81dada6e", "document_revision": "c8b726d98daa941a0883c59107d793abe0d49a32c12712d64228f0598fdd59b5"}
+
+event: block
+data: {"type": "cards", "product_ids": [3595, 1957, 1958], "prices": [{"product_id": 3595, "text": "Nettopreis nach Partner-Anmeldung", "reason": "login"}, {"product_id": 1957, "text": "Nettopreis nach Partner-Anmeldung", "reason": "login"}, {"product_id": 1958, "text": "Nettopreis nach Partner-Anmeldung", "reason": "login"}]}
+
+event: done
+data: {"ok": true}
+

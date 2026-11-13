@@ -1,0 +1,15 @@
+event: meta
+data: {"turn_id": 810, "grounded": true, "fallback": false, "attempts": 1, "failures": [], "language": "de", "route": "pairing", "intent": "pairing_compatibility", "jev_error": null, "timing": {"understand": 4.664, "understand.vocabulary": 0.0, "understand.attachments": 0.0, "understand.jev": 0.244, "understand.call.linker/search-products": 3.862, "understand.calls": 3.862, "model.attempt_1": 7.066, "model": 7.066, "ground": 0.0, "hydrate": 2.794, "log": 0.024, "first_event": 16.423, "total": 16.423}}
+
+event: block
+data: {"type": "text", "text": "Diese Batterien haben ein dokumentiertes Pairing mit dem H2-10K-T3; jedes Paar ist mit dem passenden Zubehör freigegeben.\n\n- Die B2-5.0 bis B2-25.0 bestehen aus BU2-5.0-Modulen mit einem Steuermodul BC2-HV1 und dürfen laut SAJ nur als solches Set am Hochvolt-Speicherwechselrichter der H2-Serie betrieben werden.\n- Das System der H2-Serie ist als H2 + BC2 + BU2 dokumentiert.\n- Die B2-5.0 mit nur einem Modul ist nicht gelistet, da ihre Betriebsspannung unter dem Batteriespannungsbereich des H2 T3 liegt.\n\nDie genauen Bedingungen und Spannungsbereiche stehen in den Pairing-Unterlagen. Freigegebene Partnerkonten sehen Nettopreise. Passende Modelle: B2-10.0, H2-T3-Handbuch.", "refs": ["4107", "2067", "2068", "2069", "2070", "2090", "2092"]}
+
+event: block
+data: {"type": "cards", "product_ids": [4107, 2067, 2068, 2069, 2070, 2090, 2092], "prices": [{"product_id": 4107, "text": "Nettopreis nach Partner-Anmeldung", "reason": "login"}, {"product_id": 2067, "text": "Nettopreis nach Partner-Anmeldung", "reason": "login"}, {"product_id": 2068, "text": "Nettopreis nach Partner-Anmeldung", "reason": "login"}, {"product_id": 2069, "text": "Nettopreis nach Partner-Anmeldung", "reason": "login"}, {"product_id": 2070, "text": "Nettopreis nach Partner-Anmeldung", "reason": "login"}, {"product_id": 2090, "text": "Nettopreis nach Partner-Anmeldung", "reason": "login"}, {"product_id": 2092, "text": "Nettopreis nach Partner-Anmeldung", "reason": "login"}]}
+
+event: block
+data: {"type": "document", "ref": "compat.document.2067.0", "label": "H2 HS2 HS3 AS2 AS3 Configuration Instructions V1.0 en", "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf", "document_id": "doc-41aeedc383e05d42a18ddfc5aa392780833410786275d6c40ef3caa3b46d370e", "document_revision": "f3f2da5cc24ea457c239fa05acb0e2b638d880393d2bbdfe54fa3d94bb1ca877"}
+
+event: done
+data: {"ok": true}
+
