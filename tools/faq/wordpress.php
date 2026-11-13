@@ -170,6 +170,7 @@ defined( 'ABSPATH' ) || exit;
 		$json  = \Linker\Commerce\Products\Faqs::encode( $items );
 		update_post_meta( $product_id, \Linker\Commerce\Products\Faqs::META_KEY, wp_slash( $json ) );
 		\Linker\Commerce\Products\Faqs::mirror_to_twin( $product_id, $json );
+		\Linker\Commerce\Products\Publication\EvidenceBindings::capture_faqs( $product_id );
 		$read      = (string) get_post_meta( $product_id, \Linker\Commerce\Products\Faqs::META_KEY, true );
 		$written[] = array(
 			'id'    => $product_id,

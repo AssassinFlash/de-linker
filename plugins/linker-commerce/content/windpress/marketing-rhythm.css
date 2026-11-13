@@ -23,26 +23,31 @@ html[lang^="de"] #installer-journal .lk-hero-title {
 	font-size: clamp(2.35rem, 4.1vw, 3.625rem);
 }
 
-#installer-journal .lk-hero-console .lk-console-input-row {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr);
-}
+/* The desktop hero console row stays desktop-only: the page hides it on
+   phones in favour of #installer-mobile-query, and reviving it under a
+   no-breakpoint rule truncates the long German placeholder. */
+@media (min-width: 761px) {
+	#installer-journal .lk-hero-console .lk-console-input-row {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+	}
 
-#installer-journal .lk-hero-console .lk-console-input-row .lk-btn-query {
-	justify-self: start;
-}
+	#installer-journal .lk-hero-console .lk-console-input-row .lk-btn-query {
+		justify-self: start;
+	}
 
-#installer-journal #lki-hero-query {
-	font-size: 0.78125rem;
-	text-overflow: ellipsis;
+	#installer-journal #lki-hero-query {
+		font-size: 0.78125rem;
+		text-overflow: ellipsis;
+	}
 }
 
 /* These headings can move complete words to the next line. Keep authored
-   hyphens; emergency wrapping still protects an unusually long token. */
-html[lang^="de"]
+   hyphens; emergency wrapping still protects an unusually long token. */html[lang^="de"]
 	:is(
 		#service-redesign :is(.service-hero-rest, h2, h3),
 		#tv-cs-page-v1 .lk-hero-title,
+		#tv-rs-page-v1 .lk-hero-title,
 		#installer-journal .lk-hero-title,
 		#about-journal :is(.scene-title, h2, h3),
 		#tv-cp-page-v1 :is(h2, h3),
@@ -64,6 +69,13 @@ html[lang^="de"]
 	hyphens: manual;
 	overflow-wrap: break-word;
 	text-wrap: balance;
+}
+
+/* The authored nowrap display type outruns its 950px column at the 108px
+   clamp cap (measured at 1440px: "Technischer Rückhalt" +41px, "Engineering
+   backing" +13px). The html prefix outspecifies the page's inline rule. */
+html #service-redesign .service-hero-display {
+	font-size: clamp(59px, 7.1vw, 96px);
 }
 
 /* Keep the German planning preview in the existing video frame, with the
@@ -213,6 +225,12 @@ body #service-redesign a:is(.lk-btn-primary, .lk-btn-secondary, .linker-contact-
 	/* Give the long scale names the same full-width choice as the tool decks. */
 	#tv-solution-v1 #arenas .sol-scale-tabs {
 		grid-template-columns: minmax(0, 1fr);
+	}
+
+	/* The 106px cap was drawn for 10px labels; at 14px the German one-word
+	   scale names overflow it. */
+	#tv-solution-v1 #arenas .sol-scale-tabs .sol-tab-label {
+		max-width: none;
 	}
 
 	#tv-rs-page-v1 #engineering-tools .lk-tooldeck-nav,

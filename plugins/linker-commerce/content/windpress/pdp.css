@@ -653,6 +653,14 @@
 	overflow-wrap: anywhere;
 }
 
+/* Hyphenation at German syllable boundaries reads better than an
+   anywhere-break (measured: "Nulleinspeisungsregelung" split as
+   "Nulleinspeisungsregelu/ng" on a 390px phone). */
+html[lang^="de"] #tv-storefront-pdp .pdp-section-title {
+	-webkit-hyphens: auto;
+	hyphens: auto;
+}
+
 #tv-storefront-pdp .pdp-intro-lede,
 #tv-storefront-pdp .pdp-intro-lede p {
 	font-size: clamp(17px, 1.6vw, 20px);
@@ -797,6 +805,21 @@
 #tv-storefront-pdp .pdp-feature-media {
 	position: absolute;
 	inset: 0;
+}
+
+/* A wide studio photo can reach under the copy; keep white headlines on it
+   readable without clipping the image itself. */
+#tv-storefront-pdp .pdp-feature-media::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		90deg,
+		rgb(16 44 48 / 0.96) 0%,
+		rgb(16 44 48 / 0.85) 48%,
+		rgb(16 44 48 / 0) 76%
+	);
+	pointer-events: none;
 }
 
 #tv-storefront-pdp .pdp-feature-image {
@@ -1357,6 +1380,14 @@
 	margin: 36px 0 0;
 	padding: 0;
 	list-style: none;
+}
+
+/* WooCommerce's ul.products clearfix becomes a first anonymous grid item
+   that pushes every real card one column right. */
+#tv-storefront-pdp .pdp-related ul.products::before,
+#tv-storefront-pdp .pdp-related ul.products::after {
+	content: none;
+	display: none;
 }
 
 #tv-storefront-pdp .pdp-related li.product {

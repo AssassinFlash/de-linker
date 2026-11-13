@@ -170,7 +170,7 @@ body #linker-products.sf-products .card-product { border: 1px solid var(--shop-l
 body #linker-products.sf-products .card-product strong { font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
 body #linker-products.sf-products .card-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; min-width: 0; }
 body #linker-products.sf-products .card-facts div { display: block; min-width: 0; }
-body #linker-products.sf-products .card-facts dt { font-size: 10px; line-height: 1.5; margin-bottom: 4px; color: var(--shop-muted); }
+body #linker-products.sf-products .card-facts dt { font-size: 10px; line-height: 1.5; margin-bottom: 4px; color: var(--shop-muted); overflow-wrap: anywhere; }
 body #linker-products.sf-products .card-facts dd { text-align: left; font-size: 12px; line-height: 1.45; font-weight: 600; color: var(--shop-ink); overflow-wrap: anywhere; }
 body #linker-products.sf-products .sf-card-price { margin-top: 0; font-size: 18px; font-weight: 600; }
 /* The actual login action remains below. Suppress its duplicate price-area link. */

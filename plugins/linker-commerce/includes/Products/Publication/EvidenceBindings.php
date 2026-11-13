@@ -155,13 +155,14 @@ final class EvidenceBindings {
 	 * Renew bindings whose entry changed while their source document did not.
 	 *
 	 * An entry's revision moves when its own text changes (a citation rewritten
-	 * from a document label to its URL, a missing unit added); the bytes it
-	 * cites can stay the same. Such a binding is a bookkeeping miss, not stale
-	 * evidence, and `capture()` never repairs it: `adopt_existing` keeps every
-	 * recorded entry and the ordinary path only binds entries whose revision
-	 * moved *with* new bytes. This repairs exactly the miss and nothing else:
-	 * both the document identity and its blob must equal the recorded binding,
-	 * so no value ever adopts a replaced file.
+	 * from a document label to its URL, a missing unit added, an FAQ answer
+	 * edited); the bytes it cites can stay the same. Such a binding is a
+	 * bookkeeping miss, not stale evidence, and `capture()`/`capture_faqs()`
+	 * with `$adopt_existing` or direct metadata edits never repair it:
+	 * `adopt_existing` keeps every recorded entry and the ordinary path only
+	 * binds entries whose revision moved *with* new bytes. This repairs exactly
+	 * the miss and nothing else: both the document identity and its blob must
+	 * equal the recorded binding, so no value ever adopts a replaced file.
 	 *
 	 * @param int  $id      Canonical Woo product.
 	 * @param bool $dry_run Count the renewable bindings without writing.
@@ -172,51 +173,99 @@ final class EvidenceBindings {
 		if ( ! Publication::is_published( $id ) ) {
 			return 0;
 		}
-		$previous = get_post_meta( $id, self::META_KEY, true );
-		$previous = is_array( $previous ) ? $previous : array();
-		$raw      = get_post_meta( $id, SelectionFacts::FIGURES_META_KEY, true );
-		$raw      = is_string( $raw ) ? json_decode( $raw, true ) : $raw;
-		if ( array() === $previous || ! is_array( $raw ) ) {
-			return 0;
-		}
-		$stale = array();
-		$next  = $previous;
-		foreach ( $raw as $key => $entry ) {
-			$old = $previous[ $key ] ?? null;
-			if ( ! is_array( $entry ) || ! is_array( $entry['citation'] ?? null ) || ! is_array( $old ) ) {
-				continue;
+		$previous_figures = get_post_meta( $id, self::META_KEY, true );
+		$previous_figures = is_array( $previous_figures ) ? $previous_figures : array();
+		$raw_figures      = get_post_meta( $id, SelectionFacts::FIGURES_META_KEY, true );
+		$raw_figures      = is_string( $raw_figures ) ? json_decode( $raw_figures, true ) : $raw_figures;
+		$stale_figures    = array();
+		if ( array() !== $previous_figures && is_array( $raw_figures ) ) {
+			foreach ( $raw_figures as $key => $entry ) {
+				$old = $previous_figures[ $key ] ?? null;
+				if ( ! is_array( $entry ) || ! is_array( $entry['citation'] ?? null ) || ! is_array( $old ) ) {
+					continue;
+				}
+				if ( ( $old['figure_revision'] ?? '' ) !== Publication::figure_revision( $entry ) ) {
+					$stale_figures[ $key ] = $entry;
+				}
 			}
-			if ( ( $old['figure_revision'] ?? '' ) !== Publication::figure_revision( $entry ) ) {
-				$stale[ $key ] = $entry;
-			}
-		}
-		if ( array() === $stale ) {
-			return 0;
-		}
-		// Only a product with a stale entry pays for reading its documents.
-		$allowed = self::documents_by_citation_path( $id );
-		$renewed = 0;
-		foreach ( $stale as $key => $entry ) {
-			$old      = $previous[ $key ];
-			$document = self::cited_document( $entry, $allowed );
-			if (
-				null === $document
-				|| ( $old['document_id'] ?? '' ) !== $document['document_id']
-				|| ( $old['blob_sha256'] ?? '' ) !== $document['blob_sha256']
-			) {
-				continue;
-			}
-			$next[ $key ] = array_merge(
-				$old,
-				array( 'figure_revision' => Publication::figure_revision( $entry ) )
-			);
-			++$renewed;
-		}
-		if ( $renewed > 0 && ! $dry_run ) {
-			update_post_meta( $id, self::META_KEY, $next );
 		}
 
-		return $renewed;
+		$previous_faqs = get_post_meta( $id, self::FAQ_META_KEY, true );
+		$previous_faqs = is_array( $previous_faqs ) ? $previous_faqs : array();
+		$faq_entries   = array();
+		$stale_faqs    = array();
+		if ( array() !== $previous_faqs ) {
+			foreach ( Faqs::of( $id ) as $entry ) {
+				$revision                 = Publication::figure_revision( $entry );
+				$faq_entries[ $revision ] = $entry;
+				if ( ! array_key_exists( $revision, $previous_faqs ) ) {
+					$stale_faqs[ $revision ] = $entry;
+				}
+			}
+		}
+
+		if ( array() === $stale_figures && array() === $stale_faqs ) {
+			return 0;
+		}
+
+		// Only a product with a stale entry pays for reading its documents.
+		$allowed         = self::documents_by_citation_path( $id );
+		$renewed_figures = 0;
+		if ( array() !== $stale_figures ) {
+			$next_figures = $previous_figures;
+			foreach ( $stale_figures as $key => $entry ) {
+				$old      = $previous_figures[ $key ];
+				$document = self::cited_document( $entry, $allowed );
+				if (
+					null === $document
+					|| ( $old['document_id'] ?? '' ) !== $document['document_id']
+					|| ( $old['blob_sha256'] ?? '' ) !== $document['blob_sha256']
+				) {
+					continue;
+				}
+				$next_figures[ $key ] = array_merge(
+					$old,
+					array( 'figure_revision' => Publication::figure_revision( $entry ) )
+				);
+				++$renewed_figures;
+			}
+			if ( $renewed_figures > 0 && ! $dry_run ) {
+				update_post_meta( $id, self::META_KEY, $next_figures );
+			}
+		}
+
+		$renewed_faqs = 0;
+		if ( array() !== $stale_faqs ) {
+			$next_faqs     = $previous_faqs;
+			$orphaned_faqs = array_diff_key( $previous_faqs, $faq_entries );
+			foreach ( $stale_faqs as $revision => $entry ) {
+				$document = self::cited_document( $entry, $allowed );
+				if ( null === $document ) {
+					continue;
+				}
+				foreach ( $orphaned_faqs as $old_key => $old ) {
+					if (
+						! is_array( $old )
+						|| ( $old['document_id'] ?? '' ) !== $document['document_id']
+						|| ( $old['blob_sha256'] ?? '' ) !== $document['blob_sha256']
+					) {
+						continue;
+					}
+					unset( $orphaned_faqs[ $old_key ], $next_faqs[ $old_key ] );
+					$next_faqs[ $revision ] = array_merge(
+						$old,
+						array( 'figure_revision' => $revision )
+					);
+					++$renewed_faqs;
+					break;
+				}
+			}
+			if ( $renewed_faqs > 0 && ! $dry_run ) {
+				update_post_meta( $id, self::FAQ_META_KEY, $next_faqs );
+			}
+		}
+
+		return $renewed_figures + $renewed_faqs;
 	}
 
 	/**
