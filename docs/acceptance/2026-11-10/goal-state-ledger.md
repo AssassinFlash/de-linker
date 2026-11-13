@@ -2296,3 +2296,21 @@ skipped (our V1.7 carries a text layer, theirs is image-only), and the coastal
 statements were held back as cross-product documents. Receipt with full
 hashes and rollback:
 `docs/acceptance/2026-11-13/goodwe-originals/publication-receipt.json`.
+
+## Publication propagated through every consumer; scheduled worker source updated (2026-11-13)
+
+The 609 promise — publish once in Woo, every tool gets it — was verified
+end-to-end after the certificate/maintenance-manual publication:
+
+- **Engineering feed** (`/wp-json/linker/v1/engineering-feed`) carries the new
+  documents live: 1954 15 docs (5 new), 1955 17 docs (6 new), source revision
+  advanced.
+- **Genie knowledge index**: the scheduled Mac worker initially refused the
+  claim with 409 by design — its dedicated source (`de-linker-ops/
+  knowledge-publication/source`) was at the Nov-9 recipe, superseded by
+  yesterday's paired release, and a superseded compiler may not claim. The
+  dedicated source was rebuilt from main (recipe measured `d7666150…`,
+  exactly matching the pending job), the worker re-kicked, and the build
+  completed (exit 0): new index generation `20261113T062559Z-710259000`
+  serving, runtime identity unchanged (index-only upgrade, correct).
+  Genie can now cite the maintenance manual and the certificate family.
