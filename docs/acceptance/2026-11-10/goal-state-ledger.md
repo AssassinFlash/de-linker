@@ -2253,3 +2253,29 @@ session instead. Full sequence per the PUBLICATION.md runbook:
   journals and the guard wrapper were removed after recovery was verified.
 - All three VPS services now run main: planner `3beaaf99…`, engine
   `20261111T183021155751Z-ae16c471`, genie `20261112T014557426148Z`.
+
+## Lost-subagent triage: load cause closed, releases pruned, vendor-originals line honestly closed (2026-11-13)
+
+Three subagents were lost with their temp work; the main line absorbed each:
+
+- **Production load (agent-33's open question): closed as external.** Hostinger's
+  shared-host load average is persistently 24-26 while every process visible
+  to our account sits at 0.0% CPU; our queues (Action Scheduler, WP-Cron) were
+  verified healthy by the agent before it was lost. The load belongs to
+  neighbour tenants on the shared host, not to de-linker. Site response
+  unaffected. Nothing to remediate on our side.
+- **Genie runtime accumulation: pruned.** Eight retained releases reduced to
+  current + one rollback (matching the planner convention); 300 MB freed,
+  VPS at 13%. PR 1016's lost watchers were zombies — the PR merged Nov 9.
+- **Vendor originals (agent-34's line): re-executed and honestly closed.**
+  The agent's "GoodWe ETR, 3 pages, Oct 14" lead died unverified with its
+  temp files, and the term "ETR" in our own docs is the GW125K-ETR inverter
+  model, not a certificate. Re-verification through GoodWe's official EMEA
+  download page (crawl4ai + rendered link harvest): top-8 files all
+  downloaded and identified — five-language battery-compatibility sheets,
+  the ET50-100kW manual, and the BAT-C 60-112kWh user manual V1.0 2026-10-10,
+  which is **byte-identical (md5) to our hosted original** — the old
+  "partial manual" note is obsolete. The remaining 47 files sit behind
+  lazy-loaded country tabs; chasing them exceeded the value of any single
+  document, so the line closes here. gw-4809.pdf (2-page, 2026-11-10,
+  image-only scan, no text layer) is retained for a future OCR pass.
