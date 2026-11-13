@@ -34232,7 +34232,7 @@
     "environment": "production, anonymous",
     "url": null,
     "evidence": [
-      "docs/acceptance/2026-10-22/full-site/dynamic-routes-20261107.json"
+      "docs/acceptance/2026-11-13/dynamic-routes-reverify/dynamic-routes-20261113.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -34329,6 +34329,43 @@
       "search_pagination_20261107": {
         "status": "pass",
         "detail": "?s= 200 for real query, empty result and page 2; out-of-bounds page 99 404; DE search 200"
+      },
+      "reverified_production_20261113": {
+        "result": "pass",
+        "observed_at": "2026-11-13T13:31:50.868Z",
+        "environment": "production, anonymous (read-only HTTP + headless Chromium)",
+        "width": 1440,
+        "section": "search",
+        "observation": {
+          "last_page": {
+            "status": 200,
+            "finalUrl": "https://de-linker.com/page/5/?s=SAJ",
+            "h1": "SAJ",
+            "keepsQuery": true
+          },
+          "out_of_range": {
+            "status": 404,
+            "finalUrl": "https://de-linker.com/page/6/?s=SAJ",
+            "h1": "This page does not exist.",
+            "keepsQuery": true
+          },
+          "browser_1440": {
+            "hasInput": true,
+            "value": "SAJ",
+            "resultCount": 16,
+            "scrollWidth": 1440,
+            "clientWidth": 1440
+          },
+          "browser_390": {
+            "hasInput": true,
+            "value": "SAJ",
+            "resultCount": 16,
+            "scrollWidth": 390,
+            "clientWidth": 390
+          }
+        },
+        "scope": "Replaces the 2026-11-07 pointer whose JSON was never committed. Anonymous GET + rendered DOM at 1440 and 390; zero form submissions, zero accounts, zero mail, zero model calls.",
+        "evidence": "docs/acceptance/2026-11-13/dynamic-routes-reverify/dynamic-routes-20261113.json"
       }
     },
     "remaining_scope": "Existing guest query/page/language/consumer proofs plus this staff-context native edge/recovery are retained. Other widths of the edge state, anonymous edge recovery, unpublished-product permission fixtures and independent product/journal/library filters remain open."
@@ -34343,7 +34380,7 @@
     "environment": "production, anonymous",
     "url": null,
     "evidence": [
-      "docs/acceptance/2026-10-22/full-site/dynamic-routes-20261107.json"
+      "docs/acceptance/2026-11-13/dynamic-routes-reverify/dynamic-routes-20261113.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -34399,6 +34436,43 @@
       "search_pagination_20261107": {
         "status": "pass",
         "detail": "?s= 200 for real query, empty result and page 2; out-of-bounds page 99 404; DE search 200"
+      },
+      "reverified_production_20261113": {
+        "result": "pass",
+        "observed_at": "2026-11-13T13:31:50.868Z",
+        "environment": "production, anonymous (read-only HTTP + headless Chromium)",
+        "width": 390,
+        "section": "search",
+        "observation": {
+          "last_page": {
+            "status": 200,
+            "finalUrl": "https://de-linker.com/page/5/?s=SAJ",
+            "h1": "SAJ",
+            "keepsQuery": true
+          },
+          "out_of_range": {
+            "status": 404,
+            "finalUrl": "https://de-linker.com/page/6/?s=SAJ",
+            "h1": "This page does not exist.",
+            "keepsQuery": true
+          },
+          "browser_1440": {
+            "hasInput": true,
+            "value": "SAJ",
+            "resultCount": 16,
+            "scrollWidth": 1440,
+            "clientWidth": 1440
+          },
+          "browser_390": {
+            "hasInput": true,
+            "value": "SAJ",
+            "resultCount": 16,
+            "scrollWidth": 390,
+            "clientWidth": 390
+          }
+        },
+        "scope": "Replaces the 2026-11-07 pointer whose JSON was never committed. Anonymous GET + rendered DOM at 1440 and 390; zero form submissions, zero accounts, zero mail, zero model calls.",
+        "evidence": "docs/acceptance/2026-11-13/dynamic-routes-reverify/dynamic-routes-20261113.json"
       }
     },
     "remaining_scope": "Named679 checks only; retained prior results, whole content/query/permission/edge-state contracts remain open unless separately proved."
@@ -34413,7 +34487,7 @@
     "environment": "production, anonymous",
     "url": null,
     "evidence": [
-      "docs/acceptance/2026-10-22/full-site/dynamic-routes-20261107.json"
+      "docs/acceptance/2026-11-13/dynamic-routes-reverify/dynamic-routes-20261113.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -34469,6 +34543,43 @@
       "search_pagination_20261107": {
         "status": "pass",
         "detail": "?s= 200 for real query, empty result and page 2; out-of-bounds page 99 404; DE search 200"
+      },
+      "reverified_production_20261113": {
+        "result": "pass",
+        "observed_at": "2026-11-13T13:31:50.868Z",
+        "environment": "production, anonymous (read-only HTTP + headless Chromium)",
+        "width": 1440,
+        "section": "search",
+        "observation": {
+          "last_page": {
+            "status": 200,
+            "finalUrl": "https://de-linker.com/de/seite/5/?s=SAJ",
+            "h1": "SAJ",
+            "keepsQuery": true
+          },
+          "out_of_range": {
+            "status": 404,
+            "finalUrl": "https://de-linker.com/de/seite/6/?s=SAJ",
+            "h1": "Diese Seite existiert nicht.",
+            "keepsQuery": true
+          },
+          "browser_1440": {
+            "hasInput": true,
+            "value": "SAJ",
+            "resultCount": 16,
+            "scrollWidth": 1440,
+            "clientWidth": 1440
+          },
+          "browser_390": {
+            "hasInput": true,
+            "value": "SAJ",
+            "resultCount": 16,
+            "scrollWidth": 390,
+            "clientWidth": 390
+          }
+        },
+        "scope": "Replaces the 2026-11-07 pointer whose JSON was never committed. Anonymous GET + rendered DOM at 1440 and 390; zero form submissions, zero accounts, zero mail, zero model calls.",
+        "evidence": "docs/acceptance/2026-11-13/dynamic-routes-reverify/dynamic-routes-20261113.json"
       }
     },
     "remaining_scope": "Named679 checks only; retained prior results, whole content/query/permission/edge-state contracts remain open unless separately proved."
@@ -34483,7 +34594,7 @@
     "environment": "production, anonymous",
     "url": null,
     "evidence": [
-      "docs/acceptance/2026-10-22/full-site/dynamic-routes-20261107.json"
+      "docs/acceptance/2026-11-13/dynamic-routes-reverify/dynamic-routes-20261113.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -34569,6 +34680,43 @@
       "search_pagination_20261107": {
         "status": "pass",
         "detail": "?s= 200 for real query, empty result and page 2; out-of-bounds page 99 404; DE search 200"
+      },
+      "reverified_production_20261113": {
+        "result": "pass",
+        "observed_at": "2026-11-13T13:31:50.868Z",
+        "environment": "production, anonymous (read-only HTTP + headless Chromium)",
+        "width": 390,
+        "section": "search",
+        "observation": {
+          "last_page": {
+            "status": 200,
+            "finalUrl": "https://de-linker.com/de/seite/5/?s=SAJ",
+            "h1": "SAJ",
+            "keepsQuery": true
+          },
+          "out_of_range": {
+            "status": 404,
+            "finalUrl": "https://de-linker.com/de/seite/6/?s=SAJ",
+            "h1": "Diese Seite existiert nicht.",
+            "keepsQuery": true
+          },
+          "browser_1440": {
+            "hasInput": true,
+            "value": "SAJ",
+            "resultCount": 16,
+            "scrollWidth": 1440,
+            "clientWidth": 1440
+          },
+          "browser_390": {
+            "hasInput": true,
+            "value": "SAJ",
+            "resultCount": 16,
+            "scrollWidth": 390,
+            "clientWidth": 390
+          }
+        },
+        "scope": "Replaces the 2026-11-07 pointer whose JSON was never committed. Anonymous GET + rendered DOM at 1440 and 390; zero form submissions, zero accounts, zero mail, zero model calls.",
+        "evidence": "docs/acceptance/2026-11-13/dynamic-routes-reverify/dynamic-routes-20261113.json"
       }
     },
     "remaining_scope": "Existing guest query/page/language/consumer proofs plus this staff-context native edge/recovery are retained. Other widths of the edge state, anonymous edge recovery, unpublished-product permission fixtures and independent product/journal/library filters remain open."
@@ -34583,7 +34731,7 @@
     "environment": "production, anonymous",
     "url": null,
     "evidence": [
-      "docs/acceptance/2026-10-22/full-site/dynamic-routes-20261107.json"
+      "docs/acceptance/2026-11-13/dynamic-routes-reverify/dynamic-routes-20261113.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -34598,6 +34746,36 @@
       "route_404_20261107": {
         "status": "pass",
         "detail": "confirmed-unused paths 404 with no redirect in EN and DE"
+      },
+      "reverified_production_20261113": {
+        "result": "pass",
+        "observed_at": "2026-11-13T13:31:50.868Z",
+        "environment": "production, anonymous (read-only HTTP + headless Chromium)",
+        "width": 1440,
+        "section": "404",
+        "observation": {
+          "http": {
+            "status": 404,
+            "h1": "This page does not exist.",
+            "lang": "en-US"
+          },
+          "browser_1440": {
+            "h1": "This page does not exist.",
+            "headerLang": "en-US",
+            "formAction": "/",
+            "scrollWidth": 1440,
+            "clientWidth": 1440
+          },
+          "browser_390": {
+            "h1": "This page does not exist.",
+            "headerLang": "en-US",
+            "formAction": "/",
+            "scrollWidth": 390,
+            "clientWidth": 390
+          }
+        },
+        "scope": "Replaces the 2026-11-07 pointer whose JSON was never committed. Anonymous GET + rendered DOM at 1440 and 390; zero form submissions, zero accounts, zero mail, zero model calls.",
+        "evidence": "docs/acceptance/2026-11-13/dynamic-routes-reverify/dynamic-routes-20261113.json"
       }
     }
   },
@@ -34611,7 +34789,7 @@
     "environment": "production, anonymous",
     "url": "https://de-linker.com/experience-review-missing-20261028/",
     "evidence": [
-      "docs/acceptance/2026-10-22/full-site/dynamic-routes-20261107.json"
+      "docs/acceptance/2026-11-13/dynamic-routes-reverify/dynamic-routes-20261113.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -34649,6 +34827,36 @@
       "route_404_20261107": {
         "status": "pass",
         "detail": "confirmed-unused paths 404 with no redirect in EN and DE"
+      },
+      "reverified_production_20261113": {
+        "result": "pass",
+        "observed_at": "2026-11-13T13:31:50.868Z",
+        "environment": "production, anonymous (read-only HTTP + headless Chromium)",
+        "width": 390,
+        "section": "404",
+        "observation": {
+          "http": {
+            "status": 404,
+            "h1": "This page does not exist.",
+            "lang": "en-US"
+          },
+          "browser_1440": {
+            "h1": "This page does not exist.",
+            "headerLang": "en-US",
+            "formAction": "/",
+            "scrollWidth": 1440,
+            "clientWidth": 1440
+          },
+          "browser_390": {
+            "h1": "This page does not exist.",
+            "headerLang": "en-US",
+            "formAction": "/",
+            "scrollWidth": 390,
+            "clientWidth": 390
+          }
+        },
+        "scope": "Replaces the 2026-11-07 pointer whose JSON was never committed. Anonymous GET + rendered DOM at 1440 and 390; zero form submissions, zero accounts, zero mail, zero model calls.",
+        "evidence": "docs/acceptance/2026-11-13/dynamic-routes-reverify/dynamic-routes-20261113.json"
       }
     }
   },
@@ -34662,7 +34870,7 @@
     "environment": "production, anonymous",
     "url": "https://de-linker.com/de/experience-review-missing-20261028/",
     "evidence": [
-      "docs/acceptance/2026-10-22/full-site/dynamic-routes-20261107.json"
+      "docs/acceptance/2026-11-13/dynamic-routes-reverify/dynamic-routes-20261113.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -34692,6 +34900,36 @@
       "route_404_20261107": {
         "status": "pass",
         "detail": "confirmed-unused paths 404 with no redirect in EN and DE"
+      },
+      "reverified_production_20261113": {
+        "result": "pass",
+        "observed_at": "2026-11-13T13:31:50.868Z",
+        "environment": "production, anonymous (read-only HTTP + headless Chromium)",
+        "width": 1440,
+        "section": "404",
+        "observation": {
+          "http": {
+            "status": 404,
+            "h1": "Diese Seite existiert nicht.",
+            "lang": "de-DE"
+          },
+          "browser_1440": {
+            "h1": "Diese Seite existiert nicht.",
+            "headerLang": "de-DE",
+            "formAction": "/de/",
+            "scrollWidth": 1440,
+            "clientWidth": 1440
+          },
+          "browser_390": {
+            "h1": "Diese Seite existiert nicht.",
+            "headerLang": "de-DE",
+            "formAction": "/de/",
+            "scrollWidth": 390,
+            "clientWidth": 390
+          }
+        },
+        "scope": "Replaces the 2026-11-07 pointer whose JSON was never committed. Anonymous GET + rendered DOM at 1440 and 390; zero form submissions, zero accounts, zero mail, zero model calls.",
+        "evidence": "docs/acceptance/2026-11-13/dynamic-routes-reverify/dynamic-routes-20261113.json"
       }
     }
   },
@@ -34705,7 +34943,7 @@
     "environment": "production, anonymous",
     "url": "https://de-linker.com/de/experience-review-missing-20261028/",
     "evidence": [
-      "docs/acceptance/2026-10-22/full-site/dynamic-routes-20261107.json"
+      "docs/acceptance/2026-11-13/dynamic-routes-reverify/dynamic-routes-20261113.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -34730,6 +34968,36 @@
       "route_404_20261107": {
         "status": "pass",
         "detail": "confirmed-unused paths 404 with no redirect in EN and DE"
+      },
+      "reverified_production_20261113": {
+        "result": "pass",
+        "observed_at": "2026-11-13T13:31:50.868Z",
+        "environment": "production, anonymous (read-only HTTP + headless Chromium)",
+        "width": 390,
+        "section": "404",
+        "observation": {
+          "http": {
+            "status": 404,
+            "h1": "Diese Seite existiert nicht.",
+            "lang": "de-DE"
+          },
+          "browser_1440": {
+            "h1": "Diese Seite existiert nicht.",
+            "headerLang": "de-DE",
+            "formAction": "/de/",
+            "scrollWidth": 1440,
+            "clientWidth": 1440
+          },
+          "browser_390": {
+            "h1": "Diese Seite existiert nicht.",
+            "headerLang": "de-DE",
+            "formAction": "/de/",
+            "scrollWidth": 390,
+            "clientWidth": 390
+          }
+        },
+        "scope": "Replaces the 2026-11-07 pointer whose JSON was never committed. Anonymous GET + rendered DOM at 1440 and 390; zero form submissions, zero accounts, zero mail, zero model calls.",
+        "evidence": "docs/acceptance/2026-11-13/dynamic-routes-reverify/dynamic-routes-20261113.json"
       }
     }
   },
@@ -34835,7 +35103,7 @@
     "environment": "production, anonymous",
     "url": null,
     "evidence": [
-      "docs/acceptance/2026-10-22/full-site/dynamic-routes-20261107.json"
+      "docs/acceptance/2026-11-13/dynamic-routes-reverify/dynamic-routes-20261113.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -34850,6 +35118,27 @@
       "archive_discovery_20261107": {
         "status": "pass",
         "detail": "no public author archive (404), year archive /2026/ redirects home, month 404, tag base 404: no unintended public archives exposed"
+      },
+      "reverified_production_20261113": {
+        "result": "pass",
+        "observed_at": "2026-11-13T13:31:50.868Z",
+        "environment": "production, anonymous (read-only HTTP + headless Chromium)",
+        "width": 1440,
+        "section": "archive",
+        "observation": {
+          "shop": {
+            "status": 200,
+            "cards": 25,
+            "lcTemplate": "6961"
+          },
+          "brand": {
+            "status": 200,
+            "cards": 25,
+            "lcTemplate": "231"
+          }
+        },
+        "scope": "Replaces the 2026-11-07 pointer whose JSON was never committed. Anonymous GET + rendered DOM at 1440 and 390; zero form submissions, zero accounts, zero mail, zero model calls.",
+        "evidence": "docs/acceptance/2026-11-13/dynamic-routes-reverify/dynamic-routes-20261113.json"
       }
     }
   },
@@ -34863,7 +35152,7 @@
     "environment": "production, anonymous",
     "url": null,
     "evidence": [
-      "docs/acceptance/2026-10-22/full-site/dynamic-routes-20261107.json"
+      "docs/acceptance/2026-11-13/dynamic-routes-reverify/dynamic-routes-20261113.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -34878,6 +35167,27 @@
       "archive_discovery_20261107": {
         "status": "pass",
         "detail": "no public author archive (404), year archive /2026/ redirects home, month 404, tag base 404: no unintended public archives exposed"
+      },
+      "reverified_production_20261113": {
+        "result": "pass",
+        "observed_at": "2026-11-13T13:31:50.868Z",
+        "environment": "production, anonymous (read-only HTTP + headless Chromium)",
+        "width": 390,
+        "section": "archive",
+        "observation": {
+          "shop": {
+            "status": 200,
+            "cards": 25,
+            "lcTemplate": "6961"
+          },
+          "brand": {
+            "status": 200,
+            "cards": 25,
+            "lcTemplate": "231"
+          }
+        },
+        "scope": "Replaces the 2026-11-07 pointer whose JSON was never committed. Anonymous GET + rendered DOM at 1440 and 390; zero form submissions, zero accounts, zero mail, zero model calls.",
+        "evidence": "docs/acceptance/2026-11-13/dynamic-routes-reverify/dynamic-routes-20261113.json"
       }
     }
   },
@@ -34891,7 +35201,7 @@
     "environment": "production, anonymous",
     "url": null,
     "evidence": [
-      "docs/acceptance/2026-10-22/full-site/dynamic-routes-20261107.json"
+      "docs/acceptance/2026-11-13/dynamic-routes-reverify/dynamic-routes-20261113.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -34906,6 +35216,27 @@
       "archive_discovery_20261107": {
         "status": "pass",
         "detail": "no public author archive (404), year archive /2026/ redirects home, month 404, tag base 404: no unintended public archives exposed"
+      },
+      "reverified_production_20261113": {
+        "result": "pass",
+        "observed_at": "2026-11-13T13:31:50.868Z",
+        "environment": "production, anonymous (read-only HTTP + headless Chromium)",
+        "width": 1440,
+        "section": "archive",
+        "observation": {
+          "shop": {
+            "status": 200,
+            "cards": 25,
+            "lcTemplate": "6961"
+          },
+          "brand": {
+            "status": 200,
+            "cards": 25,
+            "lcTemplate": "6905"
+          }
+        },
+        "scope": "Replaces the 2026-11-07 pointer whose JSON was never committed. Anonymous GET + rendered DOM at 1440 and 390; zero form submissions, zero accounts, zero mail, zero model calls.",
+        "evidence": "docs/acceptance/2026-11-13/dynamic-routes-reverify/dynamic-routes-20261113.json"
       }
     }
   },
@@ -34919,7 +35250,7 @@
     "environment": "production, anonymous",
     "url": null,
     "evidence": [
-      "docs/acceptance/2026-10-22/full-site/dynamic-routes-20261107.json"
+      "docs/acceptance/2026-11-13/dynamic-routes-reverify/dynamic-routes-20261113.json"
     ],
     "findings": [],
     "added_by": "2026-10-22 coverage-contract review",
@@ -34934,6 +35265,27 @@
       "archive_discovery_20261107": {
         "status": "pass",
         "detail": "no public author archive (404), year archive /2026/ redirects home, month 404, tag base 404: no unintended public archives exposed"
+      },
+      "reverified_production_20261113": {
+        "result": "pass",
+        "observed_at": "2026-11-13T13:31:50.868Z",
+        "environment": "production, anonymous (read-only HTTP + headless Chromium)",
+        "width": 390,
+        "section": "archive",
+        "observation": {
+          "shop": {
+            "status": 200,
+            "cards": 25,
+            "lcTemplate": "6961"
+          },
+          "brand": {
+            "status": 200,
+            "cards": 25,
+            "lcTemplate": "6905"
+          }
+        },
+        "scope": "Replaces the 2026-11-07 pointer whose JSON was never committed. Anonymous GET + rendered DOM at 1440 and 390; zero form submissions, zero accounts, zero mail, zero model calls.",
+        "evidence": "docs/acceptance/2026-11-13/dynamic-routes-reverify/dynamic-routes-20261113.json"
       }
     }
   },

@@ -1,0 +1,131 @@
+{
+  "captured_at": "2026-11-13T13:31:50.868Z",
+  "http": {
+    "search": {
+      "en:/page/5/?s=SAJ": {
+        "status": 200,
+        "finalUrl": "https://de-linker.com/page/5/?s=SAJ",
+        "h1": "SAJ",
+        "keepsQuery": true
+      },
+      "en:/page/6/?s=SAJ": {
+        "status": 404,
+        "finalUrl": "https://de-linker.com/page/6/?s=SAJ",
+        "h1": "This page does not exist.",
+        "keepsQuery": true
+      },
+      "de:/de/seite/5/?s=SAJ": {
+        "status": 200,
+        "finalUrl": "https://de-linker.com/de/seite/5/?s=SAJ",
+        "h1": "SAJ",
+        "keepsQuery": true
+      },
+      "de:/de/seite/6/?s=SAJ": {
+        "status": 404,
+        "finalUrl": "https://de-linker.com/de/seite/6/?s=SAJ",
+        "h1": "Diese Seite existiert nicht.",
+        "keepsQuery": true
+      }
+    },
+    "notFound": {
+      "/this-route-does-not-exist-20261113/": {
+        "status": 404,
+        "h1": "This page does not exist.",
+        "lang": "en-US"
+      },
+      "/de/diese-route-existiert-nicht-20261113/": {
+        "status": 404,
+        "h1": "Diese Seite existiert nicht.",
+        "lang": "de-DE"
+      }
+    },
+    "archive": {
+      "/brand/goodwe/": {
+        "status": 200,
+        "cards": 25,
+        "lcTemplate": "231"
+      },
+      "/de/brand/goodwe/": {
+        "status": 200,
+        "cards": 25,
+        "lcTemplate": "6905"
+      },
+      "/products/": {
+        "status": 200,
+        "cards": 25,
+        "lcTemplate": "6961"
+      },
+      "/de/produkte/": {
+        "status": 200,
+        "cards": 25,
+        "lcTemplate": "6961"
+      }
+    }
+  },
+  "browser": {
+    "en:1440": {
+      "search": {
+        "hasInput": true,
+        "value": "SAJ",
+        "resultCount": 16,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      },
+      "notFound": {
+        "h1": "This page does not exist.",
+        "headerLang": "en-US",
+        "formAction": "/",
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      }
+    },
+    "de:1440": {
+      "search": {
+        "hasInput": true,
+        "value": "SAJ",
+        "resultCount": 16,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      },
+      "notFound": {
+        "h1": "Diese Seite existiert nicht.",
+        "headerLang": "de-DE",
+        "formAction": "/de/",
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      }
+    },
+    "en:390": {
+      "search": {
+        "hasInput": true,
+        "value": "SAJ",
+        "resultCount": 16,
+        "scrollWidth": 390,
+        "clientWidth": 390
+      },
+      "notFound": {
+        "h1": "This page does not exist.",
+        "headerLang": "en-US",
+        "formAction": "/",
+        "scrollWidth": 390,
+        "clientWidth": 390
+      }
+    },
+    "de:390": {
+      "search": {
+        "hasInput": true,
+        "value": "SAJ",
+        "resultCount": 16,
+        "scrollWidth": 390,
+        "clientWidth": 390
+      },
+      "notFound": {
+        "h1": "Diese Seite existiert nicht.",
+        "headerLang": "de-DE",
+        "formAction": "/de/",
+        "scrollWidth": 390,
+        "clientWidth": 390
+      }
+    }
+  }
+}
