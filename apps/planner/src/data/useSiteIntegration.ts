@@ -2,7 +2,12 @@ import { savedSolutionId } from "../domain/savedSolution.ts";
 import { projectBriefId } from "../domain/projectBrief.ts";
 import { useEffect } from "react";
 import { initialEnergyView, PLANNER_NAVIGATION } from "./plannerLocation.ts";
-import { measurePlannerChrome } from "./measurePlannerChrome.ts";
+import {
+	armHashReveal,
+	disarmHashReveal,
+	measurePlannerChrome,
+	revealHashTarget,
+} from "./measurePlannerChrome.ts";
 import { ENTRY_QUERY_KEYS, readEntryHints } from "../domain/entryHints.ts";
 
 const workspaceHashes = new Set([
@@ -103,10 +108,17 @@ export function useSiteIntegration(projectId: string | null): void {
 		const root = document.querySelector<HTMLElement>("[data-linker-planner]");
 		if (!root) return;
 		const header = document.getElementById("lc-header");
-		const measure = () => measurePlannerChrome(root);
+		armHashReveal();
+		const measure = () => {
+			measurePlannerChrome(root);
+			revealHashTarget(root);
+		};
 		const observer = new ResizeObserver(measure);
 		if (header) observer.observe(header);
 		measure();
+		const disarm = () => disarmHashReveal();
+		window.addEventListener("wheel", disarm, { passive: true });
+		window.addEventListener("touchstart", disarm, { passive: true });
 		const originals = new Map<HTMLAnchorElement, string>();
 		for (const link of document.querySelectorAll<HTMLAnchorElement>(
 			"header a[hreflang][lang], footer a[hreflang][lang]",
@@ -129,6 +141,8 @@ export function useSiteIntegration(projectId: string | null): void {
 			window.removeEventListener(PLANNER_NAVIGATION, updateLinks);
 			window.removeEventListener("hashchange", updateLinks);
 			window.removeEventListener("popstate", updateLinks);
+			window.removeEventListener("wheel", disarm);
+			window.removeEventListener("touchstart", disarm);
 			document.removeEventListener("click", updateLinks, true);
 			observer.disconnect();
 			root.style.removeProperty("--lp-site-header-height");

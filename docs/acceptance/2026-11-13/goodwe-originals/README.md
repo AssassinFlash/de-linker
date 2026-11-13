@@ -27,7 +27,16 @@
 | 3699 | Cert VDE 2510-50 | 1463893 | 7a43b31b355a5e3264c80d47e99665f94751859ec97260040dce974da9087306 |
 | 4663 | Quick Installation Guide POLY（纯图像版） | 3079675 | 2e539846bb89ee755d4cc717e6063d945467a6016cf1f44868690ebc9cf49c70 |
 | 4740 | Products Suitable for Coastal Areas EN | 320742 | b8b8ae4c6f36c901b6ad495e3734079e46f120ace668658b7f8c28126ad831df |
-| 4809 | Product Coastline Installation Statement EN（此前身份不明，已定案） | 637758 | 见 /tmp/gw-batc/gw-4809.pdf（待随发布批入库时补记） |
+| 4809 | Product Coastline Installation Statement EN（定案见下节） | 637758 | eadffedb6dbcecdbf7eff8370b3bb9f2a59307ca9f6f528140cc7976a815b22d |
+
+## 4809 定案（OCR 全文核读，2026-11-13）
+
+标题 **Goodwe Product Coastline Installation Statement**（Statement Letter），
+GoodWe Solution Center 负责人 Frank Li（李翔）签发，日期 2026-11-09，无证书/文件编号。
+引用标准 ISO 12944-2:2017；声明产品满足 C4/C5 防腐等级，但**禁止安装于海岸线 500m
+内的 CX 环境**，500m 内适用产品指向官方清单 4740（GW_Products-Suitable-for-Coastal-Areas-EN.pdf）。
+全文不含任何具体型号列表（无 BAT-C 型号）→ **跨产品通用声明函，不作为 BAT-C
+产品文档挂附件**（与 publication-receipt.json 的 skipped 判定一致）。
 
 ## 与 PDP 的关系
 
@@ -37,8 +46,10 @@
 
 ## 后续（609 流程）
 
-新原件上 Woo 产品文档 → 产品页文档区引用 → 每件带本表 sha256 与官方 id。
-临时取证件保留于 `/tmp/gw-batc/`（32MB）至发布批完成后回收。
+3749/3257/3256/3255/3698/3699 已于 2026-11-13 发布为媒体附件 **8736–8741**
+并写入产品 1954/1955 的 `_linker_documents`（15/17 行），EN/DE 四页 + feed +
+Genie 索引读回通过——明细见 publication-receipt.json 与 goal-state-ledger。
+临时取证件目录 `/tmp/gw-batc/`（127MB）已回收。
 
 注：上一会话子代理（agent-34）所称"ETR 3 页原件"未能在官方清单中对应任何
 文件——清单中不存在该名称；该线索按不可证实处理。搜索全程 Apify（token
