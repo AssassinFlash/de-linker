@@ -3821,6 +3821,11 @@ msgstr "Gegen den Uhrzeigersinn von der U-Achse des Dachs in Richtung V."
 msgid "Country"
 msgstr "Land"
 
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Select a country"
+msgstr "Land auswählen"
+
 #: build/planner/assets/planner.js
 #: ../../apps/planner/src/components/energy/RunResult.tsx:200
 msgid "Country requirements: not assessed by this calculation."

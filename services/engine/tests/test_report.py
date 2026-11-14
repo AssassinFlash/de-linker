@@ -1,7 +1,7 @@
 """The design report: one model for the screen and the PDF, in English and German."""
 
 import io
-from typing import cast
+from typing import Any, cast
 
 import pytest
 from pypdf import PdfReader
@@ -10,7 +10,6 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
 from linker_engine import pdf, report, residential, rules
-from linker_engine.planning import report_model
 from linker_engine.engine import Engine
 from linker_engine.models import (
     Report,
@@ -19,6 +18,7 @@ from linker_engine.models import (
     ReportTable,
     ResidentialInput,
 )
+from linker_engine.planning import report_model
 from linker_engine.roof.service import ROOF_ASSUMPTIONS
 
 # A 2 x 1 px PNG, written by hand so the test needs no image tool.
@@ -392,7 +392,7 @@ def test_a_site_row_the_visitor_never_declared_is_left_out() -> None:
     establish a country or a time zone on its own. The declared rows print and
     the undeclared ones disappear.
     """
-    source = {
+    source: dict[str, Any] = {
         "title": "Residential · 10 kWp · 10115 Berlin",
         "project_id": "0" * 32,
         "revision": 2,
@@ -418,7 +418,9 @@ def test_a_site_row_the_visitor_never_declared_is_left_out() -> None:
     assert "Time zone" not in rows
     assert "—" not in rows.values()
 
-    source["brief"]["site"]["country_code"] = "DE"
+    cast(dict[str, Any], cast(dict[str, Any], source["brief"])["site"])[
+        "country_code"
+    ] = "DE"
     built = report_model.build_report(source)
     sections = {section.id: section for section in built.sections}
     rows = {row.label: row.value for row in sections["site"].rows}
