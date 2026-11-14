@@ -26,9 +26,10 @@ final class BlockStylesTest extends TestCase {
 		WP_Mock::userFunction( 'current_theme_supports' )
 			->with( 'editor-styles' )
 			->andReturn( false );
-		WP_Mock::userFunction( 'wp_dequeue_style' )
-			->once()
-			->with( 'global-styles' );
+		WP_Mock::userFunction( 'wp_dequeue_style' )->with( 'global-styles' );
+		WP_Mock::userFunction( 'wp_deregister_style' )->with( 'global-styles' );
+		WP_Mock::userFunction( 'wp_dequeue_style' )->with( 'wp-global-styles-placeholder' );
+		WP_Mock::userFunction( 'wp_deregister_style' )->with( 'wp-global-styles-placeholder' );
 
 		( new BlockStyles() )->drop_global_styles();
 
@@ -40,6 +41,7 @@ final class BlockStylesTest extends TestCase {
 		WP_Mock::userFunction( 'wp_is_block_theme' )->andReturn( true );
 		WP_Mock::userFunction( 'current_theme_supports' )->never();
 		WP_Mock::userFunction( 'wp_dequeue_style' )->never();
+		WP_Mock::userFunction( 'wp_deregister_style' )->never();
 
 		( new BlockStyles() )->drop_global_styles();
 
@@ -53,8 +55,24 @@ final class BlockStylesTest extends TestCase {
 			->with( 'editor-styles' )
 			->andReturn( true );
 		WP_Mock::userFunction( 'wp_dequeue_style' )->never();
+		WP_Mock::userFunction( 'wp_deregister_style' )->never();
 
 		( new BlockStyles() )->drop_global_styles();
+
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * Core enqueues the handle again in the footer, so the guard must run there
+	 * too; a head-only dequeue leaves the hoisted copy in place.
+	 */
+	public function test_the_guard_also_runs_after_cores_footer_enqueue(): void {
+		$styles = new BlockStyles();
+		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $styles, 'drop_global_styles' ), 100 );
+		WP_Mock::expectActionAdded( 'wp_footer', array( $styles, 'drop_global_styles' ), 2 );
+		WP_Mock::expectFilterAdded( 'should_load_separate_core_block_assets', '__return_true' );
+
+		$styles->register();
 
 		$this->assertConditionsMet();
 	}
