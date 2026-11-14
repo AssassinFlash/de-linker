@@ -395,13 +395,21 @@ html[lang^="de"] #contact-form [data-linker-contact-draft-error] p {
  * photo is 433px tall, so 263px are cropped and object-position moves the
  * remainder to 36% — the face lands behind the white title, whose own scrim
  * is only 12% opaque at the top. The band grows to the height the title and
- * scrim need, and the photo is framed on the same point at every width. */
+ * scrim need, and the photo is framed on the same point at every width.
+ *
+ * The page body carries its own `@media (max-width:800px)` block that ends on
+ * `height:auto; min-height:170px`, and an inline block in the post wins over
+ * this volume at equal specificity. The mobile rules here therefore repeat the
+ * id chain and add the body/page ancestors those inline rules use, so the
+ * declared height is the one that applies. Measured 2026-11-14 after the
+ * volume reached production: without the extra chain the band stayed 170px. */
 @media (max-width: 800px) {
-	#tv-contact-v1 .cp-hero {
+	#tv-contact-v1.cp-page .cp-hero {
+		height: auto;
 		min-height: 300px;
 	}
 
-	#tv-contact-v1 .cp-hero-photo {
+	#tv-contact-v1.cp-page .cp-hero .cp-hero-photo {
 		object-position: 46% 50%;
 	}
 }
