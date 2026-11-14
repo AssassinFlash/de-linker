@@ -9075,6 +9075,8 @@ msgstr "Ersatzstrombetrieb"
 msgid "Battery modules per stack"
 msgstr "Batteriemodule je Stack"
 
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx
+#: build/planner/assets/planner.js
 msgid "Usable battery capacity"
 msgstr "Nutzbare Speicherkapazität"
 
