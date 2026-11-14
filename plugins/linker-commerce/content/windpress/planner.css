@@ -87,7 +87,34 @@
   [data-linker-planner] .lp-new-project { width: min(100%, 340px); flex-shrink: 0; padding: 20px; background: rgb(255 255 255 / .8); border: 1px solid var(--lp-line); box-shadow: 0 10px 35px rgb(12 40 35 / .05); }
   [data-linker-planner] .lp-new-project .lp-inline-actions { margin-top: 16px; }
   [data-linker-planner] .lp-new-project > .lp-field + .lp-field { margin-top: 16px; }
-  [data-linker-planner] .lp-quickstart-form > .lp-field + .lp-field { margin-top: 16px; }
+  /* The one-screen start is the default surface for a new project, and it had
+     no rhythm of its own: measured on production 2026-11-14, the eyebrow, the
+     heading, the lede and the form all sat at 0px from each other once the
+     start moved out of the empty-index branch. A section owns its vertical
+     space here the same way .lp-section and .lp-empty already do. */
+  [data-linker-planner] .lp-quickstart { padding: 8px 0 0; }
+  [data-linker-planner] .lp-quickstart-head { padding-bottom: 28px; }
+  [data-linker-planner] .lp-quickstart-head h2,
+  [data-linker-planner] .lp-quickstart-head h1 { margin: 6px 0 0; font-size: clamp(22px, 2.4vw, 30px); line-height: 1.2; }
+  [data-linker-planner] .lp-quickstart-head p { max-width: 640px; margin: 10px 0 0; color: var(--proto-neutral-600); }
+  [data-linker-planner] .lp-quickstart-form { display: grid; gap: 16px; }
+  [data-linker-planner] .lp-quickstart-form > .lp-field + .lp-field { margin-top: 0; }
+  [data-linker-planner] .lp-quickstart-actions { display: grid; gap: 10px; margin-top: 24px; }
+  [data-linker-planner] .lp-quickstart-actions .lp-button { justify-self: start; }
+  [data-linker-planner] .lp-quickstart-advanced { margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--lp-line); }
+  [data-linker-planner] .lp-quickstart-advanced summary { min-height: 44px; align-content: center; color: var(--proto-teal-800); cursor: pointer; }
+  [data-linker-planner] .lp-quickstart-advanced > p { max-width: 640px; margin: 8px 0 0; color: var(--proto-neutral-500); font-size: 13px; }
+  [data-linker-planner] .lp-quickstart-result { margin-top: 32px; }
+  [data-linker-planner] .lp-quickstart-result > h2 { margin: 0 0 16px; font-size: 18px; }
+  /* The run view lists one row per step with a state, so each row needs a rule
+     between it and the next: the same border vocabulary .lp-project-row uses. */
+  [data-linker-planner] .lp-quickstart-steps { display: grid; gap: 0; margin: 4px 0 0; padding: 0; list-style: none; }
+  [data-linker-planner] .lp-quickstart-steps > li { display: grid; gap: 4px; padding: 14px 0; border-bottom: 1px solid var(--lp-line); }
+  [data-linker-planner] .lp-quickstart-steps > li > strong { font-size: 14px; font-weight: 600; }
+  [data-linker-planner] .lp-quickstart-steps > li > span { display: inline-flex; align-items: center; gap: 6px; color: var(--proto-neutral-600); font-size: 13px; }
+  [data-linker-planner] .lp-quickstart-steps > li[data-state="done"] > span { color: var(--proto-teal-800); }
+  [data-linker-planner] .lp-quickstart-steps > li[data-state="running"] > span { color: var(--proto-teal-700); }
+  [data-linker-planner] .lp-quickstart-steps > li .lp-notice { margin: 6px 0 0; }
   [data-linker-planner] .lp-project-bar { position: sticky; top: var(--lp-site-header-height, 0px); z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 14px 28px; background: rgb(255 255 255 / .83); backdrop-filter: blur(18px); border-bottom: 1px solid var(--lp-line); }
   [data-linker-planner] .lp-project-bar:has(.lp-navigation-refusal) { flex-wrap: wrap; row-gap: 8px; }
   [data-linker-planner] .lp-navigation-refusal { flex-basis: 100%; min-width: 0; }
