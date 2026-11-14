@@ -99,3 +99,14 @@ CLS 全部远低于 0.1。LCP 中 TTFB 占大部（同机 GitHub TLS 握手也�
    探针只查 `aria-label`/`title`/文本，漏了 `aria-labelledby` 与 `placeholder`。EPC 页那 3 个按钮有 `aria-labelledby` 指向真实标题；首页 hero 输入框有 `placeholder`。修正探针后重跑。破图项两视口复测均不存在（HTTP 无 4xx），是首轮瞬时加载失败。
 
 **真实缺陷**：PDP 主图按钮 `pdp-gallery-main-wrap` 只含 `<img>`、无任何可访问名称，德语 17 个产品页 × 2 视口全部命中。已加 `aria-label`（`61efd7ee4`）。
+
+## 修完之后自己引入的缺陷（`15c10de20`）
+
+`61efd7ee4` 上线后我验证两个语种，发现**德语页用的是英文句子**：
+
+- EN：`Enlarge the product image: GoodWe ESA GW10K-EHA-G20 (10 kW single-phase power module)` ✓
+- DE：`Enlarge the product image: … (10 kW einphasiges Leistungsmodul)` ✗
+
+根因：新 msgid 在 `linker-commerce-de_DE_formal.po` 里没有条目，`__()` 回退到英文。同一文件里 `Produktbild` 系列翻译本来就存在，是我漏补。已按 Sie 体独立撰写 `Produktbild vergrößern: %s`，`msgfmt --check` 通过、MO 重编译并 `msgunfmt` 验证。
+
+**可复用的检查点**：任何新增 `__()`/`_e()` 字符串，必须在同一批次内补德语 PO 并在两个语种的真实页面上各读回一次。只测英文会漏。
