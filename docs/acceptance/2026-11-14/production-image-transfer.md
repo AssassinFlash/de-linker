@@ -63,9 +63,29 @@
 回滚即把备份 HTML 直接写回对应 `post_content` 并 `clean_post_cache()`，随后 `do_action('litespeed_purge_all')`。
 改动后状态：`13` md5 `306261c87fb88c897b566238d9c75b43`（135,172 字节）、`6913` md5 `e1647e62e69d885b13932cabb13c3a4f`（136,473 字节）。
 
+## 全站扩展（同批）
+
+同一缺陷在其余页面族同样存在（手写 `<img>` 无 `srcset`）。第二批按 `tools/perf/measure-image-boxes.mjs` 在 390/600/768/1024/1280/1440 六个断点实测每张图的真实显示宽度，据此为 12 个页面的 52 张图片补上 `srcset` 与逐图 `sizes`（脚本 `/tmp/add-responsive-images.php`，默认 dry-run，`LINKER_IMG_APPLY=1` 才写入）。
+
+另外页脚 wordmark 位于 LiveCanvas partial（非正文），其 319,152 字节 PNG 显示为 120×46；`300x114` 衍生物 32,710 字节且保持 2.63 原比例，已在 EN/DE 两份 partial 中补上 `srcset`/`sizes` 并部署。
+
+| 页面（1440，匿名，滚到底） | 修复前 | 修复后 | 降幅 |
+|---|---|---|---|
+| 首页 EN | 4,307,997 | **808,737** | **−81.2%** |
+| 首页 DE | — | 997,421 | — |
+| About EN | 1,535,795 | **492,063** | **−68.0%** |
+| Installer EN | 1,834,263 | **1,381,495** | **−24.7%** |
+| Blog EN | 891,213 | **493,444** | **−44.6%** |
+| Products EN | — | 129,322 | — |
+| Residential Storage EN | 1,237,835 | 1,303,891 | **+5.3%** |
+
+七组全部 `broken=0`、`overflowX=0`。
+
 ## 仍未完成
 
 - 页脚 wordmark 已改为 srcset；页头 logo 本就有 `srcset`（`de-linker-logo-1.webp` + `300x150`），未在本批改动
-- 其余页型（产品、分类、博客、法律、工具）未做图片传输采样
+- **Residential Storage 页面反升 5.3%**：该页 5 张 2560/2400 px 整幅图显示为 1440 宽，但不在正文里（`srcset` 为 `n`），属 LiveCanvas 模板或 CSS 背景图，本批正文脚本覆盖不到。这是明确的未修项。
+- 仍有少量 `>=2x` 供应（首页 1、about 3、installer 2、res 4、blog 4），多为模板内或 CSS 背景图
+- 分类归档、法律页、工具页未单独采样
 - LCP / CLS 未测；本批只证明字节数与所选变体，不证明客户侧感知速度
 - 本次为正文数据修改，未新增自动化回归；脚本不在仓库内
