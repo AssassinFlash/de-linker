@@ -255,15 +255,23 @@
  * six targets 44px apart and push the row past its 334px column. Measured
  * 2026-11-15: the row is 136px inside a 334px column, so the wider targets
  * have room. The services page uses the same control under the lk-sstage-
- * prefix. */
-.lk-bstage-pill-bar,
-.lk-sstage-pill-bar {
+ * prefix.
+ *
+ * The wrapper is named in the selector, not the bar alone: the page body's own
+ * `.lk-bstage-pill-bar{…background:#4a6452…}` sets the `background` shorthand,
+ * which resets `background-clip` to its initial `border-box`. At one class of
+ * specificity that rule arrives later in the document and wins, so the padding
+ * grew the painted box and the 3px line became a solid 40px slab (measured
+ * 2026-11-15 on /de/fuer-installateur/: computed background-clip border-box,
+ * height 40px, solid colour). Two classes beat it wherever it sits. */
+.lk-bstage-pills-wrap .lk-bstage-pill-bar,
+.lk-sstage-pills-wrap .lk-sstage-pill-bar {
 	position: relative;
 }
 
 @media (pointer: coarse) {
-	.lk-bstage-pill-bar,
-	.lk-sstage-pill-bar {
+	.lk-bstage-pills-wrap .lk-bstage-pill-bar,
+	.lk-sstage-pills-wrap .lk-sstage-pill-bar {
 		padding-block: 20px;
 		padding-inline: 4px;
 		background-clip: content-box;
@@ -285,10 +293,19 @@
 	 * 0px). Naming the same id and the body outranks it, and the id is already
 	 * how marketing-rhythm.css reaches this page's own sections.
 	 *
+	 * `[aria-pressed]` is in the selector for `background-clip`, not for
+	 * padding: the page's pressed dot is `…button[aria-pressed=true]{…background:
+	 * var(--us-green)}`, one attribute more than the base rule, and that
+	 * `background` shorthand resets the clip to `border-box`. Without the
+	 * attribute here the pressed dot kept its padding and painted a solid 24x43
+	 * slab while the three idle dots stayed round (measured 2026-11-15, and the
+	 * screenshot showed exactly one tall pill). Matching on the attribute's
+	 * presence covers both states in one rule.
+	 *
 	 * The control only exists on the utility page — residential and commercial
 	 * print no dots (measured 2026-11-15: 0 occurrences) — so the id is a
 	 * narrower anchor than `body`, not a wider one. */
-	body #tv-utility-page-v1 .us-application-dots button {
+	body #tv-utility-page-v1 .us-application-dots button[aria-pressed] {
 		padding-block: 18px;
 		background-clip: content-box;
 		box-sizing: content-box;
