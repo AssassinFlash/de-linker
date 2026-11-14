@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+	lazy,
+	Suspense,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import {
 	useInfiniteQuery,
 	useQuery,
@@ -21,7 +29,14 @@ import { ProjectBriefStart } from "./ProjectBriefStart.tsx";
 import { SavedSolutionStart } from "./SavedSolutionStart.tsx";
 import { projectBriefId } from "../domain/projectBrief.ts";
 import { savedSolutionId } from "../domain/savedSolution.ts";
-import { ProjectEditor } from "./ProjectEditor.tsx";
+// The editor is the only screen that carries the whole workbench (energy,
+// design, equipment panels). It is loaded when a project is opened, so the
+// project list the visitor lands on does not wait for it. Measured
+// 2026-11-14: the initial chunk was 1,447,770 bytes and the editor's own
+// subtree is over 3,900 lines of components.
+const ProjectEditor = lazy(async () => ({
+	default: (await import("./ProjectEditor.tsx")).ProjectEditor,
+}));
 import { Notice } from "./Notice.tsx";
 import { ENTRY_QUERY_KEYS, readEntryHints } from "../domain/entryHints.ts";
 import { readObject, wire } from "../data/readProtocol.ts";
@@ -347,29 +362,37 @@ export function Workspace({
 	);
 	if (selected)
 		return !session.claim_pending && project.data ? (
-			<ProjectEditor
-				key={session.query_scope + ":" + selected}
-				project={project.data}
-				client={client}
-				store={store}
-				config={config}
-				session={session}
-				recheck={recheck}
-				recoveryScopes={recovery.data}
-				recoveryChecking={recovery.isFetching}
-				recoveryFailed={recovery.isError}
-				close={() => {
-					if (!client.isCurrentScope(session.query_scope)) return false;
-					void cache.invalidateQueries({
-						queryKey: [session.query_scope, "projects"],
-					});
-					cache.removeQueries({
-						queryKey: [session.query_scope, "project", selected],
-					});
-					select(null);
-					return true;
-				}}
-			/>
+			<Suspense
+				fallback={
+					<p className="lp-session-state" role="status">
+						{__("Opening the project…", "linker-tools")}
+					</p>
+				}
+			>
+				<ProjectEditor
+					key={session.query_scope + ":" + selected}
+					project={project.data}
+					client={client}
+					store={store}
+					config={config}
+					session={session}
+					recheck={recheck}
+					recoveryScopes={recovery.data}
+					recoveryChecking={recovery.isFetching}
+					recoveryFailed={recovery.isError}
+					close={() => {
+						if (!client.isCurrentScope(session.query_scope)) return false;
+						void cache.invalidateQueries({
+							queryKey: [session.query_scope, "projects"],
+						});
+						cache.removeQueries({
+							queryKey: [session.query_scope, "project", selected],
+						});
+						select(null);
+						return true;
+					}}
+				/>
+			</Suspense>
 		) : (
 			<div className="lp-page">
 				<button className="lp-text-button" onClick={() => select(null)}>
