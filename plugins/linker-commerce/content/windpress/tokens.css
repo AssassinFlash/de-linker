@@ -3,6 +3,34 @@
 @font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:600;font-display:swap;src:url("/wp-content/plugins/linker-commerce/assets/fonts/plus-jakarta-sans-600.woff2") format("woff2"),url("/wp-content/plugins/linker-commerce/assets/fonts/plus-jakarta-sans-600.ttf") format("truetype")}
 @font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:700;font-display:swap;src:url("/wp-content/plugins/linker-commerce/assets/fonts/plus-jakarta-sans-700.woff2") format("woff2"),url("/wp-content/plugins/linker-commerce/assets/fonts/plus-jakarta-sans-700.ttf") format("truetype")}
 @font-face{font-family:"DM Serif Display";font-style:normal;font-weight:400;font-display:swap;src:url("/wp-content/plugins/linker-commerce/assets/fonts/dm-serif-display-400.woff2") format("woff2"),url("/wp-content/plugins/linker-commerce/assets/fonts/dm-serif-display-400.ttf") format("truetype")}
+/* The fallback each family paints with before its file arrives, measured to
+ * occupy the same box as the real face: without this the swap reflows the hero
+ * (measured 2026-11-15 on /for-installer/ at 1440: CLS 0.123, `.lk-hero-desc`
+ * moving 75px when Plus Jakarta Sans replaced the system font).
+ *
+ * The numbers come from the shipped files' own metrics, not from a guess.
+ * `plus-jakarta-sans-400.ttf`: unitsPerEm 1000, hhea ascender 1038, descender
+ * -222, lineGap 0 — so its ascent:descent content box is 1.038 + 0.222.
+ * `dm-serif-display-400.ttf`: 1.036 + 0.335. Arial's are 0.905 + 0.212, and
+ * CSS Fonts 5 defines size-adjust so the fallback's content box equals the
+ * target's: 1.260 / 1.117 = 112.80% and 1.371 / 1.117 = 122.74%. The overrides
+ * then divide each target metric by that same factor back onto Arial's units. */
+@font-face{
+	font-family:"Plus Jakarta Sans Fallback";
+	src:local("Arial"),local("Helvetica"),local("Liberation Sans");
+	size-adjust:112.80%;
+	ascent-override:92.02%;
+	descent-override:19.68%;
+	line-gap-override:0%;
+}
+@font-face{
+	font-family:"DM Serif Display Fallback";
+	src:local("Georgia"),local("Times New Roman"),local("Liberation Serif");
+	size-adjust:122.74%;
+	ascent-override:84.41%;
+	descent-override:27.29%;
+	line-gap-override:0%;
+}
 /* prototype/assets/tokens-a.css
    方向 A · 坝水青绿 · 清透工程感
    色：ds-explore/color.html 方向 01（锚 #0c7f73）
@@ -54,10 +82,10 @@
   --proto-media-3: linear-gradient(180deg, #b6c3cc 0%, #879aa6 100%);
   --proto-media-4: linear-gradient(210deg, #c8d2d8 0%, #a3b2bc 55%, #6f8792 100%);
 /* Pairing A · Plus Jakarta Sans 全阶 · display 600 · 字距近 0 */
-  --proto-font-display: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
-  --proto-font-sans: "Plus Jakarta Sans", Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --proto-font-display: "Plus Jakarta Sans", "Plus Jakarta Sans Fallback", system-ui, sans-serif;
+  --proto-font-sans: "Plus Jakarta Sans", "Plus Jakarta Sans Fallback", system-ui, -apple-system, "Segoe UI", sans-serif;
   /* Editorial layer: opt in on narrative pages without changing the trade UI. */
-  --proto-font-editorial: "DM Serif Display", Georgia, serif;
+  --proto-font-editorial: "DM Serif Display", "DM Serif Display Fallback", Georgia, serif;
   --proto-editorial-paper: #f3f5f7;
   --proto-editorial-sage: #e9edf1;
   --proto-editorial-mint: #dfe6ec;
