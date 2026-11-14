@@ -1069,7 +1069,7 @@ final class ProductShortcodes {
 				. '<p class="tv-empty-state">' . esc_html__( 'Product photography for this model is in preparation.', 'linker-commerce' ) . '</p>'
 				. '</div></div>';
 		}
-		$html .= '<button type="button" class="pdp-gallery-main-wrap" data-pdp-image data-pdp-main data-src="' . esc_url( self::image_url( $ids[0] ) ) . '" data-caption="' . esc_attr( self::image_note( (string) $view['intro'] ) ) . '">'
+		$html .= '<button type="button" class="pdp-gallery-main-wrap" aria-label="' . esc_attr( sprintf( /* translators: %s: product name. */ __( 'Enlarge the product image: %s', 'linker-commerce' ), (string) $view['title'] ) ) . '" data-pdp-image data-pdp-main data-src="' . esc_url( self::image_url( $ids[0] ) ) . '" data-caption="' . esc_attr( self::image_note( (string) $view['intro'] ) ) . '">'
 			. self::image_tag(
 				$ids[0],
 				'full',
