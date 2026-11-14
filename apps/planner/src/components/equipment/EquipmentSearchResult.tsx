@@ -87,24 +87,30 @@ export function EquipmentSearchResult({
 				return p ? `${p.brand} ${p.model}` : "—";
 			})
 			.join(" + ");
-	/** What the chosen stack holds, in kWh, from the battery's own figure. */
+	/**
+	 * What the chosen stack holds, in kWh, from the battery's own figure.
+	 *
+	 * The figure arrives as the feed's own row — `{value, unit, citation}` —
+	 * not as a bare number, which is why the first version of this showed no
+	 * capacity at all (measured 2026-11-15 on production after the engine began
+	 * sending the field). `value` is the published string; a `scalar` figure is
+	 * numeric text and converts, anything else is not usable here.
+	 */
 	const stackEnergy = (selection: EquipmentSelection): string | null => {
 		const id = selection.battery_product_id;
 		const modules = selection.modules_per_stack;
 		if (id === null || typeof modules !== "number") return null;
 		const energy = readObject(products.get(id)?.energy ?? {});
-		const per =
-			typeof energy.module_energy_kwh_usable === "number"
-				? energy.module_energy_kwh_usable
-				: typeof energy.module_energy_kwh_nominal === "number"
-					? energy.module_energy_kwh_nominal
-					: null;
-		if (per === null) return null;
+		const perModule = (
+			["module_energy_kwh_usable", "module_energy_kwh_nominal"] as const
+		)
+			.map((key) => Number(readObject(energy[key] ?? {}).value))
+			.find((value) => Number.isFinite(value) && value > 0);
+		if (perModule === undefined) return null;
 		const stacks = selection.parallel_stacks ?? 1;
-		const total = per * modules * stacks;
 		return new Intl.NumberFormat(locale, {
 			maximumFractionDigits: 1,
-		}).format(total);
+		}).format(perModule * modules * stacks);
 	};
 	/**
 	 * A candidate as a customer reads it: the equipment, then what the battery
