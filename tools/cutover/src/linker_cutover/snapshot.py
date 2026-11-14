@@ -23,6 +23,7 @@ nor recreates it.
 from __future__ import annotations
 
 import fcntl
+import hashlib
 import json
 import os
 import re
@@ -228,18 +229,36 @@ def _reap_transactions(folder: Path) -> None:
 
 
 def _verified(path: Path, record: dict[str, Any]) -> bool:
-    """Reuse a full hash/gzip proof only while its exact file stamp is unchanged."""
+    """A retained snapshot is valid while its bytes still hash to the proof.
+
+    The recorded stamp pins device, inode, size and both timestamps, but an
+    inode is not part of a snapshot's identity: rewriting a file with identical
+    bytes is a new inode and the same snapshot. Requiring the stamp alone made
+    retention refuse every later pass once one file had been rewritten —
+    measured 2026-11-14, 37 snapshots (287 MB) had accumulated while every
+    prune reported "recorded snapshot is missing or changed". A stamp match
+    still short-circuits the hash; a mismatch re-reads the bytes and accepts
+    them only when the recorded SHA-256 matches and the size is unchanged.
+    """
     try:
         if path.is_symlink() or not path.is_file():
             return False
+        record_hash = record.get("sha256")
+        if (
+            not isinstance(record_hash, str)
+            or re.fullmatch(r"[a-f0-9]{64}", record_hash) is None
+        ):
+            return False
+        if path.stat().st_size != record.get("size"):
+            return False
         stamp = backup_retention.file_stamp(path)
-        return bool(
-            stamp == record.get("stamp")
-            and path.stat().st_size == record.get("size")
-            and isinstance(record.get("sha256"), str)
-            and re.fullmatch(r"[a-f0-9]{64}", record["sha256"]) is not None
-            and backup_retention.file_stamp(path) == stamp
-        )
+        if stamp == record.get("stamp"):
+            return True
+        digest = hashlib.sha256()
+        with path.open("rb") as stream:
+            for block in iter(lambda: stream.read(1 << 20), b""):
+                digest.update(block)
+        return digest.hexdigest() == record_hash
     except OSError:
         return False
 
