@@ -390,6 +390,22 @@ html[lang^="de"] #contact-form [data-linker-contact-draft-error] p {
 	}
 }
 
+/* The contact hero shrinks to a 170px band on a phone while its photo keeps
+ * object-fit: cover. Measured 2026-11-14 at 768: the box is 768x170, the drawn
+ * photo is 433px tall, so 263px are cropped and object-position moves the
+ * remainder to 36% — the face lands behind the white title, whose own scrim
+ * is only 12% opaque at the top. The band grows to the height the title and
+ * scrim need, and the photo is framed on the same point at every width. */
+@media (max-width: 800px) {
+	#tv-contact-v1 .cp-hero {
+		min-height: 300px;
+	}
+
+	#tv-contact-v1 .cp-hero-photo {
+		object-position: 46% 50%;
+	}
+}
+
 /* Optional public selection travels separately from the message. The native
  * checkbox works without a binder: its unchecked state visibly excludes the
  * summary and the POST carries 0. Minimum target follows the site's 44px
