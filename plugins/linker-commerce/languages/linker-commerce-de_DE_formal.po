@@ -3430,6 +3430,12 @@ msgstr "Die Produktfotografie für dieses Modell wird vorbereitet."
 msgid "Product image 2"
 msgstr "Produktbild 2"
 
+#. translators: %s: product name.
+#: includes/Presentation/ProductShortcodes.php:1072
+#, php-format
+msgid "Enlarge the product image: %s"
+msgstr "Produktbild vergrößern: %s"
+
 #. translators: %d: image number.
 #: includes/Presentation/ProductShortcodes.php:1150
 #, php-format
