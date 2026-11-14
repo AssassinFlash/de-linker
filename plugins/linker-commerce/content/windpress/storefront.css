@@ -1222,16 +1222,22 @@ body .sf-compare .sf-compare-head h1 {
 	padding: 12px;
 }
 @media (max-width: 600px) {
+	/* The phone label column was pinned to 7rem with max-width, so a label like
+	   "Usable energy (kWh)" could not fit on two lines and broke inside the
+	   word ("Usable ener-gy (kWh)"; production 2026-11-14, EN and DE). A floor
+	   without a ceiling lets the column take the room the labels need; the
+	   table is already the horizontal scroller, so a wider label column costs
+	   the reader nothing. */
 	.sf-compare-table thead th:first-child,
 	.sf-compare-table tbody th,
 	#linker-compare .linker-compare-table thead th:first-child,
 	#linker-compare .linker-compare-table tbody th {
-		width: 7rem;
-		min-width: 7rem;
-		max-width: 7rem;
+		width: auto;
+		min-width: 8.5rem;
+		max-width: 12rem;
 		padding-inline: 10px;
-		overflow-wrap: anywhere;
-		hyphens: auto;
+		overflow-wrap: break-word;
+		hyphens: manual;
 	}
 }
 .sf-compare-table thead th a {
