@@ -194,6 +194,13 @@ export function quickStartInputs(
 		pv_dc_kw: choices.pvKwp,
 		required_usable_kwh: sizing.usableKwh,
 		required_discharge_ac_kw: sizing.dischargeKw,
+		// The products carry the manufacturer's own home/commercial filing, so a
+		// stated project use keeps a commercial converter out of a residential
+		// answer. Measured 2026-11-14: without it a 10 kWp home request was
+		// answered with a 25 kW three-phase inverter first and 15 commercial
+		// combinations inside the same list.
+		application:
+			choices.projectType === "commercial" ? "commercial" : "residential",
 	};
 	const inputs: JsonObject = {
 		brief: {
@@ -263,6 +270,7 @@ export function mergeQuickStartInputs(
 		pv_dc_kw: declared.pv_dc_kw ?? null,
 		required_usable_kwh: declared.required_usable_kwh ?? null,
 		required_discharge_ac_kw: declared.required_discharge_ac_kw ?? null,
+		application: declared.application ?? null,
 	};
 	const note =
 		typeof currentBrief.project_note === "string" &&
