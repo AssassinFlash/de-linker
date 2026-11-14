@@ -241,3 +241,23 @@
 		background-image: url('/wp-content/uploads/2026/09/linker-commissioning-guidance-from-linker-768x432.webp');
 	}
 }
+
+/* The partner-stage progress bars are buttons: each carries role="button",
+ * tabindex="0" and an aria-label, so they are reachable by keyboard and screen
+ * reader. Measured 2026-11-14 on /de/fuer-installateur/ they are 16x3 px, far
+ * below the 44px touch target the rest of the site keeps, and six sit side by
+ * side within a single row. A 44px square around each would overlap its
+ * neighbours and send a tap to the wrong stage, so the row grows instead: the
+ * bars keep their width and 3px shape, and padding gives each one a tall
+ * target in the vertical direction where there is room. */
+.lk-bstage-pill-bar {
+	position: relative;
+}
+
+@media (pointer: coarse) {
+	.lk-bstage-pill-bar {
+		padding-block: 20px;
+		background-clip: content-box;
+		box-sizing: content-box;
+	}
+}
