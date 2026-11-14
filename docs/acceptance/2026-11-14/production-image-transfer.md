@@ -1,91 +1,90 @@
-# 生产图片传输：首页从 4.31 MB 降到 1.07 MB（2026-11-14）
+# 生产图片传输：实测、根因与全站扩展（2026-11-14）
 
-这是加载性能扩展目标下的一次有界交付，不代表该目标或全站目标完成。
+这份记录只写实测到的字节、查明的根因，以及线上读回的结果。它不代表全站性能目标完成。
 
-## 实测现象
+## 测量方法更正（重要）
 
-生产首页（EN 1440，匿名访客、真实浏览器）实际传输图片 **4,307,997 字节 / 24 张 webp**。
-其中 12 张过度供给（原图尺寸远大于显示尺寸）：
+本文件早期版本用 `for (const i of document.images) i.loading = 'eager'` 强制加载后统计，得到首页 4,307,997 字节。**那个数字不可用作客户实际传输量**：强制 eager 会让轮播中隐藏的 4 张幻灯片也下载（`linker-support-after-the-order-1.webp` 344,190、`linker-match-inverter-battery-accessories-1.webp` 335,850、`linker-order-the-system-1.webp` 311,268、`linker-trade-pricing-and-availability-1.webp` 130,800），把首页从约 299 KB 虚高到 1.9 MB。
 
-| 文件 | 原图 | 显示 | 倍率 | 字节 |
-|---|---|---|---|---|
-| `linker-check-what-works-together-1.webp` | 1600×1600 | 124×478 | 12.9× | 280,178 |
-| `linker-trade-support-from-germany-1.webp` | 1600×1600 | 124×478 | 12.9× | 224,592 |
-| `linker-logo-wordmark.png` | 717×273 | 120×46 | 6.0× | 319,152 |
-| `linker-commercial-storage-for-contractors-1.webp` | 1600×1600 | 693×… | — | 386,936 |
-| `linker-utility-scale-bess.webp` | 1568×672 | 1440×780 | 1.1× | 326,620 |
+**此后所有数字统一采用自然懒加载**：真实视口 → 逐屏 `scrollTo` + `waitForTimeout(55–70ms)` → 等待 900–1200 ms → 读 `performance.getEntriesByType('resource')` 的 `transferSize`。前后两组数字若方法不同，不得直接相减。
 
-## 根因
+## 本批最终读回（自然懒加载，匿名，2026-11-14）
 
-首页正文（`post_content`，页面 `13` Home / `6913` Startseite）里的图片是**手写的 `<img src>` 标签**，带 `width`/`height` 但**没有 `srcset` 和 `sizes`**，绕过了 WordPress 原生的响应式图片输出。磁盘上早已存在 `-100x100` / `-300x300` / `-600x600` / `-768x768` / `-1024x1024` / `-1536x1536` 等变体（如 `linker-check-what-works-together-1-300x300.webp` 仅 17 KB，原图 280 KB），页面从未使用它们。
-
-另有 3 张图虽有 `srcset`，但 `sizes` 写成 `(max-width: 600px) 120vw, 2400px`，而实际显示宽度仅 354–370 px，触发 2400w 大图下载。本批已一并修正为 `(max-width: 600px) 100vw, (max-width: 768px) 45vw, 380px`（实测 354/564/296/278/358/370），修正后浏览器选中 380w/390w 变体。
-
-## 修复
-
-在页面正文为 9 张图片补上真实的 `srcset`（由 WordPress 附件 metadata 生成，含 9–10 个变体）与 `sizes`。
-
-`sizes` 不是估计值：先在线上分别以 **390 / 600 / 768 / 1024 / 1280 / 1440** CSS px 实测每张图的显示宽度，再为每个断点写稳定上界。实测宽度例如 `linker-check-what-works-together-1` 为 59/95/117/93/120/124，故 `sizes="(max-width: 768px) 25vw, 140px"`。
-
-- 脚本：`/tmp/add-srcset.php`（本机与主机同名），默认 dry-run，`LINKER_SRCSET_APPLY=1` 才写入
-- 仅追加 `srcset`/`sizes` 属性，`src`/`alt`/`width`/`height`/class 与正文其余字节不动
-- 附件按 `_wp_attached_file` basename 匹配，因为 `attachment_url_to_postid()` 对本批 guid 失配
-
-## 读回
-
-| 场景 | 修复前 | 修复后 | 降幅 |
+| 页面 | 视口 | 图片字节 | 文件数 |
 |---|---|---|---|
-| 首页 EN 1440 图片字节 | 4,307,997 | **804,503** | **−81.3%** |
-| 首页 DE 1440 图片字节 | 未单测 | 同源镜像 | — |
-| 首页 EN 390 图片字节 | 未单测 | **751,673** | — |
+| 首页 EN | 1440 | **456,975** | 14 |
+| 首页 EN | 390 | **278,895** | 14 |
+| 首页 DE | 1440 | **423,965** | 13 |
+| 首页 DE | 390 | **278,895** | 14 |
+| services-support EN | 1440 | **390,129** | — |
+| for-epc EN | 1440 | **585,763** | — |
+| utility-storage EN | 1440 | **630,595** | — |
+| contact EN | 1440 | **181,538** | — |
+| contact EN | 390 | **135,962** | — |
+| about EN | 1440 | **238,437** | — |
 
-第一轮（9 张图补 srcset）后为 1,071,781；第二轮修正 3 张卡片的 `sizes` 后降至 804,503。
+首页 HTML 传输：EN **79,093** 字节、DE **97,189** 字节。
 
-浏览器实际选中的变体与显示宽度匹配（例：显示 124 px 选 150w；显示 420 px 选 600w；显示 693 px 选 768w）。
+全部组 `broken=0`、`docOverflowX=0`、`jsErr=0`。
 
-视觉与无回归：EN/DE 1440 与 EN 390 三组实测 **破图 0、`docOverflowX` 0、JS 错误 0**；EN 1440 首屏截图与修复前字节数相同（1,008,421），像素一致。
+## 三个独立根因（不是同一个问题）
 
-## 同批完成的 HTML 死重清理
+### 1. 手写 `<img>` 绕过 WordPress 响应式输出
 
-生产首页 HTML 原为 **401,230 字节**，其中 **133,557（33%）** 是 WordPress `global-styles-inline-css`：1,390 个 `--wp--preset--` 变量 + 区块库规则。死重证据：无任何其他样式表或内联样式引用这些变量、`style="..."` 零引用、页面零 `wp-block-*` 类，且主题非区块主题、无 `theme.json`、不支持 editor-styles。
+20 个营销页的正文是整段手写 HTML 存在 `post_content`（about 页 98 KB），`grep` 全仓库找不到源码。这些 `<img>` 只有 `src`，没有 `srcset`/`sizes`，浏览器按原图取。磁盘上变体齐全（例 `linker-residential-hybrid-from-linker-300x129.webp`），但页面从不使用。
 
-`Presentation\BlockStyles` 在两个入队点移除它（`wp_enqueue_scripts` 与 `wp_footer` 优先级 2）。**只在一个点移除无效**——core 会在 `wp_footer` 优先级 1 再入队（classic theme placeholder + hoist 机制）；首版仅处理 `wp_enqueue_scripts`，部署后实测仍为 401 KB，据此改正。
+修法：`tools/perf/add-responsive-images.php` 按附件 metadata 生成 `srcset`，`sizes` 来自 `tools/perf/site-sizes.json`。
 
-读回：`/` 401,230 → **267,544**（−33.3%）、`/de/` 448,833 → **315,229**、`/products/` 357,704 → **224,100**（−37.3%）；`--wp--preset--` 1,390 → **0**。五个页面（首页 EN/DE、产品、配置器、FAQ）实测 `--proto-ink`/`--proto-font-sans` 仍正确解析、标题字号颜色正确、无溢出、无 JS 错误。
+### 2. `sizes` 表必须由实测生成，手写追不上
 
-## TTFB 结论（不宣称提速）
+早先维护一张 28 条的手写 `sizes` 表，只能覆盖「记得住的那几张」，因此 `services-support` 3,000,095 字节、`for-epc` 2,712,283 字节长期没被处理。
 
-匿名 curl 三选中位：`/` 1.68 s、`/de/` 2.03 s、`/products/` 2.01 s。分解显示 `tls=1.30 s` 占绝大部分（DNS 3 ms、connect 4 ms）。**同机对照 `github.com` 的 TLS 也要 1.17 s**，故该 1.3 s 主要是测量点与机房之间的网络延迟，服务器特有部分约 0.15 s。本机测量不能作为客户侧 TTFB 结论。
+现在 `tools/perf/sizes-from-measurement.mjs` 从浏览器实测 JSON 生成整张表（**76 个文件**，覆盖 36 个页面 × 390/1440 两视口）。规则写进注释：
 
-## 回滚
+- 同一文件在多个位置出现时取**最大实测盒**——宁可多下几 KB，绝不因低估而模糊。
+- 只用 768px 一个断点（主题自己的手机/桌面分界），不编造未测过的中间断点。
+- 满幅横带识别为 `100vw`；已有 `srcset` 的一律不动。
 
-备份：`/home/u388076051/backups/img-srcset-20261114/{13-home.html,6913-startseite.html}`（127,821 / 129,122 字节，原内容）。
-回滚即把备份 HTML 直接写回对应 `post_content` 并 `clean_post_cache()`，随后 `do_action('litespeed_purge_all')`。
-改动后状态：`13` md5 `306261c87fb88c897b566238d9c75b43`（135,172 字节）、`6913` md5 `e1647e62e69d885b13932cabb13c3a4f`（136,473 字节）。
+### 3. 桌面端下载永久不可见的图
 
-## 全站扩展（同批）
+`mobile-photo-topics.js`（内联在 about / services / epc 六页正文，三份副本 md5 各不相同）用 JS 创建 `.mt-visual img`，该层在 `>800px` 是 `display:none`，但 `<img>` 一插入就无条件下载：`authorised-supply` 472,468、`inverter-protocol` 319,894、`container-bess` 275,156、`outdoor-cabinets` 224,578、`trade-partner-portal` 102,964 = **1,395,060 字节**，桌面访客一个字节都用不上。
 
-同一缺陷在其余页面族同样存在（手写 `<img>` 无 `srcset`）。第二批按 `tools/perf/measure-image-boxes.mjs` 在 390/600/768/1024/1280/1440 六个断点实测每张图的真实显示宽度，据此为 12 个页面的 52 张图片补上 `srcset` 与逐图 `sizes`（脚本 `/tmp/add-responsive-images.php`，默认 dry-run，`LINKER_IMG_APPLY=1` 才写入）。
+合成页实测确认机制：`display:none` 内的 `<img>` 加 `loading="lazy"` 后 `complete=false`、零字节传输；不加则立刻下载。
 
-另外页脚 wordmark 位于 LiveCanvas partial（非正文），其 319,152 字节 PNG 显示为 120×46；`300x114` 衍生物 32,710 字节且保持 2.63 原比例，已在 EN/DE 两份 partial 中补上 `srcset`/`sizes` 并部署。
+修法：`tools/perf/about-images.php` 给三份副本的 `photo`/`thumbnail` 注入 `loading="lazy"`。读回 about 1440 从 2,199,546 降到 **238,437**，`hiddenFetched=false`。
 
-| 页面（1440，匿名，滚到底） | 修复前 | 修复后 | 降幅 |
-|---|---|---|---|
-| 首页 EN | 4,307,997 | **808,737** | **−81.2%** |
-| 首页 DE | — | 997,421 | — |
-| About EN | 1,535,795 | **492,063** | **−68.0%** |
-| Installer EN | 1,834,263 | **1,381,495** | **−24.7%** |
-| Blog EN | 891,213 | **493,444** | **−44.6%** |
-| Products EN | — | 129,322 | — |
-| Residential Storage EN | 1,237,835 | 1,303,891 | **+5.3%** |
+### 4. CSS 背景图无法用 srcset
 
-七组全部 `broken=0`、`overflowX=0`。
+`initiatorType` 为 `css`/`link` 的图片是背景图，`srcset` 机制不适用。实测：services 539,400（三张）、about 197,262、home 139,776。这部分**未处理**，是已知待办。
 
-## 仍未完成
+## 内联 CSS/JS 的规模与作用域审计
 
-- 页脚 wordmark 已改为 srcset；页头 logo 本就有 `srcset`（`de-linker-logo-1.webp` + `300x150`），未在本批改动
-- **Residential Storage 页面反升 5.3%**：该页 5 张 2560/2400 px 整幅图显示为 1440 宽，但不在正文里（`srcset` 为 `n`），属 LiveCanvas 模板或 CSS 背景图，本批正文脚本覆盖不到。这是明确的未修项。
-- 仍有少量 `>=2x` 供应（首页 1、about 3、installer 2、res 4、blog 4），多为模板内或 CSS 背景图
+20 个页面把样式与脚本内联在正文：**CSS 1,019,538 字节 / 17 个块**、**JS 248,688 字节 / 12 个块**，每个页整份重发。这些在仓库里**没有对应源码文件**。
+
+作用域审计（对全部 70 个已发布 URL 的渲染 HTML 做 token 泄漏测试）：**9,160 个选择器中的 53 个未加页级前缀，但没有任何一个能在自身页面族之外匹配到元素**。也就是说把它们合并进单一 WindPress 来源在渲染上安全。这是后续工作，不在本批。
+
+## 仍开放的
+
 - 分类归档、法律页、工具页未单独采样
-- LCP / CLS 未测；本批只证明字节数与所选变体，不证明客户侧感知速度
-- 本次为正文数据修改，未新增自动化回归；脚本不在仓库内
+- LCP / CLS 未测
+- CSS 背景图 539 KB（services）未处理
+- 配置器首屏：`planner-core` 1,414 KB（gzip 380 KB）、`SceneViewport` 1,514 KB、`MapViewport` 1,161 KB、`EnergyFlowChart` 542 KB；地图与 3D 已按需加载，首屏主体是应用自身代码 + Ajv schema 校验
+
+## 备份与回滚
+
+- `/home/u388076051/backups/about-img-20261114/`（6 页正文，784 KB）
+- `/home/u388076051/backups/sizes-20261114/`（12 页正文，1.4 MB）
+- `/home/u388076051/backups/sizes2-20261114/`（4 页正文）
+
+每份目录内逐文件记录字节数与 md5。回滚：把对应 `.html` 写回 `post_content`，`clean_post_cache()`，随后 `do_action('litespeed_purge_all')`。
+
+## 工具清单
+
+| 文件 | 作用 |
+|---|---|
+| `tools/perf/sizes-from-measurement.mjs` | 实测 JSON → `sizes` 表 |
+| `tools/perf/site-sizes.json` | 生成的表（76 文件） |
+| `tools/perf/add-responsive-images.php` | 按表补 `srcset`/`sizes`，默认 dry-run |
+| `tools/perf/about-images.php` | about 族正文图 + 移动层懒加载，默认 dry-run |
+| `tools/perf/backup-pages.php` | 写入前备份页面正文 |
+| `tests/e2e/measure-image-boxes.mjs` | 六断点实测布局盒 |
