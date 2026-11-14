@@ -120,9 +120,7 @@ def assess_equipment(
                     if documents is not None
                     else {}
                 ),
-                **(
-                    {"band": band_provenance} if band_provenance is not None else {}
-                ),
+                **({"band": band_provenance} if band_provenance is not None else {}),
             }
         )
 

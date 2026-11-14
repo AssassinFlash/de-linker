@@ -2990,19 +2990,16 @@ def test_search_enumerates_cited_parallel_stacks_and_keeps_missing_facts_visible
         (row["selection"]["parallel_stacks"], row["selection"]["modules_per_stack"])
         for row in multi["candidates"]
     ] == [(1, 4), (1, 5), (2, 3), (1, 2)]
-    assert (
-        len(
-            {
-                (
-                    row["selection"]["inverter_product_id"],
-                    row["selection"]["battery_product_id"],
-                    row["selection"]["modules_per_stack"],
-                )
-                for row in multi["candidates"]
-            }
-        )
-        == len(multi["candidates"])
-    )
+    assert len(
+        {
+            (
+                row["selection"]["inverter_product_id"],
+                row["selection"]["battery_product_id"],
+                row["selection"]["modules_per_stack"],
+            )
+            for row in multi["candidates"]
+        }
+    ) == len(multi["candidates"])
     assert multi["completion"] == "exhausted_supported_domain"
     assert "stacks_parallel_max_missing" not in multi["coverage"]["gaps"]
     # The pair contract itself decides the accessory basis: BC2-HV1 is a
@@ -3104,7 +3101,11 @@ def test_residential_application_excludes_contradicting_converters_and_keeps_unk
     next(p for p in unlabeled["products"] if p["id"] == 1179)["application"] = "unknown"
     unknown = json_object(
         search_equipment(
-            demand, unlabeled, EquipmentSearchLimits(work_budget=100), store, lambda: None
+            demand,
+            unlabeled,
+            EquipmentSearchLimits(work_budget=100),
+            store,
+            lambda: None,
         )
     )
     assert any(
@@ -3145,9 +3146,7 @@ def test_dc_ac_band_from_solaredge_oversizing_note_flags_oversized_inverter(
     residential array, ratio 0.4) violates the published minimum sizing.
     """
     revisions = {
-        str(p["id"]): p["product_revision"]
-        for p in feed["products"]
-        if p["id"] == 1179
+        str(p["id"]): p["product_revision"] for p in feed["products"] if p["id"] == 1179
     }
     selection: FixtureObject = {
         "equipment_selection": {

@@ -252,7 +252,13 @@
 	#linker-faq-page .linker-library-layout { grid-template-columns: minmax(0, 1fr); gap: 0; padding-top: 8px; }
 	#linker-faq-page .linker-library-rail { display: none; }
 	#linker-faq-page .linker-library-chips { display: block; position: sticky; top: calc(var(--ll-header-h) + var(--ll-tab-h) - 2px); z-index: 36; margin-inline: calc(var(--ll-pad) * -1); background: rgba(241, 244, 243, 0.9); border-bottom: 1px solid var(--ll-line); -webkit-backdrop-filter: blur(16px) saturate(1.2); backdrop-filter: blur(16px) saturate(1.2); }
-	#linker-faq-page .linker-library-chips-scroll { display: flex; gap: 8px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; padding: 10px var(--ll-pad); scroll-snap-type: x mandatory; }
+	/* The rail folds into a horizontal scroller here and the scrollbar is
+	 * suppressed to keep the row 34px tall, so the row's own edges have to say
+	 * that more chips sit outside the viewport. Without them a chip is cut mid
+	 * word and the row reads as broken rather than scrollable. The mask leaves
+	 * the first and last 24px readable when the row is at either end. */
+	#linker-faq-page .linker-library-chips { --ll-chip-fade: 24px; -webkit-mask-image: linear-gradient(to right, transparent 0, #000 var(--ll-chip-fade), #000 calc(100% - var(--ll-chip-fade)), transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 var(--ll-chip-fade), #000 calc(100% - var(--ll-chip-fade)), transparent 100%); }
+	#linker-faq-page .linker-library-chips-scroll { display: flex; gap: 8px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; padding: 10px var(--ll-pad); scroll-snap-type: x mandatory; scroll-padding-inline: var(--ll-pad); }
 	#linker-faq-page .linker-library-chips-scroll::-webkit-scrollbar { display: none; }
 	#linker-faq-page .linker-library-chips .linker-library-chip { height: 34px; padding: 0 12px; flex: none; border-color: var(--ll-line); background: #fff; color: var(--ll-ink); scroll-snap-align: start; }
 	#linker-faq-page .linker-library-chips .linker-library-chip.is-active { background: #fff; color: var(--ll-ink); border-color: var(--ll-line); box-shadow: var(--ll-shadow); }

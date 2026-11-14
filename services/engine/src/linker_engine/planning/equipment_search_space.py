@@ -26,7 +26,10 @@ from .equipment_search_limits import EquipmentSearchLimits
 # The feed's normalized `pa_application` facet values per project application.
 # `home` is the manufacturers' residential filing (2026-11-14 production Woo:
 # 55 EN/55 DE home products, 30/30 commercial).
-PRODUCT_APPLICATIONS: dict[str, str] = {"home": "residential", "commercial": "commercial"}
+PRODUCT_APPLICATIONS: dict[str, str] = {
+    "home": "residential",
+    "commercial": "commercial",
+}
 
 
 class EquipmentSearchSpace:
