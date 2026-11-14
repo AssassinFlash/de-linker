@@ -209,3 +209,35 @@
 	min-height: var(--proto-control-height, 44px);
 	padding-block: 11px;
 }
+
+/* The three photo stacks are background images, so they cannot carry a
+ * srcset; the page body names the original file at every viewport instead.
+ * Measured on production 2026-11-14, the boxes are 342px (390), 720px (768)
+ * and 529px (1440) wide while the files are 2560px, 2560px and 1672px: three
+ * files cost 539,400 bytes for photographs never shown above 720px.
+ * Each breakpoint names the variant that covers its own box, from the sizes
+ * WordPress already stores for these attachments. A `body` prefix outranks the
+ * body's own `#service-redesign .stack-N` rule without touching page content. */
+@media (max-width: 767px) {
+	body #service-redesign .stack-one {
+		background-image: url('/wp-content/uploads/2026/09/linker-the-kit-arrives-together-300x225.webp');
+	}
+	body #service-redesign .stack-two {
+		background-image: url('/wp-content/uploads/2026/10/linker-grid-documents-for-the-order-600x450.webp');
+	}
+	body #service-redesign .stack-three {
+		background-image: url('/wp-content/uploads/2026/09/linker-commissioning-guidance-from-linker-600x337.webp');
+	}
+}
+
+@media (min-width: 768px) {
+	body #service-redesign .stack-one {
+		background-image: url('/wp-content/uploads/2026/09/linker-the-kit-arrives-together-768x576.webp');
+	}
+	body #service-redesign .stack-two {
+		background-image: url('/wp-content/uploads/2026/10/linker-grid-documents-for-the-order-1024x768.webp');
+	}
+	body #service-redesign .stack-three {
+		background-image: url('/wp-content/uploads/2026/09/linker-commissioning-guidance-from-linker-768x432.webp');
+	}
+}
