@@ -351,14 +351,31 @@ class EquipmentSearchSpace:
             },
             "products": [
                 {
-                    k: row[k]
-                    for k in (
-                        "canonical_product_id",
-                        "model",
-                        "brand",
-                        "sku",
-                        "product_revision",
-                    )
+                    "canonical_product_id": row["canonical_product_id"],
+                    "model": row["model"],
+                    "brand": row["brand"],
+                    "sku": row["sku"],
+                    "product_revision": row["product_revision"],
+                    # The battery's own energy figure travels with it so the
+                    # reader can say what a stack adds up to instead of how
+                    # many modules it was built from. Measured 2026-11-15: the
+                    # choice list showed "Battery modules per stack: 4" for
+                    # four different stacks, which is a build detail, while
+                    # these figures were already in the evidence with their
+                    # datasheet page and sha256 (`equipment_assessment.py:740`).
+                    # Passed through as compiled — `value` is a number once
+                    # `shape` is `scalar` — so the reader can multiply without
+                    # reinterpreting the fact.
+                    "energy": {
+                        key: row["figures"][key]
+                        for key in (
+                            "module_energy_kwh_usable",
+                            "module_energy_kwh_nominal",
+                            "system_usable_energy_kwh",
+                            "system_nominal_energy_kwh",
+                        )
+                        if key in row["figures"]
+                    },
                 }
                 for row in sorted(
                     self.evidence.rows, key=lambda row: row["canonical_product_id"]

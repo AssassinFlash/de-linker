@@ -2791,6 +2791,16 @@ def test_search_enumerates_documented_counts_and_keeps_budget_exhaustion_visible
     assert rows[0]["status"] == "satisfied" and rows[1]["status"] == "satisfied"
     assert rows[2]["status"] == "violated" and rows[3]["status"] == "unresolved"
     assert result["qualified_count"] == 2
+    # The products list carries each battery's own energy figure so a reader can
+    # state what a stack holds instead of how many modules it was built from.
+    # Measured 2026-11-15 on production: the choice list read "Battery modules
+    # per stack: 4" for four different stacks.
+    battery_row = next(
+        p for p in result["products"] if p["canonical_product_id"] == 2090
+    )
+    energy = battery_row["energy"]["module_energy_kwh_usable"]
+    assert energy["unit"] == "kWh"
+    assert float(energy["value"]) > 0
     compact = json_object(workspace.blobs.object(rows[0]["assessment_sha256"]))
     assert "facts" not in compact["selected_products"][0]
     assert all("facts" not in c for c in compact["checks"])

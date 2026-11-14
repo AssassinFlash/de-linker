@@ -87,15 +87,58 @@ export function EquipmentSearchResult({
 				return p ? `${p.brand} ${p.model}` : "—";
 			})
 			.join(" + ");
-	const names = (c: EquipmentCandidate) =>
-		isPlantCandidate(c)
-			? c.plant.units
-					.map(
-						(u) =>
-							`${u.name}: ${deviceNames(u.selection)} · ${__("Battery modules per stack", "linker-tools")}: ${u.selection.modules_per_stack ?? "—"}`,
-					)
-					.join(" · ")
-			: `${deviceNames(c.selection)} · ${__("Battery modules per stack", "linker-tools")}: ${c.selection.modules_per_stack ?? "—"}`;
+	/** What the chosen stack holds, in kWh, from the battery's own figure. */
+	const stackEnergy = (selection: EquipmentSelection): string | null => {
+		const id = selection.battery_product_id;
+		const modules = selection.modules_per_stack;
+		if (id === null || typeof modules !== "number") return null;
+		const energy = readObject(products.get(id)?.energy ?? {});
+		const per =
+			typeof energy.module_energy_kwh_usable === "number"
+				? energy.module_energy_kwh_usable
+				: typeof energy.module_energy_kwh_nominal === "number"
+					? energy.module_energy_kwh_nominal
+					: null;
+		if (per === null) return null;
+		const stacks = selection.parallel_stacks ?? 1;
+		const total = per * modules * stacks;
+		return new Intl.NumberFormat(locale, {
+			maximumFractionDigits: 1,
+		}).format(total);
+	};
+	/**
+	 * A candidate as a customer reads it: the equipment, then what the battery
+	 * holds. The module count is a build detail and stays out of the label —
+	 * measured 2026-11-15, the list read "Battery modules per stack: 4" for
+	 * four different stacks, which tells a buyer nothing about the system.
+	 */
+	const names = (c: EquipmentCandidate) => {
+		if (isPlantCandidate(c))
+			return c.plant.units
+				.map((u) => {
+					const kwh = stackEnergy(u.selection);
+					return `${u.name}: ${deviceNames(u.selection)}${
+						kwh
+							? " · " +
+								__("Usable battery capacity", "linker-tools") +
+								": " +
+								kwh +
+								" kWh"
+							: ""
+					}`;
+				})
+				.join(" · ");
+		const kwh = stackEnergy(c.selection);
+		return `${deviceNames(c.selection)}${
+			kwh
+				? " · " +
+					__("Usable battery capacity", "linker-tools") +
+					": " +
+					kwh +
+					" kWh"
+				: ""
+		}`;
+	};
 	const applySelected = async () => {
 		if (
 			!candidate ||
