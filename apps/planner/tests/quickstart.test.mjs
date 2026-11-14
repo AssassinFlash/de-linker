@@ -563,3 +563,46 @@ test("a failed step keeps the confirmed results and offers a retry for that step
 	);
 	assert.doesNotMatch(stepNode("save").textContent, /undefined/);
 });
+
+test("a resolved place carries its coordinates and civil time into the project", async (t) => {
+	// Translated copy resolves through the native i18n global the page provides.
+	const dom = setupDom();
+	t.after(() => dom.dispose({ unmount: async () => undefined }));
+	const choices = {
+		...quickStartDefaults(),
+		location: "10115 Berlin",
+		country: "DE",
+	};
+	// What the server's bundled postcode table answers for 10115.
+	const place = {
+		schema_version: 1,
+		found: true,
+		query: "10115 Berlin",
+		country_code: "DE",
+		location_label: "10115 Berlin",
+		latitude: 52.5323,
+		longitude: 13.3846,
+		region: "DE-BE",
+		timezone: "Europe/Berlin",
+		attribution: "Postcode positions: GeoNames (CC BY 4.0)",
+	};
+
+	const resolved = readBrief(quickStartInputs(choices, place).brief);
+	assert.equal(resolved.site.country_code, "DE");
+	assert.equal(resolved.site.latitude, 52.5323);
+	assert.equal(resolved.site.longitude, 13.3846);
+	assert.equal(resolved.site.timezone, "Europe/Berlin");
+	assert.equal(resolved.site.coordinate_basis, "user_entered");
+
+	// A miss is not an error: the typed place stays, and nothing is invented.
+	const miss = {
+		schema_version: 1,
+		found: false,
+		query: "somewhere",
+	};
+	const kept = readBrief(quickStartInputs(choices, miss).brief);
+	assert.equal(kept.site.location_label, "10115 Berlin");
+	assert.equal(kept.site.latitude, null);
+	assert.equal(kept.site.timezone, null);
+	assert.equal(kept.site.coordinate_basis, "not_provided");
+});

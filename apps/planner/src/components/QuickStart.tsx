@@ -11,6 +11,8 @@ import { readRun, runPending } from "../data/planningProtocol.ts";
 import type { PlanningRun } from "../data/planningProtocol.ts";
 import type { EquipmentCandidate } from "../data/equipmentSearch.ts";
 import { isPlantCandidate } from "../data/equipmentSearch.ts";
+import { readResolvedPlace } from "../domain/place.ts";
+import type { ResolvedPlace } from "../domain/place.ts";
 import type { EquipmentSelection } from "../domain/equipment.ts";
 import { readEquipmentProducts } from "../data/equipmentProducts.ts";
 import { emptyBrief, readBrief } from "../domain/brief.ts";
@@ -179,7 +181,10 @@ export function quickStartSizing(choices: QuickStartChoices): {
 	return { usableKwh, dischargeKw };
 }
 
-export function quickStartInputs(choices: QuickStartChoices): JsonObject {
+export function quickStartInputs(
+	choices: QuickStartChoices,
+	place: ResolvedPlace | null = null,
+): JsonObject {
 	const brief = emptyBrief();
 	const sizing = quickStartSizing(choices);
 	const setup = {
@@ -200,6 +205,13 @@ export function quickStartInputs(choices: QuickStartChoices): JsonObject {
 				...brief.site,
 				location_label: choices.location.trim(),
 				country_code: choices.country || null,
+				// A place the server resolved carries the coordinates and the
+				// civil time the report and the weather step need. A free-text
+				// place stays exactly that, with no invented numbers.
+				latitude: place?.found ? (place.latitude ?? null) : null,
+				longitude: place?.found ? (place.longitude ?? null) : null,
+				coordinate_basis: place?.found ? "user_entered" : "not_provided",
+				timezone: place?.found ? (place.timezone ?? null) : null,
 			},
 			annual_load: {
 				kwh: choices.annualKwh,
@@ -228,8 +240,9 @@ export function quickStartInputs(choices: QuickStartChoices): JsonObject {
 export function mergeQuickStartInputs(
 	existing: JsonObject,
 	choices: QuickStartChoices,
+	place: ResolvedPlace | null = null,
 ): JsonObject {
-	const next = quickStartInputs(choices);
+	const next = quickStartInputs(choices, place);
 	let currentBrief: JsonObject;
 	try {
 		currentBrief = readBrief(existing.brief);
@@ -427,6 +440,11 @@ export function QuickStart({
 	const [busy, setBusy] = useState(false);
 	const [failure, setFailure] = useState<string | null>(null);
 	const [title, setTitle] = useState<string | null>(null);
+	/**
+	 * What the server made of the typed place. A miss is not an error: the
+	 * visitor's own text stays, and the form still asks for the country.
+	 */
+	const [resolved, setResolved] = useState<ResolvedPlace | null>(null);
 	const lifetime = useRef(0);
 	useEffect(() => {
 		lifetime.current++;
@@ -457,6 +475,44 @@ export function QuickStart({
 		});
 		setFailure(null);
 	}
+	/**
+	 * Resolve the typed place as soon as it can name one, so the country and the
+	 * coordinates are facts the visitor confirmed rather than input we invented.
+	 * A failure here never blocks the screen: the manual country select remains.
+	 */
+	async function resolvePlace(query: string) {
+		const trimmed = query.trim();
+		if (trimmed.length < 4) {
+			setResolved(null);
+			return;
+		}
+		const instance = lifetime.current;
+		try {
+			const value = readResolvedPlace(
+				await client.query(
+					"places/lookup",
+					{ schema_version: 1, query: trimmed },
+					session.query_scope,
+				),
+			);
+			if (instance !== lifetime.current) return;
+			setResolved(value);
+			if (
+				value.found &&
+				value.country_code &&
+				value.location_label &&
+				value.timezone
+			) {
+				setChoices((previous) => ({
+					...previous,
+					country: value.country_code as string,
+					location: value.location_label as string,
+				}));
+			}
+		} catch {
+			if (instance === lifetime.current) setResolved(null);
+		}
+	}
 	async function start() {
 		if (!ready || busy || !client.isCurrentScope(session.query_scope)) return;
 		const instance = lifetime.current;
@@ -475,7 +531,11 @@ export function QuickStart({
 								input_contract: projectInputContract,
 								project_id: existingProject.id,
 								expected_revision: existingProject.revision,
-								inputs: mergeQuickStartInputs(existingProject.inputs, choices),
+								inputs: mergeQuickStartInputs(
+									existingProject.inputs,
+									choices,
+									resolved,
+								),
 								key: crypto.randomUUID(),
 							},
 							session.runtime.limits.max_json_depth,
@@ -493,7 +553,7 @@ export function QuickStart({
 				setProject(value);
 				return;
 			}
-			const inputs = quickStartInputs(choices);
+			const inputs = quickStartInputs(choices, resolved);
 			const value = readProject(
 				await client.send(
 					"projects/create",
@@ -723,6 +783,7 @@ export function QuickStart({
 						value={choices.location}
 						placeholder={__("e.g. 10115 Berlin", "linker-tools")}
 						onChange={(event) => change("location", event.currentTarget.value)}
+						onBlur={(event) => void resolvePlace(event.currentTarget.value)}
 					/>
 				</label>
 				<div className="lp-quickstart-actions">

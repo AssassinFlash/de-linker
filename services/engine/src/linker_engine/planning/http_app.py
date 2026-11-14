@@ -21,6 +21,7 @@ from pydantic import ValidationError
 from starlette.exceptions import HTTPException
 from starlette.types import ASGIApp
 
+from .. import geo
 from .access import active_actor, positive_integer
 from .assets import Assets
 from .assistant_context import assistant_context
@@ -73,6 +74,7 @@ from .http_documents import (
     HandoffPrepare,
     HandoffRead,
     InstallationReview,
+    PlaceLookup,
     ProfilePreviewRead,
     ProjectAssistant,
     ProjectCreate,
@@ -436,6 +438,46 @@ def create_private_app(
         if products is None:
             raise VersionUnavailable("current Woo product data is unavailable")
         return products.current()
+
+    @app.post("/places/lookup")
+    def lookup_place(body: PlaceLookup, request: Request) -> Object:
+        """Resolve a declared place to the site facts a project records.
+
+        The one-screen start asks for a postcode or a town, and until now the
+        saved project carried only that free text: the printed report had no
+        country and no time zone, and the weather step had no coordinate
+        anchor. The bundled German postcode table already answers all three,
+        so the screen asks the server instead of the visitor.
+        """
+        actor = verified_actor(request.scope)
+        with workspace.database.read() as connection:
+            active_actor(connection, actor)
+        query = body.query.strip()
+        if not query:
+            raise NotFound("place not found")
+        digits = "".join(character for character in query if character.isdigit())
+        found = geo.lookup(digits) if len(digits) == 5 else None
+        if found is None:
+            return {
+                "schema_version": 1,
+                "found": False,
+                "query": query,
+                "attribution": geo.ATTRIBUTION,
+            }
+        return {
+            "schema_version": 1,
+            "found": True,
+            "query": query,
+            "country_code": found.state.split("-", 1)[0],
+            "location_label": f"{found.plz} {found.name}",
+            "latitude": found.latitude,
+            "longitude": found.longitude,
+            "region": found.state,
+            # One country, one civil time: a German postcode fixes the zone, so
+            # the report can name it instead of leaving the row out.
+            "timezone": "Europe/Berlin",
+            "attribution": geo.ATTRIBUTION,
+        }
 
     @app.post("/handoffs/prepare")
     def prepare_handoff(body: HandoffPrepare, request: Request) -> Object:

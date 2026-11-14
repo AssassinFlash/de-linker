@@ -37,6 +37,14 @@ class Command(Document):
 class SessionClaim(Command):
     key: Key
 
+type PlaceQuery = Annotated[str, Field(min_length=1, max_length=120)]
+
+
+class PlaceLookup(Command):
+    """A declared postcode or town, resolved server-side to site facts."""
+
+    query: PlaceQuery
+
 
 class Cursor(Document):
     updated_at: Annotated[float, Field(allow_inf_nan=False)]
