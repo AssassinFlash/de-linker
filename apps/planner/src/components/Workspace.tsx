@@ -77,6 +77,10 @@ export function Workspace({
 	// The one-screen start is the default surface while the account has no
 	// project to reopen; the project list stays one click away.
 	const [quickStart, setQuickStart] = useState(false);
+	// Opening a project must not swap the surface that owns a running start.
+	// The start stays mounted at this fixed position; only the first empty
+	// index opens it, so closing it keeps the list.
+	const quickStartOpened = useRef(false);
 	const cache = useQueryClient();
 	const recovery = useQuery({
 		queryKey: [session.query_scope, "recovery-scopes", session.claim_pending],
@@ -180,6 +184,13 @@ export function Workspace({
 			},
 		);
 	}, [index.data]);
+	// The start is the default surface for an account with nothing to reopen.
+	// It opens once: a visitor who closes it keeps the project list.
+	useEffect(() => {
+		if (quickStartOpened.current || index.isPending || index.isError) return;
+		quickStartOpened.current = true;
+		if (!projects.length) setQuickStart(true);
+	}, [index.isPending, index.isError, projects.length]);
 	function quickStarted(project: Project): boolean {
 		if (!client.isCurrentScope(session.query_scope)) return false;
 		cache.setQueryData(
@@ -553,29 +564,16 @@ export function Workspace({
 						</Notice>
 					)}
 					{!index.isPending && !index.isError && !projects.length && (
-						<>
-							<div className="lp-empty">
-								<Icon name="layers" width="36" height="36" />
-								<h3>{__("Project workspace", "linker-tools")}</h3>
-								<p>
-									{__(
-										"A project can start with the information already available. Roof drawing is optional.",
-										"linker-tools",
-									)}
-								</p>
-							</div>
-							{!quickStart && (
-								<QuickStart
-									session={session}
-									client={client}
-									store={store}
-									config={config}
-									recheck={recheck}
-									created={quickStarted}
-									openWorkbench={(projectId) => select(projectId)}
-								/>
-							)}
-						</>
+						<div className="lp-empty">
+							<Icon name="layers" width="36" height="36" />
+							<h3>{__("Project workspace", "linker-tools")}</h3>
+							<p>
+								{__(
+									"A project can start with the information already available. Roof drawing is optional.",
+									"linker-tools",
+								)}
+							</p>
+						</div>
 					)}
 					<div className="lp-project-rows">
 						{projects.map((item) => (
