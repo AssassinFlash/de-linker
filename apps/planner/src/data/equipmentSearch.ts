@@ -65,7 +65,13 @@ export function readEquipmentSearchResult(
 			"one_converter_one_external_battery_assembly",
 			"declared_plant_one_external_assembly_per_converter",
 		].includes(String(coverage.template)) ||
-		search.ranking !== "not_performed_before_qualification"
+		// The engine ranks candidates by DC/AC proximity once it has assessed
+		// them. Runs recorded before ranking shipped still carry the
+		// pre-ranking statement; the planner accepts exactly these two values.
+		![
+			"dc_ac_proximity_then_unresolved_then_product_and_module_count",
+			"not_performed_before_qualification",
+		].includes(String(search.ranking))
 	)
 		throw new ApiError(502, "invalid_run_result");
 	const ids = new Set<string>();

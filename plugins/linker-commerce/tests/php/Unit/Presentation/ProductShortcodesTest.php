@@ -1839,19 +1839,21 @@ final class ProductShortcodesTest extends TestCase {
 	}
 
 	/**
-	 * The gallery's main picture suppresses the candidates on purpose, so it
-	 * prints neither srcset nor sizes: a lone sizes attribute selects nothing
-	 * and would only describe candidates the tag does not carry.
+	 * The gallery's main picture carries a candidate list and the measured box
+	 * it fills, so the browser takes the smallest file that still covers the
+	 * painted area. It used to suppress both attributes to reproduce the live
+	 * page byte for byte; measured on production 2026-11-14 that cost 577,604
+	 * bytes for a picture painted at 235-554 CSS px.
 	 */
-	public function test_the_main_picture_prints_neither_srcset_nor_sizes(): void {
+	public function test_the_main_picture_prints_its_candidates_and_measured_sizes(): void {
 		unset( $GLOBALS['product'] );
 		$this->pdp_srcset = 'http://linker.test/uploads/image-6503-300x225.png 300w';
 
 		$pair = $this->pdp( true )->pdp_gallery_pair();
 
-		// The main tag carries its src but neither candidate attribute.
-		$this->assertMatchesRegularExpression( '/<img[^>]*class="pdp-gallery-main"(?![^>]*\bsrcset=)[^>]*\/>/', $pair );
-		$this->assertMatchesRegularExpression( '/<img[^>]*class="pdp-gallery-main"(?![^>]*\bsizes=)[^>]*\/>/', $pair );
+		// The main tag states both, and the sizes values are the measured boxes.
+		$this->assertMatchesRegularExpression( '/<img[^>]*class="pdp-gallery-main"[^>]*srcset="[^"]+ 300w"/', $pair );
+		$this->assertStringContainsString( 'sizes="(max-width: 768px) 100vw, (max-width: 1024px) 493px, (max-width: 1280px) 627px, 667px"', $pair );
 		$this->assertStringContainsString( 'src="http://linker.test/uploads/image-6503.png"', $pair );
 
 		// The secondary picture keeps its generated candidates and sizes.

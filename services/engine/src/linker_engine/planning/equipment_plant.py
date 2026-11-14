@@ -65,9 +65,15 @@ def assert_plant_exclusivity(inputs: Object) -> None:
 
 def matches_setup(plant: EquipmentPlant, setup: Object) -> bool:
     """An editable draft cannot silently evaluate an older prepared plant."""
-    if setup.get("schema_version") != 1 or setup.get(
-        "requirements"
-    ) != plant.requirements.model_dump(mode="json"):
+    requirements = setup.get("requirements")
+    if setup.get("schema_version") != 1 or not isinstance(requirements, dict):
+        return False
+    try:
+        prepared_requirements = EquipmentRequirements.read(requirements)
+    except InvalidInput:
+        # An unparseable draft is not the current prepared plant.
+        return False
+    if prepared_requirements != plant.requirements:
         return False
     units = setup.get("units")
     groups = setup.get("parallel_groups")

@@ -1,5 +1,12 @@
 {
   "$defs": {
+    "Application": {
+      "enum": [
+        "residential",
+        "commercial"
+      ],
+      "type": "string"
+    },
     "GridPhase": {
       "enum": [
         1,
@@ -48,6 +55,17 @@
     },
     "required_discharge_ac_kw": {
       "$ref": "#/$defs/Nonnegative"
+    },
+    "application": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Application"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     }
   },
   "required": [

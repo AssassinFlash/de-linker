@@ -702,7 +702,7 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
                 "id": u["id"],
                 "name": u["name"],
                 "requirements": {
-                    key: u["inputs"]["equipment_setup"][key]
+                    key: u["inputs"]["equipment_setup"].get(key)
                     for key in EquipmentRequirements.model_fields
                 },
             }
@@ -2779,13 +2779,19 @@ def test_search_enumerates_documented_counts_and_keeps_budget_exhaustion_visible
         )
     )
     assert result["completion"] == "exhausted_supported_domain"
+    # Ranking orders satisfied candidates first (closest DC/AC ratio to the
+    # band midpoint, then fewer unresolved checks, then product and assembly);
+    # the emission order itself is the documented counts ascending.
     rows = result["candidates"]
-    assert [r["selection"]["modules_per_stack"] for r in rows] == [2, 3, 4, 5]
+    assert [
+        (r["selection"]["parallel_stacks"], r["selection"]["modules_per_stack"])
+        for r in rows
+    ] == [(1, 4), (1, 5), (1, 3), (1, 2)]
     assert all(r["selection"]["accessory_product_ids"] == [2092] for r in rows)
-    assert rows[0]["status"] == "unresolved"
-    assert rows[1]["status"] == "violated" and rows[2]["status"] == "satisfied"
+    assert rows[0]["status"] == "satisfied" and rows[1]["status"] == "satisfied"
+    assert rows[2]["status"] == "violated" and rows[3]["status"] == "unresolved"
     assert result["qualified_count"] == 2
-    compact = json_object(workspace.blobs.object(rows[2]["assessment_sha256"]))
+    compact = json_object(workspace.blobs.object(rows[0]["assessment_sha256"]))
     assert "facts" not in compact["selected_products"][0]
     assert all("facts" not in c for c in compact["checks"])
     limited = json_object(
@@ -2936,6 +2942,8 @@ def test_search_enumerates_cited_parallel_stacks_and_keeps_missing_facts_visible
 
     # Without a cited stacks_parallel_max fact the battery stays single-stack;
     # the missing fact is a reported gap, never an invented parallel maximum.
+    # Ranking orders satisfied combinations first (closest DC/AC ratio to the
+    # band midpoint, then fewer unresolved checks, then product and assembly).
     single = json_object(
         search_equipment(
             demand, basis, EquipmentSearchLimits(work_budget=100), store, lambda: None
@@ -2944,7 +2952,7 @@ def test_search_enumerates_cited_parallel_stacks_and_keeps_missing_facts_visible
     assert [
         (row["selection"]["parallel_stacks"], row["selection"]["modules_per_stack"])
         for row in single["candidates"]
-    ] == [(1, count) for count in (2, 3, 4, 5)]
+    ] == [(1, 4), (1, 5), (1, 3), (1, 2)]
     assert single["coverage"]["gaps"]["stacks_parallel_max_missing"] == 1
 
     stacked = copy.deepcopy(feed)
@@ -2971,17 +2979,42 @@ def test_search_enumerates_cited_parallel_stacks_and_keeps_missing_facts_visible
         )
     )
     # Stacks ascend in the outer loop, documented counts stay inner, so
-    # single-stack coverage is spent first when the budget runs out.
+    # single-stack coverage is spent first when the budget runs out. One
+    # combination (inverter, battery, count) yields one candidate: the first
+    # satisfying stack level, or the smallest one as its failing
+    # representative - count 2 stays unresolved at every level and keeps its
+    # single-stack representative; count 3 satisfies from two stacks on, so its
+    # violated single-stack level is replaced; counts 4 and 5 already satisfy
+    # single-stack. The result orders satisfied combinations first by fitness.
     assert [
         (row["selection"]["parallel_stacks"], row["selection"]["modules_per_stack"])
         for row in multi["candidates"]
-    ] == [(stacks, count) for stacks in (1, 2) for count in (2, 3, 4, 5)]
+    ] == [(1, 4), (1, 5), (2, 3), (1, 2)]
+    assert (
+        len(
+            {
+                (
+                    row["selection"]["inverter_product_id"],
+                    row["selection"]["battery_product_id"],
+                    row["selection"]["modules_per_stack"],
+                )
+                for row in multi["candidates"]
+            }
+        )
+        == len(multi["candidates"])
+    )
     assert multi["completion"] == "exhausted_supported_domain"
     assert "stacks_parallel_max_missing" not in multi["coverage"]["gaps"]
     # The pair contract itself decides the accessory basis: BC2-HV1 is a
     # per-system component, so a second stack does not double its quantity.
     two_stack = json_object(
-        workspace.blobs.object(multi["candidates"][4]["assessment_sha256"])
+        workspace.blobs.object(
+            next(
+                row["assessment_sha256"]
+                for row in multi["candidates"]
+                if row["selection"]["parallel_stacks"] == 2
+            )
+        )
     )
     bc2 = next(
         line
@@ -3004,6 +3037,265 @@ def test_search_enumerates_cited_parallel_stacks_and_keeps_missing_facts_visible
         1,
         1,
     ]
+
+
+def test_residential_application_excludes_contradicting_converters_and_keeps_unknown_visible(
+    feed: FixtureObject, workspace: Workspace
+) -> None:
+    """The manufacturer's own Woo application facet gates the candidate list.
+
+    Production 2026-11-14: every GoodWe GW75K…GW125K is filed commercial, the
+    SAJ H2/HS2/HS3 families are filed home. Only a contradicting named
+    application excludes; an unknown filing stays visible.
+    """
+    basis = {
+        "products": [
+            p for p in feed["products"] if p["id"] in [4107, 1179, 2090, 2092]
+        ],
+        "compatibility": feed["compatibility"],
+    }
+    demand: FixtureObject = {
+        "equipment_requirements": {
+            "schema_version": 1,
+            "grid_phase": 3,
+            "operating_mode": "grid_connected",
+            "pv_dc_kw": 10,
+            "required_usable_kwh": 0,
+            "required_discharge_ac_kw": 0,
+            "application": "residential",
+        }
+    }
+    store = EquipmentCandidateStore(workspace)
+    residential = json_object(
+        search_equipment(
+            demand, basis, EquipmentSearchLimits(work_budget=100), store, lambda: None
+        )
+    )
+    assert all(
+        row["selection"]["inverter_product_id"] != 1179
+        for row in residential["candidates"]
+    )
+    assert residential["coverage"]["gaps"]["converter_application_mismatch"] == 1
+    assert {
+        "product_id": 1179,
+        "reason": "converter_application_mismatch",
+    } in residential["coverage"]["excluded_products"]
+    unrestricted = json_object(
+        search_equipment(
+            {
+                "equipment_requirements": {
+                    **demand["equipment_requirements"],
+                    "application": None,
+                }
+            },
+            basis,
+            EquipmentSearchLimits(work_budget=100),
+            store,
+            lambda: None,
+        )
+    )
+    assert any(
+        row["selection"]["inverter_product_id"] == 1179
+        for row in unrestricted["candidates"]
+    )
+    # An unknown application filing is preserved, never silently excluded.
+    unlabeled = copy.deepcopy(basis)
+    unlabeled["products"] = copy.deepcopy(basis["products"])
+    next(p for p in unlabeled["products"] if p["id"] == 1179)["application"] = "unknown"
+    unknown = json_object(
+        search_equipment(
+            demand, unlabeled, EquipmentSearchLimits(work_budget=100), store, lambda: None
+        )
+    )
+    assert any(
+        row["selection"]["inverter_product_id"] == 1179 for row in unknown["candidates"]
+    )
+    assert "converter_application_mismatch" not in unknown["coverage"]["gaps"]
+    commercial = json_object(
+        search_equipment(
+            {
+                "equipment_requirements": {
+                    **demand["equipment_requirements"],
+                    "application": "commercial",
+                }
+            },
+            basis,
+            EquipmentSearchLimits(work_budget=100),
+            store,
+            lambda: None,
+        )
+    )
+    assert all(
+        row["selection"]["inverter_product_id"] != 4107
+        for row in commercial["candidates"]
+    )
+    assert any(
+        row["selection"]["inverter_product_id"] == 1179
+        for row in commercial["candidates"]
+    )
+
+
+def test_dc_ac_band_from_solaredge_oversizing_note_flags_oversized_inverter(
+    feed: FixtureObject,
+) -> None:
+    """SolarEdge's oversizing note: DC/AC sizing ratio 60% minimum, 135% maximum.
+
+    https://knowledge-center.solaredge.com/sites/kc/files/inverter_dc_oversizing_guide.pdf
+    The measured production defect (SAJ H2-25K-T3, 25 kW AC, on a 10 kWp
+    residential array, ratio 0.4) violates the published minimum sizing.
+    """
+    revisions = {
+        str(p["id"]): p["product_revision"]
+        for p in feed["products"]
+        if p["id"] == 1179
+    }
+    selection: FixtureObject = {
+        "equipment_selection": {
+            "schema_version": 1,
+            "inverter_product_id": 1179,
+            "battery_product_id": None,
+            "modules_per_stack": None,
+            "parallel_stacks": None,
+            "accessory_product_ids": [],
+            "grid_phase": 3,
+            "operating_mode": "grid_connected",
+            "pv_dc_kw": 10,
+            "required_usable_kwh": 0,
+            "required_discharge_ac_kw": 0,
+            "product_revisions": revisions,
+        }
+    }
+    basis = {
+        "products": [p for p in feed["products"] if p["id"] == 1179],
+        "compatibility": feed["compatibility"],
+    }
+    result = json_object(assess_equipment(selection, basis))
+    check = next(c for c in result["checks"] if c["id"] == "pv_dc_ac_ratio")
+    assert check["status"] == "violated"
+    assert check["actual"] == pytest.approx(0.4)
+    assert check["required"] == [0.6, 1.35]
+    assert check["band"]["band_basis"] == "cross_manufacturer_planning_band"
+    assert result["overall_status"] == "violated"
+    # A converter with no nominal AC figure stays unresolved on the band.
+    uncited = copy.deepcopy(basis)
+    del next(p for p in uncited["products"] if p["id"] == 1179)["figures"][
+        "ac_output_kw_nominal"
+    ]
+    unresolved = json_object(assess_equipment(selection, uncited))
+    ratio = next(c for c in unresolved["checks"] if c["id"] == "pv_dc_ac_ratio")
+    assert ratio["status"] == "unresolved"
+    assert ratio["required"] == [0.6, 1.35]
+
+
+def test_identical_combinations_collapse_to_one_candidate(
+    feed: FixtureObject, workspace: Workspace
+) -> None:
+    """Parallel-stack levels of one documented combination yield one candidate.
+
+    The production search listed the same inverter, battery and module count
+    four times consecutively, differing only in the parallel-stack level.
+    """
+    basis_feed = copy.deepcopy(feed)
+    battery = next(p for p in basis_feed["products"] if p["id"] == 2090)
+    battery["figures"]["stacks_parallel_max"] = {
+        "value": "4",
+        "unit": None,
+        "citation": copy.deepcopy(
+            battery["figures"]["modules_per_stack_max"]["citation"]
+        ),
+    }
+    stacked = publication_feed(basis_feed, basis_feed["compatibility"])
+    basis = {
+        "products": [p for p in stacked["products"] if p["id"] in [4107, 2090, 2092]],
+        "compatibility": stacked["compatibility"],
+    }
+    demand: FixtureObject = {
+        "equipment_requirements": {
+            "schema_version": 1,
+            "grid_phase": 3,
+            "operating_mode": "grid_connected",
+            "pv_dc_kw": 10,
+            "required_usable_kwh": 15,
+            "required_discharge_ac_kw": 5,
+        }
+    }
+    store = EquipmentCandidateStore(workspace)
+    result = json_object(
+        search_equipment(
+            demand,
+            basis,
+            EquipmentSearchLimits(work_budget=100),
+            store,
+            lambda: None,
+        )
+    )
+    combos = [
+        (
+            row["selection"]["inverter_product_id"],
+            row["selection"]["battery_product_id"],
+            row["selection"]["modules_per_stack"],
+        )
+        for row in result["candidates"]
+    ]
+    assert len(combos) == len(set(combos))
+    # Counts 4 and 5 satisfy single-stack, so no larger stack level of those
+    # combinations is emitted; count 3 emits its first satisfying stack level
+    # (two stacks), replacing the violated single-stack level; count 2 stays
+    # unresolved at every level and keeps its smallest representative.
+    # Ranking orders the satisfied combinations first.
+    assert [
+        (row["selection"]["parallel_stacks"], row["selection"]["modules_per_stack"])
+        for row in result["candidates"]
+    ] == [(1, 4), (1, 5), (2, 3), (1, 2)]
+    assert result["completion"] == "exhausted_supported_domain"
+
+
+def test_dc_ac_proximity_ranking_puts_the_array_appropriate_inverter_first(
+    feed: FixtureObject, workspace: Workspace
+) -> None:
+    """Satisfied candidates order by DC/AC proximity to the band midpoint.
+
+    Band 0.6-1.35 (SolarEdge oversizing note), midpoint 0.975: the 10 kW inverter
+    (ratio 1.0) outranks the 15 kW inverter (ratio 0.667); the 20 kW and 25 kW
+    units violate the published minimum sizing on a 10 kWp array.
+    """
+    basis = {
+        "products": [
+            p for p in feed["products"] if p["id"] in [2063, 2064, 4107, 1179]
+        ],
+        "compatibility": feed["compatibility"],
+    }
+    demand: FixtureObject = {
+        "equipment_requirements": {
+            "schema_version": 1,
+            "grid_phase": 3,
+            "operating_mode": "grid_connected",
+            "pv_dc_kw": 10,
+            "required_usable_kwh": 0,
+            "required_discharge_ac_kw": 0,
+            "application": "residential",
+        }
+    }
+    result = json_object(
+        search_equipment(
+            demand,
+            basis,
+            EquipmentSearchLimits(work_budget=100),
+            EquipmentCandidateStore(workspace),
+            lambda: None,
+        )
+    )
+    assert (
+        result["ranking"]
+        == "dc_ac_proximity_then_unresolved_then_product_and_module_count"
+    )
+    satisfied = [
+        row["selection"]["inverter_product_id"]
+        for row in result["candidates"]
+        if row["status"] == "satisfied"
+    ]
+    assert satisfied[:2] == [4107, 2063]
+    assert not {2064, 1179} & set(satisfied)
 
 
 def test_column_limit_condition_binds_count_only_not_stack_count(
@@ -3756,6 +4048,9 @@ def test_conditional_pairs_and_equipment_checks_assess_real_woo_candidates(
     # 1. 6508 + 1958: kW PV limit, MPPT topology, conditional release note,
     # fixed battery_system pack count, operating_voltage_range_v, 100% DoD
     # rated_energy_kwh, continuous AC output and discharge path all satisfy.
+    # The 120 kWp array keeps the SolarEdge-derived DC/AC sizing band
+    # (60%-135%) satisfied at 1.2; the manufacturer's 200 kW PV limit stays
+    # the binding kW input fact under test.
     sel_6508: FixtureObject = {
         "schema_version": 1,
         "inverter_product_id": 6508,
@@ -3765,7 +4060,7 @@ def test_conditional_pairs_and_equipment_checks_assess_real_woo_candidates(
         "accessory_product_ids": [],
         "grid_phase": 3,
         "operating_mode": "grid_connected",
-        "pv_dc_kw": 200.0,
+        "pv_dc_kw": 120.0,
         "required_usable_kwh": 200.0,
         "required_discharge_ac_kw": 99.99,
         "product_revisions": {"6508": revisions["6508"], "1958": revisions["1958"]},
@@ -3846,7 +4141,7 @@ def test_conditional_pairs_and_equipment_checks_assess_real_woo_candidates(
                     "schema_version": 1,
                     "grid_phase": 3,
                     "operating_mode": "grid_connected",
-                    "pv_dc_kw": 200.0,
+                    "pv_dc_kw": 120.0,
                     "required_usable_kwh": 200.0,
                     "required_discharge_ac_kw": 90.0,
                 }

@@ -19,6 +19,10 @@ def _phase(value: object) -> int:
 
 type GridPhase = Annotated[Literal[1, 3], BeforeValidator(_phase)]
 
+# The customer's stated project application; Woo products carry the
+# manufacturer's own `pa_application` facet (`home`/`commercial`).
+type Application = Literal["residential", "commercial"]
+
 
 class EquipmentRequirements(Document):
     schema_version: SchemaVersion
@@ -28,6 +32,9 @@ class EquipmentRequirements(Document):
     pv_dc_kw: Nonnegative | None
     required_usable_kwh: Nonnegative
     required_discharge_ac_kw: Nonnegative
+    # None leaves the search unrestricted. A product whose application is
+    # unknown is never excluded; only a contradicting named application is.
+    application: Application | None = None
 
     @classmethod
     def from_inputs(cls, inputs: Object) -> EquipmentRequirements:

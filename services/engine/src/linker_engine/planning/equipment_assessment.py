@@ -17,6 +17,41 @@ from .equipment_inputs import EquipmentSelection
 from .errors import InvalidInput, ProductEvidenceChanged
 from .grid_connection import country_assessment
 
+# Nominal active AC output figures, tried in this order at the cited boundary.
+AC_OUTPUT_KEYS = (
+    "ac_output_kw_nominal",
+    "ac_output_w_nominal",
+    "rated_ac_power_kw",
+    "nominal_ac_power_kw",
+    "rated_ac_power",
+    "rated_power_kw",
+    "power_kw",
+)
+
+# DC/AC sizing band for the project array against the inverter's nominal AC
+# output, as ratio pv_dc_kw / ac_output_kw_nominal. Published manufacturer
+# sizing limits: SolarEdge's technical note sets the maximum DC/AC oversizing
+# at 135% for all its inverters and a minimum DC/AC sizing ratio of 60%
+# ("Technical Note: Oversizing of SolarEdge Inverters" v1.1, October 2023,
+# https://knowledge-center.solaredge.com/sites/kc/files/inverter_dc_oversizing_guide.pdf);
+# Enphase's oversizing brief independently places the optimum DC:AC ratio at
+# 1.2 (southern Europe) to 1.35 (northern Europe)
+# (https://enphase.com/sites/default/files/2025-09/whp-00016-en-int-enphase-pv-oversizing.pdf).
+# Applied here as a cross-manufacturer planning band; a converter with no
+# nominal AC figure stays unresolved instead of failing the band.
+DC_AC_RATIO_MIN = 0.6
+DC_AC_RATIO_MAX = 1.35
+DC_AC_RATIO_MIDPOINT = (DC_AC_RATIO_MIN + DC_AC_RATIO_MAX) / 2
+
+DC_AC_BAND_PROVENANCE: Object = {
+    "relation": "pv_dc_kw / ac_output_kw_nominal",
+    "band_basis": "cross_manufacturer_planning_band",
+    "sources": [
+        "https://knowledge-center.solaredge.com/sites/kc/files/inverter_dc_oversizing_guide.pdf",
+        "https://enphase.com/sites/default/files/2025-09/whp-00016-en-int-enphase-pv-oversizing.pdf",
+    ],
+}
+
 
 def selection_products(
     selection: EquipmentSelection, basis: Object
@@ -69,6 +104,7 @@ def assess_equipment(
         required: Json = None,
         derivation: Object | None = None,
         documents: list[dict[str, Any]] | None = None,
+        band_provenance: Object | None = None,
     ) -> None:
         checks.append(
             {
@@ -83,6 +119,9 @@ def assess_equipment(
                     {"documents": cast(list[Json], documents)}
                     if documents is not None
                     else {}
+                ),
+                **(
+                    {"band": band_provenance} if band_provenance is not None else {}
                 ),
             }
         )
@@ -149,15 +188,7 @@ def assess_equipment(
     inverter = products[selection.inverter_product_id]
     converter_power: float | None = None
     converter_refs: list[dict[str, Any]] = []
-    for ac_key in (
-        "ac_output_kw_nominal",
-        "ac_output_w_nominal",
-        "rated_ac_power_kw",
-        "nominal_ac_power_kw",
-        "rated_ac_power",
-        "rated_power_kw",
-        "power_kw",
-    ):
+    for ac_key in AC_OUTPUT_KEYS:
         converter_power, converter_refs = number(
             selection.inverter_product_id,
             ac_key,
@@ -246,6 +277,32 @@ def assess_equipment(
             ("pv_nameplate_power", "active_power"),
             "pv_nameplate_limit",
         )
+    if selection.pv_dc_kw is not None and selection.pv_dc_kw > 0:
+        band = cast(Json, [DC_AC_RATIO_MIN, DC_AC_RATIO_MAX])
+        if converter_power is None or converter_power <= 0:
+            add(
+                "pv_dc_ac_ratio",
+                "unresolved",
+                "current_cited_limit_missing_or_conditional",
+                converter_refs,
+                required=band,
+                band_provenance=DC_AC_BAND_PROVENANCE,
+            )
+        else:
+            ratio = selection.pv_dc_kw / converter_power
+            add(
+                "pv_dc_ac_ratio",
+                "satisfied"
+                if DC_AC_RATIO_MIN <= ratio <= DC_AC_RATIO_MAX
+                else "violated",
+                "published_dc_ac_sizing_band",
+                converter_refs,
+                ratio,
+                band,
+                # Not `derivation`: the report renders that as a numeric
+                # product. The band is provenance, not a calculation step.
+                band_provenance=DC_AC_BAND_PROVENANCE,
+            )
     if inputs.get("pv_string_plan") is not None and "pv_module_inputs" in basis:
         from .pv_string_assessment import assess_pv_strings
 

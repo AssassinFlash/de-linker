@@ -15,7 +15,9 @@ export function readEquipmentRequirements(value: unknown): JsonObject {
 export function compileEquipmentRequirements(setup: JsonObject): JsonObject {
 	return readEquipmentRequirements(
 		Object.fromEntries(
-			Object.keys(schema.properties).map((key) => [key, setup[key]]),
+			Object.keys(schema.properties)
+				.map((key) => [key, setup[key]])
+				.filter(([, value]) => value !== undefined),
 		),
 	);
 }

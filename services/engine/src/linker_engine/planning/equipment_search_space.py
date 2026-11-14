@@ -9,14 +9,24 @@ from __future__ import annotations
 import re
 from collections import Counter
 from collections.abc import Callable, Iterator
+from math import inf
 from typing import Any, cast
 
 from .canonical import Json, Object, digest, encode
-from .equipment_assessment import assess_equipment
+from .equipment_assessment import (
+    AC_OUTPUT_KEYS,
+    DC_AC_RATIO_MIDPOINT,
+    assess_equipment,
+)
 from .equipment_evidence import EquipmentEvidence
 from .equipment_inputs import EquipmentSelection
 from .equipment_requirements import EquipmentRequirements
 from .equipment_search_limits import EquipmentSearchLimits
+
+# The feed's normalized `pa_application` facet values per project application.
+# `home` is the manufacturers' residential filing (2026-11-14 production Woo:
+# 55 EN/55 DE home products, 30/30 commercial).
+PRODUCT_APPLICATIONS: dict[str, str] = {"home": "residential", "commercial": "commercial"}
 
 
 class EquipmentSearchSpace:
@@ -49,6 +59,7 @@ class EquipmentSearchSpace:
         )
         self.gaps: Counter[str] = Counter()
         self.excluded_products: list[Json] = []
+        self.application_excluded: set[int] = set()
         self.included: list[dict[str, Any]] = []
         for source_battery in self.batteries:
             pid = source_battery["canonical_product_id"]
@@ -91,6 +102,24 @@ class EquipmentSearchSpace:
             converter_id = converter["canonical_product_id"]
             if self.evidence.sales_unit(converter_id) == "integrated_system":
                 self.gaps["integrated_topology_not_assessed"] += 1
+                continue
+            named = PRODUCT_APPLICATIONS.get(str(converter.get("application") or ""))
+            if requirements.application is not None and named not in (
+                None,
+                requirements.application,
+            ):
+                # A manufacturer-filed application that contradicts the stated
+                # project application excludes the converter; an unknown filing
+                # stays in the candidate list rather than being dropped.
+                if converter_id not in self.application_excluded:
+                    self.application_excluded.add(converter_id)
+                    self.gaps["converter_application_mismatch"] += 1
+                    self.excluded_products.append(
+                        {
+                            "product_id": converter_id,
+                            "reason": "converter_application_mismatch",
+                        }
+                    )
                 continue
             options: list[dict[str, Any] | None] = (
                 [None] if no_battery else [*self.included]
@@ -190,6 +219,20 @@ class EquipmentSearchSpace:
                     ]
                     if len(matches) == 1:
                         accessory_ids.add(matches[0]["canonical_product_id"])
+                # The customer-visible combination is inverter, battery and
+                # documented modules per stack. Parallel-stack levels of one
+                # combination are assessed in ascending order and the
+                # combination yields one candidate: the first stack level that
+                # satisfies, or the smallest one as its failing representative.
+                # A failing representative is only held back while a further
+                # cited stack level could still replace it; with a single
+                # stack level the candidate leaves immediately, preserving
+                # first-coverage ordering under a tight budget.
+                combination_representative: dict[
+                    tuple[int, int | None, int | None], tuple[Object, Object]
+                ] = {}
+                combination_satisfied: set[tuple[int, int | None, int | None]] = set()
+                escalate = len(stacks_domain) > 1
                 for stacks in stacks_domain:
                     if self.exhausted:
                         break
@@ -200,7 +243,11 @@ class EquipmentSearchSpace:
                         if battery_id is not None:
                             identities.add(battery_id)
                         selection = EquipmentSelection(
-                            **requirements.model_dump(),
+                            **{
+                                key: value
+                                for key, value in requirements.model_dump().items()
+                                if key in EquipmentSelection.model_fields
+                            },
                             inverter_product_id=converter_id,
                             battery_product_id=battery_id,
                             modules_per_stack=count,
@@ -218,12 +265,72 @@ class EquipmentSearchSpace:
                         if identity in seen:
                             continue
                         seen.add(identity)
+                        combination = (converter_id, battery_id, count)
+                        if combination in combination_satisfied:
+                            continue
                         assessment = assess_equipment(
                             {**inputs, "equipment_selection": value},
                             self.basis,
                             evidence=self.evidence,
                         )
-                        yield value, assessment
+                        if cast(str, assessment["overall_status"]) == "satisfied":
+                            combination_satisfied.add(combination)
+                            combination_representative.pop(combination, None)
+                            yield value, assessment
+                        elif not escalate:
+                            yield value, assessment
+                        elif combination not in combination_representative:
+                            combination_representative[combination] = (
+                                value,
+                                assessment,
+                            )
+                yield from combination_representative.values()
+
+    def inverter_ac_kw(self, product_id: int) -> float | None:
+        fields = cast(dict[str, Any], self.evidence.compiled(product_id)["facts"])
+        for key in AC_OUTPUT_KEYS:
+            found = fields.get(key)
+            if (
+                found
+                and found["status"] == "typed"
+                and found["shape"] == "scalar"
+                and found["quantity"] == "active_power"
+            ):
+                return float(cast(float, found["value"]))
+        return None
+
+    def ratio_deviation(self, selection: Object) -> float:
+        pv = cast(float | None, selection.get("pv_dc_kw"))
+        ac = self.inverter_ac_kw(int(cast(int, selection["inverter_product_id"])))
+        if pv is None or pv <= 0 or ac is None or ac <= 0:
+            return inf
+        return abs(pv / ac - DC_AC_RATIO_MIDPOINT)
+
+    def combination_fitness(
+        self, candidate: Json
+    ) -> tuple[int, float, int, int, int, int, str]:
+        record = cast(Object, candidate)
+        value = cast(Object, record.get("selection") or record.get("plant") or {})
+        selections = (
+            [value]
+            if "selection" in record
+            else [
+                cast(Object, unit["selection"])
+                for unit in cast(list[Object], value.get("units", []))
+            ]
+        )
+        # After the canonical product id, the documented assembly (smallest
+        # stack level, then module count) keeps the order total and stable;
+        # the candidate digest is the last resort, never the visible order.
+        return (
+            0 if record["status"] == "satisfied" else 1,
+            max((self.ratio_deviation(row) for row in selections), default=inf),
+            int(cast(int, record["unresolved_checks"])),
+            min(int(cast(int, row["inverter_product_id"])) for row in selections),
+            min(int(cast(int, row["parallel_stacks"] or 0)) for row in selections),
+            min(int(cast(int, row["modules_per_stack"] or 0)) for row in selections),
+            str(record["id"]),
+        )
 
     def result(self, candidates: list[Json], coverage: Object) -> Object:
         return {
@@ -254,10 +361,10 @@ class EquipmentSearchSpace:
                     self.evidence.rows, key=lambda row: row["canonical_product_id"]
                 )
             ],
-            "candidates": candidates,
+            "candidates": sorted(candidates, key=self.combination_fitness),
             "qualified_count": sum(
                 row["status"] == "satisfied" for row in cast(list[Object], candidates)
             ),
-            "ranking": "not_performed_before_qualification",
-            "display_order": "canonical_product_and_documented_module_count",
+            "ranking": "dc_ac_proximity_then_unresolved_then_product_and_module_count",
+            "display_order": "ranking_then_canonical_product_and_documented_module_count",
         }

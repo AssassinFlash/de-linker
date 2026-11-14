@@ -126,7 +126,9 @@ class PlantSearchPlan(Document):
                 return False
             demand = EquipmentRequirements.read(
                 {
-                    key: getattr(unit.selection, key)
+                    # A selection carries no application statement; an unset
+                    # project application never constrains the unit demand.
+                    key: getattr(unit.selection, key, None)
                     for key in EquipmentRequirements.model_fields
                 }
             )

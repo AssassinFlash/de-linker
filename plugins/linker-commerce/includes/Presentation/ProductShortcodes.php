@@ -1074,9 +1074,17 @@ final class ProductShortcodes {
 				$ids[0],
 				'full',
 				array(
-					'class'  => 'pdp-gallery-main',
-					'alt'    => (string) $view['title'],
-					'srcset' => null,
+					'class' => 'pdp-gallery-main',
+					'alt'   => (string) $view['title'],
+					// The main picture is the largest image on a product page and
+					// the box it fills is fixed by the gallery layout, so a
+					// responsive candidate list is stated from the measured box
+					// rather than suppressed. Measured on production at
+					// 390/768/1024/1280/1440/1920 the box is 332, 689, 493, 627,
+					// 667 and 663 CSS px wide; the picture is painted with
+					// object-fit: contain, so the box is an upper bound of the
+					// painted width for every product aspect ratio.
+					'sizes' => '(max-width: 768px) 100vw, (max-width: 1024px) 493px, (max-width: 1280px) 627px, 667px',
 				)
 			) . '</button>';
 		if ( isset( $ids[1] ) ) {

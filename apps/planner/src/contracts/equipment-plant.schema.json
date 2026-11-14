@@ -1,5 +1,12 @@
 {
   "$defs": {
+    "Application": {
+      "enum": [
+        "residential",
+        "commercial"
+      ],
+      "type": "string"
+    },
     "ControlNetwork": {
       "enum": [
         "lan",
@@ -44,6 +51,17 @@
         },
         "required_discharge_ac_kw": {
           "$ref": "#/$defs/Nonnegative"
+        },
+        "application": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Application"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
