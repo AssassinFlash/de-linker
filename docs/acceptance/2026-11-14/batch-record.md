@@ -99,4 +99,3 @@ CLS 全部远低于 0.1。LCP 中 TTFB 占大部（同机 GitHub TLS 握手也�
    探针只查 `aria-label`/`title`/文本，漏了 `aria-labelledby` 与 `placeholder`。EPC 页那 3 个按钮有 `aria-labelledby` 指向真实标题；首页 hero 输入框有 `placeholder`。修正探针后重跑。破图项两视口复测均不存在（HTTP 无 4xx），是首轮瞬时加载失败。
 
 **真实缺陷**：PDP 主图按钮 `pdp-gallery-main-wrap` 只含 `<img>`、无任何可访问名称，德语 17 个产品页 × 2 视口全部命中。已加 `aria-label`（`61efd7ee4`）。
-
