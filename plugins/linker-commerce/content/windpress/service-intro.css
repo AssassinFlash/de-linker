@@ -271,7 +271,11 @@
  * touch screen the row's own items grow vertically while the dot keeps its
  * painted size. */
 @media (pointer: coarse) {
-	.us-application-dots button {
+	/* The page body's own rule sets padding:0 and border-box at the same
+	 * specificity and arrives later in the document, so this one names the
+	 * wrapper to outrank it. Measured 2026-11-14: without the extra class the
+	 * dots stayed 7x7 even though pointer:coarse matched. */
+	body .us-application-dots button {
 		padding-block: 18px;
 		background-clip: content-box;
 		box-sizing: content-box;
