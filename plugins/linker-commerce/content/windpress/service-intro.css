@@ -249,14 +249,30 @@
  * side within a single row. A 44px square around each would overlap its
  * neighbours and send a tap to the wrong stage, so the row grows instead: the
  * bars keep their width and 3px shape, and padding gives each one a tall
- * target in the vertical direction where there is room. */
-.lk-bstage-pill-bar {
+ * target in the vertical direction where there is room. The services page
+ * uses the same control under the lk-sstage- prefix. */
+.lk-bstage-pill-bar,
+.lk-sstage-pill-bar {
 	position: relative;
 }
 
 @media (pointer: coarse) {
-	.lk-bstage-pill-bar {
+	.lk-bstage-pill-bar,
+	.lk-sstage-pill-bar {
 		padding-block: 20px;
+		background-clip: content-box;
+		box-sizing: content-box;
+	}
+}
+
+/* The utility page's application dots are buttons too: each carries an
+ * aria-label naming its application and aria-pressed for its state, at
+ * 7x7 px. A square target around each would overlap the next dot, so on a
+ * touch screen the row's own items grow vertically while the dot keeps its
+ * painted size. */
+@media (pointer: coarse) {
+	.us-application-dots button {
+		padding-block: 18px;
 		background-clip: content-box;
 		box-sizing: content-box;
 	}
