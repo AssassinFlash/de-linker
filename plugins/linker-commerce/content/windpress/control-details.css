@@ -126,7 +126,17 @@
 	min-height: var(--proto-control-height);
 }
 
+/* The card prints a department over its address ("Vertrieb" then the
+   mailbox). Both children are inline, so justify-content did nothing and the
+   two ran together as "Vertriebsales@de-linker.com" (production DE and EN,
+   2026-11-14). A column keeps the department as the card's label and the
+   address on its own line, centred, and lets a long address wrap instead of
+   touching the copy button. */
 #tv-footer-v2 .footer-contact-panel .footer-email-card a {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2px;
 	justify-content: center;
 	max-width: 100%;
 	overflow-wrap: anywhere;
