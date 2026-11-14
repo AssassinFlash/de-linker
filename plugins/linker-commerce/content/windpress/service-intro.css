@@ -322,4 +322,23 @@
 		background-clip: content-box;
 		box-sizing: content-box;
 	}
+
+	/* The horizontal half of the same target, and the reason it is 5.5px and
+	 * not 8.5: measured 2026-11-15 on /de/loesung/grossspeicher/, the dots sit
+	 * at x=156, 191, 209 and 227 at 390px — an 18px pitch, so an 8.5px reach
+	 * each side would make two targets share a pixel and send a tap to the
+	 * wrong application. 5.5px takes each dot to exactly the midpoint between
+	 * it and its neighbour: 18px wide, adjacent but never overlapping. That is
+	 * under WCAG 2.5.8's 24px, and it cannot be more without either moving the
+	 * dots apart (the row's own gap) or shrinking what a finger can hit. The
+	 * dots keep their 7px circle; only the reach grows. */
+	body #tv-utility-page-v1 .us-application-dots button[aria-pressed]::after {
+		content: '';
+		position: absolute;
+		inset-block: 0;
+		inset-inline: -5.5px;
+	}
+	body #tv-utility-page-v1 .us-application-dots button[aria-pressed] {
+		position: relative;
+	}
 }
