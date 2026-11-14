@@ -702,8 +702,41 @@ class Release:
         )
         write(self.deploy / "worker.env", env_text(public))
         command(["systemctl", "start", self.worker_unit])
-        self.wait_for(lambda: self.ready(identity))
+        identity["ready"] = self.wait_for(lambda: self.ready(identity))
+        self.assert_products(self.spec["start_seconds"])
         return identity
+
+    def assert_products(self, timeout: float) -> None:
+        """A release that starts but cannot read Woo data serves nothing.
+
+        Measured 2026-11-14: a preparation whose publication endpoint pointed at
+        the engine's own address activated cleanly, reported its runtime identity
+        and answered reads, while every equipment search returned
+        ``version_unavailable`` because the provider could find no products. The
+        readiness record proves process identity only, so the first product
+        read is checked here, in the release's own environment as its own user.
+        """
+        command(
+            [
+                "runuser",
+                "--preserve-environment",
+                "-u",
+                self.spec["user"],
+                "--",
+                str(self.path / ".venv/bin/python"),
+                "-c",
+                "from linker_engine.planning.product_sources import ProductSources,"
+                " worker_product_provider;"
+                " current = ProductSources(worker_product_provider).current();"
+                " assert current['products'], 'publication has no products'",
+            ],
+            env={
+                "PATH": "/usr/sbin:/usr/bin:/sbin:/bin",
+                "PYTHONDONTWRITEBYTECODE": "1",
+                **environment(self.deploy / "http.env"),
+            },
+            timeout=timeout,
+        )
 
     def ready(self, identity: dict[str, Any]) -> dict[str, Any]:
         state = unit_state(self.worker_unit)
