@@ -273,8 +273,16 @@
 }
 
 @media (pointer: coarse) {
+	/* `.active` needs its own line: the page's `#installer-journal
+	 * .lk-bstage-pill-bar.active` is an id and two classes, one class more than
+	 * the rule below, so the selected bar alone kept `background-clip:
+	 * border-box` and painted a filled 34x43 block while the other five stayed
+	 * thin lines (measured on production 2026-11-15; the screenshot showed the
+	 * first bar as a solid slab). */
 	body #installer-journal .lk-bstage-pill-bar,
-	body #service-redesign .lk-sstage-pill-bar {
+	body #service-redesign .lk-sstage-pill-bar,
+	body #installer-journal .lk-bstage-pill-bar.active,
+	body #service-redesign .lk-sstage-pill-bar.active {
 		padding-block: 20px;
 		padding-inline: 4px;
 		background-clip: content-box;
