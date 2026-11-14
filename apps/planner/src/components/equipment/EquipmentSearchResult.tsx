@@ -90,22 +90,28 @@ export function EquipmentSearchResult({
 	/**
 	 * What the chosen stack holds, in kWh, from the battery's own figure.
 	 *
-	 * The figure arrives as the feed's own row — `{value, unit, citation}` —
-	 * not as a bare number, which is why the first version of this showed no
-	 * capacity at all (measured 2026-11-15 on production after the engine began
-	 * sending the field). `value` is the published string; a `scalar` figure is
-	 * numeric text and converts, anything else is not usable here.
+	 * The figure is the feed's flattened number (`usable_kwh`), so it needs no
+	 * unwrapping. A hosted row may instead carry the compiled fact — an object
+	 * with `value` and `unit` — so both shapes are read, and anything that is
+	 * not a positive finite number is skipped rather than shown as a zero.
 	 */
 	const stackEnergy = (selection: EquipmentSelection): string | null => {
 		const id = selection.battery_product_id;
 		const modules = selection.modules_per_stack;
 		if (id === null || typeof modules !== "number") return null;
 		const energy = readObject(products.get(id)?.energy ?? {});
+		const positive = (raw: unknown) => {
+			const value =
+				typeof raw === "number"
+					? raw
+					: Number(readObject(raw ?? {}).value);
+			return Number.isFinite(value) && value > 0 ? value : undefined;
+		};
 		const perModule = (
-			["module_energy_kwh_usable", "module_energy_kwh_nominal"] as const
+			["usable_kwh", "module_energy_kwh_usable", "nominal_kwh"] as const
 		)
-			.map((key) => Number(readObject(energy[key] ?? {}).value))
-			.find((value) => Number.isFinite(value) && value > 0);
+			.map((key) => positive(energy[key]))
+			.find((value) => value !== undefined);
 		if (perModule === undefined) return null;
 		const stacks = selection.parallel_stacks ?? 1;
 		return new Intl.NumberFormat(locale, {

@@ -2798,9 +2798,9 @@ def test_search_enumerates_documented_counts_and_keeps_budget_exhaustion_visible
     battery_row = next(
         p for p in result["products"] if p["canonical_product_id"] == 2090
     )
-    energy = battery_row["energy"]["module_energy_kwh_usable"]
-    assert energy["unit"] == "kWh"
-    assert float(energy["value"]) > 0
+    energy = battery_row["energy"]
+    assert set(energy) & {"usable_kwh", "nominal_kwh", "module_energy_kwh_usable"}
+    assert all(isinstance(v, (int, float)) and v > 0 for v in energy.values())
     compact = json_object(workspace.blobs.object(rows[0]["assessment_sha256"]))
     assert "facts" not in compact["selected_products"][0]
     assert all("facts" not in c for c in compact["checks"])
