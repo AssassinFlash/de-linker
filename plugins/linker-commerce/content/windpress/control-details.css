@@ -116,6 +116,13 @@
 	padding: 12px;
 }
 
+/* One card is left after the internal support mailbox stopped being a
+   customer-facing address (owner ruling 2026-10-17): a two-column grid would
+   leave the sales card at half width beside an empty cell. */
+#tv-footer-v2 .footer-contact-panel .footer-email-grid {
+	grid-template-columns: minmax(0, 1fr);
+}
+
 #tv-footer-v2 .footer-contact-panel .footer-email-card:has(.footer-copy) {
 	padding-right: calc(var(--proto-control-height) + var(--proto-space-3));
 }
