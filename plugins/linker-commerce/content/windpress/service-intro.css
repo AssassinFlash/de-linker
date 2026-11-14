@@ -257,21 +257,24 @@
  * have room. The services page uses the same control under the lk-sstage-
  * prefix.
  *
- * The wrapper is named in the selector, not the bar alone: the page body's own
- * `.lk-bstage-pill-bar{…background:#4a6452…}` sets the `background` shorthand,
- * which resets `background-clip` to its initial `border-box`. At one class of
- * specificity that rule arrives later in the document and wins, so the padding
- * grew the painted box and the 3px line became a solid 40px slab (measured
- * 2026-11-15 on /de/fuer-installateur/: computed background-clip border-box,
- * height 40px, solid colour). Two classes beat it wherever it sits. */
+ * Two page rules have to be beaten here, and both are the reason an earlier
+ * attempt at this shipped a regression: `#installer-journal .lk-bstage-pill-bar`
+ * and `#service-redesign .lk-sstage-pill-bar` are an id plus a class, so any
+ * selector without an id loses whatever the order; and each sets the
+ * `background` shorthand, which resets `background-clip` to `border-box`, so
+ * without the clip the padding grew the painted box and the 3px line became a
+ * solid 40px slab (measured on production 2026-11-15: height 40px, computed
+ * background-clip border-box, solid colour in the screenshot). The ids are the
+ * pages' own containers, already how marketing-rhythm.css reaches them, so
+ * naming them is narrower than `body`, not wider. */
 .lk-bstage-pills-wrap .lk-bstage-pill-bar,
 .lk-sstage-pills-wrap .lk-sstage-pill-bar {
 	position: relative;
 }
 
 @media (pointer: coarse) {
-	.lk-bstage-pills-wrap .lk-bstage-pill-bar,
-	.lk-sstage-pills-wrap .lk-sstage-pill-bar {
+	body #installer-journal .lk-bstage-pill-bar,
+	body #service-redesign .lk-sstage-pill-bar {
 		padding-block: 20px;
 		padding-inline: 4px;
 		background-clip: content-box;
