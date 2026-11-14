@@ -1887,7 +1887,8 @@ test( 'a first visit with no stored conversation opens empty', async () => {
 } );
 
 // The empty column's own line, the prototype's `.gp-welcome h1` (variant A).
-// It belongs to the empty state and leaves with the first turn.
+// It belongs to the empty state and leaves with the first turn. It renders as
+// an h2 because the page template supplies the document's h1.
 test( 'the empty column carries the welcome title until a turn lands', async () => {
 	resetTurnLane();
 	vi.mocked( readThread ).mockResolvedValue( {
@@ -1907,6 +1908,7 @@ test( 'the empty column carries the welcome title until a turn lands', async () 
 	expect(
 		await screen.findByRole( 'heading', {
 			name: 'Where should we begin?',
+			level: 2,
 		} )
 	).toBeVisible();
 	await act( async () => {

@@ -244,13 +244,18 @@
 
 /* The partner-stage progress bars are buttons: each carries role="button",
  * tabindex="0" and an aria-label, so they are reachable by keyboard and screen
- * reader. Measured 2026-11-14 on /de/fuer-installateur/ they are 16x3 px, far
+ * reader. Measured 2026-11-14 on /de/fuer-installateur/ they were 16x3 px, far
  * below the 44px touch target the rest of the site keeps, and six sit side by
  * side within a single row. A 44px square around each would overlap its
  * neighbours and send a tap to the wrong stage, so the row grows instead: the
- * bars keep their width and 3px shape, and padding gives each one a tall
- * target in the vertical direction where there is room. The services page
- * uses the same control under the lk-sstage- prefix. */
+ * bars keep their painted width and 3px shape, and transparent padding gives
+ * each one a target of its own. Vertical padding reaches the 44px the rest of
+ * the site keeps because the row has the height to spare; horizontal padding
+ * stops at 24px — WCAG 2.5.8's minimum — because 44px across would put the
+ * six targets 44px apart and push the row past its 334px column. Measured
+ * 2026-11-15: the row is 136px inside a 334px column, so the wider targets
+ * have room. The services page uses the same control under the lk-sstage-
+ * prefix. */
 .lk-bstage-pill-bar,
 .lk-sstage-pill-bar {
 	position: relative;
@@ -260,6 +265,7 @@
 	.lk-bstage-pill-bar,
 	.lk-sstage-pill-bar {
 		padding-block: 20px;
+		padding-inline: 4px;
 		background-clip: content-box;
 		box-sizing: content-box;
 	}
@@ -271,11 +277,18 @@
  * touch screen the row's own items grow vertically while the dot keeps its
  * painted size. */
 @media (pointer: coarse) {
-	/* The page body's own rule sets padding:0 and border-box at the same
-	 * specificity and arrives later in the document, so this one names the
-	 * wrapper to outrank it. Measured 2026-11-14: without the extra class the
-	 * dots stayed 7x7 even though pointer:coarse matched. */
-	body .us-application-dots button {
+	/* The page body's own rule is `#tv-utility-page-v1 .us-application-dots
+	 * button` — an id, a class and a type — and it sets `padding:0`. A rule
+	 * without that id loses to it on specificity whatever the order, which is
+	 * why the first attempt at this left the dots at 7x7 (measured 2026-11-15
+	 * on /de/loesung/grossspeicher/, pointer:coarse matched, padding computed
+	 * 0px). Naming the same id and the body outranks it, and the id is already
+	 * how marketing-rhythm.css reaches this page's own sections.
+	 *
+	 * The control only exists on the utility page — residential and commercial
+	 * print no dots (measured 2026-11-15: 0 occurrences) — so the id is a
+	 * narrower anchor than `body`, not a wider one. */
+	body #tv-utility-page-v1 .us-application-dots button {
 		padding-block: 18px;
 		background-clip: content-box;
 		box-sizing: content-box;
