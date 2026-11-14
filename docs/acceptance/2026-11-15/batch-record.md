@@ -56,7 +56,29 @@
 
 **Genie 预览关闭按钮**：28×28 → 绘制 28、命中 44，用 `::after` 外扩 8px，卡片头部高度不变。
 
-## 4. 部署死锁（工具链缺陷）
+## 4. 配置器选项显示可用容量而非模块数
+
+**现象**：644 行的设备下拉框里，客户读到 `SAJ HS2-10K-T2-X + SAJ BU2-5.0-HV1 · Battery modules per stack: 4`。同一对设备因模块数不同重复出现 4–8 次，每一行都只说明它是怎么组装的，不说明它能装多少电。
+
+**根因（三层，每层都单独足以让它不生效）**：
+1. `equipment_search_space.py` 的 `products` 只上报 5 个字段，把能量数据丢掉了。
+2. 我第一版读 `row["figures"]`——**测试夹具的行有这个子对象，生产的 publication feed 没有**。生产行是扁平字段：`usable_kwh`、`nominal_kwh`、`kwh_range`。夹具通过、生产为空。
+3. 我先把引擎发到了 `linker-engine.service`（8901），而 planner 实际跑在 `linker-planner-http/worker`（8911，`/opt/linker-planner/releases/<64位sha>`）。那个激活对规划请求毫无作用。
+
+**修法**：`b990e846d` + `1e0ed1ff7` 引擎上报真实字段；前端 `EquipmentSearchResult.tsx` 用 `每模块可用容量 × 每堆模块数 × 并联堆数` 计算，读不到就**不显示这一节**而不是显示 `—` 或编造数字。德语独立撰写 `Nutzbare Speicherkapazität`。
+
+**实测（生产，1440）**：
+
+| 语言 | 首选项标签 |
+|---|---|
+| EN | `SAJ HS2-10K-T2-X + SAJ BU2-5.0-HV1 · Usable battery capacity: 18 kWh` |
+| DE | `SAJ HS2-10K-T2-X + SAJ BU2-5.0-HV1 · Nutzbare Speicherkapazität: 18 kWh` |
+
+数值核对：4 × 4.5 = 18；5 × 4.5 = 22.5（德语 `22,5`，小数逗号正确）；HS3 `3 × 4.8 = 14.4`。
+
+**发布脚本**：`/tmp/publish-planner.sh`（本轮临时，收尾后回收）。它把「解包 → `uv sync --frozen` → 落到 64-hex 目录 → 重指 `.pth` → 继承 runtime/worker 策略 → `prepare` → `activate`」串成一步；`.pth` 指向构建目录会让新 release 静默导入旧代码，这是必须显式重指的一步。
+
+## 5. 部署死锁（工具链缺陷）
 
 **现象**：部署报 `snapshot reservation belongs to another deployment`，之后**每次部署都失败**。
 
@@ -66,7 +88,7 @@
 
 **验证**：新增测试复现原场景（检查点是新的、registry 挂的是旧的），36 个快照测试通过，cutover 全套 **306 通过**，ruff/mypy 全通过。
 
-## 5. 全站矩阵
+## 6. 全站矩阵
 
 620 次扫描（310 URL × 2 视口，8 并发）：**0 错误、0 破图、0 空链接、0 标题跳级、0 横向溢出**。
 
@@ -80,6 +102,6 @@
 
 ## 仍未解决
 
-- **配置器选项标签暴露实现细节**：644 行的下拉框里客户看到 `… · Battery modules per stack: 4`，而引擎里已有 `module_energy_kwh_usable`（4.5 kWh，带数据手册页码与 sha256）。应显示为可用容量（如 20.5 kWh）。需要引擎在候选里补可用容量字段，属跨层改动。
-- **配置器首屏约 9 秒**才从「Loading projects…」进入表单。
+- **配置器首屏约 9 秒**才从「Loading projects…」进入表单（390 与 1440 同）。
 - **产品归档页 390 的 TTFB 4,097ms**，其余页型 1.4–2.5s。
+- **`legacy_release.py` 能成功激活一个不服务规划请求的单元而不报错**：`linker-engine.service`（8901）与 `linker-planner-http/worker`（8911）是两棵树，前者激活成功对后者毫无影响。本轮因此有一次发布落在无效目标上。工具层应拒绝在无请求服务的单元上激活，或在输出里明确该单元不承接规划流量。
