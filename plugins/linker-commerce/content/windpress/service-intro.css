@@ -283,7 +283,8 @@
 	body #service-redesign .lk-sstage-pill-bar,
 	body #installer-journal .lk-bstage-pill-bar.active,
 	body #service-redesign .lk-sstage-pill-bar.active {
-		padding-block: 20px;
+		/* 44px in total: the bar paints 3px, the padding carries the rest. */
+		padding-block: calc((44px - 3px) / 2);
 		padding-inline: 4px;
 		background-clip: content-box;
 		box-sizing: content-box;
