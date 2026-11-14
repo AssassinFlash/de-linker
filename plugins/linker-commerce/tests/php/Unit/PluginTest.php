@@ -114,6 +114,8 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'wp_get_consent_type', array( new AnyInstance( \Linker\Commerce\Consent\BasicMode::class ), 'opt_in' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'script_loader_tag', array( new AnyInstance( \Linker\Commerce\Consent\BasicMode::class ), 'hold_google_tag' ), 30, 2 ); // @phpstan-ignore argument.type
 		WP_Mock::expectFilterAdded( 'googlesitekit_consent_defaults', array( new AnyInstance( \Linker\Commerce\Consent\BasicMode::class ), 'deny_everywhere' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( new AnyInstance( \Linker\Commerce\Presentation\BlockStyles::class ), 'drop_global_styles' ), 100 ); // @phpstan-ignore argument.type
+		WP_Mock::expectFilterAdded( 'should_load_separate_core_block_assets', '__return_true' );
 		WP_Mock::expectFilterAdded( 'googlesitekit_consent_category_map', array( new AnyInstance( \Linker\Commerce\Consent\BasicMode::class ), 'without_ads' ) ); // @phpstan-ignore argument.type
 
 		$publication = \Linker\Commerce\Products\Publication\Module::class;

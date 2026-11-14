@@ -90,6 +90,7 @@ final class Plugin {
 		( new ProductSchema() )->register();
 		( new ArchiveSchema() )->register();
 		( new Consent\BasicMode() )->register();
+		( new Presentation\BlockStyles() )->register();
 		( new Products\Publication\Module() )->register();
 		( new Monitor( $this->file, new Settings\Options() ) )->register();
 	}
