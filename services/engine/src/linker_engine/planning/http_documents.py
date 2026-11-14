@@ -37,6 +37,7 @@ class Command(Document):
 class SessionClaim(Command):
     key: Key
 
+
 type PlaceQuery = Annotated[str, Field(min_length=1, max_length=120)]
 
 
