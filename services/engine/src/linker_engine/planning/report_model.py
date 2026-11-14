@@ -70,16 +70,20 @@ def build_report(source: Object) -> Report:
     brief = source.get("brief")
     if isinstance(brief, dict):
         site = cast(Object, brief["site"])
+        # A row the visitor never declared is left out rather than printed as a
+        # dash: "Time zone —" reads as a field the report failed to fill, and a
+        # postcode does not establish a time zone on its own.
+        site_rows = [row("location", site["location_label"])]
+        if site.get("country_code"):
+            site_rows.append(row("country", site["country_code"]))
+        if site.get("timezone"):
+            site_rows.append(row("timezone", site["timezone"]))
+        site_rows.append(row("note", brief["project_note"]))
         sections.append(
             ReportSection(
                 id="site",
                 title=text("site", locale),
-                rows=[
-                    row("location", site["location_label"]),
-                    row("country", site["country_code"]),
-                    row("timezone", site["timezone"]),
-                    row("note", brief["project_note"]),
-                ],
+                rows=site_rows,
             )
         )
 

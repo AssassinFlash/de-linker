@@ -241,7 +241,10 @@ async function renderQuickStart(t, client, options = {}) {
 					session,
 					client,
 					store: draftStore(),
-					config: { locale: "en-GB" },
+					config: {
+						locale: "en-GB",
+						countries: { DE: "Germany", FR: "France" },
+					},
 					recheck: () => undefined,
 					...options,
 				}),
@@ -259,6 +262,18 @@ const button = (text) =>
 	[...document.querySelectorAll("button")].find(
 		(node) => node.textContent.trim() === text,
 	);
+/** Choose a select option the way a reader does: value, then its change event. */
+const chooseIn = async (label, value) => {
+	const select = selectByLabel(label);
+	if (!select) throw new Error("Missing select: " + label);
+	await act(async () => {
+		Object.getOwnPropertyDescriptor(
+			window.HTMLSelectElement.prototype,
+			"value",
+		).set.call(select, value);
+		select.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+};
 const stepNode = (id) =>
 	document.querySelector(`.lp-quickstart-steps [data-step="${id}"]`);
 
@@ -344,9 +359,19 @@ test("every list carries the approved options and the location is the only requi
 	assert.equal(quickStartReady(quickStartDefaults()), false);
 
 	await enter(document.querySelector('input[type="text"]'), "10115 Berlin");
+	assert.equal(
+		button("Generate solution").disabled,
+		true,
+		"a place without its country is still incomplete",
+	);
+	await chooseIn("Country", "DE");
 	await until(() => button("Generate solution").disabled === false);
 	assert.equal(
-		quickStartReady({ ...quickStartDefaults(), location: "x" }),
+		quickStartReady({
+			...quickStartDefaults(),
+			location: "x",
+			country: "DE",
+		}),
 		true,
 	);
 	assert.deepEqual(client.calls, []);
@@ -485,6 +510,7 @@ test("a failed step keeps the confirmed results and offers a retry for that step
 	await renderQuickStart(t, client);
 	await until(() => selectByLabel("PV array size") !== undefined);
 	await enter(document.querySelector('input[type="text"]'), "10115 Berlin");
+	await chooseIn("Country", "DE");
 	await until(() => button("Generate solution").disabled === false);
 
 	await act(async () => {

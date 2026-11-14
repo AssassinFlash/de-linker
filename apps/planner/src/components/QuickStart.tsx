@@ -85,6 +85,12 @@ export interface QuickStartChoices {
 	readonly phase: 1 | 3;
 	readonly goal: QuickStartGoal;
 	readonly location: string;
+	/**
+	 * The site's country as the visitor states it. A postcode alone does not
+	 * name a country across the markets this site serves, and the report prints
+	 * the country it was given, so this is selected rather than inferred.
+	 */
+	readonly country: string;
 }
 
 /** Everything except the location has a default, so the screen opens usable. */
@@ -98,12 +104,13 @@ export function quickStartDefaults(): QuickStartChoices {
 		phase: 3,
 		goal: "self_use",
 		location: "",
+		country: "",
 	};
 }
 
-/** The location is the only field without a default; it names the site. */
+/** A named site needs both the place and the country the report will print. */
 export function quickStartReady(choices: QuickStartChoices): boolean {
-	return choices.location.trim().length > 0;
+	return choices.location.trim().length > 0 && choices.country.length > 0;
 }
 
 export function quickStartAnnualOptions(
@@ -192,6 +199,7 @@ export function quickStartInputs(choices: QuickStartChoices): JsonObject {
 			site: {
 				...brief.site,
 				location_label: choices.location.trim(),
+				country_code: choices.country || null,
 			},
 			annual_load: {
 				kwh: choices.annualKwh,
@@ -301,6 +309,10 @@ export function quickStartChoicesFrom(inputs: JsonObject): QuickStartChoices {
 		location:
 			typeof brief.site.location_label === "string"
 				? brief.site.location_label
+				: "",
+		country:
+			typeof brief.site.country_code === "string"
+				? brief.site.country_code
 				: "",
 	};
 }
@@ -683,6 +695,23 @@ export function QuickStart({
 								{quickStartGoalLabel(goal)}
 							</option>
 						))}
+					</select>
+				</label>
+				<label className="lp-field">
+					<span>{__("Country", "linker-tools")}</span>
+					<select
+						required
+						value={choices.country}
+						onChange={(event) => change("country", event.currentTarget.value)}
+					>
+						<option value="">{__("Select a country", "linker-tools")}</option>
+						{Object.entries(config.countries)
+							.sort((a, b) => a[1].localeCompare(b[1], config.locale))
+							.map(([code, name]) => (
+								<option key={code} value={code}>
+									{name}
+								</option>
+							))}
 					</select>
 				</label>
 				<label className="lp-field">

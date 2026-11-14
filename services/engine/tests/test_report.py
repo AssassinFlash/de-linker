@@ -10,6 +10,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
 from linker_engine import pdf, report, residential, rules
+from linker_engine.planning import report_model
 from linker_engine.engine import Engine
 from linker_engine.models import (
     Report,
@@ -380,3 +381,46 @@ def test_pdf_renders_the_cold_voc_beta_with_its_native_symbol_glyph(
     } == {source_url}
     assert report.model_dump() == original
     assert pdf.render(report) == document
+
+
+def test_a_site_row_the_visitor_never_declared_is_left_out() -> None:
+    """The sheet must not print a dash for a field nobody was asked to fill.
+
+    Production 2026-11-14: the one-screen start named a postcode, so the
+    printed site block read "Location 10115 Berlin / Country — / Time zone —".
+    A dash reads as a field the report failed to fill, and a postcode does not
+    establish a country or a time zone on its own. The declared rows print and
+    the undeclared ones disappear.
+    """
+    source = {
+        "title": "Residential · 10 kWp · 10115 Berlin",
+        "project_id": "0" * 32,
+        "revision": 2,
+        "input_sha256": "1" * 64,
+        "locale": "en",
+        "generated_at": "2026-11-14T08:00:00+00:00",
+        "source_runs": [],
+        "brief": {
+            "site": {
+                "location_label": "10115 Berlin",
+                "country_code": None,
+                "timezone": None,
+            },
+            "project_note": "Planned orientation: South-facing, 30°",
+        },
+    }
+
+    built = report_model.build_report(source)
+    sections = {section.id: section for section in built.sections}
+    rows = {row.label: row.value for row in sections["site"].rows}
+    assert rows["Location"] == "10115 Berlin"
+    assert "Country" not in rows
+    assert "Time zone" not in rows
+    assert "—" not in rows.values()
+
+    source["brief"]["site"]["country_code"] = "DE"
+    built = report_model.build_report(source)
+    sections = {section.id: section for section in built.sections}
+    rows = {row.label: row.value for row in sections["site"].rows}
+    assert rows["Country"] == "DE"
+    assert "Time zone" not in rows
