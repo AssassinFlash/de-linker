@@ -296,10 +296,13 @@ def _read_swiss(latitude: float, longitude: float) -> ModelResult | None:
 
     The tile is 16 MB compressed and 256 MB expanded, so it is parsed once and
     kept; a request for a second building in the same tile answers from memory.
+
+    The STAC search takes a WGS84 bbox, not the model's own metres: measured
+    2026-11-16, sending EPSG:2056 metres answers `HTTP 400 Bad Request`.
     """
     to_lv95 = Transformer.from_crs("EPSG:4326", "EPSG:2056", always_xy=True)
     x, y = to_lv95.transform(longitude, latitude)
-    tile = _swiss_tile(x, y)
+    tile = _swiss_tile(x, y, latitude, longitude)
     if tile is None:
         return None
     found = tile.nearest(x, y, CLICK_TOLERANCE_M * 4)
@@ -328,12 +331,22 @@ def _read_swiss(latitude: float, longitude: float) -> ModelResult | None:
 
 
 @cache
-def _swiss_tile(x: float, y: float) -> swiss.Tile | None:
-    """Download and parse the tile covering a position, once per process."""
-    name = _swiss_tile_name(x, y)
+def _swiss_tile(
+    x: float, y: float, latitude: float, longitude: float
+) -> swiss.Tile | None:
+    """Download and parse the tile covering a position, once per process.
+
+    The tile is chosen by which published bbox contains the position, smallest
+    first, because the ids carry a grid of their own (`1166-42`) that does not
+    follow from the projected metres. Measured 2026-11-16: the national products
+    also answer the search, and picking one of those would download 3.7 GB for a
+    single roof.
+    """
+    span = 0.01
     url = (
         f"{SWISS_STAC}/collections/{SWISS_COLLECTION}/items"
-        f"?bbox={x - 500},{y - 500},{x + 500},{y + 500}&limit=20"
+        f"?bbox={longitude - span},{latitude - span},"
+        f"{longitude + span},{latitude + span}&limit=50"
     )
     try:
         with urllib.request.urlopen(
@@ -343,27 +356,40 @@ def _swiss_tile(x: float, y: float) -> swiss.Tile | None:
             document = cast(dict[str, Any], json.load(response))
     except (urllib.error.URLError, TimeoutError, ValueError) as error:
         raise ModelUnavailable(f"swissBUILDINGS3D index did not answer: {error}") from error
-    for feature in cast(list[dict[str, Any]], document.get("features") or []):
-        if not str(feature.get("id", "")).endswith(name):
-            continue
-        for asset in cast(dict[str, Any], feature.get("assets") or {}).values():
-            href = str(asset.get("href", ""))
-            if not href.endswith(".dxf.zip"):
-                continue
-            try:
-                with urllib.request.urlopen(
-                    urllib.request.Request(
-                        href, headers={"User-Agent": USER_AGENT}
-                    ),
-                    timeout=180,
-                ) as response:
-                    return swiss.read_archive(response.read())
-            except (urllib.error.URLError, TimeoutError) as error:
-                raise ModelUnavailable(
-                    f"swissBUILDINGS3D tile did not download: {error}"
-                ) from error
-    return None
 
+    candidates: list[tuple[float, str]] = []
+    for feature in cast(list[dict[str, Any]], document.get("features") or []):
+        assets = cast(dict[str, Any], feature.get("assets") or {})
+        href = next(
+            (
+                str(asset.get("href", ""))
+                for asset in assets.values()
+                if str(asset.get("href", "")).endswith(".dxf.zip")
+            ),
+            None,
+        )
+        if href is None:
+            continue
+        bbox = feature.get("bbox")
+        if not isinstance(bbox, list) or len(bbox) != 4:
+            continue
+        west, south, east, north = (float(value) for value in bbox)
+        if not (west <= longitude <= east and south <= latitude <= north):
+            continue
+        candidates.append(((east - west) * (north - south), href))
+    if not candidates:
+        return None
+    candidates.sort()
+    try:
+        with urllib.request.urlopen(
+            urllib.request.Request(candidates[0][1], headers={"User-Agent": USER_AGENT}),
+            timeout=180,
+        ) as response:
+            return swiss.read_archive(response.read())
+    except (urllib.error.URLError, TimeoutError) as error:
+        raise ModelUnavailable(
+            f"swissBUILDINGS3D tile did not download: {error}"
+        ) from error
 
 def distance_m(ring: list[tuple[float, float]], x: float, y: float) -> float:
     """Distance from a point to a footprint, in the model's own metres.
