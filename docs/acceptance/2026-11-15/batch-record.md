@@ -507,3 +507,30 @@ saves, and a failure is reported instead of writing an empty location.
 
 `1010` is written by six countries (AL, AT, CH, CY, DK, MK). The server asking
 for the country is correct behaviour, not a bug, and is kept.
+
+## Closing state, 2026-11-16
+
+Engine: **1492 passed**, ruff and mypy clean. Frontend: 332 passed.
+Live bundle `28c5aefe29bbfb99` on both sides. Working tree clean.
+
+| # | Criterion | Verdict |
+|---|---|---|
+| 1 | Report + BOM for DE and five non-DE | met, 15 countries measured |
+| 2 | NL and CH real planes; others a 2D outline | met |
+| 3 | Cited rule pack, or a stated gap | met |
+| 4 | Aerial layer for nine markets | **7 of 9** — no IT, no GB |
+| 5 | German for new strings | met |
+| 6 | Gates, hashes, clean tree | met |
+
+Italy and the United Kingdom have no aerial layer. Both fall back to the drawn
+outline and both say so on screen in English and German. Their services were
+probed from the production network, not from a laptop:
+
+- IT — the national WMS raises `msShapefileOpen(): Unable to access
+  \\192.168.65.12\nas1_vol1\DATI\ORTOFOTO`; four regional geoportals answered
+  404, 401 or nothing.
+- GB — the Environment Agency paths answer with an ArcGIS landing page, the
+  Welsh service is decommissioned, the Scottish portal returns 400. Esri World
+  Imagery is commercial and is not used.
+
+The remaining countries draw or upload, and are told which of the two applies.
