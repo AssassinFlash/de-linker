@@ -45,6 +45,51 @@ CLICK_TOLERANCE_M = 12.0
 # outline, and keeping them all would give a 300-point ring for a rectangle.
 SAME_POINT_M = 0.35
 
+# The catalogue names regions in English, while the service speaks ISO codes.
+# Measured 2026-11-16 against `dataset-links.csv`: 225 regions, of which these
+# are the European ones the configurator serves.
+REGION_NAMES = {
+    "AL": "Albania",
+    "AT": "Austria",
+    "BA": "Bosnia and Herzegovina",
+    "BE": "Belgium",
+    "BG": "Bulgaria",
+    "CH": "Switzerland",
+    "CY": "Cyprus",
+    "CZ": "Czechia",
+    "DE": "Germany",
+    "DK": "Denmark",
+    "EE": "Estonia",
+    "ES": "Spain",
+    "FI": "Finland",
+    "FR": "France",
+    "GB": "United Kingdom",
+    "GR": "Greece",
+    "HR": "Croatia",
+    "HU": "Hungary",
+    "IE": "Ireland",
+    "IS": "Iceland",
+    "IT": "Italy",
+    "LI": "Liechtenstein",
+    "LT": "Lithuania",
+    "LU": "Luxembourg",
+    "LV": "Latvia",
+    "MD": "Moldova",
+    "ME": "Montenegro",
+    "MK": "North Macedonia",
+    "MT": "Malta",
+    "NL": "Netherlands",
+    "NO": "Norway",
+    "PL": "Poland",
+    "PT": "Portugal",
+    "RO": "Romania",
+    "RS": "Serbia",
+    "SE": "Sweden",
+    "SI": "Slovenia",
+    "SK": "Slovakia",
+    "UA": "Ukraine",
+}
+
 LICENCE = "CDLA-Permissive 2.0 (Microsoft Building Footprints)"
 LICENCE_URL = (
     "https://github.com/microsoft/GlobalMLBuildingFootprints/blob/main/LICENSE"
@@ -87,16 +132,21 @@ def _catalogue() -> dict[tuple[str, str], str]:
 
 
 def part_url(region: str, key: str) -> str | None:
-    """The published part for one region and quadkey, if the region is covered."""
+    """The published part for one region and quadkey, if the region is covered.
+
+    `region` is the ISO code the service speaks; the catalogue uses the English
+    name, so the code is mapped first.
+    """
+    name = REGION_NAMES.get(region.upper(), region)
     parts = _catalogue()
-    exact = parts.get((region, key))
+    exact = parts.get((name, key))
     if exact is not None:
         return exact
     # A cell near a border is sometimes published under a neighbouring key; any
     # part of the same region that starts with the position's prefix is close
     # enough for a click, and the outline test below rejects a wrong building.
-    for (name, candidate), url in parts.items():
-        if name == region and candidate.startswith(key[:7]):
+    for (candidate_name, candidate), url in parts.items():
+        if candidate_name == name and candidate.startswith(key[:7]):
             return url
     return None
 
