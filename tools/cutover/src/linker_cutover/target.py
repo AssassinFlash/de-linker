@@ -726,13 +726,13 @@ class Target:
             # A 3xx lands here too, by design: `_NoRedirects` leaves it to the
             # default error handler, which raises with the status and the body.
             return error.code, error.read().decode("utf-8", errors="replace")
+        except http.client.IncompleteRead as error:
+            # `IncompleteRead` is an `HTTPException`, not an `OSError`, so it
+            # never reaches the branch below. Caught by name here.
+            raise _TruncatedRead(url) from error
         except OSError as error:  # a refused connection, a DNS failure, a timeout
             if _is_read_timeout(error):
                 raise _ReadTimeout(url) from error
-            if isinstance(error, http.client.IncompleteRead) or isinstance(
-                getattr(error, "reason", None), http.client.IncompleteRead
-            ):
-                raise _TruncatedRead(url) from error
             raise CutoverError(f"GET {url}: {error}") from error
 
 

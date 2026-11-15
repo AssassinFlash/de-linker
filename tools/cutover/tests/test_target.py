@@ -835,7 +835,10 @@ def test_a_truncated_response_retries_once_and_then_fails(
     truncation is a real fault and must still stop the deploy.
     """
     target, requested = site
-    interrupted = urllib.error.URLError(http_client.IncompleteRead(b""))
+    # The real fault is a bare IncompleteRead from response.read(), which is an
+    # HTTPException rather than an OSError; wrapping it in URLError would test
+    # a path the host never takes.
+    interrupted = http_client.IncompleteRead(b"")
     with patch.object(
         OPENER, "open", wraps=OPENER.open, side_effect=[interrupted, DEFAULT]
     ) as opening:
