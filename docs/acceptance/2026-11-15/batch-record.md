@@ -463,3 +463,33 @@ cannot reach several of these hosts, which is why the probes run there):
 Every claim above is either a live HTTP result or a screenshot of the live page.
 The Swiss and Dutch roof planes are engine results measured against the
 published services, not screenshots of them in the map.
+
+## Owner-standard audit, six criteria (2026-11-16)
+
+| # | Criterion | Verdict | Evidence |
+|---|---|---|---|
+| 1 | Report + BOM for DE and five non-DE | **met** (15 countries) | live runs, every step 200 |
+| 2 | NL and CH real roof planes; others a 2D outline | **met** | NL 10 planes 18.9–58.6°, CH 4 planes 51.2–52.2°; `places/outline` 200 `found:true` for AT |
+| 3 | Each country a cited rule pack, or a stated gap | **met** | FR/NL/DE/AT/SE cited; others say no pack exists, EN+DE |
+| 4 | Aerial layer for DE/NL/FR/ES/IT/PL/GB/AT/CH | **partial: 6 of 9** | DE 16 states + BE CH ES FR NL PL |
+| 5 | New customer strings have German | **met** | 204 strings, only two identical: `row.revision`, `unit.m.other` |
+| 6 | ruff/mypy/pytest, live bundle hash, clean tree | **met** | engine 1490 passed; bundle `28c5aefe29bbfb99` both sides; 0 changed |
+
+### Criterion 4, stated plainly
+
+Italy, the United Kingdom and Austria have **no aerial layer**, and this record
+does not claim otherwise:
+
+- **IT** — the national WMS reads `\\192.168.65.12\nas1_vol1\DATI\ORTOFOTO`,
+  an internal share its own server cannot open.
+- **GB** — the Environment Agency endpoint that answers is a MapServer landing
+  page, not imagery. Esri World Imagery was rejected: a commercial service is
+  not an open licence and this product does not put unlicensed basemaps in
+  front of customers.
+- **AT** — `basemap.at` moved to WMTS and its tile hosts do not answer from the
+  production network; the states publish separately. Vienna's own WMS answers,
+  but a capital city is not a country and is not recorded as one.
+
+All three fall back to the drawn outline, and the screen now says so in
+English and German rather than leaving the visitor to guess why the background
+is a line drawing.
