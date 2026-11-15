@@ -420,6 +420,44 @@ The path is now `places/outline` → gateway allowlist → `ProjectEditor` →
 `MapViewport`, drawn dashed as a starting outline with its source and licence.
 It carries no plane and no area claim.
 
+### Final live read-back, 2026-11-16
+
+```
+places/lookup  : 200  (imagery carried for the countries that publish one)
+places/outline : 200  {"found":true,"country_code":"AT",
+                       "outline":[[16.3721337,48.2085834], ...]}
+```
+
+The Vienna outline is a real 5-point building polygon from the Microsoft
+global footprints, with its source and licence in the answer.
+
+### National mosaics, by measurement
+
+Real `GetMap` JPEGs, taken from the production network (the local machine
+cannot reach several of these hosts, which is why the probes run there):
+
+| Country | Endpoint | Bytes |
+|---|---|---|
+| NL | service.pdok.nl (Actueel_orthoHR) | 28,519 |
+| FR | data.geopf.fr (HR.ORTHOIMAGERY.ORTHOPHOTOS) | 66,395 |
+| ES | www.ign.es (OI.OrthoimageCoverage) | 35,597 |
+| CH | wms.geo.admin.ch (ch.swisstopo.swissimage) | 93,466 |
+| BE | geo.api.vlaanderen.be (Ortho) | 69,511 |
+| PL | mapy.geoportal.gov.pl (Raster) | 16,643 |
+
+**Two real gaps, stated as gaps:**
+
+- **IT** — the national WMS loads `\\192.168.65.12\nas1_vol1\DATI\ORTOFOTO`,
+  an internal path its own server cannot read.
+- **GB** — the Environment Agency endpoint that answers is a MapServer landing
+  page, not imagery; no open WMS was found that returns a tile for London.
+  Esri World Imagery is not used: it is a commercial service and this product
+  does not put unlicensed basemaps in front of customers.
+- **AT** — `basemap.at` moved from WMS to WMTS and the states publish
+  separately; no nationwide WMS was found. Vienna's own WMS answers but a city
+  is not a country, so nothing is recorded rather than a layer that would fail
+  outside the capital.
+
 ### What this record does not claim
 
 Every claim above is either a live HTTP result or a screenshot of the live page.
