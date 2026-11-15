@@ -21,7 +21,7 @@ from linker_engine.publication import Publication
 INPUT = {"plz": "80538", "country": "DE", "annual_kwh": 5000, "pv_kwp": 10, "phase": 3}
 COMMERCIAL = {
     "plz": "80538",
-            "country": "DE",
+    "country": "DE",
     "grid_connection_kva": 100,
     "annual_kwh": 150000,
     "goals": ["self_consumption"],

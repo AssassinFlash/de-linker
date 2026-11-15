@@ -165,9 +165,7 @@ def lookup(postcode: str, country: str | None = None) -> Place | None:
         # `M1 1AE` asks for [`M1`], and no country was given.
         found = {
             hit.country: hit
-            for hit in (
-                prefix_lookup(postcode, candidate) for candidate in countries()
-            )
+            for hit in (prefix_lookup(postcode, candidate) for candidate in countries())
             if hit is not None
         }
         return found.popitem()[1] if len(found) == 1 else None

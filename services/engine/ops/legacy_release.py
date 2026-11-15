@@ -275,7 +275,7 @@ compat=json.dumps(data['compatibility'],sort_keys=True,separators=(',',':'),ensu
 products=Products.from_feed(data);contract=Compatibility(json.loads(compat))
 engine=Engine(products=products,compatibility=contract,pvgis=Pvgis(Path(os.environ['LINKER_ENGINE_CACHE'])/'pvgis'))
 prepared=Publication(data).prepared_products(engine)
-place=geo.lookup('10115');assert place is not None
+place=geo.lookup('10115','DE');assert place is not None
 print(json.dumps({'import_root':str(root),'version':version.digest(version.source_bytes(root/'src/linker_engine'),feed,compat),
  'source_revision':data['source_revision'],'compatibility_revision':data['compatibility_revision'],
  'prepared_products':prepared,'feed_sha256':hashlib.sha256(feed).hexdigest(),

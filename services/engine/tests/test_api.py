@@ -6,7 +6,13 @@ from conftest import TRIFTSTRASSE_5
 from fastapi.testclient import TestClient
 from pypdf import PdfReader
 
-RESIDENTIAL = {"plz": "80538", "country": "DE", "annual_kwh": 5000, "pv_kwp": 10, "phase": 3}
+RESIDENTIAL = {
+    "plz": "80538",
+    "country": "DE",
+    "annual_kwh": 5000,
+    "pv_kwp": 10,
+    "phase": 3,
+}
 
 
 def test_postcode_gives_position_state_and_imagery(client: TestClient) -> None:

@@ -709,7 +709,7 @@ def test_native_locked_probe_loads_real_feed_publication_and_geo(
             canonical,
         )
         assert result["source_revision"] == feed["source_revision"]
-        place = geo.lookup("10115")
+        place = geo.lookup("10115", "DE")
         assert (
             place is not None
             and result["prepared_products"]

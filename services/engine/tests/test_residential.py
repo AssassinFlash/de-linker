@@ -22,7 +22,6 @@ HOUSEHOLDS = [
 def design(engine: Engine, **fields: object) -> residential.Design:
     values: dict[str, object] = {
         "plz": "80538",
-            "country": "DE",
         # The postcode alone is shared with a Ukrainian code; the country is
         # what names the place, exactly as the form passes it.
         "country": "DE",

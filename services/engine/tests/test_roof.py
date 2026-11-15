@@ -22,7 +22,9 @@ def test_triftstrasse_5_has_an_outline_planes_and_modules(
     latitude, longitude = TRIFTSTRASSE_5
     result = service.outline(
         RoofRequest(
-            plz="80538", country="DE", location=Location(latitude=latitude, longitude=longitude)
+            plz="80538",
+            country="DE",
+            location=Location(latitude=latitude, longitude=longitude),
         )
     )
     assert result.found
@@ -44,7 +46,9 @@ def test_triftstrasse_5_has_an_outline_planes_and_modules(
 def test_a_click_beside_any_building_finds_nothing(service: RoofService) -> None:
     result = service.outline(
         RoofRequest(
-            plz="80538", country="DE", location=Location(latitude=48.14095, longitude=11.58700)
+            plz="80538",
+            country="DE",
+            location=Location(latitude=48.14095, longitude=11.58700),
         )
     )
     assert not result.found and result.modules == 0
@@ -134,7 +138,10 @@ def test_a_drawn_plane_is_accepted_across_europe_and_refused_far_outside_it() ->
         ("Lisbon", [(-9.1400, 38.7200), (-9.13986, 38.7200), (-9.13986, 38.72005)]),
         ("Helsinki", [(24.9400, 60.1700), (24.94014, 60.1700), (24.94014, 60.17005)]),
         ("Valletta", [(14.5146, 35.8989), (14.51474, 35.8989), (14.51474, 35.89895)]),
-        ("Reykjavik", [(-21.9400, 64.1400), (-21.93986, 64.1400), (-21.93986, 64.14005)]),
+        (
+            "Reykjavik",
+            [(-21.9400, 64.1400), (-21.93986, 64.1400), (-21.93986, 64.14005)],
+        ),
     ):
         RoofPackRequest(polygon=ring, tilt_deg=30, azimuth_deg=180)
         assert name
