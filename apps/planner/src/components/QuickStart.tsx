@@ -1039,6 +1039,9 @@ function QuickStartRun({
 			const saved = await save();
 			if (!current()) return;
 			const revision = saved?.revision ?? draft.baseline.revision;
+			// Every save advances the revision a run must name, so the latest one
+			// travels with the chain rather than being read once at the start.
+			let latestRevision = revision;
 			done("save", sprintf(__("Revision %d", "linker-tools"), revision));
 
 			// 2. Weather: the resolved place already carries the coordinate the
@@ -1101,6 +1104,7 @@ function QuickStartRun({
 					const acquired = await startRun("runs/weather", {
 						expected_revision: withWeather.revision,
 					});
+					latestRevision = withWeather.revision;
 					if (!current()) return;
 					if (!acquired || acquired.state !== "succeeded") {
 						blocked("weather", runFailure(acquired));
@@ -1157,10 +1161,14 @@ function QuickStartRun({
 				false,
 			);
 
-			// 6. Equipment search runs from the declared requirements alone.
+			// 6. Equipment search runs from the declared requirements alone. It
+			// binds to the revision in hand, not to the one the project was
+			// created at: the weather step saves its request, which advances the
+			// revision, and a run against the older number is refused as
+			// changed (measured 2026-11-15: evaluation_revision_changed).
 			step("search");
 			const search = await startRun("runs/equipment-search", {
-				expected_revision: draft.baseline.revision,
+				expected_revision: latestRevision,
 			});
 			if (!current()) return;
 			if (!search || search.state !== "succeeded") {
