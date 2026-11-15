@@ -175,6 +175,44 @@ ES 35001    -> 35001 Las Palmas De Gran Canaria  Atlantic/Canary
 
 **需要业主决定**：是否给 QuickStart 增加 PVGIS 天气请求（只需坐标与年份区间，PVGIS 覆盖全欧），让单屏入口能给出产量估算。这是新增能力，不是修复。
 
+### 业主裁定（2026-11-15）：不允许任何功能再以「仅德国」为边界
+
+裁定后逐项清理，每一条都实际验证：
+
+| 位置 | 原先 | 现在 |
+|---|---|---|
+| `models.py` 坐标 | 德国范围 47.0–55.2 N / 5.8–15.1 E | 地理欧洲 27.0–71.5 N / −32.0–47.0 E（含加那利、亚速尔、北角） |
+| `models.py` 邮编 | `^\d{5}$` | 该国自己的样子，2–12 位字母数字加空格连字符 |
+| `models.py` `PlaceResult` | `country` 默认 `"DE"`、`timezone` 默认 `Europe/Berlin` | 三项必填，不继承德国 |
+| `roof/service.py` `_zone()` | 柏林以西 32、以东 33 | 标准 UTM 六度分区：里斯本 29、雅典 34、柏林 33、都柏林 29、赫尔辛基 35、马德里 30 |
+| `roof/service.py` `outline()` | 非德国直接拒绝 | 按区域查源；无源时报该区域没有轮廓服务，由手绘兜底 |
+| `CommercialSizing.tsx` | `/^\d{5}$/` 校验与 `\b(\d{5})\b/` 提取 | 该国形状的正则；邮编从已解析的地点标签取首词 |
+| `commercial.ts` | `/^\d{5}$/` | 同上 |
+| `geo.lookup` 无国家 | 优先德国 | 唯一匹配才回答，否则要求国家（`countries_of` 驱动提示） |
+
+**住宅、商用、屋顶、地点四个端点都新增 `country` 参数**，`ResidentialInput`/`CommercialInput`/`RoofRequest` 同步；前端全链路已传。
+
+**实测（生产，12 国逐个输入）**：
+
+```
+DE 80538    -> 80538 München                  Europe/Berlin
+GB M1 1AE   -> M1 Manchester                  Europe/London
+NL 9401 AB  -> 9401 Assen                     Europe/Amsterdam
+PT 3750-000 -> 3750-000 Zona Industrial…      Europe/Lisbon
+PL 59-700   -> 59-700 Golnice                 Europe/Warsaw
+FR 75001    -> 75001 Paris                    Europe/Paris
+IE D01 F5P2 -> D01 Dublin 1                   Europe/Dublin
+GR 10431    -> 10431 ΠΛΑΤΕΙΑ ΟΜΟΝΟΙΑΣ ΑΘΗΝΑ   Europe/Athens
+ES 35001    -> 35001 Las Palmas De Gran Canaria  Atlantic/Canary
+IT 00118    -> 00118 Roma                     Europe/Rome
+AT 1010     -> 1010 Wien, Innere Stadt        Europe/Vienna
+CH 8001     -> 8001 Zürich                    Europe/Zurich
+```
+
+**希腊的天气步骤**在修好之前一直报「需要可定位的邮编」，尽管坐标确实进了项目。根因是 `run` 是 `useCallback`，闭包捕获的是邮编解析**之前**那一次 render 的 `draft`；整个生成链只在首次执行一次。改为读挂载时的 `project.inputs`（服务端确认过的版本）。修后希腊、荷兰、英国都是 `weather:200` + `equipment-search:200`。
+
+**屋顶轮廓的全欧现实**（详见 `docs/research/2026-11-15-european-roof-outlines/REPORT.md`）：只有德国、荷兰（3D BAG，CC BY 4.0）、瑞士（swissBUILDINGS3D）有全国性 LoD2 级屋脊几何。Overture 与 Microsoft 覆盖每一个国家的 2D 轮廓。约 25 国只有 2D，其坡向必须来自客户输入或手绘。已实现荷兰的读取（`roof/europe.py`）：实测阿姆斯特丹返回 `b3_dak_type=slanted`、屋脊 15.0 m、檐口 7.47 m、四层、`MultiSurface`；解析器把 LoD 2 面作为屋脊、LoD 0 包络作为轮廓，跳过模型自称无屋顶的建筑；距离判定在轮廓内返回 0。
+
 **三处我自己引入并修掉的错误**：
 
 1. **时区跨国误标**：只用「最近城市」时，1,411 个边境邮编取了邻国时区（西班牙 `Portbou` 得到 `Europe/Paris`）。加上同国家约束后，西班牙只剩 Madrid / Canary / Ceuta，葡萄牙只剩 Lisbon / Madeira / Azores。
