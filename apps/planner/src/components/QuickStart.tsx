@@ -1057,9 +1057,20 @@ function QuickStartRun({
 			// location is not a WGS 84 coordinate — true while the lookup was
 			// German postcodes only, false once it returned a latitude and a
 			// longitude (measured 2026-11-15 for five countries).
-			const brief = readObject(
-				readObject(saved?.inputs ?? draft.history.current).brief,
-			);
+			// The confirmed project's own inputs, not this callback's captured
+			// render: the closure was created before the visitor's postcode was
+			// answered, and `draft` inside it is that older value. Measured
+			// 2026-11-15: Greek projects carried a coordinate in the created
+			// project and the weather step still reported none, because it read
+			// the stale copy.
+			// The project this component was mounted for, not this callback's
+			// captured render: the run is created once and `draft` inside it is
+			// the value from that render, which is before the visitor's postcode
+			// was answered. The mounted project carries the confirmed inputs —
+			// measured 2026-11-15, `projects/create` sends and returns the Greek
+			// coordinate while the weather step still read none.
+			const confirmedInputs = saved?.inputs ?? project.inputs;
+			const brief = readObject(readObject(confirmedInputs).brief);
 			const site = readObject(brief.site);
 			const latitude = site.latitude;
 			const longitude = site.longitude;

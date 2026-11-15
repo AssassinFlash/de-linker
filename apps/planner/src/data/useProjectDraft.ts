@@ -56,12 +56,13 @@ export function useProjectDraft(
 		[session.query_scope, store],
 	);
 	const update = useCallback(
-		(operation: (previous: Draft) => Draft) => {
-			if (!latest.current) return;
+		(operation: (previous: Draft) => Draft): Draft | null => {
+			if (!latest.current) return null;
 			const next = operation(latest.current);
 			latest.current = next;
 			setDraft(next);
 			void persist(next);
+			return next;
 		},
 		[persist],
 	);
