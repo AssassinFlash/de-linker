@@ -524,9 +524,7 @@ def create_private_app(
         place = geo.lookup(body.query.strip(), body.country)
         if place is None:
             raise NotFound("place not found")
-        found = footprints.outline_payload(
-            place.country, body.latitude, body.longitude
-        )
+        found = footprints.outline_payload(place.country, body.latitude, body.longitude)
         if found is None:
             return {
                 "schema_version": 1,

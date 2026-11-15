@@ -75,7 +75,11 @@ export function DesignEditor({
 	geometryImports?: GeometryImportSelections;
 	imagery?: PlaceImagery | null;
 	siteCentre?: readonly [number, number] | null;
-	siteOutline?: { ring: [number, number][]; source: string; licence: string } | null;
+	siteOutline?: {
+		ring: [number, number][];
+		source: string;
+		licence: string;
+	} | null;
 	sceneModuleUrl?: string | null;
 	mapModuleUrl?: string | null;
 	initialMapView?: boolean;

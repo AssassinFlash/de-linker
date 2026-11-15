@@ -14,10 +14,7 @@ from linker_engine.roof import swiss
 
 
 def _vertex(x: float, y: float, z: float) -> str:
-    return (
-        "0\nVERTEX\n8\nGebaeude Einzelhaus\n70\n192\n"
-        f"10\n{x}\n20\n{y}\n30\n{z}\n"
-    )
+    return f"0\nVERTEX\n8\nGebaeude Einzelhaus\n70\n192\n10\n{x}\n20\n{y}\n30\n{z}\n"
 
 
 def _face(first: int, second: int, third: int) -> str:

@@ -34,9 +34,7 @@ import { savedSolutionId } from "../domain/savedSolution.ts";
 // project list the visitor lands on does not wait for it. Measured
 // 2026-11-14: the initial chunk was 1,447,770 bytes and the editor's own
 // subtree is over 3,900 lines of components.
-const ProjectEditor = lazy(async () => ({
-	default: (await import("./ProjectEditor.tsx")).ProjectEditor,
-}));
+const ProjectEditor = lazy(() => import("./ProjectEditor.tsx"));
 import { Notice } from "./Notice.tsx";
 import { ENTRY_QUERY_KEYS, readEntryHints } from "../domain/entryHints.ts";
 import { readObject, wire } from "../data/readProtocol.ts";

@@ -4,7 +4,6 @@ import { Map as MapLibreMap, AttributionControl, Marker } from "maplibre-gl";
 import type {
 	GeoJSONSource,
 	MapMouseEvent,
-	RasterTileSource,
 	StyleSpecification,
 } from "maplibre-gl";
 import type { GeometryDocument, PanelPose } from "../../domain/geometry.ts";
@@ -39,6 +38,35 @@ const IMAGERY_LAYER = "linker-site-imagery";
 // The mapped building at the site, drawn dashed until the visitor adopts it.
 const SITE_OUTLINE_SOURCE = "linker-site-outline";
 const SITE_OUTLINE_LAYER = "linker-site-outline";
+
+function aerialOriginsOf(mosaic: PlaceImagery | null | undefined): string[] {
+	return (mosaic?.tiles ?? [])
+		.map((tile) => {
+			try {
+				return new URL(tile).origin;
+			} catch {
+				return "";
+			}
+		})
+		.filter(Boolean);
+}
+
+function imagerySignatureOf(mosaic: PlaceImagery): string {
+	return `${mosaic.tiles.join("\n")}\n${mosaic.credit} — ${mosaic.licence}`;
+}
+
+function imageryBeforeLayer(map: MapLibreMap): string | undefined {
+	if (map.getLayer(SITE_OUTLINE_LAYER)) return SITE_OUTLINE_LAYER;
+	return map.getLayer(`linker-map-${KINDS[0]}`)
+		? `linker-map-${KINDS[0]}`
+		: undefined;
+}
+
+function siteOutlineBeforeLayer(map: MapLibreMap): string | undefined {
+	return map.getLayer(`linker-map-${KINDS[0]}`)
+		? `linker-map-${KINDS[0]}`
+		: undefined;
+}
 
 /** Bounded renderer diagnostics exclude message bodies, URL paths/queries,
  * project data and source contents. They identify a failed runtime boundary. */
@@ -91,9 +119,11 @@ export default function MapViewport({
 	/** The declared site position, so the mosaic is visible before geometry exists. */
 	siteCentre?: readonly [number, number] | null;
 	/** The mapped building outline at the site, drawn as the starting point. */
-	siteOutline?:
-		| { ring: [number, number][]; source: string; licence: string }
-		| null;
+	siteOutline?: {
+		ring: [number, number][];
+		source: string;
+		licence: string;
+	} | null;
 }) {
 	const host = useRef<HTMLDivElement>(null),
 		mapRef = useRef<MapLibreMap | null>(null),
@@ -106,6 +136,8 @@ export default function MapViewport({
 		[failure, setFailure] = useState<string | null>(null),
 		label = useId();
 	const releaseDrawing = useRef<(() => void) | null>(null),
+		requestsRef = useRef<MapRequestScope | null>(null),
+		imagerySignature = useRef<string | null>(null),
 		prefix = useRef<MapPrefixController | null>(null),
 		pickGate = useRef(new MapPickGate());
 	const heightMarker = useRef<Marker | null>(null);
@@ -214,16 +246,12 @@ export default function MapViewport({
 		let map: MapLibreMap | null = null;
 		let resize: ResizeObserver | null = null;
 		// The mosaic's origins come from the server's answer, not from a style.
-		const aerialOrigins = (latest.current.imagery?.tiles ?? [])
-			.map((tile) => {
-				try {
-					return new URL(tile).origin;
-				} catch {
-					return "";
-				}
-			})
-			.filter(Boolean);
-		const requests = new MapRequestScope(external, aerialOrigins);
+		const requests = new MapRequestScope(
+			external,
+			aerialOriginsOf(latest.current.imagery),
+		);
+		requestsRef.current = requests;
+		imagerySignature.current = null;
 		setStatus("loading");
 		setResourceFailure(false);
 		setFailure(null);
@@ -334,36 +362,40 @@ export default function MapViewport({
 					return;
 				}
 				current.addSource(SITE_OUTLINE_SOURCE, { type: "geojson", data });
-				current.addLayer({
-					id: SITE_OUTLINE_LAYER,
-					type: "line",
-					source: SITE_OUTLINE_SOURCE,
-					paint: {
-						"line-color": colours.selected,
-						"line-width": 2,
-						"line-dasharray": [2, 1.5],
+				current.addLayer(
+					{
+						id: SITE_OUTLINE_LAYER,
+						type: "line",
+						source: SITE_OUTLINE_SOURCE,
+						paint: {
+							"line-color": colours.selected,
+							"line-width": 2.5,
+							"line-dasharray": [2, 1.5],
+						},
 					},
-				});
+					siteOutlineBeforeLayer(current),
+				);
 			}
 			function updateImagery() {
 				const mosaic = latest.current.imagery;
+				requests.setAerialOrigins(aerialOriginsOf(mosaic));
 				if (!external || !mosaic || mosaic.tiles.length === 0) {
 					if (current.getLayer(IMAGERY_LAYER))
 						current.removeLayer(IMAGERY_LAYER);
 					if (current.getSource(IMAGERY_SOURCE))
 						current.removeSource(IMAGERY_SOURCE);
+					imagerySignature.current = null;
 					return;
 				}
-				// Under the geometry: the roof fill has to stay legible on top.
-				const before = current.getLayer(`linker-map-${KINDS[0]}`)
-					? `linker-map-${KINDS[0]}`
-					: undefined;
+				const signature = imagerySignatureOf(mosaic);
 				if (current.getSource(IMAGERY_SOURCE)) {
-					(current.getSource(IMAGERY_SOURCE) as RasterTileSource).setTiles(
-						[...mosaic.tiles],
-					);
-					return;
+					if (imagerySignature.current === signature) return;
+					if (current.getLayer(IMAGERY_LAYER))
+						current.removeLayer(IMAGERY_LAYER);
+					current.removeSource(IMAGERY_SOURCE);
 				}
+				// Under the site outline and project geometry so both stay legible on top.
+				const before = imageryBeforeLayer(current);
 				current.addSource(IMAGERY_SOURCE, {
 					type: "raster",
 					tiles: [...mosaic.tiles],
@@ -379,6 +411,7 @@ export default function MapViewport({
 					},
 					before,
 				);
+				imagerySignature.current = signature;
 			}
 			function updateOverlay() {
 				if (disposed || !latest.current.projection.view) return;
@@ -478,6 +511,8 @@ export default function MapViewport({
 				heightMarker.current?.remove();
 				heightMarker.current = null;
 				requests.release();
+				if (requestsRef.current === requests) requestsRef.current = null;
+				imagerySignature.current = null;
 				resize?.disconnect();
 				if (initialized) {
 					const centre = current.getCenter();
@@ -508,6 +543,8 @@ export default function MapViewport({
 			setFailure(failureDiagnostic("initialization", error));
 			disposed = true;
 			requests.release();
+			if (requestsRef.current === requests) requestsRef.current = null;
+			imagerySignature.current = null;
 			resize?.disconnect();
 			map?.remove();
 			mapRef.current = null;
@@ -520,16 +557,18 @@ export default function MapViewport({
 	useEffect(() => {
 		const map = mapRef.current;
 		if (!map || map !== readyMap || status !== "ready") return;
+		requestsRef.current?.setAerialOrigins(aerialOriginsOf(imagery));
 		if (!external || !imagery || imagery.tiles.length === 0) {
 			if (map.getLayer(IMAGERY_LAYER)) map.removeLayer(IMAGERY_LAYER);
 			if (map.getSource(IMAGERY_SOURCE)) map.removeSource(IMAGERY_SOURCE);
+			imagerySignature.current = null;
 			return;
 		}
+		const signature = imagerySignatureOf(imagery);
 		if (map.getSource(IMAGERY_SOURCE)) {
-			(map.getSource(IMAGERY_SOURCE) as RasterTileSource).setTiles([
-				...imagery.tiles,
-			]);
-			return;
+			if (imagerySignature.current === signature) return;
+			if (map.getLayer(IMAGERY_LAYER)) map.removeLayer(IMAGERY_LAYER);
+			map.removeSource(IMAGERY_SOURCE);
 		}
 		map.addSource(IMAGERY_SOURCE, {
 			type: "raster",
@@ -544,8 +583,9 @@ export default function MapViewport({
 				source: IMAGERY_SOURCE,
 				paint: { "raster-opacity": 1 },
 			},
-			map.getLayer(`linker-map-${KINDS[0]}`) ? `linker-map-${KINDS[0]}` : undefined,
+			imageryBeforeLayer(map),
 		);
+		imagerySignature.current = signature;
 		// `readyMap` changes identity whenever the visitor's consent rebuilds the
 		// map, so the mosaic is applied to the new instance even when the place
 		// answer arrived before the rebuild.
@@ -580,13 +620,25 @@ export default function MapViewport({
 			(map.getSource(SITE_OUTLINE_SOURCE) as GeoJSONSource).setData(data);
 			return;
 		}
+		const lineColour = host.current
+			? getComputedStyle(host.current)
+					.getPropertyValue("--proto-teal-400")
+					.trim() || "#2dd4bf"
+			: "#2dd4bf";
 		map.addSource(SITE_OUTLINE_SOURCE, { type: "geojson", data });
-		map.addLayer({
-			id: SITE_OUTLINE_LAYER,
-			type: "line",
-			source: SITE_OUTLINE_SOURCE,
-			paint: { "line-color": "#0f766e", "line-width": 2, "line-dasharray": [2, 1.5] },
-		});
+		map.addLayer(
+			{
+				id: SITE_OUTLINE_LAYER,
+				type: "line",
+				source: SITE_OUTLINE_SOURCE,
+				paint: {
+					"line-color": lineColour,
+					"line-width": 2.5,
+					"line-dasharray": [2, 1.5],
+				},
+			},
+			siteOutlineBeforeLayer(map),
+		);
 	}, [readyMap, status, siteOutline]);
 	useEffect(() => {
 		const map = mapRef.current,

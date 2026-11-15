@@ -1,8 +1,10 @@
-"""Official aerial imagery (DOP) of each federal state, for the roof step's map.
+"""Official aerial imagery of each European region or country, for the roof map.
 
-`data/imagery.json` names each state's open WMS, its layer and the credit and
-licence the state asks for; the map requests 256 px tiles in EPSG:3857 and
-shows the credit.
+`data/imagery.json` names each federal state's or country's open orthophoto WMS
+or tile template alongside the European Union Copernicus VHR mosaic viewing
+service for EEA and United Kingdom territories that publish no separate open
+national WMS. Countries where neither service returns imagery answer ``None`` so
+the map displays the building footprint and hand-drawn fallback honestly.
 """
 
 from __future__ import annotations
@@ -18,18 +20,13 @@ DATA = Path(__file__).resolve().parents[2] / "data" / "imagery.json"
 
 
 @cache
-def _states() -> dict[str, Any]:
-    states: dict[str, Any] = json.loads(DATA.read_text())["states"]
-    return states
+def _catalogue() -> dict[str, Any]:
+    catalogue: dict[str, Any] = json.loads(DATA.read_text(encoding="utf-8"))
+    return catalogue
 
 
-def for_state(state: str) -> Imagery | None:
-    entry = _states().get(state)
-    if entry is None:
-        return None
+def _build(entry: dict[str, Any]) -> Imagery:
     if "template" in entry:
-        # A published tile template already carries its own {z}/{x}/{y} slots;
-        # the map substitutes them and no WMS request is built.
         tile = str(entry["template"])
     else:
         tile = (
@@ -38,16 +35,24 @@ def for_state(state: str) -> Imagery | None:
         )
     return Imagery(
         tiles=[tile],
-        credit=entry["credit"],
-        licence=entry["licence"],
-        licence_url=entry["licence_url"],
+        credit=str(entry["credit"]),
+        licence=str(entry["licence"]),
+        licence_url=str(entry["licence_url"]),
     )
 
 
-def for_country(country: str) -> Imagery | None:
-    """The national mosaic of a country, where one is published.
+def for_state(state: str) -> Imagery | None:
+    catalogue = _catalogue()
+    states: dict[str, Any] = catalogue["states"]
+    entry = states.get(state)
+    if entry is not None:
+        return _build(entry)
+    copernicus: dict[str, Any] | None = catalogue.get("copernicus_vhr")
+    if copernicus is not None and state in copernicus.get("countries", ()):
+        return _build(copernicus)
+    return None
 
-    Germany publishes per state, so the state lookup answers there; the other
-    countries publish one nationwide service under their ISO code.
-    """
+
+def for_country(country: str) -> Imagery | None:
+    """The national or Copernicus VHR mosaic of a country, where verified."""
     return for_state(country)

@@ -1,5 +1,5 @@
 {
- "note": "Official aerial imagery of each region as WMS 1.3.0 in EPSG:3857. Germany publishes per federal state; NL, FR, ES, CH and BE publish one national mosaic under their ISO code. Every entry answered a real GetMap on 2026-11-16; services that failed (Italy's national WMS serves an unreachable internal NAS) are absent so the map shows the hand-drawn fallback instead of a broken layer.",
+ "note": "Official aerial and optical imagery in EPSG:3857. Germany publishes per federal state; 15 European countries publish national high-resolution orthophoto services under their ISO code (Italy's 50 cm PCN MapServer export is relayed over same-origin HTTPS because upstream redirects HTTPS to HTTP); 28 EEA and UK countries/territories without an open national WMS use the EU Copernicus VHR2021 ImageServer viewing service. Every entry was live-probed with Origin: https://de-linker.com on 2026-11-16; the 5 non-EEA territories outside Copernicus VHR coverage (BY, MD, RU, SJ, UA) remain absent so the map shows the building outline and hand-drawn fallback instead of transparent tiles.",
  "states": {
   "DE-NW": {
    "wms": "https://www.wms.nrw.de/geobasis/wms_nw_dop",
@@ -127,6 +127,13 @@
    "licence": "Licence Ouverte 2.0",
    "licence_url": "https://www.etalab.gouv.fr/licence-ouverte-open-licence/"
   },
+  "MC": {
+   "wms": "https://data.geopf.fr/wms-r",
+   "layer": "HR.ORTHOIMAGERY.ORTHOPHOTOS",
+   "credit": "IGN / Geoplateforme",
+   "licence": "Licence Ouverte 2.0",
+   "licence_url": "https://www.etalab.gouv.fr/licence-ouverte-open-licence/"
+  },
   "ES": {
    "wms": "https://www.ign.es/wms-inspire/pnoa-ma",
    "layer": "OI.OrthoimageCoverage",
@@ -162,10 +169,92 @@
    "licence_url": "https://creativecommons.org/licenses/by/4.0/"
   },
   "IT": {
-   "template": "https://www.pcn.minambiente.it/arcgis/rest/services/immagini/ortofoto_colore_12/MapServer/export?bbox={bbox-epsg-3857}&bboxSR=3857&imageSR=3857&size=256,256&format=jpeg&f=image",
+   "template": "https://de-linker.com/wp-json/linker/v1/imagery/it?bbox={bbox-epsg-3857}",
    "credit": "Ministero dell'Ambiente e della Sicurezza Energetica (PCN)",
-   "licence": "Open data, PCN",
+   "licence": "Open data, Geoportale Nazionale",
    "licence_url": "https://www.pcn.minambiente.it/"
+  },
+  "PT": {
+   "wms": "https://cartografia.dgterritorio.gov.pt/wms/ortos2025",
+   "layer": "Ortos2025-RGB",
+   "credit": "Direcao-Geral do Territorio (DGT)",
+   "licence": "Open data, DGT",
+   "licence_url": "https://www.dgterritorio.gov.pt/"
+  },
+  "DK": {
+   "template": "https://osmtools.septima.dk/mapproxy/tiles/1.0.0/kortforsyningen_ortoforaar/EPSG3857/{z}/{x}/{y}.jpeg",
+   "credit": "GeoDanmark / Klimadatastyrelsen",
+   "licence": "CC BY 4.0",
+   "licence_url": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  "FI": {
+   "wms": "https://tiles.kartat.kapsi.fi/ortokuva",
+   "layer": "ortokuva",
+   "credit": "Maanmittauslaitos",
+   "licence": "CC BY 4.0",
+   "licence_url": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  "EE": {
+   "wms": "https://kaart.maaamet.ee/wms/alus-geo",
+   "layer": "of10000",
+   "credit": "Maa- ja Ruumiamet (Maa-amet)",
+   "licence": "Open data, Maa-amet",
+   "licence_url": "https://geoportaal.maaamet.ee/"
+  },
+  "LU": {
+   "template": "https://wmts.geoportail.lu/opendata/wmts/ortho_latest/GLOBAL_WEBMERCATOR_4_V3/{z}/{x}/{y}.jpeg",
+   "credit": "Administration du Cadastre et de la Topographie",
+   "licence": "CC0 1.0",
+   "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/"
+  },
+  "LT": {
+   "template": "https://ort10lt.openmap.lt/g16/{z}/{x}/{y}.jpeg",
+   "credit": "Nacionaline zemes tarnyba (ORT10LT)",
+   "licence": "Open data, NZT",
+   "licence_url": "https://www.geoportal.lt/"
+  },
+  "CZ": {
+   "wms": "https://ags.cuzk.gov.cz/arcgis1/services/ORTOFOTO/MapServer/WMSServer",
+   "layer": "0",
+   "credit": "Cesky urad zememerickya katastralni (CUZK)",
+   "licence": "CC BY 4.0",
+   "licence_url": "https://creativecommons.org/licenses/by/4.0/"
   }
+ },
+ "copernicus_vhr": {
+  "template": "https://image.discomap.eea.europa.eu/arcgis/rest/services/GioLand/VHR2021_WM/ImageServer/exportImage?bbox={bbox-epsg-3857}&bboxSR=3857&imageSR=3857&size=256,256&format=jpgpng&f=image",
+  "credit": "European Union, Copernicus Land Monitoring Service (EEA)",
+  "licence": "Copernicus VHR Image Mosaic viewing service",
+  "licence_url": "https://land.copernicus.eu/en/products/european-image-mosaic",
+  "countries": [
+   "AD",
+   "AL",
+   "AX",
+   "BG",
+   "CY",
+   "FO",
+   "GB",
+   "GG",
+   "GI",
+   "GR",
+   "HR",
+   "HU",
+   "IE",
+   "IM",
+   "IS",
+   "JE",
+   "LI",
+   "LV",
+   "MK",
+   "MT",
+   "NO",
+   "RO",
+   "RS",
+   "SE",
+   "SI",
+   "SK",
+   "SM",
+   "VA"
+  ]
  }
 }

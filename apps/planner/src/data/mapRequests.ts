@@ -4,10 +4,18 @@
  * passed in by the caller from the server's answer, never read from a style. */
 const ORIGIN = "https://tiles.openfreemap.org";
 
+function parseAerialOrigins(aerialOrigins: readonly string[]): Set<string> {
+	return new Set(
+		aerialOrigins
+			.map((origin) => origin.trim().toLowerCase())
+			.filter((origin) => /^https:\/\/[a-z0-9.-]+(:\d+)?$/.test(origin)),
+	);
+}
+
 export class MapRequestScope {
 	private active = true;
 	private readonly external: boolean;
-	private readonly aerial: ReadonlySet<string>;
+	private aerial: Set<string>;
 
 	/**
 	 * @param external whether the visitor allowed external map services
@@ -16,11 +24,13 @@ export class MapRequestScope {
 	 */
 	constructor(external: boolean, aerialOrigins: readonly string[] = []) {
 		this.external = external;
-		this.aerial = new Set(
-			aerialOrigins
-				.map((origin) => origin.trim().toLowerCase())
-				.filter((origin) => /^https:\/\/[a-z0-9.-]+(:\d+)?$/.test(origin)),
-		);
+		this.aerial = parseAerialOrigins(aerialOrigins);
+	}
+
+	/** Replace the granted aerial mosaic origins when the resolved site changes. */
+	setAerialOrigins(aerialOrigins: readonly string[]): void {
+		if (!this.active) return;
+		this.aerial = parseAerialOrigins(aerialOrigins);
 	}
 
 	/** MapLibre invokes this boundary for worker tiles as well as main-thread

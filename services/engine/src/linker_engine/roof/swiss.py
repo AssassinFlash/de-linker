@@ -206,7 +206,9 @@ class Tile:
             grouped.setdefault(owner, []).append(position)
         return grouped
 
-    def nearest(self, x: float, y: float, tolerance_m: float) -> BuildingSurfaces | None:
+    def nearest(
+        self, x: float, y: float, tolerance_m: float
+    ) -> BuildingSurfaces | None:
         """The building whose plan projection is closest to a position.
 
         A tile holds the whole 1 km² area, so a scan over every triangle would
@@ -290,9 +292,7 @@ def _agrees(first: Point3, second: Point3) -> bool:
     return dot >= math.cos(math.radians(SAME_PLANE_DEG))
 
 
-def _shares_edge(
-    first: tuple[int, int, int], second: tuple[int, int, int]
-) -> bool:
+def _shares_edge(first: tuple[int, int, int], second: tuple[int, int, int]) -> bool:
     return len(set(first) & set(second)) >= 2
 
 

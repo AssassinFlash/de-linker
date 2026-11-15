@@ -1004,12 +1004,8 @@ export function ProjectEditor({
 								imagery={siteImagery}
 								siteOutline={siteOutline}
 								siteCentre={
-									brief.site.latitude !== null &&
-									brief.site.longitude !== null
-										? [
-												brief.site.longitude,
-												brief.site.latitude,
-											]
+									brief.site.latitude !== null && brief.site.longitude !== null
+										? [brief.site.longitude, brief.site.latitude]
 										: null
 								}
 								geometry={geometry}
@@ -1117,3 +1113,5 @@ export function ProjectEditor({
 		</div>
 	);
 }
+
+export default ProjectEditor;

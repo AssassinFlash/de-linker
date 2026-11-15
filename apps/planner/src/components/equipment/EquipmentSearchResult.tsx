@@ -102,9 +102,7 @@ export function EquipmentSearchResult({
 		const energy = readObject(products.get(id)?.energy ?? {});
 		const positive = (raw: unknown) => {
 			const value =
-				typeof raw === "number"
-					? raw
-					: Number(readObject(raw ?? {}).value);
+				typeof raw === "number" ? raw : Number(readObject(raw ?? {}).value);
 			return Number.isFinite(value) && value > 0 ? value : undefined;
 		};
 		const perModule = (

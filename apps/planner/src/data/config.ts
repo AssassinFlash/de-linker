@@ -55,8 +55,7 @@ export function readConfiguration(
 
 	return {
 		baseUrl: data.base_url,
-		nonceUrl:
-			typeof data.nonce_url === "string" ? data.nonce_url : "",
+		nonceUrl: typeof data.nonce_url === "string" ? data.nonce_url : "",
 		locale: data.locale.replaceAll("_", "-").replace("-formal", ""),
 		countries: countries as Record<string, string>,
 		sceneModuleUrl: reviewedModule("scene", "SceneViewport"),

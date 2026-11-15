@@ -162,12 +162,14 @@ def test_a_non_german_postcode_is_served_by_its_country_mosaic(
 ) -> None:
     # Germany publishes per state and the others publish one national service,
     # so the state lookup misses abroad and the country lookup has to answer.
-    # Measured 2026-11-16: each of these WMS endpoints returned a real image.
+    # Measured 2026-11-16: each of these endpoints returned a real aerial tile.
     for code, country, host in (
         ("1012JS", "NL", "service.pdok.nl"),
         ("75001", "FR", "data.geopf.fr"),
         ("28001", "ES", "ign.es"),
         ("8001", "CH", "wms.geo.admin.ch"),
+        ("20121", "IT", "de-linker.com/wp-json/linker/v1/imagery/it"),
+        ("SW1A 1AA", "GB", "image.discomap.eea.europa.eu"),
     ):
         response = client.get(f"/geo/plz/{code}", params={"country": country})
         assert response.status_code == 200, code
@@ -180,8 +182,9 @@ def test_a_non_german_postcode_is_served_by_its_country_mosaic(
 def test_a_country_without_a_recorded_mosaic_answers_no_imagery(
     client: TestClient,
 ) -> None:
-    # No open national mosaic was found for the United Kingdom, so no layer is
-    # recorded and the map falls back rather than requesting a broken tile.
-    response = client.get("/geo/plz/SW1A 1AA", params={"country": "GB"})
+    # Ukraine sits outside the EEA Copernicus VHR mosaic and has no open
+    # national service recorded, so the map falls back rather than requesting a
+    # transparent tile.
+    response = client.get("/geo/plz/01001", params={"country": "UA"})
     assert response.status_code == 200
     assert response.json()["imagery"] is None

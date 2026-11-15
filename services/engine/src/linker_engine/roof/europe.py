@@ -158,9 +158,9 @@ def _ring(
     return out
 
 
-def _transform(document: dict[str, Any], feature: dict[str, Any]) -> tuple[
-    list[float], list[float]
-]:
+def _transform(
+    document: dict[str, Any], feature: dict[str, Any]
+) -> tuple[list[float], list[float]]:
     """The affine a feature's integer vertices are stored in.
 
     CityJSON lets the transform sit at three depths and the Dutch service uses
@@ -355,7 +355,9 @@ def _swiss_tile(
         ) as response:
             document = cast(dict[str, Any], json.load(response))
     except (urllib.error.URLError, TimeoutError, ValueError) as error:
-        raise ModelUnavailable(f"swissBUILDINGS3D index did not answer: {error}") from error
+        raise ModelUnavailable(
+            f"swissBUILDINGS3D index did not answer: {error}"
+        ) from error
 
     candidates: list[tuple[float, str]] = []
     for feature in cast(list[dict[str, Any]], document.get("features") or []):
@@ -382,7 +384,9 @@ def _swiss_tile(
     candidates.sort()
     try:
         with urllib.request.urlopen(
-            urllib.request.Request(candidates[0][1], headers={"User-Agent": USER_AGENT}),
+            urllib.request.Request(
+                candidates[0][1], headers={"User-Agent": USER_AGENT}
+            ),
             timeout=180,
         ) as response:
             return swiss.read_archive(response.read())
@@ -390,6 +394,7 @@ def _swiss_tile(
         raise ModelUnavailable(
             f"swissBUILDINGS3D tile did not download: {error}"
         ) from error
+
 
 def distance_m(ring: list[tuple[float, float]], x: float, y: float) -> float:
     """Distance from a point to a footprint, in the model's own metres.

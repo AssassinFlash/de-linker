@@ -52,7 +52,8 @@ test("an old library callback remains refused after release and a different view
 test("the site's declared mosaic origin is the only other origin granted", () => {
 	const scoped = new MapRequestScope(true, ["https://geoservices.bayern.de"]);
 	assert.equal(
-		scoped.transform("https://geoservices.bayern.de/od/wms/dop/v1/dop20").credentials,
+		scoped.transform("https://geoservices.bayern.de/od/wms/dop/v1/dop20")
+			.credentials,
 		"same-origin",
 	);
 	// A longer host that merely starts with the granted name is a different origin.
@@ -73,7 +74,11 @@ test("an origin the caller did not declare stays refused", () => {
 		/not_authorized/,
 	);
 	// A malformed declaration cannot widen the grant.
-	const malformed = new MapRequestScope(true, ["javascript:alert(1)", "", "nonsense"]);
+	const malformed = new MapRequestScope(true, [
+		"javascript:alert(1)",
+		"",
+		"nonsense",
+	]);
 	assert.throws(
 		() => malformed.transform("https://geoservices.bayern.de/tile"),
 		/not_authorized/,
@@ -82,5 +87,33 @@ test("an origin the caller did not declare stays refused", () => {
 	assert.equal(
 		malformed.transform("https://tiles.openfreemap.org/x").credentials,
 		"same-origin",
+	);
+});
+
+test("updating the mosaic grant swaps the allowed aerial origin without reviving a released scope", () => {
+	const scoped = new MapRequestScope(true, []);
+	assert.throws(
+		() => scoped.transform("https://image.discomap.eea.europa.eu/tile"),
+		/not_authorized/,
+	);
+	scoped.setAerialOrigins(["https://image.discomap.eea.europa.eu"]);
+	assert.equal(
+		scoped.transform("https://image.discomap.eea.europa.eu/tile").credentials,
+		"same-origin",
+	);
+	scoped.setAerialOrigins(["https://data.geopf.fr", "http://insecure.invalid"]);
+	assert.throws(
+		() => scoped.transform("https://image.discomap.eea.europa.eu/tile"),
+		/not_authorized/,
+	);
+	assert.equal(
+		scoped.transform("https://data.geopf.fr/wms-r").credentials,
+		"same-origin",
+	);
+	scoped.release();
+	scoped.setAerialOrigins(["https://geoservices.bayern.de"]);
+	assert.throws(
+		() => scoped.transform("https://geoservices.bayern.de/tile"),
+		/not_authorized/,
 	);
 });

@@ -488,7 +488,8 @@ export function weatherFromPlace(
 	const start = WEATHER_START_YEAR;
 	const end = WEATHER_END_YEAR;
 	if (end - start + 1 < MINIMUM_TMY_YEARS) return null;
-	const synthetic = end % 4 === 0 && (end % 100 !== 0 || end % 400 === 0) ? end - 1 : end;
+	const synthetic =
+		end % 4 === 0 && (end % 100 !== 0 || end % 400 === 0) ? end - 1 : end;
 	return {
 		schema_version: 1,
 		request: {
@@ -509,9 +510,11 @@ export function weatherFromPlace(
 		interpretation: {
 			schema_version: 1,
 			synthetic_energy_year: synthetic,
-			solar_date_policy: "original_selected_year_plus_reported_irradiance_offset",
+			solar_date_policy:
+				"original_selected_year_plus_reported_irradiance_offset",
 			output_axis_policy: "nonleap_synthetic_utc_hourly_scenario_v1",
-			power_reconstruction: "representative_pv_output_over_declared_intervals_v1",
+			power_reconstruction:
+				"representative_pv_output_over_declared_intervals_v1",
 		},
 	};
 }

@@ -94,9 +94,7 @@ class RoofService:
         try:
             tile = lod2.tile_for(place.iso_region, latitude, longitude)
         except lod2.Lod2Unavailable:
-            return self._from_footprints(
-                place.country, latitude, longitude, locale
-            )
+            return self._from_footprints(place.country, latitude, longitude, locale)
         index = self._index.load(tile)
         x, y = lod2.to_utm(tile.zone, latitude, longitude)
         point = Point(x, y)
@@ -170,7 +168,6 @@ class RoofService:
             assumptions=assumptions,
         )
 
-
     def _from_model(
         self,
         model: europe.ModelResult,
@@ -232,7 +229,9 @@ class RoofService:
                     modules=count,
                     kwp=round(count * module.pmax_w / 1000, 2),
                     module_polygons=[
-                        _wgs84_ring(to_wgs84, [(float(px), float(py)) for px, py in ring])
+                        _wgs84_ring(
+                            to_wgs84, [(float(px), float(py)) for px, py in ring]
+                        )
                         for ring in packed.modules
                     ],
                 )
@@ -244,8 +243,7 @@ class RoofService:
             address=building.address,
             distance_m=round(distance, 1),
             outline=[
-                _wgs84_ring(to_wgs84, ring)
-                for ring in (building.footprint or [])
+                _wgs84_ring(to_wgs84, ring) for ring in (building.footprint or [])
             ],
             planes=planes,
             modules=total,
@@ -296,9 +294,7 @@ class RoofService:
         cached = self._footprint_cache / f"{country}-{key}.geojsonl.gz"
         try:
             archive = (
-                cached.read_bytes()
-                if cached.exists()
-                else footprints.download(url)
+                cached.read_bytes() if cached.exists() else footprints.download(url)
             )
         except (OSError, ValueError):
             return empty
@@ -317,7 +313,9 @@ class RoofService:
             building_id=f"{country} outline {key}",
             address=None,
             distance_m=0.0,
-            outline=[[(round(x, COORD_DECIMALS), round(y, COORD_DECIMALS)) for x, y in ring]],
+            outline=[
+                [(round(x, COORD_DECIMALS), round(y, COORD_DECIMALS)) for x, y in ring]
+            ],
             # No measured plane: the pitch and facing are the customer's, entered
             # on the map. Guessing them would put a number on the offer that no
             # survey supports.
@@ -329,7 +327,10 @@ class RoofService:
             source="Microsoft building footprints",
             licence=footprints.LICENCE,
             assumptions=[
-                *(t(f"assume.{name}", locale) for name in ("roof_edge_inset", "module_gap")),
+                *(
+                    t(f"assume.{name}", locale)
+                    for name in ("roof_edge_inset", "module_gap")
+                ),
                 t("assume.outline_only", locale),
             ],
         )

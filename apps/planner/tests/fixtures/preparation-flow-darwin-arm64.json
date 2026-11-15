@@ -755,19 +755,14 @@
 					{
 						"column_gap_m": 0.2,
 						"columns": 3,
-						"excluded_slots": [
-							"1:2"
-						],
+						"excluded_slots": ["1:2"],
 						"id": "array",
 						"lower_edge_clearance_m": 0.1,
 						"module_spec_id": "module",
 						"mount_tilt_deg": 30,
 						"mounting_note": "Synthetic dimensions, not mounting-system approval",
 						"name": "Fixture array",
-						"origin_uv": [
-							1,
-							2
-						],
+						"origin_uv": [1, 2],
 						"roof_id": "roof",
 						"rotation_deg": 0,
 						"row_gap_m": 0.4,
@@ -819,42 +814,18 @@
 				"roofs": [
 					{
 						"boundary_uv": [
-							[
-								0,
-								0
-							],
-							[
-								20,
-								0
-							],
-							[
-								20,
-								20
-							],
-							[
-								0,
-								20
-							]
+							[0, 0],
+							[20, 0],
+							[20, 20],
+							[0, 20]
 						],
 						"holes_uv": [],
 						"id": "roof",
 						"name": "Fixture roof",
-						"origin_enu": [
-							10,
-							-20,
-							4
-						],
+						"origin_enu": [10, -20, 4],
 						"source_id": "survey",
-						"u_axis_enu": [
-							1,
-							0,
-							0
-						],
-						"v_axis_enu": [
-							0,
-							1,
-							0
-						]
+						"u_axis_enu": [1, 0, 0],
+						"v_axis_enu": [0, 1, 0]
 					}
 				],
 				"schema_version": 1,
@@ -904,9 +875,7 @@
 				],
 				"converters": [
 					{
-						"array_ids": [
-							"array"
-						],
+						"array_ids": ["array"],
 						"eta_nominal": 0.96,
 						"eta_reference": 0.9637,
 						"id": "converter",
@@ -971,19 +940,14 @@
 					{
 						"column_gap_m": 0.2,
 						"columns": 3,
-						"excluded_slots": [
-							"1:2"
-						],
+						"excluded_slots": ["1:2"],
 						"id": "array",
 						"lower_edge_clearance_m": 0.1,
 						"module_spec_id": "module",
 						"mount_tilt_deg": 30,
 						"mounting_note": "Synthetic dimensions, not mounting-system approval",
 						"name": "Fixture array",
-						"origin_uv": [
-							1,
-							2
-						],
+						"origin_uv": [1, 2],
 						"roof_id": "roof",
 						"rotation_deg": 0,
 						"row_gap_m": 0.4,
@@ -1035,42 +999,18 @@
 				"roofs": [
 					{
 						"boundary_uv": [
-							[
-								0,
-								0
-							],
-							[
-								20,
-								0
-							],
-							[
-								20,
-								20
-							],
-							[
-								0,
-								20
-							]
+							[0, 0],
+							[20, 0],
+							[20, 20],
+							[0, 20]
 						],
 						"holes_uv": [],
 						"id": "roof",
 						"name": "Fixture roof",
-						"origin_enu": [
-							10,
-							-20,
-							4
-						],
+						"origin_enu": [10, -20, 4],
 						"source_id": "survey",
-						"u_axis_enu": [
-							1,
-							0,
-							0
-						],
-						"v_axis_enu": [
-							0,
-							1,
-							0
-						]
+						"u_axis_enu": [1, 0, 0],
+						"v_axis_enu": [0, 1, 0]
 					}
 				],
 				"schema_version": 1,
@@ -1120,9 +1060,7 @@
 				],
 				"converters": [
 					{
-						"array_ids": [
-							"array"
-						],
+						"array_ids": ["array"],
 						"eta_nominal": 0.96,
 						"eta_reference": 0.9637,
 						"id": "converter",
@@ -1445,10 +1383,7 @@
 						"mount_tilt_deg": 10,
 						"mounting_note": "Synthetic dimensions, not mounting-system approval",
 						"name": "Fixture array",
-						"origin_uv": [
-							1,
-							2
-						],
+						"origin_uv": [1, 2],
 						"roof_id": "roof",
 						"rotation_deg": 0,
 						"row_gap_m": 0.4,
@@ -1465,10 +1400,7 @@
 						"mount_tilt_deg": 30,
 						"mounting_note": "Synthetic dimensions, not mounting-system approval",
 						"name": "Second synthetic array",
-						"origin_uv": [
-							10,
-							2
-						],
+						"origin_uv": [10, 2],
 						"roof_id": "roof",
 						"rotation_deg": 0,
 						"row_gap_m": 0.4,
@@ -1525,42 +1457,18 @@
 				"roofs": [
 					{
 						"boundary_uv": [
-							[
-								0,
-								0
-							],
-							[
-								20,
-								0
-							],
-							[
-								20,
-								20
-							],
-							[
-								0,
-								20
-							]
+							[0, 0],
+							[20, 0],
+							[20, 20],
+							[0, 20]
 						],
 						"holes_uv": [],
 						"id": "roof",
 						"name": "Fixture roof",
-						"origin_enu": [
-							10,
-							-20,
-							4
-						],
+						"origin_enu": [10, -20, 4],
 						"source_id": "survey",
-						"u_axis_enu": [
-							1,
-							0,
-							0
-						],
-						"v_axis_enu": [
-							0,
-							1,
-							0
-						]
+						"u_axis_enu": [1, 0, 0],
+						"v_axis_enu": [0, 1, 0]
 					}
 				],
 				"schema_version": 1,
@@ -1608,10 +1516,7 @@
 			"input_sha256": "8e3c6fe25671951be06d95c066d995abf53833aaed4c8385249dc945f692b4c1",
 			"inputs": {
 				"direct_beam_visibility": {
-					"row_indices": [
-						0,
-						12
-					],
+					"row_indices": [0, 12],
 					"sampling": {
 						"coarse_cells_per_edge": 1,
 						"fine_cells_per_edge": 2
@@ -1624,19 +1529,14 @@
 						{
 							"column_gap_m": 0.2,
 							"columns": 3,
-							"excluded_slots": [
-								"1:2"
-							],
+							"excluded_slots": ["1:2"],
 							"id": "array",
 							"lower_edge_clearance_m": 0.1,
 							"module_spec_id": "module",
 							"mount_tilt_deg": 0,
 							"mounting_note": "Synthetic dimensions, not mounting-system approval",
 							"name": "Fixture array",
-							"origin_uv": [
-								1,
-								2
-							],
+							"origin_uv": [1, 2],
 							"roof_id": "roof",
 							"rotation_deg": 0,
 							"row_gap_m": 0.4,
@@ -1693,42 +1593,18 @@
 					"roofs": [
 						{
 							"boundary_uv": [
-								[
-									0,
-									0
-								],
-								[
-									20,
-									0
-								],
-								[
-									20,
-									20
-								],
-								[
-									0,
-									20
-								]
+								[0, 0],
+								[20, 0],
+								[20, 20],
+								[0, 20]
 							],
 							"holes_uv": [],
 							"id": "roof",
 							"name": "Fixture roof",
-							"origin_enu": [
-								10,
-								-20,
-								4
-							],
+							"origin_enu": [10, -20, 4],
 							"source_id": "survey",
-							"u_axis_enu": [
-								1,
-								0,
-								0
-							],
-							"v_axis_enu": [
-								0,
-								1,
-								0
-							]
+							"u_axis_enu": [1, 0, 0],
+							"v_axis_enu": [0, 1, 0]
 						}
 					],
 					"schema_version": 1,
@@ -1822,19 +1698,14 @@
 						{
 							"column_gap_m": 0.2,
 							"columns": 3,
-							"excluded_slots": [
-								"1:2"
-							],
+							"excluded_slots": ["1:2"],
 							"id": "array",
 							"lower_edge_clearance_m": 0.1,
 							"module_spec_id": "module",
 							"mount_tilt_deg": 0,
 							"mounting_note": "Synthetic dimensions, not mounting-system approval",
 							"name": "Fixture array",
-							"origin_uv": [
-								1,
-								2
-							],
+							"origin_uv": [1, 2],
 							"roof_id": "roof",
 							"rotation_deg": 0,
 							"row_gap_m": 0.4,
@@ -1891,42 +1762,18 @@
 					"roofs": [
 						{
 							"boundary_uv": [
-								[
-									0,
-									0
-								],
-								[
-									20,
-									0
-								],
-								[
-									20,
-									20
-								],
-								[
-									0,
-									20
-								]
+								[0, 0],
+								[20, 0],
+								[20, 20],
+								[0, 20]
 							],
 							"holes_uv": [],
 							"id": "roof",
 							"name": "Fixture roof",
-							"origin_enu": [
-								10,
-								-20,
-								4
-							],
+							"origin_enu": [10, -20, 4],
 							"source_id": "survey",
-							"u_axis_enu": [
-								1,
-								0,
-								0
-							],
-							"v_axis_enu": [
-								0,
-								1,
-								0
-							]
+							"u_axis_enu": [1, 0, 0],
+							"v_axis_enu": [0, 1, 0]
 						}
 					],
 					"schema_version": 1,
@@ -2010,10 +1857,7 @@
 						"asset_metadata_sha256": "f2698fc4ad4ae27d8ef03d3581f86978d89c127b727f169ea9097256c5074edb",
 						"project_id": "0000000000000000000000000000000c",
 						"project_revision": 2,
-						"row_indices": [
-							0,
-							12
-						],
+						"row_indices": [0, 12],
 						"schema_version": 1,
 						"weather_document_sha256": "9de56160fb075ac308f9924a6a9a2c9584658744ad69609882cdab3cbeb079a3"
 					},
@@ -2082,9 +1926,7 @@
 							"source_label_utc": "2021-01-01T00:00:00+00:00",
 							"source_row_index": 0,
 							"sun_direction_enu": [
-								0.24292682655778103,
-								0.46683325140180126,
-								-0.8503253920260105
+								0.24292682655778103, 0.46683325140180126, -0.8503253920260105
 							]
 						},
 						{
@@ -2204,9 +2046,7 @@
 							"source_label_utc": "2021-01-01T12:00:00+00:00",
 							"source_row_index": 12,
 							"sun_direction_enu": [
-								-0.24203431977760445,
-								-0.9420708022633595,
-								0.2322110926994285
+								-0.24203431977760445, -0.9420708022633595, 0.2322110926994285
 							]
 						}
 					],
@@ -2540,18 +2380,8 @@
 							],
 							"rows": [],
 							"table": {
-								"column_weights": [
-									0.6,
-									1.7,
-									1.0,
-									1.7
-								],
-								"columns": [
-									"Quantity",
-									"Product",
-									"Reference",
-									"Supply scope"
-								],
+								"column_weights": [0.6, 1.7, 1.0, 1.7],
+								"columns": ["Quantity", "Product", "Reference", "Supply scope"],
 								"rows": [
 									[
 										"5 pc",
@@ -2586,23 +2416,9 @@
 								}
 							],
 							"table": {
-								"column_weights": [
-									1.0,
-									3.0,
-									2.0
-								],
-								"columns": [
-									"Quantity",
-									"Model",
-									"Module power (STC)"
-								],
-								"rows": [
-									[
-										"5",
-										"Trina Solar TSM-460NEG9R.28",
-										"460 W"
-									]
-								]
+								"column_weights": [1.0, 3.0, 2.0],
+								"columns": ["Quantity", "Model", "Module power (STC)"],
+								"rows": [["5", "Trina Solar TSM-460NEG9R.28", "460 W"]]
 							},
 							"title": "PV modules used in the calculation"
 						},
@@ -3110,9 +2926,7 @@
 						],
 						"converters": [
 							{
-								"array_ids": [
-									"array"
-								],
+								"array_ids": ["array"],
 								"eta_nominal": 0.96,
 								"eta_reference": 0.9637,
 								"id": "converter",
@@ -3167,10 +2981,7 @@
 							"mount_tilt_deg": 0,
 							"mounting_note": "Synthetic dimensions, not mounting-system approval",
 							"name": "Fixture array",
-							"origin_uv": [
-								1,
-								2
-							],
+							"origin_uv": [1, 2],
 							"roof_id": "roof",
 							"rotation_deg": 0,
 							"row_gap_m": 0.4,
@@ -3227,42 +3038,18 @@
 					"roofs": [
 						{
 							"boundary_uv": [
-								[
-									0,
-									0
-								],
-								[
-									20,
-									0
-								],
-								[
-									20,
-									20
-								],
-								[
-									0,
-									20
-								]
+								[0, 0],
+								[20, 0],
+								[20, 20],
+								[0, 20]
 							],
 							"holes_uv": [],
 							"id": "roof",
 							"name": "Fixture roof",
-							"origin_enu": [
-								10,
-								-20,
-								4
-							],
+							"origin_enu": [10, -20, 4],
 							"source_id": "survey",
-							"u_axis_enu": [
-								1,
-								0,
-								0
-							],
-							"v_axis_enu": [
-								0,
-								1,
-								0
-							]
+							"u_axis_enu": [1, 0, 0],
+							"v_axis_enu": [0, 1, 0]
 						}
 					],
 					"schema_version": 1,
@@ -4977,18 +4764,8 @@
 							],
 							"rows": [],
 							"table": {
-								"column_weights": [
-									0.6,
-									1.7,
-									1.0,
-									1.7
-								],
-								"columns": [
-									"Menge",
-									"Produkt",
-									"Referenz",
-									"Lieferumfang"
-								],
+								"column_weights": [0.6, 1.7, 1.0, 1.7],
+								"columns": ["Menge", "Produkt", "Referenz", "Lieferumfang"],
 								"rows": [
 									[
 										"1 St.",
@@ -5023,23 +4800,9 @@
 								}
 							],
 							"table": {
-								"column_weights": [
-									1.0,
-									3.0,
-									2.0
-								],
-								"columns": [
-									"Menge",
-									"Modell",
-									"Modulleistung (STC)"
-								],
-								"rows": [
-									[
-										"1",
-										"Trina Solar TSM-460NEG9R.28",
-										"460 W"
-									]
-								]
+								"column_weights": [1.0, 3.0, 2.0],
+								"columns": ["Menge", "Modell", "Modulleistung (STC)"],
+								"rows": [["1", "Trina Solar TSM-460NEG9R.28", "460 W"]]
 							},
 							"title": "PV-Module der Berechnung"
 						},

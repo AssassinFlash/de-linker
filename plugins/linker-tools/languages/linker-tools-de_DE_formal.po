@@ -4965,6 +4965,7 @@ msgstr ""
 "Dachumriss hier ein oder laden Sie einen Plan bzw. ein Foto des Daches hoch."
 
 #: ../../apps/planner/src/components/design/LazySceneViewport.tsx:49
+#: build/planner/assets/planner.js
 msgid "Loading 3D workspace…"
 msgstr "3D-Arbeitsbereich wird geladen …"
 
@@ -14918,3 +14919,8 @@ msgstr "Regeljahr übernommen (%s)"
 #: build/planner/assets/planner.js
 msgid "Typical year acquired for this site"
 msgstr "Regeljahr für diesen Standort übernommen"
+
+#: ../../apps/planner/src/components/Workspace.tsx:366
+#: build/planner/assets/planner.js
+msgid "Opening the project…"
+msgstr "Projekt wird geöffnet…"

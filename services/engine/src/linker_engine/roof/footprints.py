@@ -151,7 +151,9 @@ def part_url(region: str, key: str) -> str | None:
     return None
 
 
-def outlines(archive: bytes, latitude: float, longitude: float) -> list[list[tuple[float, float]]]:
+def outlines(
+    archive: bytes, latitude: float, longitude: float
+) -> list[list[tuple[float, float]]]:
     """Every outline of a part that sits near a position, in WGS84 degrees.
 
     A part holds a whole cell, so the candidates are filtered by their own
@@ -291,9 +293,7 @@ def _distance_deg(
     return best
 
 
-def _inside(
-    ring: list[tuple[float, float]], x: float, y: float
-) -> bool:
+def _inside(ring: list[tuple[float, float]], x: float, y: float) -> bool:
     crossings = 0
     count = len(ring)
     for index in range(count):
@@ -310,9 +310,7 @@ def area_m2(ring: list[tuple[float, float]]) -> float:
     latitude = sum(point[1] for point in ring) / len(ring)
     metres_per_degree = 111_320.0
     span = math.cos(math.radians(latitude))
-    scaled = [
-        (x * metres_per_degree * span, y * metres_per_degree) for x, y in ring
-    ]
+    scaled = [(x * metres_per_degree * span, y * metres_per_degree) for x, y in ring]
     return abs(_shoelace(scaled))
 
 

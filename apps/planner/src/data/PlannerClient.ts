@@ -33,8 +33,7 @@ export class PlannerClient {
 
 	constructor(options: ClientOptions) {
 		this.base = new URL(options.baseUrl);
-		this.nonceUrl =
-			options.nonceUrl === "" ? null : new URL(options.nonceUrl);
+		this.nonceUrl = options.nonceUrl === "" ? null : new URL(options.nonceUrl);
 		for (const url of [this.base, this.nonceUrl]) {
 			if (url === null) continue;
 			if (

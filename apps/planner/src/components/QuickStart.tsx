@@ -621,9 +621,7 @@ export function QuickStart({
 		} catch (error) {
 			if (instance === lifetime.current) {
 				setBusy(false);
-				setFailure(
-					error instanceof Error ? error.message : "place_unresolved",
-				);
+				setFailure(error instanceof Error ? error.message : "place_unresolved");
 			}
 			return;
 		}
@@ -1127,9 +1125,7 @@ function QuickStartRun({
 					// into the `weather_acquisition` object the engine reads.
 					editDraft(
 						previous,
-						prepareWeatherInputs(
-							solarInputs(previous.history.current, setup),
-						),
+						prepareWeatherInputs(solarInputs(previous.history.current, setup)),
 					),
 				);
 				const withWeather = await save();
@@ -1168,10 +1164,7 @@ function QuickStartRun({
 										__("Typical year acquired (%s)", "linker-tools"),
 										radiation,
 									)
-								: __(
-										"Typical year acquired for this site",
-										"linker-tools",
-									),
+								: __("Typical year acquired for this site", "linker-tools"),
 						);
 					}
 				}

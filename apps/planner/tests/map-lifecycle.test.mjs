@@ -166,3 +166,107 @@ test("map view keeps metric inputs unchanged and gates/cancels each external own
 		maps.filter((map) => map.removed).every((map) => map.removals === 1),
 	);
 });
+
+test("late-arriving imagery inserts beneath the site outline and updates its request grant across countries", async (t) => {
+	const fixture = setupDom();
+	const previous = new globalThis.Map();
+	for (const name of ["MutationObserver", "getComputedStyle"]) {
+		previous.set(name, Object.getOwnPropertyDescriptor(globalThis, name));
+		Object.defineProperty(globalThis, name, {
+			value: window[name].bind(window),
+			configurable: true,
+		});
+	}
+	const css = document.createElement("style");
+	css.textContent =
+		".lp-map-host{--proto-neutral-300:#ccc;--proto-teal-900:#123;--proto-neutral-600:#456;--proto-teal-700:#278;--proto-teal-400:#4bc;--proto-neutral-100:#eee;}";
+	document.head.append(css);
+	const { createRoot } = await import("react-dom/client");
+	const { default: MapViewport } =
+		await import("../src/components/design/MapViewport.tsx");
+	const { emptyGeometry } = await import("../src/domain/geometryCommands.ts");
+	const { maps } = await import("./map-library-fixture.mjs");
+	const root = createRoot(fixture.element);
+	t.after(async () => {
+		await fixture.dispose(root);
+		for (const [name, descriptor] of previous) {
+			if (descriptor) Object.defineProperty(globalThis, name, descriptor);
+			else delete globalThis[name];
+		}
+	});
+	const camera = { current: null };
+	const outline = {
+		ring: [
+			[-0.1419, 51.501],
+			[-0.1415, 51.501],
+			[-0.1415, 51.5013],
+			[-0.1419, 51.5013],
+		],
+		source: "Microsoft building footprints",
+		licence: "ODbL-1.0",
+	};
+	const renderWith = async (imagery) =>
+		act(async () =>
+			root.render(
+				React.createElement(MapViewport, {
+					document: emptyGeometry(),
+					poses: [],
+					selected: null,
+					select() {},
+					disabled: false,
+					openReferences() {},
+					camera,
+					siteCentre: [-0.1417, 51.5011],
+					siteOutline: outline,
+					imagery,
+				}),
+			),
+		);
+	await renderWith(null);
+	await until(() => document.querySelector('[data-map-status="ready"]'));
+	await act(async () => button("Load street map").click());
+	await until(() => typeof activeMap(maps)?.options.style === "string");
+	const live = activeMap(maps);
+	assert.ok(live.getLayer("linker-site-outline"));
+	await renderWith({
+		tiles: [
+			"https://image.discomap.eea.europa.eu/arcgis/rest/services/GioLand/VHR2021_WM/ImageServer/exportImage?bbox={bbox-epsg-3857}",
+		],
+		credit: "European Union, Copernicus Land Monitoring Service (EEA)",
+		licence: "Copernicus VHR Image Mosaic viewing service",
+		licence_url: "https://land.copernicus.eu/en/products/european-image-mosaic",
+	});
+	const order = [...live.layers.keys()];
+	assert.deepEqual(order, ["linker-site-imagery", "linker-site-outline"]);
+	assert.equal(
+		live.options.transformRequest(
+			"https://image.discomap.eea.europa.eu/arcgis/rest/services/GioLand/VHR2021_WM/ImageServer/exportImage?bbox=0,0,1,1",
+		).credentials,
+		"same-origin",
+	);
+	await renderWith({
+		tiles: [
+			"https://de-linker.com/wp-json/linker/v1/imagery/it?bbox={bbox-epsg-3857}",
+		],
+		credit: "Ministero dell'Ambiente e della Sicurezza Energetica (PCN)",
+		licence: "Open data, Geoportale Nazionale",
+		licence_url: "https://www.pcn.minambiente.it/",
+	});
+	assert.throws(
+		() =>
+			live.options.transformRequest(
+				"https://image.discomap.eea.europa.eu/arcgis/rest/services/GioLand/VHR2021_WM/ImageServer/exportImage?bbox=0,0,1,1",
+			),
+		/not_authorized/,
+	);
+	assert.equal(
+		live.options.transformRequest(
+			"https://de-linker.com/wp-json/linker/v1/imagery/it?bbox=1022900,5694800,1023200,5695100",
+		).credentials,
+		"same-origin",
+	);
+	assert.match(
+		live.getSource("linker-site-imagery").attribution,
+		/Ministero dell'Ambiente/,
+	);
+});
