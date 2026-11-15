@@ -21,7 +21,7 @@ from pydantic import ValidationError
 from starlette.exceptions import HTTPException
 from starlette.types import ASGIApp
 
-from .. import geo
+from .. import geo, imagery
 from .access import active_actor, positive_integer
 from .assets import Assets
 from .assistant_context import assistant_context
@@ -125,6 +125,21 @@ class HttpLimits:
             "max_json_depth",
         ):
             positive_integer(getattr(self, name), name)
+
+
+def _imagery_at(found: geo.Place) -> Object | None:
+    """The aerial layer for a place, or null where no service is recorded."""
+    service = imagery.for_state(found.iso_region or "") or imagery.for_country(
+        found.country
+    )
+    if service is None:
+        return None
+    return {
+        "tiles": list(service.tiles),
+        "credit": service.credit,
+        "licence": service.licence,
+        "licence_url": service.licence_url,
+    }
 
 
 def create_private_app(
@@ -486,6 +501,10 @@ def create_private_app(
             "region": found.region,
             "timezone": found.timezone,
             "attribution": geo.ATTRIBUTION,
+            # A German place is served by its state's mosaic, everything else by
+            # its country's; both answer null where none is recorded, and the map
+            # then keeps its plain background instead of requesting a broken tile.
+            "imagery": _imagery_at(found),
         }
 
     @app.post("/handoffs/prepare")

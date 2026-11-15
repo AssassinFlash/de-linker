@@ -86,3 +86,40 @@ def test_a_raster_outline_keeps_its_corners_and_drops_repeats() -> None:
     simplified = footprints.simplify(dense)
     assert len(simplified) < len(dense)
     assert simplified[0] == dense[0]
+
+
+def test_the_lookup_a_screen_calls_carries_the_aerial_layer() -> None:
+    # The one-screen start asks `places/lookup`, not `/geo/plz`: an aerial layer
+    # added only to the latter is a layer no visitor sees. Measured 2026-11-16,
+    # the frontend contains no reference to `imagery` at all until this field
+    # arrives on the answer it already reads.
+    from linker_engine import geo, imagery
+
+    expectations = (
+        ("80538", "DE", "geoservices.bayern.de"),
+        ("1012JS", "NL", "service.pdok.nl"),
+        ("75001", "FR", "data.geopf.fr"),
+        ("28001", "ES", "ign.es"),
+        ("8001", "CH", "wms.geo.admin.ch"),
+    )
+    for postcode, country, host in expectations:
+        place = geo.lookup(postcode, country)
+        assert place is not None, postcode
+        service = imagery.for_state(place.iso_region or "") or imagery.for_country(
+            place.country
+        )
+        assert service is not None, postcode
+        assert host in service.tiles[0], postcode
+
+
+def test_a_country_whose_service_is_broken_records_no_layer() -> None:
+    # Italy's national WMS answers with an internal path it cannot read, so the
+    # screen must keep its plain background rather than request a broken tile.
+    from linker_engine import geo, imagery
+
+    place = geo.lookup("20121", "IT")
+    assert place is not None
+    assert (
+        imagery.for_state(place.iso_region or "")
+        or imagery.for_country(place.country)
+    ) is None
