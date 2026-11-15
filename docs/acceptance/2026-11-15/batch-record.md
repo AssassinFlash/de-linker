@@ -101,17 +101,46 @@
 
 **首屏 Cookie 横幅是唯一剩下的真实阻塞**：390 视口占 47%（393px），实测压住三个可操作控件（首页主 CTA「Lösungskonfigurator öffnen」、Genie 输入框、铭牌拍照入口）。CookieYes 3.5.8 的 `cky-btn-close` 只存在于偏好面板标题栏，notice 横幅模板里没有关闭按钮；`settings.config.notice.elements.closeButton.status` 改成 `true` 后页面无变化（已验证并回滚该改动）。横幅高度主要来自 468 字符的德语法律文案，按 §0.2 法律正文保护不擅改。**这是需要业主决定的事项，不是我能单方面改的**。
 
-## 配置器接受不存在的地点（已定位，未修——需要裁定）
+## 7. 全欧地点支持（业主裁定：全欧洲是原则，不允许妥协）
 
-**现象**：在配置器填 `zzz not a place` 加任意国家，按 Generate solution 后，系统把这段文字**原样存成项目地点**并继续跑完全部步骤。项目标题读作 `Residential · 10 kWp · zzz not a place`。
+**现象**：配置器的邮编查询只认 5 位德国邮编。英国、荷兰、葡萄牙、希腊的客户没有任何可输入的格式；输入城市名一律「找不到」；而查不到时系统仍把原文存成项目地点继续跑。
 
-**根因（服务端，不是前端）**：`places/lookup` 只认 5 位德国邮编——`http_app.py:455` 取查询里的数字，`len(digits) == 5` 才查 `geo.lookup`，其余一律 `found: false`。而 `SiteBrief`（`brief.py:22-28`）的 `latitude`/`longitude`/`timezone` 全可为 `None`、`coordinate_basis` 允许 `not_provided`，所以未解析的地点是**结构上合法的输入**。`projects/create` 不检查这一点。前端 `quickStartReady` 也只看「地点非空 + 国家非空」。
+**根因**：`geo.py` 只读 `data/plz_de.csv.gz`（德国），`http_app.py` 用 `len(digits) == 5` 判断有效性。时区硬编码 `Europe/Berlin`。
 
-**为什么没修**：试过在前端加门禁（地点未确认则禁用按钮 + 字段提示），`tsc` 通过、纯函数逻辑正确，但让既有 UI 测试无法通过——测试的 JSDOM 环境里 `onBlur` 不触发 React handler，`places/lookup` 从未发出，按钮永远停在未确认状态。改用输入防抖同样依赖定时器，仍与测试的 `until` 渲染循环冲突。回退了全部前端改动，工作树干净。
+**修法**：
 
-**为什么不该简单加强制**：lookup 只接受德国 5 位邮编。强制解析等于挡住所有输入城市名（`Munich`、`München`）和非德国客户的访客——与「降低客户操作难度」直接冲突。真正该做的是**让 lookup 支持城市名与更多国家**，或允许「未解析但明确标注为未核实」的地点，两条都需要业主裁定取舍。
+| 层 | 改动 |
+|---|---|
+| 数据 | `build_plz.py` 改为从 GeoNames `allCountries.zip` 生成 `plz_eu.csv.gz`：**450,815 个邮编 / 50 个国家** |
+| 时区 | GeoNames 的邮编导出没有时区列，改由 `cities5000.txt` 就近城市取，并**按国家约束候选** |
+| 希腊 | GeoNames 的邮编导出**完全没有希腊**；补 Apache-2.0 的 `MentatInnovations/grpostcodes`（1,250 条，覆盖 10–90 全部前缀） |
+| 查询 | 支持各国格式并归一化大小写与空格 |
+| 前端 | 占位符随所选国家变化，不再永远是 `e.g. 10115 Berlin` |
 
-**影响面**：客户输入无效地点时不会收到任何提示，得到的方案基于不存在的地点。已在配置器表单和 `SiteBrief` 两处定位到，改动点清楚。
+**实测（本机对生产数据表）**：
+
+| 输入 | 国家 | 结果 |
+|---|---|---|
+| `M1 1AE` | GB | `M1 Manchester` / Europe/London |
+| `M11 1AA` | GB | `M11 Manchester`（空格是区段边界） |
+| `SW1A 1AA` | GB | `SW1A` |
+| `D01 F5P2` | IE | `D01 Dublin 1` |
+| `9401 AB` | NL | `9401 Assen` |
+| `3750-000` | PT | Europe/Lisbon |
+| `59-700` | PL | Europe/Warsaw |
+| `35001` | ES | `Atlantic/Canary`（加那利保住自己的时区） |
+| `10431` | GR | `Athens` / Europe/Athens |
+| `80538` | DE | `München` / Europe/Berlin |
+
+**三处我自己引入并修掉的错误**：
+
+1. **时区跨国误标**：只用「最近城市」时，1,411 个边境邮编取了邻国时区（西班牙 `Portbou` 得到 `Europe/Paris`）。加上同国家约束后，西班牙只剩 Madrid / Canary / Ceuta，葡萄牙只剩 Lisbon / Madeira / Azores。
+2. **德国市场被打残**：最初设计「共用邮编必须指定国家」，但实测 **10,815 个德国邮编里有 4,754 个（44%）与其他国家重号**，等于让近半数德国客户用不了。改为无国家时优先德国。
+3. **州代码语义被我改坏**：表里存 GeoNames 的短码 `BY` 与地名 `Bavaria`，而 `lod2-sources.json` 的键是 `DE-BY`，导致屋顶步骤报 `no LoD2 source for Bavaria`。加 `Place.iso_region`，屋顶与报告各取所需。
+
+第 3 条是引擎全套 95 个测试失败的根因，不是共用邮编问题——我最初判断错了方向。
+
+## 我造成的损失（已修复，须记录）
 
 ## 我造成的损失（已修复，须记录）
 
