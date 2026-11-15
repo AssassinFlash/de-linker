@@ -101,6 +101,18 @@
 
 **首屏 Cookie 横幅是唯一剩下的真实阻塞**：390 视口占 47%（393px），实测压住三个可操作控件（首页主 CTA「Lösungskonfigurator öffnen」、Genie 输入框、铭牌拍照入口）。CookieYes 3.5.8 的 `cky-btn-close` 只存在于偏好面板标题栏，notice 横幅模板里没有关闭按钮；`settings.config.notice.elements.closeButton.status` 改成 `true` 后页面无变化（已验证并回滚该改动）。横幅高度主要来自 468 字符的德语法律文案，按 §0.2 法律正文保护不擅改。**这是需要业主决定的事项，不是我能单方面改的**。
 
+## 配置器接受不存在的地点（已定位，未修——需要裁定）
+
+**现象**：在配置器填 `zzz not a place` 加任意国家，按 Generate solution 后，系统把这段文字**原样存成项目地点**并继续跑完全部步骤。项目标题读作 `Residential · 10 kWp · zzz not a place`。
+
+**根因（服务端，不是前端）**：`places/lookup` 只认 5 位德国邮编——`http_app.py:455` 取查询里的数字，`len(digits) == 5` 才查 `geo.lookup`，其余一律 `found: false`。而 `SiteBrief`（`brief.py:22-28`）的 `latitude`/`longitude`/`timezone` 全可为 `None`、`coordinate_basis` 允许 `not_provided`，所以未解析的地点是**结构上合法的输入**。`projects/create` 不检查这一点。前端 `quickStartReady` 也只看「地点非空 + 国家非空」。
+
+**为什么没修**：试过在前端加门禁（地点未确认则禁用按钮 + 字段提示），`tsc` 通过、纯函数逻辑正确，但让既有 UI 测试无法通过——测试的 JSDOM 环境里 `onBlur` 不触发 React handler，`places/lookup` 从未发出，按钮永远停在未确认状态。改用输入防抖同样依赖定时器，仍与测试的 `until` 渲染循环冲突。回退了全部前端改动，工作树干净。
+
+**为什么不该简单加强制**：lookup 只接受德国 5 位邮编。强制解析等于挡住所有输入城市名（`Munich`、`München`）和非德国客户的访客——与「降低客户操作难度」直接冲突。真正该做的是**让 lookup 支持城市名与更多国家**，或允许「未解析但明确标注为未核实」的地点，两条都需要业主裁定取舍。
+
+**影响面**：客户输入无效地点时不会收到任何提示，得到的方案基于不存在的地点。已在配置器表单和 `SiteBrief` 两处定位到，改动点清楚。
+
 ## 我造成的损失（已修复，须记录）
 
 **删掉了登记在册的整站备份基线。** 上一轮清理时我查的是 `~/de-linker-data/snapshots/.snapshot-retention.json` 的 `baselines`（数据库快照的），为空；而整站备份的基线在另一个文件 `~/de-linker-data/.backup-retention.json`，里面正登记着 `cutover-20261021-2259`——就是我删的那份 4.2 GB。
