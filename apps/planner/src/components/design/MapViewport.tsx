@@ -482,6 +482,9 @@ export default function MapViewport({
 			},
 			map.getLayer(`linker-map-${KINDS[0]}`) ? `linker-map-${KINDS[0]}` : undefined,
 		);
+		// `readyMap` changes identity whenever the visitor's consent rebuilds the
+		// map, so the mosaic is applied to the new instance even when the place
+		// answer arrived before the rebuild.
 	}, [external, imagery, readyMap, status]);
 	useEffect(() => {
 		const map = mapRef.current,
