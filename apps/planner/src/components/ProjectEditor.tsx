@@ -953,6 +953,15 @@ export function ProjectEditor({
 									window.location.hash,
 								)}
 								imagery={siteImagery}
+								siteCentre={
+									brief.site.latitude !== null &&
+									brief.site.longitude !== null
+										? [
+												brief.site.longitude,
+												brief.site.latitude,
+											]
+										: null
+								}
 								geometry={geometry}
 								confirmedGeometry={
 									draft.baseline.inputs.geometry === undefined

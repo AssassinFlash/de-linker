@@ -71,6 +71,7 @@ export default function MapViewport({
 	openReferences,
 	camera,
 	imagery = null,
+	siteCentre = null,
 	interaction = null,
 }: {
 	document: GeometryDocument;
@@ -83,6 +84,8 @@ export default function MapViewport({
 	interaction?: MapInteraction | null;
 	/** The official aerial mosaic for this site, or null where none exists. */
 	imagery?: PlaceImagery | null;
+	/** The declared site position, so the mosaic is visible before geometry exists. */
+	siteCentre?: readonly [number, number] | null;
 }) {
 	const host = useRef<HTMLDivElement>(null),
 		mapRef = useRef<MapLibreMap | null>(null),
@@ -115,8 +118,17 @@ export default function MapViewport({
 		disabled,
 		interaction,
 		imagery,
+		siteCentre,
 	});
-	latest.current = { projection, selected, select, disabled, interaction, imagery };
+	latest.current = {
+		projection,
+		selected,
+		select,
+		disabled,
+		interaction,
+		imagery,
+		siteCentre,
+	};
 
 	function fit(map: MapLibreMap) {
 		const view = latest.current.projection.view;
@@ -179,7 +191,11 @@ export default function MapViewport({
 		};
 	}, [projection.view !== null]);
 
-	const available = projection.view !== null;
+	// Without a design anchor the geometry cannot be projected, but the site's
+	// own position is enough to show the aerial mosaic and let the visitor draw:
+	// never infer north, and never present the mosaic as a survey frame.
+	const available =
+		projection.view !== null || (siteCentre !== null && imagery !== null);
 	useEffect(() => {
 		if (!host.current || !available) return;
 		let disposed = false;
@@ -216,7 +232,13 @@ export default function MapViewport({
 					},
 				],
 			};
-			const view = latest.current.projection.view!;
+			// A site without a design anchor still opens the map: the centre and
+			// the mosaic come from the declared position, the overlay stays empty.
+			const view = latest.current.projection.view ?? {
+				collection: { type: "FeatureCollection", features: [] },
+				bounds: null,
+				centre: [...(latest.current.siteCentre ?? [0, 0])],
+			};
 			const saved = camera.current;
 			map = new MapLibreMap({
 				container: host.current,
