@@ -244,9 +244,15 @@ export function quickStartInputs(
 		// answer. Measured 2026-11-14: without it a 10 kWp home request was
 		// answered with a 25 kW three-phase inverter first and 15 commercial
 		// combinations inside the same list.
+		//
+		// It belongs to `equipment_requirements`, not to `equipment_setup`: the
+		// selection schema forbids extra properties, so carrying it in the setup
+		// made every project fail the equipment step at `compileEquipment` —
+		// measured 2026-11-15, Germany included.
 		application:
 			choices.projectType === "commercial" ? "commercial" : "residential",
 	};
+	const { application, ...selectionSetup } = setup;
 	const inputs: JsonObject = {
 		brief: {
 			...brief,
@@ -278,7 +284,7 @@ export function quickStartInputs(
 				quickStartOrientationLabel(choices.orientation),
 			),
 		},
-		equipment_setup: setup,
+		equipment_setup: selectionSetup,
 		equipment_requirements: compileEquipmentRequirements(setup),
 	};
 	return inputs;
@@ -308,6 +314,7 @@ export function mergeQuickStartInputs(
 		currentSetup = equipmentDraft({});
 	}
 	const declared = readObject(next.equipment_setup);
+	const declaredRequirements = readObject(next.equipment_requirements);
 	const setup: JsonObject = {
 		...currentSetup,
 		grid_phase: declared.grid_phase ?? null,
@@ -315,8 +322,11 @@ export function mergeQuickStartInputs(
 		pv_dc_kw: declared.pv_dc_kw ?? null,
 		required_usable_kwh: declared.required_usable_kwh ?? null,
 		required_discharge_ac_kw: declared.required_discharge_ac_kw ?? null,
-		application: declared.application ?? null,
+		// The application lives in the requirements, which is the object the
+		// engine reads it from; the selection schema has no such property.
+		application: declaredRequirements.application ?? null,
 	};
+	const { application: declaredApplication, ...selectionSetup } = setup;
 	const note =
 		typeof currentBrief.project_note === "string" &&
 		currentBrief.project_note.trim()
@@ -333,7 +343,7 @@ export function mergeQuickStartInputs(
 			annual_load: readObject(readObject(next.brief).annual_load),
 			project_note: note,
 		},
-		equipment_setup: setup,
+		equipment_setup: selectionSetup,
 		equipment_requirements: compileEquipmentRequirements(setup),
 	};
 }
