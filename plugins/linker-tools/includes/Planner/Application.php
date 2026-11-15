@@ -232,7 +232,16 @@ final class Application {
 		$config    = wp_json_encode(
 			array(
 				'base_url'         => rest_url( Gateway::NAMESPACE . Gateway::ROUTE ),
-				'nonce_url'        => add_query_arg( 'action', 'rest-nonce', admin_url( 'admin-ajax.php' ) ),
+				// `admin-ajax.php?action=rest-nonce` only answers a logged-in
+				// cookie: WordPress registers it under `wp_ajax_` alone, so a
+				// guest is answered `400` with the body `0` (measured
+				// 2026-11-15 on production: 700ms, body `0`, and the client
+				// has always treated it as the normal guest branch). Sending
+				// the URL only to a signed-in visitor removes a request that
+				// could never succeed from every guest's first paint.
+				'nonce_url'        => is_user_logged_in()
+					? add_query_arg( 'action', 'rest-nonce', admin_url( 'admin-ajax.php' ) )
+					: null,
 				'locale'           => determine_locale(),
 				'countries'        => (object) $countries,
 				'scene_module_url' => $this->scene_module_url,

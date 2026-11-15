@@ -15,7 +15,12 @@ export function readConfiguration(
 	const data = readObject(JSON.parse(element.dataset.plannerConfig ?? "null"));
 	if (
 		typeof data.base_url !== "string" ||
-		typeof data.nonce_url !== "string" ||
+		// Absent for a guest: the endpoint only answers a signed-in cookie, so
+		// the server does not offer it. A guest that carries one anyway is
+		// still valid — the client handles the `400`/`0` answer.
+		(data.nonce_url !== null &&
+			data.nonce_url !== undefined &&
+			typeof data.nonce_url !== "string") ||
 		typeof data.locale !== "string"
 	)
 		throw new Error("invalid_planner_configuration");
@@ -50,7 +55,8 @@ export function readConfiguration(
 
 	return {
 		baseUrl: data.base_url,
-		nonceUrl: data.nonce_url,
+		nonceUrl:
+			typeof data.nonce_url === "string" ? data.nonce_url : "",
 		locale: data.locale.replaceAll("_", "-").replace("-formal", ""),
 		countries: countries as Record<string, string>,
 		sceneModuleUrl: reviewedModule("scene", "SceneViewport"),

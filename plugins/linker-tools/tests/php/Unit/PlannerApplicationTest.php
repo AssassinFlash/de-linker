@@ -21,11 +21,25 @@ use WP_Mock\Tools\TestCase;
 final class PlannerApplicationTest extends TestCase {
 
 	/**
+	 * Both visitor states the mount has to serve.
+	 *
+	 * @return array<string, array{bool}>
+	 */
+	public static function signed_in_visitor(): array {
+		return array(
+			'guest'     => array( false ),
+			'signed in' => array( true ),
+		);
+	}
+
+	/**
 	 * The native mount and entry use the same reviewed build.
 	 *
+	 * @param bool $signed_in Whether the visitor carries a login cookie.
 	 * @throws \RuntimeException If the native configuration is absent.
+	 * @dataProvider signed_in_visitor
 	 */
-	public function test_native_mount_exposes_the_current_reviewed_view_modules(): void {
+	public function test_native_mount_exposes_the_current_reviewed_view_modules( bool $signed_in ): void {
 		$root     = dirname( __DIR__, 3 ) . '/';
 		$base     = 'https://fixture.invalid/wp-content/plugins/linker-tools/';
 		$manifest = json_decode( (string) file_get_contents( $root . 'build/planner/vite-manifest.json' ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- actual read-only build fixture.
@@ -76,6 +90,7 @@ final class PlannerApplicationTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'rest_url', array( 'return' => 'https://fixture.invalid/wp-json/linker/v1/planner/' ) );
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => $signed_in ) );
 		WP_Mock::userFunction( 'admin_url', array( 'return' => 'https://fixture.invalid/wp-admin/admin-ajax.php' ) );
 		WP_Mock::userFunction( 'add_query_arg', array( 'return' => 'https://fixture.invalid/wp-admin/admin-ajax.php?action=rest-nonce' ) );
 		WP_Mock::userFunction( 'determine_locale', array( 'return' => 'en_GB' ) );
@@ -90,6 +105,15 @@ final class PlannerApplicationTest extends TestCase {
 		$this->assertSame( $base . 'build/planner/' . $scene, $config['scene_module_url'] );
 		$this->assertSame( $base . 'build/planner/' . $map, $config['map_module_url'] );
 		$this->assertSame( array( 'FR' => 'France' ), $config['countries'] );
+		// A guest is never offered the nonce endpoint: it answers only a
+		// signed-in cookie, so the browser would spend a round trip on a
+		// request that can only return 400/0 (measured 2026-11-15: 700ms).
+		if ( $signed_in ) {
+			$this->assertSame( 'https://fixture.invalid/wp-admin/admin-ajax.php?action=rest-nonce', $config['nonce_url'] );
+		} else {
+			$this->assertArrayHasKey( 'nonce_url', $config );
+			$this->assertNull( $config['nonce_url'] );
+		}
 		$this->assertStringNotContainsString( '<script', $html );
 		$this->assertSame( '', $app->mount() );
 		$this->assertConditionsMet();
