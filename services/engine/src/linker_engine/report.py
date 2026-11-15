@@ -134,7 +134,7 @@ def residential(
                 ),
             )
         )
-    roof = _roof_source(request.roof_source, design.place.region, locale)
+    roof = _roof_source(request.roof_source, design.place.iso_region, locale)
     if roof:
         site.append(ReportRow(label=t("row.roof_source", locale), value=roof))
     site += [

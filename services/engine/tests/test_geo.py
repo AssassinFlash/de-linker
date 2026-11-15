@@ -29,12 +29,19 @@ def test_a_french_postcode_is_answered_with_its_country() -> None:
     assert place.timezone == "Europe/Paris"
 
 
-def test_a_shared_postcode_needs_the_country_and_says_which_ones() -> None:
-    # Germany and Estonia both write a five-digit `10115`.
-    assert geo.lookup("10115") is None
+def test_a_shared_postcode_still_answers_for_the_home_market() -> None:
+    """Germany wins a shared code, because it is where the site sells.
+
+    Measured 2026-11-15: 4,754 of 10,815 German postcodes are also written by
+    another country, so refusing the shared ones would refuse 44% of German
+    visitors. The country form field is what disambiguates everyone else.
+    """
+    germany = geo.lookup("10115")
+    assert germany is not None and germany.country == "DE"
+    # The same digits are an Estonian code too, and naming Estonia gets it.
+    estonia = geo.lookup("10115", "EE")
+    assert estonia is not None and estonia.country == "EE"
     assert geo.countries_of("10115") == frozenset({"DE", "EE"})
-    assert geo.lookup("10115", "DE") is not None
-    assert geo.lookup("10115", "EE") is not None
 
 
 def test_a_full_british_postcode_finds_its_district() -> None:

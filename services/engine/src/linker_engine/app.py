@@ -255,10 +255,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             longitude=found.longitude,
             # The state and its imagery are German institutions; a place
             # elsewhere has a region but no LoD2 or aerial service here.
-            state=found.region if found.country == "DE" else "",
+            state=found.iso_region if found.country == "DE" else "",
             place=found.name,
             attribution=geo.ATTRIBUTION,
-            imagery=imagery.for_state(found.region) if found.country == "DE" else None,
+            imagery=imagery.for_state(found.iso_region) if found.country == "DE" else None,
             country=found.country,
             region=found.region,
             timezone=found.timezone,

@@ -79,7 +79,7 @@ class RoofService:
                 f"no official outline service for {place.country}"
             )
         latitude, longitude = request.location.latitude, request.location.longitude
-        tile = lod2.tile_for(place.region, latitude, longitude)
+        tile = lod2.tile_for(place.iso_region, latitude, longitude)
         index = self._index.load(tile)
         x, y = lod2.to_utm(tile.zone, latitude, longitude)
         point = Point(x, y)
@@ -90,7 +90,7 @@ class RoofService:
                 best = (distance, building)
         module = self._module
         name = f"{module.brand} {module.model}"
-        source = f"LoD2 {place.region}"
+        source = f"LoD2 {place.iso_region}"
         assumptions = [t(f"assume.{key}", locale) for key in ROOF_ASSUMPTIONS]
         if best is None:
             return RoofResult(
