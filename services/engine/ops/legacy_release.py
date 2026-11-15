@@ -356,6 +356,11 @@ def timer_tick() -> int:
     return int(raw[1])
 
 
+def _planner_units() -> tuple[str, ...]:
+    """The units that answer planning requests from their own releases."""
+    return ("linker-planner-http.service", "linker-planner-worker.service")
+
+
 def unit(name: str) -> dict[str, str]:
     raw = command(
         [
@@ -679,6 +684,25 @@ def activate(
             root / "current/.venv/bin/python"
         ):
             raise RuntimeError("stable feed worker validator is not selector-bound")
+        # Say who actually answers planning requests before switching this
+        # engine. Measured 2026-11-15: activating a release here looked
+        # successful while the planner kept serving an older tree, because
+        # `linker-planner-http`/`linker-planner-worker` run their own releases
+        # under /opt/linker-planner. Nothing failed; the change simply had no
+        # effect on the surface being measured.
+        planners = [
+            unit_name
+            for unit_name in _planner_units()
+            if unit(unit_name).get("ActiveState") == "active"
+        ]
+        if planners:
+            print(
+                "note: "
+                + ", ".join(planners)
+                + " serve planning requests from their own releases; this"
+                + " activation only changes the design engine",
+                flush=True,
+            )
         state: dict[str, Any] = {
             "current": name,
             "previous": expected,
