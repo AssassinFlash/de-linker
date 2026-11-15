@@ -854,6 +854,17 @@ export default function MapViewport({
 					>
 						{__("OpenFreeMap privacy policy", "linker-tools")}
 					</a>
+					{external && !imagery && (
+						// A country with no published mosaic is a real gap, and the
+						// visitor is told which one it is instead of being left to
+						// wonder why the background is a line drawing.
+						<p className="lp-profile-help">
+							{__(
+								"No official aerial imagery is published for this country. Draw the roof outline here, or upload a plan or a photograph of the roof.",
+								"linker-tools",
+							)}
+						</p>
+					)}
 				</div>
 			</div>
 		</section>

@@ -4956,6 +4956,14 @@ msgid "Load street map"
 msgstr "Straßenkarte laden"
 
 #: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/design/MapViewport.tsx
+msgid ""
+"No official aerial imagery is published for this country. Draw the roof "
+"outline here, or upload a plan or a photograph of the roof."
+msgstr ""
+"Für dieses Land sind keine amtlichen Luftbilder verfügbar. Zeichnen Sie den "
+"Dachumriss hier ein oder laden Sie einen Plan bzw. ein Foto des Daches hoch."
+
 #: ../../apps/planner/src/components/design/LazySceneViewport.tsx:49
 msgid "Loading 3D workspace…"
 msgstr "3D-Arbeitsbereich wird geladen …"
