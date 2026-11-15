@@ -258,7 +258,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             state=found.iso_region if found.country == "DE" else "",
             place=found.name,
             attribution=geo.ATTRIBUTION,
-            imagery=imagery.for_state(found.iso_region) if found.country == "DE" else None,
+            imagery=imagery.for_state(found.iso_region)
+            if found.country == "DE"
+            else None,
             country=found.country,
             region=found.region,
             timezone=found.timezone,

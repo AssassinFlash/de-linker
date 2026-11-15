@@ -20,7 +20,10 @@ from linker_engine.planning.pvgis_tmy_request import (
     PvgisTmyInterpretation,
     PvgisTmyRequest,
 )
-from linker_engine.planning.weather_fetch_errors import WeatherPeriodTooShort
+from linker_engine.planning.weather_fetch_errors import (
+    WeatherPeriodTooShort,
+    WeatherSourceQualityInvalid,
+)
 
 from .test_pv_generation import geometry, parameter_document
 
@@ -265,3 +268,29 @@ def test_request_capture_and_calendar_cannot_silently_change() -> None:
     ):
         with pytest.raises(InvalidInput):
             tmy_weather(raw(), req, capture(), interpretation(), **limits)
+
+
+def test_negative_wind_is_clamped_and_counted_while_negative_irradiance_fails() -> None:
+    """PVGIS reports a sub-zero wind speed at some sites; irradiance stays fatal.
+
+    Measured 2026-11-15: the provider returns four rows between -0.09 and
+    -0.74 m/s for Athens and none for Berlin, London, Lisbon or the Canaries.
+    Refusing the source made the typical year unreachable for Greece alone.
+    Nothing downstream reads the wind, so the row is clamped and the count is
+    published with the result; irradiance below zero remains a contradiction
+    and still fails.
+    """
+    document = json.loads(raw())
+    rows = document["outputs"]["tmy_hourly"]
+    rows[10]["WS10m"] = -0.74
+    rows[11]["WS10m"] = -0.09
+    series = parse(encode(document))
+    assert series.points[10].wind_10m_m_s == 0.0
+    assert series.points[11].wind_10m_m_s == 0.0
+    details = json.loads(series.source.details_json)
+    assert details["wind_speed_clamped_rows"] == 2
+
+    broken = json.loads(raw())
+    broken["outputs"]["tmy_hourly"][12]["G(h)"] = -0.5
+    with pytest.raises(WeatherSourceQualityInvalid):
+        parse(encode(broken))

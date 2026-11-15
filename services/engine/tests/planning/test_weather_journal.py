@@ -136,11 +136,13 @@ def test_invalid_source_keeps_private_original_and_safe_reason_without_weather_a
     owner: Actor,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    # Existing official response fixture; the one observed provider failure
-    # pattern is a negative 10-m total wind speed, never a modelled correction.
+    # A physical contradiction: irradiance cannot be below zero. The provider
+    # also reports negative 10-m wind for some sites (measured 2026-11-15:
+    # four rows for Athens), but that is clamped at parse time rather than
+    # failing the run, so irradiance is what this fixture has to break.
     body = json.loads(raw())
     row = body["outputs"]["tmy_hourly"][751]
-    row["WS10m"] = -0.29
+    row["G(h)"] = -1.5
     content = json.dumps(body).encode()
     source_timestamp = (
         datetime.strptime(row["time(UTC)"], "%Y%m%d:%H%M")
@@ -190,11 +192,11 @@ def test_invalid_source_keeps_private_original_and_safe_reason_without_weather_a
     assert host.run_once()
     completed = workspace.run(owner, run.id)
     details = {
-        "reason": "negative_wind",
-        "field": "WS10m",
+        "reason": "negative_irradiance",
+        "field": "G(h)",
         "row_index": 751,
         "source_timestamp_utc": source_timestamp,
-        "value": -0.29,
+        "value": -1.5,
     }
     assert completed.state == "failed" and completed.result is None
     assert completed.error == {
