@@ -5,11 +5,15 @@ import { readObject } from "../data/readProtocol.ts";
 /**
  * What the server resolved a declared place to. `found: false` is an answer,
  * not an error: an unknown postcode leaves the visitor's own text as typed.
+ * `needs_country` distinguishes "nowhere" from "several countries write this
+ * postcode the same way", which is answered by naming the country rather than
+ * by correcting the postcode.
  */
 export interface ResolvedPlace extends JsonObject {
 	readonly schema_version: 1;
 	readonly found: boolean;
 	readonly query: string;
+	readonly needs_country?: boolean;
 	readonly country_code?: string;
 	readonly location_label?: string;
 	readonly latitude?: number;

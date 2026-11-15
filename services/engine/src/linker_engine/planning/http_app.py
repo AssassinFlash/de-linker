@@ -441,13 +441,18 @@ def create_private_app(
 
     @app.post("/places/lookup")
     def lookup_place(body: PlaceLookup, request: Request) -> Object:
-        """Resolve a declared place to the site facts a project records.
+        """Resolve a declared postcode to the site facts a project records.
 
-        The one-screen start asks for a postcode or a town, and until now the
-        saved project carried only that free text: the printed report had no
-        country and no time zone, and the weather step had no coordinate
-        anchor. The bundled German postcode table already answers all three,
-        so the screen asks the server instead of the visitor.
+        The one-screen start asks for a postcode, and until now the saved
+        project carried only that free text: the printed report had no country
+        and no time zone, and the weather step had no coordinate anchor. The
+        bundled European table answers all four, so the screen asks the server
+        instead of the visitor.
+
+        The table used to be German and the answer keyed on five digits, so a
+        Dutch or British postcode was refused (measured 2026-11-15). Shapes now
+        come from the table in each country's own form: `10115`, `75001`,
+        `M1 1AE`, `3750-000`, `59-700`.
         """
         actor = verified_actor(request.scope)
         with workspace.database.read() as connection:
@@ -455,27 +460,29 @@ def create_private_app(
         query = body.query.strip()
         if not query:
             raise NotFound("place not found")
-        digits = "".join(character for character in query if character.isdigit())
-        found = geo.lookup(digits) if len(digits) == 5 else None
+        found = geo.lookup(query, body.country)
         if found is None:
+            # A postcode several countries write the same way is not a failure
+            # of the visitor's input; the screen asks for the country instead of
+            # claiming the place does not exist.
+            shared = body.country is None and len(geo.countries_of(query)) > 1
             return {
                 "schema_version": 1,
                 "found": False,
                 "query": query,
+                "needs_country": shared,
                 "attribution": geo.ATTRIBUTION,
             }
         return {
             "schema_version": 1,
             "found": True,
             "query": query,
-            "country_code": found.state.split("-", 1)[0],
-            "location_label": f"{found.plz} {found.name}",
+            "country_code": found.country,
+            "location_label": f"{found.postcode} {found.name}",
             "latitude": found.latitude,
             "longitude": found.longitude,
-            "region": found.state,
-            # One country, one civil time: a German postcode fixes the zone, so
-            # the report can name it instead of leaving the row out.
-            "timezone": "Europe/Berlin",
+            "region": found.region,
+            "timezone": found.timezone,
             "attribution": geo.ATTRIBUTION,
         }
 

@@ -315,6 +315,12 @@ class PlaceResult(BaseModel):
     place: str
     attribution: str
     imagery: Imagery | None
+    # The European fields. `state` and `imagery` stay German-only because the
+    # official LoD2 and aerial services are German; a Dutch or British answer
+    # names its own country, region and zone instead of borrowing Germany's.
+    country: str = "DE"
+    region: str = ""
+    timezone: str = "Europe/Berlin"
 
 
 # Roof step --------------------------------------------------------------------------------

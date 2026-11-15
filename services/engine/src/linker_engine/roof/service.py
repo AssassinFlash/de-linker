@@ -71,8 +71,15 @@ class RoofService:
         place = geo.lookup(request.plz)
         if place is None:
             raise lod2.Lod2Unavailable(f"unknown postcode {request.plz}")
+        if place.country != "DE":
+            # The official building outlines and aerial imagery this step reads
+            # are German services. A place elsewhere is a valid project site,
+            # but its outline has to be drawn by hand.
+            raise lod2.Lod2Unavailable(
+                f"no official outline service for {place.country}"
+            )
         latitude, longitude = request.location.latitude, request.location.longitude
-        tile = lod2.tile_for(place.state, latitude, longitude)
+        tile = lod2.tile_for(place.region, latitude, longitude)
         index = self._index.load(tile)
         x, y = lod2.to_utm(tile.zone, latitude, longitude)
         point = Point(x, y)
@@ -83,7 +90,7 @@ class RoofService:
                 best = (distance, building)
         module = self._module
         name = f"{module.brand} {module.model}"
-        source = f"LoD2 {place.state}"
+        source = f"LoD2 {place.region}"
         assumptions = [t(f"assume.{key}", locale) for key in ROOF_ASSUMPTIONS]
         if best is None:
             return RoofResult(

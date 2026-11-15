@@ -243,20 +243,25 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.get("/geo/plz/{plz}")
     def place(plz: str) -> PlaceResult:
-        """Map position, federal state and aerial imagery service for a postcode."""
+        """Map position, country, region and aerial imagery service for a postcode."""
         found = geo.lookup(plz)
         if found is None:
             raise HTTPException(
                 status_code=404, detail={"error": "unknown_plz", "field": "plz"}
             )
         return PlaceResult(
-            plz=found.plz,
+            plz=found.postcode,
             latitude=found.latitude,
             longitude=found.longitude,
-            state=found.state,
+            # The state and its imagery are German institutions; a place
+            # elsewhere has a region but no LoD2 or aerial service here.
+            state=found.region if found.country == "DE" else "",
             place=found.name,
             attribution=geo.ATTRIBUTION,
-            imagery=imagery.for_state(found.state),
+            imagery=imagery.for_state(found.region) if found.country == "DE" else None,
+            country=found.country,
+            region=found.region,
+            timezone=found.timezone,
         )
 
     def compute(

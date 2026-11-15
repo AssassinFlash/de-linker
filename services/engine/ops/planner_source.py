@@ -16,7 +16,9 @@ REQUIRED = {
     ".python-version",
     "pyproject.toml",
     "uv.lock",
-    "data/plz_de.csv.gz",
+    # The postcode table the engine reads. It held Germany only until
+    # 2026-11-15; the European one carries every country the site sells into.
+    "data/plz_eu.csv.gz",
     "ops/planner_source.py",
     "ops/planner_release.py",
     "ops/legacy_release.py",

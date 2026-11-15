@@ -14379,6 +14379,25 @@ msgstr "Postleitzahl oder Ort"
 
 #: ../../apps/planner/src/components/QuickStart.tsx
 #: build/planner/assets/planner.js
+msgid "Postcode"
+msgstr "Postleitzahl"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Your postcode"
+msgstr "Ihre Postleitzahl"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid ""
+"Several countries use this postcode. Choose your country and the postcode "
+"will be placed."
+msgstr ""
+"Mehrere Länder verwenden diese Postleitzahl. Wählen Sie Ihr Land, dann wird "
+"die Postleitzahl zugeordnet."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
 msgid "Prepare the storage scenario"
 msgstr "Speicherszenario vorbereiten"
 

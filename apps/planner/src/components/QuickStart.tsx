@@ -110,6 +110,44 @@ export function quickStartDefaults(): QuickStartChoices {
 	};
 }
 
+/**
+ * One example postcode in the shape the chosen country writes.
+ *
+ * The field used to show `e.g. 10115 Berlin` whatever the country was, which
+ * taught every non-German visitor the wrong shape (measured 2026-11-15).
+ */
+export function postcodeExample(country: string): string {
+	switch (country.toUpperCase()) {
+		case "GB":
+			return "e.g. M1 1AE";
+		case "IE":
+			return "e.g. D01 F5P2";
+		case "NL":
+			return "e.g. 9401 AB";
+		case "PT":
+			return "e.g. 3750-000";
+		case "PL":
+			return "e.g. 59-700";
+		case "FR":
+			return "e.g. 75001";
+		case "ES":
+			return "e.g. 28001";
+		case "IT":
+			return "e.g. 00118";
+		case "GR":
+			return "e.g. 10431";
+		case "AT":
+			return "e.g. 1010";
+		case "CH":
+			return "e.g. 8001";
+		case "DE":
+			return "e.g. 10115";
+		default:
+			// No country yet: the answer is postcode-shaped, not country-shaped.
+			return __("Your postcode", "linker-tools");
+	}
+}
+
 /** A named site needs both the place and the country the report will print. */
 export function quickStartReady(choices: QuickStartChoices): boolean {
 	return choices.location.trim().length > 0 && choices.country.length > 0;
@@ -499,7 +537,14 @@ export function QuickStart({
 			const value = readResolvedPlace(
 				await client.query(
 					"places/lookup",
-					{ schema_version: 1, query: trimmed },
+					{
+						schema_version: 1,
+						query: trimmed,
+						// The chosen country disambiguates a postcode several
+						// countries write the same way; without one the server
+						// answers `needs_country` and the screen says so.
+						...(choices.country ? { country: choices.country } : {}),
+					},
 					session.query_scope,
 				),
 			);
@@ -783,16 +828,24 @@ export function QuickStart({
 					</select>
 				</label>
 				<label className="lp-field">
-					<span>{__("Postcode or town", "linker-tools")}</span>
+					<span>{__("Postcode", "linker-tools")}</span>
 					<input
 						type="text"
 						required
 						autoComplete="postal-code"
 						value={choices.location}
-						placeholder={__("e.g. 10115 Berlin", "linker-tools")}
+						placeholder={postcodeExample(choices.country)}
 						onChange={(event) => change("location", event.currentTarget.value)}
 						onBlur={(event) => void resolvePlace(event.currentTarget.value)}
 					/>
+					{resolved !== null && !resolved.found && resolved.needs_country && (
+						<p className="lp-profile-help" role="status">
+							{__(
+								"Several countries use this postcode. Choose your country and the postcode will be placed.",
+								"linker-tools",
+							)}
+						</p>
+					)}
 				</label>
 				<div className="lp-quickstart-actions">
 					<button className="lp-button" type="submit" disabled={!ready || busy}>
