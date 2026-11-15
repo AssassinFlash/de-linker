@@ -53,7 +53,7 @@ class Machine:
         self.feed = b'{"source_revision":"source","compatibility_revision":"contract"}'
         self.original = {
             "src/linker_engine/reader.py": b"old source\n",
-            "data/plz_de.csv.gz": b"owned geo source",
+            "data/plz_eu.csv.gz": b"owned geo source",
             "pyproject.toml": b"project",
             "uv.lock": b"locked",
         }
@@ -551,7 +551,7 @@ def test_source_archive_uses_one_real_git_blob_batch(
     source = repository / "services/engine"
     source.mkdir(parents=True)
     for name, data in {
-        "data/plz_de.csv.gz": b"geo",
+        "data/plz_eu.csv.gz": b"geo",
         "pyproject.toml": b"project",
         "uv.lock": b"lock",
         "ops/legacy_release.py": (
@@ -594,7 +594,7 @@ def test_source_archive_uses_one_real_git_blob_batch(
     assert len([args for args in calls if "cat-file" in args]) == 1
     assert any("--batch" in args for args in calls)
     with tarfile.open(fileobj=io.BytesIO(raw)) as tar:
-        handle = tar.extractfile("data/plz_de.csv.gz")
+        handle = tar.extractfile("data/plz_eu.csv.gz")
         assert handle is not None and handle.read() == b"geo"
 
 

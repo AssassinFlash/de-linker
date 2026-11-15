@@ -280,7 +280,7 @@ print(json.dumps({'import_root':str(root),'version':version.digest(version.sourc
  'source_revision':data['source_revision'],'compatibility_revision':data['compatibility_revision'],
  'prepared_products':prepared,'feed_sha256':hashlib.sha256(feed).hexdigest(),
  'compatibility_sha256':hashlib.sha256(compat_file).hexdigest(),
- 'geo':{'plz':place.plz,'latitude':place.latitude,'longitude':place.longitude,'state':place.state,'place':place.name}}))
+ 'geo':{'plz':place.postcode,'latitude':place.latitude,'longitude':place.longitude,'state':place.iso_region,'place':place.name}}))
 """
 
 
@@ -1046,7 +1046,7 @@ def git_blobs(repository: Path, revision: str) -> dict[str, str]:
         if kind != "blob" or mode not in {"100644", "100755"}:
             raise ValueError("linked runtime source is forbidden")
         result[name] = oid
-    if not {"data/plz_de.csv.gz", "pyproject.toml", "uv.lock"}.issubset(result):
+    if not {"data/plz_eu.csv.gz", "pyproject.toml", "uv.lock"}.issubset(result):
         raise ValueError("incomplete legacy runtime including geo data")
     return result
 

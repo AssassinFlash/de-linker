@@ -620,7 +620,7 @@ def test_reviewed_git_archive_is_complete_and_rejects_changed_inputs(
         (source / directory).mkdir(parents=True, exist_ok=True)
     (source / "src/code.py").write_text("runtime\n")
     (source / "schemas/contract.json").write_text("{}")
-    (source / "data/plz_de.csv.gz").write_bytes(b"postcode")
+    (source / "data/plz_eu.csv.gz").write_bytes(b"postcode")
     (source / "data/htw").mkdir()
     (source / "data/htw/table.json").write_text("[1]")
     for name in (".python-version", "pyproject.toml", "uv.lock"):
