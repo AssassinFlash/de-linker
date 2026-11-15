@@ -609,6 +609,25 @@ export function QuickStart({
 		setBusy(true);
 		setFailure(null);
 		try {
+			// A visitor who types a postcode and presses the button has not blurred
+			// the field, so the place was never resolved and the project would be
+			// saved without coordinates — measured 2026-11-16, `1010 Wien` stored
+			// `latitude: null` and the roof map then refused to open.
+			if (!resolved) {
+				const pending = choices.location?.trim() ?? "";
+				if (pending) await askPlace(pending, choices.country);
+				if (instance !== lifetime.current) return;
+			}
+		} catch (error) {
+			if (instance === lifetime.current) {
+				setBusy(false);
+				setFailure(
+					error instanceof Error ? error.message : "place_unresolved",
+				);
+			}
+			return;
+		}
+		try {
 			if (existingProject) {
 				// Re-planning writes the declared keys onto the opened revision; the
 				// run chain then continues from the confirmed reply.
