@@ -1101,8 +1101,8 @@ TEXT = {
         "Prüfen Sie die örtlichen Anschlussbedingungen für die Spannungsebene am Netzanschlusspunkt. Die elektrischen Nachweise der Erzeugungseinheit sind gesondert zu prüfen.",
     ),
     "grid_no_rule": (
-        "This revision has no verified local rule for this site.",
-        "Für diesen Standort liegt in dieser Projektversion kein geprüftes örtliches Regelwerk vor.",
+        "No verified grid-connection rule pack exists yet for this country. The connection conditions for this site are checked against the local grid operator's published rules when the inquiry is answered, and the offer states them.",
+        "Für dieses Land liegt noch kein geprüftes Regelwerk zum Netzanschluss vor. Die Anschlussbedingungen für diesen Standort werden bei der Beantwortung der Anfrage anhand der veröffentlichten Regeln des örtlichen Netzbetreibers geprüft und im Angebot ausgewiesen.",
     ),
     "grid_to_supply": ("Project details still needed", "Noch benötigte Projektangaben"),
     "grid_missing_country_code": ("site country", "Land des Standorts"),

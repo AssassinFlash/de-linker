@@ -264,7 +264,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             state=found.iso_region if found.country == "DE" else found.region,
             place=found.name,
             attribution=geo.ATTRIBUTION,
-            imagery=imagery.for_state(found.iso_region),
+            # A German place is served by its state's mosaic, everything else by
+            # its country's. Both answer None where no service is recorded.
+            imagery=(
+                imagery.for_state(found.iso_region or "")
+                or imagery.for_country(found.country)
+            ),
             country=found.country,
             region=found.region,
             timezone=found.timezone,

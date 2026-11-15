@@ -37,3 +37,12 @@ def for_state(state: str) -> Imagery | None:
         licence=entry["licence"],
         licence_url=entry["licence_url"],
     )
+
+
+def for_country(country: str) -> Imagery | None:
+    """The national mosaic of a country, where one is published.
+
+    Germany publishes per state, so the state lookup answers there; the other
+    countries publish one nationwide service under their ISO code.
+    """
+    return for_state(country)

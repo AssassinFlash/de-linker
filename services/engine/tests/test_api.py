@@ -155,3 +155,33 @@ def test_commercial_without_profile(client: TestClient) -> None:
     )
     assert response.status_code == 200
     assert response.json()["status"] == "indicative"
+
+
+def test_a_non_german_postcode_is_served_by_its_country_mosaic(
+    client: TestClient,
+) -> None:
+    # Germany publishes per state and the others publish one national service,
+    # so the state lookup misses abroad and the country lookup has to answer.
+    # Measured 2026-11-16: each of these WMS endpoints returned a real image.
+    for code, country, host in (
+        ("1012JS", "NL", "service.pdok.nl"),
+        ("75001", "FR", "data.geopf.fr"),
+        ("28001", "ES", "ign.es"),
+        ("8001", "CH", "wms.geo.admin.ch"),
+    ):
+        response = client.get(f"/geo/plz/{code}", params={"country": country})
+        assert response.status_code == 200, code
+        body = response.json()
+        assert body["imagery"] is not None, code
+        assert host in body["imagery"]["tiles"][0], code
+        assert body["imagery"]["licence"], code
+
+
+def test_a_country_without_a_recorded_mosaic_answers_no_imagery(
+    client: TestClient,
+) -> None:
+    # Italy's national WMS serves an unreachable internal path, so no layer is
+    # recorded and the map has to fall back rather than request a broken tile.
+    response = client.get("/geo/plz/20121", params={"country": "IT"})
+    assert response.status_code == 200
+    assert response.json()["imagery"] is None
