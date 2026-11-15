@@ -48,11 +48,16 @@ class EquipmentRequirements(Document):
         if isinstance(setup, dict):
             # A setup cannot restate `application`: it is a declaration about the
             # project, held by the requirements, and the selection schema has no
-            # such property. Comparing it here refused every search the
-            # one-screen start sent — measured 2026-11-15, 422 invalid_input for
-            # Germany as well as Greece.
-            shared = [key for key in cls.model_fields if key not in _REQUIREMENTS_ONLY]
-            current = cls.read({key: setup.get(key) for key in shared})
-            if current != prepared:
-                raise InvalidInput("equipment search requirements need preparation")
+            # such property. Compare only the fields both documents own, and
+            # compare their values rather than two populated models — a model
+            # read from the setup would fill the absent `application` with its
+            # default and differ from every prepared requirement.
+            for name in cls.model_fields:
+                if name in _REQUIREMENTS_ONLY or name not in setup:
+                    continue
+                if setup[name] != getattr(prepared, name):
+                    raise InvalidInput(
+                        "equipment search requirements need preparation",
+                        fields=(f"equipment_setup.{name}",),
+                    )
         return prepared

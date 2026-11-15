@@ -4169,3 +4169,39 @@ def test_conditional_pairs_and_equipment_checks_assess_real_woo_candidates(
         and c["status"] == "satisfied"
         for c in search_res["candidates"]
     )
+
+
+def test_requirements_read_the_prepared_declarations_a_one_screen_start_sends() -> None:
+    # The one-screen start sends both documents. `application` is declared by the
+    # requirements only, so a setup that omits it must not read as a contradiction
+    # — measured on the production project, where every country was refused.
+    request: FixtureObject = {
+        "equipment_requirements": {
+            "schema_version": 1,
+            "grid_phase": 3,
+            "operating_mode": "grid_connected",
+            "pv_dc_kw": 10,
+            "required_usable_kwh": 13.7,
+            "required_discharge_ac_kw": 6,
+            "application": "residential",
+        },
+        "equipment_setup": {
+            "schema_version": 1,
+            "grid_phase": 3,
+            "operating_mode": "grid_connected",
+            "pv_dc_kw": 10,
+            "required_usable_kwh": 13.7,
+            "required_discharge_ac_kw": 6,
+            "inverter_product_id": None,
+            "battery_product_id": None,
+            "modules_per_stack": None,
+            "parallel_stacks": None,
+            "accessory_product_ids": [],
+        },
+    }
+    assert EquipmentRequirements.from_inputs(request).application == "residential"
+    # A setup that does restate a declaration has to agree with it.
+    contradicted = copy.deepcopy(request)
+    contradicted["equipment_setup"]["required_usable_kwh"] = 99.0
+    with pytest.raises(InvalidInput):
+        EquipmentRequirements.from_inputs(contradicted)

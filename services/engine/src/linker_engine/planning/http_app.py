@@ -256,6 +256,8 @@ def create_private_app(
         )
         # Private row/file values and exception traces are not returned.
         detail: Object = {"code": error.code}
+        if isinstance(error, InvalidInput) and error.public_fields:
+            detail["fields"] = list(error.public_fields)
         if isinstance(error, EvidenceMissing) and error.public_details:
             detail["details"] = dict(error.public_details)
         if isinstance(error, CsvIssue):
