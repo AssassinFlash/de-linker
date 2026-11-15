@@ -53,6 +53,15 @@ LICENCES = {
     "CH": "swisstopo free geodata, attribution required",
 }
 
+# Each model is published in its own national grid; the rings are transformed
+# back to WGS84 for the map and the report.
+CRS = {"NL": DUTCH_CRS, "CH": "EPSG:2056"}
+
+
+def model_crs(country: str) -> str:
+    """The projected CRS a country's model answers in."""
+    return CRS[country]
+
 
 class ModelUnavailable(RuntimeError):
     """No documented 3D model could be read for the position."""

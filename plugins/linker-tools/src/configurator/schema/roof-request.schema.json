@@ -4,14 +4,14 @@
 			"additionalProperties": false,
 			"properties": {
 				"latitude": {
-					"maximum": 55.2,
-					"minimum": 47.0,
+					"maximum": 71.5,
+					"minimum": 27.0,
 					"title": "Latitude",
 					"type": "number"
 				},
 				"longitude": {
-					"maximum": 15.1,
-					"minimum": 5.8,
+					"maximum": 47.0,
+					"minimum": -32.0,
 					"title": "Longitude",
 					"type": "number"
 				}
@@ -27,10 +27,25 @@
 	"additionalProperties": false,
 	"properties": {
 		"plz": {
-			"description": "German postcode (PLZ)",
-			"pattern": "^\\d{5}$",
+			"description": "European postcode (PLZ) as its country writes it",
+			"maxLength": 12,
+			"minLength": 2,
+			"pattern": "^[A-Za-z0-9][A-Za-z0-9 -]*$",
 			"title": "Plz",
 			"type": "string"
+		},
+		"country": {
+			"anyOf": [
+				{
+					"pattern": "^[A-Z]{2}$",
+					"type": "string"
+				},
+				{
+					"type": "null"
+				}
+			],
+			"default": null,
+			"title": "Country"
 		},
 		"location": {
 			"$ref": "#/$defs/Location"

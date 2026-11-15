@@ -9,18 +9,20 @@ reference modules fit on it.
 from __future__ import annotations
 
 import math
+from functools import cache
 from pathlib import Path
 from typing import Any
 
+from pyproj import Transformer
 from shapely.geometry import Point, Polygon
 from shapely.geometry.base import BaseGeometry
 
 from .. import geo
-from ..models import RoofPackRequest, RoofPlaneResult, RoofRequest, RoofResult
+from ..models import Locale, RoofPackRequest, RoofPlaneResult, RoofRequest, RoofResult
 from ..products import PvModule
 from ..texts import t
-from . import lod2
-from .citygml import RoofPlane
+from . import europe, lod2
+from .citygml import Building, RoofPlane
 from .packing import pack
 
 # A click on the eaves overhang or the roof edge of the aerial image still
@@ -71,14 +73,18 @@ class RoofService:
         place = geo.lookup(request.plz, request.country)
         if place is None:
             raise lod2.Lod2Unavailable(f"unknown postcode {request.plz}")
-        if place is None:
-            raise lod2.Lod2Unavailable(f"unknown postcode {request.plz}")
         latitude, longitude = request.location.latitude, request.location.longitude
+        # A country whose official model is published outside the German state
+        # scheme is read first; everything else goes through the state table.
+        # Measured 2026-11-15: only the Netherlands and Switzerland publish a
+        # nationwide model with roof surfaces, and Switzerland's tile lookup is
+        # not built yet.
+        model = europe.read(place.country, latitude, longitude)
+        if model is not None:
+            return self._from_model(model, latitude, longitude, locale)
         # Whether an official outline exists is a property of the region, not of
         # the country: `tile_for` names the region it has no source for, and a
-        # region outside the set falls back to the hand-drawn plane. Measured
-        # 2026-11-15: this used to refuse every non-German country outright, so
-        # a region that gains a source later could not be served.
+        # region outside the set falls back to the hand-drawn plane.
         tile = lod2.tile_for(place.iso_region, latitude, longitude)
         index = self._index.load(tile)
         x, y = lod2.to_utm(tile.zone, latitude, longitude)
@@ -152,6 +158,108 @@ class RoofService:
             licence=tile.licence,
             assumptions=assumptions,
         )
+
+
+    def _from_model(
+        self,
+        model: europe.ModelResult,
+        latitude: float,
+        longitude: float,
+        locale: Locale,
+    ) -> RoofResult:
+        """The roof at a position, from a country's own 3D model.
+
+        The model answers in its own projected CRS; the rings are transformed
+        back to WGS84 here so the map and the report see the same coordinates
+        the German path produces.
+        """
+        module = self._module
+        name = f"{module.brand} {module.model}"
+        assumptions = [t(f"assume.{key}", locale) for key in ROOF_ASSUMPTIONS]
+        to_wgs84 = model.transformer
+        to_local = _to_model(model.country)
+        x, y = to_local.transform(longitude, latitude)
+        best: tuple[float, Building] | None = None
+        for building in model.buildings:
+            footprint = building.footprint[0] if building.footprint else None
+            if footprint is None:
+                continue
+            distance = europe.distance_m(footprint, x, y)
+            if distance <= CLICK_TOLERANCE_M and (best is None or distance < best[0]):
+                best = (distance, building)
+        source = f"{model.country} 3D model"
+        if best is None:
+            return RoofResult(
+                found=False,
+                building_id=None,
+                address=None,
+                distance_m=None,
+                outline=[],
+                planes=[],
+                modules=0,
+                kwp=0.0,
+                module=name,
+                module_wp=module.pmax_w,
+                source=source,
+                licence=model.licence,
+                assumptions=assumptions,
+            )
+        distance, building = best
+        planes: list[RoofPlaneResult] = []
+        for number, plane in enumerate(building.planes, start=1):
+            packed = pack(plane, module)
+            count = len(packed.modules)
+            planes.append(
+                RoofPlaneResult(
+                    id=number,
+                    polygon=_wgs84_ring(to_wgs84, plane.ring),
+                    tilt_deg=plane.tilt_deg,
+                    azimuth_deg=plane.azimuth_deg,
+                    area_m2=plane.area_m2,
+                    usable=packed.usable,
+                    excluded_reason=packed.reason,
+                    modules=count,
+                    kwp=round(count * module.pmax_w / 1000, 2),
+                    module_polygons=[
+                        _wgs84_ring(to_wgs84, [(float(px), float(py)) for px, py in ring])
+                        for ring in packed.modules
+                    ],
+                )
+            )
+        total = sum(p.modules for p in planes)
+        return RoofResult(
+            found=True,
+            building_id=building.id,
+            address=building.address,
+            distance_m=round(distance, 1),
+            outline=[
+                _wgs84_ring(to_wgs84, ring)
+                for ring in (building.footprint or [])
+            ],
+            planes=planes,
+            modules=total,
+            kwp=round(total * module.pmax_w / 1000, 2),
+            module=name,
+            module_wp=module.pmax_w,
+            source=source,
+            licence=model.licence,
+            assumptions=assumptions,
+        )
+
+
+@cache
+def _to_model(country: str) -> Transformer:
+    """The model's own projected CRS, to and from WGS84."""
+    return Transformer.from_crs("EPSG:4326", europe.model_crs(country), always_xy=True)
+
+
+def _wgs84_ring(
+    transformer: Transformer, ring: list[tuple[float, float]]
+) -> list[tuple[float, float]]:
+    return [
+        (round(lon, COORD_DECIMALS), round(lat, COORD_DECIMALS))
+        for lon, lat in (transformer.transform(x, y) for x, y in ring)
+    ]
 
 
 def _zone(longitude: float) -> int:
