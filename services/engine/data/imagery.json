@@ -154,6 +154,12 @@
    "credit": "Glowny Urzad Geodezji i Kartografii (GUGiK)",
    "licence": "Open data, GUGiK",
    "licence_url": "https://www.gov.pl/web/gugik"
+  },
+  "AT": {
+   "template": "https://mapsneu.wien.gv.at/basemap/bmaporthofoto30cm/normal/google3857/{z}/{y}/{x}.jpeg",
+   "credit": "basemap.at / Stadt Wien",
+   "licence": "CC BY 4.0 (basemap.at)",
+   "licence_url": "https://creativecommons.org/licenses/by/4.0/"
   }
  }
 }

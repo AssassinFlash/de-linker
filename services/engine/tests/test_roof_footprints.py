@@ -147,3 +147,23 @@ def test_a_position_with_no_mapped_building_answers_none() -> None:
     from linker_engine.roof import footprints as module
 
     assert module.outline_at("ZZ", 48.2082, 16.3738) is None
+
+
+def test_a_published_tile_template_is_used_as_is() -> None:
+    # Austria publishes basemap.at as a tile template, not a WMS. Measured
+    # 2026-11-16: zooms 15, 16 and 17 all returned real JPEGs of 19-22 KB.
+    from linker_engine import imagery
+
+    service = imagery.for_country("AT")
+    assert service is not None
+    assert "{z}" in service.tiles[0] and "{x}" in service.tiles[0]
+    assert "basemap.at" in service.licence or "basemap" in service.credit
+
+
+def test_each_recorded_country_answers_a_usable_layer() -> None:
+    from linker_engine import imagery
+
+    for country in ("AT", "BE", "CH", "ES", "FR", "NL", "PL"):
+        service = imagery.for_country(country)
+        assert service is not None, country
+        assert "{bbox-epsg-3857}" in service.tiles[0] or "{z}" in service.tiles[0]

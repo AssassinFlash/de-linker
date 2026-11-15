@@ -27,10 +27,15 @@ def for_state(state: str) -> Imagery | None:
     entry = _states().get(state)
     if entry is None:
         return None
-    tile = (
-        f"{entry['wms']}?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS={entry['layer']}"
-        "&STYLES=&CRS=EPSG:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png"
-    )
+    if "template" in entry:
+        # A published tile template already carries its own {z}/{x}/{y} slots;
+        # the map substitutes them and no WMS request is built.
+        tile = str(entry["template"])
+    else:
+        tile = (
+            f"{entry['wms']}?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS={entry['layer']}"
+            "&STYLES=&CRS=EPSG:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png"
+        )
     return Imagery(
         tiles=[tile],
         credit=entry["credit"],
