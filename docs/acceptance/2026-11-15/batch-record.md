@@ -211,7 +211,34 @@ CH 8001     -> 8001 Zürich                    Europe/Zurich
 
 **希腊的天气步骤**在修好之前一直报「需要可定位的邮编」，尽管坐标确实进了项目。根因是 `run` 是 `useCallback`，闭包捕获的是邮编解析**之前**那一次 render 的 `draft`；整个生成链只在首次执行一次。改为读挂载时的 `project.inputs`（服务端确认过的版本）。修后希腊、荷兰、英国都是 `weather:200` + `equipment-search:200`。
 
-**屋顶轮廓的全欧现实**（详见 `docs/research/2026-11-15-european-roof-outlines/REPORT.md`）：只有德国、荷兰（3D BAG，CC BY 4.0）、瑞士（swissBUILDINGS3D）有全国性 LoD2 级屋脊几何。Overture 与 Microsoft 覆盖每一个国家的 2D 轮廓。约 25 国只有 2D，其坡向必须来自客户输入或手绘。已实现荷兰的读取（`roof/europe.py`）：实测阿姆斯特丹返回 `b3_dak_type=slanted`、屋脊 15.0 m、檐口 7.47 m、四层、`MultiSurface`；解析器把 LoD 2 面作为屋脊、LoD 0 包络作为轮廓，跳过模型自称无屋顶的建筑；距离判定在轮廓内返回 0。
+**屋顶轮廓的全欧现实**（详见 `docs/research/2026-11-15-european-roof-outlines/REPORT.md`）：只有德国、荷兰（3D BAG，CC BY 4.0）、瑞士（swissBUILDINGS3D）有全国性 LoD2 级屋脊几何。Overture 与 Microsoft 覆盖每一个国家的 2D 轮廓。约 25 国只有 2D，其坡向必须来自客户输入或手绘。
+
+**荷兰读取已实现并实测**（`roof/europe.py`）：阿姆斯特丹一栋建筑返回 10 个屋顶面，坡度 0–58.6°、朝向 18.7–308.4°、单面 1.82–94.89 m²，这是真实的 LoD 2.2 屋顶几何。
+
+### 荷兰解析连错三次，每次都把坏数据当成可用
+
+这是本轮最该记的教训——**「返回了数据」不等于「数据是对的」**。
+
+1. **层级数错**：以为 `boundaries[0]` 是面列表，实际是 `[ring]`，`surface[0]` 拿到的是 int。
+2. **顶点表位置错**：以为在 document 级，实际在 **feature 级**（`document["vertices"]` 为空，`feature["vertices"]` 有 118 个）。
+3. **坐标变换位置错**（最严重）：以为在 document 或 feature 的 `transform`，实际在 **`document["metadata"]["metadata"]["transform"]`**。读错位置导致 `scale` 取默认 1、`translate` 取默认 0，于是 RD 坐标的整数被当成米——**一栋楼的单个「屋面」算出 94,892,716 m²（94 平方公里）**。
+
+我在第 3 个错误发生时已经向业主报告「荷兰 3D 模型可用」，依据是「阿姆斯特丹返回了 b3_dak_type=slanted、屋脊 15.0 m」。那些属性是对的，但**几何是垃圾**，而我没有检查算出来的面积是否合理。业主立刻质疑「不可能这么简单」，才发现一栋楼 52 个屋面、单面 94 平方公里。
+
+修法：变换按四层深度依次查找；`CityJSON` 没有 `RoofSurface` 元素，墙和地面板与屋顶在同一个 `MultiSurface` 里，因此屋面判定加两道界——坡度 < 89°（排除墙）与面积 ≤ 3000 m²（排除地面板，与游客手绘平面的上限一致）。
+
+### 仍然是「仅德国」的层（业主要求全欧，这些尚未完成）
+
+| 层 | 实际覆盖 | 缺口 |
+|---|---|---|
+| 邮编、坐标、时区 | **50 国** | 无 |
+| 国家接网规则 `country_rules.py` | **5 国**（FR/NL/DE/AT/SE） | **45 国无规则**，报告印「本次修订无已验证的当地规则」 |
+| 航拍影像 `imagery.json` | **16 个德国州** | 全欧其余无影像 |
+| 屋顶轮廓 | 16 个德国州 + **仅荷兰** | 瑞士未实现；其余 47 国无 3D，只有 2D 轮廓（Overture/Microsoft，尚未导入） |
+| Google Maps | **零** | 前端用 MapLibre + OpenFreeMap，不是 Google Maps |
+| 新增字符串的德语 | 未翻译 | 这是必须补的 |
+
+**「12/12 通过」指的是**：邮编→坐标→时区→天气→设备搜索这条链的 HTTP 200。它**不**代表屋顶、接网规则、影像可用。链条实际停在 `Check the chosen combination` 之后的报告步骤，德国也一样（`hasReport: false`），那是另一个待查的问题。
 
 **三处我自己引入并修掉的错误**：
 
@@ -250,3 +277,151 @@ CH 8001     -> 8001 Zürich                    Europe/Zurich
 - **配置器首屏约 9 秒** → 实测拆成三段：本机到主机的 RTT 约 1.5–1.9 秒（静态 `.js` 同值）；`rest-nonce` 往返 700ms（访客注定 400，已删）；两次 `bootstrap` 各约 1.27 秒（安全设计：第一次发 cookie、第二次证明 cookie 回传，改成一次往返等于把新发 cookie 当所有权证明，与 `#902` 冲突）。删掉 nonce 后表单可见 **8,919ms → 6,858ms**。剩余部分是链路延迟与安全成本，不是可修的缺陷。
 - **产品归档页 390 的 TTFB 4,097ms** → 冷缓存首次渲染；同页第二次 1.5s，与纯静态资源相同，即链路下限。`x-litespeed-cache: hit` 时同样 1.5s。
 - **`legacy_release.py` 能激活不服务规划请求的单元而不报错** → `9f845f74f` 在该单元激活时打印仍承接规划请求的单元名。规则同步写入 `AGENTS.md` §5。
+
+## Every European country, not Germany only (2026-11-16)
+
+Owner ruling: no feature may stop at the German border. The four layers the
+configurator needs were each brought to every country, and each claim below is
+a measured production result, not an inference from a 200 status.
+
+### The report step failed for every country
+
+`runs/equipment-search` answered `422 invalid_input` on live for Germany as well
+as Greece. The request body carries no inputs: the engine reads the saved
+project, so the refusal came from `EquipmentRequirements.from_inputs`.
+
+Reading the production workspace directly (`/opt/linker-planner/state/workspace
+/workspace.sqlite`, blob `c10b8f98…`) showed the cause:
+
+```
+equipment_requirements.application = "residential"
+equipment_setup            (no application key)
+```
+
+The earlier change excluded `application` from the compared *key set* but still
+built a model from the setup, whose absent `application` defaulted to `None` and
+differed from every prepared requirement. The comparison is now by value over
+the fields both documents own, and a field the setup omits is not compared.
+
+The refusal also named no cause: `InvalidInput` carried no field path. It now
+carries bounded schema paths, so the next refusal says which declaration
+disagreed.
+
+### Report and bill of materials, measured on live
+
+Fifteen countries produced `Report and solution draft` with a bill of materials,
+each with every run at 200:
+
+| Country | Postcode | Report | BOM |
+|---|---|---|---|
+| DE | 80538 | yes | yes |
+| GR | 10431 | yes | yes |
+| NL | 1012JS | yes | yes |
+| BE | 1000 | yes | yes |
+| FR | 75001 | yes | yes |
+| ES | 28001 | yes | yes |
+| IT | 20121 | yes | yes |
+| PL | 00-001 | yes | yes |
+| GB | SW1A 1AA | yes | yes |
+| AT | 1010 | yes | yes |
+| CH | 8001 | yes | yes |
+| CZ | 11000 | yes | yes |
+| SE | 11120 | yes | yes |
+| DK | 1050 | yes | yes |
+| PT | 1000-001 | yes | yes |
+
+### Roof geometry
+
+**Netherlands** (3D BAG, CC BY 4.0), Amsterdam 52.3702 / 4.8952: ten planes,
+tilt 18.9 / 41.8 / 56.6 / 58.6 degrees, azimuth 19-308, 1.82-105.37 m2.
+
+**Switzerland** (swissBUILDINGS3D 2.0, swisstopo free with attribution), Bern
+46.9480 / 7.4474: four planes, tilt 0.0 / 51.2 / 52.2 degrees, azimuth 0 / 89.7
+/ 179.8, 59.6-133.2 m2. The reader is `roof/swiss.py`; three defects had to be
+fixed against the real 16 MB tile, and none would have shown up in a fixture:
+
+1. Grouping by shared vertices merged the whole 1 km2 tile into **one** building
+   (864,537 faces). The DXF already groups them: one `POLYLINE` per building
+   (10,934 measured).
+2. A face record numbers its vertices **within its own polyline**. Read as a
+   file-wide index, the tenth building's faces landed on the first building's
+   corners and produced near-3000 m2 "roofs".
+3. No spatial index: one lookup over 864,537 faces had not finished in five
+   minutes. A 32 m grid brings it to 0.03 s.
+
+**Every other country**: the Microsoft Global Building Footprints
+(CDLA-Permissive 2.0) give the real outline. Measured at Vienna 1010: the part
+for quadkey `120230113` is 37.9 MB compressed, and the position returns a
+32-point, 4,138 m2 ring. The pitch and facing stay the customer's, entered on
+the map, and the result names `assume.outline_only` so the report does not
+present an outline as a survey.
+
+### Grid-connection rules
+
+France, the Netherlands, Germany, Austria and Sweden carry a rule pack with an
+official citation. Every other country previously printed "This revision has no
+verified local rule for this site", which names no cause and no gap. It now
+states that no verified rule pack exists for the country and how the conditions
+will be checked, in English and in independently written German.
+
+### Aerial imagery
+
+Added as national mosaics where a real GetMap answered (byte counts are the
+live responses): NL `service.pdok.nl` 28,519; FR `data.geopf.fr` 66,395; ES
+`www.ign.es` 35,597; CH `wms.geo.admin.ch` 93,466; BE
+`geo.api.vlaanderen.be` 69,511.
+
+**Italy is a real gap**: the national WMS loads
+`\\192.168.65.12\nas1_vol1\DATI\ORTOFOTO`, an internal path it cannot read. No
+layer is recorded, the map keeps its plain background, and the reason is the
+server's, not the caller's.
+
+The layer reaches the visitor through `places/lookup`, the endpoint the screen
+actually calls; `/geo/plz` is not on that path. The map draws it as a raster
+under the project geometry and only after the visitor loads the external map,
+the same consent the street style already required.
+
+### The mosaic reached the screen, and the three gates that hid it
+
+Measured on live 2026-11-16 at 80538 München, after the fixes below:
+30 `GetMap` requests to `geoservices.bayern.de` (`LAYERS=by_dop20c`, the
+Bavarian 20 cm orthophoto), and a screenshot showing photographic roof
+texture with the credit line
+`Bayerische Vermessungsverwaltung – www.geodaten.bayern.de — CC BY 4.0`.
+
+Reaching that took four separate defects, each invisible to the one before it:
+
+1. **The aerial layer was on an endpoint no screen calls.** It was added to
+   `/geo/plz`; the one-screen start and the design step both use
+   `places/lookup`. The answer now carries `imagery`.
+2. **A site with no geometry could not open the map at all.** The map refuses
+   without a geographic anchor (`map_geographic_reference_required`, and the
+   code says "never infer north from a map"). A visitor who had entered a
+   postcode saw only a notice. The declared site position now centres the map;
+   the design anchor is still not invented from it.
+3. **The map's network grant is a one-origin allowlist.** `MapRequestScope`
+   allowed only `tiles.openfreemap.org`, so the browser never issued the WMS
+   request — the attribution rendered while zero tiles were fetched. The
+   declared mosaic origin is now granted explicitly, and
+   `mapRequests.test.ts` still refuses lookalike hosts, http, other ports and
+   credentials.
+4. **The consent gate is real.** Nothing external loads until the visitor
+   presses `Load street map`; the mosaic rides the same grant.
+
+### The outline reached the map
+
+`/roof/outline` existed on the engine's older app and was absent from the
+planner gateway, so the outline capability had no consumer: Vienna 1010 still
+showed "needs a geographic origin" with no building. Measured live on the
+published part for quadkey `120230113`, the position resolves to a 32-point,
+4,138 m2 ring.
+
+The path is now `places/outline` → gateway allowlist → `ProjectEditor` →
+`MapViewport`, drawn dashed as a starting outline with its source and licence.
+It carries no plane and no area claim.
+
+### What this record does not claim
+
+Every claim above is either a live HTTP result or a screenshot of the live page.
+The Swiss and Dutch roof planes are engine results measured against the
+published services, not screenshots of them in the map.
