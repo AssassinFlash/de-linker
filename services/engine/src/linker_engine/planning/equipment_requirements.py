@@ -24,6 +24,11 @@ type GridPhase = Annotated[Literal[1, 3], BeforeValidator(_phase)]
 type Application = Literal["residential", "commercial"]
 
 
+# Declarations the requirements own and a setup cannot carry: the selection
+# schema has no such property, so comparing them would always mismatch.
+_REQUIREMENTS_ONLY = frozenset({"application"})
+
+
 class EquipmentRequirements(Document):
     schema_version: SchemaVersion
     grid_phase: GridPhase
@@ -41,7 +46,13 @@ class EquipmentRequirements(Document):
         prepared = cls.read(inputs.get("equipment_requirements"))
         setup = inputs.get("equipment_setup")
         if isinstance(setup, dict):
-            current = cls.read({key: setup.get(key) for key in cls.model_fields})
+            # A setup cannot restate `application`: it is a declaration about the
+            # project, held by the requirements, and the selection schema has no
+            # such property. Comparing it here refused every search the
+            # one-screen start sent — measured 2026-11-15, 422 invalid_input for
+            # Germany as well as Greece.
+            shared = [key for key in cls.model_fields if key not in _REQUIREMENTS_ONLY]
+            current = cls.read({key: setup.get(key) for key in shared})
             if current != prepared:
                 raise InvalidInput("equipment search requirements need preparation")
         return prepared

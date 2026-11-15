@@ -23,6 +23,7 @@ already handles.
 
 from __future__ import annotations
 
+import http.client
 import json
 import math
 import urllib.error
@@ -47,6 +48,12 @@ DUTCH_LIMIT = 8
 # A position is inside this many metres of a building to select it, matching
 # the German path's click tolerance.
 CLICK_TOLERANCE_M = 3.0
+
+# The largest surface this tool will call a roof plane. The bound is the same
+# one a visitor's drawn plane must meet (`MAX_DRAWN_PLANE_M2`), and it is what
+# separates a roof from the walls and ground slab that CityJSON puts in the
+# same MultiSurface.
+MAX_ROOF_PLANE_M2 = 3000.0
 
 LICENCES = {
     "NL": "CC BY 4.0 (3D BAG, TU Delft / 3DGI)",
@@ -84,18 +91,50 @@ def _dutch_bbox(latitude: float, longitude: float, metres: float) -> str:
 
 
 def _fetch_dutch(latitude: float, longitude: float) -> dict[str, Any]:
+    """The building page for a position, with one retry on a short read.
+
+    Measured 2026-11-15: the same service occasionally closes a chunked body
+    before its last chunk (`IncompleteRead: 36731 bytes read, 9998 more
+    expected`). A second attempt answers in full, so one retry covers it and a
+    persistent failure still surfaces as unavailable.
+    """
     query = urllib.parse.urlencode(
         {"limit": DUTCH_LIMIT, "bbox": _dutch_bbox(latitude, longitude, 30.0)}
     )
-    request = urllib.request.Request(
-        f"{DUTCH_ENDPOINT}?{query}",
-        headers={"Accept": "application/geo+json", "User-Agent": USER_AGENT},
-    )
-    try:
-        with urllib.request.urlopen(request, timeout=60) as response:
-            return cast(dict[str, Any], json.load(response))
-    except (urllib.error.URLError, TimeoutError, ValueError) as error:
-        raise ModelUnavailable(f"3D BAG did not answer: {error}") from error
+    url = f"{DUTCH_ENDPOINT}?{query}"
+    last: Exception | None = None
+    for _attempt in range(2):
+        request = urllib.request.Request(
+            url, headers={"Accept": "application/geo+json", "User-Agent": USER_AGENT}
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=60) as response:
+                return cast(dict[str, Any], json.load(response))
+        except http.client.IncompleteRead as error:
+            last = error
+            continue
+        except (urllib.error.URLError, TimeoutError, ValueError) as error:
+            raise ModelUnavailable(f"3D BAG did not answer: {error}") from error
+    raise ModelUnavailable(f"3D BAG read was truncated twice: {last}")
+
+
+def _rings(node: Any) -> list[list[int]]:
+    """Every ring under a CityJSON `boundaries` value, at whatever depth it sits.
+
+    The specification nests one level per dimension, but a `Surface` and a
+    `CompositeSurface` differ by one: the Dutch roof geometry measured on
+    2026-11-15 arrives as `[ring]` where the fixture had `[surface[ring]]`. A
+    depth-first walk takes both, and an empty or malformed branch contributes
+    nothing rather than raising.
+    """
+    if not isinstance(node, list) or not node:
+        return []
+    if all(isinstance(item, int) for item in node):
+        return [cast(list[int], node)]
+    out: list[list[int]] = []
+    for item in node:
+        out.extend(_rings(item))
+    return out
 
 
 def _ring(
@@ -117,21 +156,47 @@ def _ring(
     return out
 
 
+def _transform(document: dict[str, Any], feature: dict[str, Any]) -> tuple[
+    list[float], list[float]
+]:
+    """The affine a feature's integer vertices are stored in.
+
+    CityJSON lets the transform sit at three depths and the Dutch service uses
+    the deepest: measured 2026-11-15, `document["metadata"]["metadata"]
+    ["transform"]` carries `scale 0.001` and a `translate` near 121497, 487042
+    — RD New metres — while the document and the feature both have no
+    `transform` key at all. Reading the shallow places gave scale 1 and
+    translate 0, which turned one building's ground slab into 94 km².
+    """
+    for holder in (
+        feature.get("transform"),
+        document.get("transform"),
+        (document.get("metadata") or {}).get("transform"),
+        ((document.get("metadata") or {}).get("metadata") or {}).get("transform"),
+    ):
+        if isinstance(holder, dict):
+            scale = [float(v) for v in holder.get("scale", [1.0, 1.0, 1.0])]
+            offset = [float(v) for v in holder.get("translate", [0.0, 0.0, 0.0])]
+            return scale, offset
+    return [1.0, 1.0, 1.0], [0.0, 0.0, 0.0]
+
+
 def _dutch_buildings(document: dict[str, Any]) -> list[Building]:
     """Roof surfaces of every building in the answer.
 
-    CityJSON stores one vertex table per document and indexes it per surface,
-    so the rings are rebuilt here before `plane_of` measures them. Only the
-    surfaces belonging to a roof are kept: a building's walls and floor carry
-    no module.
+    The vertex table sits on each feature, not on the document: measured
+    2026-11-15 against the live service, `document["vertices"]` is empty and
+    `feature["vertices"]` holds 118 entries for one building. Reading the
+    document table indexes nothing. Only roof surfaces are kept — a building's
+    walls and floor carry no module.
     """
-    transform = document.get("transform") or {}
-    scale = [float(v) for v in transform.get("scale", [1.0, 1.0, 1.0])]
-    offset = [float(v) for v in transform.get("translate", [0.0, 0.0, 0.0])]
-    vertices = cast(list[list[float]], document.get("vertices") or [])
     buildings: list[Building] = []
     for feature in cast(list[dict[str, Any]], document.get("features") or []):
         objects = cast(dict[str, Any], feature.get("CityObjects") or {})
+        scale, offset = _transform(document, feature)
+        vertices = cast(
+            list[list[float]], feature.get("vertices") or document.get("vertices") or []
+        )
         for object_id, item in objects.items():
             attributes = cast(dict[str, Any], item.get("attributes") or {})
             # The published roof type is a documented fact about the building,
@@ -145,16 +210,28 @@ def _dutch_buildings(document: dict[str, Any]) -> list[Building]:
                 boundaries = cast(list[Any], geometry.get("boundaries") or [])
                 if not boundaries:
                     continue
-                # LoD 2 carries the roof surfaces; LoD 0/1 is the extrusion
-                # envelope, whose top face is not a roof plane of the building.
-                surfaces = cast(list[list[list[int]]], boundaries[0])
-                for surface in surfaces:
-                    if not surface:
-                        continue
-                    ring = _ring(surface[0], vertices, offset, scale)
+                # CityJSON nests one level per dimension, but the levels present
+                # depend on the surface type: a CompositeSurface is
+                # `[surface[ring[index]]]`, while a plain Surface is
+                # `[ring[index]]`. Measured 2026-11-15 against the live Dutch
+                # service, the roof geometry arrives one level shallower than the
+                # fixture assumed, so the depth is read rather than trusted.
+                for indices in _rings(boundaries):
+                    ring = _ring(indices, vertices, offset, scale)
                     if lod.startswith("2"):
                         plane = plane_of(ring)
-                        if plane is not None:
+                        # CityJSON has no `RoofSurface` element: a building's
+                        # roof, walls and floor are all surfaces of the same
+                        # MultiSurface. Measured 2026-11-15, taking every LoD 2
+                        # surface gave one Amsterdam building 52 "roof planes"
+                        # of up to 94,892,716 m² — the walls and the ground
+                        # slab. A roof plane is not vertical and is not larger
+                        # than any plane this tool would let a visitor draw.
+                        if (
+                            plane is not None
+                            and plane.tilt_deg < 89.0
+                            and 0.5 <= plane.area_m2 <= MAX_ROOF_PLANE_M2
+                        ):
                             planes.append(plane)
                     elif lod.startswith("0") or lod.startswith("1"):
                         footprint.append([(x, y) for x, y, _ in ring])
