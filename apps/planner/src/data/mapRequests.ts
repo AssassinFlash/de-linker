@@ -1,12 +1,26 @@
 /** The retained OpenFreeMap style manifest uses this one delivery origin for
- * styles, tiles, glyphs and sprites. A style cannot widen its own network grant. */
+ * styles, tiles, glyphs and sprites. A style cannot widen its own network grant.
+ * The site's own aerial mosaic is a second, explicitly declared grant: it is
+ * passed in by the caller from the server's answer, never read from a style. */
 const ORIGIN = "https://tiles.openfreemap.org";
 
 export class MapRequestScope {
 	private active = true;
 	private readonly external: boolean;
-	constructor(external: boolean) {
+	private readonly aerial: ReadonlySet<string>;
+
+	/**
+	 * @param external whether the visitor allowed external map services
+	 * @param aerialOrigins origins of the site's aerial mosaic, exactly as the
+	 * server named them. An empty set leaves only the style provider reachable.
+	 */
+	constructor(external: boolean, aerialOrigins: readonly string[] = []) {
 		this.external = external;
+		this.aerial = new Set(
+			aerialOrigins
+				.map((origin) => origin.trim().toLowerCase())
+				.filter((origin) => /^https:\/\/[a-z0-9.-]+(:\d+)?$/.test(origin)),
+		);
 	}
 
 	/** MapLibre invokes this boundary for worker tiles as well as main-thread
@@ -15,10 +29,12 @@ export class MapRequestScope {
 		if (!this.active || !this.external)
 			throw new Error("map_request_not_authorized");
 		const target = new URL(url);
-		if (target.origin !== ORIGIN || target.username || target.password)
+		if (target.username || target.password)
 			throw new Error("map_resource_origin_not_authorized");
-		// The pinned library supports same-origin/include. This exact third-party
-		// origin is cross-origin to Linker, so same-origin sends no credentials.
+		if (target.origin !== ORIGIN && !this.aerial.has(target.origin))
+			throw new Error("map_resource_origin_not_authorized");
+		// The pinned library supports same-origin/include. Every granted origin
+		// here is cross-origin to Linker, so same-origin sends no credentials.
 		return {
 			url: target.href,
 			credentials: "same-origin" as const,

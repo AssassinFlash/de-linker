@@ -48,3 +48,39 @@ test("an old library callback remains refused after release and a different view
 		/not_authorized/,
 	);
 });
+
+test("the site's declared mosaic origin is the only other origin granted", () => {
+	const scoped = new MapRequestScope(true, ["https://geoservices.bayern.de"]);
+	assert.equal(
+		scoped.transform("https://geoservices.bayern.de/od/wms/dop/v1/dop20").credentials,
+		"same-origin",
+	);
+	// A longer host that merely starts with the granted name is a different origin.
+	for (const url of [
+		"https://geoservices.bayern.de.attacker.invalid/tile",
+		"https://evil.invalid/tile",
+		"http://geoservices.bayern.de/tile",
+		"https://geoservices.bayern.de:444/tile",
+		"https://user:pw@geoservices.bayern.de/tile",
+	])
+		assert.throws(() => scoped.transform(url), /not_authorized/, url);
+});
+
+test("an origin the caller did not declare stays refused", () => {
+	const scoped = new MapRequestScope(true, []);
+	assert.throws(
+		() => scoped.transform("https://geoservices.bayern.de/tile"),
+		/not_authorized/,
+	);
+	// A malformed declaration cannot widen the grant.
+	const malformed = new MapRequestScope(true, ["javascript:alert(1)", "", "nonsense"]);
+	assert.throws(
+		() => malformed.transform("https://geoservices.bayern.de/tile"),
+		/not_authorized/,
+	);
+	// The style provider is granted regardless; only the extra grants are dropped.
+	assert.equal(
+		malformed.transform("https://tiles.openfreemap.org/x").credentials,
+		"same-origin",
+	);
+});

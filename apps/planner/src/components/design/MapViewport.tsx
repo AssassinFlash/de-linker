@@ -202,7 +202,17 @@ export default function MapViewport({
 		let initialized = false;
 		let map: MapLibreMap | null = null;
 		let resize: ResizeObserver | null = null;
-		const requests = new MapRequestScope(external);
+		// The mosaic's origins come from the server's answer, not from a style.
+		const aerialOrigins = (latest.current.imagery?.tiles ?? [])
+			.map((tile) => {
+				try {
+					return new URL(tile).origin;
+				} catch {
+					return "";
+				}
+			})
+			.filter(Boolean);
+		const requests = new MapRequestScope(external, aerialOrigins);
 		setStatus("loading");
 		setResourceFailure(false);
 		setFailure(null);
