@@ -4,9 +4,11 @@ import { Map as MapLibreMap, AttributionControl, Marker } from "maplibre-gl";
 import type {
 	GeoJSONSource,
 	MapMouseEvent,
+	RasterTileSource,
 	StyleSpecification,
 } from "maplibre-gl";
 import type { GeometryDocument, PanelPose } from "../../domain/geometry.ts";
+import type { PlaceImagery } from "../../domain/place.ts";
 import { geographicMapGeometry } from "../../domain/mapGeometry.ts";
 import { MapRequestScope } from "../../data/mapRequests.ts";
 import { MapPickGate } from "../../data/MapPickGate.ts";
@@ -30,6 +32,10 @@ const LAYERS = KINDS.map((kind) => `linker-map-${kind}`);
 // Official public style, checked in the Apify provider dossier. It is never
 // requested until the visitor explicitly asks to load this external service.
 const STREET_STYLE = "https://tiles.openfreemap.org/styles/liberty";
+// The official aerial mosaic sits under the project geometry, drawn only after
+// the visitor agrees to external services, on the same rule as the street style.
+const IMAGERY_SOURCE = "linker-site-imagery";
+const IMAGERY_LAYER = "linker-site-imagery";
 
 /** Bounded renderer diagnostics exclude message bodies, URL paths/queries,
  * project data and source contents. They identify a failed runtime boundary. */
@@ -64,6 +70,7 @@ export default function MapViewport({
 	disabled,
 	openReferences,
 	camera,
+	imagery = null,
 	interaction = null,
 }: {
 	document: GeometryDocument;
@@ -74,6 +81,8 @@ export default function MapViewport({
 	openReferences: () => void;
 	camera: RefObject<MapCamera | null>;
 	interaction?: MapInteraction | null;
+	/** The official aerial mosaic for this site, or null where none exists. */
+	imagery?: PlaceImagery | null;
 }) {
 	const host = useRef<HTMLDivElement>(null),
 		mapRef = useRef<MapLibreMap | null>(null),
@@ -105,8 +114,9 @@ export default function MapViewport({
 		select,
 		disabled,
 		interaction,
+		imagery,
 	});
-	latest.current = { projection, selected, select, disabled, interaction };
+	latest.current = { projection, selected, select, disabled, interaction, imagery };
 
 	function fit(map: MapLibreMap) {
 		const view = latest.current.projection.view;
@@ -250,6 +260,41 @@ export default function MapViewport({
 			current
 				.getCanvas()
 				.setAttribute("aria-label", __("Project map", "linker-tools"));
+			function updateImagery() {
+				const mosaic = latest.current.imagery;
+				if (!external || !mosaic || mosaic.tiles.length === 0) {
+					if (current.getLayer(IMAGERY_LAYER))
+						current.removeLayer(IMAGERY_LAYER);
+					if (current.getSource(IMAGERY_SOURCE))
+						current.removeSource(IMAGERY_SOURCE);
+					return;
+				}
+				// Under the geometry: the roof fill has to stay legible on top.
+				const before = current.getLayer(`linker-map-${KINDS[0]}`)
+					? `linker-map-${KINDS[0]}`
+					: undefined;
+				if (current.getSource(IMAGERY_SOURCE)) {
+					(current.getSource(IMAGERY_SOURCE) as RasterTileSource).setTiles(
+						[...mosaic.tiles],
+					);
+					return;
+				}
+				current.addSource(IMAGERY_SOURCE, {
+					type: "raster",
+					tiles: [...mosaic.tiles],
+					tileSize: 256,
+					attribution: `${mosaic.credit} — ${mosaic.licence}`,
+				});
+				current.addLayer(
+					{
+						id: IMAGERY_LAYER,
+						type: "raster",
+						source: IMAGERY_SOURCE,
+						paint: { "raster-opacity": 1 },
+					},
+					before,
+				);
+			}
 			function updateOverlay() {
 				if (disposed || !latest.current.projection.view) return;
 				const data = latest.current.projection.view.collection;
@@ -287,6 +332,7 @@ export default function MapViewport({
 			const ready = () => {
 				if (disposed) return;
 				try {
+					updateImagery();
 					updateOverlay();
 					if (!saved) fit(current);
 					initialized = true;
@@ -383,6 +429,38 @@ export default function MapViewport({
 			setStatus("failed");
 		}
 	}, [available, external, attempt, camera]);
+	// The place resolves after the map is ready, so the mosaic is added on its
+	// own rather than only at load. The same visitor consent gates it.
+	useEffect(() => {
+		const map = mapRef.current;
+		if (!map || map !== readyMap || status !== "ready") return;
+		if (!external || !imagery || imagery.tiles.length === 0) {
+			if (map.getLayer(IMAGERY_LAYER)) map.removeLayer(IMAGERY_LAYER);
+			if (map.getSource(IMAGERY_SOURCE)) map.removeSource(IMAGERY_SOURCE);
+			return;
+		}
+		if (map.getSource(IMAGERY_SOURCE)) {
+			(map.getSource(IMAGERY_SOURCE) as RasterTileSource).setTiles([
+				...imagery.tiles,
+			]);
+			return;
+		}
+		map.addSource(IMAGERY_SOURCE, {
+			type: "raster",
+			tiles: [...imagery.tiles],
+			tileSize: 256,
+			attribution: `${imagery.credit} — ${imagery.licence}`,
+		});
+		map.addLayer(
+			{
+				id: IMAGERY_LAYER,
+				type: "raster",
+				source: IMAGERY_SOURCE,
+				paint: { "raster-opacity": 1 },
+			},
+			map.getLayer(`linker-map-${KINDS[0]}`) ? `linker-map-${KINDS[0]}` : undefined,
+		);
+	}, [external, imagery, readyMap, status]);
 	useEffect(() => {
 		const map = mapRef.current,
 			value = latest.current.interaction;

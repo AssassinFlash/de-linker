@@ -10,6 +10,8 @@ import {
 } from "../domain/gridConnection.ts";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Configuration } from "../data/config.ts";
+import { readPlaceImagery } from "../domain/place.ts";
+import type { PlaceImagery } from "../domain/place.ts";
 import type { PlannerClient } from "../data/PlannerClient.ts";
 import type { DraftStore } from "../data/DraftStore.ts";
 import type { JsonObject, Project, Session } from "../data/protocol.ts";
@@ -143,6 +145,51 @@ export function ProjectEditor({
 		recoveries,
 		restore,
 	} = useProjectDraft(project, session, client, store, recheck);
+	// The official aerial mosaic of the declared site, for the map background.
+	// It is asked once per postcode and only when the brief names one; a site
+	// whose country publishes no service keeps the plain background.
+	const [siteImagery, setSiteImagery] = useState<PlaceImagery | null>(null);
+	useEffect(() => {
+		// `brief` is resolved inside the render path below, so the hook reads the
+		// stored brief directly; a project whose brief cannot be read keeps the
+		// plain background rather than failing the design step.
+		let site: { label: string; country: string | null };
+		try {
+			const stored = draft?.history.current.brief;
+			const value = stored === undefined ? emptyBrief() : readBrief(stored);
+			site = {
+				label: value.site.location_label.trim(),
+				country: value.site.country_code,
+			};
+		} catch {
+			setSiteImagery(null);
+			return;
+		}
+		const label = site.label;
+		const country = site.country;
+		if (!label || !client.isCurrentScope(session.query_scope)) {
+			setSiteImagery(null);
+			return;
+		}
+		let live = true;
+		void (async () => {
+			try {
+				const answer = await client.query(
+					"places/lookup",
+					{ schema_version: 1, query: label, ...(country ? { country } : {}) },
+					session.query_scope,
+				);
+				if (live) setSiteImagery(readPlaceImagery(readObject(answer).imagery));
+			} catch {
+				// A missing mosaic never blocks the design step.
+				if (live) setSiteImagery(null);
+			}
+		})();
+		return () => {
+			live = false;
+		};
+	}, [draft, client, session.query_scope]);
+
 	const [gridValid, setGridValid] = useState(true);
 	const [ruleValid, setRuleValid] = useState(true);
 	const [briefValid, setBriefValid] = useState(true);
@@ -905,6 +952,7 @@ export function ProjectEditor({
 								initialMapView={mapPropertyHashes.includes(
 									window.location.hash,
 								)}
+								imagery={siteImagery}
 								geometry={geometry}
 								confirmedGeometry={
 									draft.baseline.inputs.geometry === undefined

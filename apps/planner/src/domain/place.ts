@@ -21,6 +21,35 @@ export interface ResolvedPlace extends JsonObject {
 	readonly region?: string;
 	readonly timezone?: string;
 	readonly attribution?: string;
+	/** The official aerial layer for this place, or null where none exists. */
+	readonly imagery?: PlaceImagery | null;
+}
+
+/** A WMS mosaic the map draws under the project geometry. */
+export interface PlaceImagery extends JsonObject {
+	readonly tiles: readonly string[];
+	readonly credit: string;
+	readonly licence: string;
+	readonly licence_url: string;
+}
+
+export function readPlaceImagery(value: unknown): PlaceImagery | null {
+	if (value === null || value === undefined) return null;
+	const data = readObject(value);
+	if (!Array.isArray(data.tiles) || data.tiles.length === 0)
+		throw new ApiError(502, "invalid_place_reply");
+	if (
+		typeof data.credit !== "string" ||
+		typeof data.licence !== "string" ||
+		typeof data.licence_url !== "string"
+	)
+		throw new ApiError(502, "invalid_place_reply");
+	const tiles = data.tiles.filter(
+		(tile): tile is string => typeof tile === "string" && tile.length > 0,
+	);
+	if (tiles.length !== data.tiles.length)
+		throw new ApiError(502, "invalid_place_reply");
+	return { ...data, tiles } as unknown as PlaceImagery;
 }
 
 export function readResolvedPlace(value: unknown): ResolvedPlace {
@@ -39,5 +68,5 @@ export function readResolvedPlace(value: unknown): ResolvedPlace {
 		typeof data.timezone !== "string"
 	)
 		throw new ApiError(502, "invalid_place_reply");
-	return data as ResolvedPlace;
+	return { ...data, imagery: readPlaceImagery(data.imagery) } as ResolvedPlace;
 }

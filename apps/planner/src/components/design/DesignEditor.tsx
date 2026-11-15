@@ -4,6 +4,7 @@ import type {
 	PreparedGeometryImport,
 	GeometryImportSelections,
 } from "../../domain/geometryImports.ts";
+import type { PlaceImagery } from "../../domain/place.ts";
 import type { GeometryCommand } from "../../domain/geometryCommands.ts";
 import { roofDependents } from "../../domain/geometryCommands.ts";
 import { moduleSummary, panelPoses } from "../../domain/panelPoses.ts";
@@ -60,6 +61,7 @@ export function DesignEditor({
 	session,
 	client,
 	recheck,
+	imagery = null,
 	onValidity,
 	attachImport,
 	confirmedAssetIds = [],
@@ -69,6 +71,7 @@ export function DesignEditor({
 	geometry: GeometryDocument;
 	confirmedGeometry?: GeometryDocument | null;
 	geometryImports?: GeometryImportSelections;
+	imagery?: PlaceImagery | null;
 	sceneModuleUrl?: string | null;
 	mapModuleUrl?: string | null;
 	initialMapView?: boolean;
@@ -306,6 +309,7 @@ export function DesignEditor({
 				<div className="lp-design-canvas">
 					{view === "map" ? (
 						<MapDrawingWorkspace
+							imagery={imagery}
 							mapModuleUrl={mapModuleUrl}
 							geometry={geometry}
 							confirmedGeometry={confirmedGeometry}
