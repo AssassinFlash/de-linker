@@ -147,6 +147,13 @@
    "credit": "Digitaal Vlaanderen",
    "licence": "Model licence Vlaanderen, free reuse",
    "licence_url": "https://www.vlaanderen.be/digitaal-vlaanderen"
+  },
+  "PL": {
+   "wms": "https://mapy.geoportal.gov.pl/wss/service/PZGIK/ORTO/WMS/StandardResolution",
+   "layer": "Raster",
+   "credit": "Glowny Urzad Geodezji i Kartografii (GUGiK)",
+   "licence": "Open data, GUGiK",
+   "licence_url": "https://www.gov.pl/web/gugik"
   }
  }
 }
