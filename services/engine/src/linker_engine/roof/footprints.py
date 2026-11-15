@@ -277,3 +277,39 @@ def cache_dir(root: Path) -> Path:
     directory = root / "footprints"
     directory.mkdir(parents=True, exist_ok=True)
     return directory
+
+
+def outline_at(
+    country: str, latitude: float, longitude: float
+) -> list[tuple[float, float]] | None:
+    """The mapped building outline at a position, or None where none is known.
+
+    This is the geometric answer alone: no module layout, no pitch, no area
+    claim. A caller that shows it must say where it came from.
+    """
+    key = quadkey(latitude, longitude)
+    url = part_url(country, key)
+    if url is None:
+        return None
+    try:
+        archive = download(url)
+    except (OSError, ValueError):
+        return None
+    return nearest(outlines(archive, latitude, longitude), latitude, longitude)
+
+
+def outline_payload(
+    country: str, latitude: float, longitude: float
+) -> dict[str, Any] | None:
+    """The outline with the source and licence a screen has to display."""
+    ring = outline_at(country, latitude, longitude)
+    if ring is None:
+        return None
+    return {
+        "outline": [
+            [round(longitude_value, 7), round(latitude_value, 7)]
+            for longitude_value, latitude_value in ring
+        ],
+        "source": "Microsoft building footprints",
+        "licence": LICENCE,
+    }

@@ -149,6 +149,13 @@ export function ProjectEditor({
 	// It is asked once per postcode and only when the brief names one; a site
 	// whose country publishes no service keeps the plain background.
 	const [siteImagery, setSiteImagery] = useState<PlaceImagery | null>(null);
+	// The mapped building at the declared site, for the countries whose 3D model
+	// publishes no roof. It is an outline only: the pitch stays the visitor's.
+	const [siteOutline, setSiteOutline] = useState<{
+		ring: [number, number][];
+		source: string;
+		licence: string;
+	} | null>(null);
 	useEffect(() => {
 		// `brief` is resolved inside the render path below, so the hook reads the
 		// stored brief directly; a project whose brief cannot be read keeps the
@@ -179,7 +186,49 @@ export function ProjectEditor({
 					{ schema_version: 1, query: label, ...(country ? { country } : {}) },
 					session.query_scope,
 				);
-				if (live) setSiteImagery(readPlaceImagery(readObject(answer).imagery));
+				if (!live) return;
+				const reply = readObject(answer);
+				setSiteImagery(readPlaceImagery(reply.imagery));
+				const latitude = reply.latitude;
+				const longitude = reply.longitude;
+				const replyCountry = reply.country_code;
+				if (
+					typeof latitude !== "number" ||
+					typeof longitude !== "number" ||
+					typeof replyCountry !== "string"
+				) {
+					setSiteOutline(null);
+					return;
+				}
+				try {
+					const found = readObject(
+						await client.query(
+							"places/outline",
+							{
+								schema_version: 1,
+								query: label,
+								country: replyCountry,
+								latitude,
+								longitude,
+							},
+							session.query_scope,
+						),
+					);
+					if (!live) return;
+					const ring = Array.isArray(found.outline)
+						? (found.outline as [number, number][])
+						: [];
+					setSiteOutline(
+						found.found === true &&
+							ring.length >= 3 &&
+							typeof found.source === "string" &&
+							typeof found.licence === "string"
+							? { ring, source: found.source, licence: found.licence }
+							: null,
+					);
+				} catch {
+					if (live) setSiteOutline(null);
+				}
 			} catch {
 				// A missing mosaic never blocks the design step.
 				if (live) setSiteImagery(null);
@@ -953,6 +1002,7 @@ export function ProjectEditor({
 									window.location.hash,
 								)}
 								imagery={siteImagery}
+								siteOutline={siteOutline}
 								siteCentre={
 									brief.site.latitude !== null &&
 									brief.site.longitude !== null

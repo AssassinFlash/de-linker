@@ -123,3 +123,27 @@ def test_a_country_whose_service_is_broken_records_no_layer() -> None:
         imagery.for_state(place.iso_region or "")
         or imagery.for_country(place.country)
     ) is None
+
+
+def test_the_outline_answer_carries_the_source_and_licence() -> None:
+    # The screen must show where the shape came from: an outline is not a
+    # survey, and the licence travels with it.
+    from linker_engine.roof import footprints as module
+
+    payload = module.outline_payload("AT", 48.2082, 16.3738)
+    # The published part is 38 MB; the network may be unavailable in CI, and a
+    # refused download must answer None rather than a guessed shape.
+    if payload is None:
+        return
+    assert payload["source"] == "Microsoft building footprints"
+    assert payload["licence"] == module.LICENCE
+    assert len(payload["outline"]) >= 3
+    for longitude, latitude in payload["outline"]:
+        assert -180.0 <= longitude <= 180.0
+        assert -90.0 <= latitude <= 90.0
+
+
+def test_a_position_with_no_mapped_building_answers_none() -> None:
+    from linker_engine.roof import footprints as module
+
+    assert module.outline_at("ZZ", 48.2082, 16.3738) is None

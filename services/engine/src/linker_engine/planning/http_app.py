@@ -22,6 +22,7 @@ from starlette.exceptions import HTTPException
 from starlette.types import ASGIApp
 
 from .. import geo, imagery
+from ..roof import footprints
 from .access import active_actor, positive_integer
 from .assets import Assets
 from .assistant_context import assistant_context
@@ -75,6 +76,7 @@ from .http_documents import (
     HandoffRead,
     InstallationReview,
     PlaceLookup,
+    PlaceOutline,
     ProfilePreviewRead,
     ProjectAssistant,
     ProjectCreate,
@@ -505,6 +507,39 @@ def create_private_app(
             # its country's; both answer null where none is recorded, and the map
             # then keeps its plain background instead of requesting a broken tile.
             "imagery": _imagery_at(found),
+        }
+
+    @app.post("/places/outline")
+    def place_outline(body: PlaceOutline, request: Request) -> Object:
+        """The building outline at a declared position, where one is mapped.
+
+        Germany answers from its states' LoD2 and the Netherlands and
+        Switzerland from their own 3D models; every other country answers from
+        the global open footprints. A position with no mapped building says so
+        rather than returning a guessed shape.
+        """
+        actor = verified_actor(request.scope)
+        with workspace.database.read() as connection:
+            active_actor(connection, actor)
+        place = geo.lookup(body.query.strip(), body.country)
+        if place is None:
+            raise NotFound("place not found")
+        found = footprints.outline_payload(
+            place.country, body.latitude, body.longitude
+        )
+        if found is None:
+            return {
+                "schema_version": 1,
+                "found": False,
+                "country_code": place.country,
+            }
+        return {
+            "schema_version": 1,
+            "found": True,
+            "country_code": place.country,
+            "outline": found["outline"],
+            "source": found["source"],
+            "licence": found["licence"],
         }
 
     @app.post("/handoffs/prepare")

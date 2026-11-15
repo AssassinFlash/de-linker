@@ -63,6 +63,7 @@ export function DesignEditor({
 	recheck,
 	imagery = null,
 	siteCentre = null,
+	siteOutline = null,
 	onValidity,
 	attachImport,
 	confirmedAssetIds = [],
@@ -74,6 +75,7 @@ export function DesignEditor({
 	geometryImports?: GeometryImportSelections;
 	imagery?: PlaceImagery | null;
 	siteCentre?: readonly [number, number] | null;
+	siteOutline?: { ring: [number, number][]; source: string; licence: string } | null;
 	sceneModuleUrl?: string | null;
 	mapModuleUrl?: string | null;
 	initialMapView?: boolean;
@@ -313,6 +315,7 @@ export function DesignEditor({
 						<MapDrawingWorkspace
 							imagery={imagery}
 							siteCentre={siteCentre}
+							siteOutline={siteOutline}
 							mapModuleUrl={mapModuleUrl}
 							geometry={geometry}
 							confirmedGeometry={confirmedGeometry}

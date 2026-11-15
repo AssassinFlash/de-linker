@@ -36,6 +36,9 @@ const STREET_STYLE = "https://tiles.openfreemap.org/styles/liberty";
 // the visitor agrees to external services, on the same rule as the street style.
 const IMAGERY_SOURCE = "linker-site-imagery";
 const IMAGERY_LAYER = "linker-site-imagery";
+// The mapped building at the site, drawn dashed until the visitor adopts it.
+const SITE_OUTLINE_SOURCE = "linker-site-outline";
+const SITE_OUTLINE_LAYER = "linker-site-outline";
 
 /** Bounded renderer diagnostics exclude message bodies, URL paths/queries,
  * project data and source contents. They identify a failed runtime boundary. */
@@ -72,6 +75,7 @@ export default function MapViewport({
 	camera,
 	imagery = null,
 	siteCentre = null,
+	siteOutline = null,
 	interaction = null,
 }: {
 	document: GeometryDocument;
@@ -86,6 +90,10 @@ export default function MapViewport({
 	imagery?: PlaceImagery | null;
 	/** The declared site position, so the mosaic is visible before geometry exists. */
 	siteCentre?: readonly [number, number] | null;
+	/** The mapped building outline at the site, drawn as the starting point. */
+	siteOutline?:
+		| { ring: [number, number][]; source: string; licence: string }
+		| null;
 }) {
 	const host = useRef<HTMLDivElement>(null),
 		mapRef = useRef<MapLibreMap | null>(null),
@@ -119,6 +127,7 @@ export default function MapViewport({
 		interaction,
 		imagery,
 		siteCentre,
+		siteOutline,
 	});
 	latest.current = {
 		projection,
@@ -128,6 +137,7 @@ export default function MapViewport({
 		interaction,
 		imagery,
 		siteCentre,
+		siteOutline,
 	};
 
 	function fit(map: MapLibreMap) {
@@ -195,7 +205,8 @@ export default function MapViewport({
 	// own position is enough to show the aerial mosaic and let the visitor draw:
 	// never infer north, and never present the mosaic as a survey frame.
 	const available =
-		projection.view !== null || (siteCentre !== null && imagery !== null);
+		projection.view !== null ||
+		(siteCentre !== null && (imagery !== null || siteOutline !== null));
 	useEffect(() => {
 		if (!host.current || !available) return;
 		let disposed = false;
@@ -292,6 +303,48 @@ export default function MapViewport({
 			current
 				.getCanvas()
 				.setAttribute("aria-label", __("Project map", "linker-tools"));
+			function updateSiteOutline() {
+				const shape = latest.current.siteOutline;
+				if (!shape || shape.ring.length < 3) {
+					if (current.getLayer(SITE_OUTLINE_LAYER))
+						current.removeLayer(SITE_OUTLINE_LAYER);
+					if (current.getSource(SITE_OUTLINE_SOURCE))
+						current.removeSource(SITE_OUTLINE_SOURCE);
+					return;
+				}
+				const ring = [...shape.ring];
+				const first = ring[0];
+				const last = ring[ring.length - 1];
+				if (first && last && (first[0] !== last[0] || first[1] !== last[1]))
+					ring.push(first);
+				const data = {
+					type: "FeatureCollection" as const,
+					features: [
+						{
+							type: "Feature" as const,
+							properties: {},
+							geometry: { type: "Polygon" as const, coordinates: [ring] },
+						},
+					],
+				};
+				if (current.getSource(SITE_OUTLINE_SOURCE)) {
+					(current.getSource(SITE_OUTLINE_SOURCE) as GeoJSONSource).setData(
+						data,
+					);
+					return;
+				}
+				current.addSource(SITE_OUTLINE_SOURCE, { type: "geojson", data });
+				current.addLayer({
+					id: SITE_OUTLINE_LAYER,
+					type: "line",
+					source: SITE_OUTLINE_SOURCE,
+					paint: {
+						"line-color": colours.selected,
+						"line-width": 2,
+						"line-dasharray": [2, 1.5],
+					},
+				});
+			}
 			function updateImagery() {
 				const mosaic = latest.current.imagery;
 				if (!external || !mosaic || mosaic.tiles.length === 0) {
@@ -365,6 +418,7 @@ export default function MapViewport({
 				if (disposed) return;
 				try {
 					updateImagery();
+					updateSiteOutline();
 					updateOverlay();
 					if (!saved) fit(current);
 					initialized = true;
@@ -496,6 +550,44 @@ export default function MapViewport({
 		// map, so the mosaic is applied to the new instance even when the place
 		// answer arrived before the rebuild.
 	}, [external, imagery, readyMap, status]);
+	useEffect(() => {
+		// The outline arrives after the map is ready, like the mosaic.
+		const map = mapRef.current;
+		if (!map || map !== readyMap || status !== "ready") return;
+		const shape = siteOutline;
+		if (!shape || shape.ring.length < 3) {
+			if (map.getLayer(SITE_OUTLINE_LAYER)) map.removeLayer(SITE_OUTLINE_LAYER);
+			if (map.getSource(SITE_OUTLINE_SOURCE))
+				map.removeSource(SITE_OUTLINE_SOURCE);
+			return;
+		}
+		const ring = [...shape.ring];
+		const first = ring[0];
+		const last = ring[ring.length - 1];
+		if (first && last && (first[0] !== last[0] || first[1] !== last[1]))
+			ring.push(first);
+		const data = {
+			type: "FeatureCollection" as const,
+			features: [
+				{
+					type: "Feature" as const,
+					properties: {},
+					geometry: { type: "Polygon" as const, coordinates: [ring] },
+				},
+			],
+		};
+		if (map.getSource(SITE_OUTLINE_SOURCE)) {
+			(map.getSource(SITE_OUTLINE_SOURCE) as GeoJSONSource).setData(data);
+			return;
+		}
+		map.addSource(SITE_OUTLINE_SOURCE, { type: "geojson", data });
+		map.addLayer({
+			id: SITE_OUTLINE_LAYER,
+			type: "line",
+			source: SITE_OUTLINE_SOURCE,
+			paint: { "line-color": "#0f766e", "line-width": 2, "line-dasharray": [2, 1.5] },
+		});
+	}, [readyMap, status, siteOutline]);
 	useEffect(() => {
 		const map = mapRef.current,
 			value = latest.current.interaction;

@@ -55,6 +55,21 @@ class PlaceLookup(Command):
     country: PlaceCountry | None = None
 
 
+class PlaceOutline(Command):
+    """The building outline at a declared position.
+
+    Countries that publish no roof geometry still have their buildings mapped:
+    the outline lets the map show the building the visitor clicked on and lets
+    them set the pitch they can see. It carries no measured plane, so a caller
+    must not present it as a survey.
+    """
+
+    query: PlaceQuery
+    country: PlaceCountry | None = None
+    latitude: Annotated[float, Field(ge=-90.0, le=90.0, allow_inf_nan=False)]
+    longitude: Annotated[float, Field(ge=-180.0, le=180.0, allow_inf_nan=False)]
+
+
 class Cursor(Document):
     updated_at: Annotated[float, Field(allow_inf_nan=False)]
     id: Id
