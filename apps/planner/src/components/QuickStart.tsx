@@ -1057,7 +1057,9 @@ function QuickStartRun({
 			// location is not a WGS 84 coordinate — true while the lookup was
 			// German postcodes only, false once it returned a latitude and a
 			// longitude (measured 2026-11-15 for five countries).
-			const brief = readObject(readObject(draft.history.current).brief);
+			const brief = readObject(
+				readObject(saved?.inputs ?? draft.history.current).brief,
+			);
 			const site = readObject(brief.site);
 			const latitude = site.latitude;
 			const longitude = site.longitude;

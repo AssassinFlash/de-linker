@@ -12,7 +12,7 @@ from fastapi.testclient import TestClient
 
 from linker_engine.publication import Publication, PublicationUnavailable
 
-INPUT = {"plz": "80538", "annual_kwh": 5000, "pv_kwp": 10, "phase": 3}
+INPUT = {"plz": "80538", "country": "DE", "annual_kwh": 5000, "pv_kwp": 10, "phase": 3}
 
 
 def ids(value: Any) -> set[int]:

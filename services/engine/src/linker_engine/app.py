@@ -242,9 +242,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return snapshot
 
     @app.get("/geo/plz/{plz}")
-    def place(plz: str) -> PlaceResult:
-        """Map position, country, region and aerial imagery service for a postcode."""
-        found = geo.lookup(plz)
+    def place(plz: str, country: str | None = None) -> PlaceResult:
+        """Map position, country, region and aerial imagery service for a postcode.
+
+        `?country=XX` disambiguates a postcode several countries write the same
+        way; without it only an unambiguous code is answered.
+        """
+        found = geo.lookup(plz, country)
         if found is None:
             raise HTTPException(
                 status_code=404, detail={"error": "unknown_plz", "field": "plz"}
@@ -253,14 +257,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             plz=found.postcode,
             latitude=found.latitude,
             longitude=found.longitude,
-            # The state and its imagery are German institutions; a place
-            # elsewhere has a region but no LoD2 or aerial service here.
-            state=found.iso_region if found.country == "DE" else "",
+            # The official outline and aerial services are keyed by region, and
+            # `imagery.for_state` answers None where none is recorded. A place
+            # outside that set still has its own region name, which the report
+            # prints; the ISO state code is only meaningful where one is mapped.
+            state=found.iso_region if found.country == "DE" else found.region,
             place=found.name,
             attribution=geo.ATTRIBUTION,
-            imagery=imagery.for_state(found.iso_region)
-            if found.country == "DE"
-            else None,
+            imagery=imagery.for_state(found.iso_region),
             country=found.country,
             region=found.region,
             timezone=found.timezone,

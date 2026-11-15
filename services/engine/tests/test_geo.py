@@ -29,19 +29,21 @@ def test_a_french_postcode_is_answered_with_its_country() -> None:
     assert place.timezone == "Europe/Paris"
 
 
-def test_a_shared_postcode_still_answers_for_the_home_market() -> None:
-    """Germany wins a shared code, because it is where the site sells.
+def test_a_shared_postcode_answers_only_when_the_country_is_named() -> None:
+    """A postcode two countries write has no single place, so neither is guessed.
 
     Measured 2026-11-15: 4,754 of 10,815 German postcodes are also written by
-    another country, so refusing the shared ones would refuse 44% of German
-    visitors. The country form field is what disambiguates everyone else.
+    another country. The form collects the country and passes it, so the
+    ambiguous case is answered by asking rather than by assuming Germany.
     """
-    germany = geo.lookup("10115")
-    assert germany is not None and germany.country == "DE"
-    # The same digits are an Estonian code too, and naming Estonia gets it.
-    estonia = geo.lookup("10115", "EE")
-    assert estonia is not None and estonia.country == "EE"
+    assert geo.lookup("10115") is None
     assert geo.countries_of("10115") == frozenset({"DE", "EE"})
+    germany = geo.lookup("10115", "DE")
+    estonia = geo.lookup("10115", "EE")
+    assert germany is not None and germany.country == "DE"
+    assert estonia is not None and estonia.country == "EE"
+    # An unambiguous code needs no country at all.
+    assert geo.lookup("3750-000").country == "PT"  # type: ignore[union-attr]
 
 
 def test_a_full_british_postcode_finds_its_district() -> None:

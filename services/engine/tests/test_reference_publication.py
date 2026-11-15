@@ -18,9 +18,10 @@ from fastapi.testclient import TestClient
 
 from linker_engine.publication import Publication
 
-INPUT = {"plz": "80538", "annual_kwh": 5000, "pv_kwp": 10, "phase": 3}
+INPUT = {"plz": "80538", "country": "DE", "annual_kwh": 5000, "pv_kwp": 10, "phase": 3}
 COMMERCIAL = {
     "plz": "80538",
+            "country": "DE",
     "grid_connection_kva": 100,
     "annual_kwh": 150000,
     "goals": ["self_consumption"],
@@ -37,6 +38,7 @@ OPERATIONS = [
         "/roof/outline",
         {
             "plz": "80538",
+            "country": "DE",
             "location": {
                 "latitude": TRIFTSTRASSE_5[0],
                 "longitude": TRIFTSTRASSE_5[1],

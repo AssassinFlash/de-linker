@@ -27,7 +27,7 @@ PNG = "iVBORw0KGgoAAAANSUhEUgAAAAIAAAABCAIAAAB7QOjdAAAAEElEQVR4nGNgYGD4z8DAwMAAA
 
 def build(engine: Engine, locale: str) -> Report:
     request = ResidentialInput.model_validate(
-        {"plz": "80538", "annual_kwh": 5000, "pv_kwp": 10, "phase": 3, "locale": locale}
+        {"plz": "80538", "country": "DE", "annual_kwh": 5000, "pv_kwp": 10, "phase": 3, "locale": locale}
     )
     return report.residential(
         residential.design(engine, request), "2026-10-09T12:00:00Z"
@@ -45,6 +45,7 @@ def unselected(engine: Engine, locale: str = "en") -> Report:
     request = ResidentialInput.model_validate(
         {
             "plz": "80538",
+            "country": "DE",
             "annual_kwh": 5000,
             "pv_kwp": 10,
             "phase": 3,
@@ -86,6 +87,7 @@ def test_metrics_name_the_capacity_they_assume(engine: Engine) -> None:
             ResidentialInput.model_validate(
                 {
                     "plz": "80538",
+            "country": "DE",
                     "annual_kwh": 5000,
                     "pv_kwp": 1,
                     "phase": 3,
@@ -118,7 +120,7 @@ def test_the_report_names_the_generation_it_was_built_from(engine: Engine) -> No
         residential.design(
             engine,
             ResidentialInput.model_validate(
-                {"plz": "80538", "annual_kwh": 5000, "pv_kwp": 10, "phase": 3}
+                {"plz": "80538", "country": "DE", "annual_kwh": 5000, "pv_kwp": 10, "phase": 3}
             ),
         ),
         "2026-10-09T12:00:00Z",
@@ -155,7 +157,7 @@ def test_the_pdf_prints_the_revision_it_was_built_from(engine: Engine) -> None:
         residential.design(
             engine,
             ResidentialInput.model_validate(
-                {"plz": "80538", "annual_kwh": 5000, "pv_kwp": 10, "phase": 3}
+                {"plz": "80538", "country": "DE", "annual_kwh": 5000, "pv_kwp": 10, "phase": 3}
             ),
         ),
         "2026-10-09T12:00:00Z",
@@ -294,6 +296,7 @@ def test_roof_planes_from_lod2_are_credited_under_the_states_licence(
     request = ResidentialInput.model_validate(
         {
             "plz": "80538",
+            "country": "DE",
             "annual_kwh": 5000,
             "pv_kwp": 6.44,
             "phase": 3,
@@ -317,6 +320,7 @@ def test_roof_source_needs_planes() -> None:
         ResidentialInput.model_validate(
             {
                 "plz": "80538",
+            "country": "DE",
                 "annual_kwh": 5000,
                 "pv_kwp": 10,
                 "phase": 3,

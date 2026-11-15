@@ -135,8 +135,10 @@ test("the request keeps the engine's own field vocabulary", () => {
 
 test("a request outside the engine's contract is refused", () => {
 	for (const value of [
+		// A postcode no country writes: empty, or longer than any uses.
+		{ plz: "", grid_connection_kva: 1, annual_kwh: 1, goals: ["peak_shaving"] },
 		{
-			plz: "SW1A",
+			plz: "NOT-A-POSTCODE-AT-ALL",
 			grid_connection_kva: 1,
 			annual_kwh: 1,
 			goals: ["peak_shaving"],
@@ -150,4 +152,20 @@ test("a request outside the engine's contract is refused", () => {
 		},
 	])
 		assert.throws(() => readSizing(value), /invalid_commercial_sizing/);
+});
+
+test("a British, Dutch or Portuguese postcode is a valid site", () => {
+	// Measured 2026-11-15: the reader required five digits, so every site
+	// outside Germany, France, Spain, Italy and Poland was refused here before
+	// the engine saw it.
+	for (const plz of ["SW1A", "M1 1AE", "9401 AB", "3750-000", "D01 F5P2"]) {
+		const sizing = readSizing({
+			plz,
+			country: "GB",
+			grid_connection_kva: 1,
+			annual_kwh: 1,
+			goals: ["peak_shaving"],
+		});
+		assert.equal(sizing.plz, plz);
+	}
 });

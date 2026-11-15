@@ -36,10 +36,25 @@
 			"type": "string"
 		},
 		"plz": {
-			"description": "German postcode (PLZ)",
-			"pattern": "^\\d{5}$",
+			"description": "European postcode (PLZ) as its country writes it",
+			"maxLength": 12,
+			"minLength": 2,
+			"pattern": "^[A-Za-z0-9][A-Za-z0-9 -]*$",
 			"title": "Plz",
 			"type": "string"
+		},
+		"country": {
+			"anyOf": [
+				{
+					"pattern": "^[A-Z]{2}$",
+					"type": "string"
+				},
+				{
+					"type": "null"
+				}
+			],
+			"default": null,
+			"title": "Country"
 		},
 		"grid_connection_kva": {
 			"exclusiveMinimum": 0,

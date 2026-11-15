@@ -22,7 +22,7 @@ def test_triftstrasse_5_has_an_outline_planes_and_modules(
     latitude, longitude = TRIFTSTRASSE_5
     result = service.outline(
         RoofRequest(
-            plz="80538", location=Location(latitude=latitude, longitude=longitude)
+            plz="80538", country="DE", location=Location(latitude=latitude, longitude=longitude)
         )
     )
     assert result.found
@@ -44,7 +44,7 @@ def test_triftstrasse_5_has_an_outline_planes_and_modules(
 def test_a_click_beside_any_building_finds_nothing(service: RoofService) -> None:
     result = service.outline(
         RoofRequest(
-            plz="80538", location=Location(latitude=48.14095, longitude=11.58700)
+            plz="80538", country="DE", location=Location(latitude=48.14095, longitude=11.58700)
         )
     )
     assert not result.found and result.modules == 0
@@ -60,6 +60,7 @@ def test_the_index_is_built_once(tmp_path: Path, products: Products) -> None:
     service = RoofService(tmp_path, products.module, lod2.TileIndex(tmp_path, counting))
     request = RoofRequest(
         plz="80538",
+        country="DE",
         location=Location(latitude=TRIFTSTRASSE_5[0], longitude=TRIFTSTRASSE_5[1]),
     )
     service.outline(request)
@@ -119,10 +120,28 @@ def test_a_hand_drawn_plane_gets_a_module_count(products: Products) -> None:
     assert plane.kwp == pytest.approx(plane.modules * 0.46)
 
 
-def test_a_drawn_plane_outside_germany_or_beyond_a_roof_is_refused() -> None:
-    with pytest.raises(ValueError, match="greater than or equal"):
+def test_a_drawn_plane_is_accepted_across_europe_and_refused_far_outside_it() -> None:
+    """A London or Athens roof is a normal project, not a typing error.
+
+    Measured 2026-11-15: the coordinate bounds were Germany's own extent
+    (47.0-55.2 N by 5.8-15.1 E), so a drawn plane in London, Lisbon or Athens
+    was refused before any geometry ran.
+    """
+    # Rings of about 10 m x 6 m, the size of a house roof.
+    for name, ring in (
+        ("London", [(-0.1000, 51.5000), (-0.09986, 51.5000), (-0.09986, 51.50005)]),
+        ("Athens", [(23.7200, 37.9800), (23.72014, 37.9800), (23.72014, 37.98005)]),
+        ("Lisbon", [(-9.1400, 38.7200), (-9.13986, 38.7200), (-9.13986, 38.72005)]),
+        ("Helsinki", [(24.9400, 60.1700), (24.94014, 60.1700), (24.94014, 60.17005)]),
+        ("Valletta", [(14.5146, 35.8989), (14.51474, 35.8989), (14.51474, 35.89895)]),
+        ("Reykjavik", [(-21.9400, 64.1400), (-21.93986, 64.1400), (-21.93986, 64.14005)]),
+    ):
+        RoofPackRequest(polygon=ring, tilt_deg=30, azimuth_deg=180)
+        assert name
+    # Outside geographic Europe: a real typing error, still refused.
+    with pytest.raises(ValueError):
         RoofPackRequest(
-            polygon=[(-0.1, 51.5), (-0.09, 51.5), (-0.09, 51.51)],
+            polygon=[(-74.0, 40.7), (-73.99, 40.7), (-73.99, 40.71)],
             tilt_deg=30,
             azimuth_deg=180,
         )

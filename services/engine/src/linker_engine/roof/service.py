@@ -68,17 +68,17 @@ class RoofService:
 
     def outline(self, request: RoofRequest) -> RoofResult:
         locale = request.locale
-        place = geo.lookup(request.plz)
+        place = geo.lookup(request.plz, request.country)
         if place is None:
             raise lod2.Lod2Unavailable(f"unknown postcode {request.plz}")
-        if place.country != "DE":
-            # The official building outlines and aerial imagery this step reads
-            # are German services. A place elsewhere is a valid project site,
-            # but its outline has to be drawn by hand.
-            raise lod2.Lod2Unavailable(
-                f"no official outline service for {place.country}"
-            )
+        if place is None:
+            raise lod2.Lod2Unavailable(f"unknown postcode {request.plz}")
         latitude, longitude = request.location.latitude, request.location.longitude
+        # Whether an official outline exists is a property of the region, not of
+        # the country: `tile_for` names the region it has no source for, and a
+        # region outside the set falls back to the hand-drawn plane. Measured
+        # 2026-11-15: this used to refuse every non-German country outright, so
+        # a region that gains a source later could not be served.
         tile = lod2.tile_for(place.iso_region, latitude, longitude)
         index = self._index.load(tile)
         x, y = lod2.to_utm(tile.zone, latitude, longitude)
@@ -155,8 +155,14 @@ class RoofService:
 
 
 def _zone(longitude: float) -> int:
-    """UTM zone of a German longitude (32 west of 12° E, 33 east of it)."""
-    return 32 if longitude < 12 else 33
+    """The UTM zone of a longitude, by the standard six-degree division.
+
+    This used to be Germany's own split — "32 west of 12° E, 33 east of it" —
+    which projected Lisbon into zone 32 and Athens into 33. Measured
+    2026-11-15: Lisbon is zone 29, Athens zone 34, and a wrong zone displaces
+    every outline by hundreds of kilometres.
+    """
+    return int(math.floor((longitude + 180.0) / 6.0)) % 60 + 1
 
 
 def pack_drawn(request: RoofPackRequest, module: PvModule) -> RoofPlaneResult:

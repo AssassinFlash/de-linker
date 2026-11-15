@@ -9,13 +9,13 @@
 				"minItems": 2,
 				"prefixItems": [
 					{
-						"maximum": 15.1,
-						"minimum": 5.8,
+						"maximum": 47.0,
+						"minimum": -32.0,
 						"type": "number"
 					},
 					{
-						"maximum": 55.2,
-						"minimum": 47.0,
+						"maximum": 71.5,
+						"minimum": 27.0,
 						"type": "number"
 					}
 				],

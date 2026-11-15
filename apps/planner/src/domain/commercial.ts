@@ -11,6 +11,7 @@ import { readObject } from "../data/readProtocol.ts";
  */
 export interface CommercialSizing extends JsonObject {
 	readonly plz: string;
+	readonly country?: string;
 	readonly grid_connection_kva: number;
 	readonly annual_kwh: number;
 	readonly goals: readonly string[];
@@ -46,7 +47,9 @@ export function readSizing(value: unknown): CommercialSizing {
 	const goals = input.goals;
 	if (
 		typeof plz !== "string" ||
-		!/^\d{5}$/.test(plz) ||
+		// The engine takes a European postcode in its country's own shape; the
+		// pattern only rejects what no country writes.
+		!/^[A-Za-z0-9][A-Za-z0-9 -]{1,11}$/.test(plz.trim()) ||
 		!finite(input.grid_connection_kva) ||
 		!finite(input.annual_kwh) ||
 		!Array.isArray(goals) ||
@@ -58,8 +61,14 @@ export function readSizing(value: unknown): CommercialSizing {
 	)
 		throw new ApiError(422, "invalid_commercial_sizing");
 	// Built field by field: the browser never widens the engine's contract.
+	const country = input.country;
 	return {
 		plz,
+		// The postcode alone is not unique across Europe; the engine needs the
+		// country to name the place, and the brief already carries it.
+		...(typeof country === "string" && /^[A-Z]{2}$/.test(country)
+			? { country }
+			: {}),
 		grid_connection_kva: input.grid_connection_kva,
 		annual_kwh: input.annual_kwh,
 		goals: goals as readonly string[],

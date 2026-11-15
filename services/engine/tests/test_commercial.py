@@ -32,6 +32,7 @@ def csv_text(load: list[float], decimal: str = ".") -> str:
 def request(**fields: object) -> CommercialInput:
     values: dict[str, object] = {
         "plz": "80538",
+            "country": "DE",
         "grid_connection_kva": 135,
         "annual_kwh": 400000,
         "goals": ["peak_shaving"],

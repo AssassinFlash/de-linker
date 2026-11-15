@@ -40,13 +40,14 @@ class Place:
 
     @property
     def iso_region(self) -> str:
-        """The region as ISO 3166-2, which is what the imagery services key on.
+        """The region in the form this site's services key on.
 
-        GeoNames writes Germany's states as `BY`, and `data/lod2-sources.json`
-        keys the official outline services as `DE-BY`. The postal table used to
-        store the assembled code; keeping the two apart lets the same row serve
-        the report (which prints `Bavaria`) and the roof step (which needs
-        `DE-BY`).
+        `data/lod2-sources.json` and `data/imagery.json` are keyed by ISO
+        3166-2 (`DE-BY`), so a German place assembles `DE-` and its state code.
+        GeoNames writes every other country's first-level division in its own
+        scheme — Austria `09`, France `84`, Britain `SCT` — which is not ISO
+        and has no service here; those keep GeoNames' code unchanged so a
+        reader can see what it is rather than a code that looks like ISO.
         """
         if self.country == "DE" and self.region_code:
             return f"DE-{self.region_code}"
@@ -142,12 +143,12 @@ def prefix_lookup(postcode: str, country: str) -> Place | None:
 def lookup(postcode: str, country: str | None = None) -> Place | None:
     """The place a postcode names, within the country when one is given.
 
-    Without a country the postcode is matched across the table. A postcode
-    several countries share resolves to the site's home market, Germany, and
-    only to Germany — measured 2026-11-15: 4,754 of 10,815 German postcodes are
-    also written by another country, so refusing the ambiguous ones would have
-    refused 44% of the home market's own customers. A visitor elsewhere names
-    their country, which the form already collects.
+    Without a country the postcode is matched across the table. Only an
+    unambiguous answer is returned: a postcode several countries write the
+    same way has no single place, and guessing one would put the project in
+    the wrong country. Measured 2026-11-15: 4,754 of 10,815 German postcodes
+    are also written elsewhere, so the form collects the country and passes
+    it; `countries_of` is what tells the screen to ask.
 
     A fuller postcode than the table lists (Britain's `M1 1AE` against the
     listed `M1`) resolves to its district inside the named country.
@@ -162,13 +163,16 @@ def lookup(postcode: str, country: str | None = None) -> Place | None:
     if not matches:
         # A postcode the table lists only as a district still has to resolve:
         # `M1 1AE` asks for [`M1`], and no country was given.
-        for candidate in ("GB", "IE", "NL"):
-            hit = prefix_lookup(postcode, candidate)
-            if hit is not None:
-                return hit
-        return None
-    home = [place for place in matches if place.country == "DE"]
-    return home[0] if home else (matches[0] if len(matches) == 1 else None)
+        found = {
+            hit.country: hit
+            for hit in (
+                prefix_lookup(postcode, candidate) for candidate in countries()
+            )
+            if hit is not None
+        }
+        return found.popitem()[1] if len(found) == 1 else None
+    countries_found = {place.country for place in matches}
+    return matches[0] if len(countries_found) == 1 else None
 
 
 def lookup_in(postcode: str, country: str) -> Place | None:
