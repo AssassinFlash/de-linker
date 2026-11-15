@@ -28,6 +28,12 @@ import {
 	equipmentDraft,
 } from "../domain/equipment.ts";
 import { compileEquipmentRequirements } from "../domain/equipmentRequirements.ts";
+import {
+	emptyPv,
+	solarInputs,
+	weatherFromPlace,
+} from "../domain/solarSetup.ts";
+import type { SolarSetup } from "../domain/solarSetup.ts";
 import { __, sprintf } from "../i18n.ts";
 import { Icon } from "./Icon.tsx";
 import { Notice } from "./Notice.tsx";
@@ -961,6 +967,7 @@ function QuickStartRun({
 	// reported as not run instead of being started with borrowed values.
 	async function startRun(
 		path:
+			| "runs/weather"
 			| "runs/energy"
 			| "runs/equipment-search"
 			| "runs/equipment"
@@ -1033,18 +1040,92 @@ function QuickStartRun({
 			const revision = saved?.revision ?? draft.baseline.revision;
 			done("save", sprintf(__("Revision %d", "linker-tools"), revision));
 
-			// 2-5. Steps whose inputs this screen does not collect are reported as
-			// not run rather than marked complete. A location typed as text is not
-			// a WGS 84 coordinate, so no weather request is sent from here, and an
-			// annual consumption figure is not an interval series.
-			blocked(
-				"weather",
-				__(
-					"Typical-year weather needs the site coordinates that a drawn roof supplies. Add the roof in the full workbench to run this step.",
-					"linker-tools",
-				),
-				false,
-			);
+			// 2. Weather: the resolved place already carries the coordinate the
+			// typical-year request needs, so this step runs. It used to be
+			// refused on the grounds that a typed location is not a WGS 84
+			// coordinate — true while the lookup was German postcodes only, and
+			// false once it returned a latitude and a longitude (measured
+			// 2026-11-15 for five countries).
+			step("weather");
+			// The saved project already carries the site the visitor confirmed:
+			// the postcode lookup put its country, coordinate and civil time into
+			// `brief.site`. This used to be refused on the grounds that a typed
+			// location is not a WGS 84 coordinate — true while the lookup was
+			// German postcodes only, false once it returned a latitude and a
+			// longitude (measured 2026-11-15 for five countries).
+			const brief = readObject(readObject(draft.history.current).brief);
+			const site = readObject(brief.site);
+			const latitude = site.latitude;
+			const longitude = site.longitude;
+			const weather =
+				typeof latitude === "number" && typeof longitude === "number"
+					? weatherFromPlace(latitude, longitude)
+					: null;
+			if (!weather) {
+				blocked(
+					"weather",
+					__(
+						"A typical year needs a postcode this screen can place. Enter yours before generating and this step runs.",
+						"linker-tools",
+					),
+				);
+			} else {
+				const setup: SolarSetup = {
+					schema_version: 1,
+					weather,
+					pv: emptyPv(),
+				};
+				update((previous) =>
+					editDraft(previous, solarInputs(previous.history.current, setup)),
+				);
+				const withWeather = await save();
+				if (!current()) return;
+				if (!withWeather) {
+					blocked(
+						"weather",
+						__(
+							"The weather request could not be saved. Your open changes stay on this screen.",
+							"linker-tools",
+						),
+					);
+				} else {
+					const acquired = await startRun("runs/weather", {
+						expected_revision: withWeather.revision,
+					});
+					if (!current()) return;
+					if (!acquired || acquired.state !== "succeeded") {
+						blocked("weather", runFailure(acquired));
+					} else {
+						// The acquired year stays in the project as a retained asset;
+						// the step line names the database the provider actually used,
+						// which is what a visitor can check against the report later.
+						const echoed = readObject(
+							readObject(acquired.result).weather_summary,
+						);
+						const radiation =
+							typeof echoed.radiation_database === "string"
+								? echoed.radiation_database
+								: null;
+						done(
+							"weather",
+							radiation
+								? sprintf(
+										__("Typical year acquired (%s)", "linker-tools"),
+										radiation,
+									)
+								: __(
+										"Typical year acquired for this site",
+										"linker-tools",
+									),
+						);
+					}
+				}
+			}
+
+			// 3-5. Steps whose inputs this screen does not collect are reported as
+			// not run rather than marked complete. An annual consumption figure is
+			// not an interval series, so the storage and self-consumption steps
+			// stay blocked here and run in the workbench.
 			blocked(
 				"pv",
 				__(

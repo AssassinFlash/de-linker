@@ -529,8 +529,11 @@ test("a failed step keeps the confirmed results and offers a retry for that step
 		);
 	assert.ok(retry(), "the failed step must offer its own retry");
 	// Steps this screen cannot derive say so instead of failing silently.
+	// The weather step now runs from the resolved place's coordinate; this
+	// fixture's place resolves without one, so it reports what it needs instead
+	// of claiming a drawn roof is required.
 	assert.equal(stepNode("weather").dataset.state, "blocked");
-	assert.match(stepNode("weather").textContent, /site coordinates/);
+	assert.match(stepNode("weather").textContent, /postcode this screen can place/);
 	assert.equal(stepNode("pv").dataset.state, "blocked");
 	assert.match(stepNode("pv").textContent, /placed modules/);
 	assert.equal(stepNode("scenario").dataset.state, "blocked");

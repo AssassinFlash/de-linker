@@ -14890,3 +14890,23 @@ msgstr "Zwei Punkte und eine tatsächliche Länge ergeben einen einheitlichen Ma
 #: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
 msgid "Usable uniform scale"
 msgstr "Nutzbarer einheitlicher Maßstab"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "A typical year needs a postcode this screen can place. Enter yours before generating and this step runs."
+msgstr "Ein Regeljahr braucht eine Postleitzahl, die dieser Bildschirm zuordnen kann. Tragen Sie Ihre ein, dann läuft dieser Schritt."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "The weather request could not be saved. Your open changes stay on this screen."
+msgstr "Die Wetteranfrage konnte nicht gespeichert werden. Ihre offenen Änderungen bleiben auf diesem Bildschirm."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Typical year acquired (%s)"
+msgstr "Regeljahr übernommen (%s)"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Typical year acquired for this site"
+msgstr "Regeljahr für diesen Standort übernommen"
