@@ -329,6 +329,25 @@ def cache_dir(root: Path) -> Path:
     return directory
 
 
+# A part is tens of megabytes and a city centre is served by one of them, so a
+# second request must not download it again. The cache is keyed by region and
+# quadkey and lives under the planner's own state directory.
+_CACHE: dict[tuple[str, str], bytes] = {}
+
+
+def _archive(country: str, key: str, url: str) -> bytes | None:
+    """The published part, downloaded at most once per process."""
+    cached = _CACHE.get((country, key))
+    if cached is not None:
+        return cached
+    try:
+        archive = download(url)
+    except (OSError, ValueError):
+        return None
+    _CACHE[(country, key)] = archive
+    return archive
+
+
 def outline_at(
     country: str, latitude: float, longitude: float
 ) -> list[tuple[float, float]] | None:
@@ -341,9 +360,8 @@ def outline_at(
     url = part_url(country, key)
     if url is None:
         return None
-    try:
-        archive = download(url)
-    except (OSError, ValueError):
+    archive = _archive(country, key, url)
+    if archive is None:
         return None
     return nearest(outlines(archive, latitude, longitude), latitude, longitude)
 
