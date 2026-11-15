@@ -180,8 +180,8 @@ def test_a_non_german_postcode_is_served_by_its_country_mosaic(
 def test_a_country_without_a_recorded_mosaic_answers_no_imagery(
     client: TestClient,
 ) -> None:
-    # Italy's national WMS serves an unreachable internal path, so no layer is
-    # recorded and the map has to fall back rather than request a broken tile.
-    response = client.get("/geo/plz/20121", params={"country": "IT"})
+    # No open national mosaic was found for the United Kingdom, so no layer is
+    # recorded and the map falls back rather than requesting a broken tile.
+    response = client.get("/geo/plz/SW1A 1AA", params={"country": "GB"})
     assert response.status_code == 200
     assert response.json()["imagery"] is None

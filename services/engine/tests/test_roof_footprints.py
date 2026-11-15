@@ -112,12 +112,28 @@ def test_the_lookup_a_screen_calls_carries_the_aerial_layer() -> None:
         assert host in service.tiles[0], postcode
 
 
-def test_a_country_whose_service_is_broken_records_no_layer() -> None:
-    # Italy's national WMS answers with an internal path it cannot read, so the
-    # screen must keep its plain background rather than request a broken tile.
+def test_italy_answers_through_its_arcgis_export() -> None:
+    # Italy's national geoportal has two faces: the older `ms_ogc` map file
+    # reads an internal NAS it cannot reach, while the ArcGIS MapServer export
+    # served a real 24,569-byte JPEG for Rome on 2026-11-16.
     from linker_engine import geo, imagery
 
     place = geo.lookup("20121", "IT")
+    assert place is not None
+    service = imagery.for_state(place.iso_region or "") or imagery.for_country(
+        place.country
+    )
+    assert service is not None
+    assert "pcn.minambiente.it" in service.tiles[0]
+    assert "bboxSR=3857" in service.tiles[0]
+
+
+def test_a_country_with_no_service_still_records_no_layer() -> None:
+    # No open national mosaic was found for the United Kingdom; the map keeps
+    # its plain background and says so rather than requesting a broken tile.
+    from linker_engine import geo, imagery
+
+    place = geo.lookup("SW1A 1AA", "GB")
     assert place is not None
     assert (
         imagery.for_state(place.iso_region or "")
@@ -163,7 +179,7 @@ def test_a_published_tile_template_is_used_as_is() -> None:
 def test_each_recorded_country_answers_a_usable_layer() -> None:
     from linker_engine import imagery
 
-    for country in ("AT", "BE", "CH", "ES", "FR", "NL", "PL"):
+    for country in ("AT", "BE", "CH", "ES", "FR", "IT", "NL", "PL"):
         service = imagery.for_country(country)
         assert service is not None, country
         assert "{bbox-epsg-3857}" in service.tiles[0] or "{z}" in service.tiles[0]

@@ -160,6 +160,12 @@
    "credit": "basemap.at / Stadt Wien",
    "licence": "CC BY 4.0 (basemap.at)",
    "licence_url": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  "IT": {
+   "template": "https://www.pcn.minambiente.it/arcgis/rest/services/immagini/ortofoto_colore_12/MapServer/export?bbox={bbox-epsg-3857}&bboxSR=3857&imageSR=3857&size=256,256&format=jpeg&f=image",
+   "credit": "Ministero dell'Ambiente e della Sicurezza Energetica (PCN)",
+   "licence": "Open data, PCN",
+   "licence_url": "https://www.pcn.minambiente.it/"
   }
  }
 }
