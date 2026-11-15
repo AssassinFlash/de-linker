@@ -471,14 +471,20 @@ published services, not screenshots of them in the map.
 | 1 | Report + BOM for DE and five non-DE | **met** (15 countries) | live runs, every step 200 |
 | 2 | NL and CH real roof planes; others a 2D outline | **met** | NL 10 planes 18.9–58.6°, CH 4 planes 51.2–52.2°; `places/outline` 200 `found:true` for AT |
 | 3 | Each country a cited rule pack, or a stated gap | **met** | FR/NL/DE/AT/SE cited; others say no pack exists, EN+DE |
-| 4 | Aerial layer for DE/NL/FR/ES/IT/PL/GB/AT/CH | **partial: 6 of 9** | DE 16 states + BE CH ES FR NL PL |
+| 4 | Aerial layer for DE/NL/FR/ES/IT/PL/GB/AT/CH | **partial: 7 of 9** | DE 16 states + AT BE CH ES FR NL PL |
 | 5 | New customer strings have German | **met** | 204 strings, only two identical: `row.revision`, `unit.m.other` |
 | 6 | ruff/mypy/pytest, live bundle hash, clean tree | **met** | engine 1490 passed; bundle `28c5aefe29bbfb99` both sides; 0 changed |
 
 ### Criterion 4, stated plainly
 
-Italy, the United Kingdom and Austria have **no aerial layer**, and this record
-does not claim otherwise:
+Italy and the United Kingdom have **no aerial layer**, and this record does not
+claim otherwise. Austria was recorded as a gap and then solved: basemap.at
+publishes a WMTS tile template, not a WMS, and `mapsneu.wien.gv.at` answered
+real JPEGs at zooms 15, 16 and 17 (19-22 KB each). The map now draws it under
+the visitor's own consent, credited `basemap.at / Stadt Wien — CC BY 4.0`, and
+a screenshot of Stephansdom confirms the pixels on live.
+
+The three that stayed gaps:
 
 - **IT** — the national WMS reads `\\192.168.65.12\nas1_vol1\DATI\ORTOFOTO`,
   an internal share its own server cannot open.
@@ -486,10 +492,18 @@ does not claim otherwise:
   page, not imagery. Esri World Imagery was rejected: a commercial service is
   not an open licence and this product does not put unlicensed basemaps in
   front of customers.
-- **AT** — `basemap.at` moved to WMTS and its tile hosts do not answer from the
-  production network; the states publish separately. Vienna's own WMS answers,
-  but a capital city is not a country and is not recorded as one.
+Both fall back to the drawn outline, and the screen now says so in English and
+German rather than leaving the visitor to guess why the background is a line
+drawing.
 
-All three fall back to the drawn outline, and the screen now says so in
-English and German rather than leaving the visitor to guess why the background
-is a line drawing.
+### A defect the test harness was hiding
+
+Vienna stored `latitude: null, longitude: null` while Munich stored both. The
+postcode was only resolved on the field's `blur`, and a visitor who types a
+postcode and presses the button never blurs it. The map then refused with
+"needs a geographic origin" — a correct refusal for a project with no site,
+caused by a form that never asked. `start()` now resolves the place before it
+saves, and a failure is reported instead of writing an empty location.
+
+`1010` is written by six countries (AL, AT, CH, CY, DK, MK). The server asking
+for the country is correct behaviour, not a bug, and is kept.
