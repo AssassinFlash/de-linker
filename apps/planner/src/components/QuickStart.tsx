@@ -30,6 +30,7 @@ import {
 import { compileEquipmentRequirements } from "../domain/equipmentRequirements.ts";
 import {
 	emptyPv,
+	prepareWeatherInputs,
 	solarInputs,
 	weatherFromPlace,
 } from "../domain/solarSetup.ts";
@@ -1076,7 +1077,15 @@ function QuickStartRun({
 					pv: emptyPv(),
 				};
 				update((previous) =>
-					editDraft(previous, solarInputs(previous.history.current, setup)),
+					// `solarInputs` records the setup and clears the previous
+					// request; `prepareWeatherInputs` is what compiles the draft
+					// into the `weather_acquisition` object the engine reads.
+					editDraft(
+						previous,
+						prepareWeatherInputs(
+							solarInputs(previous.history.current, setup),
+						),
+					),
 				);
 				const withWeather = await save();
 				if (!current()) return;
