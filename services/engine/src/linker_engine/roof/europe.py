@@ -30,10 +30,12 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass
+from functools import cache
 from typing import Any, cast
 
 from pyproj import Transformer
 
+from . import swiss
 from .citygml import Building, RoofPlane, plane_of
 
 USER_AGENT = "linker-engine (de-linker.com Solution Configurator)"
@@ -255,22 +257,112 @@ def documented_models() -> dict[str, str]:
 def read(country: str, latitude: float, longitude: float) -> ModelResult | None:
     """The official 3D model at a position, or None where none is published.
 
-    Only the Dutch model is read today; Switzerland's tiles need a lookup of
-    their own and are named in `documented_models` so the caller can tell
-    "no model exists" from "not implemented yet".
+    The Netherlands and Switzerland both publish a nationwide model with roof
+    surfaces. Every other country in the service area publishes footprints
+    only, and there the pitch and facing come from the customer or from the
+    plane they draw, which `pack_drawn` already handles.
     """
-    if country != "NL":
+    if country == "NL":
+        document = _fetch_dutch(latitude, longitude)
+        buildings = _dutch_buildings(document)
+        if not buildings:
+            return None
+        return ModelResult(
+            country="NL",
+            buildings=buildings,
+            licence=LICENCES["NL"],
+            transformer=Transformer.from_crs(DUTCH_CRS, "EPSG:4326", always_xy=True),
+        )
+    if country == "CH":
+        return _read_swiss(latitude, longitude)
+    return None
+
+
+# swisstopo publishes swissBUILDINGS3D as 1 km² tiles on a fixed EPSG:2056 grid.
+SWISS_STAC = "https://data.geo.admin.ch/api/stac/v0.9"
+SWISS_COLLECTION = "ch.swisstopo.swissbuildings3d_2"
+# The tile grid step in metres: measured 2026-11-16, tile `1166-42` covers
+# 7.414-7.471 E and 46.924-46.951 N, so one step is 1000 m of the projected grid.
+SWISS_TILE_M = 1000.0
+
+
+def _swiss_tile_name(x: float, y: float) -> str:
+    """The tile identifier covering a position on the published grid."""
+    return f"{int(x // SWISS_TILE_M)}-{int(y // SWISS_TILE_M)}"
+
+
+def _read_swiss(latitude: float, longitude: float) -> ModelResult | None:
+    """Roof surfaces of the buildings near a Swiss or Liechtenstein position.
+
+    The tile is 16 MB compressed and 256 MB expanded, so it is parsed once and
+    kept; a request for a second building in the same tile answers from memory.
+    """
+    to_lv95 = Transformer.from_crs("EPSG:4326", "EPSG:2056", always_xy=True)
+    x, y = to_lv95.transform(longitude, latitude)
+    tile = _swiss_tile(x, y)
+    if tile is None:
         return None
-    document = _fetch_dutch(latitude, longitude)
-    buildings = _dutch_buildings(document)
-    if not buildings:
+    found = tile.nearest(x, y, CLICK_TOLERANCE_M * 4)
+    if found is None or not found.surfaces:
         return None
-    return ModelResult(
-        country="NL",
-        buildings=buildings,
-        licence=LICENCES["NL"],
-        transformer=Transformer.from_crs(DUTCH_CRS, "EPSG:4326", always_xy=True),
+    building = Building(
+        id=f"CH {_swiss_tile_name(x, y)}",
+        address=None,
+        footprint=[found.footprint],
+        planes=[
+            RoofPlane(
+                ring=surface.outline,
+                tilt_deg=surface.tilt_deg,
+                azimuth_deg=surface.azimuth_deg,
+                area_m2=surface.area_m2,
+            )
+            for surface in found.surfaces
+        ],
     )
+    return ModelResult(
+        country="CH",
+        buildings=[building],
+        licence=LICENCES["CH"],
+        transformer=Transformer.from_crs("EPSG:2056", "EPSG:4326", always_xy=True),
+    )
+
+
+@cache
+def _swiss_tile(x: float, y: float) -> swiss.Tile | None:
+    """Download and parse the tile covering a position, once per process."""
+    name = _swiss_tile_name(x, y)
+    url = (
+        f"{SWISS_STAC}/collections/{SWISS_COLLECTION}/items"
+        f"?bbox={x - 500},{y - 500},{x + 500},{y + 500}&limit=20"
+    )
+    try:
+        with urllib.request.urlopen(
+            urllib.request.Request(url, headers={"User-Agent": USER_AGENT}),
+            timeout=120,
+        ) as response:
+            document = cast(dict[str, Any], json.load(response))
+    except (urllib.error.URLError, TimeoutError, ValueError) as error:
+        raise ModelUnavailable(f"swissBUILDINGS3D index did not answer: {error}") from error
+    for feature in cast(list[dict[str, Any]], document.get("features") or []):
+        if not str(feature.get("id", "")).endswith(name):
+            continue
+        for asset in cast(dict[str, Any], feature.get("assets") or {}).values():
+            href = str(asset.get("href", ""))
+            if not href.endswith(".dxf.zip"):
+                continue
+            try:
+                with urllib.request.urlopen(
+                    urllib.request.Request(
+                        href, headers={"User-Agent": USER_AGENT}
+                    ),
+                    timeout=180,
+                ) as response:
+                    return swiss.read_archive(response.read())
+            except (urllib.error.URLError, TimeoutError) as error:
+                raise ModelUnavailable(
+                    f"swissBUILDINGS3D tile did not download: {error}"
+                ) from error
+    return None
 
 
 def distance_m(ring: list[tuple[float, float]], x: float, y: float) -> float:
