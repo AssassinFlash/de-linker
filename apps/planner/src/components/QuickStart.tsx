@@ -492,12 +492,28 @@ export function QuickStart({
 	 */
 	const [resolved, setResolved] = useState<ResolvedPlace | null>(null);
 	const lifetime = useRef(0);
+	// A postcode settles on a pause as well as on blur. A visitor who types and
+	// then presses the button without leaving the field would otherwise never
+	// start the lookup, and the screen would carry unconfirmed text into the
+	// project (measured 2026-11-15: `zzz not a place` became the title).
+	const settle = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 	useEffect(() => {
 		lifetime.current++;
 		return () => {
 			lifetime.current++;
+			if (settle.current !== undefined) clearTimeout(settle.current);
 		};
 	}, []);
+	useEffect(() => {
+		if (settle.current !== undefined) clearTimeout(settle.current);
+		if (choices.location.trim().length < 4) return;
+		const pending = choices.location;
+		const country = choices.country;
+		settle.current = setTimeout(() => {
+			settle.current = undefined;
+			void askPlace(pending, country);
+		}, 400);
+	}, [choices.location, choices.country]);
 	const ready = quickStartReady(choices);
 	function change<K extends keyof QuickStartChoices>(
 		key: K,
@@ -526,7 +542,8 @@ export function QuickStart({
 	 * coordinates are facts the visitor confirmed rather than input we invented.
 	 * A failure here never blocks the screen: the manual country select remains.
 	 */
-	async function resolvePlace(query: string) {
+	/** Ask the server where a postcode is, and adopt the answer. */
+	async function askPlace(query: string, country: string) {
 		const trimmed = query.trim();
 		if (trimmed.length < 4) {
 			setResolved(null);
@@ -543,7 +560,7 @@ export function QuickStart({
 						// The chosen country disambiguates a postcode several
 						// countries write the same way; without one the server
 						// answers `needs_country` and the screen says so.
-						...(choices.country ? { country: choices.country } : {}),
+						...(country ? { country } : {}),
 					},
 					session.query_scope,
 				),
@@ -565,6 +582,9 @@ export function QuickStart({
 		} catch {
 			if (instance === lifetime.current) setResolved(null);
 		}
+	}
+	function resolvePlace(query: string) {
+		return askPlace(query, choices.country);
 	}
 	async function start() {
 		if (!ready || busy || !client.isCurrentScope(session.query_scope)) return;
