@@ -17,6 +17,7 @@ import textwrap
 import threading
 import urllib.error
 from collections.abc import Iterator
+from http import client as http_client
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from types import SimpleNamespace
@@ -821,3 +822,26 @@ def test_task_session_unwinds_on_termination_signal(signum: int) -> None:
     )
     assert result.returncode == 128 + signum, result.stderr
     assert "signal cleanup and handlers verified" in result.stdout
+
+
+def test_a_truncated_response_retries_once_and_then_fails(
+    site: tuple[Target, list[str]],
+) -> None:
+    """The shared host closes a chunked body before its last chunk.
+
+    Measured 2026-11-15: five consecutive deploys ended on IncompleteRead while
+    curl read the same pages in full, so the fault is the host's connection
+    handling rather than the page. One retry keeps the gate honest; a second
+    truncation is a real fault and must still stop the deploy.
+    """
+    target, requested = site
+    interrupted = urllib.error.URLError(http_client.IncompleteRead(b""))
+    with patch.object(
+        OPENER, "open", wraps=OPENER.open, side_effect=[interrupted, DEFAULT]
+    ) as opening:
+        assert target.http("/de/", cache_buster="batch")[0] == 200
+        assert opening.call_count == 2
+    with patch.object(OPENER, "open", side_effect=interrupted):
+        with pytest.raises(CutoverError, match="terms-of-sale"):
+            target.http("/terms-of-sale/")
+    assert requested == ["/de/?cbq=batch"]

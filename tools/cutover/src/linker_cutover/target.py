@@ -20,6 +20,7 @@ and why `backup` runs before anything else.
 
 from __future__ import annotations
 
+import http.client
 import json
 import os
 import shlex
@@ -689,6 +690,15 @@ class Target:
             # keeping the URL and redirect policy, like the TLS EOF retry.
             print(f"cutover: read timeout, retrying GET {path}", flush=True)
             return self._fetch(path, cache_buster)
+        except _TruncatedRead:
+            # The host closes a chunked response before its last chunk. curl
+            # reads the same pages in full (measured 2026-11-15: every verify
+            # path answers 200 with its complete body), so this is the shared
+            # host's connection handling, not the page. One retry, and the
+            # caller still fails on a second — a persistent truncation is a
+            # real fault and must not be hidden.
+            print(f"cutover: truncated read, retrying GET {path}", flush=True)
+            return self._fetch(path, cache_buster)
 
     def _fetch(self, path: str, cache_buster: str | None) -> tuple[int, str]:
         url = self.base_url.rstrip("/") + "/" + path.lstrip("/")
@@ -719,6 +729,10 @@ class Target:
         except OSError as error:  # a refused connection, a DNS failure, a timeout
             if _is_read_timeout(error):
                 raise _ReadTimeout(url) from error
+            if isinstance(error, http.client.IncompleteRead) or isinstance(
+                getattr(error, "reason", None), http.client.IncompleteRead
+            ):
+                raise _TruncatedRead(url) from error
             raise CutoverError(f"GET {url}: {error}") from error
 
 
@@ -774,6 +788,10 @@ def _is_read_timeout(error: BaseException) -> bool:
             continue
         seen = seen.__cause__ or seen.__context__
     return False
+
+
+class _TruncatedRead(CutoverError):
+    """The host closed a response before its last chunk."""
 
 
 class _ReadTimeout(CutoverError):
