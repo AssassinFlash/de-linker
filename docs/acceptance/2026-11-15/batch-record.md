@@ -132,6 +132,24 @@
 | `10431` | GR | `Athens` / Europe/Athens |
 | `80538` | DE | `München` / Europe/Berlin |
 
+**线上实测（生产配置器，九个国家的邮编逐个输入）**：
+
+```
+DE 80538    -> 80538 München                    Europe/Berlin
+GB M1 1AE   -> M1 Manchester                    Europe/London
+NL 9401 AB  -> 9401 Assen                       Europe/Amsterdam
+PT 3750-000 -> 3750-000 Zona Industrial En 1 Norte  Europe/Lisbon
+PL 59-700   -> 59-700 Golnice                   Europe/Warsaw
+FR 75001    -> 75001 Paris                      Europe/Paris
+IE D01 F5P2 -> D01 Dublin 1                     Europe/Dublin
+GR 10431    -> 10431 ΠΛΑΤΕΙΑ ΟΜΟΝΟΙΑΣ ΑΘΗΝΑ     Europe/Athens
+ES 35001    -> 35001 Las Palmas De Gran Canaria  Atlantic/Canary
+```
+
+占位符随所选国家变化（选 GB 时是 `e.g. M1 1AE`），输入停顿后自动查询并把结果如实填回字段。
+
+**触发方式**：查询原本只在 `onBlur` 时发出。客户填完邮编直接点按钮而不离开输入框，查询永远不会开始，项目就带着原文。改为输入停顿 400ms 后也查询。
+
 **三处我自己引入并修掉的错误**：
 
 1. **时区跨国误标**：只用「最近城市」时，1,411 个边境邮编取了邻国时区（西班牙 `Portbou` 得到 `Europe/Paris`）。加上同国家约束后，西班牙只剩 Madrid / Canary / Ceuta，葡萄牙只剩 Lisbon / Madeira / Azores。
