@@ -21,7 +21,7 @@ from .. import geo
 from ..models import Locale, RoofPackRequest, RoofPlaneResult, RoofRequest, RoofResult
 from ..products import PvModule
 from ..texts import t
-from . import europe, lod2
+from . import europe, footprints, lod2
 from .citygml import Building, RoofPlane
 from .packing import pack
 
@@ -67,6 +67,10 @@ class RoofService:
     ) -> None:
         self._index = index or lod2.TileIndex(cache_dir)
         self._module = module
+        # One published part per quadkey cell, kept because a part is tens of
+        # megabytes and the next request in the same city reads it again.
+        self._footprint_cache = cache_dir / "footprints"
+        self._footprint_cache.mkdir(parents=True, exist_ok=True)
 
     def outline(self, request: RoofRequest) -> RoofResult:
         locale = request.locale
@@ -82,10 +86,17 @@ class RoofService:
         model = europe.read(place.country, latitude, longitude)
         if model is not None:
             return self._from_model(model, latitude, longitude, locale)
-        # Whether an official outline exists is a property of the region, not of
-        # the country: `tile_for` names the region it has no source for, and a
-        # region outside the set falls back to the hand-drawn plane.
-        tile = lod2.tile_for(place.iso_region, latitude, longitude)
+        # No measured roof geometry here. Germany still answers from its states'
+        # LoD2; every other country answers from the global building footprints,
+        # which give the real outline and leave the pitch to the customer. The
+        # outline is what the map draws, so the step never has to say it has no
+        # outline at all.
+        try:
+            tile = lod2.tile_for(place.iso_region, latitude, longitude)
+        except lod2.Lod2Unavailable:
+            return self._from_footprints(
+                place.country, latitude, longitude, locale
+            )
         index = self._index.load(tile)
         x, y = lod2.to_utm(tile.zone, latitude, longitude)
         point = Point(x, y)
@@ -244,6 +255,83 @@ class RoofService:
             source=source,
             licence=model.licence,
             assumptions=assumptions,
+        )
+
+    def _from_footprints(
+        self,
+        country: str,
+        latitude: float,
+        longitude: float,
+        locale: Locale,
+    ) -> RoofResult:
+        """The real outline of the building at a position, with no measured roof.
+
+        Countries outside Germany, the Netherlands and Switzerland publish no
+        roof geometry, but the building itself exists and its plan is open data.
+        Returning the outline lets the map show the building and the customer
+        set the pitch they can see; returning `found: false` would claim the
+        tool knows nothing about a building it can draw.
+        """
+        module = self._module
+        name = f"{module.brand} {module.model}"
+        empty = RoofResult(
+            found=False,
+            building_id=None,
+            address=None,
+            distance_m=None,
+            outline=[],
+            planes=[],
+            modules=0,
+            kwp=0.0,
+            module=name,
+            module_wp=module.pmax_w,
+            source="Microsoft building footprints",
+            licence=footprints.LICENCE,
+            assumptions=[t(f"assume.{key}", locale) for key in ROOF_ASSUMPTIONS],
+        )
+        key = footprints.quadkey(latitude, longitude)
+        url = footprints.part_url(country, key)
+        if url is None:
+            return empty
+        cached = self._footprint_cache / f"{country}-{key}.geojsonl.gz"
+        try:
+            archive = (
+                cached.read_bytes()
+                if cached.exists()
+                else footprints.download(url)
+            )
+        except (OSError, ValueError):
+            return empty
+        if not cached.exists():
+            try:
+                cached.write_bytes(archive)
+            except OSError:
+                pass
+        ring = footprints.nearest(
+            footprints.outlines(archive, latitude, longitude), latitude, longitude
+        )
+        if ring is None:
+            return empty
+        return RoofResult(
+            found=True,
+            building_id=f"{country} outline {key}",
+            address=None,
+            distance_m=0.0,
+            outline=[[(round(x, COORD_DECIMALS), round(y, COORD_DECIMALS)) for x, y in ring]],
+            # No measured plane: the pitch and facing are the customer's, entered
+            # on the map. Guessing them would put a number on the offer that no
+            # survey supports.
+            planes=[],
+            modules=0,
+            kwp=0.0,
+            module=name,
+            module_wp=module.pmax_w,
+            source="Microsoft building footprints",
+            licence=footprints.LICENCE,
+            assumptions=[
+                *(t(f"assume.{name}", locale) for name in ("roof_edge_inset", "module_gap")),
+                t("assume.outline_only", locale),
+            ],
         )
 
 

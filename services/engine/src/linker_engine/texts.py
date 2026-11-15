@@ -634,6 +634,10 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "Modules sit 2 cm apart for the clamps.",
         "Module liegen für die Klemmen 2 cm auseinander.",
     ),
+    "assume.outline_only": (
+        "The building outline is open map data; the pitch and facing are the ones you enter.",
+        "Der Gebäudeumriss stammt aus offenen Kartendaten; Neigung und Ausrichtung übernehmen wir aus Ihren Angaben.",
+    ),
 }
 
 
