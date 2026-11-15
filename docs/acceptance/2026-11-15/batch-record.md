@@ -92,6 +92,25 @@
 
 620 次扫描（310 URL × 2 视口，8 并发）：**0 错误、0 破图、0 空链接、0 标题跳级、0 横向溢出**。
 
+14 个页型（首页/产品/分类/PDP/方案/安装商/联系，EN+DE）× 390 全滚动视觉走查：排除已确认的三类误报源（sr-only 元素的 `clip: rect(0,0,0,0)`、懒加载未触发的 `incomplete`、Cookie 隐藏面板的溢出）后，**零缺陷**。四条曾被判为缺陷、经测量撤回：
+
+- `sales@de-linker.com` 270×20 → 文字链接不受 44px 触摸目标约束。
+- 联系表单 checkbox 18×18 → 包在 312×67 的 `<label>` 里，点标签任意位置均可勾选。
+- 安装商页「Partnerleistung N anzeigen」24×44 → 就是阶段胶囊本身，宽度 24 是 WCAG 2.5.8 下限，上一轮刻意选择。
+- 全部 14 页 `overflowX: true` → 来自 Cookie 偏好面板（`.cky-preference-center` 845px），文档 `scrollWidth` 等于视口 390，页面本身无横向溢出。
+
+**首屏 Cookie 横幅是唯一剩下的真实阻塞**：390 视口占 47%（393px），实测压住三个可操作控件（首页主 CTA「Lösungskonfigurator öffnen」、Genie 输入框、铭牌拍照入口）。CookieYes 3.5.8 的 `cky-btn-close` 只存在于偏好面板标题栏，notice 横幅模板里没有关闭按钮；`settings.config.notice.elements.closeButton.status` 改成 `true` 后页面无变化（已验证并回滚该改动）。横幅高度主要来自 468 字符的德语法律文案，按 §0.2 法律正文保护不擅改。**这是需要业主决定的事项，不是我能单方面改的**。
+
+## 我造成的损失（已修复，须记录）
+
+**删掉了登记在册的整站备份基线。** 上一轮清理时我查的是 `~/de-linker-data/snapshots/.snapshot-retention.json` 的 `baselines`（数据库快照的），为空；而整站备份的基线在另一个文件 `~/de-linker-data/.backup-retention.json`，里面正登记着 `cutover-20261021-2259`——就是我删的那份 4.2 GB。
+
+后果：`just cutover backup` 每次报 `backup retention: skipped remaining cleanup (registered backup baseline is missing or changed)`，轮转被永久阻断，备份会无限增长，正是 §0 明令禁止的。
+
+**修复**：选 `cutover-20261113-0826` 作新基线。先核实完整性——数据库 sha256 与 manifest 一致（7,944,218 字节），文件集 39,782 个中随机抽 12 个哈希全对；再用工具自己的 `register-backup --baseline --write` 登记（它会重新完整校验 manifest、文件与数据库）。读回 `baselines` 已指向新值，随后一次备份实测 `removed cutover-20261113-0556`，轮转恢复。
+
+**教训**：回收任何备份前，两个 registry 都要查——`.backup-retention.json`（整站备份）与 `snapshots/.snapshot-retention.json`（数据库快照），它们是不同的保留域。
+
 ## 撤回的判断（证据推翻）
 
 - **`rest-nonce` 400 是缺陷** —— 撤回。这是 WordPress 核心对未登录访客的正常应答（`rest-nonce` 只注册在 `wp_ajax_` 分支，nopriv 只有 `generate-password` 与 `heartbeat`），前端 `PlannerClient.ts:311` 本来就显式处理 `status===400 && body==="0"` 并继续走 guest nonce。
