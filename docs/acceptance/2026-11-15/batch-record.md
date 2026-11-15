@@ -150,6 +150,31 @@ ES 35001    -> 35001 Las Palmas De Gran Canaria  Atlantic/Canary
 
 **触发方式**：查询原本只在 `onBlur` 时发出。客户填完邮编直接点按钮而不离开输入框，查询永远不会开始，项目就带着原文。改为输入停顿 400ms 后也查询。
 
+### 全欧支持的实质边界（业主质疑「底层没执行好」后的核查）
+
+业主的判断成立，但位置不同。逐项查过之后，事实是：
+
+**已经打通的**：邮编查询（50 国）、坐标、时区、国家代码进入项目 `brief.site`、项目标题带上城市名、设备搜索与选型校验。德国 / 英国 / 希腊 / 荷兰 / 西班牙五个国家端到端跑完，**零 4xx**，各步骤状态完全一致。
+
+**没有打通的（对德国也一样）**：
+
+| 步骤 | 状态 | 原因 |
+|---|---|---|
+| Fetch typical-year weather | blocked | QuickStart 从不构建 `weather_acquisition`；它只在完整工作台的 `GeometricPvSetup` / `DirectBeamSetup` 里构建，且依赖已有的屋顶几何 |
+| Model the roof generation | blocked | 同上，需要已放置的组件 |
+| Prepare the storage scenario | blocked | 需要导入的区间数据；年用电量数字不是区间序列 |
+| Calculate self-consumption | blocked | 依赖上一步 |
+
+这四步的代码注释（`QuickStart.tsx:1036-1039`）和 UI 文案是一致的，是设计声明而非崩溃。
+
+**一处过期断言**：那段注释写「a location typed as text is not a WGS 84 coordinate, so no weather request is sent from here」——这句在邮编查询只支持德国时成立，现在 `places/lookup` 返回真实坐标（希腊 10431 → 37.9844 / 23.7281），前提已经不成立。但**天气步骤不运行的原因不是缺坐标**：`WeatherAcquisitionInputs` 需要的是 PVGIS 请求对象，QuickStart 压根没有构建它的代码路径。所以补坐标不会让这步跑起来，需要新增能力。
+
+**设备搜索不按国家区分**：生产数据里带 `excluded_countries` 条件的 fact 数量是 **0**（85 个产品全部查过）。所以 644 个组合在各国完全相同。这与 `docs/research/2026-10-23-modern-workbench/COUNTRY-EVIDENCE.md` 的结论一致——「一个 EN 标准号不能自动展开为欧洲国家清单」，国家参数与设备选型本就分离。界面同时明确写着「Country requirements: not assessed by this calculation.」，没有误导。
+
+**屋顶轮廓只有德国**：`lod2-sources.json` 覆盖 16 个州，每个下载地址在 2026-07-18 实测验证过。非德国地址调用 `outline()` 会得到 `no official outline service for XX`。手绘屋顶（`pack_drawn`）不检查国家，所以非德国客户仍有可行路径，但没有官方轮廓。
+
+**需要业主决定**：是否给 QuickStart 增加 PVGIS 天气请求（只需坐标与年份区间，PVGIS 覆盖全欧），让单屏入口能给出产量估算。这是新增能力，不是修复。
+
 **三处我自己引入并修掉的错误**：
 
 1. **时区跨国误标**：只用「最近城市」时，1,411 个边境邮编取了邻国时区（西班牙 `Portbou` 得到 `Europe/Paris`）。加上同国家约束后，西班牙只剩 Madrid / Canary / Ceuta，葡萄牙只剩 Lisbon / Madeira / Azores。
