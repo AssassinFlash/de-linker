@@ -42,6 +42,155 @@ test("saved roof projects reopen in design while energy projects and explicit ro
 	assert.equal(workspaceFromHash({ brief }), "energy");
 });
 
+test("a failed aerial lookup retries on request without changing saved coordinates or roof geometry", async (t) => {
+	const dom = setupDom();
+	const previous = new Map();
+	for (const name of ["indexedDB", "getComputedStyle"]) {
+		previous.set(name, Object.getOwnPropertyDescriptor(globalThis, name));
+		Object.defineProperty(globalThis, name, {
+			value:
+				name === "indexedDB"
+					? new IDBFactory()
+					: window.getComputedStyle.bind(window),
+			configurable: true,
+		});
+	}
+	const css = document.createElement("style");
+	css.textContent =
+		".lp-map-host{--proto-neutral-300:#ccc;--proto-teal-900:#123;--proto-neutral-600:#456;--proto-teal-700:#278;--proto-teal-400:#4bc;--proto-neutral-100:#eee;}";
+	document.head.append(css);
+	const { createRoot } = await import("react-dom/client");
+	const { maps } = await import("./map-library-fixture.mjs");
+	const geometry = JSON.parse(
+		readFileSync(
+			new URL(
+				"../../../fixtures/planning/geometry-import-asset.json",
+				import.meta.url,
+			),
+			"utf8",
+		),
+	).metadata.geometry_import.geometry;
+	const project = {
+		id: "1".repeat(32),
+		title: "Synthetic aerial retry",
+		revision: 1,
+		input_sha256: "2".repeat(64),
+		inputs: {
+			geometry,
+			brief: {
+				...emptyBrief(),
+				site: {
+					...emptyBrief().site,
+					country_code: "DE",
+					location_label: "Synthetic address",
+					latitude: 50.94,
+					longitude: 6.96,
+					coordinate_basis: "user_entered",
+				},
+			},
+		},
+	};
+	const before = structuredClone(project.inputs);
+	const session = { query_scope: "3".repeat(64), kind: "guest" };
+	const imagery = {
+		tiles: ["https://tile.googleapis.com/v1/2dtiles/{z}/{x}/{y}"],
+		credit: "Synthetic imagery provider",
+		licence: "Synthetic test permission",
+		licence_url: "https://fixture.invalid/licence",
+	};
+	const lookups = [],
+		outlines = [],
+		writes = [];
+	const client = {
+		isCurrentScope: (scope) => scope === session.query_scope,
+		async query(path, command) {
+			if (path === "places/lookup") {
+				lookups.push(command);
+				if (lookups.length === 1) throw new Error("Synthetic lookup failure");
+				return { imagery, latitude: 51, longitude: 7, country_code: "DE" };
+			}
+			if (path === "places/outline") {
+				outlines.push(command);
+				return { found: false };
+			}
+			throw new Error("Unexpected fixture route " + path);
+		},
+	};
+	const store = {
+		async read() {
+			return null;
+		},
+		async candidates() {
+			return [];
+		},
+		async readProfileImports() {
+			return [];
+		},
+		async write(_scope, draft) {
+			writes.push(draft);
+		},
+	};
+	const cache = new QueryClient(),
+		root = createRoot(dom.element);
+	t.after(async () => {
+		await dom.dispose(root);
+		cache.clear();
+		for (const [name, descriptor] of previous) {
+			if (descriptor) Object.defineProperty(globalThis, name, descriptor);
+			else delete globalThis[name];
+		}
+	});
+	await act(async () =>
+		root.render(
+			React.createElement(
+				QueryClientProvider,
+				{ client: cache },
+				React.createElement(ProjectEditor, {
+					project,
+					session,
+					client,
+					store,
+					config: { locale: "en-GB", countries: { DE: "Germany" } },
+					recheck: () => assert.fail("Unexpected identity error"),
+					close: () => true,
+				}),
+			),
+		),
+	);
+	const retry = () =>
+		document.querySelector('.lp-design-panel > [role="alert"] button');
+	await until(
+		() => retry() && document.querySelector('[data-map-status="ready"]'),
+	);
+	assert.equal(retry().textContent, "Try again");
+	assert.equal(lookups.length, 1, "failure must wait for the visitor to retry");
+	const map = maps.findLast((item) => !item.removed);
+	const overlay = structuredClone(
+		map.getSource("linker-project-geometry").data,
+	);
+	assert.equal(map.getSource("linker-site-imagery"), undefined);
+	await act(async () => retry().click());
+	await until(() => map.getSource("linker-site-imagery"));
+	assert.deepEqual(lookups, [
+		{ schema_version: 1, query: "Synthetic address", country: "DE" },
+		{ schema_version: 1, query: "Synthetic address", country: "DE" },
+	]);
+	assert.deepEqual(outlines, [
+		{
+			schema_version: 1,
+			query: "Synthetic address",
+			country: "DE",
+			latitude: 50.94,
+			longitude: 6.96,
+		},
+	]);
+	assert.deepEqual(map.getSource("linker-site-imagery").tiles, imagery.tiles);
+	assert.deepEqual(map.getSource("linker-project-geometry").data, overlay);
+	assert.deepEqual(project.inputs, before);
+	assert.deepEqual(writes, [], "Imagery retry must not edit the project draft");
+	assert.equal(retry(), null);
+});
+
 test("import joins one project history step, guards navigation, and a confirmed save clears its exact original", async (t) => {
 	const dom = setupDom(),
 		previous = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");

@@ -174,6 +174,8 @@ export function ProjectEditor({
 	// Map imagery is independent of postcode geocoding. A selected full address
 	// already has its exact centre stored in the brief.
 	const [siteImagery, setSiteImagery] = useState<PlaceImagery | null>(null);
+	const [siteImageryFailed, setSiteImageryFailed] = useState(false);
+	const [siteImageryAttempt, setSiteImageryAttempt] = useState(0);
 	// The mapped building at the declared site, with official 3D roof planes
 	// where published (DE/NL/CH/LI) or 2D outline elsewhere.
 	const [siteOutline, setSiteOutline] = useState<{
@@ -206,6 +208,7 @@ export function ProjectEditor({
 		const label = mapSite?.label;
 		const country = mapSite?.country;
 		setSiteImagery(null);
+		setSiteImageryFailed(false);
 		setSiteOutline(null);
 		if (!label || !client.isCurrentScope(session.query_scope)) {
 			return;
@@ -289,7 +292,10 @@ export function ProjectEditor({
 				}
 			} catch {
 				// A missing mosaic never blocks the design step.
-				if (live) setSiteImagery(null);
+				if (live) {
+					setSiteImagery(null);
+					setSiteImageryFailed(true);
+				}
 			}
 		})();
 		return () => {
@@ -300,6 +306,7 @@ export function ProjectEditor({
 		mapSite?.country,
 		mapSite?.latitude,
 		mapSite?.longitude,
+		siteImageryAttempt,
 		client,
 		session.query_scope,
 	]);
@@ -1063,6 +1070,23 @@ export function ProjectEditor({
 							/>
 						</section>
 						<div className="lp-design-panel" hidden={workspace !== "design"}>
+							{siteImageryFailed && (
+								<Notice error>
+									<p>
+										{__(
+											"Aerial imagery is not available. You can upload a roof plan or retry loading the map.",
+											"linker-tools",
+										)}
+									</p>
+									<button
+										type="button"
+										className="lp-button lp-button-secondary"
+										onClick={() => setSiteImageryAttempt((value) => value + 1)}
+									>
+										{__("Try again", "linker-tools")}
+									</button>
+								</Notice>
+							)}
 							<DesignEditor
 								initialMapView={mapPropertyHashes.includes(
 									window.location.hash,
