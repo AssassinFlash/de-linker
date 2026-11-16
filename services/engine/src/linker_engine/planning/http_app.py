@@ -29,6 +29,7 @@ from starlette.exceptions import HTTPException
 from starlette.types import ASGIApp
 
 from .. import geo, imagery
+from ..models import Imagery
 from ..roof import europe, footprints, lod2
 from ..roof.citygml import Building
 from .access import active_actor, positive_integer
@@ -137,9 +138,8 @@ class HttpLimits:
             positive_integer(getattr(self, name), name)
 
 
-def _imagery_at(found: geo.Place) -> Object | None:
-    """The aerial layer for a place, or null where no service is recorded."""
-    service = imagery.for_place(found.country, found.iso_region)
+def _imagery_reply(service: Imagery | None) -> Object | None:
+    """Serialize the aerial layer independently of the address lookup."""
     if service is None:
         return None
     return {
@@ -677,6 +677,12 @@ def create_private_app(
                 "query": query,
                 "needs_country": shared,
                 "attribution": geo.ATTRIBUTION,
+                # A street address resolved by the browser's Google geocoder
+                # need not exist in the postal table. Its saved coordinates
+                # still need the selected country's aerial layer.
+                "imagery": _imagery_reply(
+                    imagery.for_country(body.country.upper()) if body.country else None
+                ),
             }
         return {
             "schema_version": 1,
@@ -692,7 +698,9 @@ def create_private_app(
             # A German place is served by its state's mosaic, everything else by
             # its country's; both answer null where none is recorded, and the map
             # then keeps its plain background instead of requesting a broken tile.
-            "imagery": _imagery_at(found),
+            "imagery": _imagery_reply(
+                imagery.for_place(found.country, found.iso_region)
+            ),
         }
 
     @app.post("/places/outline")

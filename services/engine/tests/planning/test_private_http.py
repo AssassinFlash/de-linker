@@ -109,6 +109,40 @@ class Rig:
         return self.post("/operations/replay" + path, body, actor)
 
 
+def test_address_lookup_keeps_country_imagery_without_inventing_a_position(
+    rig: Rig, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from linker_engine import imagery
+    from linker_engine.models import Imagery
+
+    layer = Imagery(
+        tiles=["https://tiles.example.test/{z}/{x}/{y}"],
+        credit="Test aerial provider",
+        licence="Test licence",
+        licence_url="https://tiles.example.test/terms",
+    )
+    countries: list[str] = []
+
+    def country_layer(country: str) -> Imagery:
+        countries.append(country)
+        return layer
+
+    monkeypatch.setattr(imagery, "for_country", country_layer)
+    reply = rig.post(
+        "/places/lookup",
+        {"query": "A street address outside the postal table", "country": "fr"},
+    )
+    assert reply["found"] is False
+    assert reply["imagery"] == layer.model_dump()
+    assert "latitude" not in reply and "longitude" not in reply
+    assert countries == ["FR"]
+
+    unknown = rig.post("/places/lookup", {"query": "An address without a country"})
+    assert unknown["found"] is False
+    assert unknown.get("imagery") is None
+    assert countries == ["FR"]
+
+
 def test_geometry_import_has_owned_original_receipt_and_separate_project_save(
     rig: Rig,
 ) -> None:

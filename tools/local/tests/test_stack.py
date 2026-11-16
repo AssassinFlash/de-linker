@@ -492,9 +492,9 @@ def test_pages_may_load_from_this_machine_only_and_are_not_indexed(
     # images (services/engine/data/imagery.json).
     assert home.headers["Content-Security-Policy"] == (
         f"default-src {LOCAL_SOURCES}; "
-        f"script-src {LOCAL_SOURCES} https://cdn.jsdelivr.net https://esm.sh https://unpkg.com https://challenges.cloudflare.com; "
-        f"img-src {LOCAL_SOURCES} {IMAGERY_WMS} https://tiles.openfreemap.org https://secure.gravatar.com; "
-        f"connect-src {LOCAL_SOURCES} {IMAGERY_WMS} https://tiles.openfreemap.org https://challenges.cloudflare.com; "
+        f"script-src {LOCAL_SOURCES} https://cdn.jsdelivr.net https://esm.sh https://unpkg.com https://challenges.cloudflare.com https://maps.googleapis.com https://maps.gstatic.com; "
+        f"img-src {LOCAL_SOURCES} {IMAGERY_WMS} https://tiles.openfreemap.org https://secure.gravatar.com https://tile.googleapis.com https://maps.gstatic.com; "
+        f"connect-src {LOCAL_SOURCES} {IMAGERY_WMS} https://tiles.openfreemap.org https://challenges.cloudflare.com https://maps.googleapis.com https://maps.gstatic.com https://tile.googleapis.com https://places.googleapis.com; "
         "frame-src 'self' http://127.0.0.1:* https://challenges.cloudflare.com; "
         "form-action 'self'"
     )

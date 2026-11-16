@@ -64,12 +64,15 @@ if ( 'cli' !== PHP_SAPI && ! headers_sent() ) {
 	// (a3-final package §5-2, 2026-10-16).
 	$linker_local_avatars = 'https://secure.gravatar.com';
 	$linker_local_map     = 'https://tiles.openfreemap.org';
-	$linker_local_sources = "'self' http://127.0.0.1:* data: blob: 'unsafe-inline' 'unsafe-eval'";
+	// Providers used by roof address search and satellite map display.
+	$linker_local_google_scripts = 'https://maps.googleapis.com https://maps.gstatic.com';
+	$linker_local_google_images  = 'https://tile.googleapis.com https://maps.gstatic.com';
+	$linker_local_sources        = "'self' http://127.0.0.1:* data: blob: 'unsafe-inline' 'unsafe-eval'";
 	header(
 		"Content-Security-Policy: default-src {$linker_local_sources}; " .
-		"script-src {$linker_local_sources} https://cdn.jsdelivr.net https://esm.sh https://unpkg.com https://challenges.cloudflare.com; " .
-		"img-src {$linker_local_sources} {$linker_local_imagery} {$linker_local_map} {$linker_local_avatars}; " .
-		"connect-src {$linker_local_sources} {$linker_local_imagery} {$linker_local_map} https://challenges.cloudflare.com; " .
+		"script-src {$linker_local_sources} https://cdn.jsdelivr.net https://esm.sh https://unpkg.com https://challenges.cloudflare.com {$linker_local_google_scripts}; " .
+		"img-src {$linker_local_sources} {$linker_local_imagery} {$linker_local_map} {$linker_local_avatars} {$linker_local_google_images}; " .
+		"connect-src {$linker_local_sources} {$linker_local_imagery} {$linker_local_map} https://challenges.cloudflare.com {$linker_local_google_scripts} https://tile.googleapis.com https://places.googleapis.com; " .
 		"frame-src 'self' http://127.0.0.1:* https://challenges.cloudflare.com; " .
 		"form-action 'self'"
 	);

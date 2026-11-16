@@ -15102,3 +15102,59 @@ msgstr "Google Photorealistic 3D zeigt das reale Gebäude an diesem Standort. Ö
 msgid "Photorealistic 3D (Google)"
 msgstr "Fotorealistisches 3D (Google)"
 
+
+#: build/planner/assets/planner.js
+msgid "Start with your roof"
+msgstr "Dach planen"
+
+#: build/planner/assets/planner.js
+msgid "Find your building on the aerial image, then draw the roof and place panels."
+msgstr "Finden Sie Ihr Gebäude im Luftbild. Zeichnen Sie dann das Dach und platzieren Sie die Module."
+
+#: build/planner/assets/planner.js
+msgid "Address or postcode"
+msgstr "Adresse oder Postleitzahl"
+
+#: build/planner/assets/planner.js
+msgid "Enter a street address and town, or use a postcode to find the building on the map."
+msgstr "Geben Sie Straße und Ort oder eine Postleitzahl ein, um Ihr Gebäude auf der Karte zu finden."
+
+#: build/planner/assets/planner.js
+msgid "Open roof map"
+msgstr "Dachkarte öffnen"
+
+#: build/planner/assets/planner.js
+msgid "We could not find that address in the selected country. Check the address or try a nearby postcode."
+msgstr "Diese Adresse wurde im gewählten Land nicht gefunden. Prüfen Sie die Adresse oder suchen Sie mit einer Postleitzahl in der Nähe."
+
+#: build/planner/assets/planner.js
+msgid "Address search is unavailable right now. Your details are still here; please try again."
+msgstr "Die Adresssuche ist gerade nicht verfügbar. Ihre Angaben bleiben erhalten. Versuchen Sie es erneut."
+
+#: build/planner/assets/planner.js
+msgid "Start with equipment"
+msgstr "Geräte auswählen"
+
+#: build/planner/assets/planner.js
+msgid "Draw your roof on the aerial map, then place your panels."
+msgstr "Zeichnen Sie Ihr Dach im Luftbild und platzieren Sie anschließend die Module."
+
+#: build/planner/assets/planner.js
+msgid "Use measurements or import a roof plan"
+msgstr "Maße eingeben oder Dachplan importieren"
+
+#: build/planner/assets/planner.js
+msgid "Roof face %d"
+msgstr "Dachfläche %d"
+
+#: build/planner/assets/planner.js
+msgid "Drawing source"
+msgstr "Grundlage der Zeichnung"
+
+#: build/planner/assets/planner.js
+msgid "Manually traced on aerial imagery; pitch and direction entered by the user."
+msgstr "Im Luftbild von Hand nachgezeichnet. Neigung und Ausrichtung wurden vom Nutzer eingegeben."
+
+#: build/planner/assets/planner.js
+msgid "Aerial imagery is not available. You can upload a roof plan or retry loading the map."
+msgstr "Das Luftbild ist nicht verfügbar. Sie können einen Dachplan hochladen oder die Karte erneut laden."
