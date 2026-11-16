@@ -87,6 +87,19 @@
   [data-linker-planner] .lp-new-project { width: min(100%, 340px); flex-shrink: 0; padding: 20px; background: rgb(255 255 255 / .8); border: 1px solid var(--lp-line); box-shadow: 0 10px 35px rgb(12 40 35 / .05); }
   [data-linker-planner] .lp-new-project .lp-inline-actions { margin-top: 16px; }
   [data-linker-planner] .lp-new-project > .lp-field + .lp-field { margin-top: 16px; }
+  [data-linker-planner] .lp-workspace-start { margin-bottom: 32px; }
+  [data-linker-planner] .lp-new-project.lp-roof-entry { width: 100%; padding: clamp(20px, 3vw, 32px); }
+  [data-linker-planner] .lp-roof-start { display: grid; grid-template-columns: minmax(170px, .35fr) minmax(0, 1fr); gap: 24px; }
+  [data-linker-planner] .lp-roof-start-heading { grid-column: 1 / -1; }
+  [data-linker-planner] .lp-roof-start-heading h2 { margin-bottom: 10px; }
+  [data-linker-planner] .lp-roof-start-heading p { max-width: 620px; margin: 0; color: var(--proto-neutral-600); }
+  [data-linker-planner] .lp-roof-start > .lp-profile-help { grid-column: 1 / -1; margin: 0; }
+  [data-linker-planner] .lp-design-imports { margin-block: 12px 24px; }
+  [data-linker-planner] .lp-design-imports > summary { width: fit-content; min-height: 44px; align-content: center; cursor: pointer; color: var(--proto-teal-800); }
+  @media (max-width: 640px) {
+    [data-linker-planner] .lp-roof-start { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+    [data-linker-planner] .lp-roof-entry .lp-inline-actions { flex-wrap: wrap; }
+  }
   /* The one-screen start is the default surface for a new project, and it had
      no rhythm of its own: measured on production 2026-11-14, the eyebrow, the
      heading, the lede and the form all sat at 0px from each other once the
@@ -468,6 +481,16 @@
     [data-linker-planner] .lp-drawing-properties .lp-geometry-fields { grid-template-columns: minmax(0, 1fr); }
     [data-linker-planner] .lp-drawing-source { grid-template-columns: minmax(0, 1fr); gap: 4px; }
     [data-linker-planner] .lp-drawing-source dd:not(:last-child) { margin-bottom: 12px; }
+  }
+  [data-linker-planner] .lp-google3d-view { min-width: 0; }
+  [data-linker-planner] .lp-google3d-view > [role="status"] { margin: 0 20px 16px; }
+  [data-linker-planner] .lp-google3d-host { width: 100%; height: 540px; min-width: 0; position: relative; background: var(--proto-neutral-100); }
+  [data-linker-planner] .lp-google3d-compact .lp-google3d-host { height: 320px; }
+  [data-linker-planner] .lp-quickstart-map { margin-top: 20px; border: 1px solid var(--lp-line); border-radius: var(--proto-radius-sm); overflow: hidden; background: var(--proto-neutral-100); }
+  [data-linker-planner] .lp-quickstart-studio-action { margin-top: 20px; }
+  @media (max-width: 640px) {
+    [data-linker-planner] .lp-google3d-host { height: 380px; }
+    [data-linker-planner] .lp-google3d-compact .lp-google3d-host { height: 260px; }
   }
 }
 

@@ -79,7 +79,16 @@ export class Map {
 			},
 		});
 	}
-	addLayer(layer) {
+	addLayer(layer, beforeId) {
+		if (beforeId && this.layers.has(beforeId)) {
+			const reordered = new globalThis.Map();
+			for (const [id, existing] of this.layers) {
+				if (id === beforeId) reordered.set(layer.id, layer);
+				reordered.set(id, existing);
+			}
+			this.layers = reordered;
+			return;
+		}
 		this.layers.set(layer.id, layer);
 	}
 	getLayer(id) {

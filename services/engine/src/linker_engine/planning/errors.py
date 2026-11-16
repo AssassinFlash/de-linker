@@ -2,6 +2,7 @@
 
 import logging
 import re
+from collections.abc import Sequence
 
 
 class PlanningError(Exception):
@@ -73,6 +74,15 @@ class InvalidInput(PlanningError):
     """The command is not finite JSON or has an invalid lifecycle parameter."""
 
     code = "invalid_input"
+
+    def __init__(self, message: str, *, fields: Sequence[str] = ()) -> None:
+        super().__init__(message)
+        # Schema field paths are public names, never row values. Without them a
+        # refusal names no cause, and every diagnosis has to read the code again.
+        for name in fields:
+            if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_.\[\]]*", name):
+                raise ValueError("public field name must be a schema path")
+        self.public_fields: tuple[str, ...] = tuple(fields)
 
 
 class GeometricPvExpandedScopeRequired(InvalidInput):

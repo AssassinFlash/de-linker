@@ -74,8 +74,12 @@
 	font-size: 14px;
 }
 
-/* `.lpp-close` */
+/* `.lpp-close` — the painted box stays 28px so the card's head keeps its
+ * height, but the tap target is 44px: the pseudo-element below extends the
+ * reachable area 8px past every edge. Measured 2026-11-15 on production, the
+ * button was 28x28 at both viewports, under the site's own 44px target. */
 .linker-genie-peek__close {
+	position: relative;
 	flex: none;
 	width: 28px;
 	height: 28px;
@@ -88,6 +92,12 @@
 	font-size: 20px;
 	line-height: 1;
 	cursor: pointer;
+}
+
+.linker-genie-peek__close::after {
+	content: "";
+	position: absolute;
+	inset: -8px;
 }
 
 .linker-genie-peek__close:hover {

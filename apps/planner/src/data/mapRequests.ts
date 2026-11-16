@@ -1,12 +1,37 @@
 /** The retained OpenFreeMap style manifest uses this one delivery origin for
- * styles, tiles, glyphs and sprites. A style cannot widen its own network grant. */
+ * styles, tiles, glyphs and sprites. A style cannot widen its own network grant.
+ * The site's own aerial mosaic is a second, explicitly declared grant: it is
+ * passed in by the caller from the server's answer, never read from a style. */
 const ORIGIN = "https://tiles.openfreemap.org";
+const GOOGLE_TILES_ORIGIN = "https://tile.googleapis.com";
+
+function parseAerialOrigins(aerialOrigins: readonly string[]): Set<string> {
+	return new Set(
+		aerialOrigins
+			.map((origin) => origin.trim().toLowerCase())
+			.filter((origin) => /^https:\/\/[a-z0-9.-]+(:\d+)?$/.test(origin)),
+	);
+}
 
 export class MapRequestScope {
 	private active = true;
 	private readonly external: boolean;
-	constructor(external: boolean) {
+	private aerial: Set<string>;
+
+	/**
+	 * @param external whether the visitor allowed external map services
+	 * @param aerialOrigins origins of the site's aerial mosaic, exactly as the
+	 * server named them. An empty set leaves only the style provider reachable.
+	 */
+	constructor(external: boolean, aerialOrigins: readonly string[] = []) {
 		this.external = external;
+		this.aerial = parseAerialOrigins(aerialOrigins);
+	}
+
+	/** Replace the granted aerial mosaic origins when the resolved site changes. */
+	setAerialOrigins(aerialOrigins: readonly string[]): void {
+		if (!this.active) return;
+		this.aerial = parseAerialOrigins(aerialOrigins);
 	}
 
 	/** MapLibre invokes this boundary for worker tiles as well as main-thread
@@ -15,14 +40,20 @@ export class MapRequestScope {
 		if (!this.active || !this.external)
 			throw new Error("map_request_not_authorized");
 		const target = new URL(url);
-		if (target.origin !== ORIGIN || target.username || target.password)
+		if (target.username || target.password)
 			throw new Error("map_resource_origin_not_authorized");
-		// The pinned library supports same-origin/include. This exact third-party
-		// origin is cross-origin to Linker, so same-origin sends no credentials.
+		if (target.origin !== ORIGIN && !this.aerial.has(target.origin))
+			throw new Error("map_resource_origin_not_authorized");
+		// The pinned library supports same-origin/include. Every granted origin
+		// here is cross-origin to Linker, so same-origin sends no credentials.
+		// Google Map Tiles API keys are HTTP-referrer restricted to de-linker.com.
 		return {
 			url: target.href,
 			credentials: "same-origin" as const,
-			referrerPolicy: "no-referrer" as const,
+			referrerPolicy:
+				target.origin === GOOGLE_TILES_ORIGIN
+					? ("origin" as const)
+					: ("no-referrer" as const),
 		};
 	};
 

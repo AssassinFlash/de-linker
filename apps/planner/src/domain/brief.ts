@@ -11,6 +11,7 @@ export interface Brief extends JsonObject {
 	readonly site: {
 		readonly country_code: string | null;
 		readonly location_label: string;
+		readonly postal_code?: string | null;
 		readonly latitude: number | null;
 		readonly longitude: number | null;
 		readonly coordinate_basis: "user_entered" | "not_provided";

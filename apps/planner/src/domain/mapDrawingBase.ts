@@ -23,6 +23,16 @@ export interface MapDrawingBase {
 	readonly vertices: readonly Vec2[];
 	readonly prepared_geometry: GeometryDocument | null;
 }
+
+/** A first map roof can establish its frame when the visitor confirms it.
+ * Existing metric geometry must keep its recorded frame. */
+export function canAnchorFirstMapRoof(document: GeometryDocument): boolean {
+	return (
+		document.roofs.length === 0 &&
+		document.coordinate_system.anchor === null &&
+		document.coordinate_system.north_reference === "unreferenced"
+	);
+}
 const uuid =
 	/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/;
 
@@ -72,7 +82,8 @@ export function readMapDrawingBase(
 		throw new Error("map_drawing_recovery_invalid");
 	if (row.phase === "staged") readMapPolygon(mapPolygon(vertices));
 	const before = readGeometry(row.before, policy);
-	drawingBridge(before);
+	if (row.schema_version !== 1 || !canAnchorFirstMapRoof(before))
+		drawingBridge(before);
 	return {
 		key: row.key,
 		project_id: row.project_id,

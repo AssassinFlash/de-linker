@@ -57,8 +57,8 @@ const WORDS = {
 		roofAdded: 'Roof added to the project draft',
 		featureAdded: 'Feature added to the project draft',
 		axis: 'Vertically upward',
-		loadStreet: 'Load street map',
-		hideStreet: 'Hide street map',
+		loadStreet: 'Show aerial map',
+		hideStreet: 'Hide aerial map',
 		mapNotDisplayed: 'could not be fully displayed',
 		retryMap: 'Retry loading map',
 		designView: 'Design view',
@@ -100,8 +100,8 @@ const WORDS = {
 		roofAdded: 'Die Dachfläche wurde dem Projektentwurf hinzugefügt',
 		featureAdded: 'Das Objekt wurde dem Projektentwurf hinzugefügt',
 		axis: 'Senkrecht nach oben',
-		loadStreet: 'Straßenkarte laden',
-		hideStreet: 'Straßenkarte ausblenden',
+		loadStreet: 'Luftbildkarte anzeigen',
+		hideStreet: 'Luftbildkarte ausblenden',
 		mapNotDisplayed: 'konnte nicht vollständig angezeigt werden',
 		retryMap: 'Karte erneut laden',
 		designView: 'Planungsansicht',
@@ -512,12 +512,9 @@ for (const lang of ['en', 'de'] as const) {
 		).toBeAttached({ timeout: 30_000 });
 	});
 
-	test(`${lang}: external map requests wait for the street-map opt-in and recover from tile failure`, async ({
+	test(`${lang}: external map loads by default and recovers from tile failure`, async ({
 		page,
 	}) => {
-		// The address-search row of the privacy gate: no tile, glyph, geolocation
-		// or address-search request leaves the browser until the visitor selects
-		// the disclosed Load street map action (spec 548).
 		const external: string[] = [];
 		await page.route('**/*', (route) => {
 			const url = route.request().url();
@@ -526,6 +523,9 @@ for (const lang of ['en', 'de'] as const) {
 			void route.continue();
 		});
 		const { counter } = await openDrawingWorkspace(page, lang);
+		await expect
+			.poll(() => external.length, { timeout: 30_000 })
+			.toBeGreaterThan(0);
 		const rect = (await page.locator('.maplibregl-canvas').boundingBox())!;
 		await page.mouse.click(
 			rect.x + rect.width * 0.4,
@@ -541,20 +541,9 @@ for (const lang of ['en', 'de'] as const) {
 		await expect(counter).toContainText(`${words.corners}2`, {
 			timeout: 10_000,
 		});
-		expect(
-			external,
-			'no external request before the street-map opt-in'
-		).toEqual([]);
 
-		// The single opt-in: the street style and its tiles then flow.
-		await page.getByRole('button', { name: words.loadStreet }).click();
-		await expect
-			.poll(() => external.length, { timeout: 30_000 })
-			.toBeGreaterThan(0);
-
-		// The permission-error row: denied street tiles surface the failure
-		// notice without touching the recorded geometry, and retrying after the
-		// denial is lifted recovers the map.
+		// Denied map tiles surface the failure notice without touching the
+		// recorded geometry, and retrying after the denial is lifted recovers.
 		await page.route('**tiles.openfreemap.org/**', (route) =>
 			route.abort()
 		);

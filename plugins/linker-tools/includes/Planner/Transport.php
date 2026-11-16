@@ -24,7 +24,13 @@ final class Transport {
 	 * RPCs retain their existing five-second budget.
 	 */
 	private const SOURCE_OPERATION_TIMEOUT = 30.0;
-	private const SOURCE_OPERATIONS        = array( 'products/current', 'projects/create', 'projects/revise', 'installation/review', 'battery/scenario', 'runs/pv', 'runs/direct-beam', 'runs/geometric-pv', 'runs/pvgis-reference', 'runs/energy', 'runs/equipment', 'runs/equipment-search', 'runs/report' );
+	private const SOURCE_OPERATIONS        = array( 'places/lookup', 'products/current', 'projects/create', 'projects/revise', 'installation/review', 'battery/scenario', 'runs/pv', 'runs/direct-beam', 'runs/geometric-pv', 'runs/pvgis-reference', 'runs/energy', 'runs/equipment', 'runs/equipment-search', 'runs/report', 'runs/read', 'equipment/candidates/read', 'equipment/certificates/read' );
+	/**
+	 * One published footprint part is about 38 MB and takes roughly 30 s to
+	 * fetch; measured 2026-11-16, the ordinary 5 s budget answered 503 while
+	 * the engine itself logged a completed 200.
+	 */
+	private const OUTLINE_TIMEOUT = 90.0;
 
 	/**
 	 * Select the native HTTP transport or a test adapter.
@@ -58,7 +64,7 @@ final class Transport {
 			$headers['X-Linker-Planner-Previous-Guest'] = $previous_guest;
 		}
 		$args     = array(
-			'timeout'             => in_array( $path, self::SOURCE_OPERATIONS, true ) ? self::SOURCE_OPERATION_TIMEOUT : 5.0,
+			'timeout'             => 'places/outline' === $path ? self::OUTLINE_TIMEOUT : ( in_array( $path, self::SOURCE_OPERATIONS, true ) ? self::SOURCE_OPERATION_TIMEOUT : 5.0 ),
 			'redirection'         => 0,
 			'sslverify'           => true,
 			'limit_response_size' => self::MAX_REPLY_BYTES + 1,

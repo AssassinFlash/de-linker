@@ -2374,14 +2374,21 @@ export function App( { config }: { config: GenieConfig } ) {
 						 * line, the prototype's first child of the welcome. It
 						 * is not a bar title — the column under the bar is the
 						 * one it names. The dock's own welcome stands below.
+						 *
+						 * It is an h2, not the h1 the prototype drew: the page
+						 * template already prints the page's own h1 above the
+						 * mount point, and two h1s on one page leave a reader
+						 * with no single name for the document. The level is
+						 * the only change; the rule that paints this line
+						 * names the class, so nothing moves.
 						 */ }
 						{ workspace && thread.length === 0 ? (
-							<h1 className="linker-genie-app__welcome-title">
+							<h2 className="linker-genie-app__welcome-title">
 								{ __(
 									'Where should we begin?',
 									'linker-tools'
 								) }
-							</h1>
+							</h2>
 						) : null }
 						{ /*
 						 * The dock's history view is the live Advisor's

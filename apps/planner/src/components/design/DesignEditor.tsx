@@ -1,11 +1,21 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { GeometryDocument } from "../../domain/geometry.ts";
+import type {
+	GeometryDocument,
+	PanelArray,
+	Vec2,
+} from "../../domain/geometry.ts";
 import type {
 	PreparedGeometryImport,
 	GeometryImportSelections,
 } from "../../domain/geometryImports.ts";
+import type { PlaceImagery } from "../../domain/place.ts";
 import type { GeometryCommand } from "../../domain/geometryCommands.ts";
-import { roofDependents } from "../../domain/geometryCommands.ts";
+import {
+	applyGeometryCommand,
+	roofDependents,
+} from "../../domain/geometryCommands.ts";
+import type { ArrayPlacement } from "../../data/mapInteraction.ts";
+import { revealActionResult } from "../revealActionResult.ts";
 import { moduleSummary, panelPoses } from "../../domain/panelPoses.ts";
 import { selectedRoofId } from "../../domain/geometrySelection.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
@@ -53,6 +63,7 @@ export function DesignEditor({
 	geometryImports = { schema_version: 1, selected: {} },
 	sceneModuleUrl = null,
 	mapModuleUrl = null,
+	googleMapsApiKey = null,
 	initialMapView = false,
 	commit,
 	locale,
@@ -60,6 +71,9 @@ export function DesignEditor({
 	session,
 	client,
 	recheck,
+	imagery = null,
+	siteCentre = null,
+	siteOutline = null,
 	onValidity,
 	attachImport,
 	confirmedAssetIds = [],
@@ -69,8 +83,23 @@ export function DesignEditor({
 	geometry: GeometryDocument;
 	confirmedGeometry?: GeometryDocument | null;
 	geometryImports?: GeometryImportSelections;
+	imagery?: PlaceImagery | null;
+	siteCentre?: readonly [number, number] | null;
+	siteOutline?: {
+		ring: [number, number][];
+		source: string;
+		licence: string;
+		planes?: readonly {
+			id: number;
+			polygon: readonly [number, number][];
+			tilt_deg: number;
+			azimuth_deg: number;
+			area_m2: number;
+		}[];
+	} | null;
 	sceneModuleUrl?: string | null;
 	mapModuleUrl?: string | null;
+	googleMapsApiKey?: string | null;
 	initialMapView?: boolean;
 	commit: (command: GeometryCommand) => boolean;
 	locale: string;
@@ -87,13 +116,31 @@ export function DesignEditor({
 	recoveryScopes?: readonly string[] | undefined;
 	recoveryChecking?: boolean | undefined;
 }) {
+	const canShowGoogle3D = Boolean(
+		googleMapsApiKey &&
+		(siteCentre !== null ||
+			(geometry.coordinate_system.anchor !== null &&
+				geometry.coordinate_system.north_reference === "true_north")),
+	);
+	const canShowMap = Boolean(
+		siteCentre !== null ||
+		imagery !== null ||
+		siteOutline !== null ||
+		(geometry.coordinate_system.anchor !== null &&
+			geometry.coordinate_system.north_reference === "true_north"),
+	);
+	const userPickedView = useRef(initialMapView);
 	const [selected, setSelected] = useState<string | null>(null),
 		[roofId, setRoofId] = useState<string | null>(
 			geometry.roofs[0]?.id ?? null,
 		),
-		[view, setView] = useState<"plan" | "map" | "3d">(
-			initialMapView ? "map" : "plan",
+		[view, setView] = useState<"plan" | "map" | "3d">(() =>
+			initialMapView || canShowMap ? "map" : "plan",
 		);
+	useEffect(() => {
+		if (userPickedView.current || view !== "plan") return;
+		if (canShowMap) setView("map");
+	}, [canShowMap, view]);
 	const mapCamera = useRef<MapCamera | null>(null);
 	const sceneCamera = useRef<SceneViewState | null>(null);
 	const [importOpen, setImportOpen] = useState(false);
@@ -102,8 +149,30 @@ export function DesignEditor({
 	const [form, setForm] = useState<FormState | null>(null),
 		[error, setError] = useState(false),
 		[page, setPage] = useState(0);
+	const [arrayPosition, setArrayPosition] = useState<Vec2 | null>(null);
+	const [arrayPreview, setArrayPreview] = useState<PanelArray | null>(null);
+	const displayGeometry = useMemo(() => {
+		if (form?.kind !== "array" || !arrayPreview) return geometry;
+		return applyGeometryCommand(form.snapshot, {
+			type: "put_array",
+			before:
+				form.snapshot.arrays.find((array) => array.id === form.id) ?? null,
+			value: arrayPreview,
+		});
+	}, [arrayPreview, form, geometry]);
+	const displayPoses = useMemo(
+		() => panelPoses(displayGeometry),
+		[displayGeometry],
+	);
+	const placement = useMemo<ArrayPlacement | null>(
+		() =>
+			form?.kind === "array" && form.roofId
+				? { roofId: form.roofId, place: setArrayPosition }
+				: null,
+		[form],
+	);
 	const poses = useMemo(() => panelPoses(geometry), [geometry]),
-		summary = useMemo(() => moduleSummary(geometry), [geometry]);
+		summary = useMemo(() => moduleSummary(displayGeometry), [displayGeometry]);
 	const roof =
 		geometry.roofs.find((roof) => roof.id === roofId) ??
 		geometry.roofs[0] ??
@@ -122,6 +191,8 @@ export function DesignEditor({
 	const module = geometry.module_specs.find((module) => module.id === selected);
 	const closeForm = useCallback(() => {
 		setForm(null);
+		setArrayPreview(null);
+		setArrayPosition(null);
 		setError(false);
 	}, []);
 	useEffect(() => {
@@ -175,6 +246,19 @@ export function DesignEditor({
 	) {
 		if (form || importOpen || drawingOpen) return;
 		setError(false);
+		if (kind === "array") {
+			setArrayPreview(null);
+			setArrayPosition(
+				geometry.arrays.find((array) => array.id === id)?.origin_uv ?? null,
+			);
+			if (
+				!geometry.coordinate_system.anchor ||
+				geometry.coordinate_system.north_reference !== "true_north"
+			) {
+				userPickedView.current = true;
+				setView("plan");
+			} else if (view === "3d") setView("map");
+		}
 		setForm({ kind, id, roofId: forRoof, snapshot: geometry });
 	}
 	const formProps = {
@@ -208,7 +292,7 @@ export function DesignEditor({
 					<h2 id="lp-design-heading">{__("Roof design", "linker-tools")}</h2>
 					<p>
 						{__(
-							"Roof geometry and module specifications produce an editable layout and a traceable plan check. The roof step is optional for every project type.",
+							"Draw your roof on the aerial map, then place your panels.",
 							"linker-tools",
 						)}
 					</p>
@@ -216,23 +300,16 @@ export function DesignEditor({
 			</div>
 			<div className="lp-design-toolbar">
 				<div className="lp-inline-actions">
-					<button
-						type="button"
-						className="lp-button"
-						disabled={!!form || importOpen || drawingOpen}
-						onClick={() => open("roof")}
-					>
-						<Icon name="plus" />
-						{__("Add roof face", "linker-tools")}
-					</button>
-					<button
-						type="button"
-						className="lp-button lp-button-secondary"
-						disabled={!!form || importOpen || drawingOpen}
-						onClick={() => open("module")}
-					>
-						{__("Add module specification", "linker-tools")}
-					</button>
+					{roof && (
+						<button
+							type="button"
+							className="lp-button lp-button-secondary"
+							disabled={!!form || importOpen || drawingOpen}
+							onClick={() => open("module")}
+						>
+							{__("Add module specification", "linker-tools")}
+						</button>
+					)}
 				</div>
 				<div
 					className="lp-view-switch"
@@ -241,27 +318,41 @@ export function DesignEditor({
 				>
 					<button
 						type="button"
-						aria-pressed={view === "plan"}
-						disabled={drawingOpen}
-						onClick={() => setView("plan")}
+						aria-pressed={view === "3d"}
+						disabled={drawingOpen || form?.kind === "array"}
+						onClick={() => {
+							userPickedView.current = true;
+							setView("3d");
+						}}
 					>
-						{__("Plan", "linker-tools")}
+						3D
 					</button>
 					<button
 						type="button"
 						aria-pressed={view === "map"}
-						disabled={drawingOpen}
-						onClick={() => setView("map")}
+						disabled={
+							drawingOpen ||
+							(form?.kind === "array" &&
+								(!geometry.coordinate_system.anchor ||
+									geometry.coordinate_system.north_reference !== "true_north"))
+						}
+						onClick={() => {
+							userPickedView.current = true;
+							setView("map");
+						}}
 					>
 						{__("Map", "linker-tools")}
 					</button>
 					<button
 						type="button"
-						aria-pressed={view === "3d"}
+						aria-pressed={view === "plan"}
 						disabled={drawingOpen}
-						onClick={() => setView("3d")}
+						onClick={() => {
+							userPickedView.current = true;
+							setView("plan");
+						}}
 					>
-						3D
+						{__("Plan", "linker-tools")}
 					</button>
 				</div>
 			</div>
@@ -273,41 +364,60 @@ export function DesignEditor({
 					)}
 				</Notice>
 			)}
-			<GeometryIntake
-				geometry={geometry}
-				projectId={projectId}
-				session={session}
-				client={client}
-				locale={locale}
-				recheck={recheck}
-				disabled={!!form || drawingOpen}
-				onActivity={setImportOpen}
-				attach={(before, asset) => {
-					if (!attachImport(before, asset)) return false;
-					const added = asset.geometry.roofs[0]!;
-					setRoofId(added.id);
-					setSelected(added.id);
-					return true;
-				}}
-				currentAssetIds={Object.values(geometryImports.selected)}
-				confirmedAssetIds={confirmedAssetIds}
-				recoveryScopes={recoveryScopes}
-				recoveryChecking={recoveryChecking}
-			/>
-			<ImageCalibrationWorkspace
-				geometry={geometry}
-				roofId={roof?.id ?? null}
-				locale={locale}
-				disabled={!!form || drawingOpen || importOpen}
-				onActivity={setCalibrationOpen}
-				commit={edit}
-			/>
+			<details className="lp-design-imports">
+				<summary>
+					{__("Use measurements or import a roof plan", "linker-tools")}
+				</summary>
+				<button
+					type="button"
+					className="lp-button lp-button-secondary"
+					disabled={!!form || importOpen || drawingOpen}
+					onClick={() => open("roof")}
+				>
+					<Icon name="plus" />
+					{__("Add roof face", "linker-tools")}
+				</button>
+				<GeometryIntake
+					geometry={geometry}
+					projectId={projectId}
+					session={session}
+					client={client}
+					locale={locale}
+					recheck={recheck}
+					disabled={!!form || drawingOpen}
+					onActivity={setImportOpen}
+					attach={(before, asset) => {
+						if (!attachImport(before, asset)) return false;
+						const added = asset.geometry.roofs[0]!;
+						setRoofId(added.id);
+						setSelected(added.id);
+						return true;
+					}}
+					currentAssetIds={Object.values(geometryImports.selected)}
+					confirmedAssetIds={confirmedAssetIds}
+					recoveryScopes={recoveryScopes}
+					recoveryChecking={recoveryChecking}
+				/>
+				<ImageCalibrationWorkspace
+					geometry={geometry}
+					roofId={roof?.id ?? null}
+					locale={locale}
+					disabled={!!form || drawingOpen || importOpen}
+					onActivity={setCalibrationOpen}
+					commit={edit}
+				/>
+			</details>
 			<div className="lp-design-workspace">
-				<div className="lp-design-canvas">
+				<div className="lp-design-canvas" id="lp-array-canvas" tabIndex={-1}>
 					{view === "map" ? (
 						<MapDrawingWorkspace
+							imagery={imagery}
+							siteCentre={siteCentre}
+							siteOutline={siteOutline}
 							mapModuleUrl={mapModuleUrl}
 							geometry={geometry}
+							previewGeometry={displayGeometry}
+							placement={placement}
 							confirmedGeometry={confirmedGeometry}
 							projectId={projectId}
 							locale={locale}
@@ -318,13 +428,60 @@ export function DesignEditor({
 							recoveryChecking={recoveryChecking}
 							commit={edit}
 							onActivity={setDrawingOpen}
-							poses={poses}
-							selected={selected}
+							poses={displayPoses}
+							selected={arrayPreview?.id ?? selected}
 							select={choose}
 							disabled={!!form || importOpen}
 							openReferences={() => open("coordinates")}
 							camera={mapCamera}
 						/>
+					) : view === "3d" && (roof || canShowGoogle3D) ? (
+						<>
+							{roof && (
+								<div className="lp-roof-picker">
+									<label>
+										{__("Active roof face", "linker-tools")}
+										<select
+											value={roof.id}
+											disabled={!!form || importOpen || drawingOpen}
+											onChange={(event) => {
+												setRoofId(event.currentTarget.value);
+												setSelected(event.currentTarget.value);
+											}}
+										>
+											{geometry.roofs.map((roof) => (
+												<option key={roof.id} value={roof.id}>
+													{roof.name}
+												</option>
+											))}
+										</select>
+									</label>
+									<span className="lp-eyebrow">
+										{geometry.coordinate_system.north_reference ===
+										"unreferenced"
+											? __("North unreferenced", "linker-tools")
+											: __("North reference recorded", "linker-tools")}
+									</span>
+								</div>
+							)}
+							<LazySceneViewport
+								sceneModuleUrl={sceneModuleUrl}
+								document={geometry}
+								poses={poses}
+								selected={selected}
+								select={choose}
+								commit={edit}
+								disabled={!!form || importOpen || drawingOpen}
+								camera={sceneCamera}
+								googleMapsApiKey={googleMapsApiKey}
+								siteCentre={siteCentre}
+								siteOutline={siteOutline}
+								onSwitchToMap={() => {
+									userPickedView.current = true;
+									setView("map");
+								}}
+							/>
+						</>
 					) : roof ? (
 						<>
 							<div className="lp-roof-picker">
@@ -351,29 +508,20 @@ export function DesignEditor({
 										: __("North reference recorded", "linker-tools")}
 								</span>
 							</div>
-							{view === "plan" ? (
-								<PlanViewport
-									key={roof.id}
-									document={geometry}
-									roof={roof}
-									poses={poses}
-									selected={selected}
-									select={choose}
-									commit={edit}
-									disabled={!!form || importOpen || drawingOpen}
-								/>
-							) : (
-								<LazySceneViewport
-									sceneModuleUrl={sceneModuleUrl}
-									document={geometry}
-									poses={poses}
-									selected={selected}
-									select={choose}
-									commit={edit}
-									disabled={!!form || importOpen || drawingOpen}
-									camera={sceneCamera}
-								/>
-							)}
+							<PlanViewport
+								key={roof.id}
+								document={displayGeometry}
+								roof={roof}
+								poses={displayPoses}
+								selected={arrayPreview?.id ?? selected}
+								placement={placement}
+								locale={locale}
+								select={choose}
+								commit={edit}
+								disabled={
+									(!!form && form.kind !== "array") || importOpen || drawingOpen
+								}
+							/>
 						</>
 					) : (
 						<div className="lp-design-empty">
@@ -443,6 +591,13 @@ export function DesignEditor({
 									{...formProps}
 									array={formArray}
 									roofId={form.roofId}
+									position={arrayPosition}
+									preview={setArrayPreview}
+									choosePosition={() =>
+										revealActionResult(
+											globalThis.document.getElementById("lp-array-canvas"),
+										)
+									}
 								/>
 							)}
 							{form.kind === "module" && (

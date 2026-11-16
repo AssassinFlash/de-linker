@@ -522,11 +522,22 @@ def _reserve(
     }
     active = state["active"]
     if key in active:
-        if {field: active[key].get(field) for field in expected} != expected or set(
-            active[key]
-        ) - {*expected, "proof"}:
-            raise CutoverError("snapshot reservation belongs to another deployment")
-        return
+        if {
+            field: active[key].get(field) for field in expected
+        } == expected and not set(active[key]) - {*expected, "proof"}:
+            return
+        # The checkpoint now on disk is this deployment's — the check above
+        # proved it — so an entry for the same path and a different deploy_id
+        # describes a deployment whose checkpoint no longer exists. Nothing can
+        # release it: finish_checkpoint, the only releaser, needs the very file
+        # that record names. Refusing here therefore blocks every later deploy
+        # for good, which is exactly what happened on 2026-11-15 after the
+        # checkpoint of 2026-11-14T160716Z-929cd39ba was moved aside by hand
+        # while its snapshot was already finalised. A live deployment cannot be
+        # this record: the batch holds the deploy lock from reserve to archive.
+        # Releasing it is safe because a finalised dump is protected by name in
+        # state["snapshots"], not by its reservation.
+        del active[key]
     final = directory(home) / reservation.name
     partial = directory(home) / f".{reservation.name}.partial"
     if (

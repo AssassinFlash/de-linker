@@ -7,6 +7,7 @@ export interface Configuration {
 	readonly countries: Readonly<Record<string, string>>;
 	readonly sceneModuleUrl?: string | null;
 	readonly mapModuleUrl?: string | null;
+	readonly googleMapsApiKey?: string | null;
 }
 export function readConfiguration(
 	element: HTMLElement,
@@ -15,10 +16,27 @@ export function readConfiguration(
 	const data = readObject(JSON.parse(element.dataset.plannerConfig ?? "null"));
 	if (
 		typeof data.base_url !== "string" ||
-		typeof data.nonce_url !== "string" ||
+		// Absent for a guest: the endpoint only answers a signed-in cookie, so
+		// the server does not offer it. A guest that carries one anyway is
+		// still valid — the client handles the `400`/`0` answer.
+		(data.nonce_url !== null &&
+			data.nonce_url !== undefined &&
+			typeof data.nonce_url !== "string") ||
 		typeof data.locale !== "string"
 	)
 		throw new Error("invalid_planner_configuration");
+	const rawGoogleKey = data.google_maps_api_key;
+	if (
+		rawGoogleKey !== undefined &&
+		rawGoogleKey !== null &&
+		typeof rawGoogleKey !== "string"
+	)
+		throw new Error("invalid_planner_configuration");
+	const googleMapsApiKey =
+		typeof rawGoogleKey === "string" &&
+		/^[A-Za-z0-9_-]{20,80}$/.test(rawGoogleKey.trim())
+			? rawGoogleKey.trim()
+			: null;
 	const countries = readObject(data.countries);
 	if (
 		!Object.entries(countries).every(
@@ -50,10 +68,11 @@ export function readConfiguration(
 
 	return {
 		baseUrl: data.base_url,
-		nonceUrl: data.nonce_url,
+		nonceUrl: typeof data.nonce_url === "string" ? data.nonce_url : "",
 		locale: data.locale.replaceAll("_", "-").replace("-formal", ""),
 		countries: countries as Record<string, string>,
 		sceneModuleUrl: reviewedModule("scene", "SceneViewport"),
 		mapModuleUrl: reviewedModule("map", "MapViewport"),
+		googleMapsApiKey,
 	};
 }

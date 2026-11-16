@@ -1,6 +1,7 @@
 gap-5
 grid
 lp-actions
+lp-array-settings
 lp-brand-symbol
 lp-breadcrumb
 lp-brief
@@ -19,6 +20,7 @@ lp-data-table
 lp-delete-confirm
 lp-design-canvas
 lp-design-empty
+lp-design-imports
 lp-design-panel
 lp-design-properties
 lp-design-quantities
@@ -55,6 +57,9 @@ lp-geometry-check
 lp-geometry-fields
 lp-geometry-form
 lp-geometry-intake
+lp-google3d-compact
+lp-google3d-host
+lp-google3d-view
 lp-icon-button
 lp-import-panel
 lp-import-review
@@ -97,6 +102,7 @@ lp-overview-preview-title
 lp-overview-work
 lp-page
 lp-panel-shape
+lp-plan-position
 lp-plan-svg
 lp-plan-view
 lp-plant-parameter-basis
@@ -131,8 +137,10 @@ lp-quickstart-actions
 lp-quickstart-advanced
 lp-quickstart-form
 lp-quickstart-head
+lp-quickstart-map
 lp-quickstart-result
 lp-quickstart-steps
+lp-quickstart-studio-action
 lp-rail-caption
 lp-rail-current
 lp-rail-session
@@ -140,8 +148,11 @@ lp-report-cards
 lp-report-table
 lp-result-section
 lp-review-status
+lp-roof-entry
 lp-roof-picker
 lp-roof-shape
+lp-roof-start
+lp-roof-start-heading
 lp-run-basis
 lp-run-boundaries
 lp-run-content
@@ -165,6 +176,7 @@ lp-section-heading
 lp-section-title
 lp-selected-profile
 lp-session-state
+lp-site-outline-card
 lp-source-hashes
 lp-source-note
 lp-table-scroll
@@ -182,5 +194,6 @@ lp-workspace
 lp-workspace-footnote
 lp-workspace-header
 lp-workspace-rail
+lp-workspace-start
 md:col-span-2
 md:grid-cols-2

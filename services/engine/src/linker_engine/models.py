@@ -14,7 +14,20 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 Locale = Literal["en", "de"]
 Backup = Literal["none", "needed", "needed_accessory_ok"]
-Plz = Annotated[str, Field(pattern=r"^\d{5}$", description="German postcode (PLZ)")]
+# A European postcode as the country writes it: `10115`, `75001`, `M1 1AE`,
+# `D1`, `3750-000`, `59-700`. The shape check only rejects what no country
+# writes; whether the postcode names a place is the lookup's answer, not a
+# pattern's (measured 2026-11-15: this used to accept five digits only, so a
+# British or Dutch project could not be described at all).
+Plz = Annotated[
+    str,
+    Field(
+        min_length=2,
+        max_length=12,
+        pattern=r"^[A-Za-z0-9][A-Za-z0-9 -]*$",
+        description="European postcode (PLZ) as its country writes it",
+    ),
+]
 
 
 class Strict(BaseModel):
@@ -34,9 +47,14 @@ class PlaneInput(Strict):
     ]
 
 
-# Germany's extent in WGS84, rounded outwards: positions outside are typing errors.
-LATITUDE = Field(ge=47.0, le=55.2)
-LONGITUDE = Field(ge=5.8, le=15.1)
+# Geographic Europe in WGS84, rounded outwards to include its islands: the
+# Canaries reach 27.6 N, the Azores 31.3 W, the North Cape 71.2 N, and the
+# Caspian edge of the continent 46.7 E. The site sells into every European
+# country it lists, so a Greek or Portuguese position is a normal project, not
+# a typing error (measured 2026-11-15: this used to be Germany's own extent,
+# 47.0-55.2 N by 5.8-15.1 E, which refused Athens and Lisbon outright).
+LATITUDE = Field(ge=27.0, le=71.5)
+LONGITUDE = Field(ge=-32.0, le=47.0)
 # A drawn plane larger than this is no roof plane of a building this tool plans;
 # the bound also caps the packing work of one request.
 MAX_DRAWN_PLANE_M2 = 3000.0
@@ -50,6 +68,11 @@ class Location(Strict):
 class ResidentialInput(Strict):
     locale: Locale = "en"
     plz: Plz
+    # The postcode alone is not unique across Europe — 80538 is both Munich and
+    # a Ukrainian code, 10115 both Berlin and Tallinn — so the country is what
+    # makes the site a place. Measured 2026-11-15: without it the design refused
+    # the German home market's own postcodes.
+    country: Annotated[str, Field(pattern=r"^[A-Z]{2}$")] | None = None
     annual_kwh: Annotated[
         float,
         Field(
@@ -315,6 +338,12 @@ class PlaceResult(BaseModel):
     place: str
     attribution: str
     imagery: Imagery | None
+    # The site's own facts. Every answer names the country, region and civil
+    # time it resolved to; nothing inherits Germany's. Where an official
+    # outline or aerial service exists, `state` and `imagery` carry it.
+    country: str
+    region: str
+    timezone: str
 
 
 # Roof step --------------------------------------------------------------------------------
@@ -322,6 +351,7 @@ class PlaceResult(BaseModel):
 
 class RoofRequest(Strict):
     plz: Plz
+    country: Annotated[str, Field(pattern=r"^[A-Z]{2}$")] | None = None
     location: Location
     locale: Locale = "en"
 
@@ -414,6 +444,7 @@ class Site(Strict):
 class CommercialInput(Strict):
     locale: Locale = "en"
     plz: Plz
+    country: Annotated[str, Field(pattern=r"^[A-Z]{2}$")] | None = None
     grid_connection_kva: Annotated[float, Field(gt=0, le=10000)]
     annual_kwh: Annotated[float, Field(gt=0, le=100_000_000)]
     goals: Annotated[list[Goal], Field(min_length=1)]

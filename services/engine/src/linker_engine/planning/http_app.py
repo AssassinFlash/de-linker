@@ -10,18 +10,28 @@ the Worker.
 from __future__ import annotations
 
 import logging
+import os
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import cast
+from functools import cache
+from pathlib import Path
+from typing import Any, cast
 
 from fastapi import FastAPI, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
+from pyproj import Transformer
+from shapely.geometry import Point, Polygon
+from shapely.geometry.base import BaseGeometry
+from shapely.ops import unary_union
 from starlette.exceptions import HTTPException
 from starlette.types import ASGIApp
 
-from .. import geo
+from .. import geo, imagery
+from ..models import Imagery
+from ..roof import europe, footprints, lod2
+from ..roof.citygml import Building
 from .access import active_actor, positive_integer
 from .assets import Assets
 from .assistant_context import assistant_context
@@ -75,6 +85,7 @@ from .http_documents import (
     HandoffRead,
     InstallationReview,
     PlaceLookup,
+    PlaceOutline,
     ProfilePreviewRead,
     ProjectAssistant,
     ProjectCreate,
@@ -125,6 +136,197 @@ class HttpLimits:
             "max_json_depth",
         ):
             positive_integer(getattr(self, name), name)
+
+
+def _imagery_reply(service: Imagery | None) -> Object | None:
+    """Serialize the aerial layer independently of the address lookup."""
+    if service is None:
+        return None
+    return {
+        "tiles": list(service.tiles),
+        "credit": service.credit,
+        "licence": service.licence,
+        "licence_url": service.licence_url,
+    }
+
+
+@cache
+def _local_model_transformer(country: str) -> Transformer:
+    return Transformer.from_crs("EPSG:4326", europe.model_crs(country), always_xy=True)
+
+
+def _outer_ring(
+    footprint_rings: list[list[tuple[float, float]]],
+    plane_rings: list[list[tuple[float, float]]],
+) -> list[tuple[float, float]] | None:
+    for ring in footprint_rings:
+        if len(ring) >= 3:
+            return ring
+    polygons = [Polygon(ring) for ring in plane_rings if len(ring) >= 3]
+    valid = [p if p.is_valid else p.buffer(0) for p in polygons if not p.is_empty]
+    if not valid:
+        return None
+    merged = unary_union(valid)
+    target = merged if isinstance(merged, Polygon) else merged.convex_hull
+    if isinstance(target, Polygon) and len(target.exterior.coords) >= 4:
+        return [(float(x), float(y)) for x, y in target.exterior.coords[:-1]]
+    return None
+
+
+def _lod2_shape(building: dict[str, Any]) -> BaseGeometry | None:
+    rings = building.get("footprint") or [
+        plane["ring"] for plane in building.get("planes", [])
+    ]
+    polygons = [Polygon(ring) for ring in rings if len(ring) >= 3]
+    valid = [p if p.is_valid else p.buffer(0) for p in polygons if not p.is_empty]
+    if not valid:
+        return None
+    return unary_union(valid)
+
+
+def _transform_wgs84_ring(
+    transformer: Transformer, ring: list[tuple[float, float]]
+) -> Json:
+    return [
+        [round(float(lon), 7), round(float(lat), 7)]
+        for lon, lat in (transformer.transform(x, y) for x, y in ring)
+    ]
+
+
+def _lod2_wgs84_ring(zone: int, ring: list[tuple[float, float]]) -> Json:
+    return [
+        [round(lon, 7), round(lat, 7)]
+        for lon, lat in (lod2.to_wgs84(zone, x, y) for x, y in ring)
+    ]
+
+
+OUTLINE_SEARCH_RADIUS_M = 60.0
+
+
+def _official_3d_outline(
+    place: geo.Place, latitude: float, longitude: float
+) -> Object | None:
+    if place.country in ("NL", "CH", "LI"):
+        try:
+            model = europe.read(place.country, latitude, longitude)
+        except europe.ModelUnavailable:
+            model = None
+        if model is None:
+            return None
+        to_wgs84 = model.transformer
+        to_local = _local_model_transformer(model.country)
+        x, y = to_local.transform(longitude, latitude)
+        best: tuple[float, Building] | None = None
+        for building in model.buildings:
+            footprint = (
+                building.footprint[0]
+                if building.footprint
+                else (building.planes[0].ring if building.planes else None)
+            )
+            if footprint is None:
+                continue
+            dist = europe.distance_m(footprint, x, y)
+            if dist <= OUTLINE_SEARCH_RADIUS_M and (best is None or dist < best[0]):
+                best = (dist, building)
+        if best is None:
+            return None
+        _, chosen = best
+        valid_planes = [
+            plane
+            for plane in chosen.planes
+            if 0.0 <= plane.tilt_deg < 90.0
+            and 1.0 <= plane.area_m2 <= 3000.0
+            and len(plane.ring) >= 3
+        ]
+        if not valid_planes:
+            return None
+        outer = _outer_ring(chosen.footprint, [plane.ring for plane in valid_planes])
+        if outer is None:
+            return None
+        return {
+            "schema_version": 1,
+            "found": True,
+            "country_code": place.country,
+            "outline": _transform_wgs84_ring(to_wgs84, outer),
+            "source": f"{model.country} 3D model",
+            "licence": model.licence,
+            "planes": [
+                {
+                    "id": index,
+                    "polygon": _transform_wgs84_ring(to_wgs84, plane.ring),
+                    "tilt_deg": round(plane.tilt_deg, 1),
+                    "azimuth_deg": round(plane.azimuth_deg, 1),
+                    "area_m2": round(plane.area_m2, 2),
+                }
+                for index, plane in enumerate(valid_planes, start=1)
+            ],
+        }
+    if place.country == "DE":
+        cache_dir = (
+            Path(os.environ.get("LINKER_ENGINE_CACHE") or "/tmp/linker-engine-cache")
+            / "lod2"
+        )
+        try:
+            tile = lod2.tile_for(place.iso_region, latitude, longitude)
+            index = lod2.TileIndex(cache_dir).load(tile)
+        except lod2.Lod2Unavailable:
+            return None
+        x, y = lod2.to_utm(tile.zone, latitude, longitude)
+        point = Point(x, y)
+        best_de: tuple[float, dict[str, Any]] | None = None
+        for item in index["buildings"]:
+            shape = _lod2_shape(item)
+            if shape is None:
+                continue
+            dist = shape.distance(point)
+            if dist <= OUTLINE_SEARCH_RADIUS_M and (
+                best_de is None or dist < best_de[0]
+            ):
+                best_de = (dist, item)
+        if best_de is None:
+            return None
+        _, building_dict = best_de
+        raw_planes = [
+            raw
+            for raw in building_dict.get("planes", [])
+            if 0.0 <= float(raw.get("tilt", -1)) < 90.0
+            and 1.0 <= float(raw.get("area", 0)) <= 3000.0
+            and len(raw.get("ring", [])) >= 3
+        ]
+        if not raw_planes:
+            return None
+        footprint_rings = [
+            [(float(px), float(py)) for px, py in ring]
+            for ring in (building_dict.get("footprint") or [])
+        ]
+        plane_rings = [
+            [(float(px), float(py)) for px, py in raw["ring"]] for raw in raw_planes
+        ]
+        outer = _outer_ring(footprint_rings, plane_rings)
+        if outer is None:
+            return None
+        return {
+            "schema_version": 1,
+            "found": True,
+            "country_code": place.country,
+            "outline": _lod2_wgs84_ring(tile.zone, outer),
+            "source": f"LoD2 {place.iso_region}",
+            "licence": tile.licence,
+            "planes": [
+                {
+                    "id": idx,
+                    "polygon": _lod2_wgs84_ring(
+                        tile.zone,
+                        [(float(px), float(py)) for px, py in raw["ring"]],
+                    ),
+                    "tilt_deg": round(float(raw["tilt"]), 1),
+                    "azimuth_deg": round(float(raw["azimuth"]), 1),
+                    "area_m2": round(float(raw["area"]), 2),
+                }
+                for idx, raw in enumerate(raw_planes, start=1)
+            ],
+        }
+    return None
 
 
 def create_private_app(
@@ -195,6 +397,7 @@ def create_private_app(
         or product_provider is None
     ):
         raise InvalidInput("geometric PV requires shared project and Woo authority")
+    geo.countries()
     registry = service_registry(
         energy,
         pv,
@@ -256,6 +459,8 @@ def create_private_app(
         )
         # Private row/file values and exception traces are not returned.
         detail: Object = {"code": error.code}
+        if isinstance(error, InvalidInput) and error.public_fields:
+            detail["fields"] = list(error.public_fields)
         if isinstance(error, EvidenceMissing) and error.public_details:
             detail["details"] = dict(error.public_details)
         if isinstance(error, CsvIssue):
@@ -441,13 +646,18 @@ def create_private_app(
 
     @app.post("/places/lookup")
     def lookup_place(body: PlaceLookup, request: Request) -> Object:
-        """Resolve a declared place to the site facts a project records.
+        """Resolve a declared postcode to the site facts a project records.
 
-        The one-screen start asks for a postcode or a town, and until now the
-        saved project carried only that free text: the printed report had no
-        country and no time zone, and the weather step had no coordinate
-        anchor. The bundled German postcode table already answers all three,
-        so the screen asks the server instead of the visitor.
+        The one-screen start asks for a postcode, and until now the saved
+        project carried only that free text: the printed report had no country
+        and no time zone, and the weather step had no coordinate anchor. The
+        bundled European table answers all four, so the screen asks the server
+        instead of the visitor.
+
+        The table used to be German and the answer keyed on five digits, so a
+        Dutch or British postcode was refused (measured 2026-11-15). Shapes now
+        come from the table in each country's own form: `10115`, `75001`,
+        `M1 1AE`, `3750-000`, `59-700`.
         """
         actor = verified_actor(request.scope)
         with workspace.database.read() as connection:
@@ -455,28 +665,77 @@ def create_private_app(
         query = body.query.strip()
         if not query:
             raise NotFound("place not found")
-        digits = "".join(character for character in query if character.isdigit())
-        found = geo.lookup(digits) if len(digits) == 5 else None
+        found = geo.lookup(query, body.country)
         if found is None:
+            # A postcode several countries write the same way is not a failure
+            # of the visitor's input; the screen asks for the country instead of
+            # claiming the place does not exist.
+            shared = body.country is None and len(geo.countries_of(query)) > 1
             return {
                 "schema_version": 1,
                 "found": False,
                 "query": query,
+                "needs_country": shared,
                 "attribution": geo.ATTRIBUTION,
+                # A street address resolved by the browser's Google geocoder
+                # need not exist in the postal table. Its saved coordinates
+                # still need the selected country's aerial layer.
+                "imagery": _imagery_reply(
+                    imagery.for_editing(body.country.upper()) if body.country else None
+                ),
             }
         return {
             "schema_version": 1,
             "found": True,
             "query": query,
-            "country_code": found.state.split("-", 1)[0],
-            "location_label": f"{found.plz} {found.name}",
+            "country_code": found.country,
+            "location_label": f"{found.postcode} {found.name}",
             "latitude": found.latitude,
             "longitude": found.longitude,
-            "region": found.state,
-            # One country, one civil time: a German postcode fixes the zone, so
-            # the report can name it instead of leaving the row out.
-            "timezone": "Europe/Berlin",
+            "region": found.region,
+            "timezone": found.timezone,
             "attribution": geo.ATTRIBUTION,
+            # A German place is served by its state's mosaic, everything else by
+            # its country's; both answer null where none is recorded, and the map
+            # then keeps its plain background instead of requesting a broken tile.
+            "imagery": _imagery_reply(
+                imagery.for_editing(found.country, found.iso_region)
+            ),
+        }
+
+    @app.post("/places/outline")
+    def place_outline(body: PlaceOutline, request: Request) -> Object:
+        """The building outline at a declared position, where one is mapped.
+
+        Germany answers from its states' LoD2 and the Netherlands, Switzerland
+        and Liechtenstein from their own 3D models (including measured roof
+        planes); every other country answers from open 2D building footprints.
+        A position with no mapped building says so rather than guessing.
+        """
+        actor = verified_actor(request.scope)
+        with workspace.database.read() as connection:
+            active_actor(connection, actor)
+        place = geo.lookup(body.query.strip(), body.country)
+        if place is None:
+            raise NotFound("place not found")
+        official = _official_3d_outline(place, body.latitude, body.longitude)
+        if official is not None:
+            return official
+        found = footprints.outline_payload(place.country, body.latitude, body.longitude)
+        if found is None:
+            return {
+                "schema_version": 1,
+                "found": False,
+                "country_code": place.country,
+            }
+        return {
+            "schema_version": 1,
+            "found": True,
+            "country_code": place.country,
+            "outline": found["outline"],
+            "source": found["source"],
+            "licence": found["licence"],
+            "planes": found.get("planes", []),
         }
 
     @app.post("/handoffs/prepare")

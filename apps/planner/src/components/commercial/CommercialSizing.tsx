@@ -131,8 +131,12 @@ export function CommercialSizing({
 	const brief = readBrief(draft.history.current.brief);
 	// The postcode is the one field the brief already carries; it follows the
 	// brief until the customer types their own, so a brief saved while this
-	// panel is open still fills it.
-	const briefPlz = /\b(\d{5})\b/.exec(brief.site.location_label)?.[1] ?? "";
+	// panel is open still fills it. The label is the resolved place's own text
+	// ("80538 München", "M1 Manchester"), so its first word is the postcode in
+	// whatever shape the country writes it — a five-digit pattern dropped
+	// every British, Dutch and Portuguese site (measured 2026-11-15).
+	const briefPlz = brief.site.location_label.trim().split(/\s+/)[0] ?? "";
+	const briefCountry = brief.site.country_code ?? null;
 	const [plz, setPlz] = useState(briefPlz);
 	const typedPlz = useRef(false);
 	useEffect(() => {
@@ -182,7 +186,10 @@ export function CommercialSizing({
 	// disabled rather than sending a request that would be refused, and the
 	// panel names what is still missing.
 	const missing: string[] = [];
-	if (!/^\d{5}$/.test(plz))
+	// A European postcode as its country writes it — 10115, 75001, M1 1AE,
+	// 3750-000. Measured 2026-11-15: this required five digits, so a British or
+	// Portuguese site could not be sized at all.
+	if (!/^[A-Za-z0-9][A-Za-z0-9 -]{1,11}$/.test(plz.trim()))
 		missing.push(__("the site postcode", "linker-tools"));
 	if (!(gridKva !== null && gridKva > 0))
 		missing.push(__("the grid connection capacity", "linker-tools"));
@@ -201,6 +208,7 @@ export function CommercialSizing({
 		try {
 			const sizing = readSizing({
 				plz,
+				country: briefCountry,
 				grid_connection_kva: gridKva,
 				annual_kwh: annualKwh,
 				goals,

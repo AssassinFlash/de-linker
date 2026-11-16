@@ -1,5 +1,14 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+	lazy,
+	Suspense,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import type { Configuration } from "../data/config.ts";
+import { geocodeAddress } from "../data/googleMaps.ts";
+const LazyGoogle3DMap = lazy(() => import("./design/Google3DMap.tsx"));
 import type { PlannerClient } from "../data/PlannerClient.ts";
 import type { DraftStore } from "../data/DraftStore.ts";
 import type { Json, JsonObject, Project, Session } from "../data/protocol.ts";
@@ -28,6 +37,13 @@ import {
 	equipmentDraft,
 } from "../domain/equipment.ts";
 import { compileEquipmentRequirements } from "../domain/equipmentRequirements.ts";
+import {
+	emptyPv,
+	prepareWeatherInputs,
+	solarInputs,
+	weatherFromPlace,
+} from "../domain/solarSetup.ts";
+import type { SolarSetup } from "../domain/solarSetup.ts";
 import { __, sprintf } from "../i18n.ts";
 import { Icon } from "./Icon.tsx";
 import { Notice } from "./Notice.tsx";
@@ -108,6 +124,44 @@ export function quickStartDefaults(): QuickStartChoices {
 		location: "",
 		country: "",
 	};
+}
+
+/**
+ * One example postcode in the shape the chosen country writes.
+ *
+ * The field used to show `e.g. 10115 Berlin` whatever the country was, which
+ * taught every non-German visitor the wrong shape (measured 2026-11-15).
+ */
+export function postcodeExample(country: string): string {
+	switch (country.toUpperCase()) {
+		case "GB":
+			return "e.g. M1 1AE";
+		case "IE":
+			return "e.g. D01 F5P2";
+		case "NL":
+			return "e.g. 9401 AB";
+		case "PT":
+			return "e.g. 3750-000";
+		case "PL":
+			return "e.g. 59-700";
+		case "FR":
+			return "e.g. 75001";
+		case "ES":
+			return "e.g. 28001";
+		case "IT":
+			return "e.g. 00118";
+		case "GR":
+			return "e.g. 10431";
+		case "AT":
+			return "e.g. 1010";
+		case "CH":
+			return "e.g. 8001";
+		case "DE":
+			return "e.g. 10115";
+		default:
+			// No country yet: the answer is postcode-shaped, not country-shaped.
+			return __("Your postcode", "linker-tools");
+	}
 }
 
 /** A named site needs both the place and the country the report will print. */
@@ -199,9 +253,15 @@ export function quickStartInputs(
 		// answer. Measured 2026-11-14: without it a 10 kWp home request was
 		// answered with a 25 kW three-phase inverter first and 15 commercial
 		// combinations inside the same list.
+		//
+		// It belongs to `equipment_requirements`, not to `equipment_setup`: the
+		// selection schema forbids extra properties, so carrying it in the setup
+		// made every project fail the equipment step at `compileEquipment` —
+		// measured 2026-11-15, Germany included.
 		application:
 			choices.projectType === "commercial" ? "commercial" : "residential",
 	};
+	const { application, ...selectionSetup } = setup;
 	const inputs: JsonObject = {
 		brief: {
 			...brief,
@@ -233,7 +293,7 @@ export function quickStartInputs(
 				quickStartOrientationLabel(choices.orientation),
 			),
 		},
-		equipment_setup: setup,
+		equipment_setup: selectionSetup,
 		equipment_requirements: compileEquipmentRequirements(setup),
 	};
 	return inputs;
@@ -263,6 +323,7 @@ export function mergeQuickStartInputs(
 		currentSetup = equipmentDraft({});
 	}
 	const declared = readObject(next.equipment_setup);
+	const declaredRequirements = readObject(next.equipment_requirements);
 	const setup: JsonObject = {
 		...currentSetup,
 		grid_phase: declared.grid_phase ?? null,
@@ -270,8 +331,11 @@ export function mergeQuickStartInputs(
 		pv_dc_kw: declared.pv_dc_kw ?? null,
 		required_usable_kwh: declared.required_usable_kwh ?? null,
 		required_discharge_ac_kw: declared.required_discharge_ac_kw ?? null,
-		application: declared.application ?? null,
+		// The application lives in the requirements, which is the object the
+		// engine reads it from; the selection schema has no such property.
+		application: declaredRequirements.application ?? null,
 	};
+	const { application: declaredApplication, ...selectionSetup } = setup;
 	const note =
 		typeof currentBrief.project_note === "string" &&
 		currentBrief.project_note.trim()
@@ -288,7 +352,7 @@ export function mergeQuickStartInputs(
 			annual_load: readObject(readObject(next.brief).annual_load),
 			project_note: note,
 		},
-		equipment_setup: setup,
+		equipment_setup: selectionSetup,
 		equipment_requirements: compileEquipmentRequirements(setup),
 	};
 }
@@ -433,7 +497,8 @@ export function QuickStart({
 	config: Configuration;
 	recheck: () => void;
 	created?: ((project: Project) => boolean) | undefined;
-	openWorkbench?: ((projectId: string) => void) | undefined;
+	openWorkbench?:
+		((projectId: string, destination?: "design") => void) | undefined;
 	onOpenProject?: ((projectId: string) => void) | undefined;
 	close?: (() => void) | undefined;
 	/** Re-plan an open project instead of creating another one. */
@@ -454,17 +519,41 @@ export function QuickStart({
 	 */
 	const [resolved, setResolved] = useState<ResolvedPlace | null>(null);
 	const lifetime = useRef(0);
+	// A postcode settles on a pause as well as on blur. A visitor who types and
+	// then presses the button without leaving the field would otherwise never
+	// start the lookup, and the screen would carry unconfirmed text into the
+	// project (measured 2026-11-15: `zzz not a place` became the title).
+	const settle = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+	const resolvedKey = useRef<string | null>(null);
 	useEffect(() => {
 		lifetime.current++;
 		return () => {
 			lifetime.current++;
+			if (settle.current !== undefined) clearTimeout(settle.current);
 		};
 	}, []);
+	useEffect(() => {
+		if (settle.current !== undefined) clearTimeout(settle.current);
+		const trimmed = choices.location.trim();
+		if (trimmed.length < 3) return;
+		const key = `${choices.country}:${trimmed}`;
+		if (resolvedKey.current === key) return;
+		const pending = choices.location;
+		const country = choices.country;
+		settle.current = setTimeout(() => {
+			settle.current = undefined;
+			void askPlace(pending, country);
+		}, 400);
+	}, [choices.location, choices.country]);
 	const ready = quickStartReady(choices);
 	function change<K extends keyof QuickStartChoices>(
 		key: K,
 		value: QuickStartChoices[K],
 	) {
+		if (key === "location" || key === "country") {
+			resolvedKey.current = null;
+			setResolved(null);
+		}
 		setChoices((previous) => {
 			if (key === "projectType") {
 				const type = value as QuickStartProjectType;
@@ -488,22 +577,87 @@ export function QuickStart({
 	 * coordinates are facts the visitor confirmed rather than input we invented.
 	 * A failure here never blocks the screen: the manual country select remains.
 	 */
-	async function resolvePlace(query: string) {
+	/** Ask the server where a postcode is, and adopt the answer. */
+	async function askPlace(
+		query: string,
+		country: string,
+	): Promise<ResolvedPlace | null> {
 		const trimmed = query.trim();
-		if (trimmed.length < 4) {
+		if (trimmed.length < 3) {
+			resolvedKey.current = null;
 			setResolved(null);
-			return;
+			return null;
 		}
 		const instance = lifetime.current;
 		try {
-			const value = readResolvedPlace(
+			let value = readResolvedPlace(
 				await client.query(
 					"places/lookup",
-					{ schema_version: 1, query: trimmed },
+					{
+						schema_version: 1,
+						query: trimmed,
+						// The chosen country disambiguates a postcode several
+						// countries write the same way; without one the server
+						// answers `needs_country` and the screen says so.
+						...(country ? { country } : {}),
+					},
 					session.query_scope,
 				),
 			);
-			if (instance !== lifetime.current) return;
+			if (instance !== lifetime.current) return null;
+			if (!value.found && !value.needs_country && config.googleMapsApiKey) {
+				try {
+					const geocoded = await geocodeAddress(
+						config.googleMapsApiKey,
+						trimmed,
+						country || undefined,
+						config.locale,
+					);
+					if (instance !== lifetime.current) return null;
+					if (geocoded) {
+						let enriched: ResolvedPlace | null = null;
+						if (geocoded.postcode && geocoded.countryCode) {
+							try {
+								enriched = readResolvedPlace(
+									await client.query(
+										"places/lookup",
+										{
+											schema_version: 1,
+											query: geocoded.postcode,
+											country: geocoded.countryCode,
+										},
+										session.query_scope,
+									),
+								);
+							} catch {
+								enriched = null;
+							}
+						}
+						if (instance !== lifetime.current) return null;
+						const resolvedCountry =
+							geocoded.countryCode ??
+							enriched?.country_code ??
+							(country || null);
+						value = {
+							schema_version: 1,
+							found: true,
+							query: trimmed,
+							...(resolvedCountry ? { country_code: resolvedCountry } : {}),
+							location_label:
+								enriched?.location_label ?? geocoded.formattedAddress,
+							latitude: geocoded.lat,
+							longitude: geocoded.lng,
+							timezone:
+								enriched?.timezone ??
+								Intl.DateTimeFormat().resolvedOptions().timeZone ??
+								"Europe/Berlin",
+							...(enriched?.imagery ? { imagery: enriched.imagery } : {}),
+						};
+					}
+				} catch {
+					/* Geocoding fallback stays non-blocking. */
+				}
+			}
 			setResolved(value);
 			if (
 				value.found &&
@@ -511,21 +665,69 @@ export function QuickStart({
 				value.location_label &&
 				value.timezone
 			) {
+				resolvedKey.current = `${value.country_code}:${value.location_label.trim()}`;
 				setChoices((previous) => ({
 					...previous,
 					country: value.country_code as string,
 					location: value.location_label as string,
 				}));
+			} else {
+				resolvedKey.current = `${country}:${trimmed}`;
 			}
+			return value;
 		} catch {
-			if (instance === lifetime.current) setResolved(null);
+			if (instance === lifetime.current) {
+				resolvedKey.current = null;
+				setResolved(null);
+			}
+			return null;
 		}
+	}
+	function resolvePlace(query: string) {
+		return askPlace(query, choices.country);
 	}
 	async function start() {
 		if (!ready || busy || !client.isCurrentScope(session.query_scope)) return;
+		if (settle.current !== undefined) {
+			clearTimeout(settle.current);
+			settle.current = undefined;
+		}
 		const instance = lifetime.current;
 		setBusy(true);
 		setFailure(null);
+		let activeResolved = resolved;
+		let activeChoices = choices;
+		try {
+			// A visitor who types a postcode and presses the button has not blurred
+			// the field, so the place was never resolved and the project would be
+			// saved without coordinates — measured 2026-11-16, `1010 Wien` stored
+			// `latitude: null` and the roof map then refused to open.
+			if (!activeResolved) {
+				const pending = choices.location?.trim() ?? "";
+				if (pending) {
+					activeResolved = await askPlace(pending, choices.country);
+					if (instance !== lifetime.current) return;
+					if (
+						activeResolved?.found &&
+						activeResolved.country_code &&
+						activeResolved.location_label &&
+						activeResolved.timezone
+					) {
+						activeChoices = {
+							...choices,
+							country: activeResolved.country_code,
+							location: activeResolved.location_label,
+						};
+					}
+				}
+			}
+		} catch (error) {
+			if (instance === lifetime.current) {
+				setBusy(false);
+				setFailure(error instanceof Error ? error.message : "place_unresolved");
+			}
+			return;
+		}
 		try {
 			if (existingProject) {
 				// Re-planning writes the declared keys onto the opened revision; the
@@ -541,8 +743,8 @@ export function QuickStart({
 								expected_revision: existingProject.revision,
 								inputs: mergeQuickStartInputs(
 									existingProject.inputs,
-									choices,
-									resolved,
+									activeChoices,
+									activeResolved,
 								),
 								key: crypto.randomUUID(),
 							},
@@ -561,7 +763,7 @@ export function QuickStart({
 				setProject(value);
 				return;
 			}
-			const inputs = quickStartInputs(choices, resolved);
+			const inputs = quickStartInputs(activeChoices, activeResolved);
 			const value = readProject(
 				await client.send(
 					"projects/create",
@@ -569,7 +771,7 @@ export function QuickStart({
 						{
 							schema_version: 1,
 							input_contract: projectInputContract,
-							title: quickStartTitle(choices),
+							title: quickStartTitle(activeChoices),
 							inputs,
 							key: crypto.randomUUID(),
 						},
@@ -783,16 +985,24 @@ export function QuickStart({
 					</select>
 				</label>
 				<label className="lp-field">
-					<span>{__("Postcode or town", "linker-tools")}</span>
+					<span>{__("Postcode", "linker-tools")}</span>
 					<input
 						type="text"
 						required
 						autoComplete="postal-code"
 						value={choices.location}
-						placeholder={__("e.g. 10115 Berlin", "linker-tools")}
+						placeholder={postcodeExample(choices.country)}
 						onChange={(event) => change("location", event.currentTarget.value)}
 						onBlur={(event) => void resolvePlace(event.currentTarget.value)}
 					/>
+					{resolved !== null && !resolved.found && resolved.needs_country && (
+						<p className="lp-profile-help" role="status">
+							{__(
+								"Several countries use this postcode. Choose your country and the postcode will be placed.",
+								"linker-tools",
+							)}
+						</p>
+					)}
 				</label>
 				<div className="lp-quickstart-actions">
 					<button className="lp-button" type="submit" disabled={!ready || busy}>
@@ -816,6 +1026,26 @@ export function QuickStart({
 					<p>{failure}</p>
 				</Notice>
 			)}
+			{config.googleMapsApiKey &&
+				resolved?.found &&
+				typeof resolved.latitude === "number" &&
+				typeof resolved.longitude === "number" && (
+					<div className="lp-quickstart-map">
+						<Suspense
+							fallback={
+								<p role="status">
+									{__("Loading 3D satellite imagery…", "linker-tools")}
+								</p>
+							}
+						>
+							<LazyGoogle3DMap
+								compact
+								apiKey={config.googleMapsApiKey}
+								center={[resolved.longitude, resolved.latitude]}
+							/>
+						</Suspense>
+					</div>
+				)}
 			<details className="lp-quickstart-advanced">
 				<summary>
 					{__("Advanced engineering checks (optional)", "linker-tools")}
@@ -848,7 +1078,8 @@ function QuickStartRun({
 	store: DraftStore;
 	config: Configuration;
 	recheck: () => void;
-	openWorkbench?: ((projectId: string) => void) | undefined;
+	openWorkbench?:
+		((projectId: string, destination?: "design") => void) | undefined;
 	onOpenProject?: ((projectId: string) => void) | undefined;
 }) {
 	const {
@@ -888,6 +1119,7 @@ function QuickStartRun({
 	// reported as not run instead of being started with borrowed values.
 	async function startRun(
 		path:
+			| "runs/weather"
 			| "runs/energy"
 			| "runs/equipment-search"
 			| "runs/equipment"
@@ -958,20 +1190,114 @@ function QuickStartRun({
 			const saved = await save();
 			if (!current()) return;
 			const revision = saved?.revision ?? draft.baseline.revision;
+			// Every save advances the revision a run must name, so the latest one
+			// travels with the chain rather than being read once at the start.
+			let latestRevision = revision;
 			done("save", sprintf(__("Revision %d", "linker-tools"), revision));
 
-			// 2-5. Steps whose inputs this screen does not collect are reported as
-			// not run rather than marked complete. A location typed as text is not
-			// a WGS 84 coordinate, so no weather request is sent from here, and an
-			// annual consumption figure is not an interval series.
-			blocked(
-				"weather",
-				__(
-					"Typical-year weather needs the site coordinates that a drawn roof supplies. Add the roof in the full workbench to run this step.",
-					"linker-tools",
-				),
-				false,
-			);
+			// 2. Weather: the resolved place already carries the coordinate the
+			// typical-year request needs, so this step runs. It used to be
+			// refused on the grounds that a typed location is not a WGS 84
+			// coordinate — true while the lookup was German postcodes only, and
+			// false once it returned a latitude and a longitude (measured
+			// 2026-11-15 for five countries).
+			step("weather");
+			// The saved project already carries the site the visitor confirmed:
+			// the postcode lookup put its country, coordinate and civil time into
+			// `brief.site`. This used to be refused on the grounds that a typed
+			// location is not a WGS 84 coordinate — true while the lookup was
+			// German postcodes only, false once it returned a latitude and a
+			// longitude (measured 2026-11-15 for five countries).
+			// The confirmed project's own inputs, not this callback's captured
+			// render: the closure was created before the visitor's postcode was
+			// answered, and `draft` inside it is that older value. Measured
+			// 2026-11-15: Greek projects carried a coordinate in the created
+			// project and the weather step still reported none, because it read
+			// the stale copy.
+			// The project this component was mounted for, not this callback's
+			// captured render: the run is created once and `draft` inside it is
+			// the value from that render, which is before the visitor's postcode
+			// was answered. The mounted project carries the confirmed inputs —
+			// measured 2026-11-15, `projects/create` sends and returns the Greek
+			// coordinate while the weather step still read none.
+			const confirmedInputs = saved?.inputs ?? project.inputs;
+			const brief = readObject(readObject(confirmedInputs).brief);
+			const site = readObject(brief.site);
+			const latitude = site.latitude;
+			const longitude = site.longitude;
+			const weather =
+				typeof latitude === "number" && typeof longitude === "number"
+					? weatherFromPlace(latitude, longitude)
+					: null;
+			if (!weather) {
+				blocked(
+					"weather",
+					__(
+						"A typical year needs a postcode this screen can place. Enter yours before generating and this step runs.",
+						"linker-tools",
+					),
+				);
+			} else {
+				const setup: SolarSetup = {
+					schema_version: 1,
+					weather,
+					pv: emptyPv(),
+				};
+				update((previous) =>
+					// `solarInputs` records the setup and clears the previous
+					// request; `prepareWeatherInputs` is what compiles the draft
+					// into the `weather_acquisition` object the engine reads.
+					editDraft(
+						previous,
+						prepareWeatherInputs(solarInputs(previous.history.current, setup)),
+					),
+				);
+				const withWeather = await save();
+				if (!current()) return;
+				if (!withWeather) {
+					blocked(
+						"weather",
+						__(
+							"The weather request could not be saved. Your open changes stay on this screen.",
+							"linker-tools",
+						),
+					);
+				} else {
+					const acquired = await startRun("runs/weather", {
+						expected_revision: withWeather.revision,
+					});
+					latestRevision = withWeather.revision;
+					if (!current()) return;
+					if (!acquired || acquired.state !== "succeeded") {
+						blocked("weather", runFailure(acquired));
+					} else {
+						// The acquired year stays in the project as a retained asset;
+						// the step line names the database the provider actually used,
+						// which is what a visitor can check against the report later.
+						const echoed = readObject(
+							readObject(acquired.result).weather_summary,
+						);
+						const radiation =
+							typeof echoed.radiation_database === "string"
+								? echoed.radiation_database
+								: null;
+						done(
+							"weather",
+							radiation
+								? sprintf(
+										__("Typical year acquired (%s)", "linker-tools"),
+										radiation,
+									)
+								: __("Typical year acquired for this site", "linker-tools"),
+						);
+					}
+				}
+			}
+
+			// 3-5. Steps whose inputs this screen does not collect are reported as
+			// not run rather than marked complete. An annual consumption figure is
+			// not an interval series, so the storage and self-consumption steps
+			// stay blocked here and run in the workbench.
 			blocked(
 				"pv",
 				__(
@@ -994,10 +1320,14 @@ function QuickStartRun({
 				false,
 			);
 
-			// 6. Equipment search runs from the declared requirements alone.
+			// 6. Equipment search runs from the declared requirements alone. It
+			// binds to the revision in hand, not to the one the project was
+			// created at: the weather step saves its request, which advances the
+			// revision, and a run against the older number is refused as
+			// changed (measured 2026-11-15: evaluation_revision_changed).
 			step("search");
 			const search = await startRun("runs/equipment-search", {
-				expected_revision: draft.baseline.revision,
+				expected_revision: latestRevision,
 			});
 			if (!current()) return;
 			if (!search || search.state !== "succeeded") {
@@ -1316,6 +1646,62 @@ function QuickStartRun({
 					/>
 				</section>
 			)}
+			{(() => {
+				const rawBrief = draft?.history.current.brief ?? project.inputs.brief;
+				const briefObj =
+					rawBrief && typeof rawBrief === "object" && !Array.isArray(rawBrief)
+						? (rawBrief as Record<string, unknown>)
+						: null;
+				const siteObj =
+					briefObj?.site &&
+					typeof briefObj.site === "object" &&
+					!Array.isArray(briefObj.site)
+						? (briefObj.site as Record<string, unknown>)
+						: null;
+				const lat = siteObj?.latitude;
+				const lng = siteObj?.longitude;
+				if (
+					!config.googleMapsApiKey ||
+					typeof lat !== "number" ||
+					typeof lng !== "number"
+				)
+					return null;
+				return (
+					<div className="lp-quickstart-map">
+						<Suspense
+							fallback={
+								<p role="status">
+									{__("Loading 3D satellite imagery…", "linker-tools")}
+								</p>
+							}
+						>
+							<LazyGoogle3DMap
+								compact
+								apiKey={config.googleMapsApiKey}
+								center={[lng, lat]}
+								onSwitchToMap={() =>
+									openWorkbench
+										? openWorkbench(project.id, "design")
+										: onOpenProject?.(project.id)
+								}
+							/>
+						</Suspense>
+					</div>
+				);
+			})()}
+			<div className="lp-inline-actions lp-quickstart-studio-action">
+				<button
+					className="lp-button"
+					type="button"
+					onClick={() =>
+						openWorkbench
+							? openWorkbench(project.id, "design")
+							: onOpenProject?.(project.id)
+					}
+				>
+					{__("Open 3D roof studio", "linker-tools")}
+				</button>
+			</div>
 			<details className="lp-quickstart-advanced">
 				<summary>
 					{__("Advanced engineering checks (optional)", "linker-tools")}

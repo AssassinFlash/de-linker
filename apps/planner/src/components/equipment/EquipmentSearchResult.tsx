@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { PlanningRun } from "../../data/planningProtocol.ts";
-import type { JsonObject } from "../../data/protocol.ts";
+import { ApiError, type JsonObject } from "../../data/protocol.ts";
 import type { EquipmentSelection } from "../../domain/equipment.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { EquipmentCandidate } from "../../data/equipmentSearch.ts";
@@ -64,7 +64,8 @@ export function EquipmentSearchResult({
 	const detail = useQuery({
 		queryKey: ["equipment-candidate", scope, run.id, candidate?.id],
 		enabled: !!candidate && client.isCurrentScope(scope),
-		retry: false,
+		retry: (failureCount, error) =>
+			failureCount < 1 && error instanceof ApiError && error.status === 503,
 		staleTime: Infinity,
 		refetchOnWindowFocus: false,
 		queryFn: async ({ signal }) =>
@@ -87,15 +88,68 @@ export function EquipmentSearchResult({
 				return p ? `${p.brand} ${p.model}` : "—";
 			})
 			.join(" + ");
-	const names = (c: EquipmentCandidate) =>
-		isPlantCandidate(c)
-			? c.plant.units
-					.map(
-						(u) =>
-							`${u.name}: ${deviceNames(u.selection)} · ${__("Battery modules per stack", "linker-tools")}: ${u.selection.modules_per_stack ?? "—"}`,
-					)
-					.join(" · ")
-			: `${deviceNames(c.selection)} · ${__("Battery modules per stack", "linker-tools")}: ${c.selection.modules_per_stack ?? "—"}`;
+	/**
+	 * What the chosen stack holds, in kWh, from the battery's own figure.
+	 *
+	 * The figure is the feed's flattened number (`usable_kwh`), so it needs no
+	 * unwrapping. A hosted row may instead carry the compiled fact — an object
+	 * with `value` and `unit` — so both shapes are read, and anything that is
+	 * not a positive finite number is skipped rather than shown as a zero.
+	 */
+	const stackEnergy = (selection: EquipmentSelection): string | null => {
+		const id = selection.battery_product_id;
+		const modules = selection.modules_per_stack;
+		if (id === null || typeof modules !== "number") return null;
+		const energy = readObject(products.get(id)?.energy ?? {});
+		const positive = (raw: unknown) => {
+			const value =
+				typeof raw === "number" ? raw : Number(readObject(raw ?? {}).value);
+			return Number.isFinite(value) && value > 0 ? value : undefined;
+		};
+		const perModule = (
+			["usable_kwh", "module_energy_kwh_usable", "nominal_kwh"] as const
+		)
+			.map((key) => positive(energy[key]))
+			.find((value) => value !== undefined);
+		if (perModule === undefined) return null;
+		const stacks = selection.parallel_stacks ?? 1;
+		return new Intl.NumberFormat(locale, {
+			maximumFractionDigits: 1,
+		}).format(perModule * modules * stacks);
+	};
+	/**
+	 * A candidate as a customer reads it: the equipment, then what the battery
+	 * holds. The module count is a build detail and stays out of the label —
+	 * measured 2026-11-15, the list read "Battery modules per stack: 4" for
+	 * four different stacks, which tells a buyer nothing about the system.
+	 */
+	const names = (c: EquipmentCandidate) => {
+		if (isPlantCandidate(c))
+			return c.plant.units
+				.map((u) => {
+					const kwh = stackEnergy(u.selection);
+					return `${u.name}: ${deviceNames(u.selection)}${
+						kwh
+							? " · " +
+								__("Usable battery capacity", "linker-tools") +
+								": " +
+								kwh +
+								" kWh"
+							: ""
+					}`;
+				})
+				.join(" · ");
+		const kwh = stackEnergy(c.selection);
+		return `${deviceNames(c.selection)}${
+			kwh
+				? " · " +
+					__("Usable battery capacity", "linker-tools") +
+					": " +
+					kwh +
+					" kWh"
+				: ""
+		}`;
+	};
 	const applySelected = async () => {
 		if (
 			!candidate ||

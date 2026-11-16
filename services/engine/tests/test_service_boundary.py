@@ -38,7 +38,7 @@ def test_service_exposes_only_business_routes_without_schema_ui(
             assert client.get(path).status_code == 404
         assert client.get("/health").json() == {"status": "ok"}
         assert client.get("/resource/version").status_code == 401
-        assert client.get("/geo/plz/80538").status_code == 200
+        assert client.get("/geo/plz/80538", params={"country": "DE"}).status_code == 200
         for path in POSTS:
             assert client.post(path, content="{invalid JSON").status_code == 401
     assert not list(tmp_path.rglob("*.sqlite"))

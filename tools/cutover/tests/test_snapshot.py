@@ -184,6 +184,74 @@ def test_an_existing_interrupted_artifact_is_never_overwritten(
     assert scripts == []
 
 
+def test_a_reservation_left_by_a_vanished_checkpoint_does_not_block_later_deploys(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Measured 2026-11-15: the second deploy after a moved checkpoint failed forever.
+
+    The active map is keyed by checkpoint path. A deployment whose checkpoint is
+    moved aside leaves its record behind at that path, and the only releaser,
+    finish_checkpoint, needs the file that no longer exists. The next deploy
+    arrives at the same path with a different deploy_id and is refused before it
+    starts its dump, so nothing short of hand-editing the registry recovers.
+    """
+    _dump(monkeypatch, gzip.compress(b"select 1;\n"))
+    site = _site(tmp_path / "site")
+    checkpoint = tmp_path / "custom-stage" / ".deploy.json"
+    checkpoint.parent.mkdir()
+    name = snapshot.name_at(AT)
+    checkpoint.write_text(
+        json.dumps(
+            {
+                "deploy_id": "20261114T163456852740Z-2e09d2218",
+                "target": [site.label, site.root, site.base_url, site.rsync_remote],
+                "snapshot_pending": {"name": name, "home": str(tmp_path.resolve())},
+            }
+        )
+    )
+    folder = snapshot.directory(tmp_path)
+    folder.mkdir()
+    (folder / snapshot.STATE).write_text(
+        json.dumps(
+            {
+                "origin": snapshot.ORIGIN,
+                "version": 1,
+                "snapshots": {},
+                "baselines": {},
+                "active": {
+                    str(checkpoint): {
+                        "name": "db-20261114T160727Z.sql.gz",
+                        "deploy_id": "20261114T160716528206Z-929cd39ba",
+                        "source": [
+                            site.label,
+                            site.root,
+                            site.base_url,
+                            site.rsync_remote,
+                        ],
+                    }
+                },
+            }
+        )
+    )
+
+    taken = snapshot.take(
+        site,
+        tmp_path,
+        now=AT,
+        reservation=snapshot.Reservation(
+            name,
+            checkpoint,
+            "20261114T163456852740Z-2e09d2218",
+        ),
+    )
+
+    assert taken.path.is_file()
+    state = json.loads((folder / snapshot.STATE).read_text())
+    assert state["active"][str(checkpoint)]["deploy_id"] == (
+        "20261114T163456852740Z-2e09d2218"
+    )
+
+
 def test_snapshot_refuses_a_linked_snapshot_directory(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

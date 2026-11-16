@@ -6,15 +6,26 @@ import type {
 	MapMouseEvent,
 	StyleSpecification,
 } from "maplibre-gl";
-import type { GeometryDocument, PanelPose } from "../../domain/geometry.ts";
+import type {
+	GeometryDocument,
+	PanelPose,
+	Vec2,
+} from "../../domain/geometry.ts";
+import type { PlaceImagery } from "../../domain/place.ts";
 import { geographicMapGeometry } from "../../domain/mapGeometry.ts";
 import { MapRequestScope } from "../../data/mapRequests.ts";
 import { MapPickGate } from "../../data/MapPickGate.ts";
 import { MapPrefixController } from "../../data/MapPrefixController.ts";
 import { createMapDrawingController } from "../../data/MapDrawingController.ts";
-import type { MapInteraction } from "../../data/mapInteraction.ts";
+import type {
+	ArrayPlacement,
+	MapInteraction,
+} from "../../data/mapInteraction.ts";
+import { drawingBridge } from "../../domain/mapDrawingGeometry.ts";
+import { geographicOnRoof } from "../../domain/geographic.ts";
 import { __ } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
+import { revealActionResult } from "../revealActionResult.ts";
 
 export interface MapCamera {
 	centre: [number, number];
@@ -30,6 +41,42 @@ const LAYERS = KINDS.map((kind) => `linker-map-${kind}`);
 // Official public style, checked in the Apify provider dossier. It is never
 // requested until the visitor explicitly asks to load this external service.
 const STREET_STYLE = "https://tiles.openfreemap.org/styles/liberty";
+// The official aerial mosaic sits under the project geometry, drawn only after
+// the visitor agrees to external services, on the same rule as the street style.
+const IMAGERY_SOURCE = "linker-site-imagery";
+const IMAGERY_LAYER = "linker-site-imagery";
+// The mapped building at the site, drawn dashed until the visitor adopts it.
+const SITE_OUTLINE_SOURCE = "linker-site-outline";
+const SITE_OUTLINE_LAYER = "linker-site-outline";
+
+function aerialOriginsOf(mosaic: PlaceImagery | null | undefined): string[] {
+	return (mosaic?.tiles ?? [])
+		.map((tile) => {
+			try {
+				return new URL(tile).origin;
+			} catch {
+				return "";
+			}
+		})
+		.filter(Boolean);
+}
+
+function imagerySignatureOf(mosaic: PlaceImagery): string {
+	return `${mosaic.tiles.join("\n")}\n${mosaic.credit} — ${mosaic.licence}`;
+}
+
+function imageryBeforeLayer(map: MapLibreMap): string | undefined {
+	if (map.getLayer(SITE_OUTLINE_LAYER)) return SITE_OUTLINE_LAYER;
+	return map.getLayer(`linker-map-${KINDS[0]}`)
+		? `linker-map-${KINDS[0]}`
+		: undefined;
+}
+
+function siteOutlineBeforeLayer(map: MapLibreMap): string | undefined {
+	return map.getLayer(`linker-map-${KINDS[0]}`)
+		? `linker-map-${KINDS[0]}`
+		: undefined;
+}
 
 /** Bounded renderer diagnostics exclude message bodies, URL paths/queries,
  * project data and source contents. They identify a failed runtime boundary. */
@@ -64,7 +111,11 @@ export default function MapViewport({
 	disabled,
 	openReferences,
 	camera,
+	imagery = null,
+	siteCentre = null,
+	siteOutline = null,
 	interaction = null,
+	placement = null,
 }: {
 	document: GeometryDocument;
 	poses: readonly PanelPose[];
@@ -74,11 +125,29 @@ export default function MapViewport({
 	openReferences: () => void;
 	camera: RefObject<MapCamera | null>;
 	interaction?: MapInteraction | null;
+	placement?: ArrayPlacement | null;
+	/** The official aerial mosaic for this site, or null where none exists. */
+	imagery?: PlaceImagery | null;
+	/** The declared site position, so the mosaic is visible before geometry exists. */
+	siteCentre?: readonly [number, number] | null;
+	/** The mapped building outline at the site, drawn as the starting point. */
+	siteOutline?: {
+		ring: [number, number][];
+		source: string;
+		licence: string;
+		planes?: readonly {
+			id: number;
+			polygon: readonly [number, number][];
+			tilt_deg: number;
+			azimuth_deg: number;
+			area_m2: number;
+		}[];
+	} | null;
 }) {
 	const host = useRef<HTMLDivElement>(null),
 		mapRef = useRef<MapLibreMap | null>(null),
 		releaseExternal = useRef<(() => void) | null>(null),
-		[external, setExternal] = useState(false),
+		[external, setExternal] = useState(true),
 		[attempt, setAttempt] = useState(0),
 		[status, setStatus] = useState<"loading" | "ready" | "failed">("loading"),
 		[readyMap, setReadyMap] = useState<MapLibreMap | null>(null),
@@ -86,6 +155,8 @@ export default function MapViewport({
 		[failure, setFailure] = useState<string | null>(null),
 		label = useId();
 	const releaseDrawing = useRef<(() => void) | null>(null),
+		requestsRef = useRef<MapRequestScope | null>(null),
+		imagerySignature = useRef<string | null>(null),
 		prefix = useRef<MapPrefixController | null>(null),
 		pickGate = useRef(new MapPickGate());
 	const heightMarker = useRef<Marker | null>(null);
@@ -100,17 +171,53 @@ export default function MapViewport({
 		}
 	}, [geometry, poses]);
 	const latest = useRef({
+		geometry,
 		projection,
 		selected,
 		select,
 		disabled,
 		interaction,
+		placement,
+		imagery,
+		siteCentre,
+		siteOutline,
 	});
-	latest.current = { projection, selected, select, disabled, interaction };
+	latest.current = {
+		geometry,
+		projection,
+		selected,
+		select,
+		disabled,
+		interaction,
+		placement,
+		imagery,
+		siteCentre,
+		siteOutline,
+	};
+	function placeArray(map: MapLibreMap, point: Vec2) {
+		const target = latest.current.placement;
+		if (!target) return;
+		const hit = map
+			.queryRenderedFeatures(map.project({ lng: point[0], lat: point[1] }), {
+				layers: ["linker-map-roof"],
+			})
+			.some((feature) => feature.properties?.object_id === target.roofId);
+		if (!hit) return;
+		const roof = latest.current.geometry.roofs.find(
+			(roof) => roof.id === target.roofId,
+		)!;
+		target.place(
+			geographicOnRoof(drawingBridge(latest.current.geometry), roof, point),
+		);
+	}
 
 	function fit(map: MapLibreMap) {
 		const view = latest.current.projection.view;
-		if (!view) return;
+		if (!view) {
+			if (latest.current.siteCentre)
+				map.jumpTo({ center: [...latest.current.siteCentre], zoom: 19 });
+			return;
+		}
 		// View padding/max zoom are display policy, never measurement precision.
 		if (view.bounds)
 			map.fitBounds([[...view.bounds[0]], [...view.bounds[1]]], {
@@ -121,62 +228,33 @@ export default function MapViewport({
 		else map.jumpTo({ center: [...view.centre], zoom: 17 });
 	}
 	useEffect(() => {
-		// This transient request never changes a persisted CMP category grant.
 		const stopExternal = () => {
 			releaseExternal.current?.();
 			setExternal(false);
 		};
-		const visibility = () => {
-			if (globalThis.document.visibilityState === "hidden") stopExternal();
-		};
-		const hidden = () => {
-			if (host.current?.closest("[hidden], [inert]")) stopExternal();
-		};
-		const observer = new MutationObserver(hidden);
-		for (
-			let parent = host.current?.parentElement;
-			parent;
-			parent = parent.parentElement
-		) {
-			observer.observe(parent, {
-				attributes: true,
-				attributeFilter: ["hidden", "inert"],
-			});
-			if (parent.hasAttribute("data-linker-planner")) break;
-		}
-		globalThis.document.addEventListener(
-			"cookieyes_consent_update",
-			stopExternal,
-		);
-		globalThis.document.addEventListener(
-			"wp_listen_for_consent_change",
-			stopExternal,
-		);
-		globalThis.document.addEventListener("visibilitychange", visibility);
 		window.addEventListener("pagehide", stopExternal);
 		return () => {
-			observer.disconnect();
-			globalThis.document.removeEventListener(
-				"cookieyes_consent_update",
-				stopExternal,
-			);
-			globalThis.document.removeEventListener(
-				"wp_listen_for_consent_change",
-				stopExternal,
-			);
-			globalThis.document.removeEventListener("visibilitychange", visibility);
 			window.removeEventListener("pagehide", stopExternal);
 		};
 	}, [projection.view !== null]);
 
-	const available = projection.view !== null;
+	// Without a design anchor the geometry cannot be projected, but the site's
+	// own position is enough to show the aerial mosaic and let the visitor draw:
+	// never infer north, and never present the mosaic as a survey frame.
+	const available = projection.view !== null || siteCentre !== null;
 	useEffect(() => {
 		if (!host.current || !available) return;
 		let disposed = false;
 		let initialized = false;
 		let map: MapLibreMap | null = null;
 		let resize: ResizeObserver | null = null;
-		const requests = new MapRequestScope(external);
+		// The mosaic's origins come from the server's answer, not from a style.
+		const requests = new MapRequestScope(
+			external,
+			aerialOriginsOf(latest.current.imagery),
+		);
+		requestsRef.current = requests;
+		imagerySignature.current = null;
 		setStatus("loading");
 		setResourceFailure(false);
 		setFailure(null);
@@ -206,14 +284,23 @@ export default function MapViewport({
 					},
 				],
 			};
-			const view = latest.current.projection.view!;
+			// A site without a design anchor still opens the map: the centre and
+			// the mosaic come from the declared position, the overlay stays empty.
+			const view = latest.current.projection.view ?? {
+				collection: { type: "FeatureCollection", features: [] },
+				bounds: null,
+				centre: [...(latest.current.siteCentre ?? [0, 0])],
+			};
 			const saved = camera.current;
+			const hasImagery = Boolean(
+				latest.current.imagery && latest.current.imagery.tiles.length > 0,
+			);
 			map = new MapLibreMap({
 				container: host.current,
-				style: external ? STREET_STYLE : ownStyle,
+				style: external && !hasImagery ? STREET_STYLE : ownStyle,
 				transformRequest: requests.transform,
 				center: saved?.centre ?? [...view.centre],
-				zoom: saved?.zoom ?? 17,
+				zoom: saved?.zoom ?? 19,
 				bearing: saved?.bearing ?? 0,
 				pitch: saved?.pitch ?? 0,
 				attributionControl: false,
@@ -250,9 +337,94 @@ export default function MapViewport({
 			current
 				.getCanvas()
 				.setAttribute("aria-label", __("Project map", "linker-tools"));
+			function updateSiteOutline() {
+				const shape = latest.current.siteOutline;
+				if (!shape || shape.ring.length < 3) {
+					if (current.getLayer(SITE_OUTLINE_LAYER))
+						current.removeLayer(SITE_OUTLINE_LAYER);
+					if (current.getSource(SITE_OUTLINE_SOURCE))
+						current.removeSource(SITE_OUTLINE_SOURCE);
+					return;
+				}
+				const ring = [...shape.ring];
+				const first = ring[0];
+				const last = ring[ring.length - 1];
+				if (first && last && (first[0] !== last[0] || first[1] !== last[1]))
+					ring.push(first);
+				const data = {
+					type: "FeatureCollection" as const,
+					features: [
+						{
+							type: "Feature" as const,
+							properties: {},
+							geometry: { type: "Polygon" as const, coordinates: [ring] },
+						},
+					],
+				};
+				if (current.getSource(SITE_OUTLINE_SOURCE)) {
+					(current.getSource(SITE_OUTLINE_SOURCE) as GeoJSONSource).setData(
+						data,
+					);
+					return;
+				}
+				current.addSource(SITE_OUTLINE_SOURCE, { type: "geojson", data });
+				current.addLayer(
+					{
+						id: SITE_OUTLINE_LAYER,
+						type: "line",
+						source: SITE_OUTLINE_SOURCE,
+						paint: {
+							"line-color": colours.selected,
+							"line-width": 2.5,
+							"line-dasharray": [2, 1.5],
+						},
+					},
+					siteOutlineBeforeLayer(current),
+				);
+			}
+			function updateImagery() {
+				const mosaic = latest.current.imagery;
+				requests.setAerialOrigins(aerialOriginsOf(mosaic));
+				if (!external || !mosaic || mosaic.tiles.length === 0) {
+					if (current.getLayer(IMAGERY_LAYER))
+						current.removeLayer(IMAGERY_LAYER);
+					if (current.getSource(IMAGERY_SOURCE))
+						current.removeSource(IMAGERY_SOURCE);
+					imagerySignature.current = null;
+					return;
+				}
+				const signature = imagerySignatureOf(mosaic);
+				if (current.getSource(IMAGERY_SOURCE)) {
+					if (imagerySignature.current === signature) return;
+					if (current.getLayer(IMAGERY_LAYER))
+						current.removeLayer(IMAGERY_LAYER);
+					current.removeSource(IMAGERY_SOURCE);
+				}
+				// Under the site outline and project geometry so both stay legible on top.
+				const before = imageryBeforeLayer(current);
+				current.addSource(IMAGERY_SOURCE, {
+					type: "raster",
+					tiles: [...mosaic.tiles],
+					tileSize: 256,
+					attribution: `${mosaic.credit} — ${mosaic.licence}`,
+				});
+				current.addLayer(
+					{
+						id: IMAGERY_LAYER,
+						type: "raster",
+						source: IMAGERY_SOURCE,
+						paint: { "raster-opacity": 1 },
+					},
+					before,
+				);
+				imagerySignature.current = signature;
+			}
 			function updateOverlay() {
-				if (disposed || !latest.current.projection.view) return;
-				const data = latest.current.projection.view.collection;
+				if (disposed) return;
+				const data = latest.current.projection.view?.collection ?? {
+					type: "FeatureCollection" as const,
+					features: [],
+				};
 				if (current.getSource(SOURCE))
 					(current.getSource(SOURCE) as GeoJSONSource).setData(data);
 				else {
@@ -268,7 +440,7 @@ export default function MapViewport({
 								"fill-opacity": [
 									"case",
 									["get", "included"],
-									kind === "roof" ? 0.65 : 0.85,
+									kind === "roof" ? 0.25 : 0.85,
 									0.2,
 								],
 								"fill-outline-color": colours[kind],
@@ -287,6 +459,8 @@ export default function MapViewport({
 			const ready = () => {
 				if (disposed) return;
 				try {
+					updateImagery();
+					updateSiteOutline();
 					updateOverlay();
 					if (!saved) fit(current);
 					initialized = true;
@@ -300,12 +474,16 @@ export default function MapViewport({
 			const pick = (event: MapMouseEvent) => {
 				if (
 					disposed ||
-					latest.current.disabled ||
+					(latest.current.disabled && !latest.current.placement) ||
 					latest.current.interaction ||
 					pickGate.current.blocked ||
 					!current.getSource(SOURCE)
 				)
 					return;
+				if (latest.current.placement) {
+					placeArray(current, [event.lngLat.lng, event.lngLat.lat]);
+					return;
+				}
 				const hit = current
 					.queryRenderedFeatures(event.point, { layers: LAYERS })
 					.find((feature) => typeof feature.properties?.object_id === "string");
@@ -346,6 +524,8 @@ export default function MapViewport({
 				heightMarker.current?.remove();
 				heightMarker.current = null;
 				requests.release();
+				if (requestsRef.current === requests) requestsRef.current = null;
+				imagerySignature.current = null;
 				resize?.disconnect();
 				if (initialized) {
 					const centre = current.getCenter();
@@ -376,6 +556,8 @@ export default function MapViewport({
 			setFailure(failureDiagnostic("initialization", error));
 			disposed = true;
 			requests.release();
+			if (requestsRef.current === requests) requestsRef.current = null;
+			imagerySignature.current = null;
 			resize?.disconnect();
 			map?.remove();
 			mapRef.current = null;
@@ -383,6 +565,94 @@ export default function MapViewport({
 			setStatus("failed");
 		}
 	}, [available, external, attempt, camera]);
+	// The place resolves after the map is ready, so the mosaic is added on its
+	// own rather than only at load. The same visitor consent gates it.
+	useEffect(() => {
+		const map = mapRef.current;
+		if (!map || map !== readyMap || status !== "ready") return;
+		requestsRef.current?.setAerialOrigins(aerialOriginsOf(imagery));
+		if (!external || !imagery || imagery.tiles.length === 0) {
+			if (map.getLayer(IMAGERY_LAYER)) map.removeLayer(IMAGERY_LAYER);
+			if (map.getSource(IMAGERY_SOURCE)) map.removeSource(IMAGERY_SOURCE);
+			imagerySignature.current = null;
+			return;
+		}
+		const signature = imagerySignatureOf(imagery);
+		if (map.getSource(IMAGERY_SOURCE)) {
+			if (imagerySignature.current === signature) return;
+			if (map.getLayer(IMAGERY_LAYER)) map.removeLayer(IMAGERY_LAYER);
+			map.removeSource(IMAGERY_SOURCE);
+		}
+		map.addSource(IMAGERY_SOURCE, {
+			type: "raster",
+			tiles: [...imagery.tiles],
+			tileSize: 256,
+			attribution: `${imagery.credit} — ${imagery.licence}`,
+		});
+		map.addLayer(
+			{
+				id: IMAGERY_LAYER,
+				type: "raster",
+				source: IMAGERY_SOURCE,
+				paint: { "raster-opacity": 1 },
+			},
+			imageryBeforeLayer(map),
+		);
+		imagerySignature.current = signature;
+		// `readyMap` changes identity whenever the visitor's consent rebuilds the
+		// map, so the mosaic is applied to the new instance even when the place
+		// answer arrived before the rebuild.
+	}, [external, imagery, readyMap, status]);
+	useEffect(() => {
+		// The outline arrives after the map is ready, like the mosaic.
+		const map = mapRef.current;
+		if (!map || map !== readyMap || status !== "ready") return;
+		const shape = siteOutline;
+		if (!shape || shape.ring.length < 3) {
+			if (map.getLayer(SITE_OUTLINE_LAYER)) map.removeLayer(SITE_OUTLINE_LAYER);
+			if (map.getSource(SITE_OUTLINE_SOURCE))
+				map.removeSource(SITE_OUTLINE_SOURCE);
+			return;
+		}
+		const ring = [...shape.ring];
+		const first = ring[0];
+		const last = ring[ring.length - 1];
+		if (first && last && (first[0] !== last[0] || first[1] !== last[1]))
+			ring.push(first);
+		const data = {
+			type: "FeatureCollection" as const,
+			features: [
+				{
+					type: "Feature" as const,
+					properties: {},
+					geometry: { type: "Polygon" as const, coordinates: [ring] },
+				},
+			],
+		};
+		if (map.getSource(SITE_OUTLINE_SOURCE)) {
+			(map.getSource(SITE_OUTLINE_SOURCE) as GeoJSONSource).setData(data);
+			return;
+		}
+		const lineColour = host.current
+			? getComputedStyle(host.current)
+					.getPropertyValue("--proto-teal-400")
+					.trim() || "#2dd4bf"
+			: "#2dd4bf";
+		map.addSource(SITE_OUTLINE_SOURCE, { type: "geojson", data });
+		map.addLayer(
+			{
+				id: SITE_OUTLINE_LAYER,
+				type: "line",
+				source: SITE_OUTLINE_SOURCE,
+				paint: {
+					"line-color": lineColour,
+					"line-width": 2.5,
+					"line-dasharray": [2, 1.5],
+				},
+			},
+			siteOutlineBeforeLayer(map),
+		);
+	}, [readyMap, status, siteOutline]);
 	useEffect(() => {
 		const map = mapRef.current,
 			value = latest.current.interaction;
@@ -481,9 +751,12 @@ export default function MapViewport({
 	]);
 	useEffect(() => {
 		const map = mapRef.current;
-		if (!map || !map.getSource(SOURCE) || !projection.view) return;
+		if (!map || !map.getSource(SOURCE)) return;
 		(map.getSource(SOURCE) as GeoJSONSource).setData(
-			projection.view.collection,
+			projection.view?.collection ?? {
+				type: "FeatureCollection",
+				features: [],
+			},
 		);
 		map.setFilter(SELECTED, ["==", ["get", "object_id"], selected ?? ""]);
 	}, [projection]);
@@ -523,26 +796,60 @@ export default function MapViewport({
 			aria-labelledby={label}
 			data-map-status={status}
 			data-map-failure={failure}
+			data-array-placement={placement ? true : undefined}
 		>
 			<div className="lp-map-heading">
 				<h3 id={label}>{__("Project map", "linker-tools")}</h3>
 				<span className="lp-eyebrow">
 					{external
-						? __("Street map", "linker-tools")
+						? imagery
+							? __("Aerial imagery", "linker-tools")
+							: __("Street map", "linker-tools")
 						: __("Project geometry", "linker-tools")}
 				</span>
 			</div>
-			<p className="lp-profile-help">
-				{__(
-					"The map, plan and 3D views use the same project geometry. Panning and zooming change the view. Boundary edits update the project when you apply them.",
-					"linker-tools",
-				)}
-			</p>
 			<div
 				className="lp-map-toolbar"
 				role="group"
 				aria-label={__("Map controls", "linker-tools")}
 			>
+				{placement && (
+					<>
+						<p className="lp-profile-help">
+							{__(
+								"Click inside the roof to position the panels.",
+								"linker-tools",
+							)}
+						</p>
+						<button
+							type="button"
+							className="lp-button"
+							disabled={status !== "ready"}
+							onClick={() => {
+								const map = mapRef.current;
+								if (map) {
+									const centre = map.getCenter();
+									placeArray(map, [centre.lng, centre.lat]);
+								}
+							}}
+						>
+							{__("Place panels at map centre", "linker-tools")}
+						</button>
+						<button
+							type="button"
+							className="lp-button lp-button-secondary"
+							onClick={() =>
+								revealActionResult(
+									globalThis.document.querySelector<HTMLElement>(
+										"#lp-array-properties input, #lp-array-properties select",
+									),
+								)
+							}
+						>
+							{__("Review panel layout", "linker-tools")}
+						</button>
+					</>
+				)}
 				<button
 					type="button"
 					className="lp-button lp-button-secondary"
@@ -624,10 +931,12 @@ export default function MapViewport({
 			)}
 			<div className="lp-map-provider">
 				<p className="lp-profile-help">
-					{__(
-						"Loading the street map sends your IP address and the area shown to OpenFreeMap and its delivery network. The street map is for orientation.",
-						"linker-tools",
-					)}
+					{imagery
+						? `${imagery.credit} — ${imagery.licence}`
+						: __(
+								"Loading the street map sends your IP address and the area shown to OpenFreeMap and its delivery network. The street map is for orientation.",
+								"linker-tools",
+							)}
 				</p>
 				<div className="lp-inline-actions">
 					<button
@@ -639,16 +948,34 @@ export default function MapViewport({
 						}}
 					>
 						{external
-							? __("Hide street map", "linker-tools")
-							: __("Load street map", "linker-tools")}
+							? __("Hide aerial map", "linker-tools")
+							: __("Show aerial map", "linker-tools")}
 					</button>
-					<a
-						href="https://openfreemap.org/privacy/"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						{__("OpenFreeMap privacy policy", "linker-tools")}
-					</a>
+					{imagery ? (
+						<a
+							href={imagery.licence_url}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							{__("Map attribution", "linker-tools")}
+						</a>
+					) : (
+						<a
+							href="https://openfreemap.org/privacy/"
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							{__("OpenFreeMap privacy policy", "linker-tools")}
+						</a>
+					)}
+					{!imagery && (
+						<p className="lp-profile-help">
+							{__(
+								"Aerial imagery is not available. You can upload a roof plan or retry loading the map.",
+								"linker-tools",
+							)}
+						</p>
+					)}
 				</div>
 			</div>
 		</section>

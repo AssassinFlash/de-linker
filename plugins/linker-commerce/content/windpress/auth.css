@@ -916,7 +916,6 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	justify-self: start;
 	min-height: var(--proto-control-height);
 	padding: var(--proto-space-2) var(--proto-space-5);
 	border: 1px solid var(--proto-pill-a-line);
@@ -927,6 +926,8 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 	font-weight: var(--proto-weight-semibold);
 	text-decoration: none;
 }
+#contact-form .linker-contact-form .linker-form-primary { justify-self: start; }
+.linker-inquiry-success .linker-form-primary,
 #tv-woo-b2b-checkout .linker-inquiry-success .linker-form-primary { color: var(--proto-pill-a-fg); justify-self: center; }
 #contact-form .linker-contact-form :where(a, button, input, textarea):focus-visible,
 .linker-inquiry-success a:focus-visible {

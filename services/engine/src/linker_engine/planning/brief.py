@@ -23,6 +23,7 @@ type Country = Annotated[str, Field(pattern=r"^[A-Z]{2}$")]
 class SiteBrief(Document):
     country_code: Country | None
     location_label: Text
+    postal_code: Text | None = None
     latitude: Annotated[float, Field(ge=-90, le=90, allow_inf_nan=False)] | None
     longitude: Annotated[float, Field(ge=-180, le=180, allow_inf_nan=False)] | None
     coordinate_basis: Literal["user_entered", "not_provided"]

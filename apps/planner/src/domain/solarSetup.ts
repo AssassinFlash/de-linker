@@ -52,6 +52,15 @@ export interface ModuleDraft extends JsonObject {
 /** PVGIS v5_3 TMY answers HTTP 400 for a shorter selection span; the floor is
  * the provider's (see the engine's pvgis_tmy_request.py). */
 export const MINIMUM_TMY_YEARS = 10;
+/**
+ * PVGIS-SARAH3's own record, from the official PVGIS 5.3 user manual
+ * (docs/research/2026-10-23-pv-inputs/raw/official-user-manual.md §3): start
+ * 2005, end 2023, "default DB for Europe". The one-screen start asks for the
+ * whole of that record rather than a narrower span a visitor would have no
+ * basis to choose.
+ */
+export const WEATHER_START_YEAR = 2005;
+export const WEATHER_END_YEAR = 2023;
 export const ARRAY_FACTORS = [
 	"albedo",
 	"beam_iam_b",
@@ -439,4 +448,73 @@ export function checkPvWeather(inputs: JsonObject): void {
 		)
 			throw new ApiError(422, "pv_weather_location_mismatch");
 	}
+}
+
+/**
+ * The weather request a resolved place can already answer.
+ *
+ * The one-screen start knows the site's coordinates from the postcode lookup
+ * and nothing else. PVGIS' typical-year endpoint needs only a latitude, a
+ * longitude and a selection span, so those inputs are enough to ask for a
+ * typical year — no roof geometry is involved. Measured 2026-11-15: the
+ * screen refused this step for every country, Germany included, on the
+ * grounds that a typed location is not a coordinate; that stopped being true
+ * when the lookup started returning one.
+ *
+ * The span and the databases are fixed rather than asked for: a visitor on the
+ * one-screen start has no view on which radiation database covers their site,
+ * and the provider echoes back what it actually used, which the run records.
+ * The synthetic year is the span's last year and must not be a leap year,
+ * because the returned series is a non-leap hourly axis.
+ *
+ * @param latitude Degrees north, from the resolved place.
+ * @param longitude Degrees east, from the resolved place.
+ * @returns A draft the weather step can compile and send, or null when the
+ * place is outside the span the provider serves.
+ */
+export function weatherFromPlace(
+	latitude: number,
+	longitude: number,
+): WeatherDraft | null {
+	// PVGIS' TMY service covers Europe, Africa and part of Asia; the site sells
+	// into Europe, and the country list already bounds the visitor. The guard
+	// here is the provider's own coordinate domain, not a market decision.
+	if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
+	if (latitude < -90 || latitude > 90) return null;
+	if (longitude < -180 || longitude > 180) return null;
+	// PVGIS' SARAH3 record starts in 2005 and its ERA5 fallback later; a span
+	// that reaches back further is answered with a different database than the
+	// one requested, so it is not offered.
+	const start = WEATHER_START_YEAR;
+	const end = WEATHER_END_YEAR;
+	if (end - start + 1 < MINIMUM_TMY_YEARS) return null;
+	const synthetic =
+		end % 4 === 0 && (end % 100 !== 0 || end % 400 === 0) ? end - 1 : end;
+	return {
+		schema_version: 1,
+		request: {
+			schema_version: 1,
+			api_version: "5.3",
+			latitude_deg: latitude,
+			longitude_deg: longitude,
+			start_year: start,
+			end_year: end,
+			use_terrain_horizon: false,
+			radiation_database_policy: "provider_default_with_verified_echo",
+			// SARAH3 covers Europe and is what PVGIS serves for a European site;
+			// the run records the echo, so a different answer is visible rather
+			// than silently accepted.
+			expected_radiation_database: "PVGIS-SARAH3",
+			expected_meteo_database: "ERA5",
+		},
+		interpretation: {
+			schema_version: 1,
+			synthetic_energy_year: synthetic,
+			solar_date_policy:
+				"original_selected_year_plus_reported_irradiance_offset",
+			output_axis_policy: "nonleap_synthetic_utc_hourly_scenario_v1",
+			power_reconstruction:
+				"representative_pv_output_over_declared_intervals_v1",
+		},
+	};
 }

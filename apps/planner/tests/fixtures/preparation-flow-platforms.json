@@ -6,7 +6,7 @@
 			"fixture": "preparation-flow-darwin-arm64.json",
 			"source_sha256": "406c42fa08d658359c81a2a31fa9d1814f1c093d96efec900e0d66b633929bb8",
 			"runtime_sha256": "8288daae9877e72b9b516e2d387c692a4841e43f001abff280d51daaa509dd2e",
-			"canonical_sorted_json_sha256": "df668d8a4b22d853c10c1c34fc9f62d13f7f48becd51b3eb081edda1554205f2",
+			"canonical_sorted_json_sha256": "c9e12c70104c524bdd9dcbb9b4db488d48d10223e3fcac981580098871644f75",
 			"runtime": {
 				"dependencies": {
 					"jsonschema": "4.26.0",
@@ -35,7 +35,7 @@
 			"fixture": "preparation-flow-linux-x86_64.json",
 			"source_sha256": "406c42fa08d658359c81a2a31fa9d1814f1c093d96efec900e0d66b633929bb8",
 			"runtime_sha256": "bbe8fc09a1ad56e84f5295197c181d1c03dc14ecf14793bb34c0333f5c44d86c",
-			"canonical_sorted_json_sha256": "e2b3856c93f81df2ce1333916ac182b3fad148e571d7cca52105ad49596934d7",
+			"canonical_sorted_json_sha256": "664ce3556b7af0db4237362b35778a7a2a12f7709407261723a82369f8e4e239",
 			"runtime": {
 				"dependencies": {
 					"jsonschema": "4.26.0",

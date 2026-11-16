@@ -1,8 +1,18 @@
-import { useCallback, useEffect, useId, useMemo, useState } from "react";
+import {
+	lazy,
+	Suspense,
+	useCallback,
+	useEffect,
+	useId,
+	useMemo,
+	useState,
+} from "react";
 import type { Brief } from "../domain/brief.ts";
 import type { Configuration } from "../data/config.ts";
 import { __ } from "../i18n.ts";
 import { NumberField } from "./NumberField.tsx";
+
+const LazyGoogle3DMap = lazy(() => import("./design/Google3DMap.tsx"));
 
 export function BriefForm({
 	brief,
@@ -175,6 +185,7 @@ export function BriefForm({
 									site: {
 										...brief.site,
 										country_code: event.currentTarget.value || null,
+										postal_code: null,
 									},
 								})
 							}
@@ -199,6 +210,7 @@ export function BriefForm({
 									site: {
 										...brief.site,
 										location_label: event.currentTarget.value,
+										postal_code: null,
 									},
 								})
 							}
@@ -284,6 +296,25 @@ export function BriefForm({
 						</small>
 					</label>
 				</div>
+				{config.googleMapsApiKey &&
+					brief.site.latitude !== null &&
+					brief.site.longitude !== null && (
+						<div className="lp-quickstart-map">
+							<Suspense
+								fallback={
+									<p role="status">
+										{__("Loading 3D satellite imagery…", "linker-tools")}
+									</p>
+								}
+							>
+								<LazyGoogle3DMap
+									compact
+									apiKey={config.googleMapsApiKey}
+									center={[brief.site.longitude, brief.site.latitude]}
+								/>
+							</Suspense>
+						</div>
+					)}
 			</section>
 			<section
 				className="lp-section"

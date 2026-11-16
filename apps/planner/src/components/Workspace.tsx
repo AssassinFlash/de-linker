@@ -34,9 +34,7 @@ import { savedSolutionId } from "../domain/savedSolution.ts";
 // project list the visitor lands on does not wait for it. Measured
 // 2026-11-14: the initial chunk was 1,447,770 bytes and the editor's own
 // subtree is over 3,900 lines of components.
-const ProjectEditor = lazy(async () => ({
-	default: (await import("./ProjectEditor.tsx")).ProjectEditor,
-}));
+const ProjectEditor = lazy(() => import("./ProjectEditor.tsx"));
 import { Notice } from "./Notice.tsx";
 import { ENTRY_QUERY_KEYS, readEntryHints } from "../domain/entryHints.ts";
 import { readObject, wire } from "../data/readProtocol.ts";
@@ -89,13 +87,8 @@ export function Workspace({
 	const [entryHints, setEntryHints] = useState(() =>
 		readEntryHints(new URL(location.href).searchParams),
 	);
-	// The one-screen start is the default surface while the account has no
-	// project to reopen; the project list stays one click away.
+	// Equipment sizing remains available as an explicit alternative to drawing.
 	const [quickStart, setQuickStart] = useState(false);
-	// Opening a project must not swap the surface that owns a running start.
-	// The start stays mounted at this fixed position; only the first empty
-	// index opens it, so closing it keeps the list.
-	const quickStartOpened = useRef(false);
 	const cache = useQueryClient();
 	const recovery = useQuery({
 		queryKey: [session.query_scope, "recovery-scopes", session.claim_pending],
@@ -199,13 +192,6 @@ export function Workspace({
 			},
 		);
 	}, [index.data]);
-	// The start is the default surface for an account with nothing to reopen.
-	// It opens once: a visitor who closes it keeps the project list.
-	useEffect(() => {
-		if (quickStartOpened.current || index.isPending || index.isError) return;
-		quickStartOpened.current = true;
-		if (!projects.length) setQuickStart(true);
-	}, [index.isPending, index.isError, projects.length]);
 	function quickStarted(project: Project): boolean {
 		if (!client.isCurrentScope(session.query_scope)) return false;
 		cache.setQueryData(
@@ -461,6 +447,8 @@ export function Workspace({
 							)}
 						</p>
 					</div>
+				</header>
+				<div className="lp-workspace-start" hidden={quickStart}>
 					{savedSource !== null ? (
 						<SavedSolutionStart
 							solutionId={savedSource}
@@ -502,6 +490,8 @@ export function Workspace({
 						/>
 					) : (
 						<NewProject
+							roofStart={config}
+							openOnLoad={index.isSuccess && !projects.length}
 							entryHints={entryHints}
 							locale={config.locale}
 							session={session}
@@ -514,7 +504,7 @@ export function Workspace({
 							recoveryDiscoveryFailed={recovery.isError}
 						/>
 					)}
-				</header>
+				</div>
 				{recovery.isError && (
 					<Notice error>
 						<p>
@@ -547,7 +537,9 @@ export function Workspace({
 						config={config}
 						recheck={recheck}
 						created={quickStarted}
-						openWorkbench={(projectId) => select(projectId)}
+						openWorkbench={(projectId, destination) =>
+							select(projectId, destination === "design" ? "lp-design" : "")
+						}
 						close={() => setQuickStart(false)}
 					/>
 				) : null}
@@ -560,9 +552,11 @@ export function Workspace({
 						<h2 id="lp-projects-heading">
 							{__("Saved projects", "linker-tools")}
 						</h2>
-						<button className="lp-button" onClick={() => setQuickStart(true)}>
-							<Icon name="plus" />
-							{__("Start a solution", "linker-tools")}
+						<button
+							className="lp-text-button"
+							onClick={() => setQuickStart(true)}
+						>
+							{__("Start with equipment", "linker-tools")}
 						</button>
 						<button
 							className="lp-icon-button"

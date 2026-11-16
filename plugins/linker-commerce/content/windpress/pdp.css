@@ -24,7 +24,7 @@
 	   `.pdp-dot.is-wait` (rgb(249,115,22), docs/design/2026-10-11-replication-spec.md
 	   §2); the redesign's in-stock dot is the accepted prototype's accent. */
 	--pdp-wait: #f97316;
-	--pdp-font: "Plus Jakarta Sans", Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+	--pdp-font: "Plus Jakarta Sans", "Plus Jakarta Sans Fallback", system-ui, -apple-system, "Segoe UI", sans-serif;
 	/* One container rule for the whole page (the four former insets collapse
 	   into this pair). */
 	--pdp-container: 1360px;

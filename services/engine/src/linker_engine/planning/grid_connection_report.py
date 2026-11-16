@@ -7,7 +7,13 @@ from typing import cast
 from linker_engine.models import ReportRow, ReportSection
 
 from .canonical import Json, Object
-from .report_copy import text
+from .grid_connection import BUNDLED_RULE_COUNTRIES, bundled_country_sources
+from .report_copy import (
+    country_display,
+    country_gap_paragraph,
+    country_gap_summary,
+    text,
+)
 
 
 def _rule_review(value: Json) -> Object | None:
@@ -372,50 +378,148 @@ def grid_connection_sections(value: Json, locale: str) -> list[ReportSection]:
         ],
         paragraphs=[text("grid_declaration_basis", locale)],
     )
+
+    def _source_row(source: Object) -> ReportRow:
+        return ReportRow(
+            label=str(source["title"]),
+            value=" · ".join(
+                str(item)
+                for item in (
+                    source.get("edition"),
+                    source["clause"],
+                    f"{text('grid_source_read', locale)} {source['evidence_snapshot_date']}",
+                    source["source_url"],
+                    source.get("raw_sha256") or source.get("text_sha256"),
+                )
+                if item
+            ),
+        )
+
+    country_raw = value.get("country_code")
+    country_code = (
+        country_raw.upper() if isinstance(country_raw, str) and country_raw else None
+    )
+    is_bundled = country_code in BUNDLED_RULE_COUNTRIES
+    review = _rule_review(value)
     missing = cast(list[str], value["missing_inputs"])
+    missing_items = [text(f"grid_missing_{key}", locale) for key in missing]
+
+    if country_code in BUNDLED_RULE_COUNTRIES:
+        assert country_code is not None
+        scope_paragraph = text(f"grid_bundled_scope_{country_code}", locale)
+    else:
+        scope_paragraph = country_gap_paragraph(country_code, locale)
+
+    evidence_rows: list[ReportRow] = [
+        ReportRow(
+            label=text("grid_to_supply", locale),
+            value=", ".join(missing_items) or text("grid_all_entered", locale),
+        ),
+        ReportRow(
+            label=text("grid_territory_tab", locale),
+            value=text("grid_unverified", locale),
+        ),
+        ReportRow(
+            label=text("grid_permission", locale),
+            value=text("grid_no_permission", locale),
+        ),
+        ReportRow(
+            label=text("country", locale),
+            value=country_display(country_code, locale),
+        ),
+        ReportRow(
+            label=text("grid_rule_pack_status", locale),
+            value=country_gap_summary(country_code, locale),
+        ),
+    ]
     checks = ReportSection(
         id="grid-connection-evidence",
         title=text("grid_evidence", locale),
-        paragraphs=[
-            text(
-                "grid_de_scope"
-                if value.get("country_code") == "DE"
-                else "grid_no_rule",
-                locale,
-            )
-        ],
-        rows=[
-            ReportRow(
-                label=text("grid_to_supply", locale),
-                value=", ".join(text(f"grid_missing_{key}", locale) for key in missing)
-                or text("grid_all_entered", locale),
-            ),
-            ReportRow(
-                label=text("grid_territory_tab", locale),
-                value=text("grid_unverified", locale),
-            ),
-            ReportRow(
-                label=text("grid_permission", locale),
-                value=text("grid_no_permission", locale),
-            ),
-        ],
+        paragraphs=[scope_paragraph],
+        rows=evidence_rows,
     )
-    for source in cast(list[Object], value["rule_sources"]):
-        checks.rows.append(
-            ReportRow(
-                label=str(source["title"]),
-                value=" · ".join(
-                    str(item)
-                    for item in (
-                        source.get("edition"),
-                        source["clause"],
-                        f"{text('grid_source_read', locale)} {source['evidence_snapshot_date']}",
-                        source["source_url"],
-                        source.get("raw_sha256"),
-                    )
-                    if item
-                ),
-            )
-        )
-    review = _rule_review(value)
+    recorded_sources = cast(list[Object], value["rule_sources"])
+    recorded_ids = {str(source["id"]) for source in recorded_sources}
+    for source in recorded_sources:
+        checks.rows.append(_source_row(source))
+    if is_bundled and review is None:
+        for source in bundled_country_sources(country_code):
+            if str(source["id"]) not in recorded_ids:
+                checks.rows.append(_source_row(source))
     return [declarations, checks] + (_rule_sections(review, locale) if review else [])
+
+
+def unfilled_grid_connection_sections(
+    country_code: Json, locale: str
+) -> list[ReportSection]:
+    code = (
+        country_code.upper() if isinstance(country_code, str) and country_code else None
+    )
+    is_bundled = code in BUNDLED_RULE_COUNTRIES
+    if is_bundled:
+        assert code is not None
+        paragraph = text(f"grid_bundled_unfilled_{code}", locale)
+    else:
+        paragraph = country_gap_paragraph(code, locale)
+
+    missing_keys = [
+        "dso_name",
+        "dso_source_url",
+        "voltage_level",
+        "tab.source_url",
+        "tab.edition_or_date",
+    ]
+    if code is None:
+        missing_keys.insert(0, "country_code")
+    missing_items = [text(f"grid_missing_{key}", locale) for key in missing_keys]
+    if is_bundled:
+        missing_items.append(text("grid_missing_country_rule_inputs", locale))
+
+    rows: list[ReportRow] = [
+        ReportRow(
+            label=text("country", locale),
+            value=country_display(code, locale),
+        ),
+        ReportRow(
+            label=text("grid_rule_pack_status", locale),
+            value=country_gap_summary(code, locale),
+        ),
+        ReportRow(
+            label=text("grid_to_supply", locale),
+            value=", ".join(missing_items),
+        ),
+        ReportRow(
+            label=text("grid_territory_tab", locale),
+            value=text("grid_unverified", locale),
+        ),
+        ReportRow(
+            label=text("grid_permission", locale),
+            value=text("grid_no_permission", locale),
+        ),
+    ]
+    if is_bundled:
+        for source in bundled_country_sources(code):
+            rows.append(
+                ReportRow(
+                    label=str(source["title"]),
+                    value=" · ".join(
+                        str(item)
+                        for item in (
+                            source.get("edition"),
+                            source["clause"],
+                            f"{text('grid_source_read', locale)} {source['evidence_snapshot_date']}",
+                            source["source_url"],
+                            source.get("raw_sha256") or source.get("text_sha256"),
+                        )
+                        if item
+                    ),
+                )
+            )
+    return [
+        ReportSection(
+            id="grid-connection-evidence",
+            title=text("grid_evidence", locale),
+            paragraphs=[paragraph],
+            rows=rows,
+        )
+    ]

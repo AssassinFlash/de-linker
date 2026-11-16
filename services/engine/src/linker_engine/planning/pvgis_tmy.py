@@ -134,6 +134,10 @@ def tmy_weather(
     if not isinstance(rows, list) or len(rows) != count or len(rows) > max_rows:
         raise InvalidInput("complete TMY hourly axis required within resource limits")
     points = []
+    # Rows whose provider wind speed was below zero; the stored value is
+    # clamped, and the count travels with the result so the substitution is
+    # visible rather than silent.
+    clamped_wind = 0
     for index, row in enumerate(rows):
         if not isinstance(row, dict):
             raise InvalidInput("TMY hourly row must be an object")
@@ -153,15 +157,26 @@ def tmy_weather(
             field: number(row, field)
             for field in ("G(h)", "Gb(n)", "Gd(h)", "T2m", "WS10m", "SP")
         }
-        for field in ("G(h)", "Gb(n)", "Gd(h)", "WS10m"):
+        # Irradiance below zero is a physical contradiction: reject the source.
+        # Wind speed below zero is not — measured 2026-11-15, PVGIS returns four
+        # such rows for Athens (-0.09 to -0.74 m/s) and none for Berlin, London,
+        # Lisbon or the Canaries, so a whole typical year would be refused for
+        # Greece alone. Nothing downstream reads the wind: it is carried in the
+        # retained source and the report, and the yield calculation takes only
+        # irradiance and air temperature. The value is clamped at zero and the
+        # count is recorded, so the substitution stays visible.
+        for field in ("G(h)", "Gb(n)", "Gd(h)"):
             if values[field] < 0:
                 raise WeatherSourceQualityInvalid(
-                    "negative_wind" if field == "WS10m" else "negative_irradiance",
+                    "negative_irradiance",
                     cast(SourceQualityField, field),
                     index,
                     source.isoformat(),
                     values[field],
                 )
+        if values["WS10m"] < 0:
+            values["WS10m"] = 0.0
+            clamped_wind += 1
         points.append(
             WeatherPoint(
                 Interval(target, target + timedelta(hours=1)),
@@ -199,6 +214,10 @@ def tmy_weather(
         else "era5_hourly_mean",
         "radiation_database": request.expected_radiation_database,
         "meteo_database": request.expected_meteo_database,
+        # A provider wind speed below zero is clamped to zero before storage.
+        # Nothing downstream reads the wind, but the substitution is stated so
+        # a reader can see it happened rather than infer a clean source.
+        "wind_speed_clamped_rows": clamped_wind,
         "ac_interval_energy_preservation_claim": False,
     }
     return WeatherSeries(

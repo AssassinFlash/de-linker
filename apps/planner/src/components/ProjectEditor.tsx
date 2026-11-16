@@ -8,8 +8,10 @@ import {
 	readGridConnection,
 	replaceGridConnection,
 } from "../domain/gridConnection.ts";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Configuration } from "../data/config.ts";
+import { readPlaceImagery } from "../domain/place.ts";
+import type { PlaceImagery } from "../domain/place.ts";
 import type { PlannerClient } from "../data/PlannerClient.ts";
 import type { DraftStore } from "../data/DraftStore.ts";
 import type { JsonObject, Project, Session } from "../data/protocol.ts";
@@ -82,7 +84,7 @@ const mapPropertyHashes: readonly string[] = [
 	"#lp-map-ring-properties",
 	"#lp-map-feature-properties",
 ];
-function workspaceFromHash(): ProjectWorkspace {
+export function workspaceFromHash(inputs: JsonObject): ProjectWorkspace {
 	if (window.location.hash === "#lp-installation") return "installation";
 	if (window.location.hash === "#lp-equipment") return "equipment";
 	if (
@@ -97,13 +99,39 @@ function workspaceFromHash(): ProjectWorkspace {
 		return "site";
 	if (["#lp-load", "#lp-profiles"].includes(window.location.hash))
 		return "energy";
-	return window.location.hash === "#lp-design" ||
+	if (
+		window.location.hash === "#lp-design" ||
 		(!window.location.hash &&
 			new URL(window.location.href).searchParams.getAll("step").length === 1 &&
 			new URL(window.location.href).searchParams.get("step") === "roof") ||
 		mapPropertyHashes.includes(window.location.hash)
-		? "design"
-		: "overview";
+	)
+		return "design";
+	// Site-only roof starts and their saved geometry reopen at the drawing.
+	// Established energy/equipment projects keep their existing overview entry.
+	if (
+		!window.location.hash &&
+		Object.keys(inputs).every((key) =>
+			["brief", "geometry", "geometry_imports"].includes(key),
+		) &&
+		inputs.brief !== undefined
+	) {
+		try {
+			const brief = readBrief(inputs.brief);
+			if (
+				brief.site.country_code &&
+				brief.site.latitude !== null &&
+				brief.site.longitude !== null &&
+				brief.project_use === null &&
+				brief.system_scope === null &&
+				brief.annual_load.kwh === null
+			)
+				return "design";
+		} catch {
+			// The editor reports unsupported input formats in its existing notice.
+		}
+	}
+	return "overview";
 }
 
 export function ProjectEditor({
@@ -143,6 +171,152 @@ export function ProjectEditor({
 		recoveries,
 		restore,
 	} = useProjectDraft(project, session, client, store, recheck);
+	// Map imagery is independent of postcode geocoding. A selected full address
+	// already has its exact centre stored in the brief.
+	const [siteImagery, setSiteImagery] = useState<PlaceImagery | null>(null);
+	const [siteImageryFailed, setSiteImageryFailed] = useState(false);
+	const [siteImageryAttempt, setSiteImageryAttempt] = useState(0);
+	// The mapped building at the declared site, with official 3D roof planes
+	// where published (DE/NL/CH/LI) or 2D outline elsewhere.
+	const [siteOutline, setSiteOutline] = useState<{
+		ring: [number, number][];
+		source: string;
+		licence: string;
+		planes?: {
+			id: number;
+			polygon: [number, number][];
+			tilt_deg: number;
+			azimuth_deg: number;
+			area_m2: number;
+		}[];
+	} | null>(null);
+	const mapSite = useMemo(() => {
+		try {
+			const stored = draft?.history.current.brief;
+			const value = stored === undefined ? emptyBrief() : readBrief(stored);
+			return {
+				label: value.site.location_label.trim(),
+				postcode: value.site.postal_code,
+				country: value.site.country_code,
+				latitude: value.site.latitude,
+				longitude: value.site.longitude,
+			};
+		} catch {
+			return null;
+		}
+	}, [draft?.history.current.brief]);
+	useEffect(() => {
+		const label = mapSite?.label;
+		const country = mapSite?.country;
+		setSiteImagery(null);
+		setSiteImageryFailed(false);
+		setSiteOutline(null);
+		if (!label || !client.isCurrentScope(session.query_scope)) {
+			return;
+		}
+		let live = true;
+		void (async () => {
+			try {
+				const answer = await client.query(
+					"places/lookup",
+					{
+						schema_version: 1,
+						query: mapSite?.postcode || label,
+						...(country ? { country } : {}),
+					},
+					session.query_scope,
+				);
+				if (!live) return;
+				const reply = readObject(answer);
+				setSiteImagery(readPlaceImagery(reply.imagery));
+				const latitude = mapSite?.latitude ?? reply.latitude;
+				const longitude = mapSite?.longitude ?? reply.longitude;
+				const replyCountry = country ?? reply.country_code;
+				if (
+					typeof latitude !== "number" ||
+					typeof longitude !== "number" ||
+					typeof replyCountry !== "string"
+				) {
+					setSiteOutline(null);
+					return;
+				}
+				try {
+					const found = readObject(
+						await client.query(
+							"places/outline",
+							{
+								schema_version: 1,
+								query: label,
+								country: replyCountry,
+								latitude,
+								longitude,
+							},
+							session.query_scope,
+						),
+					);
+					if (!live) return;
+					const ring = Array.isArray(found.outline)
+						? (found.outline as [number, number][])
+						: [];
+					const planes = Array.isArray(found.planes)
+						? found.planes.filter(
+								(
+									plane,
+								): plane is {
+									id: number;
+									polygon: [number, number][];
+									tilt_deg: number;
+									azimuth_deg: number;
+									area_m2: number;
+								} =>
+									typeof plane === "object" &&
+									plane !== null &&
+									typeof plane.id === "number" &&
+									Array.isArray(plane.polygon) &&
+									plane.polygon.length >= 3 &&
+									typeof plane.tilt_deg === "number" &&
+									typeof plane.azimuth_deg === "number" &&
+									typeof plane.area_m2 === "number",
+							)
+						: [];
+					setSiteOutline(
+						found.found === true &&
+							ring.length >= 3 &&
+							typeof found.source === "string" &&
+							typeof found.licence === "string"
+							? {
+									ring,
+									source: found.source,
+									licence: found.licence,
+									...(planes.length > 0 ? { planes } : {}),
+								}
+							: null,
+					);
+				} catch {
+					if (live) setSiteOutline(null);
+				}
+			} catch {
+				// A missing mosaic never blocks the design step.
+				if (live) {
+					setSiteImagery(null);
+					setSiteImageryFailed(true);
+				}
+			}
+		})();
+		return () => {
+			live = false;
+		};
+	}, [
+		mapSite?.label,
+		mapSite?.postcode,
+		mapSite?.country,
+		mapSite?.latitude,
+		mapSite?.longitude,
+		siteImageryAttempt,
+		client,
+		session.query_scope,
+	]);
+
 	const [gridValid, setGridValid] = useState(true);
 	const [ruleValid, setRuleValid] = useState(true);
 	const [briefValid, setBriefValid] = useState(true);
@@ -156,10 +330,11 @@ export function ProjectEditor({
 		designValid &&
 		energyValid &&
 		installationValid;
-	const [workspace, setWorkspace] =
-		useState<ProjectWorkspace>(workspaceFromHash);
+	const [workspace, setWorkspace] = useState<ProjectWorkspace>(() =>
+		workspaceFromHash(project.inputs),
+	);
 	const [calculationsOpened, setCalculationsOpened] = useState(() =>
-		["calculations", "equipment"].includes(workspaceFromHash()),
+		["calculations", "equipment"].includes(workspace),
 	);
 	// A saved project can still be re-planned from the one-screen start; the
 	// full workbench stays open underneath and keeps every saved input.
@@ -901,10 +1076,34 @@ export function ProjectEditor({
 							/>
 						</section>
 						<div className="lp-design-panel" hidden={workspace !== "design"}>
+							{siteImageryFailed && (
+								<Notice error>
+									<p>
+										{__(
+											"Aerial imagery is not available. You can upload a roof plan or retry loading the map.",
+											"linker-tools",
+										)}
+									</p>
+									<button
+										type="button"
+										className="lp-button lp-button-secondary"
+										onClick={() => setSiteImageryAttempt((value) => value + 1)}
+									>
+										{__("Try again", "linker-tools")}
+									</button>
+								</Notice>
+							)}
 							<DesignEditor
 								initialMapView={mapPropertyHashes.includes(
 									window.location.hash,
 								)}
+								imagery={siteImagery}
+								siteOutline={siteOutline}
+								siteCentre={
+									brief.site.latitude !== null && brief.site.longitude !== null
+										? [brief.site.longitude, brief.site.latitude]
+										: null
+								}
 								geometry={geometry}
 								confirmedGeometry={
 									draft.baseline.inputs.geometry === undefined
@@ -924,6 +1123,7 @@ export function ProjectEditor({
 								recoveryChecking={recoveryChecking}
 								sceneModuleUrl={config.sceneModuleUrl ?? null}
 								mapModuleUrl={config.mapModuleUrl ?? null}
+								googleMapsApiKey={config.googleMapsApiKey ?? null}
 								commit={editGeometry}
 								locale={config.locale}
 								projectId={project.id}
@@ -1010,3 +1210,5 @@ export function ProjectEditor({
 		</div>
 	);
 }
+
+export default ProjectEditor;

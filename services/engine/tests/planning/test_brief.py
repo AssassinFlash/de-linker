@@ -35,12 +35,38 @@ def incomplete_brief() -> FixtureObject:
 
 def test_partial_brief_keeps_missing_information_as_null() -> None:
     brief = incomplete_brief()
-    assert PlanningBrief.model_validate(brief).model_dump(mode="json") == brief
+    parsed = PlanningBrief.model_validate(brief)
+    assert parsed.site.postal_code is None
+    assert parsed.model_dump(mode="json", exclude_unset=True) == brief
     assert ProjectCreate.model_validate(
         {
             "schema_version": 1,
             "title": "Incomplete project",
             "key": "fixture",
+            "inputs": {"brief": brief},
+        }
+    ).inputs == {"brief": brief}
+
+
+def test_optional_postal_code_is_preserved_without_changing_the_site_position() -> None:
+    brief = incomplete_brief()
+    site = dict(brief["site"])
+    site.update(
+        country_code="DE",
+        postal_code="80333",
+        location_label="Karlstraße 1, 80333 München, Germany",
+        latitude=48.145,
+        longitude=11.566,
+        coordinate_basis="user_entered",
+    )
+    brief["site"] = site
+    validate_new_brief({"brief": brief})
+    assert PlanningBrief.model_validate(brief).model_dump(mode="json") == brief
+    assert ProjectCreate.model_validate(
+        {
+            "schema_version": 1,
+            "title": "Roof address",
+            "key": "postal-code",
             "inputs": {"brief": brief},
         }
     ).inputs == {"brief": brief}

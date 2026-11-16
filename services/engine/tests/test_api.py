@@ -6,17 +6,41 @@ from conftest import TRIFTSTRASSE_5
 from fastapi.testclient import TestClient
 from pypdf import PdfReader
 
-RESIDENTIAL = {"plz": "80538", "annual_kwh": 5000, "pv_kwp": 10, "phase": 3}
+RESIDENTIAL = {
+    "plz": "80538",
+    "country": "DE",
+    "annual_kwh": 5000,
+    "pv_kwp": 10,
+    "phase": 3,
+}
 
 
 def test_postcode_gives_position_state_and_imagery(client: TestClient) -> None:
-    response = client.get("/geo/plz/80538")
+    # The country names the place: 80538 is both a Bavarian and a Ukrainian
+    # code, so the country parameter is what makes it one site.
+    response = client.get("/geo/plz/80538", params={"country": "DE"})
     assert response.status_code == 200
     body = response.json()
     assert (body["state"], round(body["latitude"], 3)) == ("DE-BY", 48.14)
     assert "geoservices.bayern.de" in body["imagery"]["tiles"][0]
     assert body["imagery"]["licence"] == "CC BY 4.0"
-    assert client.get("/geo/plz/00000").status_code == 404
+    # Without a country the same digits name more than one country, so the
+    # answer is "not one place" rather than a guess.
+    assert client.get("/geo/plz/80538").status_code == 404
+    assert client.get("/geo/plz/00000", params={"country": "DE"}).status_code == 404
+
+
+def test_a_greek_or_portuguese_postcode_answers_with_its_own_country(
+    client: TestClient,
+) -> None:
+    athens = client.get("/geo/plz/10431", params={"country": "GR"})
+    assert athens.status_code == 200
+    greek = athens.json()
+    assert greek["country"] == "GR" and greek["timezone"] == "Europe/Athens"
+    assert abs(greek["latitude"] - 37.98) < 0.05
+    lisbon = client.get("/geo/plz/3750-000", params={"country": "PT"})
+    assert lisbon.status_code == 200
+    assert lisbon.json()["timezone"] == "Europe/Lisbon"
 
 
 def test_residential_design_answers_with_the_specified_shape(
@@ -109,6 +133,7 @@ def test_roof_outline(client: TestClient) -> None:
         "/roof/outline",
         json={
             "plz": "80538",
+            "country": "DE",
             "location": {"latitude": latitude, "longitude": longitude},
         },
     )
@@ -122,6 +147,7 @@ def test_commercial_without_profile(client: TestClient) -> None:
         "/design/commercial",
         json={
             "plz": "80538",
+            "country": "DE",
             "grid_connection_kva": 100,
             "annual_kwh": 150000,
             "goals": ["self_consumption"],
@@ -129,3 +155,36 @@ def test_commercial_without_profile(client: TestClient) -> None:
     )
     assert response.status_code == 200
     assert response.json()["status"] == "indicative"
+
+
+def test_a_non_german_postcode_is_served_by_its_country_mosaic(
+    client: TestClient,
+) -> None:
+    # Germany publishes per state and the others publish one national service,
+    # so the state lookup misses abroad and the country lookup has to answer.
+    # Measured 2026-11-16: each of these endpoints returned a real aerial tile.
+    for code, country, host in (
+        ("1012JS", "NL", "service.pdok.nl"),
+        ("75001", "FR", "data.geopf.fr"),
+        ("28001", "ES", "ign.es"),
+        ("8001", "CH", "wms.geo.admin.ch"),
+        ("20121", "IT", "de-linker.com/wp-json/linker/v1/imagery/it"),
+        ("SW1A 1AA", "GB", "image.discomap.eea.europa.eu"),
+    ):
+        response = client.get(f"/geo/plz/{code}", params={"country": country})
+        assert response.status_code == 200, code
+        body = response.json()
+        assert body["imagery"] is not None, code
+        assert host in body["imagery"]["tiles"][0], code
+        assert body["imagery"]["licence"], code
+
+
+def test_a_country_without_a_recorded_mosaic_answers_no_imagery(
+    client: TestClient,
+) -> None:
+    # Ukraine sits outside the EEA Copernicus VHR mosaic and has no open
+    # national service recorded, so the map falls back rather than requesting a
+    # transparent tile.
+    response = client.get("/geo/plz/01001", params={"country": "UA"})
+    assert response.status_code == 200
+    assert response.json()["imagery"] is None

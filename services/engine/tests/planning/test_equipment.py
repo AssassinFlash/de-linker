@@ -2791,6 +2791,16 @@ def test_search_enumerates_documented_counts_and_keeps_budget_exhaustion_visible
     assert rows[0]["status"] == "satisfied" and rows[1]["status"] == "satisfied"
     assert rows[2]["status"] == "violated" and rows[3]["status"] == "unresolved"
     assert result["qualified_count"] == 2
+    # The products list carries each battery's own energy figure so a reader can
+    # state what a stack holds instead of how many modules it was built from.
+    # Measured 2026-11-15 on production: the choice list read "Battery modules
+    # per stack: 4" for four different stacks.
+    battery_row = next(
+        p for p in result["products"] if p["canonical_product_id"] == 2090
+    )
+    energy = battery_row["energy"]
+    assert set(energy) & {"usable_kwh", "nominal_kwh", "module_energy_kwh_usable"}
+    assert all(isinstance(v, (int, float)) and v > 0 for v in energy.values())
     compact = json_object(workspace.blobs.object(rows[0]["assessment_sha256"]))
     assert "facts" not in compact["selected_products"][0]
     assert all("facts" not in c for c in compact["checks"])
@@ -4159,3 +4169,39 @@ def test_conditional_pairs_and_equipment_checks_assess_real_woo_candidates(
         and c["status"] == "satisfied"
         for c in search_res["candidates"]
     )
+
+
+def test_requirements_read_the_prepared_declarations_a_one_screen_start_sends() -> None:
+    # The one-screen start sends both documents. `application` is declared by the
+    # requirements only, so a setup that omits it must not read as a contradiction
+    # — measured on the production project, where every country was refused.
+    request: FixtureObject = {
+        "equipment_requirements": {
+            "schema_version": 1,
+            "grid_phase": 3,
+            "operating_mode": "grid_connected",
+            "pv_dc_kw": 10,
+            "required_usable_kwh": 13.7,
+            "required_discharge_ac_kw": 6,
+            "application": "residential",
+        },
+        "equipment_setup": {
+            "schema_version": 1,
+            "grid_phase": 3,
+            "operating_mode": "grid_connected",
+            "pv_dc_kw": 10,
+            "required_usable_kwh": 13.7,
+            "required_discharge_ac_kw": 6,
+            "inverter_product_id": None,
+            "battery_product_id": None,
+            "modules_per_stack": None,
+            "parallel_stacks": None,
+            "accessory_product_ids": [],
+        },
+    }
+    assert EquipmentRequirements.from_inputs(request).application == "residential"
+    # A setup that does restate a declaration has to agree with it.
+    contradicted = copy.deepcopy(request)
+    contradicted["equipment_setup"]["required_usable_kwh"] = 99.0
+    with pytest.raises(InvalidInput):
+        EquipmentRequirements.from_inputs(contradicted)

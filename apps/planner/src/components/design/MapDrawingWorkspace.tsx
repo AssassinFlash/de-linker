@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import type { ComponentProps } from "react";
-import type { GeometryDocument } from "../../domain/geometry.ts";
+import type { GeometryDocument, Source, Vec2 } from "../../domain/geometry.ts";
 import type { MapRoofFields } from "../../domain/mapRoofDraft.ts";
 import type { MapFeatureFields } from "../../domain/mapFeatureDraft.ts";
 import type { MapDrawingDraft } from "../../domain/mapDrawingDraft.ts";
+import { canAnchorFirstMapRoof } from "../../domain/mapDrawingBase.ts";
 import {
 	editMapDrawingVertex,
 	mapDrawingDraftCommand,
@@ -14,11 +15,20 @@ import {
 import {
 	drawingBridge,
 	mapPolygon,
+	newMapShapeCommand,
+	quantizeMapPosition,
 	readMapPolygon,
 } from "../../domain/mapDrawingGeometry.ts";
 import { applyGeometryCommand } from "../../domain/geometryCommands.ts";
-import type { GeometryCommand } from "../../domain/geometryCommands.ts";
+import type {
+	GeometryCommand,
+	GeometryEdit,
+} from "../../domain/geometryCommands.ts";
+import { manualSource } from "../../domain/geometryEditing.ts";
+import { formatDecimal, parseDecimal } from "../../domain/decimal.ts";
+import { readGeometry } from "../../domain/validateGeometry.ts";
 import { sameJson } from "../../domain/draft.ts";
+import policy from "../../contracts/geometry-policy.json" with { type: "json" };
 import { useMapDrawingDraft } from "../../data/useMapDrawingDraft.ts";
 import type { MapInteraction } from "../../data/mapInteraction.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
@@ -37,8 +47,23 @@ import { MapFeatureSelector } from "./MapFeatureSelector.tsx";
 import { MapFeatureProperties } from "./MapFeatureProperties.tsx";
 import { mapDrawingName, mapFeatureContext } from "./mapDrawingLabels.ts";
 
+function openUniqueRing(raw: readonly (readonly [number, number])[]): Vec2[] {
+	const seen = new Set<string>();
+	const ring: Vec2[] = [];
+	for (const point of raw) {
+		const quantized = quantizeMapPosition(point);
+		const key = `${quantized[0]},${quantized[1]}`;
+		if (!seen.has(key)) {
+			seen.add(key);
+			ring.push(quantized);
+		}
+	}
+	return ring;
+}
+
 export function MapDrawingWorkspace({
 	geometry,
+	previewGeometry,
 	confirmedGeometry,
 	projectId,
 	locale,
@@ -52,6 +77,7 @@ export function MapDrawingWorkspace({
 	...mapProps
 }: Omit<ComponentProps<typeof LazyMapViewport>, "document" | "interaction"> & {
 	geometry: GeometryDocument;
+	previewGeometry?: GeometryDocument;
 	confirmedGeometry: GeometryDocument | null;
 	projectId: string;
 	locale: string;
@@ -78,12 +104,27 @@ export function MapDrawingWorkspace({
 		[invalidField, setInvalidField] = useState<string | null>(null),
 		[busy, setBusy] = useState(false),
 		[unchanged, setUnchanged] = useState(false),
-		[completedApplications, setCompletedApplications] = useState(0);
+		[completedApplications, setCompletedApplications] = useState(0),
+		[selectedPlaneId, setSelectedPlaneId] = useState<number>(
+			mapProps.siteOutline?.planes?.[0]?.id ?? 1,
+		),
+		[outlinePitch, setOutlinePitch] = useState(""),
+		[outlineBearing, setOutlineBearing] = useState(""),
+		[adoptError, setAdoptError] = useState<string | null>(null);
 	const flight = useRef<AbortController | null>(null),
 		mounted = useRef(true),
 		result = useRef<HTMLElement>(null);
 	const current = useRef({ geometry, active, drawing });
 	current.current = { geometry, active, drawing };
+	const outlinePlanes = mapProps.siteOutline?.planes ?? [];
+	const selectedPlane =
+		outlinePlanes.find((plane) => plane.id === selectedPlaneId) ??
+		outlinePlanes[0] ??
+		null;
+	useEffect(() => {
+		setSelectedPlaneId(mapProps.siteOutline?.planes?.[0]?.id ?? 1);
+		setAdoptError(null);
+	}, [mapProps.siteOutline]);
 	const stale = drawing !== null && !sameJson(drawing.before, geometry);
 	const protectedResult =
 		drawing?.prepared_geometry && sameJson(drawing.prepared_geometry, geometry);
@@ -97,7 +138,8 @@ export function MapDrawingWorkspace({
 		!mapProps.disabled &&
 		!journal.checking &&
 		!journal.storageFailed &&
-		geographicReady;
+		(geographicReady ||
+			(canAnchorFirstMapRoof(geometry) && mapProps.siteCentre != null));
 	useEffect(() => {
 		onActivity(active || busy || (journal.writing && drawing !== null));
 		return () => onActivity(false);
@@ -121,7 +163,37 @@ export function MapDrawingWorkspace({
 		setInvalidField(null);
 		setUnchanged(false);
 		try {
-			journal.begin(input);
+			if (!journal.begin(input)) return;
+			const started = journal.latest.current;
+			if (input.kind === "new_roof" && started?.schema_version === 1) {
+				const imagery = mapProps.imagery;
+				void journal
+					.update({
+						...started,
+						fields: {
+							...started.fields,
+							name: sprintf(
+								__("Roof face %d", "linker-tools"),
+								geometry.roofs.length + 1,
+							),
+							// This is the chosen local origin, not a measured building height.
+							height: canAnchorFirstMapRoof(geometry) ? "0" : "",
+							...(imagery
+								? {
+										source: imagery.credit,
+										rights: `${imagery.licence} (${imagery.licence_url})`,
+										// The editing lookup returns only sources permitting derived geometry.
+										permission: true,
+										calibration: __(
+											"Manually traced on aerial imagery; pitch and direction entered by the user.",
+											"linker-tools",
+										),
+									}
+								: {}),
+						},
+					})
+					.catch(() => undefined);
+			}
 		} catch {
 			setError(
 				__(
@@ -146,7 +218,13 @@ export function MapDrawingWorkspace({
 			change({
 				...drawing,
 				prepared_geometry: null,
-				fields: { ...drawing.fields, [name]: value },
+				fields: {
+					...drawing.fields,
+					[name]: value,
+					...(name === "source" || name === "rights"
+						? { permission: false }
+						: {}),
+				},
 			});
 	}
 	function inputFailure() {
@@ -364,6 +442,245 @@ export function MapDrawingWorkspace({
 			}
 		}
 	}
+	async function adoptSiteOutline() {
+		const outline = mapProps.siteOutline;
+		if (
+			!outline ||
+			mapProps.disabled ||
+			busy ||
+			flight.current ||
+			!client.isCurrentScope(session.query_scope)
+		)
+			return;
+		setAdoptError(null);
+		let rawRing: readonly (readonly [number, number])[];
+		let pitch: number;
+		let bearing: number;
+		let roofName: string;
+		let calibrationNote: string;
+		if (outlinePlanes.length > 0 && selectedPlane) {
+			rawRing = selectedPlane.polygon;
+			pitch = selectedPlane.tilt_deg;
+			bearing = ((selectedPlane.azimuth_deg % 360) + 360) % 360;
+			roofName = sprintf(__("Roof plane %d", "linker-tools"), selectedPlane.id);
+			calibrationNote = sprintf(
+				__(
+					"Measured 3D roof plane (%1$s° tilt, %2$s° azimuth)",
+					"linker-tools",
+				),
+				formatDecimal(pitch, locale),
+				formatDecimal(bearing, locale),
+			);
+		} else {
+			let parsedPitch: number | null = null;
+			let parsedBearing: number | null = null;
+			try {
+				parsedPitch = parseDecimal(outlinePitch, locale);
+				parsedBearing = parseDecimal(outlineBearing, locale);
+			} catch {
+				parsedPitch = null;
+			}
+			if (
+				parsedPitch === null ||
+				parsedBearing === null ||
+				parsedPitch < 0 ||
+				parsedPitch >= 90 ||
+				parsedBearing < 0 ||
+				parsedBearing >= 360
+			) {
+				setAdoptError(
+					__(
+						"Enter a roof pitch between 0° and 90° and a bearing between 0° and 360°.",
+						"linker-tools",
+					),
+				);
+				return;
+			}
+			rawRing = outline.ring;
+			pitch = parsedPitch;
+			bearing = parsedBearing;
+			roofName = sprintf(
+				__("Building roof %d", "linker-tools"),
+				geometry.roofs.length + 1,
+			);
+			calibrationNote = __(
+				"Building outline adopted with entered roof pitch and bearing.",
+				"linker-tools",
+			);
+		}
+		const cleanRing = openUniqueRing(rawRing);
+		if (cleanRing.length < 3) {
+			setAdoptError(
+				__(
+					"This roof boundary could not pass the geometry check. Its points remain available for correction.",
+					"linker-tools",
+				),
+			);
+			return;
+		}
+		let command: GeometryCommand;
+		let resultDoc: GeometryDocument;
+		const id = crypto.randomUUID().replaceAll("-", "");
+		const roofId = "roof_" + id;
+		try {
+			const source: Source = {
+				...manualSource("source_" + id, outline.source, outline.licence),
+				kind: "user_drawing",
+				calibration_note: calibrationNote,
+				permissions: {
+					derive: "permitted",
+					retain: "permitted",
+					export: "unknown",
+				},
+			};
+			const coord = geometry.coordinate_system;
+			let nextCoord = coord;
+			let coordEdit: GeometryEdit | null = null;
+			if (canAnchorFirstMapRoof(geometry)) {
+				const anchorPoint = cleanRing[0]!;
+				nextCoord = {
+					...coord,
+					north_reference: "true_north",
+					north_source_id: source.id,
+					anchor: {
+						latitude_deg: anchorPoint[1],
+						longitude_deg: anchorPoint[0],
+						source_id: source.id,
+						datum: "EPSG:4326",
+					},
+				};
+				coordEdit = {
+					type: "set_coordinate_system",
+					before: coord,
+					value: nextCoord,
+				};
+			} else if (
+				coord.anchor === null ||
+				coord.north_reference !== "true_north"
+			) {
+				setAdoptError(
+					__(
+						"The map needs a geographic origin and a recorded true-north reference for this design.",
+						"linker-tools",
+					),
+				);
+				return;
+			}
+			const withSource = readGeometry(
+				{
+					...geometry,
+					coordinate_system: nextCoord,
+					sources: [...geometry.sources, source],
+				},
+				policy,
+			);
+			const shape = newMapShapeCommand(
+				withSource,
+				{
+					kind: "roof",
+					identity: { id: roofId, name: roofName, source_id: source.id },
+					pitch_deg: pitch,
+					bearing_deg: bearing,
+					height_reference_position: cleanRing[0]!,
+					reference_height_m: 0,
+				},
+				mapPolygon(cleanRing),
+			);
+			if (shape.type !== "group")
+				throw new Error("map_drawing_command_invalid");
+			command = {
+				type: "group",
+				before: geometry,
+				edits: [
+					{ type: "put_source", before: null, value: source },
+					...(coordEdit ? [coordEdit] : []),
+					...shape.edits,
+				],
+			};
+			resultDoc = applyGeometryCommand(geometry, command);
+		} catch {
+			setAdoptError(
+				__(
+					"This roof boundary could not pass the geometry check. Its points remain available for correction.",
+					"linker-tools",
+				),
+			);
+			return;
+		}
+		const controller = new AbortController();
+		flight.current = controller;
+		setBusy(true);
+		const before = geometry;
+		const admitted = () =>
+			mounted.current &&
+			flight.current === controller &&
+			!controller.signal.aborted &&
+			client.isCurrentScope(session.query_scope) &&
+			sameJson(current.current.geometry, before);
+		try {
+			const report = readLayoutReview(
+				await client.query(
+					"geometry/review",
+					{
+						schema_version: 1,
+						project_id: projectId,
+						geometry: readObject(resultDoc),
+					},
+					session.query_scope,
+					controller.signal,
+				),
+			);
+			if (!admitted()) return;
+			if (
+				!report.review_complete ||
+				report.diagnostics_truncated ||
+				report.issues.some(
+					(issue) =>
+						(issue.object_id === roofId &&
+							issue.kind === "invalid_roof_polygon") ||
+						((issue.object_id === roofId || issue.roof_id === roofId) &&
+							issue.category === "numerical_limit"),
+				)
+			) {
+				setAdoptError(
+					__(
+						"This roof boundary could not pass the geometry check. Its points remain available for correction.",
+						"linker-tools",
+					),
+				);
+				return;
+			}
+			if (!commit(command)) {
+				setAdoptError(
+					__(
+						"The project changed before this roof could be added. The drawing has been kept.",
+						"linker-tools",
+					),
+				);
+				return;
+			}
+			mapProps.select(roofId);
+			setCompletedApplications((count) => count + 1);
+		} catch (cause) {
+			if (!mounted.current || controller.signal.aborted) return;
+			setAdoptError(
+				__(
+					"The roof check or local save could not be completed. The drawing and its entered values remain available.",
+					"linker-tools",
+				),
+			);
+			if (
+				cause instanceof ApiError &&
+				([401, 403].includes(cause.status) || cause.code === "session_changed")
+			)
+				recheck();
+		} finally {
+			if (mounted.current && flight.current === controller) {
+				flight.current = null;
+				setBusy(false);
+			}
+		}
+	}
 	function drawingStatus(): string {
 		if (!drawing) return "";
 		if (busy)
@@ -442,23 +759,107 @@ export function MapDrawingWorkspace({
 									"The roof plane stays fixed while you edit this boundary. Applied changes appear in this project's map, plan and 3D views.",
 									"linker-tools",
 								)
-							: __(
-									"The outline and roof properties form an editable roof face. The source and permissions stay with it in the project, alongside the plan and 3D views.",
-									"linker-tools",
-								)}
+							: __("Draw one roof face at a time.", "linker-tools")}
 				</p>
+				{!drawing && mapProps.siteOutline && !mapProps.disabled && (
+					<div className="lp-site-outline-card">
+						<p className="lp-profile-help">
+							{sprintf(
+								__("Detected building: %s", "linker-tools"),
+								mapProps.siteOutline.source,
+							)}
+						</p>
+						{outlinePlanes.length > 0 ? (
+							<div className="lp-inline-actions">
+								<label className="lp-field">
+									<span>{__("Measured roof plane", "linker-tools")}</span>
+									<select
+										value={selectedPlane?.id ?? ""}
+										disabled={busy}
+										onChange={(event) =>
+											setSelectedPlaneId(Number(event.currentTarget.value))
+										}
+									>
+										{outlinePlanes.map((plane) => (
+											<option key={plane.id} value={plane.id}>
+												{sprintf(
+													__(
+														"Plane %1$d · %2$s m² · %3$s° tilt · %4$s° azimuth",
+														"linker-tools",
+													),
+													plane.id,
+													formatDecimal(plane.area_m2, locale),
+													formatDecimal(plane.tilt_deg, locale),
+													formatDecimal(plane.azimuth_deg, locale),
+												)}
+											</option>
+										))}
+									</select>
+								</label>
+								<button
+									type="button"
+									className="lp-button"
+									disabled={busy || !selectedPlane}
+									onClick={() => void adoptSiteOutline()}
+								>
+									{__("Use selected roof plane", "linker-tools")}
+								</button>
+							</div>
+						) : (
+							<>
+								<div className="lp-geometry-fields">
+									<label className="lp-field">
+										<span>{__("Roof pitch (°)", "linker-tools")}</span>
+										<input
+											name="outline_pitch"
+											inputMode="decimal"
+											value={outlinePitch}
+											disabled={busy}
+											onChange={(event) =>
+												setOutlinePitch(event.currentTarget.value)
+											}
+										/>
+									</label>
+									<label className="lp-field">
+										<span>{__("Down-slope bearing (°)", "linker-tools")}</span>
+										<input
+											name="outline_bearing"
+											inputMode="decimal"
+											value={outlineBearing}
+											disabled={busy}
+											onChange={(event) =>
+												setOutlineBearing(event.currentTarget.value)
+											}
+										/>
+									</label>
+								</div>
+								<div className="lp-inline-actions">
+									<button
+										type="button"
+										className="lp-button"
+										disabled={busy}
+										onClick={() => void adoptSiteOutline()}
+									>
+										{__("Use building outline", "linker-tools")}
+									</button>
+								</div>
+							</>
+						)}
+						{adoptError && <Notice error>{adoptError}</Notice>}
+					</div>
+				)}
 				{!drawing && (
 					<>
 						<MapRingSelector
 							geometry={geometry}
 							selected={mapProps.selected}
-							disabled={!canStartDrawing}
+							disabled={!canStartDrawing || !geographicReady}
 							begin={(target) => begin({ kind: "edit_ring", target })}
 						/>
 						<MapFeatureSelector
 							geometry={geometry}
 							selected={mapProps.selected}
-							disabled={!canStartDrawing}
+							disabled={!canStartDrawing || !geographicReady}
 							begin={(target) => begin({ kind: "new_feature", target })}
 						/>
 					</>
@@ -662,7 +1063,7 @@ export function MapDrawingWorkspace({
 			</section>
 			<LazyMapViewport
 				{...mapProps}
-				document={geometry}
+				document={previewGeometry ?? geometry}
 				interaction={interaction}
 			/>
 			{active &&
@@ -672,6 +1073,12 @@ export function MapDrawingWorkspace({
 				(drawing.schema_version === 1 ? (
 					<MapRoofProperties
 						drawing={drawing}
+						sourceProvided={Boolean(
+							mapProps.imagery &&
+							drawing.fields.source === mapProps.imagery.credit &&
+							drawing.fields.rights ===
+								`${mapProps.imagery.licence} (${mapProps.imagery.licence_url})`,
+						)}
 						locale={locale}
 						busy={busy}
 						invalidField={invalidField}

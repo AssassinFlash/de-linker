@@ -2,13 +2,13 @@ import type { MapRoofDraft, MapRoofFields } from "../../domain/mapRoofDraft.ts";
 import { useId } from "react";
 import { useMapPropertyFeedback } from "./useMapPropertyFeedback.ts";
 import { Notice } from "../Notice.tsx";
-import { decimalSeparator, formatDecimal } from "../../domain/decimal.ts";
+import { decimalSeparator } from "../../domain/decimal.ts";
 import { mapDrawingTextLimit } from "../../domain/mapDrawingBase.ts";
-import { __, sprintf } from "../../i18n.ts";
+import { __ } from "../../i18n.ts";
 
 export function MapRoofProperties({
 	drawing,
-	locale,
+	sourceProvided = false,
 	busy,
 	field,
 	submit,
@@ -18,6 +18,7 @@ export function MapRoofProperties({
 }: {
 	drawing: MapRoofDraft;
 	locale: string;
+	sourceProvided?: boolean;
 	busy: boolean;
 	field: <K extends keyof MapRoofFields>(
 		name: K,
@@ -76,6 +77,10 @@ export function MapRoofProperties({
 			ref={form}
 			className="lp-drawing-properties lp-focus-target"
 			id="lp-map-roof-properties"
+			onInvalid={(event) => {
+				const details = (event.target as HTMLElement).closest("details");
+				if (details) details.open = true;
+			}}
 			onSubmit={(event) => {
 				event.preventDefault();
 				submit();
@@ -84,7 +89,7 @@ export function MapRoofProperties({
 			<h3>{__("Roof properties", "linker-tools")}</h3>
 			<p>
 				{__(
-					"Drag a corner to move it, or use an edge midpoint to add a corner. The marked height reference stays fixed when the outline changes.",
+					"Check the outline, then enter the roof pitch and the direction it faces.",
 					"linker-tools",
 				)}
 			</p>
@@ -102,13 +107,26 @@ export function MapRoofProperties({
 					)}
 					{fieldInput(
 						"bearing",
-						__("Down-slope bearing (°)", "linker-tools"),
-						__(
-							"Clockwise from true north, 0 to less than 360. North is 0, east 90, south 180 and west 270.",
-							"linker-tools",
-						),
+						__("Roof direction (°)", "linker-tools"),
+						__("North 0°, east 90°, south 180°, west 270°.", "linker-tools"),
 						true,
 					)}
+				</div>
+				<p className="lp-profile-help">
+					{decimalSeparator(drawing.locale) === ","
+						? __("Decimal comma; no thousands separators.", "linker-tools")
+						: __("Decimal point; no thousands separators.", "linker-tools")}
+				</p>
+				<details
+					open={
+						!sourceProvided ||
+						Boolean(
+							invalidField &&
+							!["name", "pitch", "bearing"].includes(invalidField),
+						)
+					}
+				>
+					<summary>{__("Height and drawing source", "linker-tools")}</summary>
 					{fieldInput(
 						"height",
 						__("Height at marked reference (m)", "linker-tools"),
@@ -118,90 +136,77 @@ export function MapRoofProperties({
 						),
 						true,
 					)}
-				</div>
-				{drawing.height_reference_position && (
-					<p className="lp-profile-help">
-						{sprintf(
-							__(
-								"Height reference: longitude %1$s; latitude %2$s.",
-								"linker-tools",
-							),
-							formatDecimal(drawing.height_reference_position[0], locale),
-							formatDecimal(drawing.height_reference_position[1], locale),
-						)}
-					</p>
-				)}
-				<p className="lp-profile-help">
-					{decimalSeparator(drawing.locale) === ","
-						? __("Decimal comma; no thousands separators.", "linker-tools")
-						: __("Decimal point; no thousands separators.", "linker-tools")}
-				</p>
-				{fieldInput(
-					"source",
-					__("Measurement or drawing reference", "linker-tools"),
-					__(
-						"The source reference identifies the measurements or drawing used for the outline, slope and height. The street map provides orientation.",
-						"linker-tools",
-					),
-					false,
-					false,
-					true,
-				)}
-				<div className="lp-geometry-fields">
 					{fieldInput(
-						"precision",
-						__("Declared spatial precision (m)", "linker-tools"),
+						"source",
+						__("Measurement or drawing reference", "linker-tools"),
 						__(
-							"0 or greater. An empty field means unknown. This is a source claim, separate from numerical calculation precision.",
+							"The source reference identifies the measurements or drawing used for the outline, slope and height. The street map provides orientation.",
 							"linker-tools",
 						),
-						true,
+						false,
+						false,
 						true,
 					)}
+					<div className="lp-geometry-fields">
+						{fieldInput(
+							"precision",
+							__("Declared spatial precision (m)", "linker-tools"),
+							__(
+								"0 or greater. An empty field means unknown. This is a source claim, separate from numerical calculation precision.",
+								"linker-tools",
+							),
+							true,
+							true,
+						)}
+						{fieldInput(
+							"calibration",
+							__("Calibration and measurement conditions", "linker-tools"),
+							undefined,
+							false,
+							false,
+							true,
+						)}
+					</div>
 					{fieldInput(
-						"calibration",
-						__("Calibration and measurement conditions", "linker-tools"),
+						"rights",
+						__("Basis for using these measurements", "linker-tools"),
 						undefined,
 						false,
 						false,
 						true,
 					)}
-				</div>
-				{fieldInput(
-					"rights",
-					__("Basis for using these measurements", "linker-tools"),
-					undefined,
-					false,
-					false,
-					true,
+					<label className="lp-field">
+						<span>{__("Permission to export geometry", "linker-tools")}</span>
+						<select
+							value={drawing.fields.export}
+							onChange={(e) =>
+								field("export", e.target.value as MapRoofFields["export"])
+							}
+						>
+							<option value="unknown">{__("Unknown", "linker-tools")}</option>
+							<option value="permitted">
+								{__("Permitted", "linker-tools")}
+							</option>
+							<option value="prohibited">
+								{__("Prohibited", "linker-tools")}
+							</option>
+						</select>
+					</label>
+				</details>
+				{!(sourceProvided && drawing.fields.permission) && (
+					<label className="lp-geometry-check">
+						<input
+							type="checkbox"
+							checked={drawing.fields.permission}
+							onChange={(e) => field("permission", e.target.checked)}
+							required
+						/>
+						{__(
+							"I have permission to retain these measurements and derive an editable design from them.",
+							"linker-tools",
+						)}
+					</label>
 				)}
-				<label className="lp-field">
-					<span>{__("Permission to export geometry", "linker-tools")}</span>
-					<select
-						value={drawing.fields.export}
-						onChange={(e) =>
-							field("export", e.target.value as MapRoofFields["export"])
-						}
-					>
-						<option value="unknown">{__("Unknown", "linker-tools")}</option>
-						<option value="permitted">{__("Permitted", "linker-tools")}</option>
-						<option value="prohibited">
-							{__("Prohibited", "linker-tools")}
-						</option>
-					</select>
-				</label>
-				<label className="lp-geometry-check">
-					<input
-						type="checkbox"
-						checked={drawing.fields.permission}
-						onChange={(e) => field("permission", e.target.checked)}
-						required
-					/>
-					{__(
-						"I have permission to retain these measurements and derive an editable design from them.",
-						"linker-tools",
-					)}
-				</label>
 				{error && !invalidField && (
 					<div ref={result} tabIndex={-1} className="lp-focus-target">
 						<Notice error>{error}</Notice>
@@ -220,12 +225,6 @@ export function MapRoofProperties({
 					</button>
 				</div>
 			</fieldset>
-			<p className="lp-profile-help">
-				{__(
-					"This check tests roof boundary geometry. It does not verify measurement accuracy, structural safety or engineering approval.",
-					"linker-tools",
-				)}
-			</p>
 		</form>
 	);
 }

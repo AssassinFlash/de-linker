@@ -39,12 +39,35 @@ class SessionClaim(Command):
 
 
 type PlaceQuery = Annotated[str, Field(min_length=1, max_length=120)]
+type PlaceCountry = Annotated[str, Field(pattern=r"^[A-Za-z]{2}$")]
 
 
 class PlaceLookup(Command):
-    """A declared postcode or town, resolved server-side to site facts."""
+    """A declared postcode, resolved server-side to site facts.
+
+    `country` is optional: a postcode that only one country writes is answered
+    without it, which keeps the one-screen start to a single field. A visitor
+    whose postcode several countries share must name the country, and the reply
+    `found: false` with `needs_country: true` tells the screen to ask.
+    """
 
     query: PlaceQuery
+    country: PlaceCountry | None = None
+
+
+class PlaceOutline(Command):
+    """The building outline at a declared position.
+
+    Countries that publish no roof geometry still have their buildings mapped:
+    the outline lets the map show the building the visitor clicked on and lets
+    them set the pitch they can see. It carries no measured plane, so a caller
+    must not present it as a survey.
+    """
+
+    query: PlaceQuery
+    country: PlaceCountry | None = None
+    latitude: Annotated[float, Field(ge=-90.0, le=90.0, allow_inf_nan=False)]
+    longitude: Annotated[float, Field(ge=-180.0, le=180.0, allow_inf_nan=False)]
 
 
 class Cursor(Document):

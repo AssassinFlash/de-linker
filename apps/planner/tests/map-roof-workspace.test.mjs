@@ -9,7 +9,10 @@ import { IDBFactory } from "fake-indexeddb";
 import { setupDom, until, enter, deferred } from "./dom-fixture.mjs";
 import { MapDrawingWorkspace } from "../src/components/design/MapDrawingWorkspace.tsx";
 import { mapDrawingDraftStore } from "../src/data/MapDrawingDraftStore.ts";
-import { applyGeometryCommand } from "../src/domain/geometryCommands.ts";
+import {
+	applyGeometryCommand,
+	emptyGeometry,
+} from "../src/domain/geometryCommands.ts";
 import { bindMapRing } from "../src/domain/mapDrawingGeometry.ts";
 register("./map-library-loader.mjs", import.meta.url);
 const asset = JSON.parse(
@@ -149,6 +152,8 @@ async function rig(t, options = {}) {
 			disabled: false,
 			openReferences() {},
 			camera,
+			imagery: options.imagery ?? null,
+			siteCentre: options.siteCentre ?? null,
 		});
 	}
 	const render = async () =>
@@ -459,6 +464,141 @@ for (const kind of ["hole", "obstacle", "keepout"])
 		await until(() => button("Draw a roof feature"));
 		assert.equal((await r.records()).length, 0);
 	});
+test("an address-centred empty project can trace its first roof and show it on the same aerial map", async (t) => {
+	const r = await rig(t, {
+		geometry: emptyGeometry(),
+		siteCentre: [6.95, 50.93],
+		imagery: {
+			tiles: ["https://geodaten.bayern.de/tiles/{z}/{x}/{y}"],
+			credit: "Bayerische Vermessungsverwaltung",
+			licence: "CC BY 4.0",
+			licence_url: "https://creativecommons.org/licenses/by/4.0/",
+		},
+	});
+	const map = r.map();
+	assert.equal(typeof map.options.style, "object");
+	assert.deepEqual(map.getSource("linker-project-geometry").data.features, []);
+	assert.equal(button("Start roof drawing").disabled, false);
+	await r.click("Start roof drawing");
+	await until(() => r.active);
+	await r.point(6.96, 50.94);
+	await r.point(6.9601, 50.94);
+	await r.point(6.9601, 50.9401);
+	assert.equal(r.geometry.coordinate_system.anchor, null);
+	await r.click("Close outline and review");
+	await until(() => document.querySelector(".lp-drawing-properties"));
+	assert.equal(document.querySelector('[name="height"]').value, "0");
+	assert.equal(
+		document.querySelector('[name="source"]').value,
+		"Bayerische Vermessungsverwaltung",
+	);
+	assert.equal(
+		document.querySelector(".lp-drawing-properties details").open,
+		false,
+	);
+	assert.equal((await r.records())[0].drawing.fields.permission, true);
+	await enter(document.querySelector('[name="pitch"]'), "25");
+	await enter(document.querySelector('[name="bearing"]'), "180");
+	await enter(document.querySelector('[name="source"]'), "");
+	await act(async () => {
+		assert.equal(
+			document.querySelector(".lp-drawing-properties").checkValidity(),
+			false,
+		);
+	});
+	assert.equal(
+		document.querySelector('[name="source"]').closest("details").open,
+		true,
+	);
+	await enter(
+		document.querySelector('[name="source"]'),
+		"Bayerische Vermessungsverwaltung",
+	);
+	assert.equal(
+		document.querySelector('.lp-drawing-properties input[type="checkbox"]')
+			.checked,
+		false,
+		"editing source details clears the automatic source permission",
+	);
+	await act(async () =>
+		document
+			.querySelector('.lp-drawing-properties input[type="checkbox"]')
+			.click(),
+	);
+	await act(async () =>
+		document
+			.querySelector(".lp-drawing-properties")
+			.dispatchEvent(
+				new window.Event("submit", { bubbles: true, cancelable: true }),
+			),
+	);
+	await until(() => r.commits.length === 1 && !r.active);
+	assert.equal(r.geometry.coordinate_system.anchor.longitude_deg, 6.96);
+	assert.equal(r.geometry.coordinate_system.anchor.latitude_deg, 50.94);
+	assert.equal(r.map(), map, "first roof uses the already loaded map");
+	assert.equal(
+		map.getSource("linker-project-geometry").data.features.length,
+		1,
+	);
+	assert.equal(r.geometry.sources[0].permissions.export, "unknown");
+	assert.equal(r.geometry.sources[0].spatial_precision_m, null);
+	await r.replaceGeometry(emptyGeometry());
+	assert.deepEqual(map.getSource("linker-project-geometry").data.features, []);
+});
+
+test("a closed roof keeps its properties open through anchor navigation and idle focus changes", async (t) => {
+	const r = await rig(t);
+	await r.click("Start roof drawing");
+	await until(() => r.active);
+	for (const point of [
+		[6.96, 50.94],
+		[6.9601, 50.94],
+		[6.9601, 50.9401],
+		[6.96, 50.9401],
+	])
+		await r.point(...point);
+	await r.click("Pause drawing");
+	await until(() => !r.active);
+	await r.click("Resume drawing");
+	await r.click("Close outline and review");
+	await until(() => document.querySelector("#lp-map-roof-properties"));
+	await act(async () =>
+		document.querySelector('a[href="#lp-map-roof-properties"]').click(),
+	);
+	await until(() => location.hash === "#lp-map-roof-properties");
+	assert.equal(r.active, true, "a property anchor does not pause the drawing");
+	await act(async () => window.dispatchEvent(new window.Event("blur")));
+	await until(
+		() => !document.body.textContent.includes("Saving drawing in this browser"),
+	);
+	assert.ok(
+		document.querySelector("#lp-map-roof-properties"),
+		"idle focus changes keep the roof properties available",
+	);
+	await act(async () => {
+		Object.defineProperty(document, "visibilityState", {
+			configurable: true,
+			value: "hidden",
+		});
+		document.dispatchEvent(new window.Event("visibilitychange"));
+		Object.defineProperty(document, "visibilityState", {
+			configurable: true,
+			value: "visible",
+		});
+		document.dispatchEvent(new window.Event("visibilitychange"));
+	});
+	await until(
+		() => !document.body.textContent.includes("Saving drawing in this browser"),
+	);
+	assert.ok(
+		document.querySelector("#lp-map-roof-properties"),
+		"returning to an idle drawing keeps its review open",
+	);
+	assert.equal(r.active, true);
+	assert.equal((await r.records())[0].drawing.phase, "staged");
+	assert.equal((await r.records())[0].drawing.vertices.length, 4);
+});
+
 test("real drawing UI resumes a one-point journal, stages a roof, checks inputs and joins one project command", async (t) => {
 	const r = await rig(t);
 	await r.click("Start roof drawing");
@@ -587,7 +727,7 @@ test("provider replacement restores an open prefix only after the new map loads 
 	await until(() => r.active);
 	await r.point(6.96, 50.94);
 	const old = r.map();
-	await r.click("Load street map");
+	await r.click("Hide aerial map");
 	await until(
 		() =>
 			r.map() !== old && document.querySelector('[data-map-status="ready"]'),

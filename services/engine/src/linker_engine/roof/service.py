@@ -9,18 +9,20 @@ reference modules fit on it.
 from __future__ import annotations
 
 import math
+from functools import cache
 from pathlib import Path
 from typing import Any
 
+from pyproj import Transformer
 from shapely.geometry import Point, Polygon
 from shapely.geometry.base import BaseGeometry
 
 from .. import geo
-from ..models import RoofPackRequest, RoofPlaneResult, RoofRequest, RoofResult
+from ..models import Locale, RoofPackRequest, RoofPlaneResult, RoofRequest, RoofResult
 from ..products import PvModule
 from ..texts import t
-from . import lod2
-from .citygml import RoofPlane
+from . import europe, footprints, lod2
+from .citygml import Building, RoofPlane
 from .packing import pack
 
 # A click on the eaves overhang or the roof edge of the aerial image still
@@ -65,14 +67,34 @@ class RoofService:
     ) -> None:
         self._index = index or lod2.TileIndex(cache_dir)
         self._module = module
+        # One published part per quadkey cell, kept because a part is tens of
+        # megabytes and the next request in the same city reads it again.
+        self._footprint_cache = cache_dir / "footprints"
+        self._footprint_cache.mkdir(parents=True, exist_ok=True)
 
     def outline(self, request: RoofRequest) -> RoofResult:
         locale = request.locale
-        place = geo.lookup(request.plz)
+        place = geo.lookup(request.plz, request.country)
         if place is None:
             raise lod2.Lod2Unavailable(f"unknown postcode {request.plz}")
         latitude, longitude = request.location.latitude, request.location.longitude
-        tile = lod2.tile_for(place.state, latitude, longitude)
+        # A country whose official model is published outside the German state
+        # scheme is read first; everything else goes through the state table.
+        # Measured 2026-11-15: only the Netherlands and Switzerland publish a
+        # nationwide model with roof surfaces, and Switzerland's tile lookup is
+        # not built yet.
+        model = europe.read(place.country, latitude, longitude)
+        if model is not None:
+            return self._from_model(model, latitude, longitude, locale)
+        # No measured roof geometry here. Germany still answers from its states'
+        # LoD2; every other country answers from the global building footprints,
+        # which give the real outline and leave the pitch to the customer. The
+        # outline is what the map draws, so the step never has to say it has no
+        # outline at all.
+        try:
+            tile = lod2.tile_for(place.iso_region, latitude, longitude)
+        except lod2.Lod2Unavailable:
+            return self._from_footprints(place.country, latitude, longitude, locale)
         index = self._index.load(tile)
         x, y = lod2.to_utm(tile.zone, latitude, longitude)
         point = Point(x, y)
@@ -83,7 +105,7 @@ class RoofService:
                 best = (distance, building)
         module = self._module
         name = f"{module.brand} {module.model}"
-        source = f"LoD2 {place.state}"
+        source = f"LoD2 {place.iso_region}"
         assumptions = [t(f"assume.{key}", locale) for key in ROOF_ASSUMPTIONS]
         if best is None:
             return RoofResult(
@@ -146,10 +168,198 @@ class RoofService:
             assumptions=assumptions,
         )
 
+    def _from_model(
+        self,
+        model: europe.ModelResult,
+        latitude: float,
+        longitude: float,
+        locale: Locale,
+    ) -> RoofResult:
+        """The roof at a position, from a country's own 3D model.
+
+        The model answers in its own projected CRS; the rings are transformed
+        back to WGS84 here so the map and the report see the same coordinates
+        the German path produces.
+        """
+        module = self._module
+        name = f"{module.brand} {module.model}"
+        assumptions = [t(f"assume.{key}", locale) for key in ROOF_ASSUMPTIONS]
+        to_wgs84 = model.transformer
+        to_local = _to_model(model.country)
+        x, y = to_local.transform(longitude, latitude)
+        best: tuple[float, Building] | None = None
+        for building in model.buildings:
+            footprint = building.footprint[0] if building.footprint else None
+            if footprint is None:
+                continue
+            distance = europe.distance_m(footprint, x, y)
+            if distance <= CLICK_TOLERANCE_M and (best is None or distance < best[0]):
+                best = (distance, building)
+        source = f"{model.country} 3D model"
+        if best is None:
+            return RoofResult(
+                found=False,
+                building_id=None,
+                address=None,
+                distance_m=None,
+                outline=[],
+                planes=[],
+                modules=0,
+                kwp=0.0,
+                module=name,
+                module_wp=module.pmax_w,
+                source=source,
+                licence=model.licence,
+                assumptions=assumptions,
+            )
+        distance, building = best
+        planes: list[RoofPlaneResult] = []
+        for number, plane in enumerate(building.planes, start=1):
+            packed = pack(plane, module)
+            count = len(packed.modules)
+            planes.append(
+                RoofPlaneResult(
+                    id=number,
+                    polygon=_wgs84_ring(to_wgs84, plane.ring),
+                    tilt_deg=plane.tilt_deg,
+                    azimuth_deg=plane.azimuth_deg,
+                    area_m2=plane.area_m2,
+                    usable=packed.usable,
+                    excluded_reason=packed.reason,
+                    modules=count,
+                    kwp=round(count * module.pmax_w / 1000, 2),
+                    module_polygons=[
+                        _wgs84_ring(
+                            to_wgs84, [(float(px), float(py)) for px, py in ring]
+                        )
+                        for ring in packed.modules
+                    ],
+                )
+            )
+        total = sum(p.modules for p in planes)
+        return RoofResult(
+            found=True,
+            building_id=building.id,
+            address=building.address,
+            distance_m=round(distance, 1),
+            outline=[
+                _wgs84_ring(to_wgs84, ring) for ring in (building.footprint or [])
+            ],
+            planes=planes,
+            modules=total,
+            kwp=round(total * module.pmax_w / 1000, 2),
+            module=name,
+            module_wp=module.pmax_w,
+            source=source,
+            licence=model.licence,
+            assumptions=assumptions,
+        )
+
+    def _from_footprints(
+        self,
+        country: str,
+        latitude: float,
+        longitude: float,
+        locale: Locale,
+    ) -> RoofResult:
+        """The real outline of the building at a position, with no measured roof.
+
+        Countries outside Germany, the Netherlands and Switzerland publish no
+        roof geometry, but the building itself exists and its plan is open data.
+        Returning the outline lets the map show the building and the customer
+        set the pitch they can see; returning `found: false` would claim the
+        tool knows nothing about a building it can draw.
+        """
+        module = self._module
+        name = f"{module.brand} {module.model}"
+        empty = RoofResult(
+            found=False,
+            building_id=None,
+            address=None,
+            distance_m=None,
+            outline=[],
+            planes=[],
+            modules=0,
+            kwp=0.0,
+            module=name,
+            module_wp=module.pmax_w,
+            source="Microsoft building footprints",
+            licence=footprints.LICENCE,
+            assumptions=[t(f"assume.{key}", locale) for key in ROOF_ASSUMPTIONS],
+        )
+        key = footprints.quadkey(latitude, longitude)
+        url = footprints.part_url(country, key)
+        if url is None:
+            return empty
+        cached = self._footprint_cache / f"{country}-{key}.geojsonl.gz"
+        try:
+            archive = (
+                cached.read_bytes() if cached.exists() else footprints.download(url)
+            )
+        except (OSError, ValueError):
+            return empty
+        if not cached.exists():
+            try:
+                cached.write_bytes(archive)
+            except OSError:
+                pass
+        ring = footprints.nearest(
+            footprints.outlines(archive, latitude, longitude), latitude, longitude
+        )
+        if ring is None:
+            return empty
+        return RoofResult(
+            found=True,
+            building_id=f"{country} outline {key}",
+            address=None,
+            distance_m=0.0,
+            outline=[
+                [(round(x, COORD_DECIMALS), round(y, COORD_DECIMALS)) for x, y in ring]
+            ],
+            # No measured plane: the pitch and facing are the customer's, entered
+            # on the map. Guessing them would put a number on the offer that no
+            # survey supports.
+            planes=[],
+            modules=0,
+            kwp=0.0,
+            module=name,
+            module_wp=module.pmax_w,
+            source="Microsoft building footprints",
+            licence=footprints.LICENCE,
+            assumptions=[
+                *(
+                    t(f"assume.{name}", locale)
+                    for name in ("roof_edge_inset", "module_gap")
+                ),
+                t("assume.outline_only", locale),
+            ],
+        )
+
+
+@cache
+def _to_model(country: str) -> Transformer:
+    """The model's own projected CRS, to and from WGS84."""
+    return Transformer.from_crs("EPSG:4326", europe.model_crs(country), always_xy=True)
+
+
+def _wgs84_ring(
+    transformer: Transformer, ring: list[tuple[float, float]]
+) -> list[tuple[float, float]]:
+    return [
+        (round(lon, COORD_DECIMALS), round(lat, COORD_DECIMALS))
+        for lon, lat in (transformer.transform(x, y) for x, y in ring)
+    ]
+
 
 def _zone(longitude: float) -> int:
-    """UTM zone of a German longitude (32 west of 12° E, 33 east of it)."""
-    return 32 if longitude < 12 else 33
+    """The UTM zone of a longitude, by the standard six-degree division.
+
+    This used to be Germany's own split — "32 west of 12° E, 33 east of it" —
+    which projected Lisbon into zone 32 and Athens into 33. Measured
+    2026-11-15: Lisbon is zone 29, Athens zone 34, and a wrong zone displaces
+    every outline by hundreds of kilometres.
+    """
+    return int(math.floor((longitude + 180.0) / 6.0)) % 60 + 1
 
 
 def pack_drawn(request: RoofPackRequest, module: PvModule) -> RoofPlaneResult:

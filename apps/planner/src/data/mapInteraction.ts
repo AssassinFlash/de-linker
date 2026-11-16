@@ -12,3 +12,9 @@ export interface MapInteraction {
 	readonly failed: () => void;
 	readonly interrupted: () => void;
 }
+
+/** A roof click stages an array position; Apply remains the project writer. */
+export interface ArrayPlacement {
+	readonly roofId: string;
+	readonly place: (point: Vec2) => void;
+}

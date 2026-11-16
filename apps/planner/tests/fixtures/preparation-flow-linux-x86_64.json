@@ -294,7 +294,8 @@
 									"use_terrain_horizon": false
 								},
 								"solar_date_basis": "original_selected_year_plus_reported_irradiance_offset",
-								"weather_kind": "stitched_typical_months_not_observed_historical_year"
+								"weather_kind": "stitched_typical_months_not_observed_historical_year",
+								"wind_speed_clamped_rows": 0
 							},
 							"native_max_interval_seconds": 3600,
 							"origin": "template",
@@ -551,7 +552,8 @@
 							"use_terrain_horizon": false
 						},
 						"solar_date_basis": "original_selected_year_plus_reported_irradiance_offset",
-						"weather_kind": "stitched_typical_months_not_observed_historical_year"
+						"weather_kind": "stitched_typical_months_not_observed_historical_year",
+						"wind_speed_clamped_rows": 0
 					},
 					"native_max_interval_seconds": 3600,
 					"origin": "template",
@@ -2843,7 +2845,8 @@
 								"use_terrain_horizon": false
 							},
 							"solar_date_basis": "original_selected_year_plus_reported_irradiance_offset",
-							"weather_kind": "stitched_typical_months_not_observed_historical_year"
+							"weather_kind": "stitched_typical_months_not_observed_historical_year",
+							"wind_speed_clamped_rows": 0
 						},
 						"native_max_interval_seconds": 3600,
 						"origin": "template",
@@ -3552,7 +3555,8 @@
 								"use_terrain_horizon": false
 							},
 							"solar_date_basis": "original_selected_year_plus_reported_irradiance_offset",
-							"weather_kind": "stitched_typical_months_not_observed_historical_year"
+							"weather_kind": "stitched_typical_months_not_observed_historical_year",
+							"wind_speed_clamped_rows": 0
 						},
 						"native_max_interval_seconds": 3600,
 						"origin": "template",
@@ -4009,7 +4013,8 @@
 								"use_terrain_horizon": false
 							},
 							"solar_date_basis": "original_selected_year_plus_reported_irradiance_offset",
-							"weather_kind": "stitched_typical_months_not_observed_historical_year"
+							"weather_kind": "stitched_typical_months_not_observed_historical_year",
+							"wind_speed_clamped_rows": 0
 						},
 						"native_max_interval_seconds": 3600,
 						"origin": "template",
@@ -4336,7 +4341,8 @@
 								"use_terrain_horizon": false
 							},
 							"solar_date_basis": "original_selected_year_plus_reported_irradiance_offset",
-							"weather_kind": "stitched_typical_months_not_observed_historical_year"
+							"weather_kind": "stitched_typical_months_not_observed_historical_year",
+							"wind_speed_clamped_rows": 0
 						},
 						"native_max_interval_seconds": 3600,
 						"origin": "template",

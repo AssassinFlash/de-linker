@@ -21,6 +21,7 @@ export function MapRingSelector({
 	const [selection, setSelection] = useState({ object: selected, index: 0 });
 	const at = selection.object === selected ? selection.index : 0;
 	const target = options[at] ?? options[0];
+	if (!target && geometry.roofs.length === 0) return null;
 	if (!target)
 		return (
 			<p className="lp-profile-help">

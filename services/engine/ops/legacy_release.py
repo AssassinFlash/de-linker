@@ -275,12 +275,12 @@ compat=json.dumps(data['compatibility'],sort_keys=True,separators=(',',':'),ensu
 products=Products.from_feed(data);contract=Compatibility(json.loads(compat))
 engine=Engine(products=products,compatibility=contract,pvgis=Pvgis(Path(os.environ['LINKER_ENGINE_CACHE'])/'pvgis'))
 prepared=Publication(data).prepared_products(engine)
-place=geo.lookup('10115');assert place is not None
+place=geo.lookup('10115','DE');assert place is not None
 print(json.dumps({'import_root':str(root),'version':version.digest(version.source_bytes(root/'src/linker_engine'),feed,compat),
  'source_revision':data['source_revision'],'compatibility_revision':data['compatibility_revision'],
  'prepared_products':prepared,'feed_sha256':hashlib.sha256(feed).hexdigest(),
  'compatibility_sha256':hashlib.sha256(compat_file).hexdigest(),
- 'geo':{'plz':place.plz,'latitude':place.latitude,'longitude':place.longitude,'state':place.state,'place':place.name}}))
+ 'geo':{'plz':place.postcode,'latitude':place.latitude,'longitude':place.longitude,'state':place.iso_region,'place':place.name}}))
 """
 
 
@@ -354,6 +354,11 @@ def timer_tick() -> int:
     if len(raw) != 2 or raw[0] != "t" or not raw[1].isdigit() or int(raw[1]) >= 2**64:
         raise ValueError("timer did not return a native uint64")
     return int(raw[1])
+
+
+def _planner_units() -> tuple[str, ...]:
+    """The units that answer planning requests from their own releases."""
+    return ("linker-planner-http.service", "linker-planner-worker.service")
 
 
 def unit(name: str) -> dict[str, str]:
@@ -679,6 +684,25 @@ def activate(
             root / "current/.venv/bin/python"
         ):
             raise RuntimeError("stable feed worker validator is not selector-bound")
+        # Say who actually answers planning requests before switching this
+        # engine. Measured 2026-11-15: activating a release here looked
+        # successful while the planner kept serving an older tree, because
+        # `linker-planner-http`/`linker-planner-worker` run their own releases
+        # under /opt/linker-planner. Nothing failed; the change simply had no
+        # effect on the surface being measured.
+        planners = [
+            unit_name
+            for unit_name in _planner_units()
+            if unit(unit_name).get("ActiveState") == "active"
+        ]
+        if planners:
+            print(
+                "note: "
+                + ", ".join(planners)
+                + " serve planning requests from their own releases; this"
+                + " activation only changes the design engine",
+                flush=True,
+            )
         state: dict[str, Any] = {
             "current": name,
             "previous": expected,
@@ -1022,7 +1046,7 @@ def git_blobs(repository: Path, revision: str) -> dict[str, str]:
         if kind != "blob" or mode not in {"100644", "100755"}:
             raise ValueError("linked runtime source is forbidden")
         result[name] = oid
-    if not {"data/plz_de.csv.gz", "pyproject.toml", "uv.lock"}.issubset(result):
+    if not {"data/plz_eu.csv.gz", "pyproject.toml", "uv.lock"}.issubset(result):
         raise ValueError("incomplete legacy runtime including geo data")
     return result
 

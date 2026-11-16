@@ -799,7 +799,7 @@ def _relaxations(
 
 def design(engine: Engine, request: ResidentialInput) -> Design:
     locale = request.locale
-    place = geo.lookup(request.plz)
+    place = geo.lookup(request.plz, request.country)
     if place is None:
         raise DesignInputError("plz", f"unknown postcode {request.plz}")
     latitude = request.location.latitude if request.location else place.latitude

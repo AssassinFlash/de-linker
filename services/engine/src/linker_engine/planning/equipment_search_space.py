@@ -351,14 +351,34 @@ class EquipmentSearchSpace:
             },
             "products": [
                 {
-                    k: row[k]
-                    for k in (
-                        "canonical_product_id",
-                        "model",
-                        "brand",
-                        "sku",
-                        "product_revision",
-                    )
+                    "canonical_product_id": row["canonical_product_id"],
+                    "model": row["model"],
+                    "brand": row["brand"],
+                    "sku": row["sku"],
+                    "product_revision": row["product_revision"],
+                    # The battery's own energy travels with it so the reader can
+                    # say what a stack adds up to instead of how many modules it
+                    # was built from. Measured 2026-11-15 on production: the
+                    # choice list showed "Battery modules per stack: 4" for four
+                    # different stacks, which is a build detail.
+                    #
+                    # These are the feed row's own flattened fields, not the
+                    # compiled `figures` map: the evidence basis is the
+                    # publication feed (`equipment_evidence.py:16`), whose rows
+                    # carry `usable_kwh` and `nominal_kwh` at the top level. The
+                    # first version of this read `row["figures"]` and shipped an
+                    # empty object — the fixture rows in the test carry that
+                    # shape, production's do not.
+                    "energy": {
+                        key: row[key]
+                        for key in (
+                            "usable_kwh",
+                            "nominal_kwh",
+                            "module_energy_kwh_usable",
+                            "module_energy_kwh_nominal",
+                        )
+                        if isinstance(row.get(key), (int, float))
+                    },
                 }
                 for row in sorted(
                     self.evidence.rows, key=lambda row: row["canonical_product_id"]

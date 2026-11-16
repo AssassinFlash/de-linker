@@ -858,10 +858,6 @@ msgstr "Gespräch per E-Mail erhalten"
 msgid "Energy per 15 minutes in kWh"
 msgstr "Energie je 15 Minuten in kWh"
 
-#: src/configurator/validation.ts:40 build/configurator.js
-msgid "Enter a German postcode with five digits."
-msgstr "Geben Sie eine deutsche Postleitzahl mit fünf Ziffern ein."
-
 #: src/configurator/validation.ts:63 build/configurator.js
 msgid "Enter a number."
 msgstr "Geben Sie eine Zahl ein."
@@ -4956,7 +4952,16 @@ msgid "Load street map"
 msgstr "Straßenkarte laden"
 
 #: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/design/MapViewport.tsx
+msgid ""
+"No official aerial imagery is published for this country. Draw the roof "
+"outline here, or upload a plan or a photograph of the roof."
+msgstr ""
+"Für dieses Land sind keine amtlichen Luftbilder verfügbar. Zeichnen Sie den "
+"Dachumriss hier ein oder laden Sie einen Plan bzw. ein Foto des Daches hoch."
+
 #: ../../apps/planner/src/components/design/LazySceneViewport.tsx:49
+#: build/planner/assets/planner.js
 msgid "Loading 3D workspace…"
 msgstr "3D-Arbeitsbereich wird geladen …"
 
@@ -9074,6 +9079,11 @@ msgstr "Ersatzstrombetrieb"
 #: build/planner/assets/planner.js
 msgid "Battery modules per stack"
 msgstr "Batteriemodule je Stack"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx
+#: build/planner/assets/planner.js
+msgid "Usable battery capacity"
+msgstr "Nutzbare Speicherkapazität"
 
 #: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:278
 #: build/planner/assets/planner.js
@@ -14374,6 +14384,25 @@ msgstr "Postleitzahl oder Ort"
 
 #: ../../apps/planner/src/components/QuickStart.tsx
 #: build/planner/assets/planner.js
+msgid "Postcode"
+msgstr "Postleitzahl"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Your postcode"
+msgstr "Ihre Postleitzahl"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid ""
+"Several countries use this postcode. Choose your country and the postcode "
+"will be placed."
+msgstr ""
+"Mehrere Länder verwenden diese Postleitzahl. Wählen Sie Ihr Land, dann wird "
+"die Postleitzahl zugeordnet."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
 msgid "Prepare the storage scenario"
 msgstr "Speicherszenario vorbereiten"
 
@@ -14866,3 +14895,366 @@ msgstr "Zwei Punkte und eine tatsächliche Länge ergeben einen einheitlichen Ma
 #: ../../apps/planner/src/components/design/ImageCalibrationWorkspace.tsx build/planner/assets/planner.js:1
 msgid "Usable uniform scale"
 msgstr "Nutzbarer einheitlicher Maßstab"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "A typical year needs a postcode this screen can place. Enter yours before generating and this step runs."
+msgstr "Ein Regeljahr braucht eine Postleitzahl, die dieser Bildschirm zuordnen kann. Tragen Sie Ihre ein, dann läuft dieser Schritt."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "The weather request could not be saved. Your open changes stay on this screen."
+msgstr "Die Wetteranfrage konnte nicht gespeichert werden. Ihre offenen Änderungen bleiben auf diesem Bildschirm."
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Typical year acquired (%s)"
+msgstr "Regeljahr übernommen (%s)"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Typical year acquired for this site"
+msgstr "Regeljahr für diesen Standort übernommen"
+
+#: ../../apps/planner/src/components/Workspace.tsx:366
+#: build/planner/assets/planner.js
+msgid "Opening the project…"
+msgstr "Projekt wird geöffnet…"
+
+#: ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx
+#: build/planner/assets/planner.js
+msgid "Roof plane %d"
+msgstr "Dachfläche %d"
+
+#: ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx
+#: build/planner/assets/planner.js
+msgid "Measured 3D roof plane (%1$s° tilt, %2$s° azimuth)"
+msgstr "Aufgemessene 3D-Dachfläche (%1$s° Neigung, %2$s° Azimut)"
+
+#: ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx
+#: build/planner/assets/planner.js
+msgid "Enter a roof pitch between 0° and 90° and a bearing between 0° and 360°."
+msgstr "Geben Sie eine Dachneigung zwischen 0° und 90° sowie eine Fallrichtung zwischen 0° und 360° ein."
+
+#: ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx
+#: build/planner/assets/planner.js
+msgid "Building roof %d"
+msgstr "Gebäudedach %d"
+
+#: ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx
+#: build/planner/assets/planner.js
+msgid "Building outline adopted with entered roof pitch and bearing."
+msgstr "Gebäudeumriss mit eingegebener Dachneigung und Fallrichtung übernommen."
+
+#: ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx
+#: build/planner/assets/planner.js
+msgid "Detected building: %s"
+msgstr "Erkanntes Gebäude: %s"
+
+#: ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx
+#: build/planner/assets/planner.js
+msgid "Measured roof plane"
+msgstr "Aufgemessene Dachfläche"
+
+#: ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx
+#: build/planner/assets/planner.js
+msgid "Plane %1$d · %2$s m² · %3$s° tilt · %4$s° azimuth"
+msgstr "Fläche %1$d · %2$s m² · %3$s° Neigung · %4$s° Azimut"
+
+#: ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx
+#: build/planner/assets/planner.js
+msgid "Use selected roof plane"
+msgstr "Ausgewählte Dachfläche übernehmen"
+
+#: ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx
+#: build/planner/assets/planner.js
+msgid "Use building outline"
+msgstr "Gebäudeumriss übernehmen"
+
+#: ../../apps/planner/src/components/equipment/GridConnectionResult.tsx
+#: build/planner/assets/planner.js
+msgid "EU Regulation 2016/631 (RfG) national implementation and local DSO conditions"
+msgstr "Nationale Umsetzung der Verordnung (EU) 2016/631 (RfG) und Bedingungen des örtlichen Verteilnetzbetreibers"
+
+#: ../../apps/planner/src/components/equipment/GridConnectionResult.tsx
+#: build/planner/assets/planner.js
+msgid "National electricity network code and local grid operator conditions"
+msgstr "Nationale Netzanschlussvorschriften und Bedingungen des örtlichen Netzbetreibers"
+
+#: ../../apps/planner/src/components/equipment/GridConnectionResult.tsx
+#: build/planner/assets/planner.js
+msgid "A versioned national rule reading is bundled for %1$s (%2$s). Enter grid connection details and national rule inputs to run the conditional checks; local operator territory and connection permission still require project-specific verification."
+msgstr "Für %1$s ist eine versionierte Einordnung des nationalen Regelwerks hinterlegt (%2$s). Tragen Sie die Netzanschlussdaten und die Ländereingaben ein, um die bedingten Prüfungen auszuführen; Netzgebiet und Anschlusszusage erfordern weiterhin eine projektspezifische Prüfung."
+
+#: ../../apps/planner/src/components/equipment/GridConnectionResult.tsx
+#: build/planner/assets/planner.js
+msgid "No automated grid-connection rule pack is bundled for %1$s (%2$s). Local grid operator connection rules are checked during project engineering and inquiry handling."
+msgstr "Für %1$s ist kein automatisiertes Regelwerk zum Netzanschluss hinterlegt (%2$s). Die Anschlussbedingungen des örtlichen Netzbetreibers werden im Rahmen der Projektierung und Anfragebearbeitung geprüft."
+
+#: ../../apps/planner/src/components/equipment/GridConnectionResult.tsx
+#: build/planner/assets/planner.js
+msgid "No site country was specified, so national grid-connection rules could not be checked."
+msgstr "Es wurde kein Standortland angegeben; nationale Netzanschlussregeln konnten daher nicht geprüft werden."
+
+#: ../../apps/planner/src/components/equipment/GridConnectionResult.tsx
+#: build/planner/assets/planner.js
+msgid "A versioned national rule reading is bundled for %1$s (%2$s). Enter national rule inputs to run the conditional checks."
+msgstr "Für %1$s ist eine versionierte Einordnung des nationalen Regelwerks hinterlegt (%2$s). Tragen Sie die Ländereingaben ein, um die bedingten Prüfungen auszuführen."
+
+#: ../../apps/planner/src/components/design/Google3DMap.tsx
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: ../../apps/planner/src/components/BriefForm.tsx
+#: build/planner/assets/planner.js
+msgid "Loading 3D satellite imagery…"
+msgstr "3D-Satellitenansicht wird geladen…"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Open 3D roof studio"
+msgstr "3D-Dachplanung öffnen"
+
+#: ../../apps/planner/src/components/design/Google3DMap.tsx
+#: build/planner/assets/planner.js
+msgid "Photorealistic 3D imagery could not be loaded here. You can retry or use the aerial map."
+msgstr "Die fotorealistische 3D-Ansicht konnte hier nicht geladen werden. Sie können es erneut versuchen oder die Luftbildkarte öffnen."
+
+#: ../../apps/planner/src/components/design/Google3DMap.tsx
+#: build/planner/assets/planner.js
+msgid "Open aerial map"
+msgstr "Luftbildkarte öffnen"
+
+#: ../../apps/planner/src/components/design/Google3DMap.tsx
+#: build/planner/assets/planner.js
+msgid "3D satellite controls"
+msgstr "Steuerung der 3D-Satellitenansicht"
+
+#: ../../apps/planner/src/components/design/Google3DMap.tsx
+#: build/planner/assets/planner.js
+msgid "Reset 3D view"
+msgstr "3D-Ansicht zurücksetzen"
+
+#: ../../apps/planner/src/components/design/Google3DMap.tsx
+#: build/planner/assets/planner.js
+msgid "3D oblique view"
+msgstr "3D-Schrägansicht"
+
+#: ../../apps/planner/src/components/design/Google3DMap.tsx
+#: build/planner/assets/planner.js
+msgid "Top-down view"
+msgstr "Draufsicht von oben"
+
+#: ../../apps/planner/src/components/design/Google3DMap.tsx
+#: build/planner/assets/planner.js
+msgid "Hide street labels"
+msgstr "Straßenbeschriftung ausblenden"
+
+#: ../../apps/planner/src/components/design/Google3DMap.tsx
+#: build/planner/assets/planner.js
+msgid "Show street labels"
+msgstr "Straßenbeschriftung einblenden"
+
+#: ../../apps/planner/src/components/design/Google3DMap.tsx
+#: build/planner/assets/planner.js
+msgid "Draw or adopt on aerial map"
+msgstr "In der Luftbildkarte zeichnen oder übernehmen"
+
+#: ../../apps/planner/src/components/design/Google3DMap.tsx
+#: build/planner/assets/planner.js
+msgid "CAD 3D (Edit panels)"
+msgstr "CAD 3D (Module verschieben)"
+
+#: ../../apps/planner/src/components/design/Google3DMap.tsx
+#: build/planner/assets/planner.js
+msgid "3D satellite view of the site"
+msgstr "3D-Satellitenansicht des Standorts"
+
+#: ../../apps/planner/src/components/design/MapViewport.tsx
+#: build/planner/assets/planner.js
+msgid "Aerial imagery"
+msgstr "Luftbild"
+
+#: ../../apps/planner/src/components/design/MapViewport.tsx
+#: build/planner/assets/planner.js
+msgid "Hide aerial map"
+msgstr "Luftbildkarte ausblenden"
+
+#: ../../apps/planner/src/components/design/MapViewport.tsx
+#: build/planner/assets/planner.js
+msgid "Show aerial map"
+msgstr "Luftbildkarte anzeigen"
+
+#: ../../apps/planner/src/components/design/SceneViewport.tsx
+#: build/planner/assets/planner.js
+msgid "Google Photorealistic 3D shows the real site surroundings with your roof layout. Switch to CAD 3D to drag module arrays directly on the roof plane."
+msgstr "Google Photorealistic 3D zeigt die reale Umgebung Ihres Gebäudes samt Dachbelegung. Wechseln Sie zu CAD 3D, um Modulfelder direkt auf der Dachfläche zu verschieben."
+
+#: ../../apps/planner/src/components/design/SceneViewport.tsx
+#: build/planner/assets/planner.js
+msgid "Google Photorealistic 3D shows the real building at this location. Open the aerial map to adopt or draw the roof outline."
+msgstr "Google Photorealistic 3D zeigt das reale Gebäude an diesem Standort. Öffnen Sie die Luftbildkarte, um den Dachumriss zu übernehmen oder zu zeichnen."
+
+#: ../../apps/planner/src/components/design/SceneViewport.tsx
+#: build/planner/assets/planner.js
+msgid "Photorealistic 3D (Google)"
+msgstr "Fotorealistisches 3D (Google)"
+
+#: build/planner/assets/planner.js
+msgid "Draw one roof face at a time."
+msgstr "Zeichnen Sie jede Dachfläche einzeln."
+
+
+#: build/planner/assets/planner.js
+msgid "Start with your roof"
+msgstr "Dach planen"
+
+#: build/planner/assets/planner.js
+msgid "Find your building on the aerial image, then draw the roof and place panels."
+msgstr "Finden Sie Ihr Gebäude im Luftbild. Zeichnen Sie dann das Dach und platzieren Sie die Module."
+
+#: build/planner/assets/planner.js
+msgid "Address or postcode"
+msgstr "Adresse oder Postleitzahl"
+
+#: build/planner/assets/planner.js
+msgid "Enter a street address and town, or use a postcode to find the building on the map."
+msgstr "Geben Sie Straße und Ort oder eine Postleitzahl ein, um Ihr Gebäude auf der Karte zu finden."
+
+#: build/planner/assets/planner.js
+msgid "Open roof map"
+msgstr "Dachkarte öffnen"
+
+#: build/planner/assets/planner.js
+msgid "We could not find that address in the selected country. Check the address or try a nearby postcode."
+msgstr "Diese Adresse wurde im gewählten Land nicht gefunden. Prüfen Sie die Adresse oder suchen Sie mit einer Postleitzahl in der Nähe."
+
+#: build/planner/assets/planner.js
+msgid "Address search is unavailable right now. Your details are still here; please try again."
+msgstr "Die Adresssuche ist gerade nicht verfügbar. Ihre Angaben bleiben erhalten. Versuchen Sie es erneut."
+
+#: build/planner/assets/planner.js
+msgid "Start with equipment"
+msgstr "Geräte auswählen"
+
+#: build/planner/assets/planner.js
+msgid "Draw your roof on the aerial map, then place your panels."
+msgstr "Zeichnen Sie Ihr Dach im Luftbild und platzieren Sie anschließend die Module."
+
+#: build/planner/assets/planner.js
+msgid "Use measurements or import a roof plan"
+msgstr "Maße eingeben oder Dachplan importieren"
+
+#: build/planner/assets/planner.js
+msgid "Roof face %d"
+msgstr "Dachfläche %d"
+
+#: build/planner/assets/planner.js
+msgid "Drawing source"
+msgstr "Grundlage der Zeichnung"
+
+#: build/planner/assets/planner.js
+msgid "Manually traced on aerial imagery; pitch and direction entered by the user."
+msgstr "Im Luftbild von Hand nachgezeichnet. Neigung und Ausrichtung wurden vom Nutzer eingegeben."
+
+#: build/planner/assets/planner.js
+msgid "Aerial imagery is not available. You can upload a roof plan or retry loading the map."
+msgstr "Das Luftbild ist nicht verfügbar. Sie können einen Dachplan hochladen oder die Karte erneut laden."
+
+#: build/planner/assets/planner.js
+msgid "Check the outline, then enter the roof pitch and the direction it faces."
+msgstr "Prüfen Sie den Umriss und geben Sie Neigung und Ausrichtung der Dachfläche ein."
+
+#: build/planner/assets/planner.js
+msgid "Roof direction (°)"
+msgstr "Dachausrichtung (°)"
+
+#: build/planner/assets/planner.js
+msgid "North 0°, east 90°, south 180°, west 270°."
+msgstr "Norden 0°, Osten 90°, Süden 180°, Westen 270°."
+
+#: build/planner/assets/planner.js
+msgid "Height and drawing source"
+msgstr "Höhe und Zeichnungsgrundlage"
+
+#: build/planner/assets/planner.js
+msgid "Preview the panels on your roof. Click another position to move them before applying."
+msgstr "Prüfen Sie die Modulbelegung auf Ihrem Dach. Klicken Sie vor dem Übernehmen auf eine andere Stelle, um die Module zu verschieben."
+
+#: build/planner/assets/planner.js
+msgid "Choose where the first panel starts on your roof."
+msgstr "Wählen Sie auf dem Dach die Startposition des ersten Moduls."
+
+#: build/planner/assets/planner.js
+msgid "Change position on roof"
+msgstr "Position auf dem Dach ändern"
+
+#: build/planner/assets/planner.js
+msgid "Choose position on roof"
+msgstr "Position auf dem Dach wählen"
+
+#: build/planner/assets/planner.js
+msgid "Layout and mounting settings"
+msgstr "Einstellungen für Belegung und Montage"
+
+#: build/planner/assets/planner.js
+msgid "The initial layout follows the roof with no extra spacing or mounting height. Adjust these values for your layout."
+msgstr "Die erste Belegung folgt der Dachfläche, ohne zusätzliche Abstände oder Montagehöhe. Passen Sie diese Werte für Ihre Belegung an."
+
+#: build/planner/assets/planner.js
+msgid "Panel array %d"
+msgstr "Modulfeld %d"
+
+#: build/planner/assets/planner.js
+msgid "Panel rotation"
+msgstr "Moduldrehung"
+
+#: build/planner/assets/planner.js
+msgid "Tilt above the roof"
+msgstr "Neigung gegenüber der Dachfläche"
+
+#: build/planner/assets/planner.js
+msgid "Gap between rows"
+msgstr "Abstand zwischen den Reihen"
+
+#: build/planner/assets/planner.js
+msgid "Height above the roof"
+msgstr "Höhe über der Dachfläche"
+
+#: build/planner/assets/planner.js
+msgid "Mounting notes"
+msgstr "Hinweise zur Montage"
+
+#: build/planner/assets/planner.js
+msgid "Mounting not specified."
+msgstr "Montage noch nicht festgelegt."
+
+#: build/planner/assets/planner.js
+msgid "Click inside the roof to position the panels."
+msgstr "Klicken Sie in die Dachfläche, um die Module zu platzieren."
+
+#: build/planner/assets/planner.js
+msgid "Place panels at map centre"
+msgstr "Module in der Kartenmitte platzieren"
+
+#: build/planner/assets/planner.js
+msgid "Review panel layout"
+msgstr "Modulbelegung prüfen"
+
+#: build/planner/assets/planner.js
+msgid "Place panels"
+msgstr "Module platzieren"
+
+#: build/planner/assets/planner.js
+msgid "Enter panel position"
+msgstr "Modulposition eingeben"
+
+#: build/planner/assets/planner.js
+msgid "Preview position"
+msgstr "Position anzeigen"
+
+#: build/planner/assets/planner.js
+msgid "Module details"
+msgstr "Moduldetails"
+
+#: build/configurator.js
+msgid "Enter a postcode using letters, numbers, spaces or hyphens."
+msgstr "Geben Sie die Postleitzahl mit Buchstaben, Ziffern, Leerzeichen oder Bindestrichen ein."

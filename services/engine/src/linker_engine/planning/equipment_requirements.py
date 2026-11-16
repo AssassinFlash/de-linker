@@ -24,6 +24,11 @@ type GridPhase = Annotated[Literal[1, 3], BeforeValidator(_phase)]
 type Application = Literal["residential", "commercial"]
 
 
+# Declarations the requirements own and a setup cannot carry: the selection
+# schema has no such property, so comparing them would always mismatch.
+_REQUIREMENTS_ONLY = frozenset({"application"})
+
+
 class EquipmentRequirements(Document):
     schema_version: SchemaVersion
     grid_phase: GridPhase
@@ -41,7 +46,18 @@ class EquipmentRequirements(Document):
         prepared = cls.read(inputs.get("equipment_requirements"))
         setup = inputs.get("equipment_setup")
         if isinstance(setup, dict):
-            current = cls.read({key: setup.get(key) for key in cls.model_fields})
-            if current != prepared:
-                raise InvalidInput("equipment search requirements need preparation")
+            # A setup cannot restate `application`: it is a declaration about the
+            # project, held by the requirements, and the selection schema has no
+            # such property. Compare only the fields both documents own, and
+            # compare their values rather than two populated models — a model
+            # read from the setup would fill the absent `application` with its
+            # default and differ from every prepared requirement.
+            for name in cls.model_fields:
+                if name in _REQUIREMENTS_ONLY or name not in setup:
+                    continue
+                if setup[name] != getattr(prepared, name):
+                    raise InvalidInput(
+                        "equipment search requirements need preparation",
+                        fields=(f"equipment_setup.{name}",),
+                    )
         return prepared

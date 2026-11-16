@@ -92,6 +92,7 @@ export const RPC_PATHS = [
 	"runs/report",
 	"design/commercial",
 	"places/lookup",
+	"places/outline",
 	"equipment/candidates/read",
 	"equipment/certificates/read",
 	"runs/weather",

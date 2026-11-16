@@ -32,6 +32,41 @@ const session = {
 	},
 };
 
+async function startRoofCreation(t, title) {
+	const originalFetch = globalThis.fetch;
+	globalThis.fetch = async () =>
+		new Response(
+			JSON.stringify({
+				places: [
+					{
+						formattedAddress: title,
+						addressComponents: [{ shortText: "NO", types: ["country"] }],
+						location: { latitude: 59.91, longitude: 10.75 },
+					},
+				],
+			}),
+			{ headers: { "Content-Type": "application/json" } },
+		);
+	t.after(() => {
+		globalThis.fetch = originalFetch;
+	});
+	await until(() => document.querySelector(".lp-roof-start"));
+	await act(async () => {
+		const select = document.querySelector(".lp-roof-start select");
+		select.value = "NO";
+		select.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	await enter(document.querySelector(".lp-roof-start input"), title);
+	await until(() => !document.querySelector(".lp-roof-entry button").disabled);
+	await act(async () =>
+		document
+			.querySelector(".lp-roof-entry")
+			.dispatchEvent(
+				new window.Event("submit", { bubbles: true, cancelable: true }),
+			),
+	);
+}
+
 async function workspaceFixture(t, mode, configureDom = () => {}) {
 	const fixture = setupDom();
 	const browserGlobals = new Map();
@@ -793,6 +828,7 @@ test("a former identity's delayed creation cannot dispatch or restore cache and 
 				countries: { NO: "Norway" },
 				baseUrl: location.origin + "/api/",
 				nonceUrl: location.origin + "/nonce",
+				googleMapsApiKey: "fixture-google-maps-key",
 			};
 			function Track(props) {
 				cache = useQueryClient();
@@ -819,25 +855,7 @@ test("a former identity's delayed creation cannot dispatch or restore cache and 
 					),
 				),
 			);
-			await until(() =>
-				[...document.querySelectorAll("button")].some(
-					(button) =>
-						button.textContent.includes("New project") && !button.disabled,
-				),
-			);
-			await act(async () =>
-				[...document.querySelectorAll("button")]
-					.find((button) => button.textContent.includes("New project"))
-					.click(),
-			);
-			await enter(document.querySelector("input"), oldAck.title);
-			await act(async () =>
-				document
-					.querySelector("form")
-					.dispatchEvent(
-						new window.Event("submit", { bubbles: true, cancelable: true }),
-					),
-			);
+			await startRoofCreation(t, oldAck.title);
 			await until(() => reached);
 			nextSession = newSession;
 			await act(async () => window.dispatchEvent(new window.Event("focus")));
@@ -962,6 +980,7 @@ test("native confirmation fences pending creation, revision and navigation befor
 				countries: { NO: "Norway" },
 				baseUrl: location.origin + "/rpc/",
 				nonceUrl: location.origin + "/nonce",
+				googleMapsApiKey: "fixture-google-maps-key",
 			};
 			function Track(props) {
 				cache = useQueryClient();
@@ -1010,25 +1029,7 @@ test("native confirmation fences pending creation, revision and navigation befor
 						.click(),
 				);
 			} else {
-				await until(() =>
-					[...document.querySelectorAll("button")].some(
-						(button) =>
-							button.textContent.includes("New project") && !button.disabled,
-					),
-				);
-				await act(async () =>
-					[...document.querySelectorAll("button")]
-						.find((button) => button.textContent.includes("New project"))
-						.click(),
-				);
-				await enter(document.querySelector("input"), oldAck.title);
-				await act(async () =>
-					document
-						.querySelector("form")
-						.dispatchEvent(
-							new window.Event("submit", { bubbles: true, cancelable: true }),
-						),
-				);
+				await startRoofCreation(t, oldAck.title);
 			}
 			await until(() => reached);
 			const clear = cache.clear.bind(cache);

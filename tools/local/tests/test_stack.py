@@ -468,13 +468,20 @@ IMAGERY = json.loads(
         / "imagery.json"
     ).read_text()
 )
-# The WMS hosts the roof step loads, from the engine's own list of them: the
-# mu-plugin's allowlist and this assertion read the same source of truth.
-IMAGERY_WMS = " ".join(
+# WMS, tile templates and the Copernicus fallback share this explicit grant.
+# The Italy relay belongs to WordPress; local pages do not call production.
+IMAGERY_EXTERNAL = " ".join(
     sorted(
         {
-            f"https://{urlsplit(state['wms']).hostname}"
-            for state in IMAGERY["states"].values()
+            f"https://{urlsplit(source).hostname}"
+            for source in [
+                *(
+                    state["wms"] if "wms" in state else state["template"]
+                    for state in IMAGERY["states"].values()
+                ),
+                IMAGERY["copernicus_vhr"]["template"],
+            ]
+            if urlsplit(source).hostname != "de-linker.com"
         }
     )
 )
@@ -492,9 +499,9 @@ def test_pages_may_load_from_this_machine_only_and_are_not_indexed(
     # images (services/engine/data/imagery.json).
     assert home.headers["Content-Security-Policy"] == (
         f"default-src {LOCAL_SOURCES}; "
-        f"script-src {LOCAL_SOURCES} https://cdn.jsdelivr.net https://esm.sh https://unpkg.com https://challenges.cloudflare.com; "
-        f"img-src {LOCAL_SOURCES} {IMAGERY_WMS} https://tiles.openfreemap.org https://secure.gravatar.com; "
-        f"connect-src {LOCAL_SOURCES} {IMAGERY_WMS} https://tiles.openfreemap.org https://challenges.cloudflare.com; "
+        f"script-src {LOCAL_SOURCES} https://cdn.jsdelivr.net https://esm.sh https://unpkg.com https://challenges.cloudflare.com https://maps.googleapis.com https://maps.gstatic.com; "
+        f"img-src {LOCAL_SOURCES} {IMAGERY_EXTERNAL} https://tiles.openfreemap.org https://secure.gravatar.com https://tile.googleapis.com https://maps.gstatic.com; "
+        f"connect-src {LOCAL_SOURCES} {IMAGERY_EXTERNAL} https://tiles.openfreemap.org https://challenges.cloudflare.com https://maps.googleapis.com https://maps.gstatic.com https://tile.googleapis.com https://places.googleapis.com; "
         "frame-src 'self' http://127.0.0.1:* https://challenges.cloudflare.com; "
         "form-action 'self'"
     )

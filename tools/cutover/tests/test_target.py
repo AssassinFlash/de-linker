@@ -17,6 +17,7 @@ import textwrap
 import threading
 import urllib.error
 from collections.abc import Iterator
+from http import client as http_client
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from types import SimpleNamespace
@@ -821,3 +822,22 @@ def test_task_session_unwinds_on_termination_signal(signum: int) -> None:
     )
     assert result.returncode == 128 + signum, result.stderr
     assert "signal cleanup and handlers verified" in result.stdout
+
+
+def test_a_truncated_response_remains_observable_without_retry(
+    site: tuple[Target, list[str]],
+) -> None:
+    """An incomplete response must reach the independent deployment observer."""
+    target, requested = site
+    # The real fault is a bare IncompleteRead from response.read(), which is an
+    # HTTPException rather than an OSError; wrapping it in URLError would test
+    # a path the host never takes.
+    interrupted = http_client.IncompleteRead(b"")
+    with patch.object(
+        OPENER, "open", wraps=OPENER.open, side_effect=[interrupted, DEFAULT]
+    ) as opening:
+        with pytest.raises(http_client.IncompleteRead) as failure:
+            target.http("/de/", cache_buster="batch")
+        assert failure.value is interrupted
+        assert opening.call_count == 1
+    assert requested == []
