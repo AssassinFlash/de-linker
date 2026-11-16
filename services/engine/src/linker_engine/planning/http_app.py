@@ -10,19 +10,27 @@ the Worker.
 from __future__ import annotations
 
 import logging
+import os
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import cast
+from functools import cache
+from pathlib import Path
+from typing import Any, cast
 
 from fastapi import FastAPI, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
+from pyproj import Transformer
+from shapely.geometry import Point, Polygon
+from shapely.geometry.base import BaseGeometry
+from shapely.ops import unary_union
 from starlette.exceptions import HTTPException
 from starlette.types import ASGIApp
 
 from .. import geo, imagery
-from ..roof import footprints
+from ..roof import europe, footprints, lod2
+from ..roof.citygml import Building
 from .access import active_actor, positive_integer
 from .assets import Assets
 from .assistant_context import assistant_context
@@ -142,6 +150,184 @@ def _imagery_at(found: geo.Place) -> Object | None:
         "licence": service.licence,
         "licence_url": service.licence_url,
     }
+
+
+@cache
+def _local_model_transformer(country: str) -> Transformer:
+    return Transformer.from_crs("EPSG:4326", europe.model_crs(country), always_xy=True)
+
+
+def _outer_ring(
+    footprint_rings: list[list[tuple[float, float]]],
+    plane_rings: list[list[tuple[float, float]]],
+) -> list[tuple[float, float]] | None:
+    for ring in footprint_rings:
+        if len(ring) >= 3:
+            return ring
+    polygons = [Polygon(ring) for ring in plane_rings if len(ring) >= 3]
+    valid = [p if p.is_valid else p.buffer(0) for p in polygons if not p.is_empty]
+    if not valid:
+        return None
+    merged = unary_union(valid)
+    target = merged if isinstance(merged, Polygon) else merged.convex_hull
+    if isinstance(target, Polygon) and len(target.exterior.coords) >= 4:
+        return [(float(x), float(y)) for x, y in target.exterior.coords[:-1]]
+    return None
+
+
+def _lod2_shape(building: dict[str, Any]) -> BaseGeometry | None:
+    rings = building.get("footprint") or [
+        plane["ring"] for plane in building.get("planes", [])
+    ]
+    polygons = [Polygon(ring) for ring in rings if len(ring) >= 3]
+    valid = [p if p.is_valid else p.buffer(0) for p in polygons if not p.is_empty]
+    if not valid:
+        return None
+    return unary_union(valid)
+
+
+def _transform_wgs84_ring(
+    transformer: Transformer, ring: list[tuple[float, float]]
+) -> Json:
+    return [
+        [round(float(lon), 7), round(float(lat), 7)]
+        for lon, lat in (transformer.transform(x, y) for x, y in ring)
+    ]
+
+
+def _lod2_wgs84_ring(zone: int, ring: list[tuple[float, float]]) -> Json:
+    return [
+        [round(lon, 7), round(lat, 7)]
+        for lon, lat in (lod2.to_wgs84(zone, x, y) for x, y in ring)
+    ]
+
+
+def _official_3d_outline(
+    place: geo.Place, latitude: float, longitude: float
+) -> Object | None:
+    if place.country in ("NL", "CH", "LI"):
+        try:
+            model = europe.read(place.country, latitude, longitude)
+        except europe.ModelUnavailable:
+            model = None
+        if model is None:
+            return None
+        to_wgs84 = model.transformer
+        to_local = _local_model_transformer(model.country)
+        x, y = to_local.transform(longitude, latitude)
+        best: tuple[float, Building] | None = None
+        for building in model.buildings:
+            footprint = (
+                building.footprint[0]
+                if building.footprint
+                else (building.planes[0].ring if building.planes else None)
+            )
+            if footprint is None:
+                continue
+            dist = europe.distance_m(footprint, x, y)
+            if dist <= footprints.CLICK_TOLERANCE_M and (
+                best is None or dist < best[0]
+            ):
+                best = (dist, building)
+        if best is None:
+            return None
+        _, chosen = best
+        valid_planes = [
+            plane
+            for plane in chosen.planes
+            if 0.0 <= plane.tilt_deg < 90.0
+            and 1.0 <= plane.area_m2 <= 3000.0
+            and len(plane.ring) >= 3
+        ]
+        if not valid_planes:
+            return None
+        outer = _outer_ring(chosen.footprint, [plane.ring for plane in valid_planes])
+        if outer is None:
+            return None
+        return {
+            "schema_version": 1,
+            "found": True,
+            "country_code": place.country,
+            "outline": _transform_wgs84_ring(to_wgs84, outer),
+            "source": f"{model.country} 3D model",
+            "licence": model.licence,
+            "planes": [
+                {
+                    "id": index,
+                    "polygon": _transform_wgs84_ring(to_wgs84, plane.ring),
+                    "tilt_deg": round(plane.tilt_deg, 1),
+                    "azimuth_deg": round(plane.azimuth_deg, 1),
+                    "area_m2": round(plane.area_m2, 2),
+                }
+                for index, plane in enumerate(valid_planes, start=1)
+            ],
+        }
+    if place.country == "DE":
+        cache_dir = (
+            Path(os.environ.get("LINKER_ENGINE_CACHE") or "/tmp/linker-engine-cache")
+            / "lod2"
+        )
+        try:
+            tile = lod2.tile_for(place.iso_region, latitude, longitude)
+            index = lod2.TileIndex(cache_dir).load(tile)
+        except lod2.Lod2Unavailable:
+            return None
+        x, y = lod2.to_utm(tile.zone, latitude, longitude)
+        point = Point(x, y)
+        best_de: tuple[float, dict[str, Any]] | None = None
+        for item in index["buildings"]:
+            shape = _lod2_shape(item)
+            if shape is None:
+                continue
+            dist = shape.distance(point)
+            if dist <= footprints.CLICK_TOLERANCE_M and (
+                best_de is None or dist < best_de[0]
+            ):
+                best_de = (dist, item)
+        if best_de is None:
+            return None
+        _, building_dict = best_de
+        raw_planes = [
+            raw
+            for raw in building_dict.get("planes", [])
+            if 0.0 <= float(raw.get("tilt", -1)) < 90.0
+            and 1.0 <= float(raw.get("area", 0)) <= 3000.0
+            and len(raw.get("ring", [])) >= 3
+        ]
+        if not raw_planes:
+            return None
+        footprint_rings = [
+            [(float(px), float(py)) for px, py in ring]
+            for ring in (building_dict.get("footprint") or [])
+        ]
+        plane_rings = [
+            [(float(px), float(py)) for px, py in raw["ring"]] for raw in raw_planes
+        ]
+        outer = _outer_ring(footprint_rings, plane_rings)
+        if outer is None:
+            return None
+        return {
+            "schema_version": 1,
+            "found": True,
+            "country_code": place.country,
+            "outline": _lod2_wgs84_ring(tile.zone, outer),
+            "source": f"LoD2 {place.iso_region}",
+            "licence": tile.licence,
+            "planes": [
+                {
+                    "id": idx,
+                    "polygon": _lod2_wgs84_ring(
+                        tile.zone,
+                        [(float(px), float(py)) for px, py in raw["ring"]],
+                    ),
+                    "tilt_deg": round(float(raw["tilt"]), 1),
+                    "azimuth_deg": round(float(raw["azimuth"]), 1),
+                    "area_m2": round(float(raw["area"]), 2),
+                }
+                for idx, raw in enumerate(raw_planes, start=1)
+            ],
+        }
+    return None
 
 
 def create_private_app(
@@ -513,10 +699,10 @@ def create_private_app(
     def place_outline(body: PlaceOutline, request: Request) -> Object:
         """The building outline at a declared position, where one is mapped.
 
-        Germany answers from its states' LoD2 and the Netherlands and
-        Switzerland from their own 3D models; every other country answers from
-        the global open footprints. A position with no mapped building says so
-        rather than returning a guessed shape.
+        Germany answers from its states' LoD2 and the Netherlands, Switzerland
+        and Liechtenstein from their own 3D models (including measured roof
+        planes); every other country answers from open 2D building footprints.
+        A position with no mapped building says so rather than guessing.
         """
         actor = verified_actor(request.scope)
         with workspace.database.read() as connection:
@@ -524,6 +710,9 @@ def create_private_app(
         place = geo.lookup(body.query.strip(), body.country)
         if place is None:
             raise NotFound("place not found")
+        official = _official_3d_outline(place, body.latitude, body.longitude)
+        if official is not None:
+            return official
         found = footprints.outline_payload(place.country, body.latitude, body.longitude)
         if found is None:
             return {
@@ -538,6 +727,7 @@ def create_private_app(
             "outline": found["outline"],
             "source": found["source"],
             "licence": found["licence"],
+            "planes": found.get("planes", []),
         }
 
     @app.post("/handoffs/prepare")

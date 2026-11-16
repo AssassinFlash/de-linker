@@ -353,11 +353,35 @@ export function readCountryAssessment(value: unknown): JsonObject {
 			typeof country.country_code !== "string") ||
 		![
 			"dso_tab_evidence_requires_independent_verification",
+			"bundled_country_rules_require_inputs",
 			"country_rules_not_available",
 			"country_rules_require_project_verification",
 		].includes(String(country.reason))
 	)
 		fail();
+	if (country.rule_gap !== undefined) {
+		const gap = readObject(country.rule_gap);
+		const bundled = ["DE", "FR", "NL", "AT", "SE"].includes(
+			String(country.country_code),
+		);
+		if (
+			Object.keys(gap).some(
+				(key) =>
+					![
+						"country_code",
+						"bundled_rule_pack",
+						"gap_code",
+						"framework",
+					].includes(key),
+			) ||
+			gap.country_code !== country.country_code ||
+			gap.bundled_rule_pack !== bundled ||
+			typeof gap.gap_code !== "string" ||
+			!gap.gap_code ||
+			(gap.framework !== null && typeof gap.framework !== "string")
+		)
+			fail();
+	}
 	if (country.rule_review !== undefined) {
 		if (typeof country.country_code !== "string") fail();
 		try {

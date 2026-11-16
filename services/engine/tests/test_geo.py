@@ -35,15 +35,64 @@ def test_a_shared_postcode_answers_only_when_the_country_is_named() -> None:
     Measured 2026-11-15: 4,754 of 10,815 German postcodes are also written by
     another country. The form collects the country and passes it, so the
     ambiguous case is answered by asking rather than by assuming Germany.
+
+    Measured 2026-11-16: Poland writes `10-115` (Olsztyn), so the same digits
+    without Poland's hyphen name a third country too. The ambiguity grows; the
+    answer still asks instead of picking one.
     """
     assert geo.lookup("10115") is None
-    assert geo.countries_of("10115") == frozenset({"DE", "EE"})
+    assert {"DE", "EE"} <= geo.countries_of("10115")
     germany = geo.lookup("10115", "DE")
     estonia = geo.lookup("10115", "EE")
+    poland = geo.lookup("10-115", "PL")
     assert germany is not None and germany.country == "DE"
     assert estonia is not None and estonia.country == "EE"
+    assert poland is not None and poland.country == "PL"
     # An unambiguous code needs no country at all.
     assert geo.lookup("3750-000").country == "PT"  # type: ignore[union-attr]
+
+
+def test_a_code_written_without_its_space_finds_the_same_place() -> None:
+    """Czechia, Sweden and Slovakia write one space inside the postcode.
+
+    Measured 2026-11-16 against the table: a resident typing `11000` or
+    `11120` was answered "nowhere" while `110 00` resolved, because the table
+    keeps the country's own spelling and the lookup only matched it exactly.
+    """
+    prague = geo.lookup("110 00", "CZ")
+    assert prague is not None and prague.name == "Vinohrady"
+    assert geo.lookup("11000", "CZ") == prague
+    stockholm = geo.lookup("111 20", "SE")
+    assert stockholm is not None and stockholm.timezone == "Europe/Stockholm"
+    assert geo.lookup("11120", "SE") == stockholm
+    zilina = geo.lookup("010 01", "SK")
+    assert zilina is not None and zilina.timezone == "Europe/Bratislava"
+    assert geo.lookup("01001", "SK") == zilina
+
+
+def test_a_code_written_with_its_own_country_prefix_finds_the_same_place() -> None:
+    """Luxembourg, Latvia, Moldova and Andorra publish their prefix in the code.
+
+    Measured 2026-11-16: the table stores `L-1111`, `LV-1001`, `MD-2000` and
+    `AD100`. Residents write the prefix, so both spellings must answer — and
+    the reverse for Lithuania, whose rows carry no prefix but whose residents
+    type `LT-`.
+    """
+    lux = geo.lookup("L-1111", "LU")
+    assert lux is not None and lux.timezone == "Europe/Luxembourg"
+    assert geo.lookup("1111", "LU") == lux
+    riga = geo.lookup("LV-1001", "LV")
+    assert riga is not None and riga.name == "Riga"
+    assert geo.lookup("1001", "LV") == riga
+    chisinau = geo.lookup("MD-2000", "MD")
+    assert chisinau is not None and chisinau.name == "Chisinau"
+    assert geo.lookup("2000", "MD") == chisinau
+    assert geo.lookup("AD100", "AD") == geo.lookup("100", "AD")
+    vilnius = geo.lookup("01001", "LT")
+    assert vilnius is not None and vilnius.name == "Vilnius"
+    assert geo.lookup("LT-01001", "LT") == vilnius
+    # The country an unambiguous code names is answered without being asked.
+    assert geo.lookup("L-1111").country == "LU"  # type: ignore[union-attr]
 
 
 def test_a_full_british_postcode_finds_its_district() -> None:

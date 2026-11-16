@@ -13,8 +13,140 @@ from urllib.parse import urlsplit
 from pydantic import Field, field_validator
 
 from .canonical import Json, Object
-from .country_rules import review_country_rules
+from .country_rules import (
+    _AT_CONFORMITY_SOURCE,
+    _AT_ELWG_SOURCE,
+    _ENEDIS_SOURCE,
+    _SE_ELLAGEN_SOURCE,
+    _SE_RFG_SOURCE,
+    review_country_rules,
+)
+from .country_rules import (
+    _SOURCES as _COUNTRY_RULE_SOURCES,
+)
 from .energy_inputs import Document, SchemaVersion
+
+BUNDLED_RULE_COUNTRIES: frozenset[str] = frozenset({"DE", "FR", "NL", "AT", "SE"})
+
+_FRAMEWORKS: dict[str, str] = {
+    "DE": "EnWG §19; VDE-AR-N 4110:2023-09; EEG 2023 § 9",
+    "FR": "Arrêté du 9 juin 2020 (Art. 35); Enedis CACSI",
+    "NL": "Systeemcode elektriciteit 2026 (Art. 2.9)",
+    "AT": "TOR Stromerzeugungsanlagen Typ A v1.4; ElWG",
+    "SE": "EIFS 2018:2; EU 2016/631 (RfG); Ellagen (1997:857)",
+    "GB": "ENA ER G98 / G99 & DNO application",
+    "IT": "CEI 0-21 / CEI 0-16 & DSO TICA",
+    "ES": "RD 244/2019; RD 1183/2020; UNE 217002",
+    "CH": "VSE NA/EEA-CH & ESTI / DSO rules",
+    "PL": "EU 2016/631 (RfG) & PTPiREE IRiESD",
+    "BE": "Synergrid C10/11 & regional DSO rules",
+    "PT": "DGEG & E-Redes technical rules",
+    "CZ": "PPDS Annex 4 (Priloha c. 4)",
+    "IE": "ESB Networks NC6 / NC7 & Distribution Code",
+    "DK": "Green Power Denmark TR 3.2.1 / TR 3.3.1",
+    "FI": "Fingrid VJV & local DSO rules",
+    "NO": "FoL / REN & local DSO rules",
+}
+
+_EU_RFG_COUNTRIES: frozenset[str] = frozenset(
+    {"BG", "CY", "EE", "GR", "HR", "HU", "LT", "LU", "LV", "MT", "RO", "SI", "SK"}
+)
+
+_OTHER_EUROPEAN_COUNTRIES: frozenset[str] = frozenset(
+    {
+        "AD",
+        "AL",
+        "AX",
+        "BY",
+        "FO",
+        "GG",
+        "GI",
+        "IM",
+        "IS",
+        "JE",
+        "LI",
+        "MC",
+        "MD",
+        "MK",
+        "RS",
+        "RU",
+        "SJ",
+        "SM",
+        "UA",
+        "VA",
+    }
+)
+
+
+def rule_gap_metadata(country: str | None) -> Object:
+    code = country.upper() if isinstance(country, str) and country else None
+    bundled = code in BUNDLED_RULE_COUNTRIES
+    if code is None:
+        gap_code = "site_country_not_specified"
+        framework: str | None = None
+    elif bundled:
+        gap_code = "bundled_rule_pack_available"
+        framework = _FRAMEWORKS[code]
+    else:
+        gap_code = f"country_rule_pack_missing_{code.lower()}"
+        if code in _FRAMEWORKS:
+            framework = _FRAMEWORKS[code]
+        elif code in _EU_RFG_COUNTRIES:
+            framework = "EU 2016/631 (RfG) national implementation & local DSO rules"
+        elif code in _OTHER_EUROPEAN_COUNTRIES:
+            framework = "National network code & local grid operator conditions"
+        else:
+            framework = "Local grid operator connection conditions"
+    return {
+        "country_code": code,
+        "bundled_rule_pack": bundled,
+        "gap_code": gap_code,
+        "framework": framework,
+    }
+
+
+def bundled_country_sources(country: str | None) -> list[Object]:
+    if not isinstance(country, str):
+        return []
+    code = country.upper()
+    if code == "DE":
+        return [
+            {
+                "id": "de_enwg_19_dso_tab",
+                "source_url": "https://www.gesetze-im-internet.de/enwg_2005/__19.html",
+                "title": "EnWG §19 Technische Vorschriften",
+                "edition": None,
+                "clause": "19(1), 19(1a)",
+                "evidence_snapshot_date": "2026-11-04",
+            },
+            {
+                "id": "de_fnn_connection_scope",
+                "source_url": "https://www.vde.com/de/fnn/themen/tar/tar-mittelspannung-vde-ar-n-4110",
+                "title": "VDE FNN TAR Mittelspannung FAQ",
+                "edition": "VDE-AR-N 4110:2023-09",
+                "clause": "1 Anwendungsbereich",
+                "evidence_snapshot_date": "2026-11-04",
+            },
+            dict(_COUNTRY_RULE_SOURCES["DE"]),
+        ]
+    if code == "FR":
+        return [dict(_COUNTRY_RULE_SOURCES["FR"]), dict(_ENEDIS_SOURCE)]
+    if code == "NL":
+        return [dict(_COUNTRY_RULE_SOURCES["NL"])]
+    if code == "AT":
+        return [
+            dict(_COUNTRY_RULE_SOURCES["AT"]),
+            dict(_AT_ELWG_SOURCE),
+            dict(_AT_CONFORMITY_SOURCE),
+        ]
+    if code == "SE":
+        return [
+            dict(_COUNTRY_RULE_SOURCES["SE"]),
+            dict(_SE_RFG_SOURCE),
+            dict(_SE_ELLAGEN_SOURCE),
+        ]
+    return []
+
 
 # Private project text/URL transport limits, not engineering restrictions.
 type Text = Annotated[str, Field(min_length=1, max_length=4096, pattern=r"\S")]
@@ -152,11 +284,17 @@ def country_assessment(inputs: Object) -> Object:
         if is_de
         else []
     )
+    country_str = country if isinstance(country, str) else None
+    is_bundled = (
+        country_str is not None and country_str.upper() in BUNDLED_RULE_COUNTRIES
+    )
     result: Object = {
         "status": "unresolved",
         "country_code": country,
         "reason": "dso_tab_evidence_requires_independent_verification"
         if is_de
+        else "bundled_country_rules_require_inputs"
+        if is_bundled
         else "country_rules_not_available",
         "model": "declared_grid_connection_evidence_v1",
         "project_facts": declared,
@@ -178,6 +316,7 @@ def country_assessment(inputs: Object) -> Object:
             if not present
         ],
         "rule_sources": sources,
+        "rule_gap": rule_gap_metadata(country_str),
         "independent_verification": "not_assessed",
         "connection_permission": "not_established",
         "numeric_rules": "not_assessed",

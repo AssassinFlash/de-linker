@@ -165,6 +165,7 @@ lp-section-heading
 lp-section-title
 lp-selected-profile
 lp-session-state
+lp-site-outline-card
 lp-source-hashes
 lp-source-note
 lp-table-scroll

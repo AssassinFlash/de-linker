@@ -149,12 +149,19 @@ export function ProjectEditor({
 	// It is asked once per postcode and only when the brief names one; a site
 	// whose country publishes no service keeps the plain background.
 	const [siteImagery, setSiteImagery] = useState<PlaceImagery | null>(null);
-	// The mapped building at the declared site, for the countries whose 3D model
-	// publishes no roof. It is an outline only: the pitch stays the visitor's.
+	// The mapped building at the declared site, with official 3D roof planes
+	// where published (DE/NL/CH/LI) or 2D outline elsewhere.
 	const [siteOutline, setSiteOutline] = useState<{
 		ring: [number, number][];
 		source: string;
 		licence: string;
+		planes?: {
+			id: number;
+			polygon: [number, number][];
+			tilt_deg: number;
+			azimuth_deg: number;
+			area_m2: number;
+		}[];
 	} | null>(null);
 	useEffect(() => {
 		// `brief` is resolved inside the render path below, so the hook reads the
@@ -170,12 +177,14 @@ export function ProjectEditor({
 			};
 		} catch {
 			setSiteImagery(null);
+			setSiteOutline(null);
 			return;
 		}
 		const label = site.label;
 		const country = site.country;
 		if (!label || !client.isCurrentScope(session.query_scope)) {
 			setSiteImagery(null);
+			setSiteOutline(null);
 			return;
 		}
 		let live = true;
@@ -218,12 +227,38 @@ export function ProjectEditor({
 					const ring = Array.isArray(found.outline)
 						? (found.outline as [number, number][])
 						: [];
+					const planes = Array.isArray(found.planes)
+						? found.planes.filter(
+								(
+									plane,
+								): plane is {
+									id: number;
+									polygon: [number, number][];
+									tilt_deg: number;
+									azimuth_deg: number;
+									area_m2: number;
+								} =>
+									typeof plane === "object" &&
+									plane !== null &&
+									typeof plane.id === "number" &&
+									Array.isArray(plane.polygon) &&
+									plane.polygon.length >= 3 &&
+									typeof plane.tilt_deg === "number" &&
+									typeof plane.azimuth_deg === "number" &&
+									typeof plane.area_m2 === "number",
+							)
+						: [];
 					setSiteOutline(
 						found.found === true &&
 							ring.length >= 3 &&
 							typeof found.source === "string" &&
 							typeof found.licence === "string"
-							? { ring, source: found.source, licence: found.licence }
+							? {
+									ring,
+									source: found.source,
+									licence: found.licence,
+									...(planes.length > 0 ? { planes } : {}),
+								}
 							: null,
 					);
 				} catch {

@@ -9,6 +9,9 @@ is a test that fails on a train.
 from __future__ import annotations
 
 import math
+from pathlib import Path
+
+import pytest
 
 from linker_engine.roof import europe
 
@@ -138,7 +141,92 @@ def test_only_countries_with_a_documented_model_are_read() -> None:
     # answers None rather than inventing a roof.
     for country in ("GR", "PT", "GB", "ES", "IT", "PL", "FR", "DE"):
         assert europe.read(country, 37.98, 23.73) is None
-    assert set(europe.documented_models()) == {"NL", "CH"}
+    assert set(europe.documented_models()) == {"NL", "CH", "LI"}
+
+
+def test_liechtenstein_and_bounded_swiss_disk_lru_cache(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import io
+    import json
+    import os
+    import time
+    import zipfile
+
+    from pyproj import Transformer
+
+    # Vaduz, Liechtenstein (LV95 coordinates inside Liechtenstein)
+    lat, lon = 47.1410, 9.5209
+    to_lv95 = Transformer.from_crs("EPSG:4326", "EPSG:2056", always_xy=True)
+    vx, vy = to_lv95.transform(lon, lat)
+
+    dxf = "".join(
+        [
+            "0\nPOLYLINE\n8\nGebaeude Einzelhaus\n70\n128\n",
+            f"0\nVERTEX\n8\nGebaeude Einzelhaus\n70\n192\n10\n{vx - 5}\n20\n{vy - 5}\n30\n10.0\n",
+            f"0\nVERTEX\n8\nGebaeude Einzelhaus\n70\n192\n10\n{vx + 5}\n20\n{vy - 5}\n30\n10.0\n",
+            f"0\nVERTEX\n8\nGebaeude Einzelhaus\n70\n192\n10\n{vx - 5}\n20\n{vy + 5}\n30\n10.0\n",
+            f"0\nVERTEX\n8\nGebaeude Einzelhaus\n70\n192\n10\n{vx + 5}\n20\n{vy + 5}\n30\n10.0\n",
+            f"0\nVERTEX\n8\nGebaeude Einzelhaus\n70\n192\n10\n{vx - 5}\n20\n{vy}\n30\n13.0\n",
+            f"0\nVERTEX\n8\nGebaeude Einzelhaus\n70\n192\n10\n{vx + 5}\n20\n{vy}\n30\n13.0\n",
+            "0\nVERTEX\n8\nGebaeude Einzelhaus\n70\n128\n71\n1\n72\n5\n73\n2\n",
+            "0\nVERTEX\n8\nGebaeude Einzelhaus\n70\n128\n71\n2\n72\n5\n73\n6\n",
+            "0\nVERTEX\n8\nGebaeude Einzelhaus\n70\n128\n71\n3\n72\n4\n73\n6\n",
+            "0\nVERTEX\n8\nGebaeude Einzelhaus\n70\n128\n71\n3\n72\n6\n73\n5\n",
+        ]
+    )
+    zip_buf = io.BytesIO()
+    with zipfile.ZipFile(zip_buf, "w") as bundle:
+        bundle.writestr("vaduz.dxf", dxf)
+    zip_bytes = zip_buf.getvalue()
+
+    monkeypatch.setenv("LINKER_ENGINE_CACHE", str(tmp_path))
+    swiss_dir = tmp_path / "swiss"
+    swiss_dir.mkdir(parents=True)
+    # Seed 6 older cached tiles to verify LRU eviction keeps <= 6 files.
+    base_ts = time.time() - 100
+    for idx in range(6):
+        old_file = swiss_dir / f"old-{idx}.dxf.zip"
+        old_file.write_bytes(b"stale")
+        os.utime(old_file, (base_ts + idx, base_ts + idx))
+
+    stac_doc = {
+        "features": [
+            {
+                "id": "li-vaduz-tile",
+                "bbox": [lon - 0.02, lat - 0.02, lon + 0.02, lat + 0.02],
+                "assets": {
+                    "dxf": {"href": "https://example.invalid/li-vaduz-tile.dxf.zip"}
+                },
+            }
+        ]
+    }
+
+    class FakeResponse(io.BytesIO):
+        def __enter__(self) -> FakeResponse:
+            return self
+
+        def __exit__(self, *_: object) -> None:
+            self.close()
+
+    def fake_urlopen(req: object, timeout: float = 0) -> FakeResponse:
+        url = getattr(req, "full_url", str(req))
+        if "stac" in url:
+            return FakeResponse(json.dumps(stac_doc).encode())
+        return FakeResponse(zip_bytes)
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    result = europe.read("LI", lat, lon)
+    assert result is not None
+    assert result.country == "LI"
+    assert len(result.buildings) == 1
+    assert result.buildings[0].id.startswith("LI ")
+    assert len(result.buildings[0].planes) == 2
+
+    cached_files = sorted(p.name for p in swiss_dir.glob("*.dxf.zip"))
+    assert len(cached_files) == 6
+    assert "li-vaduz-tile.dxf.zip" in cached_files
+    assert "old-0.dxf.zip" not in cached_files
 
 
 def test_a_point_is_measured_against_a_footprint_ring() -> None:

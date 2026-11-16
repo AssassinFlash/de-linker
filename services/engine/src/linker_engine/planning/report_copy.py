@@ -1101,8 +1101,69 @@ TEXT = {
         "Prüfen Sie die örtlichen Anschlussbedingungen für die Spannungsebene am Netzanschlusspunkt. Die elektrischen Nachweise der Erzeugungseinheit sind gesondert zu prüfen.",
     ),
     "grid_no_rule": (
-        "No verified grid-connection rule pack exists yet for this country. The connection conditions for this site are checked against the local grid operator's published rules when the inquiry is answered, and the offer states them.",
-        "Für dieses Land liegt noch kein geprüftes Regelwerk zum Netzanschluss vor. Die Anschlussbedingungen für diesen Standort werden bei der Beantwortung der Anfrage anhand der veröffentlichten Regeln des örtlichen Netzbetreibers geprüft und im Angebot ausgewiesen.",
+        "No verified grid-connection rule pack is bundled for this country. German TAB requirements are not assumed, and the local grid operator's published connection rules are checked during project engineering and inquiry handling.",
+        "Für dieses Land ist kein geprüftes Regelwerk zum Netzanschluss als automatisierte Prüfung hinterlegt. Deutsche TAB werden nicht vorausgesetzt; die veröffentlichten Anschlussbedingungen des örtlichen Netzbetreibers werden bei der Projektierung und im Zuge der Anfrage geprüft.",
+    ),
+    "grid_rule_pack_status": ("National rule pack", "Nationales Regelwerk"),
+    "grid_rule_pack_bundled": (
+        "Bundled versioned reading available; local operator verification remains open",
+        "Versionierte Einordnung hinterlegt; örtliche Netzbetreiberprüfung bleibt offen",
+    ),
+    "grid_rule_pack_missing": (
+        "Not bundled as an automated rule pack",
+        "Kein automatisiertes Regelwerk hinterlegt",
+    ),
+    "grid_bundled_scope_DE": (
+        "Linker bundles a dated statutory and technical rule reading for Germany (EnWG §19, VDE-AR-N 4110:2023-09 scope, and EEG 2023 § 9(2), (3)). Check the local grid operator's technical connection conditions (TAB) for the voltage level at the grid connection point. Electrical evidence for a generating unit, operator territory verification, and connection permission remain separate checks.",
+        "Für Deutschland enthält Linker eine datierte Einordnung einschlägiger Vorschriften (EnWG §19, Anwendungsbereich der VDE-AR-N 4110:2023-09 sowie EEG 2023 § 9 Absatz 2 und 3). Prüfen Sie die örtlichen Technischen Anschlussbedingungen (TAB) des zuständigen Netzbetreibers für die Spannungsebene am Netzanschlusspunkt. Die elektrischen Nachweise der Erzeugungseinheit, die Prüfung des Netzgebiets und die Anschlusszusage des Netzbetreibers sind gesondert zu führen.",
+    ),
+    "grid_bundled_scope_FR": (
+        "Linker bundles a dated national rule reading for France (Arrêté du 9 juin 2020, Article 35, and Enedis total self-consumption / CACSI guidance where selected). Local distribution operator conditions, operator territory verification, and grid connection permission still require project-specific verification.",
+        "Für Frankreich enthält Linker eine datierte Einordnung der nationalen Anschlussregeln (Arrêté du 9 juin 2020, Article 35 sowie bei vollständiger Eigenversorgung die Enedis-Hinweise zu CACSI). Die örtlichen Vorgaben des Verteilnetzbetreibers, das Netzgebiet und die Anschlusszusage sind weiterhin projektspezifisch zu prüfen.",
+    ),
+    "grid_bundled_scope_NL": (
+        "Linker bundles a dated national rule reading for the Netherlands (Systeemcode elektriciteit 2026, Article 2.9(3)(a), (g)). Local grid operator conditions, operator territory verification, and grid connection permission still require project-specific verification.",
+        "Für die Niederlande enthält Linker eine datierte Einordnung der nationalen Netzregeln (Systeemcode elektriciteit 2026, Artikel 2.9 Absatz 3 Buchstaben a und g). Die örtlichen Vorgaben des Netzbetreibers, das Netzgebiet und die Anschlusszusage sind weiterhin projektspezifisch zu prüfen.",
+    ),
+    "grid_bundled_scope_AT": (
+        "Linker bundles a dated national rule reading for Austria (TOR Stromerzeugungsanlagen Typ A Version 1.4, BGBl. II Nr. 301/2026, and Elektrizitätswirtschaftsgesetz ElWG). Local grid operator conditions, operator territory verification, and grid connection permission still require project-specific verification.",
+        "Für Österreich enthält Linker eine datierte Einordnung der nationalen Anschlussregeln (TOR Stromerzeugungsanlagen Typ A Version 1.4, BGBl. II Nr. 301/2026 sowie Elektrizitätswirtschaftsgesetz ElWG). Die örtlichen Vorgaben des Verteilernetzbetreibers, das Netzgebiet und die Anschlusszusage sind weiterhin projektspezifisch zu prüfen.",
+    ),
+    "grid_bundled_scope_SE": (
+        "Linker bundles a dated national rule reading for Sweden (EIFS 2018:2, Commission Regulation (EU) 2016/631 RfG, and Ellagen 1997:857). Local grid operator conditions, operator territory verification, and grid connection permission still require project-specific verification.",
+        "Für Schweden enthält Linker eine datierte Einordnung der nationalen Anschlussregeln (EIFS 2018:2, Verordnung (EU) 2016/631 RfG sowie Ellagen 1997:857). Die örtlichen Vorgaben des Netzbetreibers, das Netzgebiet und die Anschlusszusage sind weiterhin projektspezifisch zu prüfen.",
+    ),
+    "grid_bundled_unfilled_DE": (
+        "Linker bundles a dated rule reading for Germany (EnWG §19, VDE-AR-N 4110:2023-09, and EEG 2023 § 9(2), (3)), while local grid-operator TAB conditions and operator permission remain unassessed because no grid-connection details were entered. Provide the responsible grid operator, connection voltage level, applicable TAB document, and German rule inputs (rule date, installed power, control-test stage, and EEG remuneration) to evaluate these checks.",
+        "Für Deutschland enthält Linker eine datierte Regelwerks-Einordnung (EnWG §19, VDE-AR-N 4110:2023-09 und EEG 2023 § 9 Absatz 2 und 3). Da keine Netzanschlussangaben hinterlegt sind, bleiben die örtlichen TAB des Netzbetreibers und die Anschlusszusage hier ungeprüft. Geben Sie den zuständigen Netzbetreiber, die Spannungsebene am Netzanschlusspunkt, das maßgebliche TAB-Dokument sowie die deutschen Regelungseingaben (Regelungsdatum, installierte Leistung, Stand der Ansteuerungsprüfung und EEG-Vergütungsform) an, um diese Prüfung auszuführen.",
+    ),
+    "grid_bundled_unfilled_FR": (
+        "Linker bundles a dated rule reading for France (Arrêté du 9 juin 2020, Article 35, and Enedis total self-consumption / CACSI guidance), while local connection conditions remain unassessed because no grid-connection details were entered. Provide the responsible grid operator, connection voltage level, applicable connection conditions, and French rule inputs (rule date, declared Pmax, connection-point voltage in kV, and Enedis self-consumption status) to evaluate these checks.",
+        "Für Frankreich enthält Linker eine datierte Einordnung der nationalen Anschlussregeln (Arrêté du 9 juin 2020, Article 35 sowie Enedis-Hinweise zur vollständigen Eigenversorgung / CACSI). Da keine Netzanschlussangaben hinterlegt sind, bleiben die örtlichen Anschlussbedingungen hier ungeprüft. Geben Sie den zuständigen Netzbetreiber, die Spannungsebene am Netzanschlusspunkt, die geltenden Anschlussbedingungen sowie die französischen Regelungseingaben (Regelungsdatum, Pmax, Anschlussspannung in kV und Enedis-Eigenverbrauchsstatus) an, um diese Prüfung auszuführen.",
+    ),
+    "grid_bundled_unfilled_NL": (
+        "Linker bundles a dated rule reading for the Netherlands (Systeemcode elektriciteit 2026, Article 2.9(3)(a), (g)), while local connection conditions remain unassessed because no grid-connection details were entered. Provide the responsible grid operator, connection voltage level, applicable connection conditions, and Dutch rule inputs (rule date and maximum active storage power) to evaluate these checks.",
+        "Für die Niederlande enthält Linker eine datierte Einordnung der nationalen Netzregeln (Systeemcode elektriciteit 2026, Artikel 2.9 Absatz 3 Buchstaben a und g). Da keine Netzanschlussangaben hinterlegt sind, bleiben die örtlichen Anschlussbedingungen hier ungeprüft. Geben Sie den zuständigen Netzbetreiber, die Spannungsebene am Netzanschlusspunkt, die geltenden Anschlussbedingungen sowie die niederländischen Regelungseingaben (Regelungsdatum und maximale Wirkleistung des Speichers) an, um diese Prüfung auszuführen.",
+    ),
+    "grid_bundled_unfilled_AT": (
+        "Linker bundles a dated rule reading for Austria (TOR Stromerzeugungsanlagen Typ A Version 1.4, BGBl. II Nr. 301/2026, and Elektrizitätswirtschaftsgesetz ElWG), while local connection conditions remain unassessed because no grid-connection details were entered. Provide the responsible grid operator, connection voltage level, applicable connection conditions, and Austrian rule inputs (rule date, maximum capacity, apparent power in kVA, net active power in kW, voltage in kV, change status, and conformity path) to evaluate these checks.",
+        "Für Österreich enthält Linker eine datierte Einordnung der nationalen Anschlussregeln (TOR Stromerzeugungsanlagen Typ A Version 1.4, BGBl. II Nr. 301/2026 sowie Elektrizitätswirtschaftsgesetz ElWG). Da keine Netzanschlussangaben hinterlegt sind, bleiben die örtlichen Anschlussbedingungen hier ungeprüft. Geben Sie den zuständigen Netzbetreiber, die Spannungsebene am Netzanschlusspunkt, die geltenden Anschlussbedingungen sowie die österreichischen Regelungseingaben (Regelungsdatum, Maximalkapazität, Scheinleistung in kVA, netzwirksame Leistung in kW, Spannung in kV, Änderungsstatus und Konformitätsnachweis) an, um diese Prüfung auszuführen.",
+    ),
+    "grid_bundled_unfilled_SE": (
+        "Linker bundles a dated rule reading for Sweden (EIFS 2018:2, Commission Regulation (EU) 2016/631 RfG, and Ellagen 1997:857), while local connection conditions remain unassessed because no grid-connection details were entered. Provide the responsible grid operator, connection voltage level, applicable connection conditions, and Swedish rule inputs (rule date, RfG maximum capacity, connection voltage in kV, feed-in power in kW, and modification status) to evaluate these checks.",
+        "Für Schweden enthält Linker eine datierte Einordnung der nationalen Anschlussregeln (EIFS 2018:2, Verordnung (EU) 2016/631 RfG sowie Ellagen 1997:857). Da keine Netzanschlussangaben hinterlegt sind, bleiben die örtlichen Anschlussbedingungen hier ungeprüft. Geben Sie den zuständigen Netzbetreiber, die Spannungsebene am Netzanschlusspunkt, die geltenden Anschlussbedingungen sowie die schwedischen Regelungseingaben (Regelungsdatum, RfG-Maximalkapazität, Anschlussspannung in kV, Einspeiseleistung in kW und Änderungsstatus) an, um diese Prüfung auszuführen.",
+    ),
+    "grid_missing_country_rule_inputs": (
+        "national rule inputs",
+        "nationale Regelungseingaben",
+    ),
+    "grid_country_not_specified": (
+        "Not specified",
+        "Nicht angegeben",
+    ),
+    "grid_no_country_gap": (
+        "No site country was specified for this project, so neither a national rule pack nor local grid-operator connection conditions could be evaluated. German TAB requirements are not assumed. Specify the site country and local grid operator details so connection rules can be reviewed during project engineering and inquiry handling.",
+        "Für dieses Projekt wurde kein Standortland angegeben, sodass weder ein nationales Regelwerk noch örtliche Netzbetreiberbedingungen ausgewertet werden konnten. Deutsche TAB werden nicht vorausgesetzt. Geben Sie das Standortland und den zuständigen Netzbetreiber an, damit die Anschlussregeln bei der Projektierung und im Zuge der Anfrage geprüft werden können.",
     ),
     "grid_to_supply": ("Project details still needed", "Noch benötigte Projektangaben"),
     "grid_missing_country_code": ("site country", "Land des Standorts"),
@@ -1991,6 +2052,173 @@ CHECKS = {
     ),
     "accessory_quantity": ("Accessory quantity", "Menge des Zubehörs"),
 }
+
+
+BUNDLED_RULE_COUNTRIES: frozenset[str] = frozenset({"DE", "FR", "NL", "AT", "SE"})
+
+COUNTRY_NAMES: dict[str, tuple[str, str]] = {
+    "AD": ("Andorra", "Andorra"),
+    "AL": ("Albania", "Albanien"),
+    "AT": ("Austria", "Österreich"),
+    "AX": ("Åland Islands", "Åland"),
+    "BE": ("Belgium", "Belgien"),
+    "BG": ("Bulgaria", "Bulgarien"),
+    "BY": ("Belarus", "Belarus"),
+    "CH": ("Switzerland", "Schweiz"),
+    "CY": ("Cyprus", "Zypern"),
+    "CZ": ("Czechia", "Tschechien"),
+    "DE": ("Germany", "Deutschland"),
+    "DK": ("Denmark", "Dänemark"),
+    "EE": ("Estonia", "Estland"),
+    "ES": ("Spain", "Spanien"),
+    "FI": ("Finland", "Finnland"),
+    "FO": ("Faroe Islands", "Färöer"),
+    "FR": ("France", "Frankreich"),
+    "GB": ("United Kingdom", "Vereinigtes Königreich"),
+    "GG": ("Guernsey", "Guernsey"),
+    "GI": ("Gibraltar", "Gibraltar"),
+    "GR": ("Greece", "Griechenland"),
+    "HR": ("Croatia", "Kroatien"),
+    "HU": ("Hungary", "Ungarn"),
+    "IE": ("Ireland", "Irland"),
+    "IM": ("Isle of Man", "Isle of Man"),
+    "IS": ("Iceland", "Island"),
+    "IT": ("Italy", "Italien"),
+    "JE": ("Jersey", "Jersey"),
+    "LI": ("Liechtenstein", "Liechtenstein"),
+    "LT": ("Lithuania", "Litauen"),
+    "LU": ("Luxembourg", "Luxemburg"),
+    "LV": ("Latvia", "Lettland"),
+    "MC": ("Monaco", "Monaco"),
+    "MD": ("Moldova", "Republik Moldau"),
+    "MK": ("North Macedonia", "Nordmazedonien"),
+    "MT": ("Malta", "Malta"),
+    "NL": ("Netherlands", "Niederlande"),
+    "NO": ("Norway", "Norwegen"),
+    "PL": ("Poland", "Polen"),
+    "PT": ("Portugal", "Portugal"),
+    "RO": ("Romania", "Rumänien"),
+    "RS": ("Serbia", "Serbien"),
+    "RU": ("Russia", "Russland"),
+    "SE": ("Sweden", "Schweden"),
+    "SI": ("Slovenia", "Slowenien"),
+    "SJ": ("Svalbard and Jan Mayen", "Spitzbergen und Jan Mayen"),
+    "SK": ("Slovakia", "Slowakei"),
+    "SM": ("San Marino", "San Marino"),
+    "UA": ("Ukraine", "Ukraine"),
+    "VA": ("Vatican City", "Vatikanstadt"),
+}
+
+_NAMED_RULE_GAPS: dict[str, tuple[str, str]] = {
+    "GB": (
+        "United Kingdom: ENA Engineering Recommendation G98 / G99 and DNO notification or application requirements are not bundled as an automated rule pack.",
+        "Vereinigtes Königreich: ENA Engineering Recommendation G98 / G99 sowie Anmelde- und Antragsverfahren des zuständigen DNO sind nicht als automatisiertes Regelwerk hinterlegt.",
+    ),
+    "IT": (
+        "Italy: CEI 0-21 / CEI 0-16 and DSO TICA connection rules are not bundled as an automated rule pack.",
+        "Italien: Die Normen CEI 0-21 / CEI 0-16 sowie die TICA-Anschlussregeln des Verteilnetzbetreibers sind nicht als automatisiertes Regelwerk hinterlegt.",
+    ),
+    "ES": (
+        "Spain: Royal Decrees RD 244/2019 / RD 1183/2020 and UNE 217002 connection requirements are not bundled as an automated rule pack.",
+        "Spanien: Die Königlichen Dekrete RD 244/2019 / RD 1183/2020 sowie UNE 217002 sind nicht als automatisiertes Regelwerk hinterlegt.",
+    ),
+    "CH": (
+        "Switzerland: VSE NA/EEA-CH and ESTI / local DSO connection rules are not bundled as an automated rule pack.",
+        "Schweiz: Die Branchenempfehlungen VSE NA/EEA-CH sowie ESTI- und Verteilnetzbetreiber-Vorgaben sind nicht als automatisiertes Regelwerk hinterlegt.",
+    ),
+    "PL": (
+        "Poland: EU Regulation 2016/631 (RfG) national requirements and PTPiREE IRiESD distribution network rules are not bundled as an automated rule pack.",
+        "Polen: Die nationale Umsetzung der Verordnung (EU) 2016/631 (RfG) sowie die Verteilernetzregeln PTPiREE IRiESD sind nicht als automatisiertes Regelwerk hinterlegt.",
+    ),
+    "BE": (
+        "Belgium: Synergrid C10/11 and regional DSO technical connection rules are not bundled as an automated rule pack.",
+        "Belgien: Die technischen Anschlussregeln Synergrid C10/11 sowie regionale Vorgaben der Verteilnetzbetreiber sind nicht als automatisiertes Regelwerk hinterlegt.",
+    ),
+    "PT": (
+        "Portugal: DGEG and E-Redes technical grid-connection rules are not bundled as an automated rule pack.",
+        "Portugal: Die technischen Anschlussregeln von DGEG und E-Redes sind nicht als automatisiertes Regelwerk hinterlegt.",
+    ),
+    "CZ": (
+        "Czechia: PPDS Annex 4 (Priloha c. 4) distribution network connection rules are not bundled as an automated rule pack.",
+        "Tschechien: Die Verteilernetz-Anschlussregeln PPDS Anhang 4 (Priloha c. 4) sind nicht als automatisiertes Regelwerk hinterlegt.",
+    ),
+    "IE": (
+        "Ireland: ESB Networks NC6 / NC7 procedures and the Distribution Code are not bundled as an automated rule pack.",
+        "Irland: Die Verfahren ESB Networks NC6 / NC7 sowie der irische Distribution Code sind nicht als automatisiertes Regelwerk hinterlegt.",
+    ),
+    "DK": (
+        "Denmark: Green Power Denmark TR 3.2.1 / TR 3.3.1 and local DSO connection rules are not bundled as an automated rule pack.",
+        "Dänemark: Die technischen Vorschriften Green Power Denmark TR 3.2.1 / TR 3.3.1 sowie örtliche Netzbetreibervorgaben sind nicht als automatisiertes Regelwerk hinterlegt.",
+    ),
+    "FI": (
+        "Finland: Fingrid VJV grid-code specifications and local DSO connection rules are not bundled as an automated rule pack.",
+        "Finnland: Die Netzanschlussvorgaben Fingrid VJV sowie örtliche Verteilnetzbetreiber-Regeln sind nicht als automatisiertes Regelwerk hinterlegt.",
+    ),
+    "NO": (
+        "Norway: FoL / REN technical requirements and local DSO connection rules are not bundled as an automated rule pack.",
+        "Norwegen: Die Vorgaben nach FoL / REN sowie örtliche Verteilnetzbetreiber-Regeln sind nicht als automatisiertes Regelwerk hinterlegt.",
+    ),
+}
+
+_EU_RFG_GAP_COUNTRIES: frozenset[str] = frozenset(
+    {"BG", "CY", "EE", "GR", "HR", "HU", "LT", "LU", "LV", "MT", "RO", "SI", "SK"}
+)
+
+_GAP_CLOSING: tuple[str, str] = (
+    "German TAB requirements are not assumed for this project. Local grid operator connection rules are checked during project engineering and inquiry handling.",
+    "Deutsche TAB werden für dieses Projekt nicht vorausgesetzt. Die maßgeblichen Anschlussbedingungen des örtlichen Netzbetreibers werden bei der Projektierung und im Zuge der Anfrage geprüft.",
+)
+
+
+def country_name(country_code: str | None, locale: str) -> str:
+    if not country_code:
+        return text("grid_country_not_specified", locale)
+    code = country_code.upper()
+    entry = COUNTRY_NAMES.get(code)
+    if entry is None:
+        return code
+    return entry[1 if locale == "de" else 0]
+
+
+def country_display(country_code: str | None, locale: str) -> str:
+    if not country_code:
+        return text("grid_country_not_specified", locale)
+    code = country_code.upper()
+    entry = COUNTRY_NAMES.get(code)
+    if entry is None:
+        return code
+    return f"{entry[1 if locale == 'de' else 0]} ({code})"
+
+
+def country_gap_summary(country_code: str | None, locale: str) -> str:
+    idx = 1 if locale == "de" else 0
+    if not country_code:
+        return text("grid_country_not_specified", locale)
+    code = country_code.upper()
+    if code in BUNDLED_RULE_COUNTRIES:
+        return text("grid_rule_pack_bundled", locale)
+    named = _NAMED_RULE_GAPS.get(code)
+    if named is not None:
+        return named[idx]
+    name = country_name(code, locale)
+    if code in _EU_RFG_GAP_COUNTRIES:
+        return (
+            f"{name}: Die nationale Umsetzung der Verordnung (EU) 2016/631 (RfG) sowie die technischen Anschlussbedingungen des örtlichen Verteilnetzbetreibers sind nicht als automatisiertes Regelwerk hinterlegt."
+            if idx == 1
+            else f"{name}: National implementation of Commission Regulation (EU) 2016/631 (RfG) and local DSO technical connection conditions are not bundled as an automated rule pack."
+        )
+    return (
+        f"{name}: Die nationalen Netzanschlussvorschriften sowie die Anschlussbedingungen des örtlichen Netzbetreibers sind nicht als automatisiertes Regelwerk hinterlegt."
+        if idx == 1
+        else f"{name}: The national electricity network code and local grid operator connection conditions are not bundled as an automated rule pack."
+    )
+
+
+def country_gap_paragraph(country_code: str | None, locale: str) -> str:
+    idx = 1 if locale == "de" else 0
+    if not country_code:
+        return text("grid_no_country_gap", locale)
+    return f"{country_gap_summary(country_code, locale)} {_GAP_CLOSING[idx]}"
 
 
 def text(key: str, locale: str) -> str:

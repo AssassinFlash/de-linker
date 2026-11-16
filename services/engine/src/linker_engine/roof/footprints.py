@@ -19,8 +19,13 @@ from __future__ import annotations
 
 import csv
 import gzip
+import io
 import json
 import math
+import os
+import tempfile
+import urllib.error
+import urllib.parse
 import urllib.request
 from functools import cache
 from pathlib import Path
@@ -49,11 +54,14 @@ SAME_POINT_M = 0.35
 # Measured 2026-11-16 against `dataset-links.csv`: 225 regions, of which these
 # are the European ones the configurator serves.
 REGION_NAMES = {
+    "AD": "Andorra",
     "AL": "Albania",
     "AT": "Austria",
+    "AX": "Finland",
     "BA": "Bosnia and Herzegovina",
     "BE": "Belgium",
     "BG": "Bulgaria",
+    "BY": "Belarus",
     "CH": "Switzerland",
     "CY": "Cyprus",
     "CZ": "Czechia",
@@ -62,18 +70,24 @@ REGION_NAMES = {
     "EE": "Estonia",
     "ES": "Spain",
     "FI": "Finland",
+    "FO": "Faroe Islands",
     "FR": "France",
     "GB": "United Kingdom",
+    "GG": "Guernsey",
+    "GI": "Gibraltar",
     "GR": "Greece",
     "HR": "Croatia",
     "HU": "Hungary",
     "IE": "Ireland",
+    "IM": "Isle of Man",
     "IS": "Iceland",
     "IT": "Italy",
+    "JE": "Jersey",
     "LI": "Liechtenstein",
     "LT": "Lithuania",
     "LU": "Luxembourg",
     "LV": "Latvia",
+    "MC": "Monaco",
     "MD": "Moldova",
     "ME": "Montenegro",
     "MK": "North Macedonia",
@@ -84,16 +98,27 @@ REGION_NAMES = {
     "PT": "Portugal",
     "RO": "Romania",
     "RS": "Serbia",
+    "RU": "Russia",
     "SE": "Sweden",
     "SI": "Slovenia",
+    "SJ": "Norway",
     "SK": "Slovakia",
+    "SM": "San Marino",
     "UA": "Ukraine",
+    "VA": "Vatican City",
+}
+
+_REGION_ALIASES: dict[str, tuple[str, ...]] = {
+    "SJ": ("Svalbard and Jan Mayen", "Norway"),
 }
 
 LICENCE = "CDLA-Permissive 2.0 (Microsoft Building Footprints)"
 LICENCE_URL = (
     "https://github.com/microsoft/GlobalMLBuildingFootprints/blob/main/LICENSE"
 )
+OSM_LICENCE = "ODbL 1.0 (OpenStreetMap)"
+OVERPASS_URL = "https://overpass-api.de/api/interpreter"
+MAX_CACHED_PARTS = 10
 
 
 def quadkey(latitude: float, longitude: float, zoom: int = ZOOM) -> str:
@@ -135,50 +160,66 @@ def part_url(region: str, key: str) -> str | None:
     """The published part for one region and quadkey, if the region is covered.
 
     `region` is the ISO code the service speaks; the catalogue uses the English
-    name, so the code is mapped first.
+    name, so the code is mapped first. Microstates inside a neighbour's quadkey
+    cell fall back to any published part matching the exact quadkey.
     """
-    name = REGION_NAMES.get(region.upper(), region)
+    code = region.upper()
+    if code not in REGION_NAMES:
+        return None
+    names = _REGION_ALIASES.get(code, (REGION_NAMES[code],))
     parts = _catalogue()
-    exact = parts.get((name, key))
-    if exact is not None:
-        return exact
+    for name in names:
+        exact = parts.get((name, key))
+        if exact is not None:
+            return exact
     # A cell near a border is sometimes published under a neighbouring key; any
     # part of the same region that starts with the position's prefix is close
     # enough for a click, and the outline test below rejects a wrong building.
-    for (candidate_name, candidate), url in parts.items():
-        if candidate_name == name and candidate.startswith(key[:7]):
+    for name in names:
+        for (candidate_name, candidate), url in parts.items():
+            if candidate_name == name and candidate.startswith(key[:7]):
+                return url
+    # Microstates (VA, SM, MC, AD, GI) often sit inside a neighbour's exact cell.
+    for (_candidate_name, candidate), url in parts.items():
+        if candidate == key:
             return url
     return None
 
 
 def outlines(
-    archive: bytes, latitude: float, longitude: float
+    archive: bytes | Path, latitude: float, longitude: float
 ) -> list[list[tuple[float, float]]]:
     """Every outline of a part that sits near a position, in WGS84 degrees.
 
-    A part holds a whole cell, so the candidates are filtered by their own
-    bounding box before any distance is measured.
+    Streams the gzipped GeoJSON lines so a 200 MB uncompressed cell never sits
+    in RAM at once.
     """
-    text = gzip.decompress(archive).decode("utf-8", errors="replace")
     near: list[list[tuple[float, float]]] = []
-    for line in text.splitlines():
-        if not line.strip():
-            continue
-        try:
-            item = json.loads(line)
-        except ValueError:
-            continue
-        ring = _largest_ring(item)
-        if ring is None:
-            continue
-        lons = [point[0] for point in ring]
-        lats = [point[1] for point in ring]
-        # 0.01 degrees is about 1 km, the scale of a click.
-        if (
-            min(lats) - 0.01 <= latitude <= max(lats) + 0.01
-            and min(lons) - 0.01 <= longitude <= max(lons) + 0.01
-        ):
-            near.append(ring)
+    if isinstance(archive, Path):
+        handle_ctx = gzip.open(archive, "rt", encoding="utf-8", errors="replace")
+    else:
+        handle_ctx = gzip.open(
+            io.BytesIO(archive), "rt", encoding="utf-8", errors="replace"
+        )
+    with handle_ctx as stream:
+        for line in stream:
+            if not line.strip():
+                continue
+            try:
+                item = json.loads(line)
+            except ValueError:
+                continue
+            ring = _largest_ring(item)
+            if ring is None:
+                continue
+            lons = [point[0] for point in ring]
+            lats = [point[1] for point in ring]
+            # 0.01 degrees is about 1 km, the scale of a click.
+            if (
+                min(lats) - 0.01 <= latitude <= max(lats) + 0.01
+                and min(lons) - 0.01 <= longitude <= max(lons) + 0.01
+            ):
+                near.append(ring)
     return near
 
 
@@ -327,23 +368,111 @@ def cache_dir(root: Path) -> Path:
     return directory
 
 
-# A part is tens of megabytes and a city centre is served by one of them, so a
-# second request must not download it again. The cache is keyed by region and
-# quadkey and lives under the planner's own state directory.
-_CACHE: dict[tuple[str, str], bytes] = {}
+def _footprints_cache_dir() -> Path:
+    root = Path(os.environ.get("LINKER_ENGINE_CACHE") or "/tmp/linker-engine-cache")
+    return cache_dir(root)
 
 
-def _archive(country: str, key: str, url: str) -> bytes | None:
-    """The published part, downloaded at most once per process."""
-    cached = _CACHE.get((country, key))
-    if cached is not None:
-        return cached
+def _prune_footprints_cache(directory: Path) -> None:
+    files = sorted(
+        directory.glob("*.geojsonl.gz"),
+        key=lambda item: item.stat().st_mtime,
+    )
+    for stale in files[:-MAX_CACHED_PARTS]:
+        stale.unlink(missing_ok=True)
+
+
+def _archive_path(country: str, key: str, url: str) -> Path | None:
+    """The published part stored on disk with bounded LRU eviction."""
+    directory = _footprints_cache_dir()
+    path = directory / f"{country.upper()}-{key}.geojsonl.gz"
+    if path.exists():
+        path.touch()
+        return path
+    tmp_path: Path | None = None
     try:
-        archive = download(url)
+        with urllib.request.urlopen(
+            urllib.request.Request(url, headers={"User-Agent": USER_AGENT}),
+            timeout=180,
+        ) as response:
+            with tempfile.NamedTemporaryFile(
+                dir=directory, suffix=".part", delete=False
+            ) as handle:
+                tmp_path = Path(handle.name)
+                while chunk := response.read(65536):
+                    handle.write(chunk)
+        os.replace(tmp_path, path)
+        _prune_footprints_cache(directory)
+        return path
     except (OSError, ValueError):
+        if tmp_path is not None:
+            tmp_path.unlink(missing_ok=True)
         return None
-    _CACHE[(country, key)] = archive
-    return archive
+
+
+def _overpass_outline(
+    latitude: float, longitude: float
+) -> list[tuple[float, float]] | None:
+    """Lightweight OpenStreetMap Overpass building fallback when footprints miss."""
+    query = (
+        f'[out:json][timeout:10];way["building"]'
+        f"(around:25,{latitude},{longitude});out geom;"
+    )
+    body = urllib.parse.urlencode({"data": query}).encode("utf-8")
+    request = urllib.request.Request(
+        OVERPASS_URL, data=body, headers={"User-Agent": USER_AGENT}
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=12) as response:
+            payload = cast(dict[str, Any], json.load(response))
+    except (OSError, ValueError, urllib.error.URLError, TimeoutError):
+        return None
+    elements = payload.get("elements")
+    if not isinstance(elements, list):
+        return None
+    candidates: list[list[tuple[float, float]]] = []
+    for element in elements:
+        if not isinstance(element, dict) or element.get("type") != "way":
+            continue
+        geometry = element.get("geometry")
+        if not isinstance(geometry, list):
+            continue
+        points: list[tuple[float, float]] = []
+        for point in geometry:
+            if (
+                isinstance(point, dict)
+                and isinstance(point.get("lon"), (int, float))
+                and isinstance(point.get("lat"), (int, float))
+            ):
+                points.append((float(point["lon"]), float(point["lat"])))
+        if len(points) >= 3:
+            candidates.append(points)
+    if not candidates:
+        return None
+    return nearest(candidates, latitude, longitude)
+
+
+def _outline_with_source(
+    country: str, latitude: float, longitude: float
+) -> tuple[list[tuple[float, float]], str, str] | None:
+    if country.upper() not in REGION_NAMES:
+        return None
+    key = quadkey(latitude, longitude)
+    try:
+        url = part_url(country, key)
+    except (OSError, ValueError):
+        url = None
+    if url is not None:
+        archive = _archive_path(country, key, url)
+        if archive is not None:
+            ring = nearest(outlines(archive, latitude, longitude), latitude, longitude)
+            if ring is not None:
+                return ring, "Microsoft building footprints", LICENCE
+            return None
+    osm_ring = _overpass_outline(latitude, longitude)
+    if osm_ring is not None:
+        return osm_ring, "OpenStreetMap contributors", OSM_LICENCE
+    return None
 
 
 def outline_at(
@@ -354,28 +483,24 @@ def outline_at(
     This is the geometric answer alone: no module layout, no pitch, no area
     claim. A caller that shows it must say where it came from.
     """
-    key = quadkey(latitude, longitude)
-    url = part_url(country, key)
-    if url is None:
-        return None
-    archive = _archive(country, key, url)
-    if archive is None:
-        return None
-    return nearest(outlines(archive, latitude, longitude), latitude, longitude)
+    result = _outline_with_source(country, latitude, longitude)
+    return result[0] if result is not None else None
 
 
 def outline_payload(
     country: str, latitude: float, longitude: float
 ) -> dict[str, Any] | None:
     """The outline with the source and licence a screen has to display."""
-    ring = outline_at(country, latitude, longitude)
-    if ring is None:
+    result = _outline_with_source(country, latitude, longitude)
+    if result is None:
         return None
+    ring, source, licence = result
     return {
         "outline": [
             [round(longitude_value, 7), round(latitude_value, 7)]
             for longitude_value, latitude_value in ring
         ],
-        "source": "Microsoft building footprints",
-        "licence": LICENCE,
+        "source": source,
+        "licence": licence,
+        "planes": [],
     }

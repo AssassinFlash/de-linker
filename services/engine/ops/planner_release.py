@@ -245,6 +245,7 @@ class Release:
         }
         # Operator control and numerical startup never inherit service credentials.
         env.pop("GENIE_SERVICE_TOKEN", None)
+        env.pop("LINKER_GOOGLE_MAP_TILES_KEY", None)
         env["LINKER_PLANNER_WORKER_CONFIG"] = str(self.worker_file)
         result: dict[str, Any] = json.loads(
             command(
@@ -293,7 +294,7 @@ class Release:
         public = {
             k: v
             for k, v in environment(self.deploy / "http.env").items()
-            if k != "GENIE_SERVICE_TOKEN"
+            if k not in ("GENIE_SERVICE_TOKEN", "LINKER_GOOGLE_MAP_TILES_KEY")
         }
         # Validate the actual source under the service identity before stopping
         # a working release; root's successful read proves no reader access.
@@ -451,7 +452,11 @@ class Release:
         token = source.get("GENIE_SERVICE_TOKEN", "")
         if not token:
             raise ValueError("existing service credential required")
-        desired_env = env_text({**public, "GENIE_SERVICE_TOKEN": token})
+        http_values = {**public, "GENIE_SERVICE_TOKEN": token}
+        map_tiles_key = source.get("LINKER_GOOGLE_MAP_TILES_KEY", "").strip()
+        if map_tiles_key:
+            http_values["LINKER_GOOGLE_MAP_TILES_KEY"] = map_tiles_key
+        desired_env = env_text(http_values)
         if (self.deploy / "prepared.json").exists():
             self.preflight()
             if (self.deploy / "http.env").read_text() != desired_env:
@@ -692,7 +697,7 @@ class Release:
         public = {
             k: v
             for k, v in environment(self.deploy / "http.env").items()
-            if k != "GENIE_SERVICE_TOKEN"
+            if k not in ("GENIE_SERVICE_TOKEN", "LINKER_GOOGLE_MAP_TILES_KEY")
         }
         public.update(
             LINKER_PLANNER_WORKER_CONFIG=str(self.worker_file),

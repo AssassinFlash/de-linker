@@ -96,7 +96,26 @@ def test_complete_project_declaration_is_neither_verified_rule_nor_permission() 
     assert "135" not in json.dumps(result)
 
 
-@pytest.mark.parametrize("country", ["FR", "NL", None])
+@pytest.mark.parametrize("country", ["FR", "NL", "AT", "SE"])
+def test_bundled_rule_countries_do_not_inherit_german_sources_and_report_bundled_status(
+    country: str,
+) -> None:
+    values = declared(country=country, complete=True)
+    result = country_assessment(values)
+    assert result["country_code"] == country
+    assert result["rule_sources"] == []
+    assert result["reason"] == "bundled_country_rules_require_inputs"
+    assert result["status"] == "unresolved"
+    assert result["project_facts"] == values["grid_connection"]
+    assert result["missing_inputs"] == []
+    rule_gap = cast(Object, result["rule_gap"])
+    assert rule_gap["country_code"] == country
+    assert rule_gap["bundled_rule_pack"] is True
+    assert rule_gap["gap_code"] == "bundled_rule_pack_available"
+    assert isinstance(rule_gap["framework"], str) and rule_gap["framework"]
+
+
+@pytest.mark.parametrize("country", ["GB", "IT", "ES", "CH", "PL", None])
 def test_other_countries_do_not_inherit_german_sources(country: str | None) -> None:
     values = declared(country=country, complete=True)
     result = country_assessment(values)
@@ -108,6 +127,15 @@ def test_other_countries_do_not_inherit_german_sources(country: str | None) -> N
     assert ("country_code" in cast(list[str], result["missing_inputs"])) == (
         country is None
     )
+    rule_gap = cast(Object, result["rule_gap"])
+    assert rule_gap["country_code"] == country
+    assert rule_gap["bundled_rule_pack"] is False
+    if country is None:
+        assert rule_gap["gap_code"] == "site_country_not_specified"
+        assert rule_gap["framework"] is None
+    else:
+        assert rule_gap["gap_code"] == f"country_rule_pack_missing_{country.lower()}"
+        assert isinstance(rule_gap["framework"], str) and rule_gap["framework"]
 
 
 def test_missing_fields_are_explicit_and_calendar_date_can_identify_source() -> None:
@@ -289,3 +317,40 @@ def test_schema_is_exact_and_shared_contract_declarations_match() -> None:
     assert json.loads(browser.read_text())["project_input_contracts"] == list(
         SUPPORTED_INPUT_CONTRACTS
     )
+
+
+def test_every_geo_country_has_explicit_rule_pack_or_rule_gap_metadata() -> None:
+    from linker_engine import geo
+    from linker_engine.planning.grid_connection import (
+        BUNDLED_RULE_COUNTRIES,
+        bundled_country_sources,
+        rule_gap_metadata,
+    )
+    from linker_engine.planning.report_copy import COUNTRY_NAMES
+
+    geo_countries = geo.countries()
+    assert len(geo_countries) == 50
+    assert set(COUNTRY_NAMES) == geo_countries
+    for code in sorted(geo_countries):
+        gap = rule_gap_metadata(code)
+        assert gap["country_code"] == code
+        assert isinstance(gap["framework"], str) and gap["framework"]
+        if code in BUNDLED_RULE_COUNTRIES:
+            assert gap["bundled_rule_pack"] is True
+            assert gap["gap_code"] == "bundled_rule_pack_available"
+            sources = bundled_country_sources(code)
+            assert sources
+            assert all(
+                isinstance(s.get("title"), str)
+                and isinstance(s.get("clause"), str)
+                and str(s.get("source_url", "")).startswith("https://")
+                and isinstance(s.get("evidence_snapshot_date"), str)
+                for s in sources
+            )
+        else:
+            assert gap["bundled_rule_pack"] is False
+            assert gap["gap_code"] == f"country_rule_pack_missing_{code.lower()}"
+            assert bundled_country_sources(code) == []
+            assessment = country_assessment(declared(country=code, complete=True))
+            assert assessment["reason"] == "country_rules_not_available"
+            assert assessment["rule_gap"] == gap

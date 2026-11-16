@@ -26,11 +26,14 @@ from __future__ import annotations
 import http.client
 import json
 import math
+import os
+import re
+import tempfile
 import urllib.error
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass
-from functools import cache
+from pathlib import Path
 from typing import Any, cast
 
 from pyproj import Transformer
@@ -60,11 +63,13 @@ MAX_ROOF_PLANE_M2 = 3000.0
 LICENCES = {
     "NL": "CC BY 4.0 (3D BAG, TU Delft / 3DGI)",
     "CH": "swisstopo free geodata, attribution required",
+    "LI": "swisstopo free geodata, attribution required",
 }
 
 # Each model is published in its own national grid; the rings are transformed
 # back to WGS84 for the map and the report.
-CRS = {"NL": DUTCH_CRS, "CH": "EPSG:2056"}
+CRS = {"NL": DUTCH_CRS, "CH": "EPSG:2056", "LI": "EPSG:2056"}
+MAX_SWISS_CACHE_FILES = 6
 
 
 def model_crs(country: str) -> str:
@@ -273,8 +278,8 @@ def read(country: str, latitude: float, longitude: float) -> ModelResult | None:
             licence=LICENCES["NL"],
             transformer=Transformer.from_crs(DUTCH_CRS, "EPSG:4326", always_xy=True),
         )
-    if country == "CH":
-        return _read_swiss(latitude, longitude)
+    if country in ("CH", "LI"):
+        return _read_swiss(latitude, longitude, country=country)
     return None
 
 
@@ -291,11 +296,29 @@ def _swiss_tile_name(x: float, y: float) -> str:
     return f"{int(x // SWISS_TILE_M)}-{int(y // SWISS_TILE_M)}"
 
 
-def _read_swiss(latitude: float, longitude: float) -> ModelResult | None:
+def _swiss_cache_dir() -> Path:
+    root = Path(os.environ.get("LINKER_ENGINE_CACHE") or "/tmp/linker-engine-cache")
+    directory = root / "swiss"
+    directory.mkdir(parents=True, exist_ok=True)
+    return directory
+
+
+def _prune_swiss_cache(directory: Path) -> None:
+    files = sorted(
+        directory.glob("*.dxf.zip"),
+        key=lambda item: item.stat().st_mtime,
+    )
+    for stale in files[:-MAX_SWISS_CACHE_FILES]:
+        stale.unlink(missing_ok=True)
+
+
+def _read_swiss(
+    latitude: float, longitude: float, *, country: str = "CH"
+) -> ModelResult | None:
     """Roof surfaces of the buildings near a Swiss or Liechtenstein position.
 
-    The tile is 16 MB compressed and 256 MB expanded, so it is parsed once and
-    kept; a request for a second building in the same tile answers from memory.
+    The tile is 16 MB compressed and hundreds of MB expanded, so the zip is
+    cached on disk (bounded LRU) and streamed with target filtering.
 
     The STAC search takes a WGS84 bbox, not the model's own metres: measured
     2026-11-16, sending EPSG:2056 metres answers `HTTP 400 Bad Request`.
@@ -309,7 +332,7 @@ def _read_swiss(latitude: float, longitude: float) -> ModelResult | None:
     if found is None or not found.surfaces:
         return None
     building = Building(
-        id=f"CH {_swiss_tile_name(x, y)}",
+        id=f"{country} {_swiss_tile_name(x, y)}",
         address=None,
         footprint=[found.footprint],
         planes=[
@@ -323,25 +346,17 @@ def _read_swiss(latitude: float, longitude: float) -> ModelResult | None:
         ],
     )
     return ModelResult(
-        country="CH",
+        country=country,
         buildings=[building],
-        licence=LICENCES["CH"],
+        licence=LICENCES[country],
         transformer=Transformer.from_crs("EPSG:2056", "EPSG:4326", always_xy=True),
     )
 
 
-@cache
 def _swiss_tile(
     x: float, y: float, latitude: float, longitude: float
 ) -> swiss.Tile | None:
-    """Download and parse the tile covering a position, once per process.
-
-    The tile is chosen by which published bbox contains the position, smallest
-    first, because the ids carry a grid of their own (`1166-42`) that does not
-    follow from the projected metres. Measured 2026-11-16: the national products
-    also answer the search, and picking one of those would download 3.7 GB for a
-    single roof.
-    """
+    """Download to bounded disk LRU cache and stream-parse around `(x, y)`."""
     span = 0.01
     url = (
         f"{SWISS_STAC}/collections/{SWISS_COLLECTION}/items"
@@ -359,7 +374,7 @@ def _swiss_tile(
             f"swissBUILDINGS3D index did not answer: {error}"
         ) from error
 
-    candidates: list[tuple[float, str]] = []
+    candidates: list[tuple[float, str, str]] = []
     for feature in cast(list[dict[str, Any]], document.get("features") or []):
         assets = cast(dict[str, Any], feature.get("assets") or {})
         href = next(
@@ -378,22 +393,45 @@ def _swiss_tile(
         west, south, east, north = (float(value) for value in bbox)
         if not (west <= longitude <= east and south <= latitude <= north):
             continue
-        candidates.append(((east - west) * (north - south), href))
+        raw_id = str(
+            feature.get("id")
+            or Path(urllib.parse.urlparse(href).path).name.removesuffix(".dxf.zip")
+            or _swiss_tile_name(x, y)
+        )
+        tile_id = re.sub(r"[^A-Za-z0-9_.-]+", "_", raw_id) or _swiss_tile_name(x, y)
+        candidates.append(((east - west) * (north - south), tile_id, href))
     if not candidates:
         return None
     candidates.sort()
-    try:
-        with urllib.request.urlopen(
-            urllib.request.Request(
-                candidates[0][1], headers={"User-Agent": USER_AGENT}
-            ),
-            timeout=180,
-        ) as response:
-            return swiss.read_archive(response.read())
-    except (urllib.error.URLError, TimeoutError) as error:
-        raise ModelUnavailable(
-            f"swissBUILDINGS3D tile did not download: {error}"
-        ) from error
+    _, tile_id, href = candidates[0]
+    directory = _swiss_cache_dir()
+    zip_path = directory / f"{tile_id}.dxf.zip"
+    if zip_path.exists():
+        zip_path.touch()
+    else:
+        tmp_path: Path | None = None
+        try:
+            with urllib.request.urlopen(
+                urllib.request.Request(href, headers={"User-Agent": USER_AGENT}),
+                timeout=180,
+            ) as response:
+                with tempfile.NamedTemporaryFile(
+                    dir=directory, suffix=".part", delete=False
+                ) as handle:
+                    tmp_path = Path(handle.name)
+                    while chunk := response.read(65536):
+                        handle.write(chunk)
+            os.replace(tmp_path, zip_path)
+            _prune_swiss_cache(directory)
+        except (urllib.error.URLError, TimeoutError, OSError) as error:
+            if tmp_path is not None:
+                tmp_path.unlink(missing_ok=True)
+            raise ModelUnavailable(
+                f"swissBUILDINGS3D tile did not download: {error}"
+            ) from error
+    return swiss.read_archive(
+        zip_path, target=(x, y), radius_m=max(60.0, CLICK_TOLERANCE_M * 8)
+    )
 
 
 def distance_m(ring: list[tuple[float, float]], x: float, y: float) -> float:

@@ -14924,3 +14924,83 @@ msgstr "Regeljahr für diesen Standort übernommen"
 #: build/planner/assets/planner.js
 msgid "Opening the project…"
 msgstr "Projekt wird geöffnet…"
+
+#: ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx
+#: build/planner/assets/planner.js
+msgid "Roof plane %d"
+msgstr "Dachfläche %d"
+
+#: ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx
+#: build/planner/assets/planner.js
+msgid "Measured 3D roof plane (%1$s° tilt, %2$s° azimuth)"
+msgstr "Aufgemessene 3D-Dachfläche (%1$s° Neigung, %2$s° Azimut)"
+
+#: ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx
+#: build/planner/assets/planner.js
+msgid "Enter a roof pitch between 0° and 90° and a bearing between 0° and 360°."
+msgstr "Geben Sie eine Dachneigung zwischen 0° und 90° sowie eine Fallrichtung zwischen 0° und 360° ein."
+
+#: ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx
+#: build/planner/assets/planner.js
+msgid "Building roof %d"
+msgstr "Gebäudedach %d"
+
+#: ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx
+#: build/planner/assets/planner.js
+msgid "Building outline adopted with entered roof pitch and bearing."
+msgstr "Gebäudeumriss mit eingegebener Dachneigung und Fallrichtung übernommen."
+
+#: ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx
+#: build/planner/assets/planner.js
+msgid "Detected building: %s"
+msgstr "Erkanntes Gebäude: %s"
+
+#: ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx
+#: build/planner/assets/planner.js
+msgid "Measured roof plane"
+msgstr "Aufgemessene Dachfläche"
+
+#: ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx
+#: build/planner/assets/planner.js
+msgid "Plane %1$d · %2$s m² · %3$s° tilt · %4$s° azimuth"
+msgstr "Fläche %1$d · %2$s m² · %3$s° Neigung · %4$s° Azimut"
+
+#: ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx
+#: build/planner/assets/planner.js
+msgid "Use selected roof plane"
+msgstr "Ausgewählte Dachfläche übernehmen"
+
+#: ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx
+#: build/planner/assets/planner.js
+msgid "Use building outline"
+msgstr "Gebäudeumriss übernehmen"
+
+#: ../../apps/planner/src/components/equipment/GridConnectionResult.tsx
+#: build/planner/assets/planner.js
+msgid "EU Regulation 2016/631 (RfG) national implementation and local DSO conditions"
+msgstr "Nationale Umsetzung der Verordnung (EU) 2016/631 (RfG) und Bedingungen des örtlichen Verteilnetzbetreibers"
+
+#: ../../apps/planner/src/components/equipment/GridConnectionResult.tsx
+#: build/planner/assets/planner.js
+msgid "National electricity network code and local grid operator conditions"
+msgstr "Nationale Netzanschlussvorschriften und Bedingungen des örtlichen Netzbetreibers"
+
+#: ../../apps/planner/src/components/equipment/GridConnectionResult.tsx
+#: build/planner/assets/planner.js
+msgid "A versioned national rule reading is bundled for %1$s (%2$s). Enter grid connection details and national rule inputs to run the conditional checks; local operator territory and connection permission still require project-specific verification."
+msgstr "Für %1$s ist eine versionierte Einordnung des nationalen Regelwerks hinterlegt (%2$s). Tragen Sie die Netzanschlussdaten und die Ländereingaben ein, um die bedingten Prüfungen auszuführen; Netzgebiet und Anschlusszusage erfordern weiterhin eine projektspezifische Prüfung."
+
+#: ../../apps/planner/src/components/equipment/GridConnectionResult.tsx
+#: build/planner/assets/planner.js
+msgid "No automated grid-connection rule pack is bundled for %1$s (%2$s). Local grid operator connection rules are checked during project engineering and inquiry handling."
+msgstr "Für %1$s ist kein automatisiertes Regelwerk zum Netzanschluss hinterlegt (%2$s). Die Anschlussbedingungen des örtlichen Netzbetreibers werden im Rahmen der Projektierung und Anfragebearbeitung geprüft."
+
+#: ../../apps/planner/src/components/equipment/GridConnectionResult.tsx
+#: build/planner/assets/planner.js
+msgid "No site country was specified, so national grid-connection rules could not be checked."
+msgstr "Es wurde kein Standortland angegeben; nationale Netzanschlussregeln konnten daher nicht geprüft werden."
+
+#: ../../apps/planner/src/components/equipment/GridConnectionResult.tsx
+#: build/planner/assets/planner.js
+msgid "A versioned national rule reading is bundled for %1$s (%2$s). Enter national rule inputs to run the conditional checks."
+msgstr "Für %1$s ist eine versionierte Einordnung des nationalen Regelwerks hinterlegt (%2$s). Tragen Sie die Ländereingaben ein, um die bedingten Prüfungen auszuführen."

@@ -46,12 +46,43 @@ class ProductProvider(Protocol):
     version: str
 
 
+_CACHED_PROVIDER: (
+    tuple[tuple[str, int, int, str, int, int, str, str, str], ProductProvider] | None
+) = None
+
+
 def worker_product_provider() -> ProductProvider:
     # Reuse the site's loader for the currently selected immutable generation.
     # Run proofs stay frozen; current permission is checked independently.
+    global _CACHED_PROVIDER
+    import os
+
     from ..app import SOURCE, Services, Settings
 
-    return Services(Settings.from_environment(), SOURCE)
+    settings = Settings.from_environment()
+    feed_path = settings.feed.resolve()
+    manifest_path = feed_path.parent / "manifest.json"
+    compat_path = (
+        feed_path.parent / "compatibility.json"
+        if manifest_path.exists()
+        else settings.compatibility.resolve()
+    )
+    feed_stat = feed_path.stat()
+    compat_stat = compat_path.stat()
+    key = (
+        str(feed_path),
+        feed_stat.st_mtime_ns,
+        feed_stat.st_size,
+        str(compat_path),
+        compat_stat.st_mtime_ns,
+        compat_stat.st_size,
+        str(settings.cache.resolve()),
+        os.environ.get("LINKER_PUBLICATION_URL", ""),
+        os.environ.get("LINKER_ENGINE_GATE_MODE", ""),
+    )
+    if _CACHED_PROVIDER is None or _CACHED_PROVIDER[0] != key:
+        _CACHED_PROVIDER = (key, Services(settings, SOURCE))
+    return _CACHED_PROVIDER[1]
 
 
 class _Confirmation:

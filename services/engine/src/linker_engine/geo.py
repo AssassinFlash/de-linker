@@ -98,6 +98,46 @@ def _compact(postcode: str) -> str:
     return re.sub(r"\s+", "", postcode).upper()
 
 
+# Countries whose residents write a country prefix in front of their own
+# postcode. Measured 2026-11-16 against `data/plz_eu.csv.gz`: the table stores
+# Luxembourg `L-1111`, Latvia `LV-1001`, Moldova `MD-2000` and Andorra `AD100`,
+# and Lithuania's rows omit the `LT-` its residents type. The prefix is not
+# part of the postcode, so `L-1111`, `LU-1111` and `1111` name one place.
+_PREFIXES = {"LU": "L", "LV": "LV", "MD": "MD", "AD": "AD", "LT": "LT"}
+
+
+def _compact_key(postcode: str, country: str) -> str:
+    """The postcode without separators or its own country prefix.
+
+    Czechia, Sweden and Slovakia write one space inside the code (`110 00`,
+    `100 04`, `010 01`); a visitor writing `11000` names the same street. Only
+    the separators and the country's own prefix are dropped — nothing else,
+    because two different codes must stay different.
+    """
+    letters = "".join(ch for ch in postcode.upper() if ch.isalnum())
+    prefix = _PREFIXES.get(country.upper(), "")
+    if prefix and letters.startswith(prefix):
+        rest = letters[len(prefix) :]
+        if rest and any(ch.isdigit() for ch in rest):
+            return rest
+    return letters
+
+
+@cache
+def _by_compact() -> dict[str, dict[str, Place | None]]:
+    """Country → compact key → the place it names, or None when ambiguous.
+
+    Two recorded codes can compact to one key inside the same country; that
+    key answers nothing rather than guessing which street was meant.
+    """
+    grouped: dict[str, dict[str, Place | None]] = {}
+    for place in _table().values():
+        bucket = grouped.setdefault(place.country, {})
+        key = _compact_key(place.postcode, place.country)
+        bucket[key] = place if key not in bucket else None
+    return grouped
+
+
 def prefix_lookup(postcode: str, country: str) -> Place | None:
     """The district a fuller postcode belongs to.
 
@@ -158,7 +198,12 @@ def lookup(postcode: str, country: str | None = None) -> Place | None:
         return None
     if country is not None:
         exact = _by_country().get(country.upper(), {}).get(wanted)
-        return exact if exact is not None else prefix_lookup(postcode, country)
+        if exact is not None:
+            return exact
+        compact = (
+            _by_compact().get(country.upper(), {}).get(_compact_key(postcode, country))
+        )
+        return compact if compact is not None else prefix_lookup(postcode, country)
     matches = _by_postcode().get(wanted, ())
     if not matches:
         # A postcode the table lists only as a district still has to resolve:
@@ -168,25 +213,49 @@ def lookup(postcode: str, country: str | None = None) -> Place | None:
             for hit in (prefix_lookup(postcode, candidate) for candidate in countries())
             if hit is not None
         }
-        return found.popitem()[1] if len(found) == 1 else None
+        if len(found) == 1:
+            return found.popitem()[1]
+        # The same fallback for a code written with other separators: `11000`
+        # for Czechia's `110 00`, `1111` for Luxembourg's `L-1111`.
+        keyed = {
+            place.country: place
+            for candidate in countries()
+            if (
+                place := _by_compact()
+                .get(candidate, {})
+                .get(_compact_key(postcode, candidate))
+            )
+            is not None
+        }
+        return keyed.popitem()[1] if len(keyed) == 1 else None
     countries_found = {place.country for place in matches}
     return matches[0] if len(countries_found) == 1 else None
 
 
 def lookup_in(postcode: str, country: str) -> Place | None:
-    """The place inside one country, which is what a form with a country uses."""
-    return _by_country().get(country.upper(), {}).get(normalise(postcode))
+    """The place inside one country, which is what a form with a country uses.
+
+    It resolves exactly like `lookup` does for a named country, so a code the
+    visitor wrote with other separators or with its own country prefix
+    (`11000` for `110 00`, `L-1111` for `1111`) still finds the same place.
+    """
+    return lookup(postcode, country)
 
 
 def countries_of(postcode: str) -> frozenset[str]:
     """Every country that writes this postcode this way.
 
     The lookup needs it to tell "nowhere" from "several places": only the
-    second is worth asking the visitor a follow-up question for.
+    second is worth asking the visitor a follow-up question for. A code written
+    with other separators counts too — `11000` is Czechia's `110 00` as well as
+    Serbia's `11000`, and answering "nowhere" would be wrong for both.
     """
-    return frozenset(
-        place.country for place in _by_postcode().get(normalise(postcode), ())
-    )
+    wanted = normalise(postcode)
+    found = {place.country for place in _by_postcode().get(wanted, ())}
+    for country in _by_compact():
+        if _by_compact()[country].get(_compact_key(postcode, country)) is not None:
+            found.add(country)
+    return frozenset(found)
 
 
 def countries() -> frozenset[str]:

@@ -117,3 +117,41 @@ test("updating the mosaic grant swaps the allowed aerial origin without reviving
 		/not_authorized/,
 	);
 });
+
+test("Google tile requests send the site origin as Referer while other origins send no referrer", () => {
+	const scoped = new MapRequestScope(true, [
+		"https://tile.googleapis.com",
+		"https://geoservices.bayern.de",
+	]);
+	assert.deepEqual(
+		scoped.transform(
+			"https://tile.googleapis.com/v1/2dtiles/18/140000/95000?session=s&key=k",
+		),
+		{
+			url: "https://tile.googleapis.com/v1/2dtiles/18/140000/95000?session=s&key=k",
+			credentials: "same-origin",
+			referrerPolicy: "origin",
+		},
+	);
+	assert.deepEqual(
+		scoped.transform("https://geoservices.bayern.de/od/wms/dop/v1/dop20"),
+		{
+			url: "https://geoservices.bayern.de/od/wms/dop/v1/dop20",
+			credentials: "same-origin",
+			referrerPolicy: "no-referrer",
+		},
+	);
+	assert.deepEqual(
+		scoped.transform("https://tiles.openfreemap.org/styles/liberty"),
+		{
+			url: "https://tiles.openfreemap.org/styles/liberty",
+			credentials: "same-origin",
+			referrerPolicy: "no-referrer",
+		},
+	);
+	for (const url of [
+		"https://tile.googleapis.com.attacker.invalid/v1/2dtiles/0/0/0",
+		"http://tile.googleapis.com/v1/2dtiles/0/0/0",
+	])
+		assert.throws(() => scoped.transform(url), /not_authorized/, url);
+});

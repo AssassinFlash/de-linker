@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { PlanningRun } from "../../data/planningProtocol.ts";
-import type { JsonObject } from "../../data/protocol.ts";
+import { ApiError, type JsonObject } from "../../data/protocol.ts";
 import type { EquipmentSelection } from "../../domain/equipment.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { EquipmentCandidate } from "../../data/equipmentSearch.ts";
@@ -64,7 +64,8 @@ export function EquipmentSearchResult({
 	const detail = useQuery({
 		queryKey: ["equipment-candidate", scope, run.id, candidate?.id],
 		enabled: !!candidate && client.isCurrentScope(scope),
-		retry: false,
+		retry: (failureCount, error) =>
+			failureCount < 1 && error instanceof ApiError && error.status === 503,
 		staleTime: Infinity,
 		refetchOnWindowFocus: false,
 		queryFn: async ({ signal }) =>

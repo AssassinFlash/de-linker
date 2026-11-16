@@ -123,6 +123,13 @@ export default function MapViewport({
 		ring: [number, number][];
 		source: string;
 		licence: string;
+		planes?: readonly {
+			id: number;
+			polygon: readonly [number, number][];
+			tilt_deg: number;
+			azimuth_deg: number;
+			area_m2: number;
+		}[];
 	} | null;
 }) {
 	const host = useRef<HTMLDivElement>(null),

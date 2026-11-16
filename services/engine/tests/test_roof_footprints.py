@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import gzip
 import json
+from pathlib import Path
 
 from linker_engine.roof import footprints
 
@@ -209,3 +210,125 @@ def test_each_recorded_country_answers_a_usable_layer() -> None:
         assert service is not None, country
         assert service.tiles[0].startswith("https://"), country
         assert "{bbox-epsg-3857}" in service.tiles[0] or "{z}" in service.tiles[0]
+
+
+def test_all_50_geo_countries_have_footprint_region_mapping() -> None:
+    from linker_engine import geo
+
+    missing = geo.countries() - set(footprints.REGION_NAMES)
+    assert missing == set()
+
+
+def test_microstate_part_url_falls_back_to_exact_quadkey(
+    monkeypatch: object,
+) -> None:
+    import pytest
+
+    mp = monkeypatch
+    assert isinstance(mp, pytest.MonkeyPatch)
+    mp.setattr(
+        footprints,
+        "_catalogue",
+        lambda: {
+            ("Italy", "120233021"): "https://example.invalid/italy-cell.geojsonl.gz"
+        },
+    )
+    assert (
+        footprints.part_url("VA", "120233021")
+        == "https://example.invalid/italy-cell.geojsonl.gz"
+    )
+    assert footprints.part_url("ZZ", "120233021") is None
+
+
+def test_streaming_disk_lru_and_overpass_fallback(
+    tmp_path: Path, monkeypatch: object
+) -> None:
+    import io
+    import os
+    import time
+
+    import pytest
+
+    mp = monkeypatch
+    assert isinstance(mp, pytest.MonkeyPatch)
+    mp.setenv("LINKER_ENGINE_CACHE", str(tmp_path))
+
+    # 1. Streaming from a .geojsonl.gz Path on disk works.
+    gz_path = tmp_path / "sample.geojsonl.gz"
+    gz_path.write_bytes(_part([_box(15.64, 78.22)]))
+    kept = footprints.outlines(gz_path, 78.2201, 15.6401)
+    assert len(kept) == 1
+
+    # 2. Disk LRU keeps at most MAX_CACHED_PARTS (10) files.
+    fp_dir = footprints.cache_dir(tmp_path)
+    base_ts = time.time() - 100
+    for idx in range(10):
+        old_file = fp_dir / f"XX-{idx:09d}.geojsonl.gz"
+        old_file.write_bytes(b"old")
+        os.utime(old_file, (base_ts + idx, base_ts + idx))
+
+    part_bytes = _part([_box(15.64, 78.22)])
+    mp.setattr(
+        footprints,
+        "_catalogue",
+        lambda: {
+            (
+                "Norway",
+                footprints.quadkey(78.2201, 15.6401),
+            ): "https://example.invalid/sj.gz"
+        },
+    )
+
+    class FakeResp(io.BytesIO):
+        def __enter__(self) -> FakeResp:
+            return self
+
+        def __exit__(self, *_: object) -> None:
+            self.close()
+
+    mp.setattr(
+        "urllib.request.urlopen",
+        lambda req, timeout=0: FakeResp(part_bytes),
+    )
+    payload = footprints.outline_payload("SJ", 78.2201, 15.6401)
+    assert payload is not None
+    assert payload["source"] == "Microsoft building footprints"
+    assert payload["planes"] == []
+    cached = list(fp_dir.glob("*.geojsonl.gz"))
+    assert len(cached) == 10
+    assert not (fp_dir / "XX-000000000.geojsonl.gz").exists()
+
+    # 3. When Microsoft has no part, Overpass fallback returns OSM outline.
+    mp.setattr(footprints, "_catalogue", lambda: {})
+    osm_json = json.dumps(
+        {
+            "elements": [
+                {
+                    "type": "way",
+                    "geometry": [
+                        {"lat": 78.2200, "lon": 15.6400},
+                        {"lat": 78.2200, "lon": 15.6403},
+                        {"lat": 78.2203, "lon": 15.6403},
+                        {"lat": 78.2203, "lon": 15.6400},
+                        {"lat": 78.2200, "lon": 15.6400},
+                    ],
+                }
+            ]
+        }
+    ).encode()
+    mp.setattr(
+        "urllib.request.urlopen",
+        lambda req, timeout=0: FakeResp(osm_json),
+    )
+    osm_payload = footprints.outline_payload("SJ", 78.2201, 15.6401)
+    assert osm_payload is not None
+    assert osm_payload["source"] == "OpenStreetMap contributors"
+    assert osm_payload["licence"] == "ODbL 1.0 (OpenStreetMap)"
+    assert osm_payload["planes"] == []
+
+    # 4. Overpass timeout/error never raises and returns None.
+    def fail_urlopen(*_args: object, **_kwargs: object) -> None:
+        raise TimeoutError("overpass timed out")
+
+    mp.setattr("urllib.request.urlopen", fail_urlopen)
+    assert footprints.outline_payload("SJ", 78.2201, 15.6401) is None

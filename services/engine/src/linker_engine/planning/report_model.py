@@ -12,7 +12,10 @@ from .certificate_report import certificate_sections
 from .comparison_report import comparison_sections
 from .direct_beam_report import direct_beam_sections
 from .geometric_pv_report import geometric_pv_sections
-from .grid_connection_report import grid_connection_sections
+from .grid_connection_report import (
+    grid_connection_sections,
+    unfilled_grid_connection_sections,
+)
 from .installation_report import installation_sections
 from .project_materials import (
     material_name,
@@ -68,8 +71,10 @@ def build_report(source: Object) -> Report:
         )
     )
     brief = source.get("brief")
+    brief_country_code: Any = None
     if isinstance(brief, dict):
         site = cast(Object, brief["site"])
+        brief_country_code = site.get("country_code")
         # A row the visitor never declared is left out rather than printed as a
         # dash: "Time zone —" reads as a field the report failed to fill, and a
         # postcode does not establish a time zone on its own.
@@ -275,9 +280,15 @@ def build_report(source: Object) -> Report:
                                 }
                             )
                         )
-        grid_sections = grid_connection_sections(
-            assessment.get("country_assessment"), locale
-        )
+        country_assessment_value = assessment.get("country_assessment")
+        grid_sections = grid_connection_sections(country_assessment_value, locale)
+        if not grid_sections:
+            unfilled_country = (
+                country_assessment_value.get("country_code")
+                if isinstance(country_assessment_value, dict)
+                else None
+            ) or brief_country_code
+            grid_sections = unfilled_grid_connection_sections(unfilled_country, locale)
         sections.append(
             ReportSection(
                 id="equipment",
@@ -641,6 +652,9 @@ def build_report(source: Object) -> Report:
                 table=part_table,
             )
         )
+
+    elif isinstance(brief_country_code, str) and brief_country_code:
+        sections.extend(unfilled_grid_connection_sections(brief_country_code, locale))
 
     binding = source.get("energy_equipment")
     if isinstance(binding, dict) and "selection" in binding:

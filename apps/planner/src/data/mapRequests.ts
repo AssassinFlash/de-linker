@@ -3,6 +3,7 @@
  * The site's own aerial mosaic is a second, explicitly declared grant: it is
  * passed in by the caller from the server's answer, never read from a style. */
 const ORIGIN = "https://tiles.openfreemap.org";
+const GOOGLE_TILES_ORIGIN = "https://tile.googleapis.com";
 
 function parseAerialOrigins(aerialOrigins: readonly string[]): Set<string> {
 	return new Set(
@@ -45,10 +46,14 @@ export class MapRequestScope {
 			throw new Error("map_resource_origin_not_authorized");
 		// The pinned library supports same-origin/include. Every granted origin
 		// here is cross-origin to Linker, so same-origin sends no credentials.
+		// Google Map Tiles API keys are HTTP-referrer restricted to de-linker.com.
 		return {
 			url: target.href,
 			credentials: "same-origin" as const,
-			referrerPolicy: "no-referrer" as const,
+			referrerPolicy:
+				target.origin === GOOGLE_TILES_ORIGIN
+					? ("origin" as const)
+					: ("no-referrer" as const),
 		};
 	};
 

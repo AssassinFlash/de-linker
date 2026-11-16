@@ -24,7 +24,7 @@ final class Transport {
 	 * RPCs retain their existing five-second budget.
 	 */
 	private const SOURCE_OPERATION_TIMEOUT = 30.0;
-	private const SOURCE_OPERATIONS        = array( 'products/current', 'projects/create', 'projects/revise', 'installation/review', 'battery/scenario', 'runs/pv', 'runs/direct-beam', 'runs/geometric-pv', 'runs/pvgis-reference', 'runs/energy', 'runs/equipment', 'runs/equipment-search', 'runs/report' );
+	private const SOURCE_OPERATIONS        = array( 'products/current', 'projects/create', 'projects/revise', 'installation/review', 'battery/scenario', 'runs/pv', 'runs/direct-beam', 'runs/geometric-pv', 'runs/pvgis-reference', 'runs/energy', 'runs/equipment', 'runs/equipment-search', 'runs/report', 'runs/read', 'equipment/candidates/read', 'equipment/certificates/read' );
 	/**
 	 * One published footprint part is about 38 MB and takes roughly 30 s to
 	 * fetch; measured 2026-11-16, the ordinary 5 s budget answered 503 while

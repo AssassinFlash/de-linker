@@ -9,6 +9,7 @@ the real file exposed.
 from __future__ import annotations
 
 import math
+from pathlib import Path
 
 from linker_engine.roof import swiss
 
@@ -113,3 +114,74 @@ def test_the_tile_grid_names_one_kilometre_square() -> None:
     # step is 1000 m of EPSG:2056.
     assert swiss.MAX_ROOF_PLANE_M2 == 3000.0
     assert math.isclose(swiss.CELL_M, 32.0)
+
+
+def test_read_archive_streams_and_discards_distant_buildings_with_tracemalloc(
+    tmp_path: Path,
+) -> None:
+    import io
+    import tracemalloc
+    import zipfile
+
+    from shapely.geometry import LinearRing, Polygon
+
+    buildings = "".join(_gable(i * 200.0, i * 200.0 + 20.0) for i in range(60))
+    zip_path = tmp_path / "synthetic-tile.dxf.zip"
+    with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as bundle:
+        bundle.writestr("tile.dxf", buildings)
+
+    target_x, target_y = 2000.0 + 10.0, 5.0
+    tracemalloc.start()
+    tile = swiss.read_archive(zip_path, target=(target_x, target_y), radius_m=40.0)
+    _, peak_bytes = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+
+    assert len(tile.buildings()) == 1
+    assert peak_bytes < 4 * 1024 * 1024
+    found = tile.nearest(target_x, target_y, 5.0)
+    assert found is not None
+    assert len(found.surfaces) == 2
+    assert Polygon(found.footprint).is_valid
+    assert LinearRing(found.footprint).is_ccw
+    for surface in found.surfaces:
+        assert 0.0 <= surface.tilt_deg < 89.0
+        assert 1.0 <= surface.area_m2 <= 3000.0
+        assert Polygon(surface.outline).is_valid
+        assert LinearRing(surface.outline).is_ccw
+
+    # Bytes archive still works without target filtering.
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w") as bundle:
+        bundle.writestr("tile.dxf", _gable(0.0, 20.0) + _gable(500.0, 520.0))
+    full_tile = swiss.read_archive(buf.getvalue())
+    assert len(full_tile.buildings()) == 2
+
+
+def test_hull_points_returns_clean_ccw_ring_for_concave_multi_triangle_roof() -> None:
+    from shapely.geometry import LinearRing, Polygon
+
+    # L-shaped flat roof made of 4 triangles at z=10.
+    text = "".join(
+        [
+            _polyline(),
+            _vertex(0.0, 0.0, 10.0),
+            _vertex(10.0, 0.0, 10.0),
+            _vertex(10.0, 5.0, 10.0),
+            _vertex(5.0, 5.0, 10.0),
+            _vertex(5.0, 10.0, 10.0),
+            _vertex(0.0, 10.0, 10.0),
+            _face(1, 2, 3),
+            _face(1, 3, 4),
+            _face(1, 4, 6),
+            _face(4, 5, 6),
+        ]
+    )
+    tile = swiss.parse(swiss._pairs(text))  # noqa: SLF001
+    found = tile.nearest(2.0, 2.0, 2.0)
+    assert found is not None
+    assert len(found.surfaces) == 1
+    ring = found.surfaces[0].outline
+    poly = Polygon(ring)
+    assert poly.is_valid
+    assert LinearRing(ring).is_ccw
+    assert math.isclose(poly.area, 75.0, abs_tol=0.1)

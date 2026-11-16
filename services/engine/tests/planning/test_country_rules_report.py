@@ -327,3 +327,152 @@ def test_report_never_rounds_declared_power_across_a_rule_threshold(
     rendered = str(grid_connection_sections(country_assessment(values), locale))
     assert ("999,9999 kW" if locale == "de" else "999.9999 kW") in rendered
     assert text("country_rule_type_a", locale) in rendered
+
+
+@pytest.mark.parametrize("locale", ["en", "de"])
+def test_all_50_european_countries_report_official_sources_or_explicit_rule_gaps(
+    locale: str,
+) -> None:
+    from linker_engine import geo, pdf
+    from linker_engine.planning.grid_connection import (
+        BUNDLED_RULE_COUNTRIES,
+        bundled_country_sources,
+        country_assessment,
+    )
+    from linker_engine.planning.grid_connection_report import grid_connection_sections
+    from linker_engine.planning.report_copy import country_name
+    from linker_engine.planning.report_model import build_report
+
+    from .test_grid_connection import declared
+
+    expected_frameworks = {
+        "GB": "ENA Engineering Recommendation G98 / G99",
+        "IT": "CEI 0-21 / CEI 0-16",
+        "ES": "RD 244/2019",
+        "CH": "VSE NA/EEA-CH",
+        "PL": "PTPiREE IRiESD",
+        "BE": "Synergrid C10/11",
+        "PT": "E-Redes",
+        "CZ": "PPDS",
+        "IE": "ESB Networks NC6 / NC7",
+        "DK": "Green Power Denmark TR 3.2.1 / TR 3.3.1",
+        "FI": "Fingrid VJV",
+        "NO": "FoL / REN",
+    }
+
+    for code in sorted(geo.countries()):
+        name = country_name(code, locale)
+        # Path 1: grid_connection filled (without country_rule_inputs)
+        with_grid = country_assessment(declared(country=code, complete=True))
+        sections = grid_connection_sections(with_grid, locale)
+        evidence_section = next(
+            s for s in sections if s.id == "grid-connection-evidence"
+        )
+        rendered = " ".join(
+            [
+                evidence_section.title,
+                *evidence_section.paragraphs,
+                *(f"{r.label} {r.value}" for r in evidence_section.rows),
+            ]
+        )
+        assert name in rendered
+        assert "sondern" not in rendered.lower()
+        if code in BUNDLED_RULE_COUNTRIES:
+            assert "No verified grid-connection rule pack" not in rendered
+            assert "kein geprüftes Regelwerk" not in rendered
+            for source in bundled_country_sources(code):
+                assert str(source["title"]) in rendered
+                assert str(source["clause"]) in rendered
+                assert str(source["source_url"]) in rendered
+        else:
+            assert (
+                "German TAB requirements are not assumed"
+                if locale == "en"
+                else "Deutsche TAB werden für dieses Projekt nicht vorausgesetzt"
+            ) in rendered
+            assert (
+                "not bundled as an automated rule pack"
+                if locale == "en"
+                else "nicht als automatisiertes Regelwerk hinterlegt"
+            ) in rendered
+            if code in expected_frameworks:
+                assert expected_frameworks[code] in rendered
+
+        # Path 2: QuickStart / no grid_connection (`versioned_country_rules_required`)
+        quick_source: Object = {
+            "title": f"QuickStart {code}",
+            "project_id": "0" * 32,
+            "revision": 1,
+            "input_sha256": "1" * 64,
+            "locale": locale,
+            "generated_at": "2026-11-16T00:00:00+00:00",
+            "source_runs": [],
+            "brief": {
+                "site": {
+                    "location_label": f"Site {code}",
+                    "country_code": code,
+                    "timezone": None,
+                },
+                "project_note": "",
+            },
+            "equipment": {
+                "model": "woo_equipment_v1",
+                "overall_status": "unresolved",
+                "equipment_status": "unresolved",
+                "selected_products": [],
+                "checks": [],
+                "provisional_bill_of_materials": [],
+                "country_assessment": {
+                    "status": "unresolved",
+                    "country_code": code,
+                    "reason": "versioned_country_rules_required",
+                },
+            },
+        }
+        report = build_report(quick_source)
+        quick_section = next(
+            s for s in report.sections if s.id == "grid-connection-evidence"
+        )
+        quick_text = " ".join(
+            [
+                quick_section.title,
+                *quick_section.paragraphs,
+                *(f"{r.label} {r.value}" for r in quick_section.rows),
+            ]
+        )
+        assert name in quick_text
+        assert text("country_open", locale) not in str(report.sections)
+        if code in BUNDLED_RULE_COUNTRIES:
+            for source in bundled_country_sources(code):
+                assert str(source["title"]) in quick_text
+                assert str(source["source_url"]) in quick_text
+        elif code in expected_frameworks:
+            assert expected_frameworks[code] in quick_text
+
+    # Spot-check PDF rendering for bundled and non-bundled countries (no missing glyphs)
+    for sample_code in ("DE", "FR", "NL", "AT", "SE", "GB", "IT", "CZ", "PL", "AX"):
+        report = build_report(
+            {
+                "title": f"PDF {sample_code}",
+                "project_id": "0" * 32,
+                "revision": 1,
+                "input_sha256": "1" * 64,
+                "locale": locale,
+                "generated_at": "2026-11-16T00:00:00+00:00",
+                "source_runs": [],
+                "brief": {
+                    "site": {
+                        "location_label": f"Site {sample_code}",
+                        "country_code": sample_code,
+                        "timezone": None,
+                    },
+                    "project_note": "",
+                },
+            }
+        )
+        doc = pdf.render(report)
+        extracted = "\n".join(
+            page.extract_text() for page in PdfReader(io.BytesIO(doc)).pages
+        )
+        assert country_name(sample_code, locale) in extracted
+        assert "\x00" not in extracted and "■" not in extracted

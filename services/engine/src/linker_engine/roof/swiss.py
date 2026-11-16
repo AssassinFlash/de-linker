@@ -28,7 +28,13 @@ from __future__ import annotations
 import io
 import math
 import zipfile
+from collections.abc import Iterator
 from dataclasses import dataclass
+from pathlib import Path
+
+from shapely.geometry import MultiPoint, Polygon
+from shapely.geometry.polygon import orient
+from shapely.ops import unary_union
 
 from .citygml import RoofPlane
 
@@ -102,17 +108,143 @@ def _pairs(text: str) -> list[tuple[int, str]]:
     return pairs
 
 
-def read_archive(archive: bytes) -> Tile:
-    """Parse one published tile archive into buildings and faces."""
-    with zipfile.ZipFile(io.BytesIO(archive)) as bundle:
+def _iter_pairs(stream: io.TextIOBase) -> Iterator[tuple[int, str]]:
+    """Stream DXF group codes two lines at a time without loading the file."""
+    while True:
+        code_line = stream.readline()
+        if not code_line:
+            break
+        code_str = code_line.strip()
+        if not code_str.lstrip("-").isdigit():
+            continue
+        value_line = stream.readline()
+        if not value_line:
+            break
+        yield int(code_str), value_line.strip()
+
+
+def _parse_vertex_record(
+    record: list[tuple[int, str]],
+    b_vertices: list[Point3],
+    b_faces: list[tuple[int, int, int]],
+) -> tuple[float, float] | None:
+    """Parse one VERTEX record into building-local vertices or faces."""
+    if not record or record[0][1] != "VERTEX":
+        return None
+    fields = {code: value for code, value in record}
+    flag = int(fields.get(70, "0") or 0)
+    if flag == _MESH_VERTEX:
+        try:
+            x = float(fields[10])
+            y = float(fields[20])
+            z = float(fields.get(30, "0.0"))
+        except (KeyError, ValueError):
+            return None
+        b_vertices.append((x, y, z))
+        return (x, y)
+    if flag == _FACE:
+        try:
+            indices = [int(fields[key]) for key in (71, 72, 73) if key in fields]
+        except ValueError:
+            return None
+        if len(indices) < 3:
+            return None
+        triangle = (indices[0] - 1, indices[1] - 1, indices[2] - 1)
+        if all(0 <= index < len(b_vertices) for index in triangle):
+            b_faces.append(triangle)
+    return None
+
+
+def read_archive(
+    archive: bytes | Path,
+    *,
+    target: tuple[float, float] | None = None,
+    radius_m: float = 80.0,
+) -> Tile:
+    """Stream one published tile archive into buildings and faces.
+
+    When `target` is given, only buildings whose XY bounding box comes within
+    `radius_m` of `target` are retained so full-tile memory stays bounded.
+    """
+    source: Path | io.BytesIO = (
+        archive if isinstance(archive, Path) else io.BytesIO(archive)
+    )
+    vertices: list[Point3] = []
+    faces: list[tuple[int, int, int]] = []
+    owners: list[int] = []
+    building = -1
+
+    b_vertices: list[Point3] = []
+    b_faces: list[tuple[int, int, int]] = []
+    min_x = math.inf
+    max_x = -math.inf
+    min_y = math.inf
+    max_y = -math.inf
+    in_polyline = False
+    pending: list[tuple[int, str]] = []
+
+    def flush_building() -> None:
+        nonlocal building, b_vertices, b_faces, min_x, max_x, min_y, max_y
+        if b_faces:
+            keep = target is None or (
+                min_x - radius_m <= target[0] <= max_x + radius_m
+                and min_y - radius_m <= target[1] <= max_y + radius_m
+            )
+            if keep:
+                building += 1
+                offset = len(vertices)
+                vertices.extend(b_vertices)
+                for a, b, c in b_faces:
+                    faces.append((offset + a, offset + b, offset + c))
+                    owners.append(building)
+        b_vertices = []
+        b_faces = []
+        min_x = math.inf
+        max_x = -math.inf
+        min_y = math.inf
+        max_y = -math.inf
+
+    def flush_record() -> None:
+        nonlocal min_x, max_x, min_y, max_y, pending
+        if in_polyline and pending:
+            point = _parse_vertex_record(pending, b_vertices, b_faces)
+            if point is not None:
+                px, py = point
+                if px < min_x:
+                    min_x = px
+                if px > max_x:
+                    max_x = px
+                if py < min_y:
+                    min_y = py
+                if py > max_y:
+                    max_y = py
+        pending = []
+
+    with zipfile.ZipFile(source) as bundle:
         name = next(
             (item for item in bundle.namelist() if item.lower().endswith(".dxf")),
             None,
         )
         if name is None:
             raise ValueError("the tile carries no DXF")
-        text = bundle.read(name).decode("utf-8", errors="replace")
-    return parse(_pairs(text))
+        with (
+            bundle.open(name) as raw,
+            io.TextIOWrapper(raw, encoding="utf-8", errors="replace") as stream,
+        ):
+            for code, value in _iter_pairs(stream):
+                if code == 0:
+                    flush_record()
+                    if value == "POLYLINE":
+                        flush_building()
+                        in_polyline = True
+                    elif value == "SEQEND":
+                        flush_building()
+                        in_polyline = False
+                if in_polyline:
+                    pending.append((code, value))
+            flush_record()
+            flush_building()
+    return Tile(vertices=vertices, faces=faces, owners=owners)
 
 
 def parse(pairs: list[tuple[int, str]]) -> Tile:
@@ -368,11 +500,24 @@ def _surface(
     if tilt >= MAX_ROOF_TILT_DEG:
         return None
     azimuth = (math.degrees(math.atan2(nx, ny)) + 360) % 360
+    tilt_deg = round(tilt, 1)
+    area_m2 = round(area, 2)
+    if (
+        tilt_deg < 0.0
+        or tilt_deg >= MAX_ROOF_TILT_DEG
+        or area_m2 < MIN_ROOF_PLANE_M2
+        or area_m2 > MAX_ROOF_PLANE_M2
+    ):
+        return None
+    outline = _hull_points(tile, members)
+    if len(outline) < 3:
+        return None
+    azimuth_deg = round(azimuth, 1) % 360.0
     return Surface(
-        tilt_deg=round(tilt, 1),
-        azimuth_deg=round(azimuth, 1),
-        area_m2=round(area, 2),
-        outline=_hull_points(tile, members),
+        tilt_deg=tilt_deg,
+        azimuth_deg=azimuth_deg,
+        area_m2=area_m2,
+        outline=outline,
     )
 
 
@@ -391,12 +536,52 @@ def _component_distance(tile: Tile, component: list[int], x: float, y: float) ->
 
 
 def _hull_points(tile: Tile, component: list[int]) -> list[tuple[float, float]]:
-    """Plan-projected vertices used by a set of faces, deduplicated."""
+    """Clean, non-self-intersecting counter-clockwise plan outline of faces."""
+    triangles: list[Polygon] = []
+    pts: list[tuple[float, float]] = []
     seen: dict[tuple[float, float], None] = {}
     for position in component:
+        tri_pts: list[tuple[float, float]] = []
         for index in tile.faces[position]:
             vertex = tile.vertices[index]
+            pt = (vertex[0], vertex[1])
+            tri_pts.append(pt)
+            pts.append(pt)
             seen[(round(vertex[0], 2), round(vertex[1], 2))] = None
+        if len(tri_pts) >= 3:
+            poly = Polygon(tri_pts)
+            if poly.is_valid and not poly.is_empty and poly.area > 1e-6:
+                triangles.append(poly)
+    ring_poly: Polygon | None = None
+    if triangles:
+        merged = unary_union(triangles)
+        if (
+            isinstance(merged, Polygon)
+            and merged.is_valid
+            and not merged.is_empty
+            and merged.area > 1e-6
+        ):
+            ring_poly = merged
+    if ring_poly is None and len(pts) >= 3:
+        hull = MultiPoint(pts).convex_hull
+        if (
+            isinstance(hull, Polygon)
+            and hull.is_valid
+            and not hull.is_empty
+            and hull.area > 1e-6
+        ):
+            ring_poly = hull
+    if ring_poly is not None:
+        ccw = orient(ring_poly, sign=1.0)
+        coords = [(round(x, 2), round(y, 2)) for x, y in ccw.exterior.coords[:-1]]
+        deduped: list[tuple[float, float]] = []
+        for coord in coords:
+            if not deduped or coord != deduped[-1]:
+                deduped.append(coord)
+        if len(deduped) > 1 and deduped[0] == deduped[-1]:
+            deduped.pop()
+        if len(deduped) >= 3:
+            return deduped
     return list(seen)
 
 
