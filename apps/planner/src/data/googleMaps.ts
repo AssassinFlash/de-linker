@@ -81,44 +81,8 @@ export interface Maps3DLibrary {
 	}) => Marker3DElementInstance;
 }
 
-interface GeocoderAddressComponent {
-	long_name: string;
-	short_name: string;
-	types: string[];
-}
-
-interface GeocoderResult {
-	formatted_address?: string;
-	address_components?: GeocoderAddressComponent[];
-	geometry?: {
-		location?: {
-			lat(): number;
-			lng(): number;
-		};
-	};
-}
-
-interface GeocoderRequest {
-	address: string;
-	region?: string;
-	componentRestrictions?: { country: string };
-	fulfillOnZeroResults?: boolean;
-}
-
 interface GoogleMapsApi {
 	importLibrary(name: "maps3d"): Promise<Maps3DLibrary>;
-	importLibrary(name: "geocoding"): Promise<{
-		Geocoder: new () => {
-			geocode(request: GeocoderRequest): Promise<{
-				results: GeocoderResult[];
-			}>;
-		};
-	}>;
-	Geocoder?: new () => {
-		geocode(request: GeocoderRequest): Promise<{
-			results: GeocoderResult[];
-		}>;
-	};
 }
 
 declare global {
@@ -197,6 +161,12 @@ export interface GeocodedPlace {
 	readonly formattedAddress: string;
 }
 
+interface GooglePlace {
+	formattedAddress?: string;
+	addressComponents?: { shortText: string; types: string[] }[];
+	location?: { latitude: number; longitude: number };
+}
+
 export async function geocodeAddress(
 	apiKey: string,
 	query: string,
@@ -204,31 +174,49 @@ export async function geocodeAddress(
 ): Promise<GeocodedPlace | null> {
 	const trimmed = query.trim();
 	if (!trimmed || !apiKey) return null;
-	const maps = await loadGoogleMaps(apiKey);
-	const Geocoder =
-		maps.Geocoder ?? (await maps.importLibrary("geocoding")).Geocoder;
-	const geocoder = new Geocoder();
-	const { results } = await geocoder.geocode({
-		address: trimmed,
-		fulfillOnZeroResults: true,
-		// Region only biases a result; the selected country must restrict it.
-		// https://developers.google.com/maps/documentation/javascript/geocoding#ComponentFiltering
-		...(countryCode ? { componentRestrictions: { country: countryCode } } : {}),
-	});
-	const first = results[0];
-	const location = first?.geometry?.location;
+	// Places API (New) is enabled for this site's key; Geocoding API is not.
+	// https://developers.google.com/maps/documentation/places/web-service/text-search
+	const response = await fetch(
+		"https://places.googleapis.com/v1/places:searchText",
+		{
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				"X-Goog-Api-Key": apiKey,
+				"X-Goog-FieldMask":
+					"places.formattedAddress,places.location,places.addressComponents",
+			},
+			body: JSON.stringify({
+				textQuery: trimmed,
+				...(countryCode ? { regionCode: countryCode.toUpperCase() } : {}),
+			}),
+		},
+	);
+	if (!response.ok) throw new Error(`google_places_${response.status}`);
+	const payload: { places?: GooglePlace[] } = await response.json();
+	const places = payload.places ?? [];
+	// regionCode biases the search but does not restrict the returned country.
+	const first = countryCode
+		? places.find((place) =>
+				place.addressComponents?.some(
+					(component) =>
+						component.types.includes("country") &&
+						component.shortText === countryCode.toUpperCase(),
+				),
+			)
+		: places[0];
+	const location = first?.location;
 	if (!first || !location) return null;
-	const components = first.address_components ?? [];
+	const components = first.addressComponents ?? [];
 	const postcode =
-		components.find((c) => c.types.includes("postal_code"))?.short_name ?? null;
+		components.find((c) => c.types.includes("postal_code"))?.shortText ?? null;
 	const country =
-		components.find((c) => c.types.includes("country"))?.short_name ?? null;
-	if (countryCode && country !== countryCode.toUpperCase()) return null;
+		components.find((c) => c.types.includes("country"))?.shortText ?? null;
 	return {
-		lat: location.lat(),
-		lng: location.lng(),
+		lat: location.latitude,
+		lng: location.longitude,
 		postcode,
 		countryCode: country && /^[A-Z]{2}$/.test(country) ? country : null,
-		formattedAddress: first.formatted_address ?? trimmed,
+		formattedAddress: first.formattedAddress ?? trimmed,
 	};
 }

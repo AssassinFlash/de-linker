@@ -32,32 +32,24 @@ const session = {
 	},
 };
 
-async function startRoofCreation(title) {
-	window.google = {
-		maps: {
-			async importLibrary() {
-				return {
-					Geocoder: class {
-						async geocode() {
-							return {
-								results: [
-									{
-										formatted_address: title,
-										address_components: [
-											{ short_name: "NO", types: ["country"] },
-										],
-										geometry: {
-											location: { lat: () => 59.91, lng: () => 10.75 },
-										},
-									},
-								],
-							};
-						}
+async function startRoofCreation(t, title) {
+	const originalFetch = globalThis.fetch;
+	globalThis.fetch = async () =>
+		new Response(
+			JSON.stringify({
+				places: [
+					{
+						formattedAddress: title,
+						addressComponents: [{ shortText: "NO", types: ["country"] }],
+						location: { latitude: 59.91, longitude: 10.75 },
 					},
-				};
-			},
-		},
-	};
+				],
+			}),
+			{ headers: { "Content-Type": "application/json" } },
+		);
+	t.after(() => {
+		globalThis.fetch = originalFetch;
+	});
 	await until(() => document.querySelector(".lp-roof-start"));
 	await act(async () => {
 		const select = document.querySelector(".lp-roof-start select");
@@ -863,7 +855,7 @@ test("a former identity's delayed creation cannot dispatch or restore cache and 
 					),
 				),
 			);
-			await startRoofCreation(oldAck.title);
+			await startRoofCreation(t, oldAck.title);
 			await until(() => reached);
 			nextSession = newSession;
 			await act(async () => window.dispatchEvent(new window.Event("focus")));
@@ -1037,7 +1029,7 @@ test("native confirmation fences pending creation, revision and navigation befor
 						.click(),
 				);
 			} else {
-				await startRoofCreation(oldAck.title);
+				await startRoofCreation(t, oldAck.title);
 			}
 			await until(() => reached);
 			const clear = cache.clear.bind(cache);

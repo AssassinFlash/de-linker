@@ -10,12 +10,12 @@ const session = {
 };
 const address = "Karlstraße 1, 80333 München, Germany";
 const geocoded = (country = "DE") => ({
-	formatted_address: address,
-	address_components: [
-		{ long_name: "Germany", short_name: country, types: ["country"] },
-		{ long_name: "80333", short_name: "80333", types: ["postal_code"] },
+	formattedAddress: address,
+	addressComponents: [
+		{ longText: "Germany", shortText: country, types: ["country"] },
+		{ longText: "80333", shortText: "80333", types: ["postal_code"] },
 	],
-	geometry: { location: { lat: () => 48.145, lng: () => 11.566 } },
+	location: { latitude: 48.145, longitude: 11.566 },
 });
 const button = (label) =>
 	[...document.querySelectorAll("button")].find(
@@ -31,23 +31,28 @@ async function fixture(t, options = {}) {
 		searches = [],
 		records = [],
 		opened = [];
-	let lookup = async () => ({ results: [geocoded()] });
+	let lookup = async () => ({ places: [geocoded()] });
 	let createFailure = false;
-	window.google = {
-		maps: {
-			async importLibrary(name) {
-				assert.equal(name, "geocoding");
-				return {
-					Geocoder: class {
-						async geocode(request) {
-							searches.push(request);
-							return lookup(request);
-						}
-					},
-				};
-			},
-		},
+	const originalFetch = globalThis.fetch;
+	globalThis.fetch = async (url, init) => {
+		assert.equal(url, "https://places.googleapis.com/v1/places:searchText");
+		assert.equal(init.method, "POST");
+		assert.equal(init.headers["X-Goog-Api-Key"], "fixture-google-maps-key");
+		assert.equal(
+			init.headers["X-Goog-FieldMask"],
+			"places.formattedAddress,places.location,places.addressComponents",
+		);
+		const request = JSON.parse(init.body);
+		searches.push(request);
+		const result = await lookup(request);
+		if (result instanceof Response) return result;
+		return new Response(JSON.stringify(result), {
+			headers: { "Content-Type": "application/json" },
+		});
 	};
+	t.after(() => {
+		globalThis.fetch = originalFetch;
+	});
 	const client = {
 		isCurrentScope: (scope) => scope === session.query_scope,
 		async send(path, body, scope) {
@@ -173,9 +178,8 @@ test("country and real address create a roof project without sizing inputs", asy
 	await until(() => page.opened.length === 1);
 	assert.deepEqual(page.searches, [
 		{
-			address: "Karlstraße 1, München",
-			componentRestrictions: { country: "DE" },
-			fulfillOnZeroResults: true,
+			textQuery: "Karlstraße 1, München",
+			regionCode: "DE",
 		},
 	]);
 	assert.equal(page.opened[0].destination, "design");
@@ -196,7 +200,7 @@ test("country and real address create a roof project without sizing inputs", asy
 test("address failures keep the input editable and do not create a project", async (t) => {
 	const page = await fixture(t);
 	await page.fill();
-	page.setLookup(async () => ({ results: [geocoded("FR")] }));
+	page.setLookup(async () => ({ places: [geocoded("FR")] }));
 	await page.submit();
 	await until(() =>
 		document.body.textContent.includes("We could not find that address"),
@@ -207,20 +211,23 @@ test("address failures keep the input editable and do not create a project", asy
 		"Karlstraße 1, München",
 	);
 	page.setLookup(async () => {
-		throw new Error("REQUEST_DENIED");
+		return new Response(
+			JSON.stringify({ error: { status: "REQUEST_DENIED" } }),
+			{ status: 403 },
+		);
 	});
 	await page.submit();
 	await until(() =>
 		document.body.textContent.includes("Address search is unavailable"),
 	);
 	assert.equal(page.requests.length, 0);
-	page.setLookup(async () => ({ results: [] }));
+	page.setLookup(async () => ({ places: [] }));
 	await page.submit();
 	await until(() =>
 		document.body.textContent.includes("We could not find that address"),
 	);
 	assert.equal(page.requests.length, 0);
-	page.setLookup(async () => ({ results: [geocoded()] }));
+	page.setLookup(async () => ({ places: [geocoded()] }));
 	await page.fill("DE", "Karlstraße 1, 80333 München");
 	await page.submit();
 	await until(() => page.opened.length === 1);
