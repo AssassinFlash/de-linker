@@ -98,17 +98,24 @@ interface GeocoderResult {
 	};
 }
 
+interface GeocoderRequest {
+	address: string;
+	region?: string;
+	componentRestrictions?: { country: string };
+	fulfillOnZeroResults?: boolean;
+}
+
 interface GoogleMapsApi {
 	importLibrary(name: "maps3d"): Promise<Maps3DLibrary>;
 	importLibrary(name: "geocoding"): Promise<{
 		Geocoder: new () => {
-			geocode(request: { address: string; region?: string }): Promise<{
+			geocode(request: GeocoderRequest): Promise<{
 				results: GeocoderResult[];
 			}>;
 		};
 	}>;
 	Geocoder?: new () => {
-		geocode(request: { address: string; region?: string }): Promise<{
+		geocode(request: GeocoderRequest): Promise<{
 			results: GeocoderResult[];
 		}>;
 	};
@@ -203,7 +210,10 @@ export async function geocodeAddress(
 	const geocoder = new Geocoder();
 	const { results } = await geocoder.geocode({
 		address: trimmed,
-		...(countryCode ? { region: countryCode.toLowerCase() } : {}),
+		fulfillOnZeroResults: true,
+		// Region only biases a result; the selected country must restrict it.
+		// https://developers.google.com/maps/documentation/javascript/geocoding#ComponentFiltering
+		...(countryCode ? { componentRestrictions: { country: countryCode } } : {}),
 	});
 	const first = results[0];
 	const location = first?.geometry?.location;
@@ -213,6 +223,7 @@ export async function geocodeAddress(
 		components.find((c) => c.types.includes("postal_code"))?.short_name ?? null;
 	const country =
 		components.find((c) => c.types.includes("country"))?.short_name ?? null;
+	if (countryCode && country !== countryCode.toUpperCase()) return null;
 	return {
 		lat: location.lat(),
 		lng: location.lng(),

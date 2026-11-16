@@ -15,6 +15,9 @@ import { useEquipmentProducts } from "../data/equipmentProducts.ts";
 import { entryInputs, placedProduct } from "../domain/entryHints.ts";
 import type { EntryHints } from "../domain/entryHints.ts";
 import { formatDecimal } from "../domain/decimal.ts";
+import type { Configuration } from "../data/config.ts";
+import { geocodeAddress } from "../data/googleMaps.ts";
+import { RoofStart } from "./RoofStart.tsx";
 
 export function NewProject({
 	session,
@@ -29,6 +32,8 @@ export function NewProject({
 	initialProject = null,
 	cancelled,
 	locale = "en",
+	roofStart,
+	openOnLoad = false,
 }: {
 	session: Session;
 	client: PlannerClient;
@@ -42,8 +47,18 @@ export function NewProject({
 	initialProject?: { title: string; inputs: JsonObject } | null;
 	cancelled?: () => void;
 	locale?: string;
+	roofStart?: Configuration;
+	openOnLoad?: boolean;
 }) {
-	const [open, setOpen] = useState(Boolean(entryHints || initialProject));
+	const [open, setOpen] = useState(
+		Boolean(entryHints || initialProject || openOnLoad),
+	);
+	const openedOnLoad = useRef(openOnLoad);
+	const [country, setCountry] = useState("");
+	const [address, setAddress] = useState("");
+	const [addressFailure, setAddressFailure] = useState<
+		"not_found" | "unavailable" | null
+	>(null);
 	const [useHints, setUseHints] = useState(true);
 	const [title, setTitle] = useState(initialProject?.title ?? "");
 	const [busy, setBusy] = useState(false);
@@ -67,9 +82,35 @@ export function NewProject({
 	const lifetime = useRef(0);
 	const openWork = useRef(false);
 	openWork.current = Boolean(
-		intent.current || (title && title !== initialProject?.title),
+		intent.current ||
+		country ||
+		address ||
+		(title && title !== initialProject?.title),
 	);
 	const admitted = client.isCurrentScope(session.query_scope);
+	const hasCarriedValues =
+		entryHints &&
+		[
+			entryHints.annualKwh,
+			entryHints.pvKw,
+			entryHints.phase,
+			entryHints.backup,
+			entryHints.postalCode,
+			entryHints.productId,
+		].some((v) => v !== null);
+	const roofEntry = Boolean(
+		roofStart &&
+		!initialProject &&
+		(!entryHints ||
+			(entryHints.roof && !entryHints.invalid && !hasCarriedValues)),
+	);
+	const needsAddress = roofEntry && !intent.current;
+	useEffect(() => {
+		if (openOnLoad && !openedOnLoad.current) {
+			openedOnLoad.current = true;
+			setOpen(true);
+		}
+	}, [openOnLoad]);
 	useEffect(() => {
 		lifetime.current++;
 		return () => {
@@ -120,7 +161,7 @@ export function NewProject({
 			checking ||
 			recoveryChecking ||
 			recoveryDiscoveryFailed ||
-			!title.trim()
+			(needsAddress ? !country || !address.trim() : !title.trim())
 		)
 			return;
 		const instance = lifetime.current;
@@ -131,7 +172,49 @@ export function NewProject({
 		setFailed(false);
 		setProjectGone(false);
 		setInputContractRequired(false);
+		setAddressFailure(null);
 		try {
+			let roofInputs: JsonObject | null = null;
+			let projectTitle = title.trim();
+			if (needsAddress) {
+				let place;
+				try {
+					if (!roofStart?.googleMapsApiKey)
+						throw new Error("google_maps_unavailable");
+					place = await geocodeAddress(
+						roofStart.googleMapsApiKey,
+						address,
+						country,
+					);
+				} catch {
+					if (lifetime.current === instance) setAddressFailure("unavailable");
+					return;
+				}
+				if (lifetime.current !== instance) return;
+				if (!place) {
+					setAddressFailure("not_found");
+					return;
+				}
+				const brief = emptyBrief();
+				roofInputs = {
+					brief: {
+						...brief,
+						site: {
+							...brief.site,
+							country_code: country,
+							location_label: place.formattedAddress,
+							latitude: place.lat,
+							longitude: place.lng,
+							coordinate_basis: "user_entered",
+						},
+					},
+				};
+				// Project names already use the 256-character limit in this form.
+				projectTitle = Array.from(place.formattedAddress)
+					.slice(0, 256)
+					.join("");
+				setTitle(projectTitle);
+			}
 			const requestedProduct = entryHints?.productId ?? null;
 			const wantsProduct =
 				!selectedRequest &&
@@ -165,9 +248,10 @@ export function NewProject({
 				{
 					schema_version: 1,
 					input_contract: projectInputContract,
-					title: title.trim(),
+					title: projectTitle,
 					inputs:
-						initialProject && useHints
+						roofInputs ??
+						(initialProject && useHints
 							? initialProject.inputs
 							: entryHints && useHints
 								? entryInputs(
@@ -182,18 +266,20 @@ export function NewProject({
 										),
 										placed,
 									)
-								: { brief: emptyBrief() },
+								: { brief: emptyBrief() }),
 					key: crypto.randomUUID(),
 				},
 				session.runtime.limits.max_json_depth,
 				session.runtime.limits.max_body_bytes,
 			);
 			if (selectedRequest === undefined)
-				destination.current = entryHints?.equipment
-					? "equipment"
-					: entryHints?.roof
-						? "design"
-						: null;
+				destination.current = roofEntry
+					? "design"
+					: entryHints?.equipment
+						? "equipment"
+						: entryHints?.roof
+							? "design"
+							: null;
 			await store
 				.writeCreation(originScope, intent.current, destination.current)
 				.catch(() => {
@@ -277,16 +363,6 @@ export function NewProject({
 		(request) =>
 			request.body === intent.current && request.scope === intentScope.current,
 	);
-	const hasCarriedValues =
-		entryHints &&
-		[
-			entryHints.annualKwh,
-			entryHints.pvKw,
-			entryHints.phase,
-			entryHints.backup,
-			entryHints.postalCode,
-			entryHints.productId,
-		].some((v) => v !== null);
 	const proposed =
 		catalog.data?.products.find((item) => item.id === entryHints?.productId) ??
 		null;
@@ -306,13 +382,13 @@ export function NewProject({
 		);
 	return (
 		<form
-			className="lp-new-project"
+			className={roofEntry ? "lp-new-project lp-roof-entry" : "lp-new-project"}
 			onSubmit={(event) => {
 				event.preventDefault();
 				void submit();
 			}}
 		>
-			{entryHints && !selectedRequest && (
+			{entryHints && !selectedRequest && !roofEntry && (
 				<Notice>
 					<p>
 						{initialProject
@@ -448,17 +524,34 @@ export function NewProject({
 					</select>
 				</label>
 			)}
-			<label className="lp-field">
-				<span>{__("Project name", "linker-tools")}</span>
-				<input
-					autoFocus
-					required
-					maxLength={256}
-					value={title}
-					readOnly={Boolean(intent.current)}
-					onChange={(event) => setTitle(event.currentTarget.value)}
+			{needsAddress && roofStart ? (
+				<RoofStart
+					config={roofStart}
+					country={country}
+					address={address}
+					disabled={busy}
+					changeCountry={(value) => {
+						setCountry(value);
+						setAddressFailure(null);
+					}}
+					changeAddress={(value) => {
+						setAddress(value);
+						setAddressFailure(null);
+					}}
 				/>
-			</label>
+			) : (
+				<label className="lp-field">
+					<span>{__("Project name", "linker-tools")}</span>
+					<input
+						autoFocus
+						required
+						maxLength={256}
+						value={title}
+						readOnly={Boolean(intent.current)}
+						onChange={(event) => setTitle(event.currentTarget.value)}
+					/>
+				</label>
+			)}
 			<div className="lp-inline-actions">
 				<button
 					className="lp-button"
@@ -467,19 +560,22 @@ export function NewProject({
 						checking ||
 						recoveryChecking ||
 						recoveryDiscoveryFailed ||
-						!title.trim()
+						(needsAddress ? !country || !address.trim() : !title.trim())
 					}
 				>
 					{busy
 						? __("Creating…", "linker-tools")
 						: failed
 							? __("Retry project creation", "linker-tools")
-							: __("Create project", "linker-tools")}
+							: roofEntry
+								? __("Open roof map", "linker-tools")
+								: __("Create project", "linker-tools")}
 				</button>
 				{!intent.current && (
 					<button
 						className="lp-text-button"
 						type="button"
+						disabled={busy}
 						onClick={() => {
 							setOpen(false);
 							cancelled?.();
@@ -489,6 +585,19 @@ export function NewProject({
 					</button>
 				)}
 			</div>
+			{addressFailure && (
+				<Notice error>
+					{addressFailure === "not_found"
+						? __(
+								"We could not find that address in the selected country. Check the address or try a nearby postcode.",
+								"linker-tools",
+							)
+						: __(
+								"Address search is unavailable right now. Your details are still here; please try again.",
+								"linker-tools",
+							)}
+				</Notice>
+			)}
 			{productBlocked === "load" && (
 				<Notice error>
 					{__("Product data could not be loaded.", "linker-tools")}

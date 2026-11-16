@@ -78,6 +78,9 @@ test("the start survives its own project appearing in the saved-project index", 
 		},
 	};
 	const store = {
+		async readCreations() {
+			return [];
+		},
 		async read() {
 			return null;
 		},
@@ -122,8 +125,15 @@ test("the start survives its own project appearing in the saved-project index", 
 		),
 	);
 	const start = () => document.querySelector(".lp-quickstart");
+	await until(() => document.querySelector(".lp-roof-start"));
+	assert.equal(start(), null, "roof location is the default on an empty index");
+	await act(async () =>
+		[...document.querySelectorAll("button")]
+			.find((button) => button.textContent === "Start with equipment")
+			.click(),
+	);
 	await until(() => start());
-	assert.ok(start(), "expected the start on an empty index");
+	assert.equal(document.querySelector(".lp-workspace-start").hidden, true);
 
 	listed = [
 		{
