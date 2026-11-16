@@ -19,6 +19,7 @@ lp-data-table
 lp-delete-confirm
 lp-design-canvas
 lp-design-empty
+lp-design-imports
 lp-design-panel
 lp-design-properties
 lp-design-quantities
@@ -145,8 +146,11 @@ lp-report-cards
 lp-report-table
 lp-result-section
 lp-review-status
+lp-roof-entry
 lp-roof-picker
 lp-roof-shape
+lp-roof-start
+lp-roof-start-heading
 lp-run-basis
 lp-run-boundaries
 lp-run-content
@@ -188,5 +192,6 @@ lp-workspace
 lp-workspace-footnote
 lp-workspace-header
 lp-workspace-rail
+lp-workspace-start
 md:col-span-2
 md:grid-cols-2
