@@ -22,16 +22,14 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$apply = '1' === getenv( 'LINKER_APPLY' );
-
 /**
  * A page's edit list.
  *
  * @param int $id Page id.
  * @return array<int, array{0: string, 1: string, 2: int, 3: string}>|null
  */
-function linker_heading_edits( int $id ): ?array {
-	$home = array(
+function linker_commerce_heading_edits( int $id ): ?array {
+	$home    = array(
 		// The four capability cards sit directly under the h1, before the
 		// first h2 (measured 2026-11-15: offsets 34255-35934 against the
 		// first h2 at 36906), so their level is h2. The scene card at the
@@ -81,12 +79,12 @@ function linker_heading_edits( int $id ): ?array {
 		array( '#tv-cs-page-v1 .lk-comp-body h4', '#tv-cs-page-v1 .lk-comp-body h3', 2, 'comp body size' ),
 		array( '#tv-cs-page-v1 .lk-comp-callout-panel h4', '#tv-cs-page-v1 .lk-comp-callout-panel h3', 1, 'callout size' ),
 	);
-	$utility = array(
+	$utility    = array(
 		array( '<h4>', '<h3>', 4, 'feature tag' ),
 		array( '</h4>', '</h3>', 4, 'feature close' ),
 		array( '#tv-utility-page-v1 .us-engineering-feature h4', '#tv-utility-page-v1 .us-engineering-feature h3', 2, 'feature size' ),
 	);
-	$map = array(
+	$map        = array(
 		13   => $home,
 		6913 => $home_de,
 		746  => $hub,
@@ -111,7 +109,7 @@ function linker_heading_edits( int $id ): ?array {
  * @param int $id Page id.
  * @return array<int, string>
  */
-function linker_heading_absent( int $id ): array {
+function linker_commerce_heading_absent( int $id ): array {
 	$hub = array( '<h3 class="lk-arena-h3">' );
 	return match ( $id ) {
 		746, 6871 => $hub,
@@ -119,66 +117,77 @@ function linker_heading_absent( int $id ): array {
 	};
 }
 
-$ids   = array( 13, 6913, 746, 6871, 749, 6923, 792, 6921, 1755, 6917 );
-$total = 0;
+( static function (): void {
+	$apply = '1' === getenv( 'LINKER_APPLY' );
+	$ids   = array( 13, 6913, 746, 6871, 749, 6923, 792, 6921, 1755, 6917 );
+	$total = 0;
 
-foreach ( $ids as $id ) {
-	$edits = linker_heading_edits( $id );
-	$post  = get_post( $id );
-	if ( ! $edits || ! $post instanceof WP_Post ) {
-		throw new RuntimeException( "page {$id}: no edit list or no post" );
-	}
-	$content = $post->post_content;
-	$next    = $content;
-	$lines   = array();
-	foreach ( $edits as [ $old, $new, $count, $why ] ) {
-		$before = substr_count( $next, $old );
-		if ( 0 === $before ) {
-			// Nothing left of the old form: this page is past this edit. The
-			// outline check below proves it, rather than the new tag's count,
-			// which cannot tell moved headings from the ones already there.
-			$lines[] = sprintf( '  %-22s already moved', $why );
+	foreach ( $ids as $id ) {
+		$edits = linker_commerce_heading_edits( $id );
+		$post  = get_post( $id );
+		if ( ! $edits || ! $post instanceof WP_Post ) {
+			throw new RuntimeException( esc_html( "page {$id}: no edit list or no post" ) );
+		}
+		$content = $post->post_content;
+		$next    = $content;
+		$lines   = array();
+		foreach ( $edits as [ $old, $new, $count, $why ] ) {
+			$before = substr_count( $next, $old );
+			if ( 0 === $before ) {
+				// Nothing left of the old form: this page is past this edit. The
+				// outline check below proves it, rather than the new tag's count,
+				// which cannot tell moved headings from the ones already there.
+				$lines[] = sprintf( '  %-22s already moved', $why );
+				continue;
+			}
+			if ( $before !== $count ) {
+				throw new RuntimeException(
+					esc_html(
+						sprintf(
+							'page %d (%s): %s needs %d of the old form, found %d',
+							$id,
+							$post->post_name,
+							$why,
+							$count,
+							$before
+						)
+					)
+				);
+			}
+			$next    = str_replace( $old, $new, $next );
+			$lines[] = sprintf( '  %-22s %d', $why, $count );
+		}
+		foreach ( linker_commerce_heading_absent( $id ) as $absent ) {
+			$left = substr_count( $next, $absent );
+			if ( 0 !== $left ) {
+				throw new RuntimeException(
+					esc_html( sprintf( 'page %d (%s): %d of %s survive the edit', $id, $post->post_name, $left, $absent ) )
+				);
+			}
+		}
+		$changed = $next !== $content;
+		WP_CLI::log( sprintf( '%d %s: %s', $id, $post->post_name, $changed ? 'changes' : 'already correct' ) );
+		foreach ( $lines as $line ) {
+			WP_CLI::log( $line );
+		}
+		if ( ! $changed ) {
 			continue;
 		}
-		if ( $before !== $count ) {
-			throw new RuntimeException(
-				sprintf(
-					'page %d (%s): %s needs %d of the old form, found %d',
-					$id,
-					$post->post_name,
-					$why,
-					$count,
-					$before
-				)
+		++$total;
+		if ( $apply ) {
+			$result = wp_update_post(
+				array(
+					'ID'           => $id,
+					'post_content' => $next,
+				),
+				true
 			);
-		}
-		$next    = str_replace( $old, $new, $next );
-		$lines[] = sprintf( '  %-22s %d', $why, $count );
-	}
-	foreach ( linker_heading_absent( $id ) as $absent ) {
-		$left = substr_count( $next, $absent );
-		if ( 0 !== $left ) {
-			throw new RuntimeException(
-				sprintf( 'page %d (%s): %d of %s survive the edit', $id, $post->post_name, $left, $absent )
-			);
+			if ( is_wp_error( $result ) ) {
+				throw new RuntimeException( esc_html( "page {$id}: " . $result->get_error_message() ) );
+			}
+			clean_post_cache( $id );
 		}
 	}
-	$changed = $next !== $content;
-	printf( "%d %s: %s\n", $id, $post->post_name, $changed ? 'changes' : 'already correct' );
-	foreach ( $lines as $line ) {
-		echo $line, "\n";
-	}
-	if ( ! $changed ) {
-		continue;
-	}
-	++$total;
-	if ( $apply ) {
-		$result = wp_update_post( array( 'ID' => $id, 'post_content' => $next ), true );
-		if ( is_wp_error( $result ) ) {
-			throw new RuntimeException( "page {$id}: " . $result->get_error_message() );
-		}
-		clean_post_cache( $id );
-	}
-}
 
-printf( "%s: %d page(s) %s\n", $apply ? 'applied' : 'dry run', $total, $apply ? 'written' : 'would change' );
+	WP_CLI::log( sprintf( '%s: %d page(s) %s', $apply ? 'applied' : 'dry run', $total, $apply ? 'written' : 'would change' ) );
+} )();

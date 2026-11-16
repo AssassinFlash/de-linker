@@ -29,8 +29,8 @@ if ( 'cli' !== PHP_SAPI && ! headers_sent() ) {
 	// - the live theme's template scripts (the snapshot's pages enqueue Alpine,
 	// Preline, lottie-player and taos from these CDNs; without them the local
 	// instance would not look like the live one, AGENTS.md §2);
-	// - the Solution Configurator's roof step: the official aerial imagery of
-	// each federal state (services/engine/data/imagery.json, open-licence WMS,
+	// - the Solution Configurator's roof step: European aerial imagery
+	// (services/engine/data/imagery.json, WMS and tile templates,
 	// credited on the map), which MapLibre loads by fetch (connect-src) and
 	// paints as images (img-src), not through WordPress's HTTP API.
 	// - the unified planner's explicitly requested OpenFreeMap street reference.
@@ -42,20 +42,35 @@ if ( 'cli' !== PHP_SAPI && ! headers_sent() ) {
 	$linker_local_imagery = implode(
 		' ',
 		array(
+			'https://ags.cuzk.gov.cz',
+			'https://cartografia.dgterritorio.gov.pt',
+			'https://data.geopf.fr',
+			'https://geo.api.vlaanderen.be',
 			'https://geo4.service24.rlp.de',
 			'https://geodienste.bremen.de',
 			'https://geodienste.hamburg.de',
 			'https://geodienste.sachsen.de',
 			'https://geoportal.saarland.de',
 			'https://geoservices.bayern.de',
+			'https://image.discomap.eea.europa.eu',
 			'https://isk.geobasis-bb.de',
+			'https://kaart.maaamet.ee',
+			'https://mapsneu.wien.gv.at',
+			'https://mapy.geoportal.gov.pl',
 			'https://opendata.lgln.niedersachsen.de',
+			'https://ort10lt.openmap.lt',
+			'https://osmtools.septima.dk',
 			'https://owsproxy.lgl-bw.de',
 			'https://service.gdi-sh.de',
+			'https://service.pdok.nl',
+			'https://tiles.kartat.kapsi.fi',
+			'https://wms.geo.admin.ch',
+			'https://wmts.geoportail.lu',
 			'https://www.gds-srv.hessen.de',
 			'https://www.geodaten-mv.de',
 			'https://www.geodatenportal.sachsen-anhalt.de',
 			'https://www.geoproxy.geoportal-th.de',
+			'https://www.ign.es',
 			'https://www.wms.nrw.de',
 		)
 	);

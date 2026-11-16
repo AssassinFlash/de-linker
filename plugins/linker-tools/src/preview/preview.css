@@ -95,7 +95,7 @@
 }
 
 .linker-genie-peek__close::after {
-	content: '';
+	content: "";
 	position: absolute;
 	inset: -8px;
 }
