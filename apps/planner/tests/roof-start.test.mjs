@@ -179,6 +179,7 @@ test("country and real address create a roof project without sizing inputs", asy
 	assert.deepEqual(page.searches, [
 		{
 			textQuery: "Karlstraße 1, München",
+			languageCode: "en",
 			regionCode: "DE",
 		},
 	]);
@@ -195,6 +196,29 @@ test("country and real address create a roof project without sizing inputs", asy
 	assert.deepEqual(Object.keys(page.opened[0].project.inputs), ["brief"]);
 	assert.equal(page.opened[0].project.inputs.brief.annual_load.kwh, null);
 	assert.equal(page.records.length, 0);
+});
+
+test("German roof entry requests German addresses for the saved title and location", async (t) => {
+	const page = await fixture(t, {
+		roofStart: {
+			locale: "de-DE",
+			countries: { DE: "Deutschland" },
+			googleMapsApiKey: "fixture-google-maps-key",
+		},
+	});
+	const germanAddress = "Karlstraße 1, 80333 München, Deutschland";
+	page.setLookup(async ({ languageCode }) => {
+		assert.equal(languageCode, "de");
+		return { places: [{ ...geocoded(), formattedAddress: germanAddress }] };
+	});
+	await page.fill();
+	await page.submit();
+	await until(() => page.opened.length === 1);
+	assert.equal(page.opened[0].project.title, germanAddress);
+	assert.equal(
+		page.opened[0].project.inputs.brief.site.location_label,
+		germanAddress,
+	);
 });
 
 test("address failures keep the input editable and do not create a project", async (t) => {

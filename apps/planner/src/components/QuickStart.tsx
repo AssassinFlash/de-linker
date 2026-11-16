@@ -611,6 +611,7 @@ export function QuickStart({
 						config.googleMapsApiKey,
 						trimmed,
 						country || undefined,
+						config.locale,
 					);
 					if (instance !== lifetime.current) return null;
 					if (geocoded) {

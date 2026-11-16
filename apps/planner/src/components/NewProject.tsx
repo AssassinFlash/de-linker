@@ -185,6 +185,7 @@ export function NewProject({
 						roofStart.googleMapsApiKey,
 						address,
 						country,
+						roofStart.locale,
 					);
 				} catch {
 					if (lifetime.current === instance) setAddressFailure("unavailable");

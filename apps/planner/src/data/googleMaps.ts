@@ -170,7 +170,8 @@ interface GooglePlace {
 export async function geocodeAddress(
 	apiKey: string,
 	query: string,
-	countryCode?: string,
+	countryCode: string | undefined,
+	locale: string,
 ): Promise<GeocodedPlace | null> {
 	const trimmed = query.trim();
 	if (!trimmed || !apiKey) return null;
@@ -188,6 +189,7 @@ export async function geocodeAddress(
 			},
 			body: JSON.stringify({
 				textQuery: trimmed,
+				languageCode: locale.toLowerCase().startsWith("de") ? "de" : "en",
 				...(countryCode ? { regionCode: countryCode.toUpperCase() } : {}),
 			}),
 		},
