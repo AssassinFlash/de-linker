@@ -69,40 +69,43 @@ export function ModuleForm({
 					))}
 				</select>
 			</label>
-			<dl className="lp-design-quantities">
-				{(
-					[
-						[__("Module length", "linker-tools"), tier.length_m, "m"],
-						[__("Module width", "linker-tools"), tier.width_m, "m"],
-						[__("Module thickness", "linker-tools"), tier.thickness_m, "m"],
-						[__("Rated power at STC", "linker-tools"), tier.stc_power_w, "W"],
+			<details>
+				<summary>{__("Module details", "linker-tools")}</summary>
+				<dl className="lp-design-quantities">
+					{(
 						[
-							__("Temperature coefficient of maximum power", "linker-tools"),
-							toPercent(tier.gamma_pdc_per_c),
-							"%/°C",
-						],
-						[
-							__("Open-circuit voltage at STC", "linker-tools"),
-							tier.voc_v,
-							"V",
-						],
-						[__("MPP voltage at STC", "linker-tools"), tier.vmp_v, "V"],
-						[
-							__("Short-circuit current at STC", "linker-tools"),
-							tier.isc_a,
-							"A",
-						],
-						[__("MPP current at STC", "linker-tools"), tier.imp_a, "A"],
-					] as const
-				).map(([label, value, unit]) => (
-					<div key={label}>
-						<dt>{label}</dt>
-						<dd>
-							{formatDecimal(value, locale)} <small>{unit}</small>
-						</dd>
-					</div>
-				))}
-			</dl>
+							[__("Module length", "linker-tools"), tier.length_m, "m"],
+							[__("Module width", "linker-tools"), tier.width_m, "m"],
+							[__("Module thickness", "linker-tools"), tier.thickness_m, "m"],
+							[__("Rated power at STC", "linker-tools"), tier.stc_power_w, "W"],
+							[
+								__("Temperature coefficient of maximum power", "linker-tools"),
+								toPercent(tier.gamma_pdc_per_c),
+								"%/°C",
+							],
+							[
+								__("Open-circuit voltage at STC", "linker-tools"),
+								tier.voc_v,
+								"V",
+							],
+							[__("MPP voltage at STC", "linker-tools"), tier.vmp_v, "V"],
+							[
+								__("Short-circuit current at STC", "linker-tools"),
+								tier.isc_a,
+								"A",
+							],
+							[__("MPP current at STC", "linker-tools"), tier.imp_a, "A"],
+						] as const
+					).map(([label, value, unit]) => (
+						<div key={label}>
+							<dt>{label}</dt>
+							<dd>
+								{formatDecimal(value, locale)} <small>{unit}</small>
+							</dd>
+						</div>
+					))}
+				</dl>
+			</details>
 			<p>
 				{__(
 					"“Apply properties” updates the module values in this draft. “Save project” saves the changes.",

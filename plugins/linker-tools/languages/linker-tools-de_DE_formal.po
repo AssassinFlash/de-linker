@@ -15254,3 +15254,7 @@ msgstr "Modulposition eingeben"
 #: build/planner/assets/planner.js
 msgid "Preview position"
 msgstr "Position anzeigen"
+
+#: build/planner/assets/planner.js
+msgid "Module details"
+msgstr "Moduldetails"
