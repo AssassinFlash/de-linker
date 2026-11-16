@@ -196,6 +196,7 @@ export function ProjectEditor({
 			const value = stored === undefined ? emptyBrief() : readBrief(stored);
 			return {
 				label: value.site.location_label.trim(),
+				postcode: value.site.postal_code,
 				country: value.site.country_code,
 				latitude: value.site.latitude,
 				longitude: value.site.longitude,
@@ -218,7 +219,11 @@ export function ProjectEditor({
 			try {
 				const answer = await client.query(
 					"places/lookup",
-					{ schema_version: 1, query: label, ...(country ? { country } : {}) },
+					{
+						schema_version: 1,
+						query: mapSite?.postcode || label,
+						...(country ? { country } : {}),
+					},
 					session.query_scope,
 				);
 				if (!live) return;
@@ -303,6 +308,7 @@ export function ProjectEditor({
 		};
 	}, [
 		mapSite?.label,
+		mapSite?.postcode,
 		mapSite?.country,
 		mapSite?.latitude,
 		mapSite?.longitude,

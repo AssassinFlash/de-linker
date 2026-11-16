@@ -188,6 +188,7 @@ test("country and real address create a roof project without sizing inputs", asy
 	assert.deepEqual(page.opened[0].project.inputs.brief.site, {
 		country_code: "DE",
 		location_label: address,
+		postal_code: "80333",
 		latitude: 48.145,
 		longitude: 11.566,
 		coordinate_basis: "user_entered",

@@ -749,10 +749,7 @@ export function MapDrawingWorkspace({
 									"The roof plane stays fixed while you edit this boundary. Applied changes appear in this project's map, plan and 3D views.",
 									"linker-tools",
 								)
-							: __(
-									"Draw one roof face at a time.",
-									"linker-tools",
-								)}
+							: __("Draw one roof face at a time.", "linker-tools")}
 				</p>
 				{!drawing && mapProps.siteOutline && !mapProps.disabled && (
 					<div className="lp-site-outline-card">

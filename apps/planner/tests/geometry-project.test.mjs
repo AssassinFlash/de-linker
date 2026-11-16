@@ -83,6 +83,7 @@ test("a failed aerial lookup retries on request without changing saved coordinat
 					...emptyBrief().site,
 					country_code: "DE",
 					location_label: "Synthetic address",
+					postal_code: "50667",
 					latitude: 50.94,
 					longitude: 6.96,
 					coordinate_basis: "user_entered",
@@ -172,8 +173,8 @@ test("a failed aerial lookup retries on request without changing saved coordinat
 	await act(async () => retry().click());
 	await until(() => map.getSource("linker-site-imagery"));
 	assert.deepEqual(lookups, [
-		{ schema_version: 1, query: "Synthetic address", country: "DE" },
-		{ schema_version: 1, query: "Synthetic address", country: "DE" },
+		{ schema_version: 1, query: "50667", country: "DE" },
+		{ schema_version: 1, query: "50667", country: "DE" },
 	]);
 	assert.deepEqual(outlines, [
 		{

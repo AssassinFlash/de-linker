@@ -89,7 +89,7 @@ export function MapRoofProperties({
 			<h3>{__("Roof properties", "linker-tools")}</h3>
 			<p>
 				{__(
-					"Drag a corner to move it, or use an edge midpoint to add a corner. The marked height reference stays fixed when the outline changes.",
+					"Check the outline, then enter the roof pitch and the direction it faces.",
 					"linker-tools",
 				)}
 			</p>
@@ -107,20 +107,8 @@ export function MapRoofProperties({
 					)}
 					{fieldInput(
 						"bearing",
-						__("Down-slope bearing (°)", "linker-tools"),
-						__(
-							"Clockwise from true north, 0 to less than 360. North is 0, east 90, south 180 and west 270.",
-							"linker-tools",
-						),
-						true,
-					)}
-					{fieldInput(
-						"height",
-						__("Height at marked reference (m)", "linker-tools"),
-						__(
-							"Height relative to the project origin, not altitude above sea level. The reference is fixed at the first recorded map point.",
-							"linker-tools",
-						),
+						__("Roof direction (°)", "linker-tools"),
+						__("North 0°, east 90°, south 180°, west 270°.", "linker-tools"),
 						true,
 					)}
 				</div>
@@ -134,11 +122,20 @@ export function MapRoofProperties({
 						!sourceProvided ||
 						Boolean(
 							invalidField &&
-							!["name", "pitch", "bearing", "height"].includes(invalidField),
+							!["name", "pitch", "bearing"].includes(invalidField),
 						)
 					}
 				>
-					<summary>{__("Drawing source", "linker-tools")}</summary>
+					<summary>{__("Height and drawing source", "linker-tools")}</summary>
+					{fieldInput(
+						"height",
+						__("Height at marked reference (m)", "linker-tools"),
+						__(
+							"Height relative to the project origin, not altitude above sea level. The reference is fixed at the first recorded map point.",
+							"linker-tools",
+						),
+						true,
+					)}
 					{fieldInput(
 						"source",
 						__("Measurement or drawing reference", "linker-tools"),
@@ -196,18 +193,20 @@ export function MapRoofProperties({
 						</select>
 					</label>
 				</details>
-				<label className="lp-geometry-check">
-					<input
-						type="checkbox"
-						checked={drawing.fields.permission}
-						onChange={(e) => field("permission", e.target.checked)}
-						required
-					/>
-					{__(
-						"I have permission to retain these measurements and derive an editable design from them.",
-						"linker-tools",
-					)}
-				</label>
+				{!(sourceProvided && drawing.fields.permission) && (
+					<label className="lp-geometry-check">
+						<input
+							type="checkbox"
+							checked={drawing.fields.permission}
+							onChange={(e) => field("permission", e.target.checked)}
+							required
+						/>
+						{__(
+							"I have permission to retain these measurements and derive an editable design from them.",
+							"linker-tools",
+						)}
+					</label>
+				)}
 				{error && !invalidField && (
 					<div ref={result} tabIndex={-1} className="lp-focus-target">
 						<Notice error>{error}</Notice>

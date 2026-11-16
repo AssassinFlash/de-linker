@@ -204,6 +204,7 @@ export function NewProject({
 							...brief.site,
 							country_code: country,
 							location_label: place.formattedAddress,
+							postal_code: place.postcode,
 							latitude: place.lat,
 							longitude: place.lng,
 							coordinate_basis: "user_entered",
