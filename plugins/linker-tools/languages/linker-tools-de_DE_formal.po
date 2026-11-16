@@ -15162,3 +15162,95 @@ msgstr "Im Luftbild von Hand nachgezeichnet. Neigung und Ausrichtung wurden vom 
 #: build/planner/assets/planner.js
 msgid "Aerial imagery is not available. You can upload a roof plan or retry loading the map."
 msgstr "Das Luftbild ist nicht verfügbar. Sie können einen Dachplan hochladen oder die Karte erneut laden."
+
+#: build/planner/assets/planner.js
+msgid "Check the outline, then enter the roof pitch and the direction it faces."
+msgstr "Prüfen Sie den Umriss und geben Sie Neigung und Ausrichtung der Dachfläche ein."
+
+#: build/planner/assets/planner.js
+msgid "Roof direction (°)"
+msgstr "Dachausrichtung (°)"
+
+#: build/planner/assets/planner.js
+msgid "North 0°, east 90°, south 180°, west 270°."
+msgstr "Norden 0°, Osten 90°, Süden 180°, Westen 270°."
+
+#: build/planner/assets/planner.js
+msgid "Height and drawing source"
+msgstr "Höhe und Zeichnungsgrundlage"
+
+#: build/planner/assets/planner.js
+msgid "Preview the panels on your roof. Click another position to move them before applying."
+msgstr "Prüfen Sie die Modulbelegung auf Ihrem Dach. Klicken Sie vor dem Übernehmen auf eine andere Stelle, um die Module zu verschieben."
+
+#: build/planner/assets/planner.js
+msgid "Choose where the first panel starts on your roof."
+msgstr "Wählen Sie auf dem Dach die Startposition des ersten Moduls."
+
+#: build/planner/assets/planner.js
+msgid "Change position on roof"
+msgstr "Position auf dem Dach ändern"
+
+#: build/planner/assets/planner.js
+msgid "Choose position on roof"
+msgstr "Position auf dem Dach wählen"
+
+#: build/planner/assets/planner.js
+msgid "Layout and mounting settings"
+msgstr "Einstellungen für Belegung und Montage"
+
+#: build/planner/assets/planner.js
+msgid "The initial layout follows the roof with no extra spacing or mounting height. Adjust these values for your layout."
+msgstr "Die erste Belegung folgt der Dachfläche, ohne zusätzliche Abstände oder Montagehöhe. Passen Sie diese Werte für Ihre Belegung an."
+
+#: build/planner/assets/planner.js
+msgid "Panel array %d"
+msgstr "Modulfeld %d"
+
+#: build/planner/assets/planner.js
+msgid "Panel rotation"
+msgstr "Moduldrehung"
+
+#: build/planner/assets/planner.js
+msgid "Tilt above the roof"
+msgstr "Neigung gegenüber der Dachfläche"
+
+#: build/planner/assets/planner.js
+msgid "Gap between rows"
+msgstr "Abstand zwischen den Reihen"
+
+#: build/planner/assets/planner.js
+msgid "Height above the roof"
+msgstr "Höhe über der Dachfläche"
+
+#: build/planner/assets/planner.js
+msgid "Mounting notes"
+msgstr "Hinweise zur Montage"
+
+#: build/planner/assets/planner.js
+msgid "Mounting not specified."
+msgstr "Montage noch nicht festgelegt."
+
+#: build/planner/assets/planner.js
+msgid "Click inside the roof to position the panels."
+msgstr "Klicken Sie in die Dachfläche, um die Module zu platzieren."
+
+#: build/planner/assets/planner.js
+msgid "Place panels at map centre"
+msgstr "Module in der Kartenmitte platzieren"
+
+#: build/planner/assets/planner.js
+msgid "Review panel layout"
+msgstr "Modulbelegung prüfen"
+
+#: build/planner/assets/planner.js
+msgid "Place panels"
+msgstr "Module platzieren"
+
+#: build/planner/assets/planner.js
+msgid "Enter panel position"
+msgstr "Modulposition eingeben"
+
+#: build/planner/assets/planner.js
+msgid "Preview position"
+msgstr "Position anzeigen"

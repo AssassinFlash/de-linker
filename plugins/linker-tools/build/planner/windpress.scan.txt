@@ -1,6 +1,7 @@
 gap-5
 grid
 lp-actions
+lp-array-settings
 lp-brand-symbol
 lp-breadcrumb
 lp-brief
@@ -101,6 +102,7 @@ lp-overview-preview-title
 lp-overview-work
 lp-page
 lp-panel-shape
+lp-plan-position
 lp-plan-svg
 lp-plan-view
 lp-plant-parameter-basis
