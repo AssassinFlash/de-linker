@@ -1,12 +1,21 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { GeometryDocument } from "../../domain/geometry.ts";
+import type {
+	GeometryDocument,
+	PanelArray,
+	Vec2,
+} from "../../domain/geometry.ts";
 import type {
 	PreparedGeometryImport,
 	GeometryImportSelections,
 } from "../../domain/geometryImports.ts";
 import type { PlaceImagery } from "../../domain/place.ts";
 import type { GeometryCommand } from "../../domain/geometryCommands.ts";
-import { roofDependents } from "../../domain/geometryCommands.ts";
+import {
+	applyGeometryCommand,
+	roofDependents,
+} from "../../domain/geometryCommands.ts";
+import type { ArrayPlacement } from "../../data/mapInteraction.ts";
+import { revealActionResult } from "../revealActionResult.ts";
 import { moduleSummary, panelPoses } from "../../domain/panelPoses.ts";
 import { selectedRoofId } from "../../domain/geometrySelection.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
@@ -140,8 +149,30 @@ export function DesignEditor({
 	const [form, setForm] = useState<FormState | null>(null),
 		[error, setError] = useState(false),
 		[page, setPage] = useState(0);
+	const [arrayPosition, setArrayPosition] = useState<Vec2 | null>(null);
+	const [arrayPreview, setArrayPreview] = useState<PanelArray | null>(null);
+	const displayGeometry = useMemo(() => {
+		if (form?.kind !== "array" || !arrayPreview) return geometry;
+		return applyGeometryCommand(form.snapshot, {
+			type: "put_array",
+			before:
+				form.snapshot.arrays.find((array) => array.id === form.id) ?? null,
+			value: arrayPreview,
+		});
+	}, [arrayPreview, form, geometry]);
+	const displayPoses = useMemo(
+		() => panelPoses(displayGeometry),
+		[displayGeometry],
+	);
+	const placement = useMemo<ArrayPlacement | null>(
+		() =>
+			form?.kind === "array" && form.roofId
+				? { roofId: form.roofId, place: setArrayPosition }
+				: null,
+		[form],
+	);
 	const poses = useMemo(() => panelPoses(geometry), [geometry]),
-		summary = useMemo(() => moduleSummary(geometry), [geometry]);
+		summary = useMemo(() => moduleSummary(displayGeometry), [displayGeometry]);
 	const roof =
 		geometry.roofs.find((roof) => roof.id === roofId) ??
 		geometry.roofs[0] ??
@@ -160,6 +191,8 @@ export function DesignEditor({
 	const module = geometry.module_specs.find((module) => module.id === selected);
 	const closeForm = useCallback(() => {
 		setForm(null);
+		setArrayPreview(null);
+		setArrayPosition(null);
 		setError(false);
 	}, []);
 	useEffect(() => {
@@ -213,6 +246,19 @@ export function DesignEditor({
 	) {
 		if (form || importOpen || drawingOpen) return;
 		setError(false);
+		if (kind === "array") {
+			setArrayPreview(null);
+			setArrayPosition(
+				geometry.arrays.find((array) => array.id === id)?.origin_uv ?? null,
+			);
+			if (
+				!geometry.coordinate_system.anchor ||
+				geometry.coordinate_system.north_reference !== "true_north"
+			) {
+				userPickedView.current = true;
+				setView("plan");
+			} else if (view === "3d") setView("map");
+		}
 		setForm({ kind, id, roofId: forRoof, snapshot: geometry });
 	}
 	const formProps = {
@@ -273,7 +319,7 @@ export function DesignEditor({
 					<button
 						type="button"
 						aria-pressed={view === "3d"}
-						disabled={drawingOpen}
+						disabled={drawingOpen || form?.kind === "array"}
 						onClick={() => {
 							userPickedView.current = true;
 							setView("3d");
@@ -284,7 +330,12 @@ export function DesignEditor({
 					<button
 						type="button"
 						aria-pressed={view === "map"}
-						disabled={drawingOpen}
+						disabled={
+							drawingOpen ||
+							(form?.kind === "array" &&
+								(!geometry.coordinate_system.anchor ||
+									geometry.coordinate_system.north_reference !== "true_north"))
+						}
 						onClick={() => {
 							userPickedView.current = true;
 							setView("map");
@@ -357,7 +408,7 @@ export function DesignEditor({
 				/>
 			</details>
 			<div className="lp-design-workspace">
-				<div className="lp-design-canvas">
+				<div className="lp-design-canvas" id="lp-array-canvas" tabIndex={-1}>
 					{view === "map" ? (
 						<MapDrawingWorkspace
 							imagery={imagery}
@@ -365,6 +416,8 @@ export function DesignEditor({
 							siteOutline={siteOutline}
 							mapModuleUrl={mapModuleUrl}
 							geometry={geometry}
+							previewGeometry={displayGeometry}
+							placement={placement}
 							confirmedGeometry={confirmedGeometry}
 							projectId={projectId}
 							locale={locale}
@@ -375,8 +428,8 @@ export function DesignEditor({
 							recoveryChecking={recoveryChecking}
 							commit={edit}
 							onActivity={setDrawingOpen}
-							poses={poses}
-							selected={selected}
+							poses={displayPoses}
+							selected={arrayPreview?.id ?? selected}
 							select={choose}
 							disabled={!!form || importOpen}
 							openReferences={() => open("coordinates")}
@@ -457,13 +510,16 @@ export function DesignEditor({
 							</div>
 							<PlanViewport
 								key={roof.id}
-								document={geometry}
+								document={displayGeometry}
 								roof={roof}
-								poses={poses}
-								selected={selected}
+								poses={displayPoses}
+								selected={arrayPreview?.id ?? selected}
+								placement={placement}
 								select={choose}
 								commit={edit}
-								disabled={!!form || importOpen || drawingOpen}
+								disabled={
+									(!!form && form.kind !== "array") || importOpen || drawingOpen
+								}
 							/>
 						</>
 					) : (
@@ -534,6 +590,13 @@ export function DesignEditor({
 									{...formProps}
 									array={formArray}
 									roofId={form.roofId}
+									position={arrayPosition}
+									preview={setArrayPreview}
+									choosePosition={() =>
+										revealActionResult(
+											globalThis.document.getElementById("lp-array-canvas"),
+										)
+									}
 								/>
 							)}
 							{form.kind === "module" && (

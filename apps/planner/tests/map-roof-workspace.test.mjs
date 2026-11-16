@@ -469,12 +469,10 @@ test("an address-centred empty project can trace its first roof and show it on t
 		geometry: emptyGeometry(),
 		siteCentre: [6.95, 50.93],
 		imagery: {
-			tiles: [
-				"https://tile.googleapis.com/v1/2dtiles/{z}/{x}/{y}?session=fixture",
-			],
-			credit: "Google Maps",
-			licence: "Google Maps Platform terms",
-			licence_url: "https://cloud.google.com/maps-platform/terms",
+			tiles: ["https://geodaten.bayern.de/tiles/{z}/{x}/{y}"],
+			credit: "Bayerische Vermessungsverwaltung",
+			licence: "CC BY 4.0",
+			licence_url: "https://creativecommons.org/licenses/by/4.0/",
 		},
 	});
 	const map = r.map();
@@ -490,23 +488,17 @@ test("an address-centred empty project can trace its first roof and show it on t
 	await r.click("Close outline and review");
 	await until(() => document.querySelector(".lp-drawing-properties"));
 	assert.equal(document.querySelector('[name="height"]').value, "0");
-	assert.equal(document.querySelector('[name="source"]').value, "Google Maps");
+	assert.equal(
+		document.querySelector('[name="source"]').value,
+		"Bayerische Vermessungsverwaltung",
+	);
 	assert.equal(
 		document.querySelector(".lp-drawing-properties details").open,
 		false,
 	);
-	assert.equal(
-		document.querySelector('.lp-drawing-properties input[type="checkbox"]')
-			.checked,
-		false,
-	);
+	assert.equal((await r.records())[0].drawing.fields.permission, true);
 	await enter(document.querySelector('[name="pitch"]'), "25");
 	await enter(document.querySelector('[name="bearing"]'), "180");
-	await act(async () =>
-		document
-			.querySelector('.lp-drawing-properties input[type="checkbox"]')
-			.click(),
-	);
 	await enter(document.querySelector('[name="source"]'), "");
 	await act(async () => {
 		assert.equal(
@@ -515,10 +507,24 @@ test("an address-centred empty project can trace its first roof and show it on t
 		);
 	});
 	assert.equal(
-		document.querySelector(".lp-drawing-properties details").open,
+		document.querySelector('[name="source"]').closest("details").open,
 		true,
 	);
-	await enter(document.querySelector('[name="source"]'), "Google Maps");
+	await enter(
+		document.querySelector('[name="source"]'),
+		"Bayerische Vermessungsverwaltung",
+	);
+	assert.equal(
+		document.querySelector('.lp-drawing-properties input[type="checkbox"]')
+			.checked,
+		false,
+		"editing source details clears the automatic source permission",
+	);
+	await act(async () =>
+		document
+			.querySelector('.lp-drawing-properties input[type="checkbox"]')
+			.click(),
+	);
 	await act(async () =>
 		document
 			.querySelector(".lp-drawing-properties")

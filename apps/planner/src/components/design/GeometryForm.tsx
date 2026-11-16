@@ -118,6 +118,8 @@ export function GeometryForm({
 	onValidity,
 	measurementHelp = true,
 	submitDisabled = false,
+	onValuesChange,
+	id,
 }: {
 	title: string;
 	locale: string;
@@ -127,6 +129,8 @@ export function GeometryForm({
 	onValidity: (valid: boolean) => void;
 	measurementHelp?: boolean;
 	submitDisabled?: boolean;
+	onValuesChange?: (values: GeometryValues) => void;
+	id?: string;
 }) {
 	const [error, setError] = useState("");
 	const formRef = useRef<HTMLFormElement>(null);
@@ -135,6 +139,10 @@ export function GeometryForm({
 			formRef.current?.querySelector<HTMLElement>("input, select") ?? null,
 		);
 	}, []);
+	useEffect(() => {
+		if (formRef.current && onValuesChange)
+			onValuesChange(new GeometryValues(formRef.current, locale));
+	}, [onValuesChange, locale]);
 	function apply(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 		const form = event.currentTarget;
@@ -169,7 +177,12 @@ export function GeometryForm({
 	return (
 		<form
 			ref={formRef}
+			id={id}
 			className="lp-geometry-form"
+			onInvalid={(event) => {
+				const details = (event.target as HTMLElement).closest("details");
+				if (details) details.open = true;
+			}}
 			onSubmit={apply}
 			onInput={(event) => {
 				onValidity(false);
@@ -183,7 +196,10 @@ export function GeometryForm({
 					input.removeAttribute("aria-invalid");
 				}
 			}}
-			onChange={() => onValidity(false)}
+			onChange={(event) => {
+				onValidity(false);
+				onValuesChange?.(new GeometryValues(event.currentTarget, locale));
+			}}
 		>
 			<h3>{title}</h3>
 			{measurementHelp && (

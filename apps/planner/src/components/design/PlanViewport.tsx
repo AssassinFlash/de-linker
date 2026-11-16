@@ -8,10 +8,12 @@ import type {
 	Vec2,
 } from "../../domain/geometry.ts";
 import type { GeometryCommand } from "../../domain/geometryCommands.ts";
+import type { ArrayPlacement } from "../../data/mapInteraction.ts";
 import { dot } from "../../domain/coordinates.ts";
 import { requireUvResolution } from "../../domain/geometryNumerics.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
+import { revealActionResult } from "../revealActionResult.ts";
 
 interface View {
 	x: number;
@@ -41,6 +43,7 @@ export function PlanViewport({
 	commit,
 	disabled,
 	previewOnly = false,
+	placement = null,
 }: {
 	document: GeometryDocument;
 	roof: RoofFace;
@@ -50,6 +53,7 @@ export function PlanViewport({
 	commit: (command: GeometryCommand) => boolean;
 	disabled: boolean;
 	previewOnly?: boolean;
+	placement?: ArrayPlacement | null;
 }) {
 	const svg = useRef<SVGSVGElement>(null),
 		gesture = useRef<Gesture | null>(null);
@@ -158,16 +162,25 @@ export function PlanViewport({
 			"[data-object]",
 		);
 		const id = target?.dataset.object;
-		if (id && tool === "select") select(id);
+		if (id && tool === "select" && !placement) select(id);
 		const array =
 			arrays.find((array) => array.id === target?.dataset.array) ?? null;
-		if (tool === "select" && !array) return;
+		if (tool === "select" && !array && !(placement && id === roof.id)) return;
+		if (
+			placement &&
+			tool === "select" &&
+			array &&
+			!svg.current
+				?.querySelector<SVGGeometryElement>(".lp-roof-shape")
+				?.isPointInFill(new DOMPoint(point[0], -point[1]))
+		)
+			return;
 		gesture.current = {
 			document: geometry,
 			pointer: event.pointerId,
 			start: point,
 			client: [event.clientX, event.clientY],
-			array: tool === "select" ? array : null,
+			array: tool === "select" && !placement ? array : null,
 			view: current,
 		};
 		event.currentTarget.setPointerCapture(event.pointerId);
@@ -183,6 +196,7 @@ export function PlanViewport({
 				delta: [point[0] - active.start[0], point[1] - active.start[1]],
 			});
 		else {
+			if (placement && tool === "select") return;
 			// Convert CSS displacement with the original matrix scale, so view updates do not feed back into the pan.
 			const matrix = svg.current?.getScreenCTM();
 			if (!matrix) return;
@@ -198,6 +212,18 @@ export function PlanViewport({
 		if (!active || active.pointer !== event.pointerId) return;
 		gesture.current = null;
 		const point = at(event);
+		if (
+			!cancelled &&
+			!disabled &&
+			placement &&
+			tool === "select" &&
+			point &&
+			Math.hypot(
+				event.clientX - active.client[0],
+				event.clientY - active.client[1],
+			) < 3
+		)
+			placement.place(point);
 		// Three CSS pixels distinguish a click from a drag. This is interaction policy, not a metric tolerance.
 		if (
 			!cancelled &&
@@ -241,7 +267,33 @@ export function PlanViewport({
 		});
 	}
 	return (
-		<div className="lp-plan-view">
+		<div
+			className="lp-plan-view"
+			data-array-placement={placement ? true : undefined}
+		>
+			{placement && (
+				<div className="lp-canvas-tools">
+					<p className="lp-profile-help">
+						{__(
+							"Click inside the roof to position the panels.",
+							"linker-tools",
+						)}
+					</p>
+					<button
+						type="button"
+						className="lp-button lp-button-secondary"
+						onClick={() =>
+							revealActionResult(
+								globalThis.document.querySelector<HTMLElement>(
+									"#lp-array-properties input, #lp-array-properties select",
+								),
+							)
+						}
+					>
+						{__("Review panel layout", "linker-tools")}
+					</button>
+				</div>
+			)}
 			{!previewOnly && (
 				<div
 					className="lp-canvas-tools"
@@ -254,7 +306,9 @@ export function PlanViewport({
 						aria-pressed={tool === "select"}
 						onClick={() => setTool("select")}
 					>
-						{__("Select / move array", "linker-tools")}
+						{placement
+							? __("Place panels", "linker-tools")
+							: __("Select / move array", "linker-tools")}
 					</button>
 					<button
 						type="button"

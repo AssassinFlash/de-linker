@@ -63,6 +63,7 @@ function openUniqueRing(raw: readonly (readonly [number, number])[]): Vec2[] {
 
 export function MapDrawingWorkspace({
 	geometry,
+	previewGeometry,
 	confirmedGeometry,
 	projectId,
 	locale,
@@ -76,6 +77,7 @@ export function MapDrawingWorkspace({
 	...mapProps
 }: Omit<ComponentProps<typeof LazyMapViewport>, "document" | "interaction"> & {
 	geometry: GeometryDocument;
+	previewGeometry?: GeometryDocument;
 	confirmedGeometry: GeometryDocument | null;
 	projectId: string;
 	locale: string;
@@ -180,6 +182,8 @@ export function MapDrawingWorkspace({
 								? {
 										source: imagery.credit,
 										rights: `${imagery.licence} (${imagery.licence_url})`,
+										// The editing lookup returns only sources permitting derived geometry.
+										permission: true,
 										calibration: __(
 											"Manually traced on aerial imagery; pitch and direction entered by the user.",
 											"linker-tools",
@@ -214,7 +218,13 @@ export function MapDrawingWorkspace({
 			change({
 				...drawing,
 				prepared_geometry: null,
-				fields: { ...drawing.fields, [name]: value },
+				fields: {
+					...drawing.fields,
+					[name]: value,
+					...(name === "source" || name === "rights"
+						? { permission: false }
+						: {}),
+				},
 			});
 	}
 	function inputFailure() {
@@ -1053,7 +1063,7 @@ export function MapDrawingWorkspace({
 			</section>
 			<LazyMapViewport
 				{...mapProps}
-				document={geometry}
+				document={previewGeometry ?? geometry}
 				interaction={interaction}
 			/>
 			{active &&
@@ -1063,7 +1073,12 @@ export function MapDrawingWorkspace({
 				(drawing.schema_version === 1 ? (
 					<MapRoofProperties
 						drawing={drawing}
-						sourceProvided={Boolean(mapProps.imagery)}
+						sourceProvided={Boolean(
+							mapProps.imagery &&
+							drawing.fields.source === mapProps.imagery.credit &&
+							drawing.fields.rights ===
+								`${mapProps.imagery.licence} (${mapProps.imagery.licence_url})`,
+						)}
 						locale={locale}
 						busy={busy}
 						invalidField={invalidField}

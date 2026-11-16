@@ -6,16 +6,26 @@ import type {
 	MapMouseEvent,
 	StyleSpecification,
 } from "maplibre-gl";
-import type { GeometryDocument, PanelPose } from "../../domain/geometry.ts";
+import type {
+	GeometryDocument,
+	PanelPose,
+	Vec2,
+} from "../../domain/geometry.ts";
 import type { PlaceImagery } from "../../domain/place.ts";
 import { geographicMapGeometry } from "../../domain/mapGeometry.ts";
 import { MapRequestScope } from "../../data/mapRequests.ts";
 import { MapPickGate } from "../../data/MapPickGate.ts";
 import { MapPrefixController } from "../../data/MapPrefixController.ts";
 import { createMapDrawingController } from "../../data/MapDrawingController.ts";
-import type { MapInteraction } from "../../data/mapInteraction.ts";
+import type {
+	ArrayPlacement,
+	MapInteraction,
+} from "../../data/mapInteraction.ts";
+import { drawingBridge } from "../../domain/mapDrawingGeometry.ts";
+import { geographicOnRoof } from "../../domain/geographic.ts";
 import { __ } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
+import { revealActionResult } from "../revealActionResult.ts";
 
 export interface MapCamera {
 	centre: [number, number];
@@ -105,6 +115,7 @@ export default function MapViewport({
 	siteCentre = null,
 	siteOutline = null,
 	interaction = null,
+	placement = null,
 }: {
 	document: GeometryDocument;
 	poses: readonly PanelPose[];
@@ -114,6 +125,7 @@ export default function MapViewport({
 	openReferences: () => void;
 	camera: RefObject<MapCamera | null>;
 	interaction?: MapInteraction | null;
+	placement?: ArrayPlacement | null;
 	/** The official aerial mosaic for this site, or null where none exists. */
 	imagery?: PlaceImagery | null;
 	/** The declared site position, so the mosaic is visible before geometry exists. */
@@ -159,25 +171,45 @@ export default function MapViewport({
 		}
 	}, [geometry, poses]);
 	const latest = useRef({
+		geometry,
 		projection,
 		selected,
 		select,
 		disabled,
 		interaction,
+		placement,
 		imagery,
 		siteCentre,
 		siteOutline,
 	});
 	latest.current = {
+		geometry,
 		projection,
 		selected,
 		select,
 		disabled,
 		interaction,
+		placement,
 		imagery,
 		siteCentre,
 		siteOutline,
 	};
+	function placeArray(map: MapLibreMap, point: Vec2) {
+		const target = latest.current.placement;
+		if (!target) return;
+		const hit = map
+			.queryRenderedFeatures(map.project({ lng: point[0], lat: point[1] }), {
+				layers: ["linker-map-roof"],
+			})
+			.some((feature) => feature.properties?.object_id === target.roofId);
+		if (!hit) return;
+		const roof = latest.current.geometry.roofs.find(
+			(roof) => roof.id === target.roofId,
+		)!;
+		target.place(
+			geographicOnRoof(drawingBridge(latest.current.geometry), roof, point),
+		);
+	}
 
 	function fit(map: MapLibreMap) {
 		const view = latest.current.projection.view;
@@ -442,12 +474,16 @@ export default function MapViewport({
 			const pick = (event: MapMouseEvent) => {
 				if (
 					disposed ||
-					latest.current.disabled ||
+					(latest.current.disabled && !latest.current.placement) ||
 					latest.current.interaction ||
 					pickGate.current.blocked ||
 					!current.getSource(SOURCE)
 				)
 					return;
+				if (latest.current.placement) {
+					placeArray(current, [event.lngLat.lng, event.lngLat.lat]);
+					return;
+				}
 				const hit = current
 					.queryRenderedFeatures(event.point, { layers: LAYERS })
 					.find((feature) => typeof feature.properties?.object_id === "string");
@@ -760,6 +796,7 @@ export default function MapViewport({
 			aria-labelledby={label}
 			data-map-status={status}
 			data-map-failure={failure}
+			data-array-placement={placement ? true : undefined}
 		>
 			<div className="lp-map-heading">
 				<h3 id={label}>{__("Project map", "linker-tools")}</h3>
@@ -776,6 +813,43 @@ export default function MapViewport({
 				role="group"
 				aria-label={__("Map controls", "linker-tools")}
 			>
+				{placement && (
+					<>
+						<p className="lp-profile-help">
+							{__(
+								"Click inside the roof to position the panels.",
+								"linker-tools",
+							)}
+						</p>
+						<button
+							type="button"
+							className="lp-button"
+							disabled={status !== "ready"}
+							onClick={() => {
+								const map = mapRef.current;
+								if (map) {
+									const centre = map.getCenter();
+									placeArray(map, [centre.lng, centre.lat]);
+								}
+							}}
+						>
+							{__("Place panels at map centre", "linker-tools")}
+						</button>
+						<button
+							type="button"
+							className="lp-button lp-button-secondary"
+							onClick={() =>
+								revealActionResult(
+									globalThis.document.querySelector<HTMLElement>(
+										"#lp-array-properties input, #lp-array-properties select",
+									),
+								)
+							}
+						>
+							{__("Review panel layout", "linker-tools")}
+						</button>
+					</>
+				)}
 				<button
 					type="button"
 					className="lp-button lp-button-secondary"
