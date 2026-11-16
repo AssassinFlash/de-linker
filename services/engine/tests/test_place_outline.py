@@ -160,3 +160,56 @@ def test_place_outline_returns_3d_planes_for_nl_and_falls_back_to_footprints(
     assert at_body["found"] is True
     assert at_body["source"] == "Microsoft building footprints"
     assert at_body["planes"] == []
+
+
+def test_place_outline_hits_ch_3d_model_at_postcode_centroid_distance(
+    outline_client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    to_lv95 = Transformer.from_crs("EPSG:4326", "EPSG:2056", always_xy=True)
+    to_wgs84 = Transformer.from_crs("EPSG:2056", "EPSG:4326", always_xy=True)
+    lat, lon = 47.3723, 8.5425
+    cx, cy = to_lv95.transform(lon, lat)
+    # Place building ~20 m east of the postcode centroid (matches real CH 8001 offset).
+    ring = [
+        (cx + 20.0, cy - 5.0),
+        (cx + 30.0, cy - 5.0),
+        (cx + 30.0, cy + 5.0),
+        (cx + 20.0, cy + 5.0),
+    ]
+    model = europe.ModelResult(
+        country="CH",
+        buildings=[
+            Building(
+                id="CH 2683-1247",
+                address=None,
+                footprint=[ring],
+                planes=[
+                    RoofPlane(
+                        ring=ring, tilt_deg=28.0, azimuth_deg=180.0, area_m2=113.0
+                    )
+                ],
+            )
+        ],
+        licence=europe.LICENCES["CH"],
+        transformer=to_wgs84,
+    )
+    monkeypatch.setattr(europe, "read", lambda c, la, lo: model if c == "CH" else None)
+
+    ch_res = outline_client.post(
+        "/places/outline",
+        json={
+            "schema_version": 1,
+            "query": "8001 Zürich",
+            "country": "CH",
+            "latitude": lat,
+            "longitude": lon,
+        },
+        headers=_headers(),
+    )
+    assert ch_res.status_code == 200
+    ch_body = ch_res.json()
+    assert ch_body["found"] is True
+    assert ch_body["source"] == "CH 3D model"
+    assert len(ch_body["planes"]) == 1
+    assert ch_body["planes"][0]["tilt_deg"] == 28.0
+    assert ch_body["planes"][0]["area_m2"] == 113.0

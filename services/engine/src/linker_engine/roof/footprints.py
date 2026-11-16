@@ -45,6 +45,8 @@ ZOOM = 9
 # A position belongs to the building whose outline it falls inside, or barring
 # that the nearest one within this distance.
 CLICK_TOLERANCE_M = 12.0
+# Postcode centroids sit near a street or square centre rather than on a roof.
+CENTROID_TOLERANCE_M = 60.0
 
 # Consecutive points closer than this are one corner of a raster-derived
 # outline, and keeping them all would give a 300-point ring for a rectangle.
@@ -285,7 +287,11 @@ def simplify(
 
 
 def nearest(
-    candidates: list[list[tuple[float, float]]], latitude: float, longitude: float
+    candidates: list[list[tuple[float, float]]],
+    latitude: float,
+    longitude: float,
+    *,
+    tolerance_m: float = CLICK_TOLERANCE_M,
 ) -> list[tuple[float, float]] | None:
     """The outline containing the position, or the closest one within tolerance."""
     inside: list[tuple[float, float]] | None = None
@@ -302,7 +308,7 @@ def nearest(
     if best is None:
         return None
     # 12 m at European latitudes is about 0.00011 degrees of latitude.
-    if best[0] > CLICK_TOLERANCE_M / 111_320:
+    if best[0] > tolerance_m / 111_320:
         return None
     return simplify(best[1])
 
@@ -411,12 +417,13 @@ def _archive_path(country: str, key: str, url: str) -> Path | None:
 
 
 def _overpass_outline(
-    latitude: float, longitude: float
+    latitude: float, longitude: float, *, tolerance_m: float = 25.0
 ) -> list[tuple[float, float]] | None:
     """Lightweight OpenStreetMap Overpass building fallback when footprints miss."""
+    radius = max(25, int(math.ceil(tolerance_m)))
     query = (
         f'[out:json][timeout:10];way["building"]'
-        f"(around:25,{latitude},{longitude});out geom;"
+        f"(around:{radius},{latitude},{longitude});out geom;"
     )
     body = urllib.parse.urlencode({"data": query}).encode("utf-8")
     request = urllib.request.Request(
@@ -449,11 +456,15 @@ def _overpass_outline(
             candidates.append(points)
     if not candidates:
         return None
-    return nearest(candidates, latitude, longitude)
+    return nearest(candidates, latitude, longitude, tolerance_m=tolerance_m)
 
 
 def _outline_with_source(
-    country: str, latitude: float, longitude: float
+    country: str,
+    latitude: float,
+    longitude: float,
+    *,
+    tolerance_m: float = CENTROID_TOLERANCE_M,
 ) -> tuple[list[tuple[float, float]], str, str] | None:
     if country.upper() not in REGION_NAMES:
         return None
@@ -465,32 +476,47 @@ def _outline_with_source(
     if url is not None:
         archive = _archive_path(country, key, url)
         if archive is not None:
-            ring = nearest(outlines(archive, latitude, longitude), latitude, longitude)
+            ring = nearest(
+                outlines(archive, latitude, longitude),
+                latitude,
+                longitude,
+                tolerance_m=tolerance_m,
+            )
             if ring is not None:
                 return ring, "Microsoft building footprints", LICENCE
-    osm_ring = _overpass_outline(latitude, longitude)
+    osm_ring = _overpass_outline(
+        latitude, longitude, tolerance_m=max(25.0, tolerance_m)
+    )
     if osm_ring is not None:
         return osm_ring, "OpenStreetMap contributors", OSM_LICENCE
     return None
 
 
 def outline_at(
-    country: str, latitude: float, longitude: float
+    country: str,
+    latitude: float,
+    longitude: float,
+    *,
+    tolerance_m: float = CENTROID_TOLERANCE_M,
 ) -> list[tuple[float, float]] | None:
     """The mapped building outline at a position, or None where none is known.
 
     This is the geometric answer alone: no module layout, no pitch, no area
     claim. A caller that shows it must say where it came from.
     """
-    result = _outline_with_source(country, latitude, longitude)
+    result = _outline_with_source(country, latitude, longitude, tolerance_m=tolerance_m)
     return result[0] if result is not None else None
 
 
 def outline_payload(
-    country: str, latitude: float, longitude: float
+    country: str,
+    latitude: float,
+    longitude: float,
+    *,
+    tolerance_m: float = CENTROID_TOLERANCE_M,
 ) -> dict[str, Any] | None:
     """The outline with the source and licence a screen has to display."""
-    result = _outline_with_source(country, latitude, longitude)
+    result = _outline_with_source(country, latitude, longitude, tolerance_m=tolerance_m)
     if result is None:
         return None
     ring, source, licence = result

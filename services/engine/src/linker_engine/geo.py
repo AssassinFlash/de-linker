@@ -180,6 +180,39 @@ def prefix_lookup(postcode: str, country: str) -> Place | None:
     return None
 
 
+def _lookup_in_country(postcode: str, country: str) -> Place | None:
+    wanted = normalise(postcode)
+    if not wanted:
+        return None
+    exact = _by_country().get(country.upper(), {}).get(wanted)
+    if exact is not None:
+        return exact
+    compact = (
+        _by_compact().get(country.upper(), {}).get(_compact_key(postcode, country))
+    )
+    if compact is not None:
+        return compact
+    prefixed = prefix_lookup(postcode, country)
+    if prefixed is not None:
+        return prefixed
+    parts = wanted.split()
+    if len(parts) > 1:
+        country_exact = _by_country().get(country.upper(), {})
+        country_compact = _by_compact().get(country.upper(), {})
+        for end in range(len(parts) - 1, 0, -1):
+            candidate = " ".join(parts[:end])
+            hit = country_exact.get(candidate) or country_compact.get(
+                _compact_key(candidate, country)
+            )
+            if hit is not None:
+                return hit
+        for end in range(len(parts) - 1, 0, -1):
+            hit = prefix_lookup(" ".join(parts[:end]), country)
+            if hit is not None:
+                return hit
+    return None
+
+
 def lookup(postcode: str, country: str | None = None) -> Place | None:
     """The place a postcode names, within the country when one is given.
 
@@ -197,13 +230,7 @@ def lookup(postcode: str, country: str | None = None) -> Place | None:
     if not wanted:
         return None
     if country is not None:
-        exact = _by_country().get(country.upper(), {}).get(wanted)
-        if exact is not None:
-            return exact
-        compact = (
-            _by_compact().get(country.upper(), {}).get(_compact_key(postcode, country))
-        )
-        return compact if compact is not None else prefix_lookup(postcode, country)
+        return _lookup_in_country(postcode, country)
     matches = _by_postcode().get(wanted, ())
     if not matches:
         # A postcode the table lists only as a district still has to resolve:

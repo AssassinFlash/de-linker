@@ -111,6 +111,28 @@ def test_verified_open_orthophoto_states_stay_primary_even_with_key_set(
         assert host in service.tiles[0]
 
 
+def test_for_place_avoids_non_german_region_code_collisions(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("LINKER_GOOGLE_MAP_TILES_KEY", "test-key")
+    monkeypatch.setattr(
+        urllib.request,
+        "urlopen",
+        lambda *_a, **_kw: _FakeResponse(json.dumps({"session": "sess-1"})),
+    )
+
+    es_madrid = imagery.for_place("ES", "MD")
+    assert es_madrid is not None and "ign.es" in es_madrid.tiles[0]
+
+    ch_bern = imagery.for_place("CH", "BE")
+    ch_fribourg = imagery.for_place("CH", "FR")
+    assert ch_bern is not None and "wms.geo.admin.ch" in ch_bern.tiles[0]
+    assert ch_fribourg is not None and "wms.geo.admin.ch" in ch_fribourg.tiles[0]
+
+    de_bayern = imagery.for_place("DE", "DE-BY")
+    assert de_bayern is not None and "geoservices.bayern.de" in de_bayern.tiles[0]
+
+
 def test_session_cache_refreshes_near_expiry_and_keys_by_api_key(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

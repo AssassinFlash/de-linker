@@ -514,6 +514,7 @@ export function QuickStart({
 	// start the lookup, and the screen would carry unconfirmed text into the
 	// project (measured 2026-11-15: `zzz not a place` became the title).
 	const settle = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+	const resolvedKey = useRef<string | null>(null);
 	useEffect(() => {
 		lifetime.current++;
 		return () => {
@@ -523,7 +524,10 @@ export function QuickStart({
 	}, []);
 	useEffect(() => {
 		if (settle.current !== undefined) clearTimeout(settle.current);
-		if (choices.location.trim().length < 3) return;
+		const trimmed = choices.location.trim();
+		if (trimmed.length < 3) return;
+		const key = `${choices.country}:${trimmed}`;
+		if (resolvedKey.current === key) return;
 		const pending = choices.location;
 		const country = choices.country;
 		settle.current = setTimeout(() => {
@@ -536,7 +540,10 @@ export function QuickStart({
 		key: K,
 		value: QuickStartChoices[K],
 	) {
-		if (key === "location" || key === "country") setResolved(null);
+		if (key === "location" || key === "country") {
+			resolvedKey.current = null;
+			setResolved(null);
+		}
 		setChoices((previous) => {
 			if (key === "projectType") {
 				const type = value as QuickStartProjectType;
@@ -567,6 +574,7 @@ export function QuickStart({
 	): Promise<ResolvedPlace | null> {
 		const trimmed = query.trim();
 		if (trimmed.length < 3) {
+			resolvedKey.current = null;
 			setResolved(null);
 			return null;
 		}
@@ -594,15 +602,21 @@ export function QuickStart({
 				value.location_label &&
 				value.timezone
 			) {
+				resolvedKey.current = `${value.country_code}:${value.location_label.trim()}`;
 				setChoices((previous) => ({
 					...previous,
 					country: value.country_code as string,
 					location: value.location_label as string,
 				}));
+			} else {
+				resolvedKey.current = `${country}:${trimmed}`;
 			}
 			return value;
 		} catch {
-			if (instance === lifetime.current) setResolved(null);
+			if (instance === lifetime.current) {
+				resolvedKey.current = null;
+				setResolved(null);
+			}
 			return null;
 		}
 	}
@@ -611,6 +625,10 @@ export function QuickStart({
 	}
 	async function start() {
 		if (!ready || busy || !client.isCurrentScope(session.query_scope)) return;
+		if (settle.current !== undefined) {
+			clearTimeout(settle.current);
+			settle.current = undefined;
+		}
 		const instance = lifetime.current;
 		setBusy(true);
 		setFailure(null);

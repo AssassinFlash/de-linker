@@ -160,3 +160,18 @@ def for_state(state: str) -> Imagery | None:
 def for_country(country: str) -> Imagery | None:
     """The national or Copernicus VHR mosaic of a country, where verified."""
     return for_state(country)
+
+
+def for_place(country: str, iso_region: str | None = None) -> Imagery | None:
+    """The aerial imagery layer for a resolved place without region-code collisions.
+
+    Only Germany publishes state-level orthophotos keyed by `DE-*`; outside
+    Germany, GeoNames region codes such as `MD` (Madrid), `FR` (Fribourg) or
+    `BE` (Bern) collide with ISO country codes and must never enter country
+    imagery fallback.
+    """
+    if country == "DE" and iso_region:
+        state_entry = _catalogue()["states"].get(iso_region)
+        if state_entry is not None:
+            return _build(state_entry)
+    return for_country(country)

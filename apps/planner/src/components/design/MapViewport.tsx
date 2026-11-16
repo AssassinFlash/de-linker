@@ -913,7 +913,7 @@ export default function MapViewport({
 					>
 						{__("OpenFreeMap privacy policy", "linker-tools")}
 					</a>
-					{external && !imagery && (
+					{!imagery && (
 						// A country with no published mosaic is a real gap, and the
 						// visitor is told which one it is instead of being left to
 						// wonder why the background is a line drawing.

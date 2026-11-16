@@ -167,6 +167,20 @@ def test_every_zone_in_the_table_is_an_installed_iana_name() -> None:
     assert unknown == set()
 
 
+def test_location_labels_with_space_postcodes_resolve_again() -> None:
+    for query, country, expected_code in (
+        ("110 00 Vinohrady", "CZ", "110 00"),
+        ("111 20 Stockholm", "SE", "111 20"),
+        ("010 01 Žilina", "SK", "010 01"),
+        ("M1 1AE Manchester", "GB", "M1"),
+        ("59-700 Golnice", "PL", "59-700"),
+    ):
+        found = geo.lookup(query, country)
+        assert found is not None, (query, country)
+        assert found.country == country
+        assert found.postcode == expected_code
+
+
 def test_the_table_covers_the_european_countries_the_site_sells_into() -> None:
     present = geo.countries()
     for country in (

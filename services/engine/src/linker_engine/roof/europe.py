@@ -97,7 +97,9 @@ def _dutch_bbox(latitude: float, longitude: float, metres: float) -> str:
     return f"{x - metres},{y - metres},{x + metres},{y + metres}"
 
 
-def _fetch_dutch(latitude: float, longitude: float) -> dict[str, Any]:
+def _fetch_dutch(
+    latitude: float, longitude: float, *, search_m: float = 30.0
+) -> dict[str, Any]:
     """The building page for a position, with one retry on a short read.
 
     Measured 2026-11-15: the same service occasionally closes a chunked body
@@ -106,7 +108,7 @@ def _fetch_dutch(latitude: float, longitude: float) -> dict[str, Any]:
     persistent failure still surfaces as unavailable.
     """
     query = urllib.parse.urlencode(
-        {"limit": DUTCH_LIMIT, "bbox": _dutch_bbox(latitude, longitude, 30.0)}
+        {"limit": DUTCH_LIMIT, "bbox": _dutch_bbox(latitude, longitude, search_m)}
     )
     url = f"{DUTCH_ENDPOINT}?{query}"
     last: Exception | None = None
@@ -271,6 +273,9 @@ def read(country: str, latitude: float, longitude: float) -> ModelResult | None:
         document = _fetch_dutch(latitude, longitude)
         buildings = _dutch_buildings(document)
         if not buildings:
+            document = _fetch_dutch(latitude, longitude, search_m=60.0)
+            buildings = _dutch_buildings(document)
+        if not buildings:
             return None
         return ModelResult(
             country="NL",
@@ -279,7 +284,7 @@ def read(country: str, latitude: float, longitude: float) -> ModelResult | None:
             transformer=Transformer.from_crs(DUTCH_CRS, "EPSG:4326", always_xy=True),
         )
     if country in ("CH", "LI"):
-        return _read_swiss(latitude, longitude, country=country)
+        return _read_swiss(latitude, longitude, country=country, tolerance_m=60.0)
     return None
 
 
@@ -313,7 +318,11 @@ def _prune_swiss_cache(directory: Path) -> None:
 
 
 def _read_swiss(
-    latitude: float, longitude: float, *, country: str = "CH"
+    latitude: float,
+    longitude: float,
+    *,
+    country: str = "CH",
+    tolerance_m: float = CLICK_TOLERANCE_M * 4,
 ) -> ModelResult | None:
     """Roof surfaces of the buildings near a Swiss or Liechtenstein position.
 
@@ -328,7 +337,7 @@ def _read_swiss(
     tile = _swiss_tile(x, y, latitude, longitude)
     if tile is None:
         return None
-    found = tile.nearest(x, y, CLICK_TOLERANCE_M * 4)
+    found = tile.nearest(x, y, tolerance_m)
     if found is None or not found.surfaces:
         return None
     building = Building(

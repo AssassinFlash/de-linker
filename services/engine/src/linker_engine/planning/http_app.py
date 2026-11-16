@@ -139,9 +139,7 @@ class HttpLimits:
 
 def _imagery_at(found: geo.Place) -> Object | None:
     """The aerial layer for a place, or null where no service is recorded."""
-    service = imagery.for_state(found.iso_region or "") or imagery.for_country(
-        found.country
-    )
+    service = imagery.for_place(found.country, found.iso_region)
     if service is None:
         return None
     return {
@@ -202,6 +200,9 @@ def _lod2_wgs84_ring(zone: int, ring: list[tuple[float, float]]) -> Json:
     ]
 
 
+OUTLINE_SEARCH_RADIUS_M = 60.0
+
+
 def _official_3d_outline(
     place: geo.Place, latitude: float, longitude: float
 ) -> Object | None:
@@ -225,9 +226,7 @@ def _official_3d_outline(
             if footprint is None:
                 continue
             dist = europe.distance_m(footprint, x, y)
-            if dist <= footprints.CLICK_TOLERANCE_M and (
-                best is None or dist < best[0]
-            ):
+            if dist <= OUTLINE_SEARCH_RADIUS_M and (best is None or dist < best[0]):
                 best = (dist, building)
         if best is None:
             return None
@@ -280,7 +279,7 @@ def _official_3d_outline(
             if shape is None:
                 continue
             dist = shape.distance(point)
-            if dist <= footprints.CLICK_TOLERANCE_M and (
+            if dist <= OUTLINE_SEARCH_RADIUS_M and (
                 best_de is None or dist < best_de[0]
             ):
                 best_de = (dist, item)
@@ -398,6 +397,7 @@ def create_private_app(
         or product_provider is None
     ):
         raise InvalidInput("geometric PV requires shared project and Woo authority")
+    geo.countries()
     registry = service_registry(
         energy,
         pv,
