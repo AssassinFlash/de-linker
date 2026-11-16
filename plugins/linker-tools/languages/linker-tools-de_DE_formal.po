@@ -858,10 +858,6 @@ msgstr "Gespräch per E-Mail erhalten"
 msgid "Energy per 15 minutes in kWh"
 msgstr "Energie je 15 Minuten in kWh"
 
-#: src/configurator/validation.ts:40 build/configurator.js
-msgid "Enter a German postcode with five digits."
-msgstr "Geben Sie eine deutsche Postleitzahl mit fünf Ziffern ein."
-
 #: src/configurator/validation.ts:63 build/configurator.js
 msgid "Enter a number."
 msgstr "Geben Sie eine Zahl ein."
