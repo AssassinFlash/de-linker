@@ -197,7 +197,7 @@ export class MapDrawingController {
 		this.window.addEventListener("pointerup", this.pointerUp, true);
 		this.window.addEventListener("pointercancel", this.pointerCancel, true);
 		this.canvas.addEventListener("lostpointercapture", this.pointerCancel);
-		this.window.addEventListener("blur", this.interrupt);
+		this.window.addEventListener("blur", this.interruptGesture);
 		this.window.addEventListener("pagehide", this.interrupt);
 		this.owner.addEventListener("visibilitychange", this.visibility);
 		this.draw.on("change", this.changed);
@@ -370,7 +370,12 @@ export class MapDrawingController {
 		if (this.pointer === event.pointerId) this.interrupt();
 	};
 	private visibility = () => {
-		if (this.owner.visibilityState === "hidden") this.interrupt();
+		if (this.owner.visibilityState === "hidden") this.interruptGesture();
+	};
+	private interruptGesture = () => {
+		// Switching focus between completed edits must keep the property form
+		// open. Only an unfinished gesture needs to be cancelled and reviewed.
+		if (this.pointer !== null || this.steps.length > 0) this.interrupt();
 	};
 	private interrupt = () => {
 		if (this.disposed) return;
@@ -520,7 +525,7 @@ export class MapDrawingController {
 		this.window.removeEventListener("pointerup", this.pointerUp, true);
 		this.window.removeEventListener("pointercancel", this.pointerCancel, true);
 		this.canvas.removeEventListener("lostpointercapture", this.pointerCancel);
-		this.window.removeEventListener("blur", this.interrupt);
+		this.window.removeEventListener("blur", this.interruptGesture);
 		this.window.removeEventListener("pagehide", this.interrupt);
 		this.owner.removeEventListener("visibilitychange", this.visibility);
 		this.draw.off("change", this.changed);

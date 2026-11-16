@@ -540,6 +540,59 @@ test("an address-centred empty project can trace its first roof and show it on t
 	assert.deepEqual(map.getSource("linker-project-geometry").data.features, []);
 });
 
+test("a closed roof keeps its properties open through anchor navigation and idle focus changes", async (t) => {
+	const r = await rig(t);
+	await r.click("Start roof drawing");
+	await until(() => r.active);
+	for (const point of [
+		[6.96, 50.94],
+		[6.9601, 50.94],
+		[6.9601, 50.9401],
+		[6.96, 50.9401],
+	])
+		await r.point(...point);
+	await r.click("Pause drawing");
+	await until(() => !r.active);
+	await r.click("Resume drawing");
+	await r.click("Close outline and review");
+	await until(() => document.querySelector("#lp-map-roof-properties"));
+	await act(async () =>
+		document.querySelector('a[href="#lp-map-roof-properties"]').click(),
+	);
+	await until(() => location.hash === "#lp-map-roof-properties");
+	assert.equal(r.active, true, "a property anchor does not pause the drawing");
+	await act(async () => window.dispatchEvent(new window.Event("blur")));
+	await until(
+		() => !document.body.textContent.includes("Saving drawing in this browser"),
+	);
+	assert.ok(
+		document.querySelector("#lp-map-roof-properties"),
+		"idle focus changes keep the roof properties available",
+	);
+	await act(async () => {
+		Object.defineProperty(document, "visibilityState", {
+			configurable: true,
+			value: "hidden",
+		});
+		document.dispatchEvent(new window.Event("visibilitychange"));
+		Object.defineProperty(document, "visibilityState", {
+			configurable: true,
+			value: "visible",
+		});
+		document.dispatchEvent(new window.Event("visibilitychange"));
+	});
+	await until(
+		() => !document.body.textContent.includes("Saving drawing in this browser"),
+	);
+	assert.ok(
+		document.querySelector("#lp-map-roof-properties"),
+		"returning to an idle drawing keeps its review open",
+	);
+	assert.equal(r.active, true);
+	assert.equal((await r.records())[0].drawing.phase, "staged");
+	assert.equal((await r.records())[0].drawing.vertices.length, 4);
+});
+
 test("real drawing UI resumes a one-point journal, stages a roof, checks inputs and joins one project command", async (t) => {
 	const r = await rig(t);
 	await r.click("Start roof drawing");
