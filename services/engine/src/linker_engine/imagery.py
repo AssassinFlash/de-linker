@@ -1,13 +1,10 @@
-"""Official aerial imagery of each European region or country, for the roof map.
+"""Aerial imagery for every European region and country, for the roof map.
 
-`data/imagery.json` names each federal state's or country's open orthophoto WMS
-or tile template alongside the European Union Copernicus VHR mosaic viewing
-service for EEA and United Kingdom territories that publish no separate open
-national WMS. When ``LINKER_GOOGLE_MAP_TILES_KEY`` is configured, Google 2D
-Satellite imagery replaces Italy's blank-tile PCN relay and serves European
-countries without a verified open orthophoto service; if the key is unset or
-session creation fails, each lookup falls back cleanly to the open service or
-``None``.
+When ``LINKER_GOOGLE_MAP_TILES_KEY`` is configured, Google 2D Satellite imagery
+is the primary layer across all verified European countries and German states.
+When the key is unset or Google session creation fails, each lookup falls back
+cleanly to the state's or country's open orthophoto service in
+``data/imagery.json`` or the EU Copernicus VHR mosaic, or ``None``.
 """
 
 from __future__ import annotations
@@ -135,30 +132,29 @@ def _google_satellite() -> Imagery | None:
 def for_state(state: str) -> Imagery | None:
     catalogue = _catalogue()
     states: dict[str, Any] = catalogue["states"]
-    if state == "IT":
-        google = _google_satellite()
-        if google is not None:
-            return google
-        entry = states.get("IT")
-        return _build(entry) if entry is not None else None
-    entry = states.get(state)
-    if entry is not None:
-        return _build(entry)
     copernicus: dict[str, Any] | None = catalogue.get("copernicus_vhr")
     copernicus_countries = (
         set(copernicus.get("countries", ())) if copernicus is not None else set()
     )
-    if state in geo.countries() or state in copernicus_countries:
-        google = _google_satellite()
-        if google is not None:
-            return google
+    if (
+        state not in states
+        and state not in geo.countries()
+        and state not in copernicus_countries
+    ):
+        return None
+    google = _google_satellite()
+    if google is not None:
+        return google
+    entry = states.get(state)
+    if entry is not None:
+        return _build(entry)
     if copernicus is not None and state in copernicus_countries:
         return _build(copernicus)
     return None
 
 
 def for_country(country: str) -> Imagery | None:
-    """The national or Copernicus VHR mosaic of a country, where verified."""
+    """The Google Satellite or open orthophoto mosaic of a European country."""
     return for_state(country)
 
 
@@ -170,8 +166,6 @@ def for_place(country: str, iso_region: str | None = None) -> Imagery | None:
     `BE` (Bern) collide with ISO country codes and must never enter country
     imagery fallback.
     """
-    if country == "DE" and iso_region:
-        state_entry = _catalogue()["states"].get(iso_region)
-        if state_entry is not None:
-            return _build(state_entry)
+    if country == "DE" and iso_region and iso_region in _catalogue()["states"]:
+        return for_state(iso_region)
     return for_country(country)

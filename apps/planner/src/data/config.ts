@@ -7,6 +7,7 @@ export interface Configuration {
 	readonly countries: Readonly<Record<string, string>>;
 	readonly sceneModuleUrl?: string | null;
 	readonly mapModuleUrl?: string | null;
+	readonly googleMapsApiKey?: string | null;
 }
 export function readConfiguration(
 	element: HTMLElement,
@@ -24,6 +25,18 @@ export function readConfiguration(
 		typeof data.locale !== "string"
 	)
 		throw new Error("invalid_planner_configuration");
+	const rawGoogleKey = data.google_maps_api_key;
+	if (
+		rawGoogleKey !== undefined &&
+		rawGoogleKey !== null &&
+		typeof rawGoogleKey !== "string"
+	)
+		throw new Error("invalid_planner_configuration");
+	const googleMapsApiKey =
+		typeof rawGoogleKey === "string" &&
+		/^[A-Za-z0-9_-]{20,80}$/.test(rawGoogleKey.trim())
+			? rawGoogleKey.trim()
+			: null;
 	const countries = readObject(data.countries);
 	if (
 		!Object.entries(countries).every(
@@ -60,5 +73,6 @@ export function readConfiguration(
 		countries: countries as Record<string, string>,
 		sceneModuleUrl: reviewedModule("scene", "SceneViewport"),
 		mapModuleUrl: reviewedModule("map", "MapViewport"),
+		googleMapsApiKey,
 	};
 }

@@ -54,6 +54,7 @@ export function DesignEditor({
 	geometryImports = { schema_version: 1, selected: {} },
 	sceneModuleUrl = null,
 	mapModuleUrl = null,
+	googleMapsApiKey = null,
 	initialMapView = false,
 	commit,
 	locale,
@@ -79,9 +80,17 @@ export function DesignEditor({
 		ring: [number, number][];
 		source: string;
 		licence: string;
+		planes?: readonly {
+			id: number;
+			polygon: readonly [number, number][];
+			tilt_deg: number;
+			azimuth_deg: number;
+			area_m2: number;
+		}[];
 	} | null;
 	sceneModuleUrl?: string | null;
 	mapModuleUrl?: string | null;
+	googleMapsApiKey?: string | null;
 	initialMapView?: boolean;
 	commit: (command: GeometryCommand) => boolean;
 	locale: string;
@@ -98,13 +107,38 @@ export function DesignEditor({
 	recoveryScopes?: readonly string[] | undefined;
 	recoveryChecking?: boolean | undefined;
 }) {
+	const canShowGoogle3D = Boolean(
+		googleMapsApiKey &&
+		(siteCentre !== null ||
+			(geometry.coordinate_system.anchor !== null &&
+				geometry.coordinate_system.north_reference === "true_north")),
+	);
+	const canShowMap = Boolean(
+		siteCentre !== null ||
+		imagery !== null ||
+		siteOutline !== null ||
+		(geometry.coordinate_system.anchor !== null &&
+			geometry.coordinate_system.north_reference === "true_north"),
+	);
+	const userPickedView = useRef(initialMapView);
 	const [selected, setSelected] = useState<string | null>(null),
 		[roofId, setRoofId] = useState<string | null>(
 			geometry.roofs[0]?.id ?? null,
 		),
-		[view, setView] = useState<"plan" | "map" | "3d">(
-			initialMapView ? "map" : "plan",
+		[view, setView] = useState<"plan" | "map" | "3d">(() =>
+			initialMapView
+				? "map"
+				: canShowGoogle3D
+					? "3d"
+					: canShowMap
+						? "map"
+						: "plan",
 		);
+	useEffect(() => {
+		if (userPickedView.current || view !== "plan") return;
+		if (canShowGoogle3D) setView("3d");
+		else if (canShowMap) setView("map");
+	}, [canShowGoogle3D, canShowMap, view]);
 	const mapCamera = useRef<MapCamera | null>(null);
 	const sceneCamera = useRef<SceneViewState | null>(null);
 	const [importOpen, setImportOpen] = useState(false);
@@ -252,27 +286,36 @@ export function DesignEditor({
 				>
 					<button
 						type="button"
-						aria-pressed={view === "plan"}
+						aria-pressed={view === "3d"}
 						disabled={drawingOpen}
-						onClick={() => setView("plan")}
+						onClick={() => {
+							userPickedView.current = true;
+							setView("3d");
+						}}
 					>
-						{__("Plan", "linker-tools")}
+						3D
 					</button>
 					<button
 						type="button"
 						aria-pressed={view === "map"}
 						disabled={drawingOpen}
-						onClick={() => setView("map")}
+						onClick={() => {
+							userPickedView.current = true;
+							setView("map");
+						}}
 					>
 						{__("Map", "linker-tools")}
 					</button>
 					<button
 						type="button"
-						aria-pressed={view === "3d"}
+						aria-pressed={view === "plan"}
 						disabled={drawingOpen}
-						onClick={() => setView("3d")}
+						onClick={() => {
+							userPickedView.current = true;
+							setView("plan");
+						}}
 					>
-						3D
+						{__("Plan", "linker-tools")}
 					</button>
 				</div>
 			</div>
@@ -339,6 +382,53 @@ export function DesignEditor({
 							openReferences={() => open("coordinates")}
 							camera={mapCamera}
 						/>
+					) : view === "3d" && (roof || canShowGoogle3D) ? (
+						<>
+							{roof && (
+								<div className="lp-roof-picker">
+									<label>
+										{__("Active roof face", "linker-tools")}
+										<select
+											value={roof.id}
+											disabled={!!form || importOpen || drawingOpen}
+											onChange={(event) => {
+												setRoofId(event.currentTarget.value);
+												setSelected(event.currentTarget.value);
+											}}
+										>
+											{geometry.roofs.map((roof) => (
+												<option key={roof.id} value={roof.id}>
+													{roof.name}
+												</option>
+											))}
+										</select>
+									</label>
+									<span className="lp-eyebrow">
+										{geometry.coordinate_system.north_reference ===
+										"unreferenced"
+											? __("North unreferenced", "linker-tools")
+											: __("North reference recorded", "linker-tools")}
+									</span>
+								</div>
+							)}
+							<LazySceneViewport
+								sceneModuleUrl={sceneModuleUrl}
+								document={geometry}
+								poses={poses}
+								selected={selected}
+								select={choose}
+								commit={edit}
+								disabled={!!form || importOpen || drawingOpen}
+								camera={sceneCamera}
+								googleMapsApiKey={googleMapsApiKey}
+								siteCentre={siteCentre}
+								siteOutline={siteOutline}
+								onSwitchToMap={() => {
+									userPickedView.current = true;
+									setView("map");
+								}}
+							/>
+						</>
 					) : roof ? (
 						<>
 							<div className="lp-roof-picker">
@@ -365,29 +455,16 @@ export function DesignEditor({
 										: __("North reference recorded", "linker-tools")}
 								</span>
 							</div>
-							{view === "plan" ? (
-								<PlanViewport
-									key={roof.id}
-									document={geometry}
-									roof={roof}
-									poses={poses}
-									selected={selected}
-									select={choose}
-									commit={edit}
-									disabled={!!form || importOpen || drawingOpen}
-								/>
-							) : (
-								<LazySceneViewport
-									sceneModuleUrl={sceneModuleUrl}
-									document={geometry}
-									poses={poses}
-									selected={selected}
-									select={choose}
-									commit={edit}
-									disabled={!!form || importOpen || drawingOpen}
-									camera={sceneCamera}
-								/>
-							)}
+							<PlanViewport
+								key={roof.id}
+								document={geometry}
+								roof={roof}
+								poses={poses}
+								selected={selected}
+								select={choose}
+								commit={edit}
+								disabled={!!form || importOpen || drawingOpen}
+							/>
 						</>
 					) : (
 						<div className="lp-design-empty">

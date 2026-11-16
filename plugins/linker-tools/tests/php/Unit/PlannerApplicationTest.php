@@ -94,6 +94,13 @@ final class PlannerApplicationTest extends TestCase {
 		WP_Mock::userFunction( 'admin_url', array( 'return' => 'https://fixture.invalid/wp-admin/admin-ajax.php' ) );
 		WP_Mock::userFunction( 'add_query_arg', array( 'return' => 'https://fixture.invalid/wp-admin/admin-ajax.php?action=rest-nonce' ) );
 		WP_Mock::userFunction( 'determine_locale', array( 'return' => 'en_GB' ) );
+		WP_Mock::userFunction(
+			'get_option',
+			array(
+				'args'   => array( 'linker_google_maps_api_key', '' ),
+				'return' => '',
+			)
+		);
 		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn( mixed $data ): string|false => json_encode( $data ) ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- implements the mocked encoder without recursion.
 		WP_Mock::userFunction( 'esc_attr', array( 'return' => static fn( string $value ): string => htmlspecialchars( $value, ENT_QUOTES ) ) );
 		WP_Mock::userFunction( 'esc_html__', array( 'return' => static fn( string $value ): string => $value ) );
@@ -104,6 +111,7 @@ final class PlannerApplicationTest extends TestCase {
 		$config = json_decode( html_entity_decode( $matches[1] ?? throw new \RuntimeException( 'Native planner configuration was not rendered.' ), ENT_QUOTES ), true );
 		$this->assertSame( $base . 'build/planner/' . $scene, $config['scene_module_url'] );
 		$this->assertSame( $base . 'build/planner/' . $map, $config['map_module_url'] );
+		$this->assertNull( $config['google_maps_api_key'] );
 		$this->assertSame( array( 'FR' => 'France' ), $config['countries'] );
 		// A guest is never offered the nonce endpoint: it answers only a
 		// signed-in cookie, so the browser would spend a round trip on a

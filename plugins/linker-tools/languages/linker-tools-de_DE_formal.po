@@ -15004,3 +15004,101 @@ msgstr "Es wurde kein Standortland angegeben; nationale Netzanschlussregeln konn
 #: build/planner/assets/planner.js
 msgid "A versioned national rule reading is bundled for %1$s (%2$s). Enter national rule inputs to run the conditional checks."
 msgstr "Für %1$s ist eine versionierte Einordnung des nationalen Regelwerks hinterlegt (%2$s). Tragen Sie die Ländereingaben ein, um die bedingten Prüfungen auszuführen."
+
+#: ../../apps/planner/src/components/design/Google3DMap.tsx
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: ../../apps/planner/src/components/BriefForm.tsx
+#: build/planner/assets/planner.js
+msgid "Loading 3D satellite imagery…"
+msgstr "3D-Satellitenansicht wird geladen…"
+
+#: ../../apps/planner/src/components/QuickStart.tsx
+#: build/planner/assets/planner.js
+msgid "Open 3D roof studio"
+msgstr "3D-Dachplanung öffnen"
+
+#: ../../apps/planner/src/components/design/Google3DMap.tsx
+#: build/planner/assets/planner.js
+msgid "Photorealistic 3D imagery could not be loaded here. You can retry or use the aerial map."
+msgstr "Die fotorealistische 3D-Ansicht konnte hier nicht geladen werden. Sie können es erneut versuchen oder die Luftbildkarte öffnen."
+
+#: ../../apps/planner/src/components/design/Google3DMap.tsx
+#: build/planner/assets/planner.js
+msgid "Open aerial map"
+msgstr "Luftbildkarte öffnen"
+
+#: ../../apps/planner/src/components/design/Google3DMap.tsx
+#: build/planner/assets/planner.js
+msgid "3D satellite controls"
+msgstr "Steuerung der 3D-Satellitenansicht"
+
+#: ../../apps/planner/src/components/design/Google3DMap.tsx
+#: build/planner/assets/planner.js
+msgid "Reset 3D view"
+msgstr "3D-Ansicht zurücksetzen"
+
+#: ../../apps/planner/src/components/design/Google3DMap.tsx
+#: build/planner/assets/planner.js
+msgid "3D oblique view"
+msgstr "3D-Schrägansicht"
+
+#: ../../apps/planner/src/components/design/Google3DMap.tsx
+#: build/planner/assets/planner.js
+msgid "Top-down view"
+msgstr "Draufsicht von oben"
+
+#: ../../apps/planner/src/components/design/Google3DMap.tsx
+#: build/planner/assets/planner.js
+msgid "Hide street labels"
+msgstr "Straßenbeschriftung ausblenden"
+
+#: ../../apps/planner/src/components/design/Google3DMap.tsx
+#: build/planner/assets/planner.js
+msgid "Show street labels"
+msgstr "Straßenbeschriftung einblenden"
+
+#: ../../apps/planner/src/components/design/Google3DMap.tsx
+#: build/planner/assets/planner.js
+msgid "Draw or adopt on aerial map"
+msgstr "In der Luftbildkarte zeichnen oder übernehmen"
+
+#: ../../apps/planner/src/components/design/Google3DMap.tsx
+#: build/planner/assets/planner.js
+msgid "CAD 3D (Edit panels)"
+msgstr "CAD 3D (Module verschieben)"
+
+#: ../../apps/planner/src/components/design/Google3DMap.tsx
+#: build/planner/assets/planner.js
+msgid "3D satellite view of the site"
+msgstr "3D-Satellitenansicht des Standorts"
+
+#: ../../apps/planner/src/components/design/MapViewport.tsx
+#: build/planner/assets/planner.js
+msgid "Aerial imagery"
+msgstr "Luftbild"
+
+#: ../../apps/planner/src/components/design/MapViewport.tsx
+#: build/planner/assets/planner.js
+msgid "Hide aerial map"
+msgstr "Luftbildkarte ausblenden"
+
+#: ../../apps/planner/src/components/design/MapViewport.tsx
+#: build/planner/assets/planner.js
+msgid "Show aerial map"
+msgstr "Luftbildkarte anzeigen"
+
+#: ../../apps/planner/src/components/design/SceneViewport.tsx
+#: build/planner/assets/planner.js
+msgid "Google Photorealistic 3D shows the real site surroundings with your roof layout. Switch to CAD 3D to drag module arrays directly on the roof plane."
+msgstr "Google Photorealistic 3D zeigt die reale Umgebung Ihres Gebäudes samt Dachbelegung. Wechseln Sie zu CAD 3D, um Modulfelder direkt auf der Dachfläche zu verschieben."
+
+#: ../../apps/planner/src/components/design/SceneViewport.tsx
+#: build/planner/assets/planner.js
+msgid "Google Photorealistic 3D shows the real building at this location. Open the aerial map to adopt or draw the roof outline."
+msgstr "Google Photorealistic 3D zeigt das reale Gebäude an diesem Standort. Öffnen Sie die Luftbildkarte, um den Dachumriss zu übernehmen oder zu zeichnen."
+
+#: ../../apps/planner/src/components/design/SceneViewport.tsx
+#: build/planner/assets/planner.js
+msgid "Photorealistic 3D (Google)"
+msgstr "Fotorealistisches 3D (Google)"
+

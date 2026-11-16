@@ -228,10 +228,15 @@ final class Application {
 		$this->mounted = true;
 		wp_enqueue_script( 'wp-i18n' );
 		wp_enqueue_script_module( self::HANDLE );
-		$countries = function_exists( 'WC' ) ? WC()->countries->get_countries() : array();
-		$config    = wp_json_encode(
+		$countries    = function_exists( 'WC' ) ? WC()->countries->get_countries() : array();
+		$raw_maps_key = defined( 'LINKER_GOOGLE_MAPS_API_KEY' ) ? constant( 'LINKER_GOOGLE_MAPS_API_KEY' ) : get_option( 'linker_google_maps_api_key', '' );
+		$maps_key     = is_string( $raw_maps_key ) ? trim( $raw_maps_key ) : '';
+		if ( 1 !== preg_match( '/\A[A-Za-z0-9_-]{20,80}\z/', $maps_key ) ) {
+			$maps_key = '';
+		}
+		$config = wp_json_encode(
 			array(
-				'base_url'         => rest_url( Gateway::NAMESPACE . Gateway::ROUTE ),
+				'base_url'            => rest_url( Gateway::NAMESPACE . Gateway::ROUTE ),
 				// `admin-ajax.php?action=rest-nonce` only answers a logged-in
 				// cookie: WordPress registers it under `wp_ajax_` alone, so a
 				// guest is answered `400` with the body `0` (measured
@@ -239,13 +244,14 @@ final class Application {
 				// has always treated it as the normal guest branch). Sending
 				// the URL only to a signed-in visitor removes a request that
 				// could never succeed from every guest's first paint.
-				'nonce_url'        => is_user_logged_in()
+				'nonce_url'           => is_user_logged_in()
 					? add_query_arg( 'action', 'rest-nonce', admin_url( 'admin-ajax.php' ) )
 					: null,
-				'locale'           => determine_locale(),
-				'countries'        => (object) $countries,
-				'scene_module_url' => $this->scene_module_url,
-				'map_module_url'   => $this->map_module_url,
+				'locale'              => determine_locale(),
+				'countries'           => (object) $countries,
+				'scene_module_url'    => $this->scene_module_url,
+				'map_module_url'      => $this->map_module_url,
+				'google_maps_api_key' => '' !== $maps_key ? $maps_key : null,
 			)
 		);
 		return sprintf(

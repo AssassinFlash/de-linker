@@ -3,6 +3,7 @@ import type { ReactNode, RefObject } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { ArrayTransform } from "./SceneControls.tsx";
 import { SceneCamera } from "./SceneCamera.tsx";
+import { Google3DMap, type SiteOutline3D } from "./Google3DMap.tsx";
 import { SCENE_FOV_DEG, sceneViewDirection } from "../../domain/sceneCamera.ts";
 import type { SceneViewState } from "../../domain/sceneCamera.ts";
 import {
@@ -79,6 +80,11 @@ interface SceneProps {
 	directBeam?: ReadonlyMap<string, number | null> | undefined;
 	/** Viewer's own orbit, retained across a released-and-restored surface. */
 	camera?: RefObject<SceneViewState | null> | undefined;
+	/** Public website-restricted key for Google Photorealistic 3D. */
+	googleMapsApiKey?: string | null | undefined;
+	siteCentre?: readonly [number, number] | null | undefined;
+	siteOutline?: SiteOutline3D | null | undefined;
+	onSwitchToMap?: (() => void) | undefined;
 }
 const vector = (point: Vec3) => new Vector3(...point);
 const sceneLens = { fov: SCENE_FOV_DEG };
@@ -511,6 +517,7 @@ export default function SceneViewport(props: SceneProps) {
 	const [backend, setBackend] = useState("");
 	const [fitRequest, setFitRequest] = useState(0);
 	const [forceWebGL, setForceWebGL] = useState(false);
+	const [cadMode, setCadMode] = useState(false);
 	const alive = useRef(true);
 	const generation = useRef(0);
 	// The workspace keeps inactive sections mounted, so a displayed 3D canvas can
@@ -576,6 +583,60 @@ export default function SceneViewport(props: SceneProps) {
 			return null;
 		}
 	}, [props.document, props.poses, props.selected, props.routes, reference]);
+	const googleCenter: readonly [number, number] | null =
+		props.document.coordinate_system.anchor &&
+		props.document.coordinate_system.north_reference === "true_north" &&
+		props.document.roofs.length > 0
+			? [
+					props.document.coordinate_system.anchor.longitude_deg,
+					props.document.coordinate_system.anchor.latitude_deg,
+				]
+			: (props.siteCentre ?? null);
+	const canUseGoogle3D = Boolean(
+		props.googleMapsApiKey &&
+		googleCenter &&
+		!props.routes &&
+		!props.directBeam,
+	);
+	if (canUseGoogle3D && !cadMode && props.googleMapsApiKey && googleCenter) {
+		return (
+			<div className="lp-scene-view" ref={host}>
+				{!hidden && (
+					<Google3DMap
+						apiKey={props.googleMapsApiKey}
+						center={googleCenter}
+						document={props.document}
+						poses={props.poses}
+						siteOutline={props.siteOutline}
+						selected={props.selected}
+						select={props.select}
+						onSwitchToMap={props.onSwitchToMap}
+						onSwitchToCad={
+							props.document.roofs.length > 0
+								? () => setCadMode(true)
+								: undefined
+						}
+						onFallback={() => {
+							if (props.document.roofs.length > 0) setCadMode(true);
+						}}
+					/>
+				)}
+				{!props.disabled && (
+					<p className="lp-profile-help">
+						{props.document.roofs.length > 0
+							? __(
+									"Google Photorealistic 3D shows the real site surroundings with your roof layout. Switch to CAD 3D to drag module arrays directly on the roof plane.",
+									"linker-tools",
+								)
+							: __(
+									"Google Photorealistic 3D shows the real building at this location. Open the aerial map to adopt or draw the roof outline.",
+									"linker-tools",
+								)}
+					</p>
+				)}
+			</div>
+		);
+	}
 	return (
 		<div className="lp-scene-view" ref={host}>
 			{failed ? (
@@ -730,16 +791,27 @@ export default function SceneViewport(props: SceneProps) {
 			)}
 			{!failed && !hidden && bounds && reference && (
 				<div className="lp-canvas-caption">
-					<button
-						type="button"
-						className="lp-tool-button"
-						disabled={!backend}
-						onClick={() => {
-							setFitRequest((value) => value + 1);
-						}}
-					>
-						{__("Fit 3D view", "linker-tools")}
-					</button>
+					<div className="lp-inline-actions">
+						<button
+							type="button"
+							className="lp-tool-button"
+							disabled={!backend}
+							onClick={() => {
+								setFitRequest((value) => value + 1);
+							}}
+						>
+							{__("Fit 3D view", "linker-tools")}
+						</button>
+						{canUseGoogle3D && (
+							<button
+								type="button"
+								className="lp-tool-button"
+								onClick={() => setCadMode(false)}
+							>
+								{__("Photorealistic 3D (Google)", "linker-tools")}
+							</button>
+						)}
+					</div>
 					<span data-renderer={backend || undefined}>
 						{backend ? "3D" : __("Preparing 3D…", "linker-tools")}
 					</span>

@@ -34,7 +34,7 @@ def _clean_google_env_and_cache(monkeypatch: pytest.MonkeyPatch) -> None:
     imagery._GOOGLE_SESSIONS.clear()
 
 
-def test_italy_and_non_open_european_countries_use_google_when_key_set(
+def test_all_european_countries_and_states_use_google_when_key_set(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv("LINKER_GOOGLE_MAP_TILES_KEY", "test-key")
@@ -58,23 +58,16 @@ def test_italy_and_non_open_european_countries_use_google_when_key_set(
 
     monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
 
-    italy = imagery.for_country("IT")
-    assert italy is not None
-    assert (
-        italy.tiles[0]
-        == "https://tile.googleapis.com/v1/2dtiles/{z}/{x}/{y}?session=sess-123&key=test-key"
-    )
-    assert italy.credit == "Map data © Google"
-    assert italy.licence == "Google Maps Platform Terms of Service"
-    assert italy.licence_url == "https://cloud.google.com/maps-platform/terms"
-
-    gb = imagery.for_country("GB")
-    assert gb is not None
-    assert "tile.googleapis.com/v1/2dtiles" in gb.tiles[0]
-
-    ukraine = imagery.for_country("UA")
-    assert ukraine is not None
-    assert "tile.googleapis.com/v1/2dtiles" in ukraine.tiles[0]
+    for state in ("DE-BY", "NL", "FR", "CH", "AT", "ES", "IT", "GB", "UA"):
+        service = imagery.for_state(state)
+        assert service is not None
+        assert (
+            service.tiles[0]
+            == "https://tile.googleapis.com/v1/2dtiles/{z}/{x}/{y}?session=sess-123&key=test-key"
+        )
+        assert service.credit == "Map data © Google"
+        assert service.licence == "Google Maps Platform Terms of Service"
+        assert service.licence_url == "https://cloud.google.com/maps-platform/terms"
 
     assert len(seen) == 1
     assert seen[0]["url"] == "https://tile.googleapis.com/v1/createSession?key=test-key"
@@ -89,16 +82,7 @@ def test_italy_and_non_open_european_countries_use_google_when_key_set(
     assert seen[0]["timeout"] == 10
 
 
-def test_verified_open_orthophoto_states_stay_primary_even_with_key_set(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setenv("LINKER_GOOGLE_MAP_TILES_KEY", "test-key")
-
-    def fail_if_called(*_: object, **__: object) -> Any:
-        raise AssertionError("Google createSession must not be called for open WMS")
-
-    monkeypatch.setattr(urllib.request, "urlopen", fail_if_called)
-
+def test_verified_open_orthophoto_states_serve_as_fallback_without_key() -> None:
     for state, host in (
         ("DE-BY", "geoservices.bayern.de"),
         ("NL", "service.pdok.nl"),
@@ -111,16 +95,7 @@ def test_verified_open_orthophoto_states_stay_primary_even_with_key_set(
         assert host in service.tiles[0]
 
 
-def test_for_place_avoids_non_german_region_code_collisions(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setenv("LINKER_GOOGLE_MAP_TILES_KEY", "test-key")
-    monkeypatch.setattr(
-        urllib.request,
-        "urlopen",
-        lambda *_a, **_kw: _FakeResponse(json.dumps({"session": "sess-1"})),
-    )
-
+def test_for_place_avoids_non_german_region_code_collisions() -> None:
     es_madrid = imagery.for_place("ES", "MD")
     assert es_madrid is not None and "ign.es" in es_madrid.tiles[0]
 

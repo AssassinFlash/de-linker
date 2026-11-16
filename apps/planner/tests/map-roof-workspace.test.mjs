@@ -587,7 +587,7 @@ test("provider replacement restores an open prefix only after the new map loads 
 	await until(() => r.active);
 	await r.point(6.96, 50.94);
 	const old = r.map();
-	await r.click("Load street map");
+	await r.click("Hide aerial map");
 	await until(
 		() =>
 			r.map() !== old && document.querySelector('[data-map-status="ready"]'),

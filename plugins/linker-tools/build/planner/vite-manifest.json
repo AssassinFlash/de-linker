@@ -1,11 +1,19 @@
 {
-  "_planner-core-D7GIucjl.js": {
-    "file": "assets/planner-core-D7GIucjl.js",
+  "_geographic-BZ0IsCSq.js": {
+    "file": "assets/geographic-BZ0IsCSq.js",
+    "name": "geographic",
+    "imports": [
+      "_planner-core-mzlA8RW4.js"
+    ]
+  },
+  "_planner-core-mzlA8RW4.js": {
+    "file": "assets/planner-core-mzlA8RW4.js",
     "name": "planner-core",
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js"
     ],
     "dynamicImports": [
+      "src/components/design/Google3DMap.tsx",
       "src/components/ProjectEditor.tsx"
     ]
   },
@@ -14,50 +22,65 @@
     "name": "rolldown-runtime"
   },
   "src/components/ProjectEditor.tsx": {
-    "file": "assets/ProjectEditor-Cq62H7Eg.js",
+    "file": "assets/ProjectEditor-CZQfk-yD.js",
     "name": "ProjectEditor",
     "src": "src/components/ProjectEditor.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-D7GIucjl.js"
+      "_planner-core-mzlA8RW4.js",
+      "_geographic-BZ0IsCSq.js"
     ],
     "dynamicImports": [
+      "src/components/design/Google3DMap.tsx",
       "src/components/design/SceneViewport.tsx",
       "src/components/design/MapViewport.tsx",
       "src/components/energy/EnergyFlowChart.tsx"
     ]
   },
+  "src/components/design/Google3DMap.tsx": {
+    "file": "assets/Google3DMap-DJohZ7B5.js",
+    "name": "Google3DMap",
+    "src": "src/components/design/Google3DMap.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-BWaJ3C7D.js",
+      "_planner-core-mzlA8RW4.js",
+      "_geographic-BZ0IsCSq.js"
+    ]
+  },
   "src/components/design/MapViewport.tsx": {
-    "file": "assets/MapViewport-D86s_W7U.js",
+    "file": "assets/MapViewport-CyNcYfGV.js",
     "name": "MapViewport",
     "src": "src/components/design/MapViewport.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-D7GIucjl.js",
+      "_planner-core-mzlA8RW4.js",
+      "_geographic-BZ0IsCSq.js",
       "src/components/ProjectEditor.tsx"
     ]
   },
   "src/components/design/SceneViewport.tsx": {
-    "file": "assets/SceneViewport-AhbiRlCC.js",
+    "file": "assets/SceneViewport-B1pxY_n1.js",
     "name": "SceneViewport",
     "src": "src/components/design/SceneViewport.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-D7GIucjl.js",
-      "src/components/ProjectEditor.tsx"
+      "_planner-core-mzlA8RW4.js",
+      "src/components/ProjectEditor.tsx",
+      "src/components/design/Google3DMap.tsx"
     ]
   },
   "src/components/energy/EnergyFlowChart.tsx": {
-    "file": "assets/EnergyFlowChart-DQQEbN0s.js",
+    "file": "assets/EnergyFlowChart-DdTWn9BA.js",
     "name": "EnergyFlowChart",
     "src": "src/components/energy/EnergyFlowChart.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-D7GIucjl.js",
+      "_planner-core-mzlA8RW4.js",
       "src/components/ProjectEditor.tsx"
     ]
   },
@@ -68,7 +91,7 @@
     "isEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-D7GIucjl.js"
+      "_planner-core-mzlA8RW4.js"
     ]
   }
 }

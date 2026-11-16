@@ -12,7 +12,7 @@ const button = (text) =>
 		(node) => node.textContent.trim() === text,
 	);
 
-test("map view keeps metric inputs unchanged and gates/cancels each external owner across CMP and identity hiding", async (t) => {
+test("map view loads aerial/street imagery by default, supports hiding/retrying, and preserves geometry", async (t) => {
 	const fixture = setupDom();
 	const previous = new globalThis.Map();
 	for (const name of ["MutationObserver", "getComputedStyle"]) {
@@ -65,8 +65,10 @@ test("map view keeps metric inputs unchanged and gates/cancels each external own
 	await until(() => document.querySelector('[data-map-status="ready"]'));
 	assert.ok(maps.length >= 2, "StrictMode should release the first setup");
 	assert.equal(maps[0].removals, 1);
-	assert.equal(typeof activeMap(maps).options.style, "object");
-	assert.deepEqual(activeMap(maps).options.style.sources, {});
+	assert.equal(
+		activeMap(maps).options.style,
+		"https://tiles.openfreemap.org/styles/liberty",
+	);
 	assert.ok(
 		activeMap(maps).fitted,
 		"the first ready view must fit the actual geometry",
@@ -81,44 +83,15 @@ test("map view keeps metric inputs unchanged and gates/cancels each external own
 		activeMap(maps).emit("click", { point: { x: 1, y: 1 } }),
 	);
 	assert.deepEqual(picked, [geometry.roofs[0].id]);
-	await act(async () => button("Load street map").click());
-	await until(() => typeof activeMap(maps)?.options.style === "string");
 	const hiddenByButton = activeMap(maps);
 	await act(async () => {
-		button("Hide street map").click();
+		button("Hide aerial map").click();
 		assert.equal(hiddenByButton.removals, 1);
 	});
 	await until(() => typeof activeMap(maps)?.options.style === "object");
-	await act(async () => button("Load street map").click());
-	await until(() => typeof activeMap(maps)?.options.style === "string");
-	const external = activeMap(maps);
-	assert.equal(
-		external.options.style,
-		"https://tiles.openfreemap.org/styles/liberty",
-	);
-	await act(async () => {
-		document.dispatchEvent(
-			new window.CustomEvent("wp_listen_for_consent_change", {
-				detail: { statistics: "deny" },
-			}),
-		);
-		assert.equal(
-			external.removals,
-			1,
-			"withdrawal must synchronously release the current owner",
-		);
-	});
-	await until(() => typeof activeMap(maps)?.options.style === "object");
-	assert.ok(button("Load street map"));
-	await act(async () => button("Load street map").click());
-	await until(() => typeof activeMap(maps)?.options.style === "string");
-	const hiddenOwner = activeMap(maps);
-	await act(async () => fixture.element.setAttribute("hidden", ""));
-	await until(() => hiddenOwner.removed);
-	await act(async () => fixture.element.removeAttribute("hidden"));
-	assert.equal(typeof activeMap(maps).options.style, "object");
+	assert.deepEqual(activeMap(maps).options.style.sources, {});
 	behavior.autoLoad = false;
-	await act(async () => button("Load street map").click());
+	await act(async () => button("Show aerial map").click());
 	const unavailable = activeMap(maps);
 	await act(async () =>
 		unavailable.emit("error", { error: new Error("synthetic offline") }),
@@ -140,7 +113,7 @@ test("map view keeps metric inputs unchanged and gates/cancels each external own
 	await act(async () => button("Retry loading map").click());
 	await until(() => document.querySelector('[data-map-status="ready"]'));
 	assert.equal(unavailable.removals, 1);
-	await act(async () => button("Hide street map").click());
+	await act(async () => button("Hide aerial map").click());
 	await until(() => typeof activeMap(maps)?.options.style === "object");
 	activeMap(maps).jumpTo({
 		center: [6.9601, 50.9401],
@@ -157,9 +130,9 @@ test("map view keeps metric inputs unchanged and gates/cancels each external own
 	assert.deepEqual(activeMap(maps).options.center, [6.9601, 50.9401]);
 	assert.equal(activeMap(maps).options.bearing, 35);
 	assert.equal(
-		typeof activeMap(maps).options.style,
-		"object",
-		"view changes do not retain an external grant",
+		activeMap(maps).options.style,
+		"https://tiles.openfreemap.org/styles/liberty",
+		"reopening the map view restores aerial/street imagery by default",
 	);
 	assert.equal(JSON.stringify(geometry), before);
 	assert.ok(
@@ -224,8 +197,6 @@ test("late-arriving imagery inserts beneath the site outline and updates its req
 		);
 	await renderWith(null);
 	await until(() => document.querySelector('[data-map-status="ready"]'));
-	await act(async () => button("Load street map").click());
-	await until(() => typeof activeMap(maps)?.options.style === "string");
 	const live = activeMap(maps);
 	assert.ok(live.getLayer("linker-site-outline"));
 	await renderWith({

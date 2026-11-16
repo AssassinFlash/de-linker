@@ -1062,6 +1062,7 @@ export function ProjectEditor({
 								recoveryChecking={recoveryChecking}
 								sceneModuleUrl={config.sceneModuleUrl ?? null}
 								mapModuleUrl={config.mapModuleUrl ?? null}
+								googleMapsApiKey={config.googleMapsApiKey ?? null}
 								commit={editGeometry}
 								locale={config.locale}
 								projectId={project.id}

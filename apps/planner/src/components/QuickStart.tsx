@@ -1,5 +1,14 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+	lazy,
+	Suspense,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import type { Configuration } from "../data/config.ts";
+import { geocodeAddress } from "../data/googleMaps.ts";
+const LazyGoogle3DMap = lazy(() => import("./design/Google3DMap.tsx"));
 import type { PlannerClient } from "../data/PlannerClient.ts";
 import type { DraftStore } from "../data/DraftStore.ts";
 import type { Json, JsonObject, Project, Session } from "../data/protocol.ts";
@@ -488,7 +497,8 @@ export function QuickStart({
 	config: Configuration;
 	recheck: () => void;
 	created?: ((project: Project) => boolean) | undefined;
-	openWorkbench?: ((projectId: string) => void) | undefined;
+	openWorkbench?:
+		((projectId: string, destination?: "design") => void) | undefined;
 	onOpenProject?: ((projectId: string) => void) | undefined;
 	close?: (() => void) | undefined;
 	/** Re-plan an open project instead of creating another one. */
@@ -580,7 +590,7 @@ export function QuickStart({
 		}
 		const instance = lifetime.current;
 		try {
-			const value = readResolvedPlace(
+			let value = readResolvedPlace(
 				await client.query(
 					"places/lookup",
 					{
@@ -595,6 +605,58 @@ export function QuickStart({
 				),
 			);
 			if (instance !== lifetime.current) return null;
+			if (!value.found && !value.needs_country && config.googleMapsApiKey) {
+				try {
+					const geocoded = await geocodeAddress(
+						config.googleMapsApiKey,
+						trimmed,
+						country || undefined,
+					);
+					if (instance !== lifetime.current) return null;
+					if (geocoded) {
+						let enriched: ResolvedPlace | null = null;
+						if (geocoded.postcode && geocoded.countryCode) {
+							try {
+								enriched = readResolvedPlace(
+									await client.query(
+										"places/lookup",
+										{
+											schema_version: 1,
+											query: geocoded.postcode,
+											country: geocoded.countryCode,
+										},
+										session.query_scope,
+									),
+								);
+							} catch {
+								enriched = null;
+							}
+						}
+						if (instance !== lifetime.current) return null;
+						const resolvedCountry =
+							geocoded.countryCode ??
+							enriched?.country_code ??
+							(country || null);
+						value = {
+							schema_version: 1,
+							found: true,
+							query: trimmed,
+							...(resolvedCountry ? { country_code: resolvedCountry } : {}),
+							location_label:
+								enriched?.location_label ?? geocoded.formattedAddress,
+							latitude: geocoded.lat,
+							longitude: geocoded.lng,
+							timezone:
+								enriched?.timezone ??
+								Intl.DateTimeFormat().resolvedOptions().timeZone ??
+								"Europe/Berlin",
+							...(enriched?.imagery ? { imagery: enriched.imagery } : {}),
+						};
+					}
+				} catch {
+					/* Geocoding fallback stays non-blocking. */
+				}
+			}
 			setResolved(value);
 			if (
 				value.found &&
@@ -963,6 +1025,26 @@ export function QuickStart({
 					<p>{failure}</p>
 				</Notice>
 			)}
+			{config.googleMapsApiKey &&
+				resolved?.found &&
+				typeof resolved.latitude === "number" &&
+				typeof resolved.longitude === "number" && (
+					<div className="lp-quickstart-map">
+						<Suspense
+							fallback={
+								<p role="status">
+									{__("Loading 3D satellite imagery…", "linker-tools")}
+								</p>
+							}
+						>
+							<LazyGoogle3DMap
+								compact
+								apiKey={config.googleMapsApiKey}
+								center={[resolved.longitude, resolved.latitude]}
+							/>
+						</Suspense>
+					</div>
+				)}
 			<details className="lp-quickstart-advanced">
 				<summary>
 					{__("Advanced engineering checks (optional)", "linker-tools")}
@@ -995,7 +1077,8 @@ function QuickStartRun({
 	store: DraftStore;
 	config: Configuration;
 	recheck: () => void;
-	openWorkbench?: ((projectId: string) => void) | undefined;
+	openWorkbench?:
+		((projectId: string, destination?: "design") => void) | undefined;
 	onOpenProject?: ((projectId: string) => void) | undefined;
 }) {
 	const {
@@ -1562,6 +1645,62 @@ function QuickStartRun({
 					/>
 				</section>
 			)}
+			{(() => {
+				const rawBrief = draft?.history.current.brief ?? project.inputs.brief;
+				const briefObj =
+					rawBrief && typeof rawBrief === "object" && !Array.isArray(rawBrief)
+						? (rawBrief as Record<string, unknown>)
+						: null;
+				const siteObj =
+					briefObj?.site &&
+					typeof briefObj.site === "object" &&
+					!Array.isArray(briefObj.site)
+						? (briefObj.site as Record<string, unknown>)
+						: null;
+				const lat = siteObj?.latitude;
+				const lng = siteObj?.longitude;
+				if (
+					!config.googleMapsApiKey ||
+					typeof lat !== "number" ||
+					typeof lng !== "number"
+				)
+					return null;
+				return (
+					<div className="lp-quickstart-map">
+						<Suspense
+							fallback={
+								<p role="status">
+									{__("Loading 3D satellite imagery…", "linker-tools")}
+								</p>
+							}
+						>
+							<LazyGoogle3DMap
+								compact
+								apiKey={config.googleMapsApiKey}
+								center={[lng, lat]}
+								onSwitchToMap={() =>
+									openWorkbench
+										? openWorkbench(project.id, "design")
+										: onOpenProject?.(project.id)
+								}
+							/>
+						</Suspense>
+					</div>
+				);
+			})()}
+			<div className="lp-inline-actions lp-quickstart-studio-action">
+				<button
+					className="lp-button"
+					type="button"
+					onClick={() =>
+						openWorkbench
+							? openWorkbench(project.id, "design")
+							: onOpenProject?.(project.id)
+					}
+				>
+					{__("Open 3D roof studio", "linker-tools")}
+				</button>
+			</div>
 			<details className="lp-quickstart-advanced">
 				<summary>
 					{__("Advanced engineering checks (optional)", "linker-tools")}

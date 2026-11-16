@@ -55,6 +55,9 @@ lp-geometry-check
 lp-geometry-fields
 lp-geometry-form
 lp-geometry-intake
+lp-google3d-compact
+lp-google3d-host
+lp-google3d-view
 lp-icon-button
 lp-import-panel
 lp-import-review
@@ -131,8 +134,10 @@ lp-quickstart-actions
 lp-quickstart-advanced
 lp-quickstart-form
 lp-quickstart-head
+lp-quickstart-map
 lp-quickstart-result
 lp-quickstart-steps
+lp-quickstart-studio-action
 lp-rail-caption
 lp-rail-current
 lp-rail-session

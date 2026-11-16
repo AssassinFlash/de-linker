@@ -135,7 +135,7 @@ export default function MapViewport({
 	const host = useRef<HTMLDivElement>(null),
 		mapRef = useRef<MapLibreMap | null>(null),
 		releaseExternal = useRef<(() => void) | null>(null),
-		[external, setExternal] = useState(false),
+		[external, setExternal] = useState(true),
 		[attempt, setAttempt] = useState(0),
 		[status, setStatus] = useState<"loading" | "ready" | "failed">("loading"),
 		[readyMap, setReadyMap] = useState<MapLibreMap | null>(null),
@@ -192,50 +192,12 @@ export default function MapViewport({
 		else map.jumpTo({ center: [...view.centre], zoom: 17 });
 	}
 	useEffect(() => {
-		// This transient request never changes a persisted CMP category grant.
 		const stopExternal = () => {
 			releaseExternal.current?.();
 			setExternal(false);
 		};
-		const visibility = () => {
-			if (globalThis.document.visibilityState === "hidden") stopExternal();
-		};
-		const hidden = () => {
-			if (host.current?.closest("[hidden], [inert]")) stopExternal();
-		};
-		const observer = new MutationObserver(hidden);
-		for (
-			let parent = host.current?.parentElement;
-			parent;
-			parent = parent.parentElement
-		) {
-			observer.observe(parent, {
-				attributes: true,
-				attributeFilter: ["hidden", "inert"],
-			});
-			if (parent.hasAttribute("data-linker-planner")) break;
-		}
-		globalThis.document.addEventListener(
-			"cookieyes_consent_update",
-			stopExternal,
-		);
-		globalThis.document.addEventListener(
-			"wp_listen_for_consent_change",
-			stopExternal,
-		);
-		globalThis.document.addEventListener("visibilitychange", visibility);
 		window.addEventListener("pagehide", stopExternal);
 		return () => {
-			observer.disconnect();
-			globalThis.document.removeEventListener(
-				"cookieyes_consent_update",
-				stopExternal,
-			);
-			globalThis.document.removeEventListener(
-				"wp_listen_for_consent_change",
-				stopExternal,
-			);
-			globalThis.document.removeEventListener("visibilitychange", visibility);
 			window.removeEventListener("pagehide", stopExternal);
 		};
 	}, [projection.view !== null]);
@@ -243,9 +205,7 @@ export default function MapViewport({
 	// Without a design anchor the geometry cannot be projected, but the site's
 	// own position is enough to show the aerial mosaic and let the visitor draw:
 	// never infer north, and never present the mosaic as a survey frame.
-	const available =
-		projection.view !== null ||
-		(siteCentre !== null && (imagery !== null || siteOutline !== null));
+	const available = projection.view !== null || siteCentre !== null;
 	useEffect(() => {
 		if (!host.current || !available) return;
 		let disposed = false;
@@ -296,9 +256,12 @@ export default function MapViewport({
 				centre: [...(latest.current.siteCentre ?? [0, 0])],
 			};
 			const saved = camera.current;
+			const hasImagery = Boolean(
+				latest.current.imagery && latest.current.imagery.tiles.length > 0,
+			);
 			map = new MapLibreMap({
 				container: host.current,
-				style: external ? STREET_STYLE : ownStyle,
+				style: external && !hasImagery ? STREET_STYLE : ownStyle,
 				transformRequest: requests.transform,
 				center: saved?.centre ?? [...view.centre],
 				zoom: saved?.zoom ?? 17,
@@ -792,7 +755,9 @@ export default function MapViewport({
 				<h3 id={label}>{__("Project map", "linker-tools")}</h3>
 				<span className="lp-eyebrow">
 					{external
-						? __("Street map", "linker-tools")
+						? imagery
+							? __("Aerial imagery", "linker-tools")
+							: __("Street map", "linker-tools")
 						: __("Project geometry", "linker-tools")}
 				</span>
 			</div>
@@ -888,10 +853,12 @@ export default function MapViewport({
 			)}
 			<div className="lp-map-provider">
 				<p className="lp-profile-help">
-					{__(
-						"Loading the street map sends your IP address and the area shown to OpenFreeMap and its delivery network. The street map is for orientation.",
-						"linker-tools",
-					)}
+					{imagery
+						? `${imagery.credit} — ${imagery.licence}`
+						: __(
+								"Loading the street map sends your IP address and the area shown to OpenFreeMap and its delivery network. The street map is for orientation.",
+								"linker-tools",
+							)}
 				</p>
 				<div className="lp-inline-actions">
 					<button
@@ -903,16 +870,26 @@ export default function MapViewport({
 						}}
 					>
 						{external
-							? __("Hide street map", "linker-tools")
-							: __("Load street map", "linker-tools")}
+							? __("Hide aerial map", "linker-tools")
+							: __("Show aerial map", "linker-tools")}
 					</button>
-					<a
-						href="https://openfreemap.org/privacy/"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						{__("OpenFreeMap privacy policy", "linker-tools")}
-					</a>
+					{imagery ? (
+						<a
+							href={imagery.licence_url}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							{__("Map attribution", "linker-tools")}
+						</a>
+					) : (
+						<a
+							href="https://openfreemap.org/privacy/"
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							{__("OpenFreeMap privacy policy", "linker-tools")}
+						</a>
+					)}
 					{!imagery && (
 						// A country with no published mosaic is a real gap, and the
 						// visitor is told which one it is instead of being left to

@@ -545,7 +545,9 @@ export function Workspace({
 						config={config}
 						recheck={recheck}
 						created={quickStarted}
-						openWorkbench={(projectId) => select(projectId)}
+						openWorkbench={(projectId, destination) =>
+							select(projectId, destination === "design" ? "lp-design" : "")
+						}
 						close={() => setQuickStart(false)}
 					/>
 				) : null}
