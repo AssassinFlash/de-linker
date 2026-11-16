@@ -771,12 +771,6 @@ export default function MapViewport({
 						: __("Project geometry", "linker-tools")}
 				</span>
 			</div>
-			<p className="lp-profile-help">
-				{__(
-					"The map, plan and 3D views use the same project geometry. Panning and zooming change the view. Boundary edits update the project when you apply them.",
-					"linker-tools",
-				)}
-			</p>
 			<div
 				className="lp-map-toolbar"
 				role="group"

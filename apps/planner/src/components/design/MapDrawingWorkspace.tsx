@@ -750,7 +750,7 @@ export function MapDrawingWorkspace({
 									"linker-tools",
 								)
 							: __(
-									"The outline and roof properties form an editable roof face. The source and permissions stay with it in the project, alongside the plan and 3D views.",
+									"Draw one roof face at a time.",
 									"linker-tools",
 								)}
 				</p>

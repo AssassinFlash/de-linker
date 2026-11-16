@@ -15102,6 +15102,10 @@ msgstr "Google Photorealistic 3D zeigt das reale Gebäude an diesem Standort. Ö
 msgid "Photorealistic 3D (Google)"
 msgstr "Fotorealistisches 3D (Google)"
 
+#: build/planner/assets/planner.js
+msgid "Draw one roof face at a time."
+msgstr "Zeichnen Sie jede Dachfläche einzeln."
+
 
 #: build/planner/assets/planner.js
 msgid "Start with your roof"
