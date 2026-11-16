@@ -36,10 +36,12 @@ export function message( error: ErrorObject, locale: Locale ): string {
 		case 'required':
 			return __( 'Please fill in this field.', 'linker-tools' );
 		case 'pattern':
-			return __(
-				'Enter a German postcode with five digits.',
-				'linker-tools'
-			);
+			return error.instancePath === '/plz'
+				? __(
+						'Enter a postcode using letters, numbers, spaces or hyphens.',
+						'linker-tools'
+					)
+				: __( 'Check this value.', 'linker-tools' );
 		case 'minimum':
 			return sprintf(
 				/* translators: %s: smallest allowed value */

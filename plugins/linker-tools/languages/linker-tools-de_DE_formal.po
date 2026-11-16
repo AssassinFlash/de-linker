@@ -15258,3 +15258,7 @@ msgstr "Position anzeigen"
 #: build/planner/assets/planner.js
 msgid "Module details"
 msgstr "Moduldetails"
+
+#: build/configurator.js
+msgid "Enter a postcode using letters, numbers, spaces or hyphens."
+msgstr "Geben Sie die Postleitzahl mit Buchstaben, Ziffern, Leerzeichen oder Bindestrichen ein."

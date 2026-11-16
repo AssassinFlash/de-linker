@@ -358,7 +358,7 @@ test( 'inputs are checked against the engine schema before any request', async (
 			store={ fakeStore().store }
 		/>
 	);
-	fill( /Postcode of the site/, '8053' );
+	fill( /Postcode of the site/, '80!53' );
 	fill( /Annual household consumption/, '120' );
 	await act( async () => {
 		fireEvent.click(
@@ -366,7 +366,9 @@ test( 'inputs are checked against the engine schema before any request', async (
 		);
 	} );
 	expect(
-		screen.getByText( 'Enter a German postcode with five digits.' )
+		screen.getByText(
+			'Enter a postcode using letters, numbers, spaces or hyphens.'
+		)
 	).toBeInTheDocument();
 	expect( screen.getByText( 'Enter at least 500.' ) ).toBeInTheDocument();
 	expect( calls ).toHaveLength( 0 );
